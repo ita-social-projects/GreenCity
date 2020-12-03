@@ -2,6 +2,7 @@ package greencity.dto.habit;
 
 import greencity.dto.user.UserVO;
 import java.time.ZonedDateTime;
+import greencity.enums.HabitAssignStatus;
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,8 +12,7 @@ import lombok.*;
 @Builder
 public class HabitAssignVO {
     private Long id;
-    private Boolean acquired;
-    private Boolean suspended;
+    private HabitAssignStatus status;
     private ZonedDateTime createDateTime;
     private HabitVO habitVO;
     private UserVO userVO;

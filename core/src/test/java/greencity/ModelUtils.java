@@ -181,41 +181,8 @@ public class ModelUtils {
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+            .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
-            .build();
-    }
-
-    public static UserGoal getCustomUserGoal() {
-        return UserGoal.builder()
-            .id(1L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
-            .status(GoalStatus.DONE)
-            .build();
-    }
-
-    public static UserGoalResponseDto getCustomUserGoalDto() {
-        return UserGoalResponseDto.builder()
-            .id(1L)
-            .text("Buy electric car")
-            .status(GoalStatus.ACTIVE)
-            .build();
-    }
-
-    public static UserGoal getPredefinedUserGoal() {
-        return UserGoal.builder()
-            .id(2L)
-            .user(User.builder().id(1L).email(TestConst.EMAIL).name(TestConst.NAME).role(Role.ROLE_USER).build())
-            .status(GoalStatus.ACTIVE)
-            .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
-            .build();
-    }
-
-    public static UserGoalResponseDto getPredefinedUserGoalDto() {
-        return UserGoalResponseDto.builder()
-            .id(2L)
-            .text("Buy a bamboo toothbrush")
-            .status(GoalStatus.ACTIVE)
             .build();
     }
 
@@ -227,7 +194,7 @@ public class ModelUtils {
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
-                .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
+                .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build(),
             GoalTranslation.builder()
                 .id(11L)
@@ -235,7 +202,7 @@ public class ModelUtils {
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
-                .goal(new Goal(4L, Collections.emptyList(), Collections.emptyList()))
+                .goal(new Goal(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build());
     }
 
@@ -449,9 +416,8 @@ public class ModelUtils {
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
             .id(1L)
-            .acquired(true)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDate(ZonedDateTime.now())
-            .suspended(false)
             .habit(Habit.builder()
                 .id(1L)
                 .image("")
