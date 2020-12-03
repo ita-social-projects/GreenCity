@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.tag.TagVO;
+
 import java.util.List;
 
 /**
@@ -39,6 +40,14 @@ public interface TagsService {
      * @return list of Tag's names
      */
     List<String> findAllTipsAndTricksTags();
+
+    /**
+     * Method that finds all Habits {@link Tag}'s.
+     *
+     * @return list of {@link Tag}'s names
+     * @author Markiyan Derevetskyi
+     */
+    List<String> findAllHabitsTags();
 
     /**
      * Method that checks if all Tags are unique.

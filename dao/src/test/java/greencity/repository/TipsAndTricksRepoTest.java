@@ -46,36 +46,6 @@ class TipsAndTricksRepoTest {
     }
 
     @Test
-    void searchTipsAndTricksTest() {
-        Pageable pageable = PageRequest.of(0, 6);
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, "News", "en");
-        List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(1, tipsAndTricks.size());
-        assertEquals("News", tipsAndTricks.get(0).getTags().get(0).getName());
-    }
-
-    @Test
-    void searchByAuthorNameTest() {
-        Pageable pageable = PageRequest.of(0, 6);
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(pageable, "John", "en");
-        List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(1, tipsAndTricks.size());
-        assertEquals("John", tipsAndTricks.get(0).getAuthor().getName());
-    }
-
-    @Test
-    void searchByTitleTest() {
-        Pageable pageable = PageRequest.of(0, 6);
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchBy(pageable, "TitleTest", "en");
-        List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(1, tipsAndTricks.size());
-        assertEquals(Optional.of("TitleTest"),
-            tipsAndTricks.get(0).getTitleTranslations().stream()
-                .filter(elem -> elem.getLanguage().getCode().equals("en"))
-                .findFirst().map(TitleTranslation::getContent));
-    }
-
-    @Test
     void getAmountOfWrittenTipsAndTrickByUserIdTest() {
         Long amount = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(1L);
         assertEquals(4, amount);

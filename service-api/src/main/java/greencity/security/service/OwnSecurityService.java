@@ -22,7 +22,7 @@ public interface OwnSecurityService {
      * @return {@link SuccessSignUpDto}
      * @author Yurii Koval
      */
-    SuccessSignUpDto signUp(OwnSignUpDto dto);
+    SuccessSignUpDto signUp(OwnSignUpDto dto, String language);
 
     /**
      * Method that allow you sign-in user.

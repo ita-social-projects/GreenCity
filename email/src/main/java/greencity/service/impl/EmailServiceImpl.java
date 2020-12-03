@@ -2,21 +2,13 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.service.EmailService;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +18,17 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * {@inheritDoc}
@@ -133,12 +136,13 @@ public class EmailServiceImpl implements EmailService {
      * @author Volodymyr Turko
      */
     @Override
-    public void sendVerificationEmail(Long id, String name, String email, String token) {
+    public void sendVerificationEmail(Long id, String name, String email, String token, String language) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
         model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
             + token + PARAM_USER_ID + id);
+        changeLocale(language);
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
     }
@@ -168,14 +172,35 @@ public class EmailServiceImpl implements EmailService {
      * @param token     password recovery token.
      */
     @Override
-    public void sendRestoreEmail(Long userId, String userName, String userEmail, String token) {
+    public void sendRestoreEmail(Long userId, String userName, String userEmail, String token, String language) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, userName);
         model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
             + PARAM_USER_ID + userId);
+        changeLocale(language);
+        log.info(Locale.getDefault().toString());
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
         sendEmail(userEmail, EmailConstants.CONFIRM_RESTORING_PASS, template);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param language language which will be used for sending recovery letter.
+     */
+    public void changeLocale(String language) {
+        Locale rus = new Locale("ru", "RU");
+        Locale uk = new Locale("uk", "UA");
+        if (language.equals("uk")) {
+            Locale.setDefault(uk);
+        }
+        if (language.equals("ru")) {
+            Locale.setDefault(rus);
+        }
+        if (language.equals("en")) {
+            Locale.setDefault(Locale.ENGLISH);
+        }
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {

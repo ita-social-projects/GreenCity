@@ -18,13 +18,13 @@ VALUES (1, 'image1'),
        (6, 'image6'),
        (7, 'image7');
 
-INSERT INTO habit_assign (id, habit_id, user_id, acquired, create_date, suspended)
-VALUES (1, 1, 1, false, '2020-09-09 20:00:00+00', false),
-       (2, 1, 2, false, '2020-09-10 20:00:00+00', false),
-       (3, 3, 3, false, '2020-09-11 20:00:00+00', false),
-       (4, 4, 4, false, '2020-09-12 20:00:00+00', false),
-       (5, 5, 5, false, '2020-09-13 20:00:00+00', false),
-       (6, 6, 6, false, '2020-09-14 20:00:00+00', false);
+INSERT INTO habit_assign (id, habit_id, user_id, status, create_date)
+VALUES (1, 1, 1, 'ACTIVE', '2020-09-09 20:00:00+00'),
+       (2, 1, 2, 'ACTIVE', '2020-09-10 20:00:00+00'),
+       (3, 3, 3, 'ACTIVE', '2020-09-11 20:00:00+00'),
+       (4, 4, 4, 'ACTIVE', '2020-09-12 20:00:00+00'),
+       (5, 5, 5, 'ACTIVE', '2020-09-13 20:00:00+00'),
+       (6, 6, 6, 'ACTIVE', '2020-09-14 20:00:00+00');
 
 INSERT INTO languages (id, code)
 VALUES (1, 'ua'),

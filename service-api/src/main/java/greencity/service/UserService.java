@@ -5,6 +5,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.goal.GoalVO;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -178,53 +181,6 @@ public interface UserService {
      * @return - number of updated rows
      */
     int updateUserRefreshToken(String refreshTokenKey, Long id);
-
-    /**
-     * Method returns list of user goals for specific language.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of {@link UserGoalDto}.
-     */
-    List<UserGoalResponseDto> getUserGoals(Long userId, String language);
-
-    /**
-     * Method returns list of available (not ACTIVE) goals for user for specific
-     * language.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of {@link GoalDto}.
-     */
-    List<GoalDto> getAvailableGoals(Long userId, String language);
-
-    /**
-     * Method saves list of user goals.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param language needed language code.
-     * @return List of saved {@link UserGoalDto} with specific language.
-     */
-    List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto dto, String language);
-
-    /**
-     * Method for deleted list of user goals.
-     *
-     * @param ids string with ids object for deleting.
-     * @return list ids of deleted {@link UserGoalVO}
-     * @author Bogdan Kuzenko
-     */
-    List<Long> deleteUserGoals(String ids);
-
-    /**
-     * Method update status of user goal.
-     *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param goalId   - {@link UserGoalVO}'s id that should be updated.
-     * @param language needed language code.
-     * @return {@link UserGoalDto} with specific language.
-     */
-    UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language);
 
     /**
      * Method add default habit.

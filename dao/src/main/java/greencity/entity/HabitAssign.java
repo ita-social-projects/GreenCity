@@ -1,6 +1,8 @@
 package greencity.entity;
 
+import greencity.enums.HabitAssignStatus;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -18,14 +20,12 @@ public class HabitAssign {
     @Column(nullable = false)
     private Long id;
 
-    @Column(name = "acquired", nullable = false)
-    private Boolean acquired;
-
     @Column(name = "create_date", nullable = false)
     private ZonedDateTime createDate;
 
-    @Column(name = "suspended", nullable = false)
-    private Boolean suspended;
+    @Column(name = "status", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private HabitAssignStatus status;
 
     @Column(name = "duration", nullable = false)
     private Integer duration;
@@ -38,6 +38,9 @@ public class HabitAssign {
 
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
+
+    @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY)
+    private List<UserGoal> userGoals = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;

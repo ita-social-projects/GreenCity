@@ -98,12 +98,11 @@ public class HabitAssignController {
     /**
      * Method for finding all active {@link HabitAssignDto}'s for current user.
      *
-     * @param userVO   {@link UserVO} instance.
-     * @param acquired {@link Boolean} status.
-     * @param locale   needed language code.
+     * @param userVO {@link UserVO} instance.
+     * @param locale needed language code.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get active habit assigns for current user by acquired status.")
+    @ApiOperation(value = "Get active habit assigns for current user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -113,20 +112,19 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("")
     public ResponseEntity<List<HabitAssignDto>> getCurrentUserHabitAssignsByIdAndAcquired(
-        @ApiIgnore @CurrentUser UserVO userVO, @RequestParam Boolean acquired,
+        @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getAllHabitAssignsByUserIdAndAcquiredStatus(userVO.getId(), acquired, locale.getLanguage()));
+                .getAllHabitAssignsByUserIdAndAcquiredStatus(userVO.getId(), locale.getLanguage()));
     }
 
     /**
      * Method to return all active {@link HabitAssignDto} by it's {@link HabitVO}
      * id.
      *
-     * @param habitId  {@link HabitVO} id.
-     * @param acquired {@link Boolean} status.
-     * @param locale   needed language code.
+     * @param habitId {@link HabitVO} id.
+     * @param locale  needed language code.
      * @return {@link List} of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get all active assigns by certain habit.")
@@ -138,11 +136,10 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{habitId}/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long habitId,
-        @RequestParam Boolean acquired,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId,
-                acquired, locale.getLanguage()));
+                locale.getLanguage()));
     }
 
     /**
@@ -204,15 +201,16 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusCalendarDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{habitId}/enroll")
-    public ResponseEntity<HabitStatusCalendarDto> enrollHabit(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId()));
+    @PostMapping("/{habitId}/enroll/{date}")
+    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId(), date));
     }
 
     /**

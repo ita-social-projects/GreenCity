@@ -40,16 +40,14 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @param userId   {@link User} id which we use to filter.
      * @param language code language.
-     * @param acquired habit acquired status.
      * @return List of available {@link HabitTranslation}`s.
      */
     @Query(value = "SELECT ht FROM HabitTranslation ht "
         + "WHERE ht.language.code = :language AND ht.habit.id IN "
         + "(SELECT ha.habit.id FROM HabitAssign ha "
-        + "WHERE ha.user.id = :userId AND ha.acquired = :acquired)")
+        + "WHERE ha.user.id = :userId AND upper(ha.status) <> 'AQCUIRED')")
     List<HabitTranslation> findHabitTranslationsByUserAndAcquiredStatus(@Param("userId") Long userId,
-        @Param("language") String language,
-        @Param("acquired") boolean acquired);
+        @Param("language") String language);
 
     /**
      * Method returns all {@link Habit}'s by language.
@@ -66,4 +64,21 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param habit {@link Habit} instance.
      */
     void deleteAllByHabit(Habit habit);
+
+    /**
+     * Method that find all habit's translations by language code and tags.
+     *
+     * @param pageable     {@link Pageable}
+     * @param tags         {@link List} of {@link String} tags
+     * @param languageCode language code {@link String}
+     *
+     * @return {@link List} of {@link HabitTranslation}.
+     * @author Markiyan Derevetskyi
+     */
+    @Query(nativeQuery = true, value = "select distinct ht.* from habit_translation as ht "
+        + "inner join habits_tags as htg on ht.habit_id = htg.habit_id "
+        + "inner join tags as t on t.id = htg.tag_id "
+        + "inner join languages as l on l.id = ht.language_id "
+        + "where t.name in (:tags) and l.code = :languageCode")
+    Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 }

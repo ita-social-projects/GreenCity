@@ -46,6 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
+    private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
 
     /**
      * Constructor.
@@ -113,9 +114,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/statuses",
                 "/habit",
                 "/habit/{id}",
+                "/habit/{id}/shopping-list",
+                "/habit/tags",
+                "/habit/tags/all",
                 "/habit/assign/{id}",
-                "/habit/assign/{habitId}",
-                "/habit/assign/{habitId}/all",
+                HABIT_ASSIGN_ID,
+                HABIT_ASSIGN_ID + "/all",
                 "/habit/assign/active/{date}",
                 "/habit/statistic/{habitId}",
                 "/habit/statistic/assign/{habitAssignId}",
@@ -163,19 +167,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/advices",
                 "/favorite_place/",
                 "/goals",
-                "/goals/shoppingList/{userId}",
                 "/habit/assign",
-                "/habit/assign/{habitId}/active",
-                "/habit/assign/{habitId}",
+                HABIT_ASSIGN_ID + "/active",
+                HABIT_ASSIGN_ID,
                 "/facts",
                 "/facts/random/{habitId}",
                 "/facts/dayFact/{languageId}",
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
                 "/user",
-                "/user/{userId}/goals",
+                "/user/goals/habits/{habitId}/shopping-list",
                 USER_CUSTOM_GOALS,
-                "/user/{userId}/goals/available",
                 "/user/{userId}/customGoals/available",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
@@ -190,10 +192,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/files/image",
-                "/habit/assign/{habitId}",
-                "/habit/assign/{habitId}/custom",
-                "/habit/assign/{habitId}/enroll",
-                "/habit/assign/{habitId}/unenroll/{date}",
+                HABIT_ASSIGN_ID,
+                HABIT_ASSIGN_ID + "/custom",
+                HABIT_ASSIGN_ID + "/enroll/{date}",
+                HABIT_ASSIGN_ID + "/unenroll/{date}",
                 "/habit/statistic/{habitId}",
                 "/newsSubscriber",
                 "/place/{placeId}/comments",
@@ -203,7 +205,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/like",
                 "/tipsandtricks",
                 USER_CUSTOM_GOALS,
-                "/user/{userId}/goals",
+                "/user/goals",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
@@ -216,11 +218,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
-                "/goals/shoppingList/{userId}",
                 "/habit/assign/{habitId}",
+                "/goals/shoppingList/{userId}",
+                HABIT_ASSIGN_ID,
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
-                "/user/{userId}/goals/{goalId}",
+                "/user/goals/{userGoalId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
             .hasAnyRole(USER, ADMIN, MODERATOR)
@@ -230,7 +233,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/{placeId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
-                "/user/{userId}/userGoals",
+                "/user/goals/user-goals",
+                "/user/goals",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
