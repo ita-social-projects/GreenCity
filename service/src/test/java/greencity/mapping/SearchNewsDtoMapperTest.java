@@ -1,13 +1,14 @@
-/*package greencity.mapping;
+package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import greencity.entity.User;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import greencity.entity.localization.TagTranslation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,10 +40,11 @@ class SearchNewsDtoMapperTest {
             .creationDate(ecoNewsTest.getCreationDate())
             .tags(ecoNewsTest.getTags()
                 .stream()
-                .map(Tag::getName)
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .build();
 
         assertEquals(searchedNews, searchNewsDtoMapper.convert(ecoNewsTest));
     }
-}*/
+}

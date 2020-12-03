@@ -58,12 +58,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
+
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(), Collections.emptySet());
+        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+            Collections.emptySet());
     }
 
     public static List<TagTranslation> getTagTranslations() {
@@ -818,7 +820,18 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png").build();
+        return Habit.builder().id(1L).image("image.png").tags(new HashSet<>(getTags())).build();
+    }
+
+    public static HabitTranslation getHabitTranslation() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(getHabit())
+            .build();
     }
 
     public static Advice getAdvice() {
