@@ -201,15 +201,16 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatusCalendarDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{habitId}/enroll")
-    public ResponseEntity<HabitStatusCalendarDto> enrollHabit(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId()));
+    @PostMapping("/{habitId}/enroll/{date}")
+    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId(), date));
     }
 
     /**
