@@ -30,9 +30,9 @@ INSERT INTO habits (id, image, default_duration)
 VALUES (1,'image1', 14),
        (2,'image2', 14);
 
-INSERT INTO habit_assign (id, habit_id, user_id, acquired, create_date, suspended, duration)
-VALUES (1, 1, 1, false, '2020-09-10 20:00:00', false, 14),
-       (2, 2, 2, false, '2020-09-10 20:00:00', false, 14);
+INSERT INTO habit_assign (id, habit_id, user_id, create_date, status, duration)
+VALUES (1, 1, 1, '2020-09-10 20:00:00', 'ACTIVE', 14),
+       (2, 2, 2, '2020-09-10 20:00:00', 'ACTIVE', 14);
 
 INSERT INTO user_goals(id, habit_assign_id, goal_id, status)
 VALUES (1, 1, 1, 'ACTIVE'),
