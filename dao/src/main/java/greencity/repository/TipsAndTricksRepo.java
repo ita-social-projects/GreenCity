@@ -1,10 +1,8 @@
 package greencity.repository;
 
 import greencity.entity.TipsAndTricks;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,14 +58,8 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param searchQuery query to search
      * @return list of {@link TipsAndTricks}
      */
-    @Query("select distinct tt from TipsAndTricks tt "
-        + "left JOIN tt.titleTranslations title "
-        + "left JOIN tt.textTranslations textTrans "
-        + "where ("
-        + "lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
-        + ")"
-        + "and title.language.code = :languageCode")
+    @Query(nativeQuery = true,
+        value = " SELECT distinct * FROM public.fn_texttipsandtricks ( :searchQuery, :languageCode) ")
     Page<TipsAndTricks> searchTipsAndTricks(Pageable pageable, String searchQuery, String languageCode);
 
     /**
@@ -77,15 +69,8 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param searchQuery query to search.
      * @return list of {@link TipsAndTricks}.
      */
-    @Query("select distinct tt from TipsAndTricks tt "
-        + "left JOIN tt.titleTranslations title "
-        + "left JOIN tt.textTranslations textTrans "
-        + "where (CONCAT(tt.id,'') like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(title.content) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or lower(textTrans.content) like lower(CONCAT('%', :searchQuery, '%')) "
-        + "or tt.id in (select tt.id from TipsAndTricks tt inner join tt.author a "
-        + "where lower(a.name) like lower(CONCAT('%', :searchQuery, '%'))) "
-        + "and title.language.code = :languageCode)")
+    @Query(nativeQuery = true,
+        value = " SELECT distinct * FROM public.fn_textsearchtipsandtricksforadmin ( :searchQuery, :languageCode) ")
     Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery, String languageCode);
 
     /**

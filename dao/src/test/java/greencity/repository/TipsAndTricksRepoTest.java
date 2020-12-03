@@ -79,4 +79,5 @@ class TipsAndTricksRepoTest {
         Long amount = tipsAndTricksRepo.getAmountOfWrittenTipsAndTrickByUserId(1L);
         assertEquals(4, amount);
     }
+
 }

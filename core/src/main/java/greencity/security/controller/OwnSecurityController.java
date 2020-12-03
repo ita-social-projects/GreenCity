@@ -1,5 +1,7 @@
 package greencity.security.controller;
 
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.dto.SuccessSignUpDto;
@@ -14,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
+import java.util.Locale;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -73,8 +76,10 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_ALREADY_REGISTERED_WITH_THIS_EMAIL)
     })
     @PostMapping("/signUp")
-    public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto));
+    @ApiLocale
+    public ResponseEntity<SuccessSignUpDto> singUp(@Valid @RequestBody OwnSignUpDto dto,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(dto, locale.getLanguage()));
     }
 
     /**
@@ -140,8 +145,11 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = USER_NOT_FOUND_BY_EMAIL)
     })
     @GetMapping("/restorePassword")
-    public ResponseEntity<Object> restore(@RequestParam @Email String email) {
-        passwordRecoveryService.sendPasswordRecoveryEmailTo(email);
+    @ApiLocale
+    public ResponseEntity<Object> restore(@RequestParam @Email String email,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        log.info(Locale.getDefault().toString());
+        passwordRecoveryService.sendPasswordRecoveryEmailTo(email, locale.getLanguage());
         return ResponseEntity.ok().build();
     }
 

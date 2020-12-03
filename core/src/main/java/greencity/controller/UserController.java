@@ -6,10 +6,7 @@ import greencity.constant.SwaggerExampleModel;
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.goal.BulkCustomGoalDto;
-import greencity.dto.goal.BulkSaveCustomGoalDto;
-import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.*;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
@@ -48,7 +45,6 @@ public class UserController {
     private final UserService userService;
     private final CustomGoalService customGoalService;
     private final HabitAssignService habitAssignService;
-    private final HabitStatisticService habitStatisticService;
 
     /**
      * The method which update user status. Parameter principal are ignored because
@@ -218,29 +214,6 @@ public class UserController {
     }
 
     /**
-     * Method returns list of user goals for specific language.
-     *
-     * @param locale - needed language code
-     * @return {@link ResponseEntity}.
-     * @author Vitalii Skolozdra
-     */
-    @ApiOperation(value = "Get goals of current user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @GetMapping("/{userId}/goals")
-    @ApiLocale
-    public ResponseEntity<List<UserGoalResponseDto>> getUserGoals(
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(userService.getUserGoals(userId, locale.getLanguage()));
-    }
-
-    /**
      * Method returns list user custom goals.
      *
      * @param userId {@link UserVO} id
@@ -326,29 +299,6 @@ public class UserController {
     }
 
     /**
-     * Method returns list of available (not ACTIVE) goals for user.
-     *
-     * @param locale - needed language code
-     * @return {@link ResponseEntity}.
-     * @author Vitalii Skolozdra
-     */
-    @ApiOperation(value = "Get available goals for current user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
-    })
-    @GetMapping("/{userId}/goals/available")
-    @ApiLocale
-    public ResponseEntity<List<GoalDto>> getAvailableGoals(
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(userService.getAvailableGoals(userId, locale.getLanguage()));
-    }
-
-    /**
      * Method returns list of available (not ACTIVE) custom goals for user.
      *
      * @return {@link ResponseEntity}.
@@ -369,59 +319,9 @@ public class UserController {
     }
 
     /**
-     * Method updates goal status.
-     *
-     * @param locale - needed language code
-     * @return new {@link ResponseEntity}.
-     * @author Vitalii Skolozdra
-     */
-    @ApiOperation(value = "Change status of one of the goals for current user to DONE.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PatchMapping("/{userId}/goals/{goalId}")
-    @ApiLocale
-    public ResponseEntity<UserGoalResponseDto> updateUserGoalStatus(
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @ApiParam("Id of the UserGoal that belongs to current user. Cannot be empty.") @PathVariable Long goalId,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(userService.updateUserGoalStatus(userId, goalId, locale.getLanguage()));
-    }
-
-    /**
-     * Method saves goals, chosen by user.
-     *
-     * @param dto    - dto with goals, chosen by user.
-     * @param locale - needed language code
-     * @return new {@link ResponseEntity}.
-     * @author Vitalii Skolozdra
-     */
-    @ApiOperation(value = "Save one or multiple goals for current user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PostMapping("/{userId}/goals")
-    @ApiLocale
-    public ResponseEntity<List<UserGoalResponseDto>> saveUserGoals(
-        @Valid @RequestBody BulkSaveUserGoalDto dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(userService.saveUserGoals(userId, dto, locale.getLanguage()));
-    }
-
-    /**
      * Method for finding all active habit assigns by {@link UserVO} id.
      *
-     * @param userId   {@link UserVO} id.
-     * @param acquired {@link Boolean} status.
+     * @param userId {@link UserVO} id.
      * @return list of {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get active habit assigns for certain user by acquired status.")
@@ -434,35 +334,10 @@ public class UserController {
     @GetMapping("/{userId}/habit/assign")
     @ApiLocale
     public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long userId, @RequestParam Boolean acquired, @ApiIgnore @ValidLanguage Locale locale) {
+        @PathVariable Long userId, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(
-                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, acquired, locale.getLanguage()));
-    }
-
-    /**
-     * Method for deleting user goals.
-     *
-     * @param ids    string with objects id for deleting.
-     * @param userId {@link UserVO} id
-     * @return new {@link ResponseEntity}
-     * @author Bogdan Kuzenko
-     */
-    @ApiOperation(value = "Delete user goal")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @DeleteMapping("/{userId}/userGoals")
-    public ResponseEntity<List<Long>> bulkDeleteUserGoals(
-        @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true) @Pattern(
-            regexp = "^\\d+(,\\d+)*$",
-            message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids,
-        @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService
-            .deleteUserGoals(ids));
+                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, locale.getLanguage()));
     }
 
     /**

@@ -2,15 +2,13 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.localization.TagTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
+import greencity.repository.*;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -27,6 +25,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
+    private final GoalTranslationRepo goalTranslationRepo;
 
     /**
      * {@inheritDoc}
@@ -78,5 +77,16 @@ public class HabitServiceImpl implements HabitService {
         return new PageableDto<>(habits, habitTranslationsPage.getTotalElements(),
             habitTranslationsPage.getPageable().getPageNumber(),
             habitTranslationsPage.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GoalDto> getShoppingListForHabit(Long habitId, String lang) {
+        return goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode(lang, habitId)
+            .stream()
+            .map(g -> modelMapper.map(g, GoalDto.class))
+            .collect(Collectors.toList());
     }
 }

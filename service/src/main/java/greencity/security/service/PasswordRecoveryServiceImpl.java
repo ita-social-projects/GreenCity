@@ -73,7 +73,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
      */
     @Transactional
     @Override
-    public void sendPasswordRecoveryEmailTo(String email) {
+    public void sendPasswordRecoveryEmailTo(String email, String language) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -81,7 +81,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
         if (restorePasswordEmail != null) {
             throw new WrongEmailException(ErrorMessage.PASSWORD_RESTORE_LINK_ALREADY_SENT + email);
         }
-        savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey());
+        savePasswordRestorationTokenForUser(user, jwtTool.generateTokenKey(), language);
     }
 
     /**
@@ -117,7 +117,7 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
      * @param user  {@link User} - User whose password is to be recovered
      * @param token {@link String} - token for password restoration
      */
-    private void savePasswordRestorationTokenForUser(User user, String token) {
+    private void savePasswordRestorationTokenForUser(User user, String token, String language) {
         RestorePasswordEmail restorePasswordEmail =
             RestorePasswordEmail.builder()
                 .user(user)
@@ -132,7 +132,8 @@ public class PasswordRecoveryServiceImpl implements PasswordRecoveryService {
                 user.getId(),
                 user.getFirstName(),
                 user.getEmail(),
-                token));
+                token,
+                language));
     }
 
     /**
