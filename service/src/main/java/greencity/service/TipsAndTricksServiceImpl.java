@@ -223,7 +223,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                     languageCode,
                     page);
         } else {
-            pages = tipsAndTricksRepo.find(page, tags);
+            List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
+            pages = tipsAndTricksRepo.find(page, lowerCaseTags);
         }
         return getPagesWithTipsAndTricksDtoResponse(pages);
     }
