@@ -14,6 +14,7 @@ public final class PasswordRecoveryMessage implements Serializable {
     private final String userFirstName;
     private final String userEmail;
     private final String recoveryToken;
+    private final String language;
 
     /**
      * Constructor with all required for email sending dependencies declared.
@@ -23,11 +24,14 @@ public final class PasswordRecoveryMessage implements Serializable {
      * @param userEmail     user email which will be used for sending recovery
      *                      letter.
      * @param recoveryToken password recovery token.
+     * @param language      language which will be used for sending recovery letter.
      */
-    public PasswordRecoveryMessage(Long userId, String userFirstName, String userEmail, String recoveryToken) {
+    public PasswordRecoveryMessage(Long userId, String userFirstName, String userEmail, String recoveryToken,
+        String language) {
         this.userId = userId;
         this.userFirstName = userFirstName;
         this.userEmail = userEmail;
         this.recoveryToken = recoveryToken;
+        this.language = language;
     }
 }

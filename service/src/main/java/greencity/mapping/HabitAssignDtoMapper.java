@@ -1,7 +1,9 @@
 package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.entity.HabitAssign;
+import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -21,14 +23,19 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
     protected HabitAssignDto convert(HabitAssign habitAssign) {
         return HabitAssignDto.builder()
             .id(habitAssign.getId())
-            .acquired(habitAssign.getAcquired())
-            .suspended(habitAssign.getSuspended())
+            .status(habitAssign.getStatus())
             .createDateTime(habitAssign.getCreateDate())
             .userId(habitAssign.getUser().getId())
             .duration(habitAssign.getDuration())
             .habitStreak(habitAssign.getHabitStreak())
             .workingDays(habitAssign.getWorkingDays())
             .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
+            .habitStatusCalendarDtoList(habitAssign.getHabitStatusCalendars().stream().map(
+                habitStatusCalendar -> HabitStatusCalendarDto.builder()
+                    .id(habitStatusCalendar.getId())
+                    .enrollDate(habitStatusCalendar.getEnrollDate())
+                    .build())
+                .collect(Collectors.toList()))
             .build();
     }
 }

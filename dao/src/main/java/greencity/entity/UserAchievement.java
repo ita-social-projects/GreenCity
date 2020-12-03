@@ -4,7 +4,6 @@ import greencity.enums.AchievementStatus;
 import java.util.Objects;
 import javax.persistence.*;
 
-import greencity.enums.UserStatus;
 import lombok.*;
 
 @Entity

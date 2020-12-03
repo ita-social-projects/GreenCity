@@ -2,6 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.user.UserGoalVO;
 import greencity.entity.Goal;
+import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.entity.UserGoal;
 import org.modelmapper.AbstractConverter;
@@ -14,11 +15,13 @@ public class UserGoalMapper extends AbstractConverter<UserGoalVO, UserGoal> {
         return UserGoal.builder()
             .id(userGoalVO.getId())
             .status(userGoalVO.getStatus())
-            .user(User.builder()
-                .id(userGoalVO.getUser().getId())
-                .email(userGoalVO.getUser().getEmail())
-                .name(userGoalVO.getUser().getName())
-                .role(userGoalVO.getUser().getRole())
+            .habitAssign(HabitAssign.builder()
+                .id(userGoalVO.getHabitAssign().getId())
+                .status(userGoalVO.getHabitAssign().getStatus())
+                .habitStreak(userGoalVO.getHabitAssign().getHabitStreak())
+                .duration(userGoalVO.getHabitAssign().getDuration())
+                .lastEnrollmentDate(userGoalVO.getHabitAssign().getLastEnrollmentDate())
+                .workingDays(userGoalVO.getHabitAssign().getWorkingDays())
                 .build())
             .goal(Goal.builder()
                 .id(userGoalVO.getGoal().getId())
