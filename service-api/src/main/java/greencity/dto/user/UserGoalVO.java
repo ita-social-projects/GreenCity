@@ -1,6 +1,7 @@
 package greencity.dto.user;
 
 import greencity.dto.goal.GoalVO;
+import greencity.dto.habit.HabitAssignVO;
 import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ import lombok.Setter;
 public class UserGoalVO {
     private Long id;
 
-    private UserVO user;
+    private HabitAssignVO habitAssign;
 
     private GoalVO goal;
 

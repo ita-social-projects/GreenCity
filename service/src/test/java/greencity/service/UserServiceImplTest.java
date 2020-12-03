@@ -63,7 +63,7 @@ class UserServiceImplTest {
     GoalTranslationRepo goalTranslationRepo;
 
     @Mock
-    HabitRepo habitRepo;
+    HabitAssignRepo habitAssignRepo;
 
     @Mock
     HabitStatisticRepo habitStatisticRepo;
@@ -133,22 +133,6 @@ class UserServiceImplTest {
      * .build();
      */
     private String language = "ua";
-    private List<GoalTranslation> goalTranslations = Arrays.asList(
-        GoalTranslation.builder()
-            .id(1L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .content("TEST")
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptyList()))
-            .build(),
-        GoalTranslation.builder()
-            .id(2L)
-            .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList()))
-            .content("TEST")
-            .goal(new Goal(2L, Collections.emptyList(), Collections.emptyList()))
-            .build());
     private Long userId = user.getId();
     private Long userId2 = user2.getId();
     private String userEmail = user.getEmail();
@@ -375,98 +359,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserGoalsTest() {
-        UserGoal customUserGoal = ModelUtils.getCustomUserGoal();
-        UserGoal predefinedUserGoal = ModelUtils.getPredefinedUserGoal();
-        List<UserGoal> userGoals = Arrays.asList(customUserGoal, predefinedUserGoal);
-        UserGoalResponseDto customDtoWithoutText =
-            UserGoalResponseDto.builder().id(1L).status(GoalStatus.ACTIVE).build();
-        UserGoalResponseDto predefinedDtoWithoutText =
-            UserGoalResponseDto.builder().id(2L).status(GoalStatus.ACTIVE).build();
-        UserGoalResponseDto customUserGoalDto = ModelUtils.getCustomUserGoalDto();
-        UserGoalResponseDto predefinedUserGoalDto = ModelUtils.getPredefinedUserGoalDto();
-        List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
-        CustomGoal customGoal = CustomGoal.builder().id(8L).text("Buy electric car").build();
-
-        when(userGoalRepo.findAllByUserId(userId)).thenReturn(userGoals);
-        when(modelMapper.map(userGoals.get(0), UserGoalResponseDto.class)).thenReturn(customDtoWithoutText);
-        when(modelMapper.map(userGoals.get(1), UserGoalResponseDto.class)).thenReturn(predefinedDtoWithoutText);
-        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(0).getId())).thenReturn(Optional.empty());
-        when(userGoalRepo.findGoalByUserGoalId(userGoals.get(1).getId()))
-            .thenReturn(Optional.of(predefinedUserGoal.getGoal()));
-        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
-        when(customGoalRepo.findByUserId(anyLong())).thenReturn(customGoal);
-        List<UserGoalResponseDto> userGoalDtos = Arrays.asList(customUserGoalDto, predefinedUserGoalDto);
-        assertEquals(userService.getUserGoals(userId, "en"), userGoalDtos);
-    }
-
-    @Test
-    void getUserGoalsUserHasNoGoalTest() {
-        when(userGoalRepo.findAllByUserId(userId)).thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoGoalsException.class, () -> userService.getUserGoals(userId, "en"));
-    }
-
-    @Test
     void updateUserRefreshTokenForUserWithExistentIdTest() {
         when(userRepo.updateUserRefreshToken("foo", userId)).thenReturn(1);
         int updatedRows = userService.updateUserRefreshToken("foo", userId);
         assertEquals(1, updatedRows);
-    }
-
-    @Test
-    void updateUserGoalStatusWithNonExistentGoalIdTest() {
-        user.setUserGoals(Collections.singletonList(new UserGoal(1L, null, null, null, null)));
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        assertThrows(UserGoalStatusNotUpdatedException.class, () -> userService.updateUserGoalStatus(userId, 2L, "en"));
-        verifyNoInteractions(userGoalRepo);
-    }
-
-    @Test
-    void updateUserGoalStatusWithActiveGoalStateTest() {
-        UserGoal userGoal = ModelUtils.getPredefinedUserGoal();
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(2L, null, GoalStatus.DONE));
-        user.setUserGoals(Collections.singletonList(userGoal));
-        when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.of(userGoal.getGoal()));
-        when(goalTranslationRepo.findByUserIdLangAndUserGoalId(anyLong(), anyString(), anyLong()))
-            .thenReturn(goalTranslations.get(0));
-        UserGoalResponseDto userGoalResponseDto =
-            userService.updateUserGoalStatus(userId, userGoal.getId(), "en");
-
-        assertEquals(GoalStatus.DONE, userGoal.getStatus());
-        assertEquals(userGoalResponseDto,
-            new UserGoalResponseDto(2L, goalTranslations.get(0).getContent(), GoalStatus.DONE));
-        verify(userGoalRepo).save(userGoal);
-    }
-
-    @Test
-    void updateUserGoalStatusWithDoneGoalStateTest() {
-        UserGoal userGoal = new UserGoal(1L, null, null, GoalStatus.DONE, null);
-        when(userGoalRepo.getOne(userGoal.getId())).thenReturn(userGoal);
-        when(modelMapper.map(any(), eq(UserGoalResponseDto.class)))
-            .thenReturn(new UserGoalResponseDto(1L, null, GoalStatus.ACTIVE));
-        user.setUserGoals(Collections.singletonList(userGoal));
-        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
-        when(userGoalRepo.findGoalByUserGoalId(anyLong())).thenReturn(Optional.empty());
-        Long userId = user.getId();
-        Long userGoalId = userGoal.getId();
-        assertThrows(UserGoalStatusNotUpdatedException.class,
-            () -> userService.updateUserGoalStatus(userId, userGoalId, "en"));
-        assertNotEquals(GoalStatus.ACTIVE, userGoal.getStatus());
-    }
-
-    @Test
-    void getAvailableGoalsTest() {
-        List<GoalDto> goalDto = Arrays.asList(new GoalDto(1L, "TEST"), new GoalDto(2L, "TEST"));
-
-        when(goalTranslationRepo.findAvailableByUserId(userId, language)).thenReturn(goalTranslations);
-        when(modelMapper.map(goalTranslations.get(0), GoalDto.class)).thenReturn(goalDto.get(0));
-        when(modelMapper.map(goalTranslations.get(1), GoalDto.class)).thenReturn(goalDto.get(1));
-
-        assertEquals(goalDto, userService.getAvailableGoals(userId, language));
     }
 
     /*
@@ -482,12 +378,6 @@ class UserServiceImplTest {
      * expectedDeletedGoals.add(3L); assertEquals(deletedGoals,
      * expectedDeletedGoals); }
      */
-
-    @Test
-    void getAvailableGoalsNoAvailableGoalsTest() {
-        when(goalTranslationRepo.findAvailableByUserId(userId, language)).thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoAvailableGoalsException.class, () -> userService.getAvailableGoals(userId, language));
-    }
 
     /*
      * @Test void getAvailableHabitDictionaryNoAvailable() {

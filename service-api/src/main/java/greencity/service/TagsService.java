@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.tag.TagVO;
-import greencity.entity.Tag;
 
 import java.util.List;
 
