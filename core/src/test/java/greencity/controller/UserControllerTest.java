@@ -5,16 +5,15 @@ import greencity.ModelUtils;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
-import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.user.UserProfileDtoRequest;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserUpdateDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
-import greencity.service.*;
+import greencity.service.CustomGoalService;
+import greencity.service.HabitAssignService;
+import greencity.service.UserService;
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +53,7 @@ class UserControllerTest {
     private CustomGoalService customGoalService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(userController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -132,6 +131,18 @@ class UserControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByPage(eq(pageable));
+    }
+
+    @Test
+    void findUsersRecommendedFriendsTest() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(userLink + "/{userId}/recommendedFriends?page=1", 1))
+            .andExpect(status().isOk());
+
+        verify(userService).findUsersRecommendedFriends(eq(pageable), eq(1L));
+
     }
 
     @Test
@@ -301,21 +312,21 @@ class UserControllerTest {
      * mockMvc.perform(get(userLink +
      * "/{userId}/habit-dictionary/available?language=en", 1))
      * .andExpect(status().isOk());
-     * 
+     *
      * verify(userService).getAvailableHabitDictionary(eq(1L), eq("en")); }
      */
 
     /*
      * @Test void saveUserHabitsTest() throws Exception { String content = "[\n" +
      * "  {\n" + "    \"habitDictionaryId\": 0\n" + "  }\n" + "]";
-     * 
+     *
      * mockMvc.perform(post(userLink + "/{userId}/habit?language=en", 1)
      * .contentType(MediaType.APPLICATION_JSON) .content(content))
      * .andExpect(status().isCreated());
-     * 
+     *
      * ObjectMapper mapper = new ObjectMapper(); List<HabitIdDto> dto =
      * mapper.readValue(content, new TypeReference<List<HabitIdDto>>() { });
-     * 
+     *
      * verify(userService).createUserHabit(eq(1L), eq(dto), eq("en")); }
      */
 
@@ -323,7 +334,7 @@ class UserControllerTest {
      * @Test void deleteHabitTest() throws Exception {
      * mockMvc.perform(delete(userLink + "/{userId}/habit/{habitId}", 1, 1))
      * .andExpect(status().isOk());
-     * 
+     *
      * verify(userService).deleteHabitByUserIdAndHabitDictionary(eq(1L), eq(1L)); }
      */
 
