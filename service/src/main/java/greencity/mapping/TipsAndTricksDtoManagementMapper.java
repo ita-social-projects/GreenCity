@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
-import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;

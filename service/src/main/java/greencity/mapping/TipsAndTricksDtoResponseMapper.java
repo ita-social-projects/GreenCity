@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.user.AuthorDto;
-import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;

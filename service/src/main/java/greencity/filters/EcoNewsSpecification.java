@@ -3,7 +3,6 @@ package greencity.filters;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNews_;
 import greencity.entity.Tag_;
-import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

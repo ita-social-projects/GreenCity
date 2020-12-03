@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.user.AuthorDto;
-import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;

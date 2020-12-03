@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import java.util.stream.Collectors;
 
 import greencity.entity.localization.TagTranslation;

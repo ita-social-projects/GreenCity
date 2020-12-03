@@ -5,7 +5,6 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
-import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
