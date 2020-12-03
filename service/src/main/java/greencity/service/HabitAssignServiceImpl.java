@@ -325,7 +325,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method checks and calls method for delete if enroll of {@link HabitAssign} exists.
+     * Method checks and calls method for delete if enroll of {@link HabitAssign}
+     * exists.
      *
      * @param date        {@link LocalDate} date.
      * @param habitAssign {@link HabitAssign} instance.
@@ -337,7 +338,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     date, modelMapper.map(habitAssign, HabitAssignVO.class));
         deleteHabitStatusCalendar(habitAssign, habitCalendarVO);
     }
-
 
     /**
      * Method deletes enroll of {@link HabitAssign}.
