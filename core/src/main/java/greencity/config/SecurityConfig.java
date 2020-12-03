@@ -194,7 +194,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/files/image",
                 HABIT_ASSIGN_ID,
                 HABIT_ASSIGN_ID + "/custom",
-                HABIT_ASSIGN_ID + "/enroll",
+                HABIT_ASSIGN_ID + "/enroll/{date}",
                 HABIT_ASSIGN_ID + "/unenroll/{date}",
                 "/habit/statistic/{habitId}",
                 "/newsSubscriber",
