@@ -171,8 +171,7 @@ public class ModelUtils {
         return HabitAssignVO.builder()
             .id(1L)
             .habitVO(getHabitVO())
-            .acquired(true)
-            .suspended(false)
+            .status(HabitAssignStatus.ACQUIRED)
             .createDateTime(ZonedDateTime.now())
             .userVO(UserVO.builder().id(1L).build()).build();
     }
