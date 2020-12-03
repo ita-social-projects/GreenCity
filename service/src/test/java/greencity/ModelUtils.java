@@ -67,8 +67,11 @@ public class ModelUtils {
     }
 
     public static List<TagTranslation> getTagTranslations() {
-        return Arrays.asList(TagTranslation.builder().id(1L).name("Новини").build(), TagTranslation.builder().id(2L).name("News").build(),
-            TagTranslation.builder().id(3L).name("Новины").build());
+        Language language = getLanguage();
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Новини").language(language).build(),
+            TagTranslation.builder().id(2L).name("News").language(language).build(),
+            TagTranslation.builder().id(3L).name("Новины").language(language).build());
     }
 
     public static List<Tag> getTags() {
@@ -409,7 +412,7 @@ public class ModelUtils {
         return new AddEcoNewsDtoResponse(1L, "title",
             "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
-            Collections.singletonList("tag"));
+            Arrays.asList("Новини", "News", "Новины"));
     }
 
     public static MultipartFile getFile() {

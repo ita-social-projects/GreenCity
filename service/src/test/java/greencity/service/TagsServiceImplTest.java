@@ -93,16 +93,6 @@ class TagsServiceImplTest {
         assertEquals(expected, actual);
     }
 
-    /*@Test
-    void isAllTipsAndTricksValidReturnTrue() {
-        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        List<TagVO> tipsAndTricksTags = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagsService.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames)).thenReturn(tipsAndTricksTags);
-        boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames);
-
-        assertTrue(expected);
-    }*/
-
     @Test
     void isAllTipsAndTricksValidReturnFalse() {
         List<String> tipsAndTricksTagsNames = Collections.singletonList("News");

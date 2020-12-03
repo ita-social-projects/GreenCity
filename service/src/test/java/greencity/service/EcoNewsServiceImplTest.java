@@ -26,6 +26,8 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +39,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -208,9 +209,10 @@ class EcoNewsServiceImplTest {
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
         List<String> tags = Collections.singletonList(ModelUtils.getTagTranslations().get(0).getName());
+        List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
 
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
-        when(ecoNewsRepo.findByTags(pageRequest, tags))
+        when(ecoNewsRepo.findByTags(pageRequest, lowerCaseTags))
             .thenReturn(page);
 
         PageableAdvancedDto<EcoNewsDto> actual =

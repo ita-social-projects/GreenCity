@@ -41,7 +41,7 @@ class EcoNewsRepoTest {
     @Test
     void findByTagsTest() {
         PageRequest pageRequest = PageRequest.of(0, 3);
-        List<String> tagsList = Collections.singletonList("Ads");
+        List<String> tagsList = Collections.singletonList("ads");
         Page<EcoNews> ecoNewsPage = ecoNewsRepo.findByTags(pageRequest, tagsList);
 
         Long firstActual = ecoNewsPage.getContent().get(0).getId();

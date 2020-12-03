@@ -1,11 +1,14 @@
-/*package greencity.mapping;
+package greencity.mapping;
 
 import greencity.ModelUtils;
+import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import greencity.entity.localization.TagTranslation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,14 +22,17 @@ class EcoNewsDtoMapperTest {
     @Test
     void convertTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
+        String defaultLanguage = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
             ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
             ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
-                .map(Tag::getName)
+                .flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
+                .map(TagTranslation::getName)
                 .collect(Collectors.toList()));
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }
-}*/
+}

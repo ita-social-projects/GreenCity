@@ -57,10 +57,11 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
 
     /**
      * Method that finds {@link EcoNews} by id.
+     * 
      * @param id {@link Long}.
      * @return {@link Optional} of {@link EcoNews}
      *
-     * */
+     */
     @Query("select e from EcoNews e join fetch e.tags where e.id = :id")
     Optional<EcoNews> findById(Long id);
 

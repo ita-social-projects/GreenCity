@@ -29,7 +29,7 @@ class TipsAndTricksRepoTest {
     @Test
     void findTest() {
         Pageable pageable = PageRequest.of(0, 6);
-        List<String> tags = Arrays.asList("News", "Education");
+        List<String> tags = Arrays.asList("news", "education");
         Page<TipsAndTricks> page = tipsAndTricksRepo.find(pageable, tags);
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(4, tipsAndTricks.size());

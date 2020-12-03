@@ -157,30 +157,6 @@ class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    void findTest() {
-        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
-        List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
-        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-        String tagName = ModelUtils.getTagTranslations().get(0).getName();
-        List<String> tags = Collections.singletonList(tagName);
-
-        when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo.find(pageRequest, tags))
-            .thenReturn(page);
-        when((tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageRequest)))
-            .thenReturn(page);
-
-        PageableDto<TipsAndTricksDtoResponse> actual =
-            tipsAndTricksService.find(pageRequest, Collections.singletonList(tagName), "en");
-
-        assertEquals(pageableDto, actual);
-        assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null, "en"));
-    }
-
-    @Test
     void findDtoByIdTest() {
         TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
