@@ -4,19 +4,15 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.GoalRequestDto;
-import greencity.dto.goal.GoalVO;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Provides the interface to manage {UserVO} entity.
@@ -380,4 +376,14 @@ public interface UserService {
      * @return {@link List} of {@link UserManagementDto} instances.
      */
     List<UserManagementDto> findUserFriendsByUserId(Long id);
+
+    /**
+     * Method that finds user's recommended friends.
+     *
+     * @param pageable {@link Pageable}.
+     * @param userId   {@link Long} -current user's id.
+     * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
+     */
+
+    PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId);
 }

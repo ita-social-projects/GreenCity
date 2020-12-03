@@ -6,18 +6,42 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.goal.GoalDto;
-import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.SocialNetwork;
+import greencity.entity.SocialNetworkImage;
+import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
-import greencity.enums.GoalStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.CheckRepeatingValueException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.CustomGoalRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitStatisticRepo;
+import greencity.repository.SocialNetworkRepo;
+import greencity.repository.TipsAndTricksRepo;
+import greencity.repository.UserGoalRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,13 +52,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -58,12 +75,12 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
-    @Value("${greencity.time.after.last.activity}")
-    private long timeAfterLastActivity;
     /**
      * Autowired mapper.
      */
     private final ModelMapper modelMapper;
+    @Value("${greencity.time.after.last.activity}")
+    private long timeAfterLastActivity;
 
     /**
      * {@inheritDoc}
@@ -184,6 +201,19 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userRepo.findUsersFriendsById(id),
             new TypeToken<List<UserManagementDto>>() {
             }.getType());
+    }
+
+    @Override
+    public PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId) {
+        Page<User> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
+        List<RecommendedFriendDto> recommendedFriendDtos = friends.get()
+            .map(user -> modelMapper.map(user, RecommendedFriendDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            recommendedFriendDtos,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
     }
 
     /**
@@ -399,7 +429,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-        UserProfilePictureDto userProfilePictureDto) {
+                                           UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
