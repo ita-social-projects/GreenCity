@@ -10,6 +10,7 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
@@ -71,7 +72,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (image != null) {
             toSave.setImagePath(fileService.upload(image).toString());
         }
-        toSave.setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoRequest.getTags()),
+        toSave.setTags(modelMapper.map(tagService
+                .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
@@ -130,7 +132,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             tipsAndTricks.setImagePath(fileService.upload(image).toString());
         }
         tipsAndTricks
-            .setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoManagement.getTags()),
+            .setTags(modelMapper.map(tagService
+                    .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
                 new TypeToken<List<Tag>>() {
                 }.getType()));
 
@@ -154,7 +157,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         MultipartFile image) {
         TipsAndTricks toUpdate = findTipsAndTricksById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findTagsByNames(tipsAndTricksDtoManagement.getTags()),
+        toUpdate.setTags(modelMapper.map(tagService
+                .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {

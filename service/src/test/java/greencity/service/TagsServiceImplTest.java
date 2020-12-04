@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
@@ -39,31 +40,33 @@ class TagsServiceImplTest {
 
     @Test
     void findTagsByNames() {
+        TagType tagType = TagType.ECO_NEWS;
         List<String> tagsNames = Collections.singletonList("News");
         List<String> lowerTagsNames = tagsNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
         List<Tag> ecoNewsTags = ModelUtils.getTags();
         List<TagVO> actual = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(ecoNewsTags);
+        when(tagRepo.findTagsByNamesAndType(lowerTagsNames, tagType)).thenReturn(ecoNewsTags);
         when(modelMapper.map(ecoNewsTags, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(actual);
-        List<TagVO> expected = tagsService.findTagsByNames(tagsNames);
+        List<TagVO> expected = tagsService.findTagsByNamesAndType(tagsNames, tagType);
 
         assertEquals(expected, actual);
     }
 
     @Test
     void findTagsByNamesThrowTagNotFoundException() {
+        TagType tagType = TagType.TIPS_AND_TRICKS;
         List<String> tagsNames = Collections.singletonList("News");
         List<String> lowerTagsNames = tagsNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
         List<Tag> tags = Collections.emptyList();
-        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(tags);
+        when(tagRepo.findTagsByNamesAndType(lowerTagsNames, tagType)).thenReturn(tags);
 
         assertThrows(TagNotFoundException.class,
-            () -> tagsService.findTagsByNames(tagsNames));
+            () -> tagsService.findTagsByNamesAndType(tagsNames, tagType));
     }
 
     @Test
@@ -95,9 +98,10 @@ class TagsServiceImplTest {
 
     @Test
     void isAllTipsAndTricksValidReturnFalse() {
+        TagType tagType = TagType.TIPS_AND_TRICKS;
         List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        when(tagRepo.findTagsByNames(tipsAndTricksTagsNames)).thenThrow(TagNotFoundException.class);
-        boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames);
+        when(tagRepo.findTagsByNamesAndType(tipsAndTricksTagsNames, tagType)).thenThrow(TagNotFoundException.class);
+        boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames, tagType);
 
         assertFalse(expected);
     }

@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.constant.ValidationConstants;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
@@ -27,11 +28,11 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<TagVO> findTagsByNames(List<String> tagNames) {
+    public List<TagVO> findTagsByNamesAndType(List<String> tagNames, TagType tagType) {
         List<String> lowerCaseTagNames = tagNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
-        List<Tag> tags = tagRepo.findTagsByNames(lowerCaseTagNames);
+        List<Tag> tags = tagRepo.findTagsByNamesAndType(lowerCaseTagNames, tagType);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
@@ -64,9 +65,9 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames) {
+    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type) {
         try {
-            findTagsByNames(tipsAndTricksTagNames);
+            findTagsByNamesAndType(tipsAndTricksTagNames, type);
         } catch (TagNotFoundException e) {
             return false;
         }

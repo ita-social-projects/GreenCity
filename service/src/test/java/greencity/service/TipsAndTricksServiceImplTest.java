@@ -16,6 +16,7 @@ import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -76,14 +77,14 @@ class TipsAndTricksServiceImplTest {
         TagTranslationVO.builder().id(3L).name("Новины")
             .languageVO(LanguageVO.builder().id(1L).code("ru").build())
             .build());
-    private TagVO tagVO = new TagVO(1L, tagTranslationVOList, null, null, null);
+    private TagVO tagVO = new TagVO(1L, TagType.TIPS_AND_TRICKS, tagTranslationVOList, null, null, null);
 
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -111,7 +112,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), TagType.TIPS_AND_TRICKS))
             .thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -131,7 +132,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), TagType.TIPS_AND_TRICKS))
             .thenReturn(tagVOList);
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
 
@@ -228,7 +229,7 @@ class TipsAndTricksServiceImplTest {
             .build();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));

@@ -14,6 +14,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.EcoNews;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.message.AddEcoNewsMessage;
@@ -90,7 +91,7 @@ class EcoNewsServiceImplTest {
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsByNames(anyList())).thenReturn(tagVOList);
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(languageService.findByCode(AppConstant.DEFAULT_LANGUAGE_CODE))
             .thenReturn(dto);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
@@ -116,7 +117,7 @@ class EcoNewsServiceImplTest {
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsByNames(anyList())).thenReturn(tagVOList);
+        when(tagService.findTagsByNamesAndType(anyList(), TagType.ECO_NEWS)).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
 

@@ -2,18 +2,22 @@ package greencity.repository;
 
 import greencity.entity.Tag;
 import java.util.List;
+
+import greencity.enums.TagType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface TagsRepo extends JpaRepository<Tag, Long> {
     /**
-     * Method that allow you to find list of {@link Tag}s by names.
+     * Method that allow you to find list of {@link Tag}s by names and type.
      *
      * @param names list of {@link String} values
+     * @param tagType {@link String}
      * @return list of {@link Tag}
      */
-    @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names")
-    List<Tag> findTagsByNames(List<String> names);
+    @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
+    List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
     /**
      * Method that allow you to find all EcoNews {@link Tag}s.

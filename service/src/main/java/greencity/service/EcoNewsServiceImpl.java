@@ -17,9 +17,11 @@ import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -89,7 +91,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(modelMapper.map(tagService.findTagsByNames(addEcoNewsDtoRequest.getTags()),
+        List<TagVO> tagVOS = tagService.findTagsByNamesAndType
+            (addEcoNewsDtoRequest.getTags(), TagType.ECO_NEWS);
+
+        toSave.setTags(modelMapper.map(tagVOS,
             new TypeToken<List<Tag>>() {
             }.getType()));
         try {
@@ -323,7 +328,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
-            .map(tagService.findTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
+            .map(tagService.findTagsByNamesAndType(ecoNewsDtoManagement.getTags(), TagType.ECO_NEWS), new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
             toUpdate.setImagePath(fileService.upload(image).toString());
@@ -344,7 +349,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findTagsByNames(updateEcoNewsDto.getTags()),
+        toUpdate.setTags(modelMapper.map(tagService
+                .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (updateEcoNewsDto.getImage() != null) {
