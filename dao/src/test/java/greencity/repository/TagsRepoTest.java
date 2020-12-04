@@ -58,7 +58,7 @@ class TagsRepoTest {
     @Test
     void findAllEcoNewsTagsWithEnglishTest() {
         List<String> actual = tagsRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE);
-        List<String> expected = Arrays.asList("News", "Education", "Ads");
+        List<String> expected = Arrays.asList("Ads", "Education", "News");
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
     }
@@ -74,7 +74,7 @@ class TagsRepoTest {
     @Test
     void findAllHabitsTagsWithEnglishTest() {
         List<String> actual = tagsRepo.findAllHabitsTags(ENGLISH_LANGUAGE);
-        List<String> expected = Arrays.asList("News", "Education", "Ads");
+        List<String> expected = Arrays.asList("Ads", "Education", "News");
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
     }
