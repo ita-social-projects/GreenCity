@@ -1,33 +1,34 @@
 package greencity.mapping;
 
+import greencity.ModelUtils;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.localization.TagTranslation;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.stream.Collectors;
 
-/**
- * Class that used by {@link ModelMapper} to map {@link HabitTranslation} into
- * {@link HabitDto}.
- */
-@Component
-public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto> {
-    /**
-     * Method convert {@link HabitTranslation} to {@link HabitDto}.
-     *
-     * @return {@link HabitDto}
-     */
-    @Override
-    protected HabitDto convert(HabitTranslation habitTranslation) {
-        Language language = habitTranslation.getLanguage();
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
+class HabitDtoMapperTest {
+
+    @InjectMocks
+    HabitDtoMapper habitDtoMapper;
+
+    @Test
+    void convert() {
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         Habit habit = habitTranslation.getHabit();
-        return HabitDto.builder()
+        Language language = habitTranslation.getLanguage();
+
+        HabitDto habitDto = HabitDto.builder()
             .id(habit.getId())
             .image(habitTranslation.getHabit().getImage())
             .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
@@ -42,5 +43,9 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
+
+        HabitDto expected = habitDtoMapper.convert(habitTranslation);
+
+        assertEquals(habitDto, expected);
     }
 }

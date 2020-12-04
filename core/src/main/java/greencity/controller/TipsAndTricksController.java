@@ -1,8 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidTipsAndTricksDtoRequest;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
@@ -17,6 +15,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -123,11 +123,13 @@ public class TipsAndTricksController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/tags")
-    @ApiPageable
+    @ApiPageableWithLocale
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> getTipsAndTricks(
-        @ApiIgnore Pageable page,
-        @ApiParam(value = "Tags to filter (if no tags, get all)") @RequestParam(required = false) List<String> tags) {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.find(page, tags));
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam(required = false) List<String> tags,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tipsAndTricksService.find(pageable, tags, locale.getLanguage()));
     }
 
     /**
@@ -137,7 +139,8 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Find all tips & tricks tags")
     @GetMapping("/tags/all")
-    public ResponseEntity<List<String>> findAllTipsAndTricksTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags());
+    @ApiPageableWithLocale
+    public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
     }
 }

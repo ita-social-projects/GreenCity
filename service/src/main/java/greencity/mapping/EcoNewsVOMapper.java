@@ -30,7 +30,6 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
             .tags(ecoNews.getTags().stream()
                 .map(tag -> TagVO.builder()
                     .id(tag.getId())
-                    .name(tag.getName())
                     .build())
                 .collect(Collectors.toList()))
             .ecoNewsComments(ecoNews.getEcoNewsComments().stream()

@@ -1,3 +1,6 @@
+INSERT INTO languages(id, code)
+VALUES(1, 'ua'),(2, 'en'), (3, 'ru');
+
 INSERT INTO users (id,
                    date_of_registration,
                    email,
@@ -36,22 +39,19 @@ VALUES (1,'2020-04-11 18:33:51', 'шлях до картинки', 1,
        (9,'2020-04-11 19:55:05', 'шлях до картинки', 1, 'Rising sea surface temperatures and acidic waters could eliminate nearly all existing coral reef habitats by 2100, suggesting restoration projects in these areas will likely meet serious challenges','Warming, acidic oceans may nearly eliminate coral reef habitats by 2100'),
        (10,'2020-04-11 20:12:56', 'шлях до картинки', 1, 'Four fossilized monkey teeth discovered deep in the Peruvian Amazon provide new evidence that more than one group of ancient primates journeyed across the Atlantic Ocean from Africa.', 'Ancient Teeth from Peru Hint Now-Extinct Monkeys Crossed Atlantic from Africa'),
        (11,'2020-04-11 20:15:03', 'шлях до картинки', 1, 'Researchers from Cambridge University and University of California San Diego have 3D printed coral-inspired structures that are capable of growing dense populations of microscopic algae', '3D-printed corals could improve bioenergy and help coral reefs');
-INSERT INTO tags(id,name)
-VALUES (1,'News'),
-       (2,'Events'),
-       (3,'Education'),
-       (4,'Initiatives'),
-       (5,'Ads'),
-       (6,'Lifehacks'),
-       (7,'Green thinking'),
-       (8,'Zero waste'),
-       (9,'3 r''s'),
-       (10,'Eco-city');
+INSERT INTO tags(id)
+VALUES (1),(2),(3);
+
+INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Новини', 1, 1),
+(2, 'News', 1, 2),(3, 'Новины', 1, 3),(4, 'Освіта', 2, 1),(5, 'Education', 2, 2),
+(6, 'Образование', 2, 3),(7, 'Реклами', 3, 1),(8, 'Ads', 3, 2),(9, 'Рекламы', 3, 3);
+
+
 INSERT INTO eco_news_tags(eco_news_id, tags_id)
-VALUES (1, 4),
-       (2, 4),
+VALUES (1, 3),
+       (2, 3),
        (3, 1),
-       (4, 4),
+       (4, 3),
        (5, 1),
        (6, 1),
        (7, 1),

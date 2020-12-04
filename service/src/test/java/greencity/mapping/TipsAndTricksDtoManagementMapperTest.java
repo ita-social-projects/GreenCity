@@ -1,32 +1,34 @@
 package greencity.mapping;
 
+import greencity.ModelUtils;
 import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
+import greencity.dto.user.AuthorDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.localization.TagTranslation;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.stream.Collectors;
 
-/**
- * Class that used by {@link ModelMapper} to map {@link TipsAndTricks} into
- * {@link TipsAndTricksDtoManagement}.
- */
-@Component
-public class TipsAndTricksDtoManagementMapper extends AbstractConverter<TipsAndTricks, TipsAndTricksDtoManagement> {
-    /**
-     * Method for converting {@link TipsAndTricks} into
-     * {@link TipsAndTricksDtoManagement}.
-     *
-     * @param tipsAndTricks object to convert.
-     * @return converted object.
-     */
-    @Override
-    protected TipsAndTricksDtoManagement convert(TipsAndTricks tipsAndTricks) {
-        return TipsAndTricksDtoManagement.builder()
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(SpringExtension.class)
+class TipsAndTricksDtoManagementMapperTest {
+
+    @InjectMocks
+    private TipsAndTricksDtoManagementMapper tipsAndTricksDtoManagementMapper;
+
+    @Test
+    void convert() {
+        TipsAndTricks tipsAndTricks = ModelUtils.getTipsAndTricks();
+
+        TipsAndTricksDtoManagement actual = TipsAndTricksDtoManagement.builder()
             .id(tipsAndTricks.getId())
             .textTranslations(tipsAndTricks.getTextTranslations()
                 .stream()
@@ -44,5 +46,10 @@ public class TipsAndTricksDtoManagementMapper extends AbstractConverter<TipsAndT
             .tags(tipsAndTricks.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
+
+        TipsAndTricksDtoManagement expected = tipsAndTricksDtoManagementMapper
+            .convert(tipsAndTricks);
+
+        assertEquals(expected, actual);
     }
 }

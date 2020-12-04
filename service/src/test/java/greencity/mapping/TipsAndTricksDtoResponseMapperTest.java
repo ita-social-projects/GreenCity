@@ -1,35 +1,34 @@
 package greencity.mapping;
 
-import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.ModelUtils;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.user.AuthorDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.localization.TagTranslation;
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.ModelMapper;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-/**
- * Class that used by {@link ModelMapper} to map {@link TipsAndTricks} into
- * {@link TipsAndTricksDtoResponse}.
- */
-@Component
-public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTricks, TipsAndTricksDtoResponse> {
-    /**
-     * Method for converting {@link TipsAndTricks} into
-     * {@link AddEcoNewsDtoResponse}.
-     *
-     * @param tipsAndTricks object to convert.
-     * @return converted object.
-     */
+import static org.junit.jupiter.api.Assertions.*;
 
-    @Override
-    protected TipsAndTricksDtoResponse convert(TipsAndTricks tipsAndTricks) {
-        String language = LocaleContextHolder.getLocale().getLanguage();
-        return TipsAndTricksDtoResponse.builder()
+@ExtendWith(SpringExtension.class)
+class TipsAndTricksDtoResponseMapperTest {
+
+    @InjectMocks
+    private TipsAndTricksDtoResponseMapper mapper;
+
+    @Test
+    void convert() {
+        TipsAndTricks tipsAndTricks = ModelUtils.getTipsAndTricks();
+        LocaleContextHolder.setLocale(Locale.ENGLISH);
+        String language = "en";
+
+        TipsAndTricksDtoResponse actual = TipsAndTricksDtoResponse.builder()
             .id(tipsAndTricks.getId())
             .title(tipsAndTricks.getTitleTranslations()
                 .stream()
@@ -54,5 +53,8 @@ public class TipsAndTricksDtoResponseMapper extends AbstractConverter<TipsAndTri
                 .filter(t -> t.getLanguage().getCode().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
+        TipsAndTricksDtoResponse expected = mapper.convert(tipsAndTricks);
+
+        assertEquals(expected, actual);
     }
 }
