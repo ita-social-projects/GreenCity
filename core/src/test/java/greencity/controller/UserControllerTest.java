@@ -135,10 +135,10 @@ class UserControllerTest {
 
     @Test
     void findUsersRecommendedFriendsTest() throws Exception {
-        int pageNumber = 1;
+        int pageNumber = 0;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(userLink + "/{userId}/recommendedFriends?page=1", 1))
+        mockMvc.perform(get(userLink + "/{userId}/recommendedFriends/", 1))
             .andExpect(status().isOk());
 
         verify(userService).findUsersRecommendedFriends(eq(pageable), eq(1L));

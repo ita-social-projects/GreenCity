@@ -482,7 +482,7 @@ public class UserController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
-    @GetMapping("/{userId}/recommendedFriends")
+    @GetMapping("/{userId}/recommendedFriends/")
     @ApiPageable
     public ResponseEntity<PageableDto<RecommendedFriendDto>> findUsersRecommendedFriends(
         @ApiIgnore Pageable page,
