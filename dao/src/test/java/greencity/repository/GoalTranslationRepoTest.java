@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.Goal;
 import greencity.entity.localization.GoalTranslation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +30,9 @@ class GoalTranslationRepoTest {
 
     @Test
     void findAvailableByUserIdTest() {
-        List<GoalTranslation> goalTranslations = goalTranslationRepo.findAvailableByUserId(1L, "uk");
+        List<GoalTranslation> goalTranslations = goalTranslationRepo.findAvailableByUserId(1L, "ua");
         assertEquals(2, goalTranslations.size());
-        assertEquals("uk", goalTranslations.get(0).getLanguage().getCode());
+        assertEquals("ua", goalTranslations.get(0).getLanguage().getCode());
     }
 
     @Test

@@ -152,7 +152,7 @@ class UserServiceImplTest {
      * HabitDictionary()) .statusHabit(true) .createDate(ZonedDateTime.now())
      * .build();
      */
-    private String language = "uk";
+    private String language = "ua";
     private Long userId = user.getId();
     private Long userId2 = user2.getId();
     private String userEmail = user.getEmail();
