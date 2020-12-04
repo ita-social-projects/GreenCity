@@ -112,7 +112,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNamesAndType(anyList(), TagType.TIPS_AND_TRICKS))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -132,7 +132,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNamesAndType(anyList(), TagType.TIPS_AND_TRICKS))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
 

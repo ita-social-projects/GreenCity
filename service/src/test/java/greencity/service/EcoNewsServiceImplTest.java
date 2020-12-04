@@ -117,7 +117,7 @@ class EcoNewsServiceImplTest {
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsByNamesAndType(anyList(), TagType.ECO_NEWS)).thenReturn(tagVOList);
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
 

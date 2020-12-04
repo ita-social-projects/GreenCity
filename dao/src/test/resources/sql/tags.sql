@@ -1,4 +1,4 @@
-INSERT INTO tags(id)
+INSERT INTO tags(id, type)
 VALUES (1, 'ECO_NEWS'),(2, 'HABIT'),(3, 'TIPS_AND_TRICKS');
 
 INSERT INTO languages(id, code)
