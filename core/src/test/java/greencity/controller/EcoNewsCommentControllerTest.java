@@ -99,24 +99,6 @@ class EcoNewsCommentControllerTest {
     }
 
     @Test
-    void findAll() throws Exception {
-        User user = getUser();
-        UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-
-        int pageNumber = 5;
-        int pageSize = 20;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        mockMvc.perform(get(ecoNewsCommentControllerLink + "?ecoNewsId=1&page=5")
-            .principal(principal))
-            .andExpect(status().isOk());
-
-        verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllComments(eq(pageable), eq(userVO), eq(1L));
-    }
-
-    @Test
     void getAllActiveComments() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
