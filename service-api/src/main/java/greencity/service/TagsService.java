@@ -12,6 +12,14 @@ import java.util.List;
  */
 public interface TagsService {
     /**
+     * Method finds all tags by language code.
+     *
+     * @param languageCode @{link String} language code
+     * @return list of @{link String} tags.
+     */
+    List<String> findAllTags(String languageCode);
+
+    /**
      * Method that allow you to find list of Tags by names.
      *
      * @param tags list of {@link String} values

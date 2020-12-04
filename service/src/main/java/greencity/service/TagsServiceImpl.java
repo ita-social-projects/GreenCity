@@ -27,6 +27,14 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
+    public List<String> findAllTags(String languageCode) {
+        return tagRepo.findAllByLanguage(languageCode);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<TagVO> findTagsByNames(List<String> tagNames) {
         List<String> lowerCaseTagNames = tagNames.stream()
             .map(String::toLowerCase)

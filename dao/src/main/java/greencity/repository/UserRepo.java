@@ -253,7 +253,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method that finds user's recommended friends.
      *
      * @param pageable {@link Pageable}.
-     * @param userId       {@link Long} -current user's id.
+     * @param userId   {@link Long} -current user's id.
      * @return {@link Page} of {@link User} instances.
      */
     @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_recommended_friends ( :userId ) ")

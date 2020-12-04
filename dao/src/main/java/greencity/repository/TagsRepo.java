@@ -7,6 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TagsRepo extends JpaRepository<Tag, Long> {
     /**
+     * Method finds all tags by language code.
+     *
+     * @param languageCode @{link String} language code
+     * @return list of @{link String} tags.
+     */
+    @Query("SELECT tt.name FROM TagTranslation tt INNER JOIN tt.language l WHERE l.code = :languageCode")
+    List<String> findAllByLanguage(String languageCode);
+
+    /**
      * Method that allow you to find list of {@link Tag}s by names.
      *
      * @param names list of {@link String} values

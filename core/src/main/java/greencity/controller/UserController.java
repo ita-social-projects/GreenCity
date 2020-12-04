@@ -211,7 +211,7 @@ public class UserController {
     })
     @PatchMapping
     public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
-                                                    @ApiIgnore @AuthenticationPrincipal Principal principal) {
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
@@ -274,7 +274,7 @@ public class UserController {
     })
     @PatchMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
-                                                                  @Valid @RequestBody BulkCustomGoalDto dto) {
+        @Valid @RequestBody BulkCustomGoalDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customGoalService.updateBulk(dto));
     }
@@ -471,8 +471,7 @@ public class UserController {
     }
 
     /**
-     * The method finds {@link RecommendedFriendDto} for the current
-     * userId.
+     * The method finds {@link RecommendedFriendDto} for the current userId.
      *
      * @return {@link ResponseEntity}.
      */
@@ -486,8 +485,7 @@ public class UserController {
     @ApiPageable
     public ResponseEntity<PageableDto<RecommendedFriendDto>> findUsersRecommendedFriends(
         @ApiIgnore Pageable page,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId
-    ) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.findUsersRecommendedFriends(page, userId));
