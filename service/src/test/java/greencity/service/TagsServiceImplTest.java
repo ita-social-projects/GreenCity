@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
@@ -36,6 +37,18 @@ class TagsServiceImplTest {
 
     private static final String UKRAINIAN_LANGUAGE = "ua";
     private static final String ENGLISH_LANGUAGE = "en";
+
+    @Test
+    void findAllTags() {
+        String languageCode = "en";
+
+        List<String> actual = ModelUtils.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+            .map(TagTranslation::getName).collect(Collectors.toList());
+        when(tagRepo.findAllByLanguage(languageCode)).thenReturn(actual);
+        List<String> expected = tagsService.findAllTags(languageCode);
+
+        assertEquals(expected, actual);
+    }
 
     @Test
     void findTagsByNames() {
