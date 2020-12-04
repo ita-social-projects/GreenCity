@@ -29,11 +29,11 @@ class TipsAndTricksRepoTest {
     @Test
     void findTest() {
         Pageable pageable = PageRequest.of(0, 6);
-        List<String> tags = Arrays.asList("news", "events");
-        Page<TipsAndTricks> page = tipsAndTricksRepo.find("en", pageable, tags);
+        List<String> tags = Arrays.asList("news", "education");
+        Page<TipsAndTricks> page = tipsAndTricksRepo.find(pageable, tags);
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
-        assertEquals(2, tipsAndTricks.size());
-        assertEquals(1, tipsAndTricks.get(1).getId());
+        assertEquals(4, tipsAndTricks.size());
+        assertEquals(2, tipsAndTricks.get(1).getId());
     }
 
     @Test

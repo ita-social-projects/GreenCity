@@ -4,7 +4,8 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.*;
 import java.util.List;
@@ -54,8 +55,9 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
         String languageCode) {
+        List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
         Page<HabitTranslation> habitTranslationsPage =
-            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, tags, languageCode);
+            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
         return buildPageableDto(habitTranslationsPage);
     }
 

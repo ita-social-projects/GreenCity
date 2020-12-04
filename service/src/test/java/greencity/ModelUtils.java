@@ -46,12 +46,9 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.TextTranslationVO;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
-import greencity.dto.tipsandtricks.TitleTranslationVO;
+import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -68,13 +65,8 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.CommentStatus;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.GoalStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.PlaceStatus;
-import greencity.enums.Role;
+import greencity.entity.localization.TagTranslation;
+import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -96,7 +88,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, "tag", Collections.emptyList(), Collections.emptyList(), Collections.emptySet());
+        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+            Collections.emptySet());
+    }
+
+    public static List<TagTranslation> getTagTranslations() {
+        Language language = getLanguage();
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Новини").language(language).build(),
+            TagTranslation.builder().id(2L).name("News").language(language).build(),
+            TagTranslation.builder().id(3L).name("Новины").language(language).build());
+    }
+
+    public static List<Tag> getTags() {
+        return Collections.singletonList(getTag());
     }
 
     public static User getUser() {
@@ -435,7 +440,7 @@ public class ModelUtils {
         return new AddEcoNewsDtoResponse(1L, "title",
             "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
-            Collections.singletonList("tag"));
+            Arrays.asList("Новини", "News", "Новины"));
     }
 
     public static MultipartFile getFile() {
@@ -553,12 +558,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static List<TagTranslationVO> getTagTranslationsVO() {
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
+            TagTranslationVO.builder().id(2L).name("News").build(),
+            TagTranslationVO.builder().id(3L).name("Новины").build());
+    }
+
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, "tag", null, null);
+        return new TagVO(1L, getTagTranslationsVO(), null, null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
@@ -837,7 +848,18 @@ public class ModelUtils {
     }
 
     public static Habit getHabit() {
-        return Habit.builder().id(1L).image("image.png").build();
+        return Habit.builder().id(1L).image("image.png").tags(new HashSet<>(getTags())).build();
+    }
+
+    public static HabitTranslation getHabitTranslation() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(getHabit())
+            .build();
     }
 
     public static Advice getAdvice() {
