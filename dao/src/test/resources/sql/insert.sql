@@ -225,17 +225,41 @@ VALUES (3, 1, 1),
        (45, 8, 6),
        (45, 9, 6);
 
-INSERT INTO tags (name)
-VALUES ('News'),
-       ('Events'),
-       ('Education'),
-       ('Initiatives'),
-       ('Ads'),
-       ('Lifehacks'),
-       ('Green thinking'),
-       ('Zero waste'),
-       ('3 r''s'),
-       ('Eco-city');
+insert into tags values (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11);
+
+insert into tag_translations values(1, 'Новини', 1, 1);
+insert into tag_translations values(2, 'News', 1, 2);
+insert into tag_translations values(3, 'Новины', 1, 3);
+insert into tag_translations values(4, 'Події', 2, 1);
+insert into tag_translations values(5, 'Events', 2, 2);
+insert into tag_translations values(6, 'События', 2, 3);
+insert into tag_translations values(7, 'Освіта', 3, 1);
+insert into tag_translations values(8, 'Education', 3, 2);
+insert into tag_translations values(9, 'Образование', 3, 3);
+insert into tag_translations values(10, 'Ініціативи', 4, 1);
+insert into tag_translations values(11, 'Initiatives', 4, 2);
+insert into tag_translations values(12, 'Инициативы', 4, 3);
+insert into tag_translations values(13, 'Реклами', 5, 1);
+insert into tag_translations values(14, 'Ads', 5, 2);
+insert into tag_translations values(15, 'Рекламы', 5, 3);
+insert into tag_translations values(16, 'Лайфхаки', 6, 1);
+insert into tag_translations values(17, 'Lifehacks', 6, 2);
+insert into tag_translations values(18, 'Лайфхаки', 6, 3);
+insert into tag_translations values(19, 'Зелене мислення', 7, 1);
+insert into tag_translations values(20, 'Green thinking', 7, 2);
+insert into tag_translations values(21, 'Зеленое мышление', 7, 3);
+insert into tag_translations values(22, 'Нульові відходи', 8, 1);
+insert into tag_translations values(23, 'Zero waste', 8, 2);
+insert into tag_translations values(24, 'Нулевые отходи', 8, 3);
+insert into tag_translations values(25, '3 р''с', 9, 1);
+insert into tag_translations values(26, '3 r''s', 9, 2);
+insert into tag_translations values(27, '3 р''с', 9, 3);
+insert into tag_translations values(28, 'Еко-місто', 10, 1);
+insert into tag_translations values(29, 'Eco-city', 10, 2);
+insert into tag_translations values(30, 'Эко-город', 10, 3);
+insert into tag_translations values(31, 'Тестування', 11, 1);
+insert into tag_translations values(32, 'Testing', 11, 2);
+insert into tag_translations values(33, 'Тестирование', 11, 3);
 
 INSERT INTO eco_news (creation_date, image_path, author_id, text, title, source)
 VALUES ('2020-09-11 18:33:51', 'шлях до картинки', 1,
