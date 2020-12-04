@@ -48,7 +48,7 @@ class LanguageServiceImplTest {
 
     @Test
     void extractExistingLanguageCodeFromRequest() {
-        String expectedLanguageCode = "uk";
+        String expectedLanguageCode = "ua";
 
         when(request.getParameter("language")).thenReturn(expectedLanguageCode);
         assertEquals(expectedLanguageCode, languageService.extractLanguageCodeFromRequest());
@@ -72,7 +72,7 @@ class LanguageServiceImplTest {
     void findCodeByIdFailed() {
         Assertions
             .assertThrows(LanguageNotFoundException.class,
-                () -> languageService.findByCode("uk"));
+                () -> languageService.findByCode("ua"));
     }
 
     @Test
