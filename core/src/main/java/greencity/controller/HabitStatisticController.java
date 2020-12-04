@@ -127,7 +127,7 @@ public class HabitStatisticController {
      * value is not taken amount of these items. Language of habit items is defined
      * by the `language` parameter.
      *
-     * @param locale - Name of habit item localization language(e.x. "en" or "uk").
+     * @param locale - Name of habit item localization language(e.x. "en" or "ua").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
      *         key-value pairs.
      */

@@ -64,7 +64,7 @@ public interface HabitStatisticService {
      * by the `language` parameter.
      *
      * @param language - Name of habit item localization language(e.x. "en" or
-     *                 "uk").
+     *                 "ua").
      * @return {@link List} of {@link HabitItemsAmountStatisticDto}s contain those
      *         key-value pairs.
      */

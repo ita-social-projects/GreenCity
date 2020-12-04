@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used for choosing language code as a query parameter for
- * example: "en", "uk", "ru".
+ * example: "en", "ua", "ru".
  *
  * @author Yurii Savchenko
  */
