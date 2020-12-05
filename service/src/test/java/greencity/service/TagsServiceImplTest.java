@@ -20,6 +20,8 @@ import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -94,6 +96,20 @@ class TagsServiceImplTest {
         List<String> expected = tagsService.findAllHabitsTags(UKRAINIAN_LANGUAGE);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void isAllTipsAndTricksValidReturnTrue() {
+        TagType tagType = TagType.TIPS_AND_TRICKS;
+        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
+        TagsServiceImpl tagsServiceSpy = Mockito.spy(tagsService);
+        List<TagVO> tagVOS = Collections.singletonList(ModelUtils.getTagVO());
+        Mockito.doReturn(tagVOS).when(tagsServiceSpy)
+            .findTagsByNamesAndType(tipsAndTricksTagsNames, tagType);
+
+        boolean expected = tagsServiceSpy.isAllTipsAndTricksValid(tipsAndTricksTagsNames, tagType);
+
+        assertTrue(expected);
     }
 
     @Test

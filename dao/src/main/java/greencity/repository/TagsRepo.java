@@ -6,7 +6,6 @@ import java.util.List;
 import greencity.enums.TagType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface TagsRepo extends JpaRepository<Tag, Long> {
     /**
