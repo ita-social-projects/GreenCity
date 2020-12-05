@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -365,6 +366,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    @AchievementCalculation(category = "Tips&TricksLikes")
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
     }

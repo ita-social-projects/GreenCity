@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.annotations.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.*;
@@ -31,6 +33,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
+    private final AchievementService achievementService;
     private final ModelMapper modelMapper;
 
     /**
@@ -283,12 +286,29 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitStatusCalendars.add(habitCalendar);
         habitAssign.setHabitStatusCalendars(habitStatusCalendars);
 
-        habitAssign.setHabitStreak(countNewHabitStreak(habitAssign.getHabitStatusCalendars()));
+        int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
+        habitAssign.setHabitStreak(habitStreak);
+        changeHabitStreakCount(habitAssign, habitStreak);
 
         if (isHabitAcquired(habitAssign)) {
-            habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+            acquired(habitAssign);
         }
         habitAssignRepo.save(habitAssign);
+    }
+
+    @AchievementCalculation(category = "AcquiredHabit")
+    private void acquired(HabitAssign habitAssign) {
+        habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+    }
+
+    @AchievementCalculation(category = "HabitStreak")
+    private void changeHabitStreakCount(HabitAssign habitAssign, Integer habitStreak){
+        User user = habitAssign.getUser();
+        UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
+        if(userActionByUserId.getHabitStreak()<habitStreak){
+            userActionByUserId.setHabitStreak(habitStreak);
+            achievementService.updateUserActions(userActionByUserId);
+        }
     }
 
     /**

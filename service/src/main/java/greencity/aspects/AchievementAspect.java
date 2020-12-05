@@ -60,15 +60,20 @@ public class AchievementAspect {
         UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
         AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCalculation.category());
         int condition = updateUserAction(achievementCalculation.category(), userActionByUserId);
-        AchievementVO byCategoryId = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
-        if (byCategoryId != null) {
-            Optional<UserAchievement> first = user.getUserAchievements().stream()
-                .filter(userAchievement -> userAchievement.getAchievement().getId().equals(byCategoryId.getId()))
+        AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
+        if (achievementVO != null) {
+            changeAchievementStatus(user, achievementVO);
+        }
+    }
+
+    @AchievementCalculation(category = "Achievements")
+    private void changeAchievementStatus(User user, AchievementVO achievementVO){
+        Optional<UserAchievement> userAchievement = user.getUserAchievements().stream()
+                .filter(userAchievement1 -> userAchievement1.getAchievement().getId().equals(achievementVO.getId()))
                 .findFirst();
-            if (first.isPresent()) {
-                first.get().setAchievementStatus(ACTIVE);
-                userService.save(modelMapper.map(user, UserVO.class));
-            }
+        if (userAchievement.isPresent()) {
+            userAchievement.get().setAchievementStatus(ACTIVE);
+            userService.save(modelMapper.map(user, UserVO.class));
         }
     }
 
@@ -101,11 +106,9 @@ public class AchievementAspect {
                 break;
             case "HabitStreak":
                 action = userActionVO.getHabitStreak();
-                userActionVO.setHabitStreak(++action);
                 break;
             case "SocialNetworks":
                 action = userActionVO.getSocialNetworks();
-                userActionVO.setSocialNetworks(++action);
                 break;
             case "Achievements":
                 action = userActionVO.getAchievements();

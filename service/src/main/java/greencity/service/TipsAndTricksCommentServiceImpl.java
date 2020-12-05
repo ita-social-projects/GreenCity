@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
@@ -45,6 +46,7 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
+    @AchievementCalculation(category = "Tips&TricksComments")
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,

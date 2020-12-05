@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -7,10 +8,8 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
-import greencity.entity.SocialNetwork;
-import greencity.entity.SocialNetworkImage;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
+import greencity.dto.useraction.UserActionVO;
+import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -75,6 +74,7 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
+    private final AchievementService achievementService;
     /**
      * Autowired mapper.
      */
@@ -570,7 +570,16 @@ public class UserServiceImpl implements UserService {
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
         userRepo.save(user);
+        changeSocialNetworksCount(user);
         return modelMapper.map(user, UserProfileDtoResponse.class);
+    }
+
+    @AchievementCalculation(category = "SocialNetworks")
+    private void changeSocialNetworksCount(User user){
+        int size = user.getSocialNetworks().size();
+        UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
+        userActionByUserId.setSocialNetworks(size);
+        achievementService.updateUserActions(userActionByUserId);
     }
 
     /**

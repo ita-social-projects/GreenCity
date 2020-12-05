@@ -71,6 +71,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
+    @AchievementCalculation(category = "EcoNews")
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
