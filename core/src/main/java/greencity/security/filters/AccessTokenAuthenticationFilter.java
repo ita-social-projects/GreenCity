@@ -42,7 +42,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
-    private String getTokenFromCookies(Cookie []cookies) {
+    private String getTokenFromCookies(Cookie[] cookies) {
         return Arrays.stream(cookies)
             .filter(c -> c.getName().equals("accessToken"))
             .findFirst()
@@ -51,7 +51,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+        String uri = request.getRequestURI();
+        if (cookies != null && uri.startsWith("/management")) {
             return getTokenFromCookies(cookies);
         }
 
