@@ -34,6 +34,11 @@ public class AchievementAspect {
     private AchievementCategoryService achievementCategoryService;
     private final ModelMapper modelMapper;
 
+    /**
+     * This pointcut {@link Pointcut} is used for define annotation to processing.
+     *
+     * @param achievementCalculation is used for recognize methods to processing.
+     */
     @Pointcut("@annotation(achievementCalculation)")
     public void myAnnotationPointcut(AchievementCalculation achievementCalculation) {
         /*
@@ -48,7 +53,7 @@ public class AchievementAspect {
      * @author Orest Mamchuk
      */
     @AfterReturning(pointcut = "myAnnotationPointcut(achievementCalculation)",
-            argNames = "achievementCalculation")
+        argNames = "achievementCalculation")
     private void achievementCalculation(AchievementCalculation achievementCalculation) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
@@ -56,10 +61,10 @@ public class AchievementAspect {
         AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCalculation.category());
         int condition = updateUserAction(achievementCalculation.category(), userActionByUserId);
         AchievementVO byCategoryId = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
-        if(byCategoryId != null){
+        if (byCategoryId != null) {
             Optional<UserAchievement> first = user.getUserAchievements().stream()
-                    .filter(userAchievement -> userAchievement.getAchievement().getId().equals(byCategoryId.getId()))
-                    .findFirst();
+                .filter(userAchievement -> userAchievement.getAchievement().getId().equals(byCategoryId.getId()))
+                .findFirst();
             if (first.isPresent()) {
                 first.get().setAchievementStatus(ACTIVE);
                 userService.save(modelMapper.map(user, UserVO.class));

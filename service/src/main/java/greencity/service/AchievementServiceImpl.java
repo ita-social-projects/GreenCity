@@ -174,6 +174,11 @@ public class AchievementServiceImpl implements AchievementService {
         return modelMapper.map(updated, AchievementPostDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
         Achievement achievement =
@@ -181,6 +186,11 @@ public class AchievementServiceImpl implements AchievementService {
         return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public UserActionVO updateUserActions(UserActionVO userActionVO) {
         Optional<UserAction> byId = userActionRepo.findById(userActionVO.getId());
@@ -201,6 +211,11 @@ public class AchievementServiceImpl implements AchievementService {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
     @Override
     public UserActionVO findUserActionByUserId(Long id) {
         UserAction userAction = userActionRepo.findByUserId(id);

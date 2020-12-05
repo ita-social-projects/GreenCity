@@ -68,7 +68,7 @@ public interface AchievementService {
      *
      * @param id of {@link AchievementVO}
      * @return {@link AchievementVO}
-     * @author Orest Mamchuck
+     * @author Orest Mamchuk
      */
     AchievementVO findById(Long id);
 
@@ -77,13 +77,35 @@ public interface AchievementService {
      *
      * @param achievementManagementDto {@link AchievementManagementDto}
      * @return instance of {@link AchievementPostDto}
-     * @author Orest Mamchuck
+     * @author Orest Mamchuk
      */
     AchievementPostDto update(AchievementManagementDto achievementManagementDto);
 
+    /**
+     * Method find {@link AchievementVO} by categoryId and condition.
+     *
+     * @param categoryId of {@link AchievementVO}
+     * @param condition  of {@link AchievementVO}
+     * @return {@link AchievementVO}
+     * @author Orest Mamchuk
+     */
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
 
+    /**
+     * Method updates {@link UserActionVO}.
+     *
+     * @param userActionVO {@link UserActionVO}
+     * @return {@link UserActionVO}
+     * @author Orest Mamchuk
+     */
     UserActionVO updateUserActions(UserActionVO userActionVO);
 
+    /**
+     * Method find {@link UserActionVO} by id.
+     *
+     * @param id of {@link UserActionVO}
+     * @return {@link UserActionVO}
+     * @author Orest Mamchuk
+     */
     UserActionVO findUserActionByUserId(Long id);
 }
