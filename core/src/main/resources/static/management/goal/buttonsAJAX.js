@@ -1,9 +1,3 @@
-$.ajaxSetup({
-    beforeSend: function(xhr) {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('accessToken'));
-    }
-});
-
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }

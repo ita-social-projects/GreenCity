@@ -1,9 +1,3 @@
-$.ajaxSetup({
-    beforeSend: function(xhr) {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('accessToken'));
-    }
-});
-
 var languages;
 $.get('/factoftheday/languages',function (data){
     languages=data;

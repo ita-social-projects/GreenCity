@@ -28,10 +28,4 @@
 </div>
     <div id="footer" th:insert="core/footer"></div>
 </body>
-<input id="token" type="hidden" th:value="${accessToken}"/>
-<script>
-    const accessToken = document.getElementById('token').value;
-    localStorage.setItem('accessToken', accessToken);
-    console.log(accessToken);
-</script>
 </html>
