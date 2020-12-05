@@ -10,7 +10,6 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,9 +30,9 @@ class GoalTranslationRepoTest {
 
     @Test
     void findAvailableByUserIdTest() {
-        List<GoalTranslation> goalTranslations = goalTranslationRepo.findAvailableByUserId(1L, "uk");
+        List<GoalTranslation> goalTranslations = goalTranslationRepo.findAvailableByUserId(1L, "ua");
         assertEquals(2, goalTranslations.size());
-        assertEquals("uk", goalTranslations.get(0).getLanguage().getCode());
+        assertEquals("ua", goalTranslations.get(0).getLanguage().getCode());
     }
 
     @Test
@@ -44,40 +43,20 @@ class GoalTranslationRepoTest {
 
     @Test
     void findByUserIdLangAndUserGoalIdTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(2L, "ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 2L);
         assertEquals("ru", goalTranslation.getLanguage().getCode());
         assertEquals(2L, goalTranslation.getGoal().getId());
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdNotFoundTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(3L, "ru", 2L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 10L);
         assertNull(goalTranslation);
     }
 
     @Test
     void findByUserIdLangAndUserGoalIdWithEmptyResultTest() {
-        GoalTranslation goalTranslation = goalTranslationRepo.findByUserIdLangAndUserGoalId(2L, "ru", 3L);
+        GoalTranslation goalTranslation = goalTranslationRepo.findByLangAndUserGoalId("ru", 3L);
         assertNull(goalTranslation);
     }
-
-    @Test
-    void findByGoalAndLanguageCodeTest() {
-        Goal goal = new Goal();
-        goal.setId(1L);
-        Optional<GoalTranslation> goalTranslation = goalTranslationRepo
-            .findByGoalAndLanguageCode(goal, "en");
-        assertTrue(goalTranslation.isPresent());
-        assertEquals(goal, goalTranslation.get().getGoal());
-    }
-
-    @Test
-    void findByGoalAndLanguageCodeNotFoundTest() {
-        Goal goal = new Goal();
-        goal.setId(10L);
-        Optional<GoalTranslation> goalTranslation = goalTranslationRepo
-            .findByGoalAndLanguageCode(goal, "en");
-        assertTrue(goalTranslation.isEmpty());
-    }
-
 }

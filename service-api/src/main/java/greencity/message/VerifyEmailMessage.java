@@ -13,4 +13,5 @@ public class VerifyEmailMessage implements Serializable {
     private final String name;
     private final String email;
     private final String token;
+    private final String language;
 }

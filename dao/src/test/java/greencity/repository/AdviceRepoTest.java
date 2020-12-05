@@ -46,8 +46,9 @@ class AdviceRepoTest {
     @Test
     void searchBy() {
         Pageable pageable = PageRequest.of(0, 2);
-        String query = "При";
+        String query = "Hel";
         List<Advice> advices = ModelUtils.getAdvices();
+        advices.remove(0);
         advices.remove(1);
 
         Page<Advice> actual = new PageImpl<>(advices, pageable, advices.size());
@@ -58,7 +59,7 @@ class AdviceRepoTest {
         List<Long> expectedIds = expected.getContent().stream().map(Advice::getId)
             .collect(Collectors.toList());
 
-        assertEquals(2, expected.getContent().size());
+        assertEquals(1, expected.getContent().size());
         assertEquals(expectedIds, actualIds);
     }
 

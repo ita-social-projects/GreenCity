@@ -1,5 +1,6 @@
 package greencity.dto.habit;
 
+import greencity.enums.HabitAssignStatus;
 import javax.validation.constraints.NotNull;
 import lombok.*;
 
@@ -11,7 +12,5 @@ import lombok.*;
 @Builder
 public class HabitAssignStatDto {
     @NotNull
-    private Boolean acquired;
-    @NotNull
-    private Boolean suspended;
+    private HabitAssignStatus status;
 }

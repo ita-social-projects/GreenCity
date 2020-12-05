@@ -2,12 +2,12 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
+import greencity.repository.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -25,6 +25,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
+    private final GoalTranslationRepo goalTranslationRepo;
 
     /**
      * {@inheritDoc}
@@ -43,14 +44,49 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
-        Page<HabitTranslation> pages =
+        Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCode(pageable, language);
-        List<HabitDto> habitTranslationDtos =
-            pages.stream()
+        return buildPageableDto(habitTranslationPage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags,
+        String languageCode) {
+        List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
+        Page<HabitTranslation> habitTranslationsPage =
+            habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+        return buildPageableDto(habitTranslationsPage);
+    }
+
+    /**
+     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page}
+     * of {@link HabitTranslation}.
+     *
+     * @param habitTranslationsPage {@link Page} of {@link HabitTranslation}
+     * @return {@link PageableDto} of {@link HabitDto}
+     * @author Markiyan Derevetskyi
+     */
+    private PageableDto<HabitDto> buildPageableDto(Page<HabitTranslation> habitTranslationsPage) {
+        List<HabitDto> habits =
+            habitTranslationsPage.stream()
                 .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
                 .collect(Collectors.toList());
-        return new PageableDto<>(habitTranslationDtos, pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages());
+        return new PageableDto<>(habits, habitTranslationsPage.getTotalElements(),
+            habitTranslationsPage.getPageable().getPageNumber(),
+            habitTranslationsPage.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GoalDto> getShoppingListForHabit(Long habitId, String lang) {
+        return goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode(lang, habitId)
+            .stream()
+            .map(g -> modelMapper.map(g, GoalDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -39,16 +39,18 @@ class EcoNewsRepoTest {
     }
 
     @Test
-    void findTest() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<String> tagsList = Collections.singletonList("initiatives");
-        Page<EcoNews> ecoNewsPage = ecoNewsRepo.find(pageRequest, tagsList);
+    void findByTagsTest() {
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        List<String> tagsList = Collections.singletonList("ads");
+        Page<EcoNews> ecoNewsPage = ecoNewsRepo.findByTags(pageRequest, tagsList);
 
         Long firstActual = ecoNewsPage.getContent().get(0).getId();
         Long secondActual = ecoNewsPage.getContent().get(1).getId();
+        Long thirdActual = ecoNewsPage.getContent().get(2).getId();
 
         assertEquals(4L, firstActual);
         assertEquals(2L, secondActual);
+        assertEquals(1L, thirdActual);
     }
 
     @Test
