@@ -1,10 +1,9 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageableWithLocale;
-import greencity.annotations.ValidLanguage;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -75,18 +74,35 @@ public class HabitController {
     }
 
     /**
+     * Method finds shoppingList for habit in specific language.
+     *
+     * @param locale {@link Locale} with needed language code.
+     * @param id     {@link Long} with needed habit id.
+     * @return List of {@link GoalDto}.
+     */
+    @ApiOperation(value = "Get shopping list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+    })
+    @GetMapping("{id}/shopping-list")
+    @ApiLocale
+    public ResponseEntity<List<GoalDto>> getGoals(
+        @PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            habitService.getShoppingListForHabit(id, locale.getLanguage()));
+    }
+
+    /**
      * Method finds all habits by tags and language code.
      *
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @param tags     {@link List} of {@link String}
-     * @return Pageable of {@link HabitTranslationDto}.
+     * @return Pageable of {@link HabitDto}.
      */
     @ApiOperation(value = "Find all habits by tags and language code.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-    })
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
@@ -105,7 +121,8 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all habits tags")
     @GetMapping("/tags")
-    public ResponseEntity<List<String>> findAllHabitsTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
+    @ApiPageableWithLocale
+    public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
     }
 }

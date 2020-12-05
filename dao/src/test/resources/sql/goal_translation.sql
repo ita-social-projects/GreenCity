@@ -1,6 +1,6 @@
 INSERT INTO goals(id) VALUES (1), (2), (3), (4);
 
-INSERT INTO languages(id, code) VALUES(1,'uk'), (2,'en'), (3,'ru');
+INSERT INTO languages(id, code) VALUES(1,'ua'), (2,'en'), (3,'ru');
 
 INSERT INTO goal_translations(id, content, goal_id, language_id)
 VALUES(1, 'Купіть бамбукову щітку', 1, 1),
@@ -26,6 +26,14 @@ INSERT INTO users (id,
 VALUES (1, current_date, 'mail@.com', 1, 'Tom', current_date, 1, 1, 'quux'),
        (2, current_date, 'test@.com', 0, 'John', current_date, 1, 1, 'quux');
 
-INSERT INTO user_goals(id, user_id, goal_id, status)
+INSERT INTO habits (id, image, default_duration)
+VALUES (1,'image1', 14),
+       (2,'image2', 14);
+
+INSERT INTO habit_assign (id, habit_id, user_id, create_date, status, duration)
+VALUES (1, 1, 1, '2020-09-10 20:00:00', 'ACTIVE', 14),
+       (2, 2, 2, '2020-09-10 20:00:00', 'ACTIVE', 14);
+
+INSERT INTO user_goals(id, habit_assign_id, goal_id, status)
 VALUES (1, 1, 1, 'ACTIVE'),
        (2, 2, 2, 'DONE');

@@ -21,7 +21,7 @@ public class UserGoal {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private HabitAssign habitAssign;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Goal goal;
@@ -43,7 +43,7 @@ public class UserGoal {
         }
         UserGoal userGoal = (UserGoal) o;
         return id.equals(userGoal.id)
-            && user.equals(userGoal.user)
+            && habitAssign.equals(userGoal.habitAssign)
             && Objects.equals(goal, userGoal.goal)
             && status == userGoal.status
             && Objects.equals(dateCompleted, userGoal.dateCompleted);
@@ -51,6 +51,6 @@ public class UserGoal {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, goal, status, dateCompleted);
+        return Objects.hash(id, habitAssign, goal, status, dateCompleted);
     }
 }

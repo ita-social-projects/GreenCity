@@ -18,7 +18,7 @@ public class ModelUtils {
     public static AdviceTranslation getAdviceTranslationFirst() {
         return AdviceTranslation.builder()
             .id(1L)
-            .language(Language.builder().id(1L).code("uk").build())
+            .language(Language.builder().id(1L).code("ua").build())
             .content("Привіт")
             .advice(getAdvice()).build();
     }

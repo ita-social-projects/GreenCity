@@ -1,5 +1,5 @@
 INSERT INTO languages (id, code)
-VALUES (1, 'uk'),
+VALUES (1, 'ua'),
        (2, 'en'),
        (3, 'ru');
 

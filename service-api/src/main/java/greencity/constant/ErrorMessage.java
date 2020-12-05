@@ -4,6 +4,8 @@ public final class ErrorMessage {
     public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
     public static final String GOAL_NOT_DELETED = "Advice not deleted ";
     public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
+    public static final String GOAL_NOT_ASSIGNED_FOR_THIS_HABIT = "Goal with such id does not assigned fot this habit ";
+    public static final String GOAL_ALREADY_SELECTED = "Goal with such id already selected by user ";
     public static final String GOAL_NOT_FOUND_BY_LANGUAGE_CODE = "There is no goal for such language.";
     public static final String GOAL_WRONG_ID = "Goal with this id not found : ";
     public static final String WRONG_PARAMETER = "You must choose one goal id  custom or simple. ";
@@ -54,6 +56,10 @@ public final class ErrorMessage {
     public static final String HABIT_HAS_BEEN_ALREADY_ON_THAT_DAY = "Habit has been enrolled";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
+    public static final String HABIT_STATUS_CALENDAR_NOT_FOUND = "Habit status calendar hasn't been found for this"
+        + " assign with date: ";
+    public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
+        "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
         "Current user does not have habit statistic with id: ";
     public static final String USER_ALREADY_HAS_ASSIGNED_HABIT = "Current user already has assigned habit with id: ";
@@ -131,7 +137,7 @@ public final class ErrorMessage {
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
-    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'uk' or 'ru'";
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'ua' or 'ru'";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String CAN_NOT_CREATE_EVENT_INSTANCE =
         "Can not create instance of events, used constructor that differ from events superclass.";

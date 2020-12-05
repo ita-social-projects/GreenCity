@@ -88,9 +88,6 @@ public class User {
     @Column(name = "refresh_token_key", nullable = false)
     private String refreshTokenKey;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<UserGoal> userGoals = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<CustomGoal> customGoals = new ArrayList<>();
 
