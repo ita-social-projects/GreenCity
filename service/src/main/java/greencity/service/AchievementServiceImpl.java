@@ -176,8 +176,9 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
-        Achievement achievement = achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
-        return achievement!=null ? modelMapper.map(achievement, AchievementVO.class) : null;
+        Achievement achievement =
+            achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
+        return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
     @Override

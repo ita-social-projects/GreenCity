@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface AchievementCalculation {
 
-    AchievementCalculationEnum category();
+    String category();
 }

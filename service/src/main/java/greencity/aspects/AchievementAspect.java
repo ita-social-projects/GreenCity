@@ -53,9 +53,8 @@ public class AchievementAspect {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
         UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
-        String achievementCategory = achievementCalculation.category().getAchievementCategory();
-        AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCategory);
-        int condition = updateUserAction(achievementCategory, userActionByUserId);
+        AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCalculation.category());
+        int condition = updateUserAction(achievementCalculation.category(), userActionByUserId);
         AchievementVO byCategoryId = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
         if(byCategoryId != null){
             Optional<UserAchievement> first = user.getUserAchievements().stream()
@@ -68,47 +67,47 @@ public class AchievementAspect {
         }
     }
 
-    private int updateUserAction(String achievementCategory, UserActionVO userActionVO){
+    private int updateUserAction(String achievementCategory, UserActionVO userActionVO) {
         Integer action = 0;
-        if(achievementCategory.equals("EcoNews")){
-            action = userActionVO.getEcoNews();
-            userActionVO.setEcoNews(++action);
-        }
-        if(achievementCategory.equals("EcoNewsLikes")){
-            action = userActionVO.getEcoNewsLikes();
-            userActionVO.setEcoNewsLikes(++action);
-        }
-        if(achievementCategory.equals("EcoNewsComments")){
-            action = userActionVO.getEcoNewsComments();
-            userActionVO.setEcoNewsComments(++action);
-        }
-        if(achievementCategory.equals("Tips&TricksLikes")){
-            action = userActionVO.getTipsAndTricksLikes();
-            userActionVO.setTipsAndTricksLikes(++action);
-        }
-        if(achievementCategory.equals("Tips&TricksComments")){
-            action = userActionVO.getTipsAndTricksComments();
-            userActionVO.setTipsAndTricksComments(++action);
-        }
-        if(achievementCategory.equals("AcquiredHabit")){
-            action = userActionVO.getAcquiredHabit();
-            userActionVO.setAcquiredHabit(++action);
-        }
-        if(achievementCategory.equals("HabitStreak")){
-            action = userActionVO.getHabitStreak();
-            userActionVO.setHabitStreak(++action);
-        }
-        if(achievementCategory.equals("SocialNetworks")){
-            action = userActionVO.getSocialNetworks();
-            userActionVO.setSocialNetworks(++action);
-        }
-//        if(achievementCategory.equals("Rating")){
-//            action = userActionVO.getRating().intValue();
-//            userActionVO.setRating(action++);
-//        }
-        if(achievementCategory.equals("Achievements")){
-            action = userActionVO.getAchievements();
-            userActionVO.setAchievements(++action);
+        switch (achievementCategory) {
+            case "EcoNews":
+                action = userActionVO.getEcoNews();
+                userActionVO.setEcoNews(++action);
+                break;
+            case "EcoNewsLikes":
+                action = userActionVO.getEcoNewsLikes();
+                userActionVO.setEcoNewsLikes(++action);
+                break;
+            case "EcoNewsComments":
+                action = userActionVO.getEcoNewsComments();
+                userActionVO.setEcoNewsComments(++action);
+                break;
+            case "Tips&TricksLikes":
+                action = userActionVO.getTipsAndTricksLikes();
+                userActionVO.setTipsAndTricksLikes(++action);
+                break;
+            case "Tips&TricksComments":
+                action = userActionVO.getTipsAndTricksComments();
+                userActionVO.setTipsAndTricksComments(++action);
+                break;
+            case "AcquiredHabit":
+                action = userActionVO.getAcquiredHabit();
+                userActionVO.setAcquiredHabit(++action);
+                break;
+            case "HabitStreak":
+                action = userActionVO.getHabitStreak();
+                userActionVO.setHabitStreak(++action);
+                break;
+            case "SocialNetworks":
+                action = userActionVO.getSocialNetworks();
+                userActionVO.setSocialNetworks(++action);
+                break;
+            case "Achievements":
+                action = userActionVO.getAchievements();
+                userActionVO.setAchievements(++action);
+                break;
+            default:
+                return action;
         }
         achievementService.updateUserActions(userActionVO);
         return action;
