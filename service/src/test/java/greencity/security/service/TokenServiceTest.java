@@ -31,10 +31,8 @@ class TokenServiceTest {
 
         String expectedAccessTokenValue = expectedAccessTokenCookie.getValue();
         boolean expectedHttpOnlyFlag = expectedAccessTokenCookie.isHttpOnly();
-        boolean expectedSecuredFlag = expectedAccessTokenCookie.getSecure();
 
         assertEquals(expectedAccessTokenValue, accessToken);
         assertTrue(expectedHttpOnlyFlag);
-        assertTrue(expectedSecuredFlag);
     }
 }
