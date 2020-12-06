@@ -43,8 +43,7 @@ class TokenControllerTest {
     void passTokenToCookies() throws Exception {
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJ";
 
-        mockMvc.perform(post(TOKEN_LINK)
-            .content(accessToken))
+        mockMvc.perform(get(TOKEN_LINK + "?accessToken=" + accessToken))
             .andExpect(status().is3xxRedirection());
     }
 }

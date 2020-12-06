@@ -152,6 +152,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
+                "/token",
                 "/socket/**")
             .permitAll()
             .antMatchers(HttpMethod.POST,
@@ -159,7 +160,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/signIn",
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
-                "/token",
                 "/place/filter")
             .permitAll()
             .antMatchers(HttpMethod.GET,

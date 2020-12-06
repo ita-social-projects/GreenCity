@@ -20,8 +20,8 @@ public class TokenController {
      * @param response    {@link HttpServletResponse}
      * @return html view of management page.
      */
-    @PostMapping
-    public String passTokenToCookies(@RequestBody String accessToken, HttpServletResponse response) {
+    @GetMapping
+    public String passTokenToCookies(@RequestParam String accessToken, HttpServletResponse response) {
         tokenService.passTokenToCookies(accessToken, response);
 
         return "redirect:/management";
