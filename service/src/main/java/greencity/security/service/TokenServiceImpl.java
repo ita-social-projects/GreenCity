@@ -4,7 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 public class TokenServiceImpl implements TokenService {
-
     /**
      * {@inheritDoc}
      * */
