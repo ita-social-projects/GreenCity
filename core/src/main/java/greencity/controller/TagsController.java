@@ -29,7 +29,7 @@ public class TagsController {
      * @param locale {@link Locale}
      * @param type {@link String}
      * @return list of {@link String} (tag's names).
-     * @author Kovaliv Taras
+     * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Find all tags by type and language code")
     @GetMapping("/search")
