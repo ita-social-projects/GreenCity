@@ -190,7 +190,7 @@ public class EmailServiceImpl implements EmailService {
      *
      * @param language language which will be used for sending recovery letter.
      */
-    public void changeLocale(String language) {
+    private void changeLocale(String language) {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
         switch (language) {
