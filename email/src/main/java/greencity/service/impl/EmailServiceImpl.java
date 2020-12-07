@@ -143,6 +143,7 @@ public class EmailServiceImpl implements EmailService {
         model.put(EmailConstants.VERIFY_ADDRESS, clientLink + "?token="
             + token + PARAM_USER_ID + id);
         changeLocale(language);
+        log.info(Locale.getDefault().toString());
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
     }
@@ -192,14 +193,18 @@ public class EmailServiceImpl implements EmailService {
     public void changeLocale(String language) {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
-        if (language.equals("ua")) {
-            Locale.setDefault(ua);
-        }
-        if (language.equals("ru")) {
-            Locale.setDefault(rus);
-        }
-        if (language.equals("en")) {
-            Locale.setDefault(Locale.ENGLISH);
+        switch (language){
+            case "ua":
+                Locale.setDefault(ua);
+                break;
+            case "ru":
+                Locale.setDefault(rus);
+                break;
+            case "en":
+                Locale.setDefault(Locale.ENGLISH);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + language);
         }
     }
 

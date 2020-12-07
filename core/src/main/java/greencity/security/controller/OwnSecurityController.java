@@ -110,10 +110,9 @@ public class OwnSecurityController {
         @ApiResponse(code = 400, message = NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN)
     })
     @GetMapping("/verifyEmail")
-    public ResponseEntity<Object> verify(@RequestParam @NotBlank String token,
-        @RequestParam("user_id") Long userId) {
-        verifyEmailService.verifyByToken(userId, token);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Boolean> verify(@RequestParam @NotBlank String token,
+                                          @RequestParam("user_id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(verifyEmailService.verifyByToken(userId, token));
     }
 
     /**
