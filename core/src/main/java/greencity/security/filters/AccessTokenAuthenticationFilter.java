@@ -5,9 +5,11 @@ import greencity.security.jwt.JwtTool;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,23 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
+    private String getTokenFromCookies(Cookie[] cookies) {
+        return Arrays.stream(cookies)
+            .filter(c -> c.getName().equals("accessToken"))
+            .findFirst()
+            .map(Cookie::getValue).orElse(null);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String uri = request.getRequestURI();
+        if (cookies != null && uri.startsWith("/management")) {
+            return getTokenFromCookies(cookies);
+        }
+
+        return jwtTool.getTokenFromHttpServletRequest(request);
+    }
+
     /**
      * Checks if request has token in header, if this token still valid, and set
      * authentication for spring.
@@ -52,7 +71,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
         @SuppressWarnings("NullableProblems") HttpServletResponse response,
         @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
-        String token = jwtTool.getTokenFromHttpServletRequest(request);
+        String token = extractToken(request);
+
         if (token != null) {
             try {
                 Authentication authentication = authenticationManager
