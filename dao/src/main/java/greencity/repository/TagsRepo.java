@@ -25,10 +25,10 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
      * @param languageCode {@link String}
      * @return list of tag's names.
      */
-    @Query(nativeQuery = true, value = "select tt.name from tags t " +
-        "inner join tag_translations tt on t.id = tt.tag_id " +
-        "inner join languages l on l.id = tt.language_id " +
-        "where t.type = :tagType and l.code = :languageCode")
+    @Query(nativeQuery = true, value = "select tt.name from tags t "
+        + "inner join tag_translations tt on t.id = tt.tag_id "
+        + "inner join languages l on l.id = tt.language_id "
+        + "where t.type = :tagType and l.code = :languageCode")
     List<String> findTagsByTypeAndLanguageCode(String tagType, String languageCode);
 
     /**

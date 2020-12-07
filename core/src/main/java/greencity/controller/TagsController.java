@@ -34,7 +34,7 @@ public class TagsController {
     @ApiOperation(value = "Find all tags by type and language code")
     @GetMapping("/search")
     @ApiLocale
-    public ResponseEntity<List<String>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale,
+    public ResponseEntity<List<String>> findByTypeAndLanguageCode(@ApiIgnore @ValidLanguage Locale locale,
         @RequestParam String type) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tagsService.findByTypeAndLanguageCode(type, locale.getLanguage()));
