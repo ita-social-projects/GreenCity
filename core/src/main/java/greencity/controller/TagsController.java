@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
-import greencity.dto.tag.TagVO;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
