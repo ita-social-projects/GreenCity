@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificationExecutor<EcoNews> {
@@ -41,10 +42,10 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     @Query(nativeQuery = true, value = "SELECT en.* FROM eco_news AS en "
         + "INNER JOIN eco_news_tags AS entag "
         + "ON en.id = entag.eco_news_id "
-        + "INNER JOIN tags AS t ON entag.tags_id = t.id "
+        + "INNER JOIN tag_translations AS t ON entag.tags_id = t.tag_id "
         + "WHERE lower(t.name) IN (:tags) "
-        + "ORDER BY  en.creation_date DESC")
-    Page<EcoNews> find(Pageable pageable, List<String> tags);
+        + "ORDER BY en.creation_date DESC")
+    Page<EcoNews> findByTags(Pageable pageable, List<String> tags);
 
     /**
      * Method returns all {@link EcoNews} by page.
@@ -55,12 +56,22 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
 
     /**
+     * Method that finds {@link EcoNews} by id.
+     * 
+     * @param id {@link Long}.
+     * @return {@link Optional} of {@link EcoNews}
+     *
+     */
+    @Query("SELECT e FROM EcoNews e JOIN FETCH e.tags WHERE e.id = :id")
+    Optional<EcoNews> findById(Long id);
+
+    /**
      * Method returns {@link EcoNews} by search query and page.
      *
      * @param searchQuery query to search
      * @return list of {@link EcoNews}
      */
-    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_textsearcheconews ( :searchQuery ) ")
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searcheconews ( :searchQuery ) ")
     Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
 
     /**
@@ -83,17 +94,17 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @return list of {@link EcoNews}.
      */
     @Query(nativeQuery = true,
-        value = "Select e.id, e.title, e.author_id, e.text, u.name, e.creation_date, e.source, t.name, e.image_path "
+        value = "Select e.id, e.title, e.author_id, e.text, u.name, e.creation_date, e.source, tt.name, e.image_path "
             + "FROM eco_news e "
             + "JOIN users u on u.id = e.author_id "
             + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "
-            + "JOIN tags t on t.id = ent.tags_id "
+            + "JOIN tag_translations tt on tt.tag_id = ent.tags_id "
             + "WHERE concat(e.id,'') like :query or "
             + "    lower(e.title) like lower(concat('%', :query, '%')) or "
             + "    lower(e.text) like lower(concat('%', :query, '%')) or "
             + "    lower(u.name) like lower(concat('%', :query, '%')) or "
             + "    lower(concat(e.creation_date,'')) like lower(concat('%', :query, '%')) or "
             + "    lower(e.source) like lower(concat('%', :query, '%')) or "
-            + "    lower(t.name) like lower(concat('%', :query, '%'))")
+            + "    lower(tt.name) like lower(concat('%', :query, '%'))")
     Page<EcoNews> searchEcoNewsBy(Pageable paging, String query);
 }

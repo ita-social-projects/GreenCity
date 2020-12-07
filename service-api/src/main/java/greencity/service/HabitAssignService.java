@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.habit.*;
-import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import java.time.LocalDate;
 import java.util.List;
@@ -51,22 +50,20 @@ public interface HabitAssignService {
      * {@code User} id and acquired status.
      *
      * @param userId   {@code User} id.
-     * @param acquired {@link Boolean} status.
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, Boolean acquired, String language);
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language);
 
     /**
      * Method to find all active (not suspended) {@code HabitAssign}'s by
      * {@code Habit} id and acquired status.
      *
      * @param habitId  {@code Habit} id.
-     * @param acquired {@link Boolean} status.
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, Boolean acquired, String language);
+    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, String language);
 
     /**
      * Method to delete all {@code HabitAssign}'s by {@code Habit} instance.
@@ -90,11 +87,12 @@ public interface HabitAssignService {
     /**
      * Method to enroll {@code Habit}.
      *
-     * @param habitId {@code Habit} id to enroll.
-     * @param userId  {@code User} id.
-     * @return {@link HabitStatusCalendarDto}.
+     * @param habitId  {@code Habit} id to enroll.
+     * @param userId   {@code User} id.
+     * @param dateTime {@link LocalDate} dateTime we want enroll.
+     * @return {@link HabitAssignDto}.
      */
-    HabitStatusCalendarDto enrollHabit(Long habitId, Long userId);
+    HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
     /**
      * Method to unenroll Habit in defined date.

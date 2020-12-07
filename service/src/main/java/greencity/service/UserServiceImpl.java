@@ -6,17 +6,42 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.goal.GoalDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.SocialNetwork;
+import greencity.entity.SocialNetworkImage;
+import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
-import greencity.enums.GoalStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.CheckRepeatingValueException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
+import greencity.repository.CustomGoalRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitStatisticRepo;
+import greencity.repository.SocialNetworkRepo;
+import greencity.repository.TipsAndTricksRepo;
+import greencity.repository.UserGoalRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,13 +52,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code UserService}.
@@ -57,12 +75,12 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
-    @Value("${greencity.time.after.last.activity}")
-    private long timeAfterLastActivity;
     /**
      * Autowired mapper.
      */
     private final ModelMapper modelMapper;
+    @Value("${greencity.time.after.last.activity}")
+    private long timeAfterLastActivity;
 
     /**
      * {@inheritDoc}
@@ -185,6 +203,19 @@ public class UserServiceImpl implements UserService {
             }.getType());
     }
 
+    @Override
+    public PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId) {
+        Page<User> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
+        List<RecommendedFriendDto> recommendedFriendDtos = friends.get()
+            .map(user -> modelMapper.map(user, RecommendedFriendDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+            recommendedFriendDtos,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -304,147 +335,6 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
-    @Transactional
-    @Override
-    public List<UserGoalResponseDto> getUserGoals(Long userId, String language) {
-        List<UserGoalResponseDto> userGoalResponseDtos = userGoalRepo
-            .findAllByUserId(userId)
-            .stream()
-            .map(userGoal -> modelMapper.map(userGoal, UserGoalResponseDto.class))
-            .collect(Collectors.toList());
-        if (userGoalResponseDtos.isEmpty()) {
-            throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
-        }
-        userGoalResponseDtos.forEach(el -> setTextForAnyUserGoal(el, userId, language));
-        return userGoalResponseDtos;
-    }
-
-    /**
-     * Method for setting text either for UserGoal with localization or for
-     * CustomGoal.
-     *
-     * @param userId id of the current user.
-     * @param dto    {@link UserGoalResponseDto}
-     */
-    private UserGoalResponseDto setTextForAnyUserGoal(UserGoalResponseDto dto, Long userId, String language) {
-        String text = userGoalRepo.findGoalByUserGoalId(dto.getId()).isPresent()
-            ? goalTranslationRepo.findByUserIdLangAndUserGoalId(userId, language, dto.getId()).getContent()
-            : customGoalRepo.findByUserId(userId).getText();
-        dto.setText(text);
-        return dto;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public List<GoalDto> getAvailableGoals(Long userId, String language) {
-        List<GoalTranslation> goalTranslations = goalTranslationRepo
-            .findAvailableByUserId(userId, language);
-        if (goalTranslations.isEmpty()) {
-            throw new UserHasNoAvailableGoalsException(ErrorMessage.USER_HAS_NO_AVAILABLE_GOALS);
-        }
-        return goalTranslations
-            .stream()
-            .map(g -> modelMapper.map(g, GoalDto.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public List<UserGoalResponseDto> saveUserGoals(Long userId, BulkSaveUserGoalDto bulkDto, String language) {
-        List<UserGoalDto> goalDtos = bulkDto.getUserGoals();
-        UserVO user = modelMapper.map(userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)), UserVO.class);
-        if (goalDtos != null) {
-            saveGoalForUserGoal(user, goalDtos);
-        }
-        return getUserGoals(userId, language);
-    }
-
-    /**
-     * Method save user goals with goal dictionary.
-     *
-     * @param userVO {@link UserVO} current user
-     * @param goals  list {@link UserGoalDto} for saving
-     * @author Bogdan Kuzenko
-     */
-    private void saveGoalForUserGoal(UserVO userVO, List<UserGoalDto> goals) {
-        User user = modelMapper.map(userVO, User.class);
-        for (UserGoalDto el : goals) {
-            UserGoal userGoal = modelMapper.map(el, UserGoal.class);
-            userGoal.setUser(user);
-            user.getUserGoals().add(userGoal);
-            userGoalRepo.saveAll(user.getUserGoals());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Bogdan Kuzenko
-     */
-    @Transactional
-    @Override
-    public List<Long> deleteUserGoals(String ids) {
-        List<Long> arrayId = Arrays.stream(ids.split(","))
-            .map(Long::valueOf)
-            .collect(Collectors.toList());
-
-        List<Long> deleted = new ArrayList<>();
-        for (Long id : arrayId) {
-            deleted.add(delete(id));
-        }
-        return deleted;
-    }
-
-    /**
-     * Method for deleting user goal by id.
-     *
-     * @param id {@link UserGoal} id.
-     * @return id of deleted {@link UserGoal}
-     * @author Bogdan Kuzenko
-     */
-    private Long delete(Long id) {
-        UserGoal userGoal = userGoalRepo
-            .findById(id).orElseThrow(() -> new NotFoundException(ErrorMessage.USER_GOAL_NOT_FOUND + id));
-        userGoalRepo.delete(userGoal);
-        return id;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Transactional
-    @Override
-    public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
-        UserGoal userGoal;
-        User user = userRepo.findById(userId)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
-        if (user.getUserGoals().stream().anyMatch(o -> o.getId().equals(goalId))) {
-            userGoal = userGoalRepo.getOne(goalId);
-            if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
-                userGoal.setStatus(GoalStatus.DONE);
-                userGoal.setDateCompleted(LocalDateTime.now());
-                userGoalRepo.save(userGoal);
-            } else {
-                throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + goalId);
-            }
-        } else {
-            throw new UserGoalStatusNotUpdatedException(ErrorMessage.USER_HAS_NO_SUCH_GOAL + goalId);
-        }
-        UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
-        setTextForAnyUserGoal(updatedUserGoal, userId, language);
-        return updatedUserGoal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int updateUserRefreshToken(String refreshTokenKey, Long id) {
         return userRepo.updateUserRefreshToken(refreshTokenKey, id);
@@ -539,7 +429,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-        UserProfilePictureDto userProfilePictureDto) {
+                                           UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));

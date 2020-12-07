@@ -3,8 +3,8 @@ package greencity.mapping;
 import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
-import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -41,10 +41,8 @@ public class TipsAndTricksDtoManagementMapper extends AbstractConverter<TipsAndT
             .imagePath(tipsAndTricks.getImagePath())
             .creationDate(tipsAndTricks.getCreationDate())
             .authorName(tipsAndTricks.getAuthor().getName())
-            .tags(tipsAndTricks.getTags()
-                .stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList()))
+            .tags(tipsAndTricks.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
 }

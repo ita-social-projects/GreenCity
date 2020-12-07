@@ -10,12 +10,14 @@ import greencity.repository.TagsRepo;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,95 +32,97 @@ class TagsServiceImplTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private TagsServiceImpl tagService;
+    private TagsServiceImpl tagsService;
+
+    private static final String UKRAINIAN_LANGUAGE = "ua";
+    private static final String ENGLISH_LANGUAGE = "en";
 
     @Test
-    void testFindAll() {
-        Tag tag = ModelUtils.getTag();
-        tag.setEcoNews(Collections.singletonList(ModelUtils.getEcoNews()));
-        when(tagRepo.findAllEcoNewsTags()).thenReturn(Collections.singletonList(tag.getName()));
-        List<String> expected = Collections.singletonList(tag.getName());
-        assertEquals(expected, tagService.findAllEcoNewsTags());
+    void findTagsByNames() {
+        List<String> tagsNames = Collections.singletonList("News");
+        List<String> lowerTagsNames = tagsNames.stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
+        List<Tag> ecoNewsTags = ModelUtils.getTags();
+        List<TagVO> actual = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(ecoNewsTags);
+        when(modelMapper.map(ecoNewsTags, new TypeToken<List<TagVO>>() {
+        }.getType())).thenReturn(actual);
+        List<TagVO> expected = tagsService.findTagsByNames(tagsNames);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    void testFindAllWithoutEcoNews() {
-        when(tagRepo.findAllEcoNewsTags()).thenReturn(Collections.singletonList(ModelUtils.getTag().getName()));
-        List<String> expected = Collections.singletonList(ModelUtils.getTag().getName());
-        assertEquals(expected, tagService.findAllEcoNewsTags());
+    void findTagsByNamesThrowTagNotFoundException() {
+        List<String> tagsNames = Collections.singletonList("News");
+        List<String> lowerTagsNames = tagsNames.stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
+        List<Tag> tags = Collections.emptyList();
+        when(tagRepo.findTagsByNames(lowerTagsNames)).thenReturn(tags);
+
+        assertThrows(TagNotFoundException.class,
+            () -> tagsService.findTagsByNames(tagsNames));
     }
 
     @Test
-    void findAllTest() {
-        Tag tipsAndTricksTag = ModelUtils.getTag();
-        tipsAndTricksTag.setTipsAndTricks(Collections.singletonList(ModelUtils.getTipsAndTricks()));
-        when(tagRepo.findAllTipsAndTricksTags()).thenReturn(Collections.singletonList(tipsAndTricksTag.getName()));
-        List<String> expected = Collections.singletonList(tipsAndTricksTag.getName());
-        assertEquals(expected, tagService.findAllTipsAndTricksTags());
+    void findAllEcoNewsTags() {
+        List<String> actual = Collections.singletonList("News");
+        when(tagRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE)).thenReturn(actual);
+        List<String> expected = tagsService.findAllEcoNewsTags(ENGLISH_LANGUAGE);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    void findAllWithoutTipsAndTricksTest() {
-        when(tagRepo.findAllTipsAndTricksTags()).thenReturn(Collections.singletonList(ModelUtils.getTag().getName()));
-        List<String> expected = Collections.singletonList(ModelUtils.getTag().getName());
-        assertEquals(expected, tagService.findAllTipsAndTricksTags());
+    void findAllTipsAndTricksTags() {
+        List<String> actual = Collections.singletonList("Новини");
+        when(tagRepo.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE)).thenReturn(actual);
+        List<String> expected = tagsService.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    void findAllByNamesTest() {
-        Tag tipsAndTricksTag = ModelUtils.getTag();
-        List<Tag> expected = Collections.singletonList(tipsAndTricksTag);
-        when(tagRepo.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())))
-            .thenReturn(expected);
-        List<TagVO> tagVOList = Collections.singletonList(new TagVO(1L, "tag", null, null));
-        when(modelMapper.map(expected, new TypeToken<List<TagVO>>() {
-        }.getType())).thenReturn(tagVOList);
-        assertEquals(tagVOList,
-            tagService.findTipsAndTricksTagsByNames(Collections.singletonList(tipsAndTricksTag.getName())));
+    void findAllHabitsTags() {
+        List<String> actual = Collections.singletonList("Новини");
+        when(tagRepo.findAllHabitsTags(UKRAINIAN_LANGUAGE)).thenReturn(actual);
+        List<String> expected = tagsService.findAllHabitsTags(UKRAINIAN_LANGUAGE);
+
+        assertEquals(expected, actual);
     }
 
     @Test
-    void findAllByNamesFailedTest() {
-        String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
-        when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames)).thenReturn(Collections.emptyList());
-        assertThrows(TagNotFoundException.class, () -> tagService.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames));
+    void isAllTipsAndTricksValidReturnFalse() {
+        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
+        when(tagRepo.findTagsByNames(tipsAndTricksTagsNames)).thenThrow(TagNotFoundException.class);
+        boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames);
+
+        assertFalse(expected);
     }
 
     @Test
-    void isAllValidTrueTest() {
-        String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
-        when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames))
-            .thenReturn(Collections.singletonList(ModelUtils.getTag()));
-        assertEquals(true, tagService.isAllTipsAndTricksValid(tipsAndTricksTagsNames));
+    void isValidNumOfUniqueTagsReturnTrue() {
+        List<String> tagNames = Arrays.asList("News", "Education");
+        boolean expected = tagsService.isValidNumOfUniqueTags(tagNames);
+
+        assertTrue(expected);
     }
 
     @Test
-    void isAllValidFalseTest() {
-        String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Collections.singletonList(name);
-        when(tagRepo.findTipsAndTricksTagsByNames(tipsAndTricksTagsNames))
-            .thenReturn(Collections.emptyList());
-        assertEquals(false, tagService.isAllTipsAndTricksValid(tipsAndTricksTagsNames));
+    void isValidNumOfUniqueTagsThrowsDuplicatedTagsException() {
+        List<String> tagNames = Arrays.asList("News", "News");
+
+        assertThrows(DuplicatedTagException.class,
+            () -> tagsService.isValidNumOfUniqueTags(tagNames));
     }
 
     @Test
-    void isValidNumOfUniqueTagsTrueTest() {
-        String name = ModelUtils.getTag().getName();
-        assertEquals(true, tagService.isValidNumOfUniqueTags(Collections.singletonList(name)));
-    }
+    void isValidNumOfUniqueTagsThrowsInvalidNumOfTagsException() {
+        List<String> tagNames = Arrays.asList("News", "Education", "Ads", "Events");
 
-    @Test
-    void isValidNumOfUniqueTagsDuplicatedTagExceptionTest() {
-        String name = ModelUtils.getTag().getName();
-        List<String> tipsAndTricksTagsNames = Arrays.asList(name, name);
-        assertThrows(DuplicatedTagException.class, () -> tagService.isValidNumOfUniqueTags(tipsAndTricksTagsNames));
-    }
-
-    @Test
-    void isValidNumOfUniqueTagsInvalidNumOfTagsException() {
-        List<String> tipsAndTricksTagsNames = Arrays.asList("name1", "name2", "name3", "name4");
-        assertThrows(InvalidNumOfTagsException.class, () -> tagService.isValidNumOfUniqueTags(tipsAndTricksTagsNames));
+        assertThrows(InvalidNumOfTagsException.class,
+            () -> tagsService.isValidNumOfUniqueTags(tagNames));
     }
 }

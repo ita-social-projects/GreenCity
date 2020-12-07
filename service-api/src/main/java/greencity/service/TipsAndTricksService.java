@@ -56,11 +56,12 @@ public interface TipsAndTricksService {
     /**
      * Method for getting tips & tricks by params.
      *
-     * @param page to search for.
-     * @param tags used to search for.
+     * @param page         to search for.
+     * @param tags         used to search for.
+     * @param languageCode language code.
      * @return PageableDto with {@link TipsAndTricksDtoResponse} instance.
      */
-    PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags);
+    PageableDto<TipsAndTricksDtoResponse> find(Pageable page, List<String> tags, String languageCode);
 
     /**
      * Method for getting the {@link TipsAndTricksDtoResponse} instance by its id.
