@@ -11,7 +11,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
     /**
      * Method that allow you to find list of {@link Tag}s by names and type.
      *
-     * @param names list of {@link String} values
+     * @param names   list of {@link String} values
      * @param tagType {@link String}
      * @return list of {@link Tag}
      */
