@@ -55,6 +55,42 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
 
+    private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
+        MultipartFile image, String email) {
+        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        if (tipsAndTricksDtoRequest.getImage() != null) {
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
+        }
+        if (image != null) {
+            toSave.setImagePath(fileService.upload(image).toString());
+        }
+        toSave.setTags(modelMapper.map(tagService
+            .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
+            new TypeToken<List<Tag>>() {
+            }.getType()));
+        toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+        toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+    }
+
+    private void enhanceWithNewManagementData(TipsAndTricks tipsAndTricks,
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
+        MultipartFile image, String email) {
+        tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
+        tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
+        if (tipsAndTricksDtoManagement.getImagePath() != null) {
+            image = fileService.convertToMultipartImage(tipsAndTricksDtoManagement.getImagePath());
+        }
+        if (image != null) {
+            tipsAndTricks.setImagePath(fileService.upload(image).toString());
+        }
+        tipsAndTricks
+            .setTags(modelMapper.map(tagService
+                .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -65,19 +101,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
         String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
-        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
-        if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
-        }
-        if (image != null) {
-            toSave.setImagePath(fileService.upload(image).toString());
-        }
-        toSave.setTags(modelMapper.map(tagService
-                .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
-            new TypeToken<List<Tag>>() {
-            }.getType()));
-        toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
-        toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, image, email);
         try {
             tipsAndTricksRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
@@ -122,20 +146,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                         .build())
                     .collect(Collectors.toList()))
             .build();
-        tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
-        tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
-        tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
-        if (tipsAndTricksDtoManagement.getImagePath() != null) {
-            image = fileService.convertToMultipartImage(tipsAndTricksDtoManagement.getImagePath());
-        }
-        if (image != null) {
-            tipsAndTricks.setImagePath(fileService.upload(image).toString());
-        }
-        tipsAndTricks
-            .setTags(modelMapper.map(tagService
-                    .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
-                new TypeToken<List<Tag>>() {
-                }.getType()));
+        enhanceWithNewManagementData(tipsAndTricks, tipsAndTricksDtoManagement,
+            image, email);
 
         tipsAndTricksRepo.save(tipsAndTricks);
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
@@ -158,7 +170,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         TipsAndTricks toUpdate = findTipsAndTricksById(tipsAndTricksDtoManagement.getId());
         toUpdate.setSource(tipsAndTricksDtoManagement.getSource());
         toUpdate.setTags(modelMapper.map(tagService
-                .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
+            .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {

@@ -41,12 +41,12 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtTool jwtTool;
-    private final UserService userService;
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
+    private final JwtTool jwtTool;
+    private final UserService userService;
 
     /**
      * Constructor.
@@ -152,6 +152,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
+                "/token",
                 "/socket/**")
             .permitAll()
             .antMatchers(HttpMethod.POST,
@@ -184,7 +185,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/isOnline/{userId}/",
                 "/user/{userId}/profileStatistics/",
                 "/user/userAndSixFriendsWithOnlineStatus",
-                "/user/userAndAllFriendsWithOnlineStatus")
+                "/user/userAndAllFriendsWithOnlineStatus",
+                "/user/{userId}/recommendedFriends/")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category",
