@@ -1,24 +1,32 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUserId;
+import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
-import greencity.constant.ValidationConstants;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
-import greencity.dto.goal.*;
+import greencity.dto.goal.BulkCustomGoalDto;
+import greencity.dto.goal.BulkSaveCustomGoalDto;
+import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
 import greencity.service.CustomGoalService;
 import greencity.service.HabitAssignService;
-import greencity.service.HabitStatisticService;
 import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.security.Principal;
+import java.util.List;
+import java.util.Locale;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,11 +39,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import java.security.Principal;
-import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/user")
@@ -465,6 +468,27 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getSixFriendsWithTheHighestRating(userId));
+    }
+
+    /**
+     * The method finds {@link RecommendedFriendDto} for the current userId.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Find recommended friends")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/recommendedFriends/")
+    @ApiPageable
+    public ResponseEntity<PageableDto<RecommendedFriendDto>> findUsersRecommendedFriends(
+        @ApiIgnore Pageable page,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.findUsersRecommendedFriends(page, userId));
     }
 
     /**

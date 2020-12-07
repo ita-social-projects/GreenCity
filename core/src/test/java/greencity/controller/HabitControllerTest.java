@@ -1,10 +1,13 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
-import static greencity.ModelUtils.getPrincipal;
 import greencity.service.HabitService;
-import java.security.Principal;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+
+import greencity.service.TagsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +32,11 @@ class HabitControllerTest {
     @Mock
     HabitService habitService;
 
+    @Mock
+    TagsService tagsService;
+
     @InjectMocks
     HabitController habitController;
-
-    private Principal principal = getPrincipal();
 
     private static final String habitLink = "/habit";
 
@@ -56,5 +60,32 @@ class HabitControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllHabitsByLanguageCode(pageable, locale.getLanguage());
+    }
+
+    @Test
+    void getAllByTagsAndLanguageCode() throws Exception {
+        int pageNumber = 1;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Locale locale = new Locale("en");
+        List<String> tags = Arrays.asList("News", "Education");
+
+        mockMvc.perform(get(habitLink + "/tags/search?page=" + pageNumber +
+            "&lang=" + locale.getLanguage() + "&tags=News,Education")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage());
+    }
+
+    @Test
+    void findAllHabitsTags() throws Exception {
+        Locale locale = new Locale("en");
+        Gson gson = new Gson();
+
+        mockMvc.perform(get(habitLink + "/tags")
+            .content(gson.toJson(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(tagsService).findAllHabitsTags(locale.getLanguage());
     }
 }

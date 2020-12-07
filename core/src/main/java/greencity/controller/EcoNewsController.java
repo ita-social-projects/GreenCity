@@ -1,9 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidEcoNewsDtoRequest;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
@@ -22,6 +19,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -224,7 +222,8 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Find all eco news tags")
     @GetMapping("/tags/all")
-    public ResponseEntity<List<String>> findAllEcoNewsTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags());
+    @ApiLocale
+    public ResponseEntity<List<String>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
     }
 }

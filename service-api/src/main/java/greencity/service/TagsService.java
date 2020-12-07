@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.tag.TagVO;
+import greencity.enums.TagType;
 
 import java.util.List;
 
@@ -12,42 +13,35 @@ import java.util.List;
  */
 public interface TagsService {
     /**
-     * Method that allow you to find list of EcoNews Tags by names.
+     * Method that allow you to find list of Tags by names.
      *
-     * @param ecoNewsTagNames list of {@link String} values
+     * @param tags list of {@link String} values
      * @return list of Tags
      */
-    List<TagVO> findEcoNewsTagsByNames(List<String> ecoNewsTagNames);
-
-    /**
-     * Method that allow you to find list of Tips & Tricks Tags by names.
-     *
-     * @param tipsAndTricksTagNames list of {@link String} values
-     * @return list of Tags
-     */
-    List<TagVO> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames);
+    List<TagVO> findTagsByNamesAndType(List<String> tags, TagType tagType);
 
     /**
      * Method that allow you to find all EcoNews Tags.
      *
      * @return list of Tag's names
      */
-    List<String> findAllEcoNewsTags();
+    List<String> findAllEcoNewsTags(String languageCode);
 
     /**
      * Method that allow you to find all Tips & Tricks Tags.
      *
      * @return list of Tag's names
      */
-    List<String> findAllTipsAndTricksTags();
+    List<String> findAllTipsAndTricksTags(String languageCode);
 
     /**
      * Method that finds all Habits {@link Tag}'s.
      *
+     * @param languageCode {@link String}
      * @return list of {@link Tag}'s names
      * @author Markiyan Derevetskyi
      */
-    List<String> findAllHabitsTags();
+    List<String> findAllHabitsTags(String languageCode);
 
     /**
      * Method that checks if all Tags are unique.
@@ -55,7 +49,7 @@ public interface TagsService {
      * @param tipsAndTricksTagNames list of {@link String} values
      * @return {@link Boolean}
      */
-    boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames);
+    boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type);
 
     /**
      * Method that checks if there is allowed amount (less than 3) of unique Tags .

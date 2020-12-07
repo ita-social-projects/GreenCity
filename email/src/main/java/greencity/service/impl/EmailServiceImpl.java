@@ -191,9 +191,9 @@ public class EmailServiceImpl implements EmailService {
      */
     public void changeLocale(String language) {
         Locale rus = new Locale("ru", "RU");
-        Locale uk = new Locale("uk", "UA");
-        if (language.equals("uk")) {
-            Locale.setDefault(uk);
+        Locale ua = new Locale("uk", "UA");
+        if (language.equals("ua")) {
+            Locale.setDefault(ua);
         }
         if (language.equals("ru")) {
             Locale.setDefault(rus);

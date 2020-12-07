@@ -39,19 +39,6 @@ class EcoNewsRepoTest {
     }
 
     @Test
-    void findTest() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        List<String> tagsList = Collections.singletonList("initiatives");
-        Page<EcoNews> ecoNewsPage = ecoNewsRepo.find(pageRequest, tagsList);
-
-        Long firstActual = ecoNewsPage.getContent().get(0).getId();
-        Long secondActual = ecoNewsPage.getContent().get(1).getId();
-
-        assertEquals(4L, firstActual);
-        assertEquals(2L, secondActual);
-    }
-
-    @Test
     void findAllByOrderByCreationDateDescTest() {
         PageRequest pageRequest = PageRequest.of(0, 11);
         Page<EcoNews> ecoNewsPage = ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest);

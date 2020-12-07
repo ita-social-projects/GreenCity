@@ -3,9 +3,10 @@ package greencity.mapping;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.Tag;
 import greencity.entity.User;
 import java.util.stream.Collectors;
+
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +22,8 @@ public class SearchNewsDtoMapper extends AbstractConverter<EcoNews, SearchNewsDt
             .author(new EcoNewsAuthorDto(author.getId(),
                 author.getName()))
             .creationDate(ecoNews.getCreationDate())
-            .tags(ecoNews.getTags()
-                .stream()
-                .map(Tag::getName)
-                .collect(Collectors.toList()))
+            .tags(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
 }

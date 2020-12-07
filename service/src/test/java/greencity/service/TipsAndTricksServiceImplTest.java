@@ -4,7 +4,9 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.search.SearchTipsAndTricksDto;
+import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
@@ -13,6 +15,8 @@ import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
+import greencity.entity.localization.TagTranslation;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.TipsAndTricksRepo;
@@ -64,14 +68,23 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
     private User user = ModelUtils.getUser();
     private UserVO userVO = ModelUtils.getUserVO();
-    private TagVO tagVO = new TagVO(1L, "News", null, null);
+    private List<TagTranslationVO> tagTranslationVOList = Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+        .languageVO(LanguageVO.builder().id(1L).code("ua").build())
+        .build(),
+        TagTranslationVO.builder().id(2L).name("News")
+            .languageVO(LanguageVO.builder().id(2L).code("en").build())
+            .build(),
+        TagTranslationVO.builder().id(3L).name("Новины")
+            .languageVO(LanguageVO.builder().id(1L).code("ru").build())
+            .build());
+    private TagVO tagVO = new TagVO(1L, TagType.TIPS_AND_TRICKS, tagTranslationVOList, null, null, null);
 
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -99,7 +112,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
@@ -119,7 +132,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
 
@@ -144,28 +157,6 @@ class TipsAndTricksServiceImplTest {
         PageableDto<TipsAndTricksDtoResponse> actual = tipsAndTricksService.findAll(pageRequest);
 
         assertEquals(pageableDto, actual);
-    }
-
-    @Test
-    void findTest() {
-        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
-        List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
-        PageableDto<TipsAndTricksDtoResponse> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-
-        when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo.find("en", pageRequest, Collections.singletonList(ModelUtils.getTag().getName())))
-            .thenReturn(page);
-        when((tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageRequest)))
-            .thenReturn(page);
-
-        PageableDto<TipsAndTricksDtoResponse> actual =
-            tipsAndTricksService.find(pageRequest, Collections.singletonList(ModelUtils.getTag().getName()));
-
-        assertEquals(pageableDto, actual);
-        assertEquals(pageableDto, tipsAndTricksService.find(pageRequest, null));
     }
 
     @Test
@@ -232,12 +223,13 @@ class TipsAndTricksServiceImplTest {
             .authorName("orest@gmail.com")
             .tags(tipsAndTricks.getTags()
                 .stream()
-                .map(Tag::getName)
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .build();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTipsAndTricksTagsByNames(anyList()))
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));
@@ -340,5 +332,4 @@ class TipsAndTricksServiceImplTest {
         assertEquals(initial, tipsAndTricksComment);
 
     }
-
 }

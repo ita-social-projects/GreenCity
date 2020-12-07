@@ -4,7 +4,11 @@ import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.NamedNativeQuery;
 import org.springframework.data.domain.Page;
@@ -15,11 +19,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides an interface to manage {@link User} entity.
@@ -249,4 +248,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         return findAllRegistrationMonths().stream().collect(
             Collectors.toMap(RegistrationStatisticsDtoResponse::getMonth, RegistrationStatisticsDtoResponse::getCount));
     }
+
+    /**
+     * Method that finds user's recommended friends.
+     *
+     * @param pageable {@link Pageable}.
+     * @param userId   {@link Long} -current user's id.
+     * @return {@link Page} of {@link User} instances.
+     */
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_recommended_friends ( :userId ) ")
+    Page<User> findUsersRecommendedFriends(Pageable pageable, Long userId);
 }

@@ -3,6 +3,9 @@ package greencity.entity;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
+
+import greencity.entity.localization.TagTranslation;
+import greencity.enums.TagType;
 import lombok.*;
 
 @Entity
@@ -18,8 +21,12 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 20)
-    private String name;
+    @Column(name = "type", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private TagType type;
+
+    @OneToMany(mappedBy = "tag")
+    private List<TagTranslation> tagTranslations;
 
     @ManyToMany(mappedBy = "tags")
     private List<EcoNews> ecoNews;

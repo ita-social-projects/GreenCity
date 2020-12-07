@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.constant.ValidationConstants;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
 import greencity.exception.exceptions.TagNotFoundException;
@@ -27,28 +28,11 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<TagVO> findEcoNewsTagsByNames(List<String> ecoNewsTagNames) {
-        List<String> lowerCaseTagNames = ecoNewsTagNames.stream()
+    public List<TagVO> findTagsByNamesAndType(List<String> tagNames, TagType tagType) {
+        List<String> lowerCaseTagNames = tagNames.stream()
             .map(String::toLowerCase)
             .collect(Collectors.toList());
-        List<Tag> tags = tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames);
-        if (tags.isEmpty()) {
-            throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
-        }
-        return modelMapper.map(tagRepo.findEcoNewsTagsByNames(lowerCaseTagNames),
-            new TypeToken<List<TagVO>>() {
-            }.getType());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TagVO> findTipsAndTricksTagsByNames(List<String> tipsAndTricksTagNames) {
-        List<String> lowerCaseTagNames = tipsAndTricksTagNames.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        List<Tag> tags = tagRepo.findTipsAndTricksTagsByNames(lowerCaseTagNames);
+        List<Tag> tags = tagRepo.findTagsByNamesAndType(lowerCaseTagNames, tagType);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
         }
@@ -60,30 +44,30 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllEcoNewsTags() {
-        return tagRepo.findAllEcoNewsTags();
+    public List<String> findAllEcoNewsTags(String languageCode) {
+        return tagRepo.findAllEcoNewsTags(languageCode);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllTipsAndTricksTags() {
-        return tagRepo.findAllTipsAndTricksTags();
+    public List<String> findAllTipsAndTricksTags(String languageCode) {
+        return tagRepo.findAllTipsAndTricksTags(languageCode);
     }
 
     @Override
-    public List<String> findAllHabitsTags() {
-        return tagRepo.findAllHabitsTags();
+    public List<String> findAllHabitsTags(String languageCode) {
+        return tagRepo.findAllHabitsTags(languageCode);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames) {
+    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type) {
         try {
-            findTipsAndTricksTagsByNames(tipsAndTricksTagNames);
+            findTagsByNamesAndType(tipsAndTricksTagNames, type);
         } catch (TagNotFoundException e) {
             return false;
         }

@@ -100,7 +100,7 @@ public class HabitController {
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @param tags     {@link List} of {@link String}
-     * @return Pageable of {@link HabitTranslationDto}.
+     * @return Pageable of {@link HabitDto}.
      */
     @ApiOperation(value = "Find all habits by tags and language code.")
     @GetMapping("/tags/search")
@@ -121,7 +121,8 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all habits tags")
     @GetMapping("/tags")
-    public ResponseEntity<List<String>> findAllHabitsTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags());
+    @ApiLocale
+    public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
     }
 }

@@ -17,9 +17,11 @@ import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -32,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -88,7 +91,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(addEcoNewsDtoRequest.getTags()),
+        List<TagVO> tagVOS = tagService.findTagsByNamesAndType(
+            addEcoNewsDtoRequest.getTags(), TagType.ECO_NEWS);
+
+        toSave.setTags(modelMapper.map(tagVOS,
             new TypeToken<List<Tag>>() {
             }.getType()));
         try {
@@ -145,20 +151,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public PageableAdvancedDto<EcoNewsDto> findAll(Pageable page) {
         Page<EcoNews> pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
-        List<EcoNewsDto> ecoNewsDtos = pages
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages(),
-            pages.getNumber(),
-            pages.hasPrevious(),
-            pages.hasNext(),
-            pages.isFirst(),
-            pages.isLast());
+        return buildPageableAdvancedDto(pages);
     }
 
     /**
@@ -168,25 +161,27 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags) {
-        List<String> lowerCaseTags = tags.stream()
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-        Page<EcoNews> pages = ecoNewsRepo.find(page, lowerCaseTags);
+        List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
+        Page<EcoNews> pages = ecoNewsRepo.findByTags(page, lowerCaseTags);
 
-        List<EcoNewsDto> ecoNewsDtos = pages.stream()
+        return buildPageableAdvancedDto(pages);
+    }
+
+    private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
+        List<EcoNewsDto> ecoNewsDtos = ecoNewsPage.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
             ecoNewsDtos,
-            pages.getTotalElements(),
-            pages.getPageable().getPageNumber(),
-            pages.getTotalPages(),
-            pages.getNumber(),
-            pages.hasPrevious(),
-            pages.hasNext(),
-            pages.isFirst(),
-            pages.isLast());
+            ecoNewsPage.getTotalElements(),
+            ecoNewsPage.getPageable().getPageNumber(),
+            ecoNewsPage.getTotalPages(),
+            ecoNewsPage.getNumber(),
+            ecoNewsPage.hasPrevious(),
+            ecoNewsPage.hasNext(),
+            ecoNewsPage.isFirst(),
+            ecoNewsPage.isLast());
     }
 
     /**
@@ -209,7 +204,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoById(Long id) {
-        EcoNews ecoNews = modelMapper.map(findById(id), EcoNews.class);
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
 
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
@@ -319,19 +315,37 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public PageableAdvancedDto<EcoNewsDto> searchEcoNewsBy(Pageable paging, String query) {
         Page<EcoNews> page = ecoNewsRepo.searchEcoNewsBy(paging, query);
-        List<EcoNewsDto> ecoNews = page.stream()
-            .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNews,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return buildPageableAdvancedDto(page);
+    }
+
+    private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
+        MultipartFile image) {
+        toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
+        toUpdate.setText(ecoNewsDtoManagement.getText());
+        toUpdate.setTags(modelMapper
+            .map(tagService.findTagsByNamesAndType(ecoNewsDtoManagement.getTags(), TagType.ECO_NEWS),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
+    }
+
+    private void enhanceWithNewData(EcoNews toUpdate, UpdateEcoNewsDto updateEcoNewsDto,
+        MultipartFile image) {
+        toUpdate.setTitle(updateEcoNewsDto.getTitle());
+        toUpdate.setText(updateEcoNewsDto.getText());
+        toUpdate.setSource(updateEcoNewsDto.getSource());
+        toUpdate.setTags(modelMapper.map(tagService
+            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+            new TypeToken<List<Tag>>() {
+            }.getType()));
+        if (updateEcoNewsDto.getImage() != null) {
+            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
+        }
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
     }
 
     /**
@@ -341,14 +355,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile image) {
         EcoNews toUpdate = modelMapper.map(findById(ecoNewsDtoManagement.getId()), EcoNews.class);
-        toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
-        toUpdate.setText(ecoNewsDtoManagement.getText());
-        toUpdate.setTags(modelMapper
-            .map(tagService.findTipsAndTricksTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
-            }.getType()));
-        if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
-        }
+        enhanceWithNewManagementData(toUpdate, ecoNewsDtoManagement, image);
+
         ecoNewsRepo.save(toUpdate);
     }
 
@@ -362,18 +370,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        toUpdate.setTitle(updateEcoNewsDto.getTitle());
-        toUpdate.setText(updateEcoNewsDto.getText());
-        toUpdate.setSource(updateEcoNewsDto.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findEcoNewsTagsByNames(updateEcoNewsDto.getTags()),
-            new TypeToken<List<Tag>>() {
-            }.getType()));
-        if (updateEcoNewsDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
-        }
-        if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
-        }
+        enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
+
         return modelMapper.map(ecoNewsRepo.save(toUpdate), EcoNewsDto.class);
     }
 
@@ -381,19 +379,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
-        List<EcoNewsDto> ecoNews = page.stream()
-            .map(ecoNew -> modelMapper.map(ecoNew, EcoNewsDto.class))
-            .collect(Collectors.toList());
-        return new PageableAdvancedDto<>(
-            ecoNews,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages(),
-            page.getNumber(),
-            page.hasPrevious(),
-            page.hasNext(),
-            page.isFirst(),
-            page.isLast());
+        return buildPageableAdvancedDto(page);
     }
 
     /**

@@ -65,4 +65,7 @@
     <include file="db/changelog/logs/ch-change-habitAssign-Khonko.xml"/>
     <include file="db/changelog/logs/ch-table-habits-tags-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-user-actions-Mamchuk.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-name-from-tag-Derevetskyi.xml"/>
+    <include file="db/changelog/logs/ch-table-tag-translations-Derevetskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-type-column-to-tags-Derevetskyi.xml"/>
 </databaseChangeLog>
