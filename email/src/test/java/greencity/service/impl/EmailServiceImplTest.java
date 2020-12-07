@@ -11,6 +11,8 @@ import javax.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -65,5 +67,32 @@ class EmailServiceImplTest {
             Collections.singletonList(placeAuthorDto), categoriesWithPlacesTest, "DAILY");
 
         verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendVerificationEmailLangEn() {
+        service.sendVerificationEmail(1L, "Test", "test@gmail.com", "token", "en");
+
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendVerificationEmailLangUa() {
+        service.sendVerificationEmail(1L, "Test", "test@gmail.com", "token", "ua");
+
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendVerificationEmailLangRu() {
+        service.sendVerificationEmail(1L, "Test", "test@gmail.com", "token", "ru");
+
+        verify(javaMailSender).createMimeMessage();
+    }
+
+    @Test
+    void sendVerificationEmailIllegalStateException() {
+        assertThrows(IllegalStateException.class,
+            () -> service.sendVerificationEmail(1L, "Test", "test@gmail.com", "token", "enuaru"));
     }
 }
