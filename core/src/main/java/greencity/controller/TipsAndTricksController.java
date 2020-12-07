@@ -1,14 +1,12 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidTipsAndTricksDtoRequest;
+import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.entity.Tag;
-import greencity.entity.TipsAndTricks;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.service.TagsService;
 import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
@@ -17,20 +15,15 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -43,9 +36,9 @@ public class TipsAndTricksController {
     private final TagsService tagService;
 
     /**
-     * Method for creating {@link TipsAndTricks}.
+     * Method for creating {@link TipsAndTricksVO}.
      *
-     * @param tipsAndTricksDtoRequest - dto for {@link TipsAndTricks} entity.
+     * @param tipsAndTricksDtoRequest - dto for {@link TipsAndTricksVO} entity.
      * @return dto {@link TipsAndTricksDtoResponse} instance.
      */
 
@@ -58,11 +51,9 @@ public class TipsAndTricksController {
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
-        @ApiParam(value = "Add tips & tricks request", required = true)
-        @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
-        @ApiParam(value = "Tips & tricks image")
-        @ImageValidation
-        @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = SwaggerExampleModel.ADD_TIPS_AND_TRICKS_REQUEST,
+            required = true) @RequestPart @ValidTipsAndTricksDtoRequest TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
+        @ApiParam(value = "Tips & tricks image") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             tipsAndTricksService.save(tipsAndTricksDtoRequest, image, principal.getName()));
@@ -102,10 +93,10 @@ public class TipsAndTricksController {
     }
 
     /**
-     * Method for deleting {@link TipsAndTricks} by its id.
+     * Method for deleting {@link TipsAndTricksVO} by its id.
      *
-     * @param id {@link TipsAndTricks} which will be deleted.
-     * @return id of deleted {@link TipsAndTricks}.
+     * @param id {@link TipsAndTricksVO} which will be deleted.
+     * @return id of deleted {@link TipsAndTricksVO}.
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {
@@ -132,23 +123,24 @@ public class TipsAndTricksController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("/tags")
-    @ApiPageable
+    @ApiPageableWithLocale
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> getTipsAndTricks(
-        @ApiIgnore Pageable page,
-        @ApiParam(value = "Tags to filter (if no tags, get all)")
-        @RequestParam(required = false) List<String> tags
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.find(page, tags));
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam(required = false) List<String> tags,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tipsAndTricksService.find(pageable, tags, locale.getLanguage()));
     }
 
     /**
-     * The method which returns all Tips & Tricks {@link Tag}s.
+     * The method which returns all Tips & Tricks Tags.
      *
      * @return list of {@link String} (tag's names).
      */
     @ApiOperation(value = "Find all tips & tricks tags")
     @GetMapping("/tags/all")
-    public ResponseEntity<List<String>> findAllTipsAndTricksTags() {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags());
+    @ApiPageableWithLocale
+    public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
     }
 }

@@ -1,0 +1,14 @@
+{
+  "os": "linux",
+  "jdk": [
+    "openjdk11"
+  ],
+  "dist": "trusty",
+  "group": "stable",
+  "script": [
+    "git fetch --unshallow",
+    "mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports"
+  ],
+  ".result": "configured",
+  "language": "java"
+}

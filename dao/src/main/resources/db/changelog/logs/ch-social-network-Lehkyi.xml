@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Lehkyi-15" author="Mykola Lehkyi">
+        <createTable tableName="social_network_images">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="image_path" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="host_path" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+   <changeSet id="Lehkyi-16" author="Mykola Lehkyi">
+       <createTable tableName="social_networks">
+           <column name="id" autoIncrement="true" type="BIGINT">
+               <constraints primaryKey="true"/>
+           </column>
+
+           <column name="user_id" type="BIGINT">
+               <constraints nullable="false"/>
+           </column>
+
+           <column name="social_network_url" type="varchar(500)">
+               <constraints nullable="false"/>
+           </column>
+
+           <column name="social_network_image_id" type="BIGINT">
+               <constraints nullable="false"/>
+           </column>
+       </createTable>
+   </changeSet>
+
+    <changeSet id="Lehkyi-17" author="Mykola Lehkyi">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="social_networks"
+                                 constraintName="FK_user_social_network"
+                                 onDelete="CASCADE"
+                                 onUpdate="CASCADE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+        />
+
+        <addForeignKeyConstraint baseColumnNames="social_network_image_id" baseTableName="social_networks"
+                                 constraintName="FK_social_network_social_network_image"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="social_network_images"
+        />
+    </changeSet>
+
+    <changeSet id="Lehkyi-18" author="Mykola Lehkyi">
+        <preConditions onFail="MARK_RAN"><tableExists tableName="user_social_networks"/></preConditions>
+        <dropTable cascadeConstraints="true" tableName="user_social_networks"/>
+    </changeSet>
+
+    <changeSet id="Lehkyi-19" author="Mykola Lehkyi">
+        <insert tableName="social_network_images">
+            <column name="image_path" value="img/default_social_network_icon.png"/>
+            <column name="host_path" value="img/default_social_network_icon.png"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

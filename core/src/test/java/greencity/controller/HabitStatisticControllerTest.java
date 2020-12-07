@@ -1,112 +1,96 @@
 package greencity.controller;
 
+import com.google.gson.Gson;
+import static greencity.ModelUtils.getPrincipal;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
 import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import static greencity.enums.HabitRate.GOOD;
 import greencity.service.HabitStatisticService;
-import java.util.Collections;
+import java.security.Principal;
+import java.time.ZonedDateTime;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(MockitoExtension.class)
-public class HabitStatisticControllerTest {
-    private static final String habitStatisticLink = "/habit/statistic/";
+class HabitStatisticControllerTest {
+
     private MockMvc mockMvc;
 
-    @InjectMocks
-    private HabitStatisticController habitStatisticController;
-
     @Mock
-    private HabitStatisticService habitStatisticService;
+    HabitStatisticService habitStatisticService;
+
+    @InjectMocks
+    HabitStatisticController habitStatisticController;
+
+    private Principal principal = getPrincipal();
+
+    private static final String habitLink = "/habit/statistic";
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitStatisticController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
     }
 
     @Test
-    public void getTodayStatisticsForAllHabitItemsStatusCodeTest() throws Exception {
-        when(habitStatisticService.getTodayStatisticsForAllHabitItems(anyString()))
-            .thenReturn(Collections.singletonList((new HabitItemsAmountStatisticDto())));
-
-        mockMvc.perform(get(habitStatisticLink + "todayStatisticsForAllHabitItems"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void findAllByHabitIdTest() throws Exception {
-        when(habitStatisticService.findAllByHabitId(anyLong()))
-            .thenReturn(Collections.singletonList((new HabitStatisticDto())));
-
-        mockMvc.perform(get(habitStatisticLink + "/{habitId}", 1))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    public void saveTest() throws Exception {
-        when(habitStatisticService.save(any(AddHabitStatisticDto.class)))
-            .thenReturn(new AddHabitStatisticDto());
-
-        mockMvc.perform(post(habitStatisticLink)
+    void save() throws Exception {
+        AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
+        addHabitStatisticDto.setAmountOfItems(1);
+        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
+        addHabitStatisticDto.setHabitRate(GOOD);
+        mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content("{\n" +
-                "\"amountOfItems\": 0,\n" +
-                "\"createdOn\": \"2020-01-01T00:00:00.000Z\",\n" +
-                "\"habitId\": 0,\n" +
-                "\"habitRate\": \"DEFAULT\",\n" +
-                "\"id\": 0\n}")
-            .accept(MediaType.APPLICATION_JSON)
+                "  \"amountOfItems\": 1,\n" +
+                "  \"createDate\": \"2020-10-09T16:49:01.020Z\",\n" +
+                "  \"habitRate\": \"GOOD\"\n" +
+                "}")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
-
-        verify(habitStatisticService, times(1)).save(any(AddHabitStatisticDto.class));
+        verify(habitStatisticService).saveByHabitIdAndUserId(1L, null, addHabitStatisticDto);
     }
 
-
     @Test
-    public void saveBadRequestTest() throws Exception {
-        mockMvc.perform(post(habitStatisticLink)
-            .content("{}")
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-
-    @Test
-    public void updateTest() throws Exception {
-        when(habitStatisticService.update(anyLong(), any(UpdateHabitStatisticDto.class)))
-            .thenReturn(new UpdateHabitStatisticDto());
-
-        mockMvc.perform(patch(habitStatisticLink + "/{habitStatisticId}", 1)
-            .content("{\n" +
-                "  \"amountOfItems\": 0,\n" +
-                "  \"habitRate\": \"DEFAULT\",\n" +
-                "  \"id\": 0\n" +
-                "}")
-            .accept(MediaType.APPLICATION_JSON)
+    void updateStatistic() throws Exception {
+        UpdateHabitStatisticDto habitStatisticForUpdateDto = new UpdateHabitStatisticDto();
+        habitStatisticForUpdateDto.setAmountOfItems(1);
+        habitStatisticForUpdateDto.setHabitRate(GOOD);
+        Gson gson = new Gson();
+        String json = gson.toJson(habitStatisticForUpdateDto);
+        mockMvc.perform(put(habitLink + "/{id}", 1)
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+        verify(habitStatisticService).update(1L, 1L, habitStatisticForUpdateDto);
+    }
 
-        verify(habitStatisticService, times(1)).update(anyLong(), any(UpdateHabitStatisticDto.class));
+    @Test
+    void findAllByHabitId() throws Exception {
+        mockMvc.perform(get(habitLink + "/{habitId}", 1))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).findAllStatsByHabitId(1L);
+    }
+
+    @Test
+    void getTodayStatisticsForAllHabitItems() throws Exception {
+        Locale locale = new Locale("en");
+        Gson gson = new Gson();
+        String json = gson.toJson(locale);
+        mockMvc.perform(get(habitLink + "/todayStatisticsForAllHabitItems")
+            .content(json))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).getTodayStatisticsForAllHabitItems(locale.getLanguage());
     }
 }

@@ -2,21 +2,13 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
+import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.service.EmailService;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executor;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,6 +18,17 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 /**
  * {@inheritDoc}
@@ -40,18 +43,19 @@ public class EmailServiceImpl implements EmailService {
     private final String ecoNewsLink;
     private final String serverLink;
     private final String senderEmailAddress;
+    private static final String PARAM_USER_ID = "&user_id=";
 
     /**
      * Constructor.
      */
     @Autowired
     public EmailServiceImpl(JavaMailSender javaMailSender,
-                            ITemplateEngine templateEngine,
-                            @Qualifier("sendEmailExecutor") Executor executor,
-                            @Value("${client.address}") String clientLink,
-                            @Value("${econews.address}") String ecoNewsLink,
-                            @Value("${address}") String serverLink,
-                            @Value("${sender.email.address}") String senderEmailAddress) {
+        ITemplateEngine templateEngine,
+        @Qualifier("sendEmailExecutor") Executor executor,
+        @Value("${client.address}") String clientLink,
+        @Value("${econews.address}") String ecoNewsLink,
+        @Value("${address}") String serverLink,
+        @Value("${sender.email.address}") String senderEmailAddress) {
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
         this.executor = executor;
@@ -68,7 +72,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendChangePlaceStatusEmail(String authorName, String placeName,
-                                           String placeStatus, String authorEmail) {
+        String placeStatus, String authorEmail) {
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
@@ -87,8 +91,8 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendAddedNewPlacesReportEmail(List<PlaceAuthorDto> subscribers,
-                                              Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
-                                              String notification) {
+        Map<CategoryDto, List<PlaceNotificationDto>> categoriesWithPlaces,
+        String notification) {
         log.info(LogMessage.IN_SEND_ADDED_NEW_PLACES_REPORT_EMAIL, null, null, notification);
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
@@ -109,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void sendNewNewsForSubscriber(List<NewsSubscriberResponseDto> subscribers,
-                                         AddEcoNewsDtoResponse newsDto) {
+        AddEcoNewsDtoResponse newsDto) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.ECO_NEWS_LINK, ecoNewsLink);
         model.put(EmailConstants.NEWS_RESULT, newsDto);
@@ -132,33 +136,71 @@ public class EmailServiceImpl implements EmailService {
      * @author Volodymyr Turko
      */
     @Override
-    public void sendVerificationEmail(Long id, String name, String email, String token) {
+    public void sendVerificationEmail(Long id, String name, String email, String token, String language) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
         model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
-            + token + "&user_id=" + id);
+            + token + PARAM_USER_ID + id);
+        changeLocale(language);
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
     }
 
     /**
-     * Sends password recovery email using separated user parameters.
+     * {@inheritDoc}
      *
-     * @param userId       the user id is used for recovery link building.
-     * @param userName     username is used in email model constants.
-     * @param userEmail    user email which will be used for sending recovery letter.
-     * @param token        password recovery token.
+     * @author Vasyl Zhovnir
      */
     @Override
-    public void sendRestoreEmail(Long userId, String userName, String userEmail, String token) {
+    public void sendApprovalEmail(Long userId, String name, String email, String token) {
+        Map<String, Object> model = new HashMap<>();
+        model.put(EmailConstants.CLIENT_LINK, clientLink);
+        model.put(EmailConstants.USER_NAME, name);
+        model.put(EmailConstants.APPROVE_REGISTRATION, clientLink + "/#/auth/restore?" + "token=" + token
+            + PARAM_USER_ID + userId);
+        String template = createEmailTemplate(model, EmailConstants.USER_APPROVAL_EMAIL_PAGE);
+        sendEmail(email, EmailConstants.APPROVE_REGISTRATION_SUBJECT, template);
+    }
+
+    /**
+     * Sends password recovery email using separated user parameters.
+     *
+     * @param userId    the user id is used for recovery link building.
+     * @param userName  username is used in email model constants.
+     * @param userEmail user email which will be used for sending recovery letter.
+     * @param token     password recovery token.
+     */
+    @Override
+    public void sendRestoreEmail(Long userId, String userName, String userEmail, String token, String language) {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, userName);
         model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
-            + "&user_id=" + userId);
+            + PARAM_USER_ID + userId);
+        changeLocale(language);
+        log.info(Locale.getDefault().toString());
         String template = createEmailTemplate(model, EmailConstants.RESTORE_EMAIL_PAGE);
         sendEmail(userEmail, EmailConstants.CONFIRM_RESTORING_PASS, template);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param language language which will be used for sending recovery letter.
+     */
+    public void changeLocale(String language) {
+        Locale rus = new Locale("ru", "RU");
+        Locale ua = new Locale("uk", "UA");
+        if (language.equals("ua")) {
+            Locale.setDefault(ua);
+        }
+        if (language.equals("ru")) {
+            Locale.setDefault(rus);
+        }
+        if (language.equals("en")) {
+            Locale.setDefault(Locale.ENGLISH);
+        }
     }
 
     private String createEmailTemplate(Map<String, Object> vars, String templateName) {

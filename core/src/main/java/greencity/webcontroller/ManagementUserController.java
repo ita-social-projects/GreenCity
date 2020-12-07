@@ -1,8 +1,14 @@
 package greencity.webcontroller;
 
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.genericresponse.GenericResponseDto;
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
-import greencity.entity.User;
+import greencity.dto.user.UserVO;
+import greencity.security.service.OwnSecurityService;
 import greencity.service.UserService;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -15,88 +21,129 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @Controller
 @AllArgsConstructor
-@RequestMapping("/management")
+@RequestMapping("/management/users")
 public class ManagementUserController {
-    private UserService userService;
-    private ModelMapper modelMapper;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
+    private final OwnSecurityService ownSecurityService;
 
     /**
-     * Method that returns management page with all {@link User}.
+     * Method that returns management page with all {@link UserVO}.
      *
-     * @param model Model that will be configured and returned to user.
-     * @param page  Page index you want to retrieve.
-     * @param size  Number of records per page.
+     * @param query    Query for searching related data
+     * @param model    Model that will be configured and returned to user.
+     * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      * @author Vasyl Zhovnir
      */
-    @GetMapping("/users")
-    public String getAllUsers(Model model,
-                              @RequestParam(defaultValue = "0") int page,
-                              @RequestParam(defaultValue = "5") int size) {
-        Pageable paging = PageRequest.of(page, size, Sort.by("id").descending());
-        model.addAttribute("users", userService.findUserForManagementByPage(paging));
-        model.addAttribute("currentPage", page);
-        return "core/management_users_list";
+    @GetMapping
+    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
+        Model model) {
+        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+        PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
+            ? userService.findUserForManagementByPage(paging)
+            : userService.searchBy(paging, query);
+        model.addAttribute("users", pageableDto);
+        return "core/management_user";
     }
 
     /**
-     * Method that shows form for updating {@link User}.
+     * Register new user from admin panel.
      *
-     * @param id    {@link User}'s id.
-     * @param model Model that will be configured and returned to user.
-     * @return View template path {@link String}.
+     * @param userDto dto with info for registering user.
+     * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @GetMapping("/updateUserForm")
-    public String showForm(@RequestParam Long id, Model model) {
-        model.addAttribute("user", modelMapper.map(userService.findById(id), UserManagementDto.class));
-        return "core/management_user_update_form";
+    @PostMapping("/register")
+    @ResponseBody
+    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            ownSecurityService.managementRegisterUser(userDto);
+        }
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
      * Method that updates user data.
      *
      * @param userDto dto with updated fields.
-     * @return View template path {@link String}.
+     * @return {@link GenericResponseDto}
      * @author Vasyl Zhovnir
      */
-    @PostMapping("/update")
-    public String updateUser(@Valid @ModelAttribute("user") UserManagementDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "core/management_user_update_form";
+    @PutMapping
+    @ResponseBody
+    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
+        if (!bindingResult.hasErrors()) {
+            userService.updateUser(userDto);
         }
-        userService.updateUser(userDto);
-        return "redirect:/management/users";
+        return buildGenericResponseDto(bindingResult);
     }
 
     /**
-     * Method for finding {@link User} by id.
+     * Method for finding {@link UserVO} by id.
      *
-     * @param id of the searched {@link User}.
-     * @return dto {@link UserManagementDto} of the {@link User}.
+     * @param id of the searched {@link UserVO}.
+     * @return dto {@link UserManagementDto} of the {@link UserVO}.
      * @author Vasyl Zhovnir
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserManagementDto findById(Long id) {
-        User byId = userService.findById(id);
+    public UserManagementDto findById(@RequestParam("id") Long id) {
+        UserVO byId = userService.findById(id);
         return modelMapper.map(byId, UserManagementDto.class);
     }
 
     /**
-     * Method for setting {@link User}'s status to DEACTIVATED,
-     * so the user will not be able to log in into the system.
+     * Method that finds user's friends {@link UserManagementDto} by given id.
      *
-     * @param id of the searched {@link User}.
+     * @param id {@link Long} - user's id.
+     * @return {@link List} of {@link UserManagementDto} instances.
+     * @author Markiyan Derevetskyi
+     */
+    @GetMapping("/{id}/friends")
+    @ResponseBody
+    public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
+        return userService.findUserFriendsByUserId(id);
+    }
+
+    /**
+     * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
+     * not be able to log in into the system.
+     *
+     * @param id of the searched {@link UserVO}.
      * @author Vasyl Zhovnir
      */
-    @PostMapping
-    public ResponseEntity deactivateUser(@RequestParam Long id) {
+    @PostMapping("/deactivate")
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
         userService.deactivateUser(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for setting {@link UserVO}'s status to ACTIVATED.
+     *
+     * @param id of the searched {@link UserVO}.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/activate")
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
+        userService.setActivatedStatus(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for setting to a list of {@link UserVO} status DEACTIVATED, so the
+     * users will not be able to log in into the system.
+     *
+     * @param listId {@link List} populated with ids of {@link UserVO} to be
+     *               deleted.
+     * @author Vasyl Zhovnir
+     */
+    @PostMapping("/deactivateAll")
+    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.deactivateAllUsers(listId));
     }
 }
