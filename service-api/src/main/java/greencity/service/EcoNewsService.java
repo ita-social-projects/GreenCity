@@ -21,6 +21,8 @@ public interface EcoNewsService {
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
+    void calculateEcoNews(Long userId);
+
     /**
      * Method for getting last three eco news.
      *
@@ -121,6 +123,7 @@ public interface EcoNewsService {
      */
     void likeComment(UserVO user, EcoNewsCommentVO comment);
 
+    void calculateEcoNewsLikes(UserVO user);
     /**
      * Method to mark comment as unliked by User.
      *

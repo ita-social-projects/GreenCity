@@ -11,6 +11,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     private EcoNewsService ecoNewsService;
+    private final UserActionService userActionService;
     private ModelMapper modelMapper;
 
     /**
@@ -47,7 +50,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
-    @AchievementCalculation(category = "EcoNewsComments")
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
@@ -65,8 +67,16 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
         }
-
+        CompletableFuture.runAsync(() -> calculateEcoNewsComment(userVO));
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
+    }
+
+    @AchievementCalculation(category = "EcoNewsComments", column = "eco_news_comment")
+    public void calculateEcoNewsComment(UserVO userVO){
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
+        int action = userActionVO.getEcoNewsComments();
+        userActionVO.setEcoNewsComments(++action);
+        userActionService.updateUserActions(userActionVO);
     }
 
     /**

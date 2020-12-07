@@ -94,6 +94,9 @@ public interface HabitAssignService {
      */
     HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
+    void calculateAcquiredHabit(Long userId);
+
+    void calculateHabitStreak(Long userId, Integer habitStreak);
     /**
      * Method to unenroll Habit in defined date.
      *

@@ -90,22 +90,22 @@ public interface AchievementService {
      * @author Orest Mamchuk
      */
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
-
-    /**
-     * Method updates {@link UserActionVO}.
-     *
-     * @param userActionVO {@link UserActionVO}
-     * @return {@link UserActionVO}
-     * @author Orest Mamchuk
-     */
-    UserActionVO updateUserActions(UserActionVO userActionVO);
-
-    /**
-     * Method find {@link UserActionVO} by id.
-     *
-     * @param id of {@link UserActionVO}
-     * @return {@link UserActionVO}
-     * @author Orest Mamchuk
-     */
-    UserActionVO findUserActionByUserId(Long id);
+//
+//    /**
+//     * Method updates {@link UserActionVO}.
+//     *
+//     * @param userActionVO {@link UserActionVO}
+//     * @return {@link UserActionVO}
+//     * @author Orest Mamchuk
+//     */
+//    UserActionVO updateUserActions(UserActionVO userActionVO);
+//
+//    /**
+//     * Method find {@link UserActionVO} by id.
+//     *
+//     * @param id of {@link UserActionVO}
+//     * @return {@link UserActionVO}
+//     * @author Orest Mamchuk
+//     */
+//    UserActionVO findUserActionByUserId(Long id);
 }

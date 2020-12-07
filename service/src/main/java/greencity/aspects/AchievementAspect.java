@@ -7,8 +7,10 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
+import greencity.repository.UserActionRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
+import greencity.service.UserActionService;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static greencity.enums.AchievementStatus.ACTIVE;
 
@@ -30,9 +33,11 @@ import static greencity.enums.AchievementStatus.ACTIVE;
 @Builder
 public class AchievementAspect {
     private UserService userService;
+    private UserActionService userActionService;
     private AchievementService achievementService;
     private AchievementCategoryService achievementCategoryService;
     private final ModelMapper modelMapper;
+    private final UserActionRepo userActionRepo;
 
     /**
      * This pointcut {@link Pointcut} is used for define annotation to processing.
@@ -57,67 +62,29 @@ public class AchievementAspect {
     private void achievementCalculation(AchievementCalculation achievementCalculation) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
-        UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
+        int condition = userActionRepo.findActionCountAccordToCategory(achievementCalculation.column(), user.getId());
         AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCalculation.category());
-        int condition = updateUserAction(achievementCalculation.category(), userActionByUserId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
         if (achievementVO != null) {
             changeAchievementStatus(user, achievementVO);
         }
     }
 
-    @AchievementCalculation(category = "Achievements")
-    private void changeAchievementStatus(User user, AchievementVO achievementVO){
+    private void changeAchievementStatus(User user, AchievementVO achievementVO) {
         Optional<UserAchievement> userAchievement = user.getUserAchievements().stream()
-                .filter(userAchievement1 -> userAchievement1.getAchievement().getId().equals(achievementVO.getId()))
-                .findFirst();
+            .filter(userAchievement1 -> userAchievement1.getAchievement().getId().equals(achievementVO.getId()))
+            .findFirst();
         if (userAchievement.isPresent()) {
             userAchievement.get().setAchievementStatus(ACTIVE);
             userService.save(modelMapper.map(user, UserVO.class));
+            CompletableFuture.runAsync(() -> calculateAchievements(user));
         }
     }
 
-    private int updateUserAction(String achievementCategory, UserActionVO userActionVO) {
-        Integer action = 0;
-        switch (achievementCategory) {
-            case "EcoNews":
-                action = userActionVO.getEcoNews();
-                userActionVO.setEcoNews(++action);
-                break;
-            case "EcoNewsLikes":
-                action = userActionVO.getEcoNewsLikes();
-                userActionVO.setEcoNewsLikes(++action);
-                break;
-            case "EcoNewsComments":
-                action = userActionVO.getEcoNewsComments();
-                userActionVO.setEcoNewsComments(++action);
-                break;
-            case "Tips&TricksLikes":
-                action = userActionVO.getTipsAndTricksLikes();
-                userActionVO.setTipsAndTricksLikes(++action);
-                break;
-            case "Tips&TricksComments":
-                action = userActionVO.getTipsAndTricksComments();
-                userActionVO.setTipsAndTricksComments(++action);
-                break;
-            case "AcquiredHabit":
-                action = userActionVO.getAcquiredHabit();
-                userActionVO.setAcquiredHabit(++action);
-                break;
-            case "HabitStreak":
-                action = userActionVO.getHabitStreak();
-                break;
-            case "SocialNetworks":
-                action = userActionVO.getSocialNetworks();
-                break;
-            case "Achievements":
-                action = userActionVO.getAchievements();
-                userActionVO.setAchievements(++action);
-                break;
-            default:
-                return action;
-        }
-        achievementService.updateUserActions(userActionVO);
-        return action;
+    @AchievementCalculation(category = "Achievements", column = "achievements")
+    public void calculateAchievements(User user) {
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
+        userActionVO.setAchievements(userActionVO.getAchievements() + 1);
+        userActionService.updateUserActions(userActionVO);
     }
 }

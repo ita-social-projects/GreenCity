@@ -10,6 +10,7 @@ import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -19,6 +20,7 @@ import greencity.repository.TipsAndTricksRepo;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -54,6 +56,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final LanguageService languageService;
 
     private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
+
+    private final UserActionService userActionService;
 
     /**
      * {@inheritDoc}
@@ -366,9 +370,16 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    @AchievementCalculation(category = "Tips&TricksLikes")
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
+        CompletableFuture.runAsync(() -> calculateTipsAndTricksLikes(user));
+    }
+
+    @AchievementCalculation(category = "Tips&TricksLikes", column = "tips_and_tricks_likes")
+    public void calculateTipsAndTricksLikes(UserVO user){
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
+        userActionVO.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes() + 1);
+        userActionService.updateUserActions(userActionVO);
     }
 
     /**

@@ -27,6 +27,8 @@ public interface TipsAndTricksCommentService {
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
         UserVO user);
 
+    void calculateTipsAndTricksComment(UserVO userVO);
+
     /**
      * Method returns all comments to certain tipsAndTricks specified by
      * tipsAndTricksId.

@@ -18,4 +18,12 @@ public @interface AchievementCalculation {
      * @author Orest Mamchuk
      */
     String category();
+
+    /**
+     * {@inheritDoc} This method is used for determine the column name
+     *
+     * @return column name in table
+     * @author Orest Mamchuk
+     */
+    String column();
 }

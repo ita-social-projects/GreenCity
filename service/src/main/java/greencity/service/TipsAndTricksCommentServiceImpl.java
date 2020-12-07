@@ -10,6 +10,7 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
@@ -18,6 +19,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.TipsAndTricksCommentRepo;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentService {
     private TipsAndTricksCommentRepo tipsAndTricksCommentRepo;
     private TipsAndTricksService tipsAndTricksService;
+    private final UserActionService userActionService;
     private ModelMapper modelMapper;
 
     /**
@@ -46,7 +49,6 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
-    @AchievementCalculation(category = "Tips&TricksComments")
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
@@ -55,7 +57,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             .findById(tipsandtricksId), TipsAndTricks.class);
         TipsAndTricksComment tipsAndTricksComment =
             modelMapper.map(addTipsAndTricksCommentDtoRequest, TipsAndTricksComment.class);
-        tipsAndTricksComment.setUser(modelMapper.map(userVO, User.class));
+        User user = modelMapper.map(userVO, User.class);
+        tipsAndTricksComment.setUser(user);
         tipsAndTricksComment.setTipsAndTricks(tipsAndTricks);
         if (addTipsAndTricksCommentDtoRequest.getParentCommentId() != null
             && addTipsAndTricksCommentDtoRequest.getParentCommentId() != 0) {
@@ -77,9 +80,16 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
                 }
             }
         }
-
+        CompletableFuture.runAsync(() -> calculateTipsAndTricksComment(userVO));
         return modelMapper
             .map(tipsAndTricksCommentRepo.save(tipsAndTricksComment), AddTipsAndTricksCommentDtoResponse.class);
+    }
+
+    @AchievementCalculation(category = "Tips&TricksComments", column = "tips_and_tricks_comment")
+    public void calculateTipsAndTricksComment(UserVO userVO){
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
+        userActionVO.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments() + 1);
+        userActionService.updateUserActions(userActionVO);
     }
 
     /**

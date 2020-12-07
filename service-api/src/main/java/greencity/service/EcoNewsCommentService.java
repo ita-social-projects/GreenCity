@@ -23,6 +23,8 @@ public interface EcoNewsCommentService {
     AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO user);
 
+    void calculateEcoNewsComment(UserVO userVO);
+
     /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *

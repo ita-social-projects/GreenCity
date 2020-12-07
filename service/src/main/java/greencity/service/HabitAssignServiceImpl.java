@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -33,7 +34,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
-    private final AchievementService achievementService;
+    private final UserActionService userActionService;
     private final ModelMapper modelMapper;
 
     /**
@@ -243,7 +244,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(dateTime).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
 
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
@@ -277,7 +278,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar) {
+        HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -288,26 +289,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
-        changeHabitStreakCount(habitAssign, habitStreak);
+        CompletableFuture.runAsync(() -> calculateHabitStreak(habitAssign.getUser().getId(), habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
-            acquired(habitAssign);
+            habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+            CompletableFuture.runAsync(() -> calculateAcquiredHabit(userId));
         }
         habitAssignRepo.save(habitAssign);
     }
 
-    @AchievementCalculation(category = "AcquiredHabit")
-    private void acquired(HabitAssign habitAssign) {
-        habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+    @AchievementCalculation(category = "AcquiredHabit", column = "acquired_habit")
+    public void calculateAcquiredHabit(Long userId) {
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
+        userActionVO.setAcquiredHabit(userActionVO.getAcquiredHabit() + 1);
+        userActionService.updateUserActions(userActionVO);
     }
 
-    @AchievementCalculation(category = "HabitStreak")
-    private void changeHabitStreakCount(HabitAssign habitAssign, Integer habitStreak){
-        User user = habitAssign.getUser();
-        UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
-        if(userActionByUserId.getHabitStreak()<habitStreak){
-            userActionByUserId.setHabitStreak(habitStreak);
-            achievementService.updateUserActions(userActionByUserId);
+    @AchievementCalculation(category = "HabitStreak", column = "habit_streak")
+    public void calculateHabitStreak(Long userId, Integer habitStreak) {
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
+        if (userActionVO.getHabitStreak() < habitStreak) {
+            userActionVO.setHabitStreak(habitStreak);
+            userActionService.updateUserActions(userActionVO);
         }
     }
 

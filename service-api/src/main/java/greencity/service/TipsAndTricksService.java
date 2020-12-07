@@ -144,6 +144,7 @@ public interface TipsAndTricksService {
      */
     void likeComment(UserVO user, TipsAndTricksCommentVO comment);
 
+    void calculateTipsAndTricksLikes(UserVO user);
     /**
      * Method to mark comment as unliked by User.
      *

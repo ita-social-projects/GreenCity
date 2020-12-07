@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
-    private final AchievementService achievementService;
+    private final UserActionService userActionService;
     /**
      * Autowired mapper.
      */
@@ -570,16 +571,15 @@ public class UserServiceImpl implements UserService {
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
         userRepo.save(user);
-        changeSocialNetworksCount(user);
+        CompletableFuture.runAsync(() -> calculateSocialNetworks(user.getId(), user.getSocialNetworks().size()));
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
-    @AchievementCalculation(category = "SocialNetworks")
-    private void changeSocialNetworksCount(User user){
-        int size = user.getSocialNetworks().size();
-        UserActionVO userActionByUserId = achievementService.findUserActionByUserId(user.getId());
-        userActionByUserId.setSocialNetworks(size);
-        achievementService.updateUserActions(userActionByUserId);
+    @AchievementCalculation(category = "SocialNetworks", column = "social_networks")
+    public void calculateSocialNetworks(Long userId, int size) {
+        UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
+        userActionVO.setSocialNetworks(size);
+        userActionService.updateUserActions(userActionVO);
     }
 
     /**
