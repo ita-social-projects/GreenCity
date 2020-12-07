@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="1" author="Kravchenko">
+        <createTable tableName="direct_messages">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sender_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="varchar(170)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="direct_messages"
+                                 constraintName="fk_sender_users_user_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+
+    <changeSet id="2" author="Kravchenko">
+        <createTable tableName="direct_rooms">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="first_participant_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="second_participant_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_message_date" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_message_content" type="varchar(170)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="first_participant_id" baseTableName="direct_rooms"
+                                 constraintName="fk_first_participant_users_user_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="second_participant_id" baseTableName="direct_rooms"
+                                 constraintName="fk_second_participant_users_user_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="3" author="Kravchenko">
+        <addColumn tableName="direct_messages">
+            <column name="direct_room_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="direct_room_id" baseTableName="direct_messages"
+                                 constraintName="fk_direct_room_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="direct_rooms"/>
+    </changeSet>
+</databaseChangeLog>
