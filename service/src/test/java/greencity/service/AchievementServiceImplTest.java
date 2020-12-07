@@ -84,7 +84,7 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         Achievement achievement = ModelUtils.getAchievement();
         AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
