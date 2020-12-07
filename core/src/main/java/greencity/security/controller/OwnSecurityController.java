@@ -111,7 +111,7 @@ public class OwnSecurityController {
     })
     @GetMapping("/verifyEmail")
     public ResponseEntity<Boolean> verify(@RequestParam @NotBlank String token,
-                                          @RequestParam("user_id") Long userId) {
+        @RequestParam("user_id") Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(verifyEmailService.verifyByToken(userId, token));
     }
 
