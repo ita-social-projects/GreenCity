@@ -19,4 +19,6 @@ public class AchievementTranslationVO {
     private String description;
 
     private String message;
+
+    private AchievementVO achievementVO;
 }

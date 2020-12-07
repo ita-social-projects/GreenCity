@@ -1,6 +1,9 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.achievement.*;
+import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdviceVO;
@@ -45,6 +48,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.*;
@@ -820,5 +824,45 @@ public class ModelUtils {
 
     public static AdvicePostDto getAdvicePostDto() {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
+
+    public static Achievement getAchievement() {
+        return new Achievement(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategory(),1);
+    }
+
+    public static AchievementCategory getAchievementCategory() {
+        return new AchievementCategory(1L,"Name",Collections.singletonList(getAchievement()));
+    }
+
+    public static AchievementVO getAchievementVO() {
+        return new AchievementVO(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategoryVO(),1);
+    }
+
+    public static AchievementPostDto getAchievementPostDto() {
+        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+    }
+
+    public static AchievementCategoryDto getAchievementCategoryDto() {
+        return new AchievementCategoryDto("Test");
+    }
+
+    public static AchievementTranslationVO getAchievementTranslationVO() {
+        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message", getAchievementVO());
+    }
+
+    public static AchievementCategoryVO getAchievementCategoryVO() {
+        return new AchievementCategoryVO(1L,"Category");
+    }
+
+    public static AchievementManagementDto getAchievementManagementDto() {
+        return new AchievementManagementDto(1L);
+    }
+
+    public static AchievementTranslation getAchievementTranslation() {
+        return new AchievementTranslation(1L,getLanguage(),"Title","Description","Message", getAchievement());
+    }
+
+    public static UserAchievementVO getUserAchievementVO() {
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
     }
 }
