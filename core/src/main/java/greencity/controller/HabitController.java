@@ -121,7 +121,7 @@ public class HabitController {
      */
     @ApiOperation(value = "Find all habits tags")
     @GetMapping("/tags")
-    @ApiPageableWithLocale
+    @ApiLocale
     public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
     }

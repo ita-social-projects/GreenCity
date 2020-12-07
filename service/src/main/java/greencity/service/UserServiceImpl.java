@@ -429,7 +429,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                           UserProfilePictureDto userProfilePictureDto) {
+        UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));

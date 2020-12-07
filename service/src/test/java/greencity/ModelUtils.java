@@ -88,7 +88,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
     }
 
@@ -569,7 +569,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, getTagTranslationsVO(), null, null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
