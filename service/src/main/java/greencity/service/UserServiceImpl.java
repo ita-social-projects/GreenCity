@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
@@ -575,6 +576,12 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     * @param size   count of {@link SocialNetworkVO}
+     */
     @AchievementCalculation(category = "SocialNetworks", column = "socialNetworks")
     public void calculateSocialNetworks(Long userId, int size) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);

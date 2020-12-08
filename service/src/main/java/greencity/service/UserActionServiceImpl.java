@@ -12,9 +12,10 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class UserActionServiceImpl implements UserActionService{
+public class UserActionServiceImpl implements UserActionService {
     private UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
+
     /**
      * {@inheritDoc}
      *

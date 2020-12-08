@@ -72,7 +72,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
-    public void calculateEcoNewsComment(UserVO userVO){
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userVO {@link UserVO}
+     */
+    public void calculateEcoNewsComment(UserVO userVO) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
         int action = userActionVO.getEcoNewsComments();
         userActionVO.setEcoNewsComments(++action);

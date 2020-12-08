@@ -86,7 +86,12 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             .map(tipsAndTricksCommentRepo.save(tipsAndTricksComment), AddTipsAndTricksCommentDtoResponse.class);
     }
 
-    public void calculateTipsAndTricksComment(UserVO userVO){
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userVO {@link UserVO}
+     */
+    public void calculateTipsAndTricksComment(UserVO userVO) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
         userActionVO.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments() + 1);
         userActionService.updateUserActions(userActionVO);

@@ -82,7 +82,7 @@ public class AchievementAspect {
         checkAchievements(user, "Achievements", "achievements");
     }
 
-    private void checkAchievements(User user, String category, String column){
+    private void checkAchievements(User user, String category, String column) {
         int condition = userActionRepoCustom.findActionCountAccordToCategory(column, user.getId());
         AchievementCategoryVO byName = achievementCategoryService.findByName(category);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);

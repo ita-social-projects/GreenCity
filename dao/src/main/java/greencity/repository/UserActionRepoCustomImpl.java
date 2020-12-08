@@ -19,7 +19,8 @@ public class UserActionRepoCustomImpl implements UserActionRepoCustom {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Integer> query = criteriaBuilder.createQuery(Integer.class);
         Root<UserAction> userActionRoot = query.from(UserAction.class);
-        query.select(userActionRoot.get(category)).where(criteriaBuilder.equal(userActionRoot.get("user").get("id"), userId));
+        query.select(userActionRoot.get(category))
+            .where(criteriaBuilder.equal(userActionRoot.get("user").get("id"), userId));
         return entityManager.createQuery(query).getSingleResult();
     }
 }

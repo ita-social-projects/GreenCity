@@ -392,7 +392,12 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         CompletableFuture.runAsync(() -> calculateTipsAndTricksLikes(user));
     }
 
-    public void calculateTipsAndTricksLikes(UserVO user){
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param user {@link UserVO}
+     */
+    public void calculateTipsAndTricksLikes(UserVO user) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
         userActionVO.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes() + 1);
         userActionService.updateUserActions(userActionVO);

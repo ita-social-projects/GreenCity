@@ -2,6 +2,8 @@ package greencity.service;
 
 import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -94,9 +96,21 @@ public interface HabitAssignService {
      */
     HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     */
     void calculateAcquiredHabit(Long userId);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId      of {@link UserVO}
+     * @param habitStreak habit streak
+     */
     void calculateHabitStreak(Long userId, Integer habitStreak);
+
     /**
      * Method to unenroll Habit in defined date.
      *

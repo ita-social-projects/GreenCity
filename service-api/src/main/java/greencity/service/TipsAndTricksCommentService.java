@@ -6,6 +6,8 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.dto.user.UserVO;
 import java.util.List;
+
+import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 
 public interface TipsAndTricksCommentService {
@@ -27,6 +29,11 @@ public interface TipsAndTricksCommentService {
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
         UserVO user);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userVO {@link UserVO}
+     */
     void calculateTipsAndTricksComment(UserVO userVO);
 
     /**

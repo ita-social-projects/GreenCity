@@ -299,6 +299,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.save(habitAssign);
     }
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     */
     @AchievementCalculation(category = "AcquiredHabit", column = "acquiredHabit")
     public void calculateAcquiredHabit(Long userId) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
@@ -306,6 +311,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userActionService.updateUserActions(userActionVO);
     }
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId      of {@link UserVO}
+     * @param habitStreak habit streak
+     */
     public void calculateHabitStreak(Long userId, Integer habitStreak) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         if (userActionVO.getHabitStreak() < habitStreak) {

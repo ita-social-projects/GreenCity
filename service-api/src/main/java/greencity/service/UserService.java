@@ -4,7 +4,9 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.*;
+import greencity.dto.useraction.UserActionVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -271,7 +273,14 @@ public interface UserService {
      */
     UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String name);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     * @param size   count of {@link SocialNetworkVO}
+     */
     void calculateSocialNetworks(Long userId, int size);
+
     /**
      * Updates last activity time for a given user.
      *

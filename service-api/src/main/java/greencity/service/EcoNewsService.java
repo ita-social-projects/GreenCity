@@ -6,6 +6,7 @@ import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,11 @@ public interface EcoNewsService {
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     */
     void calculateEcoNews(Long userId);
 
     /**
@@ -28,7 +34,6 @@ public interface EcoNewsService {
      *
      * @return list of {@link EcoNewsDto} instances.
      */
-
     List<EcoNewsDto> getThreeLastEcoNews();
 
     /**
@@ -123,7 +128,13 @@ public interface EcoNewsService {
      */
     void likeComment(UserVO user, EcoNewsCommentVO comment);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param user {@link UserVO}
+     */
     void calculateEcoNewsLikes(UserVO user);
+
     /**
      * Method to mark comment as unliked by User.
      *

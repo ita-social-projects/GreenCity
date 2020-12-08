@@ -7,6 +7,7 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 
 public interface EcoNewsCommentService {
@@ -23,6 +24,11 @@ public interface EcoNewsCommentService {
     AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO user);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userVO {@link UserVO}
+     */
     void calculateEcoNewsComment(UserVO userVO);
 
     /**

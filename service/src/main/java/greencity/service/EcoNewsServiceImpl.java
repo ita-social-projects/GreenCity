@@ -114,7 +114,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> calculateEcoNews(user.getId()));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
-    public void calculateEcoNews(Long userId){
+
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param userId of {@link UserVO}
+     */
+    public void calculateEcoNews(Long userId) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         userActionVO.setEcoNews(userActionVO.getEcoNews() + 1);
         userActionService.updateUserActions(userActionVO);
@@ -313,7 +319,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> calculateEcoNewsLikes(user));
     }
 
-    public void calculateEcoNewsLikes(UserVO user){
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param user {@link UserVO}
+     */
+    public void calculateEcoNewsLikes(UserVO user) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
         userActionVO.setEcoNewsLikes(userActionVO.getEcoNewsLikes() + 1);
         userActionService.updateUserActions(userActionVO);

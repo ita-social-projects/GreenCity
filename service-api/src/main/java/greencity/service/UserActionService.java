@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.useraction.UserActionVO;
 
 public interface UserActionService {
-
     /**
      * Method updates {@link UserActionVO}.
      *

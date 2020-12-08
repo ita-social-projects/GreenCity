@@ -6,6 +6,8 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
+
+import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -144,7 +146,13 @@ public interface TipsAndTricksService {
      */
     void likeComment(UserVO user, TipsAndTricksCommentVO comment);
 
+    /**
+     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
+     *
+     * @param user {@link UserVO}
+     */
     void calculateTipsAndTricksLikes(UserVO user);
+
     /**
      * Method to mark comment as unliked by User.
      *
