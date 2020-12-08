@@ -2,10 +2,7 @@ package greencity.entity.localization;
 
 import greencity.entity.Achievement;
 import greencity.entity.Language;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -17,6 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
 public class AchievementTranslation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

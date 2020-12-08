@@ -1,5 +1,5 @@
-INSERT INTO tags(id)
-VALUES (1),(2),(3);
+INSERT INTO tags(id, type)
+VALUES (1, 'ECO_NEWS'),(2, 'HABIT'),(3, 'TIPS_AND_TRICKS');
 
 INSERT INTO languages(id, code)
 VALUES(1, 'ua'),(2, 'en'), (3, 'ru');

@@ -18,10 +18,12 @@ import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -95,7 +97,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
 
-        toSave.setTags(modelMapper.map(tagService.findTagsByNames(addEcoNewsDtoRequest.getTags()),
+        List<TagVO> tagVOS = tagService.findTagsByNamesAndType(
+            addEcoNewsDtoRequest.getTags(), TagType.ECO_NEWS);
+
+        toSave.setTags(modelMapper.map(tagVOS,
             new TypeToken<List<Tag>>() {
             }.getType()));
         try {
@@ -332,6 +337,36 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         return buildPageableAdvancedDto(page);
     }
 
+    private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
+        MultipartFile image) {
+        toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
+        toUpdate.setText(ecoNewsDtoManagement.getText());
+        toUpdate.setTags(modelMapper
+            .map(tagService.findTagsByNamesAndType(ecoNewsDtoManagement.getTags(), TagType.ECO_NEWS),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
+    }
+
+    private void enhanceWithNewData(EcoNews toUpdate, UpdateEcoNewsDto updateEcoNewsDto,
+        MultipartFile image) {
+        toUpdate.setTitle(updateEcoNewsDto.getTitle());
+        toUpdate.setText(updateEcoNewsDto.getText());
+        toUpdate.setSource(updateEcoNewsDto.getSource());
+        toUpdate.setTags(modelMapper.map(tagService
+            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+            new TypeToken<List<Tag>>() {
+            }.getType()));
+        if (updateEcoNewsDto.getImage() != null) {
+            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
+        }
+        if (image != null) {
+            toUpdate.setImagePath(fileService.upload(image).toString());
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -339,14 +374,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void update(EcoNewsDtoManagement ecoNewsDtoManagement, MultipartFile image) {
         EcoNews toUpdate = modelMapper.map(findById(ecoNewsDtoManagement.getId()), EcoNews.class);
-        toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
-        toUpdate.setText(ecoNewsDtoManagement.getText());
-        toUpdate.setTags(modelMapper
-            .map(tagService.findTagsByNames(ecoNewsDtoManagement.getTags()), new TypeToken<List<Tag>>() {
-            }.getType()));
-        if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
-        }
+        enhanceWithNewManagementData(toUpdate, ecoNewsDtoManagement, image);
+
         ecoNewsRepo.save(toUpdate);
     }
 
@@ -360,18 +389,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(toUpdate.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        toUpdate.setTitle(updateEcoNewsDto.getTitle());
-        toUpdate.setText(updateEcoNewsDto.getText());
-        toUpdate.setSource(updateEcoNewsDto.getSource());
-        toUpdate.setTags(modelMapper.map(tagService.findTagsByNames(updateEcoNewsDto.getTags()),
-            new TypeToken<List<Tag>>() {
-            }.getType()));
-        if (updateEcoNewsDto.getImage() != null) {
-            image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
-        }
-        if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
-        }
+        enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
+
         return modelMapper.map(ecoNewsRepo.save(toUpdate), EcoNewsDto.class);
     }
 
