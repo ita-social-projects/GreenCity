@@ -905,7 +905,7 @@ public class ModelUtils {
     }
 
     public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message", getAchievementVO());
+        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message");
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
