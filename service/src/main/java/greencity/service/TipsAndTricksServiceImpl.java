@@ -370,12 +370,12 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
+    @AchievementCalculation(category = "Tips&TricksLikes", column = "tipsAndTricksLikes")
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
         CompletableFuture.runAsync(() -> calculateTipsAndTricksLikes(user));
     }
 
-    @AchievementCalculation(category = "Tips&TricksLikes", column = "tips_and_tricks_likes")
     public void calculateTipsAndTricksLikes(UserVO user){
         UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
         userActionVO.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes() + 1);

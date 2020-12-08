@@ -50,6 +50,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
+    @AchievementCalculation(category = "EcoNewsComments", column = "ecoNewsComments")
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
@@ -71,7 +72,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
-    @AchievementCalculation(category = "EcoNewsComments", column = "eco_news_comment")
     public void calculateEcoNewsComment(UserVO userVO){
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
         int action = userActionVO.getEcoNewsComments();

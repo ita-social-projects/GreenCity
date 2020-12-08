@@ -49,6 +49,7 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
+    @AchievementCalculation(category = "Tips&TricksComments", column = "tipsAndTricksComments")
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
@@ -85,7 +86,6 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
             .map(tipsAndTricksCommentRepo.save(tipsAndTricksComment), AddTipsAndTricksCommentDtoResponse.class);
     }
 
-    @AchievementCalculation(category = "Tips&TricksComments", column = "tips_and_tricks_comment")
     public void calculateTipsAndTricksComment(UserVO userVO){
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
         userActionVO.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments() + 1);

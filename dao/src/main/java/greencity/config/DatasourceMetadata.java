@@ -69,7 +69,6 @@ public class DatasourceMetadata {
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/pg_stat_statements_reset.sql"));
         databasePopulator.addScript(new ClassPathResource("db/functions/fn_recommended_friends.sql"));
-        databasePopulator.addScript(new ClassPathResource("db/functions/fn_textsearchcolumn.sql"));
         databasePopulator.execute(Objects.requireNonNull(jdbcTemplate.getDataSource()));
     }
 

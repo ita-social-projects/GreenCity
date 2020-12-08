@@ -575,7 +575,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
-    @AchievementCalculation(category = "SocialNetworks", column = "social_networks")
+    @AchievementCalculation(category = "SocialNetworks", column = "socialNetworks")
     public void calculateSocialNetworks(Long userId, int size) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         userActionVO.setSocialNetworks(size);

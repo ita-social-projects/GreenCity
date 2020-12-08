@@ -277,6 +277,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param habitAssign {@link HabitAssign} instance.
      */
+    @AchievementCalculation(category = "HabitStreak", column = "habitStreak")
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
         HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
@@ -293,19 +294,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
-            CompletableFuture.runAsync(() -> calculateAcquiredHabit(userId));
+            calculateAcquiredHabit(userId);
         }
         habitAssignRepo.save(habitAssign);
     }
 
-    @AchievementCalculation(category = "AcquiredHabit", column = "acquired_habit")
+    @AchievementCalculation(category = "AcquiredHabit", column = "acquiredHabit")
     public void calculateAcquiredHabit(Long userId) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         userActionVO.setAcquiredHabit(userActionVO.getAcquiredHabit() + 1);
         userActionService.updateUserActions(userActionVO);
     }
 
-    @AchievementCalculation(category = "HabitStreak", column = "habit_streak")
     public void calculateHabitStreak(Long userId, Integer habitStreak) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         if (userActionVO.getHabitStreak() < habitStreak) {

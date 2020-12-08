@@ -74,6 +74,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
+    @AchievementCalculation(category = "EcoNews", column = "ecoNews")
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
@@ -108,8 +109,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> calculateEcoNews(user.getId()));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
-
-    @AchievementCalculation(category = "EcoNews", column = "published_eco_news")
     public void calculateEcoNews(Long userId){
         UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
         userActionVO.setEcoNews(userActionVO.getEcoNews() + 1);
@@ -303,13 +302,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    @AchievementCalculation(category = "EcoNewsLikes", column = "eco_news_likes")
+    @AchievementCalculation(category = "EcoNewsLikes", column = "ecoNewsLikes")
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
         CompletableFuture.runAsync(() -> calculateEcoNewsLikes(user));
     }
 
-    @AchievementCalculation(category = "EcoNewsLikes", column = "eco_news_likes")
     public void calculateEcoNewsLikes(UserVO user){
         UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
         userActionVO.setEcoNewsLikes(userActionVO.getEcoNewsLikes() + 1);

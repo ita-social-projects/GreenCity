@@ -7,7 +7,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.repository.UserActionRepo;
+import greencity.repository.UserActionRepoCustom;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
@@ -23,7 +23,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static greencity.enums.AchievementStatus.ACTIVE;
 
@@ -37,7 +36,7 @@ public class AchievementAspect {
     private AchievementService achievementService;
     private AchievementCategoryService achievementCategoryService;
     private final ModelMapper modelMapper;
-    private final UserActionRepo userActionRepo;
+    private final UserActionRepoCustom userActionRepoCustom;
 
     /**
      * This pointcut {@link Pointcut} is used for define annotation to processing.
@@ -62,12 +61,7 @@ public class AchievementAspect {
     private void achievementCalculation(AchievementCalculation achievementCalculation) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
-        int condition = userActionRepo.findActionCountAccordToCategory(achievementCalculation.column(), user.getId());
-        AchievementCategoryVO byName = achievementCategoryService.findByName(achievementCalculation.category());
-        AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
-        if (achievementVO != null) {
-            changeAchievementStatus(user, achievementVO);
-        }
+        checkAchievements(user, achievementCalculation.category(), achievementCalculation.column());
     }
 
     private void changeAchievementStatus(User user, AchievementVO achievementVO) {
@@ -77,14 +71,23 @@ public class AchievementAspect {
         if (userAchievement.isPresent()) {
             userAchievement.get().setAchievementStatus(ACTIVE);
             userService.save(modelMapper.map(user, UserVO.class));
-            CompletableFuture.runAsync(() -> calculateAchievements(user));
+            calculateAchievements(user);
         }
     }
 
-    @AchievementCalculation(category = "Achievements", column = "achievements")
-    public void calculateAchievements(User user) {
+    private void calculateAchievements(User user) {
         UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
         userActionVO.setAchievements(userActionVO.getAchievements() + 1);
         userActionService.updateUserActions(userActionVO);
+        checkAchievements(user, "Achievements", "achievements");
+    }
+
+    private void checkAchievements(User user, String category, String column){
+        int condition = userActionRepoCustom.findActionCountAccordToCategory(column, user.getId());
+        AchievementCategoryVO byName = achievementCategoryService.findByName(category);
+        AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(byName.getId(), condition);
+        if (achievementVO != null) {
+            changeAchievementStatus(user, achievementVO);
+        }
     }
 }

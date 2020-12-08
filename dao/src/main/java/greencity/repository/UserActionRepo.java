@@ -16,8 +16,4 @@ public interface UserActionRepo extends JpaRepository<UserAction, Long> {
      */
     @Query(value = "select u from UserAction u join fetch u.user as us WHERE us.id = :id")
     UserAction findByUserId(Long id);
-
-    @Query(nativeQuery = true,
-            value = " SELECT * FROM public.fn_textsearchcolumn(:category, :userId) ")
-    Integer findActionCountAccordToCategory(String category, Long userId);
 }
