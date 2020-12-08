@@ -9,6 +9,7 @@ import greencity.enums.GoalStatus;
 import greencity.enums.Role;
 import static greencity.enums.UserStatus.ACTIVATED;
 import greencity.exception.exceptions.GoalNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserGoalStatusNotUpdatedException;
 import greencity.repository.*;
 import java.time.LocalDateTime;
@@ -52,6 +53,7 @@ class GoalServiceImplTest {
     private final GoalPostDto goalPostDto =
         new GoalPostDto(languageTranslationDTOS, new GoalRequestDto(1L));
 
+    private final HabitAssign habitAssign = ModelUtils.getHabitAssign();
     private User user = User.builder()
         .id(1L)
         .name("Test Testing")
@@ -167,7 +169,6 @@ class GoalServiceImplTest {
 
     @Test
     void getUserGoalsTest() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserGoal userGoal = UserGoal.builder().id(1L).status(GoalStatus.ACTIVE).build();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
@@ -177,5 +178,19 @@ class GoalServiceImplTest {
         when(goalTranslationRepo.findByLangAndUserGoalId("en", 1L))
             .thenReturn(GoalTranslation.builder().id(1L).build());
         assertEquals(goalService.getUserGoals(userId, 1L, "en").get(0).getId(), 1L);
+    }
+
+    @Test
+    void deleteUserGoalByGoalIdAndUserIdAndHabitIdTest() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        goalService.deleteUserGoalByGoalIdAndUserIdAndHabitId(1L, userId, 1L);
+        verify(userGoalRepo).deleteByGoalIdAndHabitAssignId(1L, 1L);
+    }
+
+    @Test
+    void deleteUserGoalByGoalIdAndUserIdAndHabitIdTestThorows() {
+        assertThrows(NotFoundException.class,
+            () -> goalService.deleteUserGoalByGoalIdAndUserIdAndHabitId(1L, userId, 1L));
     }
 }
