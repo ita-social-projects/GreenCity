@@ -5,7 +5,6 @@ import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
