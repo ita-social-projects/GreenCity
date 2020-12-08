@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.tag.TagVO;
+import greencity.enums.TagType;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface TagsService {
      * @param tags list of {@link String} values
      * @return list of Tags
      */
-    List<TagVO> findTagsByNames(List<String> tags);
+    List<TagVO> findTagsByNamesAndType(List<String> tags, TagType tagType);
 
     /**
      * Method that allow you to find all EcoNews Tags.
@@ -48,7 +49,7 @@ public interface TagsService {
      * @param tipsAndTricksTagNames list of {@link String} values
      * @return {@link Boolean}
      */
-    boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames);
+    boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type);
 
     /**
      * Method that checks if there is allowed amount (less than 3) of unique Tags .

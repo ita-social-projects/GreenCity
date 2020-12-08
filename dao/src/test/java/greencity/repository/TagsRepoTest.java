@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.Tag;
+import greencity.enums.TagType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,15 @@ class TagsRepoTest {
 
     @Test
     void findTagsByNamesTest() {
-        List<String> tagNames = Arrays.asList("news", "education");
-        List<Tag> tags = tagsRepo.findTagsByNames(tagNames);
-        assertEquals(2, tags.size());
+        List<String> tagNames = Collections.singletonList("news");
+        List<Tag> tags = tagsRepo.findTagsByNamesAndType(tagNames, TagType.ECO_NEWS);
+        assertEquals(1, tags.size());
     }
 
     @Test
     void findTagsByNamesNotFoundTest() {
-        List<String> tagNames = Collections.singletonList("xxx");
-        List<Tag> tags = tagsRepo.findTagsByNames(tagNames);
+        List<String> tagNames = Collections.singletonList("news");
+        List<Tag> tags = tagsRepo.findTagsByNamesAndType(tagNames, TagType.TIPS_AND_TRICKS);
         assertTrue(tags.isEmpty());
     }
 
