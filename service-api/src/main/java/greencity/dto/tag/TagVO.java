@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 public class TagVO {
     private Long id;
-    private TagType tagType;
+    private TagType type;
     private List<TagTranslationVO> tagTranslations;
     private List<EcoNewsVO> ecoNews;
     private List<TipsAndTricksVO> tipsAndTricks;

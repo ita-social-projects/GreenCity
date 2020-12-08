@@ -4,10 +4,25 @@ import greencity.entity.Tag;
 import java.util.List;
 
 import greencity.enums.TagType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TagsRepo extends JpaRepository<Tag, Long> {
+public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag> {
+
+    /**
+     * Method finds all tags and fetches theirs translations.
+     *
+     * @param pageable {@link Pageable}
+     * @return list of tags {@link Page}
+     * @author Markiyan Derevetskyi
+     * */
+    @Query(value = "select t from Tag t join fetch t.tagTranslations order by t.id",
+        countQuery = "select count(t) from Tag t")
+    Page<Tag> findAll(Pageable pageable);
+
     /**
      * Method that allow you to find list of {@link Tag}s by names and type.
      *

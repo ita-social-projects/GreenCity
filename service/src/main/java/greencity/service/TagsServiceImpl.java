@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ValidationConstants;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +26,29 @@ import org.springframework.stereotype.Service;
 public class TagsServiceImpl implements TagsService {
     private final TagsRepo tagRepo;
     private final ModelMapper modelMapper;
+
+    /**
+     * {@inheritDoc}
+     * */
+    @Override
+    public PageableAdvancedDto<TagVO> findAll(Pageable pageable) {
+        Page<Tag> tags = tagRepo.findAll(pageable);
+
+        return buildPageableAdvanceDtoFromPage(tags);
+    }
+
+    private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {
+        List<TagVO> tagVOs = pageTags.getContent().stream()
+            .map(t -> modelMapper.map(t, TagVO.class))
+            .collect(Collectors.toList());
+
+        return new PageableAdvancedDto<>(
+            tagVOs,
+            pageTags.getTotalElements(), pageTags.getPageable().getPageNumber(),
+            pageTags.getTotalPages(), pageTags.getNumber(),
+            pageTags.hasPrevious(), pageTags.hasNext(),
+            pageTags.isFirst(), pageTags.isLast());
+    }
 
     /**
      * {@inheritDoc}

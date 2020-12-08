@@ -1,7 +1,9 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.tag.TagVO;
 import greencity.enums.TagType;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,6 +14,14 @@ import java.util.List;
  * @version 1.0
  */
 public interface TagsService {
+    /**
+     * Method that returns all tags.
+     *
+     * @param pageable {@link Pageable}
+     * @return all tags {@link PageableAdvancedDto}
+     * */
+    PageableAdvancedDto<TagVO> findAll(Pageable pageable);
+
     /**
      * Method that allow you to find list of Tags by names.
      *
