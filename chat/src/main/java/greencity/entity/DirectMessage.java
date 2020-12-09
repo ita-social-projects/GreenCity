@@ -1,6 +1,5 @@
-package greencity.entity.chat;
+package greencity.entity;
 
-import greencity.entity.User;
 import java.time.ZonedDateTime;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,8 +19,7 @@ public class DirectMessage {
     @ManyToOne
     private DirectRoom directRoom;
 
-    @ManyToOne
-    private User sender;
+    private Long senderId;
 
     private String content;
     private ZonedDateTime createDate;

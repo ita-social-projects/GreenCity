@@ -18,11 +18,11 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="direct_messages"
+       <!-- <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="direct_messages"
                                  constraintName="fk_sender_users_user_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="users"/>
-    </changeSet>
+   --> </changeSet>
 
 
     <changeSet id="2" author="Kravchenko">
@@ -44,7 +44,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="first_participant_id" baseTableName="direct_rooms"
+        <!--<addForeignKeyConstraint baseColumnNames="first_participant_id" baseTableName="direct_rooms"
                                  constraintName="fk_first_participant_users_user_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="users"/>
@@ -52,7 +52,7 @@
                                  constraintName="fk_second_participant_users_user_id" deferrable="false" initiallyDeferred="false"
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="users"/>
-    </changeSet>
+    --></changeSet>
 
     <changeSet id="3" author="Kravchenko">
         <addColumn tableName="direct_messages">
@@ -66,4 +66,10 @@
                                  onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
                                  referencedTableName="direct_rooms"/>
     </changeSet>
+
+    <!--<changeSet id="4" author="Kravchenko">
+        <dropForeignKeyConstraint baseTableName="direct_rooms" constraintName="fk_first_participant_users_user_id"/>
+        <dropForeignKeyConstraint baseTableName="direct_rooms" constraintName="fk_second_participant_users_user_id"/>
+        <dropForeignKeyConstraint baseTableName="direct_messages" constraintName="fk_sender_users_user_id"/>
+    </changeSet>-->
 </databaseChangeLog>

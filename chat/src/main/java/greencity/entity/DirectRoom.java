@@ -1,6 +1,5 @@
-package greencity.entity.chat;
+package greencity.entity;
 
-import greencity.entity.User;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.*;
@@ -18,11 +17,8 @@ public class DirectRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    User firstParticipant;
-
-    @ManyToOne
-    User secondParticipant;
+    Long firstParticipantId;
+    Long secondParticipantId;
 
     String lastMessageContent;
     ZonedDateTime lastMessageDate;
