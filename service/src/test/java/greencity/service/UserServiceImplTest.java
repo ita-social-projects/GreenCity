@@ -944,6 +944,7 @@ class UserServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         userService.calculateSocialNetworks(1L, 3);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 
     /*

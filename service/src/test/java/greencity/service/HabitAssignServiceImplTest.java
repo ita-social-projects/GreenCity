@@ -213,6 +213,7 @@ class HabitAssignServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         habitAssignService.calculateAcquiredHabit(1L);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 
     @Test
@@ -221,5 +222,6 @@ class HabitAssignServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         habitAssignService.calculateHabitStreak(1L, 2);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 }

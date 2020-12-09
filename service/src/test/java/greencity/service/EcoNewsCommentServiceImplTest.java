@@ -397,5 +397,6 @@ class EcoNewsCommentServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         ecoNewsCommentService.calculateEcoNewsComment(userVO);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 }

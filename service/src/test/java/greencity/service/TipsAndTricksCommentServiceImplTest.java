@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -269,5 +270,6 @@ class TipsAndTricksCommentServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         tipsAndTricksCommentService.calculateTipsAndTricksComment(userVO);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 }

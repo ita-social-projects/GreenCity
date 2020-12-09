@@ -290,6 +290,7 @@ class EcoNewsServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         ecoNewsService.calculateEcoNews(1L);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 
     @Test
@@ -299,5 +300,6 @@ class EcoNewsServiceImplTest {
         when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
         ecoNewsService.calculateEcoNewsLikes(userVO);
+        verify(userActionService).findUserActionByUserId(1L);
     }
 }
