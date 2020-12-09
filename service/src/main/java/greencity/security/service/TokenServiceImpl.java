@@ -14,8 +14,9 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void passTokenToCookies(String accessToken, HttpServletResponse response) throws IOException {
         String whitelist =  "ey";
-        if (!whitelist.contains(accessToken))
+        if (!whitelist.contains(accessToken)) {
             throw new IOException();
+        }
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
