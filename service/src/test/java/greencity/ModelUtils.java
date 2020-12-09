@@ -32,7 +32,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
@@ -526,14 +525,6 @@ public class ModelUtils {
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
         return new FactOfTheDayTranslationDTO(1L, "content");
-    }
-
-    public static ShoppingListDtoResponse getShoppingListDtoResponse() {
-        return ShoppingListDtoResponse.builder()
-            .goalId(1L)
-            .status("ACTIVE")
-            .text("text")
-            .build();
     }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
