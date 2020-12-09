@@ -9,6 +9,8 @@ import greencity.service.LanguageService;
 import greencity.service.TagsService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,5 +47,12 @@ public class ManagementTagsController {
         }
 
         return buildGenericResponseDto(bindingResult);
+    }
+
+    @ResponseBody
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tagsService.deleteById(id));
     }
 }

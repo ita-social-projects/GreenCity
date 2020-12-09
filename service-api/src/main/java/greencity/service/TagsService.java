@@ -32,6 +32,14 @@ public interface TagsService {
     TagVO save(TagPostDto tag);
 
     /**
+     * Method that deletes by given id.
+     *
+     * @param id - {@link Long}
+     * @return id {@link Long} of deleted tag
+     * */
+    Long deleteById(Long id);
+
+    /**
      * Method that allow you to find list of Tags by names.
      *
      * @param tags list of {@link String} values

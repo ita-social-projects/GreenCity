@@ -8,6 +8,7 @@ import greencity.entity.Tag;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.DuplicatedTagException;
 import greencity.exception.exceptions.InvalidNumOfTagsException;
+import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.TagNotFoundException;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,17 @@ public class TagsServiceImpl implements TagsService {
         Tag saved = tagRepo.save(toSave);
 
         return modelMapper.map(saved, TagVO.class);
+    }
+
+    @Override
+    public Long deleteById(Long id) {
+        try {
+            tagRepo.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotDeletedException(ErrorMessage.TAG_NOT_DELETED + id);
+        }
+
+        return id;
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {

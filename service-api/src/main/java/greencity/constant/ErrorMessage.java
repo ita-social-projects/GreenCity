@@ -34,6 +34,7 @@ public final class ErrorMessage {
     public static final String CANNOT_ADD_PARENT_CATEGORY = "The category cannot be added to no-parent category";
     public static final String NOT_SAVE_DELETION = "This is can't be deleted";
 
+    public static final String TAG_NOT_DELETED = "Tag not deleted by id : ";
     public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
     public static final String INVALID_NUM_OF_TAGS =
