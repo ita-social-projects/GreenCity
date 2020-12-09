@@ -13,8 +13,8 @@ public class TokenServiceImpl implements TokenService {
      */
     @Override
     public void passTokenToCookies(String accessToken, HttpServletResponse response) {
-        String whitelist = "ey";
-        if (!accessToken.contains(whitelist)) {
+        String checkToken = "eyJhbGciOiJIUzI1NiJ9";
+        if (!accessToken.contains(checkToken)) {
             throw new BadRequestException("bad access token");
         }
         Cookie cookie = new Cookie("accessToken", accessToken);
