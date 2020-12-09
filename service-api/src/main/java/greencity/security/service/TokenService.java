@@ -13,5 +13,5 @@ public interface TokenService {
      * @param accessToken {@link String}
      * @param response    {@link HttpServletResponse}
      */
-    void passTokenToCookies(String accessToken, HttpServletResponse response) throws IOException;
+    void passTokenToCookies(String accessToken, HttpServletResponse response);
 }

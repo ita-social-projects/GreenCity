@@ -1,10 +1,10 @@
 package greencity.security.service;
 
+import greencity.exception.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Service
 public class TokenServiceImpl implements TokenService {
@@ -12,10 +12,10 @@ public class TokenServiceImpl implements TokenService {
      * {@inheritDoc}
      */
     @Override
-    public void passTokenToCookies(String accessToken, HttpServletResponse response) throws IOException {
-        String whitelist =  "ey";
+    public void passTokenToCookies(String accessToken, HttpServletResponse response) {
+        String whitelist = "ey";
         if (!accessToken.contains(whitelist)) {
-            throw new IOException();
+            throw new BadRequestException("bad access token");
         }
         Cookie cookie = new Cookie("accessToken", accessToken);
         cookie.setHttpOnly(true);

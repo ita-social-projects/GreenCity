@@ -22,7 +22,7 @@ class TokenServiceTest {
     }
 
     @Test
-    void passTokenToCookies() throws IOException {
+    void passTokenToCookies() {
         String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJ";
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
