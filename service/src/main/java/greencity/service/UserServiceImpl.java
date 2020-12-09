@@ -205,9 +205,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId) {
-        Page<User> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
+        Page<UsersFriendDto> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
         List<RecommendedFriendDto> recommendedFriendDtos = friends.get()
-            .map(user -> modelMapper.map(user, RecommendedFriendDto.class))
+            .map(user ->
+                new RecommendedFriendDto(user.getId(), user.getName(), user.getProfilePicture()))
             .collect(Collectors.toList());
         return new PageableDto<>(
             recommendedFriendDtos,
@@ -429,7 +430,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-        UserProfilePictureDto userProfilePictureDto) {
+                                           UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
