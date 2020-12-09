@@ -1,10 +1,8 @@
 package greencity.mapping;
 
-import greencity.dto.goal.GoalDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.entity.Goal;
 import greencity.entity.UserGoal;
-import greencity.entity.localization.GoalTranslation;
 import greencity.enums.GoalStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

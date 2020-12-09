@@ -885,15 +885,15 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategory(),1);
+        return new Achievement(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L,"Name",Collections.singletonList(getAchievement()));
+        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategoryVO(),1);
+        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -905,11 +905,11 @@ public class ModelUtils {
     }
 
     public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message");
+        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L,"Category");
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -917,7 +917,7 @@ public class ModelUtils {
     }
 
     public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L,getLanguage(),"Title","Description","Message", getAchievement());
+        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", getAchievement());
     }
 
     public static UserAchievementVO getUserAchievementVO() {
