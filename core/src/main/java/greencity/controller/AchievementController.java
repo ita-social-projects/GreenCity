@@ -32,14 +32,14 @@ public class AchievementController {
      *
      * @return list of {@link AchievementDTO}
      */
-    @ApiOperation(value = "Get all achievements.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @GetMapping("")
-    public ResponseEntity<List<AchievementDTO>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
-    }
+//    @ApiOperation(value = "Get all achievements.")
+//    @ApiResponses(value = {
+//        @ApiResponse(code = 200, message = HttpStatuses.OK),
+//        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+//        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+//    })
+//    @GetMapping("")
+//    public ResponseEntity<List<AchievementDTO>> getAll() {
+//        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
+//    }
 }

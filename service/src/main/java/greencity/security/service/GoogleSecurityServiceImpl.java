@@ -5,19 +5,27 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
+import greencity.entity.Achievement;
 import greencity.entity.User;
+import greencity.entity.UserAchievement;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.UserDeactivatedException;
+import greencity.repository.UserRepo;
 import greencity.security.dto.SuccessSignInDto;
 import greencity.security.jwt.JwtTool;
+import greencity.service.AchievementService;
 import greencity.service.UserService;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +44,8 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     private final GoogleIdTokenVerifier googleIdTokenVerifier;
     private final JwtTool jwtTool;
     private final ModelMapper modelMapper;
+    private final AchievementService achievementService;
+    private final UserRepo userRepo;
 
     /**
      * Constructor.
@@ -48,13 +58,17 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
      */
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
-        JwtTool jwtTool,
-        GoogleIdTokenVerifier googleIdTokenVerifier,
-        ModelMapper modelMapper) {
+                                     JwtTool jwtTool,
+                                     GoogleIdTokenVerifier googleIdTokenVerifier,
+                                     ModelMapper modelMapper,
+                                     AchievementService achievementService,
+                                     UserRepo userRepo) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;
         this.modelMapper = modelMapper;
+        this.achievementService = achievementService;
+        this.userRepo = userRepo;
     }
 
     /**
@@ -69,20 +83,24 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                 GoogleIdToken.Payload payload = googleIdToken.getPayload();
                 String email = payload.getEmail();
                 String userName = (String) payload.get(USERNAME);
-                UserVO user = userService.findByEmail(email);
-                if (user == null) {
+                UserVO userVO = userService.findByEmail(email);
+                if (userVO == null) {
                     log.info(USER_NOT_FOUND_BY_EMAIL + email);
                     String profilePicture = (String) payload.get(GOOGLE_PICTURE);
-                    user = modelMapper.map(createNewUser(email, userName, profilePicture), UserVO.class);
-                    user = userService.save(user);
-                    log.info("Google sign-up and sign-in user - {}", user.getEmail());
-                    return getSuccessSignInDto(user);
+                    User user = createNewUser(email, userName, profilePicture);
+                    List<UserAchievement> userAchievementList = createUserAchievements(user);
+                    user.setUserAchievements(userAchievementList);
+                    User savedUser = userRepo.save(user);
+                    user.setId(savedUser.getId());
+                    userVO = modelMapper.map(user, UserVO.class);
+                    log.info("Google sign-up and sign-in user - {}", userVO.getEmail());
+                    return getSuccessSignInDto(userVO);
                 } else {
-                    if (user.getUserStatus() == UserStatus.DEACTIVATED) {
+                    if (userVO.getUserStatus() == UserStatus.DEACTIVATED) {
                         throw new UserDeactivatedException(ErrorMessage.USER_DEACTIVATED);
                     }
-                    log.info("Google sign-in exist user - {}", user.getEmail());
-                    return getSuccessSignInDto(user);
+                    log.info("Google sign-in exist user - {}", userVO.getEmail());
+                    return getSuccessSignInDto(userVO);
                 }
             } else {
                 throw new IllegalArgumentException(ErrorMessage.BAD_GOOGLE_TOKEN);
@@ -106,6 +124,19 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
             .profilePicturePath(profilePicture)
             .rating(AppConstant.DEFAULT_RATING)
             .build();
+    }
+
+    private List<UserAchievement> createUserAchievements(User user) {
+        List<Achievement> achievementList = modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
+        }.getType());
+        return achievementList.stream()
+                .map(a -> {
+                    UserAchievement userAchievement = new UserAchievement();
+                    userAchievement.setAchievement(a);
+                    userAchievement.setUser(user);
+                    return userAchievement;
+                })
+                .collect(Collectors.toList());
     }
 
     private SuccessSignInDto getSuccessSignInDto(UserVO user) {

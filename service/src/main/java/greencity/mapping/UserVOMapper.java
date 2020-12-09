@@ -63,6 +63,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                     .achievementStatus(userAchievement.getAchievementStatus())
                     .user(UserVO.builder()
                         .id(userAchievement.getUser().getId())
+                        .email(userAchievement.getUser().getEmail())
                         .build())
                     .achievement(AchievementVO.builder()
                         .id(userAchievement.getAchievement().getId())

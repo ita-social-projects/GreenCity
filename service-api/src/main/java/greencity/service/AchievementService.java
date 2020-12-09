@@ -15,7 +15,7 @@ public interface AchievementService {
      *
      * @return list of all{@link AchievementDTO}.
      */
-    List<AchievementDTO> findAll();
+    List<AchievementVO> findAll();
 
     /**
      * Find {@link AchievementVO} for management by page .
