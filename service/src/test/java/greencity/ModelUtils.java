@@ -64,6 +64,7 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
@@ -922,5 +923,13 @@ public class ModelUtils {
 
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+    }
+
+    public static UserAction getUserAction() {
+        return new UserAction(1L, ModelUtils.getUser(), 1, 0, 0, 0, 0, 0, 0, 0, 0.0, 0);
+    }
+
+    public static UserActionVO getUserActionVO() {
+        return new UserActionVO(1L, ModelUtils.getUserVO(), 1, 0, 0, 0, 0, 0, 0, 0, 0.0, 0);
     }
 }

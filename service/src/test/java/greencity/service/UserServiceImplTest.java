@@ -7,6 +7,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.user.*;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.SocialNetwork;
 import greencity.entity.SocialNetworkImage;
 import greencity.entity.TipsAndTricks;
@@ -101,6 +102,9 @@ class UserServiceImplTest {
 
     @Mock
     SocialNetworkImageService socialNetworkImageService;
+
+    @Mock
+    UserActionService userActionService;
 
     private User user = User.builder()
         .id(1L)
@@ -932,6 +936,14 @@ class UserServiceImplTest {
         when(userRepo.searchBy(pageable, userList.get(0).getName())).thenReturn(usersPage);
 
         assertEquals(pageableDto, userService.searchBy(pageable, userList.get(0).getName()));
+    }
+
+    @Test
+    void calculateSocialNetworks() {
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
+        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
+        userService.calculateSocialNetworks(1L, 3);
     }
 
     /*

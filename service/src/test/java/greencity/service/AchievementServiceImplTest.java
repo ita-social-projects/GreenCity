@@ -167,4 +167,15 @@ class AchievementServiceImplTest {
         });
         achievementService.deleteAll(listId);
     }
+
+    @Test
+    void findByCategoryIdAndCondition() {
+        Achievement achievement = ModelUtils.getAchievement();
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        achievement.setAchievementCategory(ModelUtils.getAchievementCategory());
+        achievementVO.setAchievementCategory(ModelUtils.getAchievementCategoryVO());
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
+        assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
+    }
 }

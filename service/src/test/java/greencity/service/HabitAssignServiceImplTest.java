@@ -5,6 +5,7 @@ import static greencity.ModelUtils.getHabitAssign;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
@@ -36,6 +37,8 @@ class HabitAssignServiceImplTest {
     HabitAssignRepo habitAssignRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
+    @Mock
+    UserActionService userActionService;
     @Mock
     ModelMapper modelMapper;
     @InjectMocks
@@ -202,5 +205,21 @@ class HabitAssignServiceImplTest {
         assertThrows(NotFoundException.class, () -> {
             habitAssignService.unenrollHabit(1L, 1L, enrollDate);
         });
+    }
+
+    @Test
+    void calculateAcquiredHabit() {
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
+        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
+        habitAssignService.calculateAcquiredHabit(1L);
+    }
+
+    @Test
+    void calculateHabitStreak() {
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
+        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
+        habitAssignService.calculateHabitStreak(1L, 2);
     }
 }
