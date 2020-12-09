@@ -270,7 +270,7 @@ public class GoalServiceImpl implements GoalService {
 
     private void saveUserGoalForGoal(GoalRequestDto goal, HabitAssign habitAssign) {
         if (isAssignedToHabit(goal, habitAssign)) {
-            if(isAssignedToUser(goal, habitAssign)) {
+            if (isAssignedToUser(goal, habitAssign)) {
                 saveUserGoal(goal, habitAssign);
             } else {
                 throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + goal.getId());
@@ -358,7 +358,7 @@ public class GoalServiceImpl implements GoalService {
             changeStatusToDone(userGoal);
         } else {
             throw new UserGoalStatusNotUpdatedException(
-                    ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + userGoal.getId());
+                ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + userGoal.getId());
         }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
         setTextForUserGoal(updatedUserGoal, language);
