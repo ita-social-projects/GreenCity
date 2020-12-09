@@ -222,7 +222,7 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Find all eco news tags")
     @GetMapping("/tags/all")
-    @ApiPageableWithLocale
+    @ApiLocale
     public ResponseEntity<List<String>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
     }

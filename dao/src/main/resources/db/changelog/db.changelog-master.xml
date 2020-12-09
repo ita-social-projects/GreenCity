@@ -68,4 +68,5 @@
     <include file="db/changelog/logs/ch-drop-column-name-from-tag-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-table-tag-translations-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-add-messages-Kravchenko.xml"/>
+    <include file="db/changelog/logs/ch-add-type-column-to-tags-Derevetskyi.xml"/>
 </databaseChangeLog>

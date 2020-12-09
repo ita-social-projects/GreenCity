@@ -4,7 +4,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.*;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.user.UserGoalDto;
 import greencity.dto.user.UserGoalResponseDto;
 import greencity.entity.Goal;
 import greencity.entity.HabitAssign;
@@ -339,8 +338,16 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public void deleteUserGoalByGoalIdAndUserIdAndHabitId(Long goalId, Long userId, Long habitId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId).get();
-        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId, habitAssign.getId());
+        userGoalRepo.deleteByGoalIdAndHabitAssignId(goalId,
+            getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(userId, habitId).getId());
+    }
+
+    private HabitAssign getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(Long userId, Long habitId) {
+        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+        if (habitAssign.isPresent()) {
+            return habitAssign.get();
+        }
+        throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID);
     }
 
     /**

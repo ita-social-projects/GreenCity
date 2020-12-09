@@ -225,17 +225,18 @@ VALUES (3, 1, 1),
        (45, 8, 6),
        (45, 9, 6);
 
-INSERT INTO tags (name)
-VALUES ('News'),
-       ('Events'),
-       ('Education'),
-       ('Initiatives'),
-       ('Ads'),
-       ('Lifehacks'),
-       ('Green thinking'),
-       ('Zero waste'),
-       ('3 r''s'),
-       ('Eco-city');
+INSERT INTO tags (id, type)
+VALUES (1, 'ECO_NEWS'),
+       (2, 'ECO_NEWS'),
+       (3, 'ECO_NEWS'),
+       (4, 'ECO_NEWS'),
+       (5, 'HABIT'),
+       (6, 'HABIT'),
+       (7, 'HABIT'),
+       (8, 'HABIT'),
+       (9, 'TIPS_AND_TRICKS'),
+       (10, 'TIPS_AND_TRICKS'),
+       (11, 'TIPS_AND_TRICKS');
 
 INSERT INTO eco_news (creation_date, image_path, author_id, text, title, source)
 VALUES ('2020-09-11 18:33:51', 'шлях до картинки', 1,

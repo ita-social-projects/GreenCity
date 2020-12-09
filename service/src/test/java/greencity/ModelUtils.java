@@ -1,6 +1,9 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.achievement.*;
+import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdviceVO;
@@ -63,6 +66,7 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.localization.TagTranslation;
@@ -88,7 +92,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
     }
 
@@ -569,7 +573,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, getTagTranslationsVO(), null, null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
@@ -878,5 +882,45 @@ public class ModelUtils {
 
     public static AdvicePostDto getAdvicePostDto() {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
+    }
+
+    public static Achievement getAchievement() {
+        return new Achievement(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategory(), 1);
+    }
+
+    public static AchievementCategory getAchievementCategory() {
+        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
+    }
+
+    public static AchievementVO getAchievementVO() {
+        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
+    }
+
+    public static AchievementPostDto getAchievementPostDto() {
+        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+    }
+
+    public static AchievementCategoryDto getAchievementCategoryDto() {
+        return new AchievementCategoryDto("Test");
+    }
+
+    public static AchievementTranslationVO getAchievementTranslationVO() {
+        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
+    }
+
+    public static AchievementCategoryVO getAchievementCategoryVO() {
+        return new AchievementCategoryVO(1L, "Category");
+    }
+
+    public static AchievementManagementDto getAchievementManagementDto() {
+        return new AchievementManagementDto(1L);
+    }
+
+    public static AchievementTranslation getAchievementTranslation() {
+        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", getAchievement());
+    }
+
+    public static UserAchievementVO getUserAchievementVO() {
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
     }
 }

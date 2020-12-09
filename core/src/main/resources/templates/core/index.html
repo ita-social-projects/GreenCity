@@ -27,5 +27,10 @@
     <h2>Welcome to management page</h2>
 </div>
     <div id="footer" th:insert="core/footer"></div>
+<script>
+    $.ajaxSetup({
+        xhrFields: { withCredentials: true}
+    });
+</script>
 </body>
 </html>

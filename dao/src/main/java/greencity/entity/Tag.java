@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.TagType;
 import lombok.*;
 
 @Entity
@@ -19,6 +20,10 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private TagType type;
 
     @OneToMany(mappedBy = "tag")
     private List<TagTranslation> tagTranslations;
