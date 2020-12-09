@@ -1,6 +1,7 @@
 package greencity.security.service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Service that provides a token transfer to cookies.
@@ -12,5 +13,5 @@ public interface TokenService {
      * @param accessToken {@link String}
      * @param response    {@link HttpServletResponse}
      */
-    void passTokenToCookies(String accessToken, HttpServletResponse response);
+    void passTokenToCookies(String accessToken, HttpServletResponse response) throws IOException;
 }
