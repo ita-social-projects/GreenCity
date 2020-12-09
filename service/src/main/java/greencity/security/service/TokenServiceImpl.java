@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 public class TokenServiceImpl implements TokenService {
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public void passTokenToCookies(String accessToken, HttpServletResponse response) {
         Cookie cookie = new Cookie("accessToken", accessToken);
