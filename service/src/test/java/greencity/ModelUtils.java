@@ -924,7 +924,8 @@ public class ModelUtils {
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
-        return new UpdateEcoNewsDto(1L, "title", "text", Collections.singletonList("tag"), "image", "source");
+        return new UpdateEcoNewsDto(1L, "title", "text", Collections.singletonList("tag"),
+            "image", "source");
     }
 
     public static SearchNewsDto getSearchNewsDto() {
