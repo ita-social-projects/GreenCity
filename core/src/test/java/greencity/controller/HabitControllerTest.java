@@ -72,7 +72,7 @@ class HabitControllerTest {
 
         mockMvc.perform(get(habitLink + "/tags/search?page=" + pageNumber +
             "&lang=" + locale.getLanguage() + "&tags=News,Education")
-            .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage());
     }

@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
+import greencity.dto.user.UsersFriendDto;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -253,9 +255,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Method that finds user's recommended friends.
      *
      * @param pageable {@link Pageable}.
-     * @param userId       {@link Long} -current user's id.
+     * @param userId   {@link Long} -current user's id.
      * @return {@link Page} of {@link User} instances.
      */
-    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_recommended_friends ( :userId ) ")
-    Page<User> findUsersRecommendedFriends(Pageable pageable, Long userId);
+    @Query(nativeQuery = true, value = "select * FROM public.fn_recommended_friends ( :userId )")
+    Page<UsersFriendDto> findUsersRecommendedFriends(Pageable pageable,
+                                                     @Param("userId") Long userId);
 }

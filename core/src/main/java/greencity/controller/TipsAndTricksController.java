@@ -139,7 +139,7 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Find all tips & tricks tags")
     @GetMapping("/tags/all")
-    @ApiPageableWithLocale
+    @ApiLocale
     public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
     }

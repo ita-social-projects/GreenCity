@@ -152,6 +152,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
+                "/token",
                 "/socket/**")
             .permitAll()
             .antMatchers(HttpMethod.POST,
@@ -219,7 +220,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
-                "/habit/assign/{habitId}",
+                HABIT_ASSIGN_ID,
                 "/goals/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
                 TIPS_AND_TRICKS_COMMENTS,

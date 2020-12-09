@@ -3,7 +3,6 @@ package greencity.mapping;
 import greencity.dto.goal.GoalVO;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.user.UserGoalVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.UserGoal;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
