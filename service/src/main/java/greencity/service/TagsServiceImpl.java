@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
@@ -35,6 +36,15 @@ public class TagsServiceImpl implements TagsService {
         Page<Tag> tags = tagRepo.findAll(pageable);
 
         return buildPageableAdvanceDtoFromPage(tags);
+    }
+
+    @Override
+    public TagVO save(TagPostDto tag) {
+        Tag toSave = modelMapper.map(tag, Tag.class);
+        toSave.getTagTranslations().forEach(t -> t.setTag(toSave));
+        Tag saved = tagRepo.save(toSave);
+
+        return modelMapper.map(saved, TagVO.class);
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {

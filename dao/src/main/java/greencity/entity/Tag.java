@@ -25,7 +25,7 @@ public class Tag {
     @Enumerated(value = EnumType.STRING)
     private TagType type;
 
-    @OneToMany(mappedBy = "tag")
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL)
     private List<TagTranslation> tagTranslations;
 
     @ManyToMany(mappedBy = "tags")
