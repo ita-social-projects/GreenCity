@@ -314,8 +314,8 @@ class EcoNewsServiceImplTest {
     @Test
     void getAmountOfPublishedNewsByUserIdTest() {
         when(ecoNewsRepo.getAmountOfPublishedNewsByUserId(1L)).thenReturn(10L);
-        Long expected = ecoNewsService.getAmountOfPublishedNewsByUserId(1L);
-        assertEquals(expected, 10L);
+        Long actual = ecoNewsService.getAmountOfPublishedNewsByUserId(1L);
+        assertEquals(10L, actual);
     }
 
     @Test
@@ -335,7 +335,7 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    public void searchEcoNewsBy() {
+    void searchEcoNewsBy() {
         Pageable pageable = PageRequest.of(0, 2);
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, 2);
@@ -424,8 +424,8 @@ class EcoNewsServiceImplTest {
     @Test
     void buildSearchCriteriaTest() {
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
-        List<SearchCriteria> expected = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
-        assertEquals(expected.size(), 8);
+        List<SearchCriteria> actual = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
+        assertEquals(8, actual.size());
     }
 
 }
