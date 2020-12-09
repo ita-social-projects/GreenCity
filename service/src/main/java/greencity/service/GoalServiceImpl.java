@@ -269,32 +269,30 @@ public class GoalServiceImpl implements GoalService {
     }
 
     private void saveUserGoalForGoal(GoalRequestDto goal, HabitAssign habitAssign) {
-        if (isAssignedToHabit(goal, habitAssign) && isAssignedToUser(goal, habitAssign)) {
-            saveUserGoal(goal, habitAssign);
+        if (isAssignedToHabit(goal, habitAssign)) {
+            if(isAssignedToUser(goal, habitAssign)) {
+                saveUserGoal(goal, habitAssign);
+            } else {
+                throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + goal.getId());
+            }
+        } else {
+            throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + goal.getId());
         }
     }
 
     private boolean isAssignedToHabit(GoalRequestDto goal, HabitAssign habitAssign) {
         List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
-        try {
             if (ids.contains(goal.getId())) {
                 return true;
             }
-        } catch (Exception e) {
-            throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + goal.getId());
-        }
         return false;
     }
 
     private boolean isAssignedToUser(GoalRequestDto goal, HabitAssign habitAssign) {
         List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
-        try {
             if (!assignedIds.contains(goal.getId())) {
                 return true;
             }
-        } catch (Exception e) {
-            throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + goal.getId());
-        }
         return false;
     }
 
