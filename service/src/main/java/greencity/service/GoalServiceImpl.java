@@ -272,26 +272,22 @@ public class GoalServiceImpl implements GoalService {
         if (isAssignedToHabit(goal, habitAssign)) {
             if (isAssignedToUser(goal, habitAssign)) {
                 saveUserGoal(goal, habitAssign);
+            } else {
+                throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + goal.getId());
             }
-        }
-    }
-
-    private boolean isAssignedToHabit(GoalRequestDto goal, HabitAssign habitAssign) {
-        List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
-        if (ids.contains(goal.getId())) {
-            return true;
         } else {
             throw new NotFoundException(ErrorMessage.GOAL_NOT_ASSIGNED_FOR_THIS_HABIT + goal.getId());
         }
     }
 
+    private boolean isAssignedToHabit(GoalRequestDto goal, HabitAssign habitAssign) {
+        List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
+        return ids.contains(goal.getId());
+    }
+
     private boolean isAssignedToUser(GoalRequestDto goal, HabitAssign habitAssign) {
         List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
-        if (!assignedIds.contains(goal.getId())) {
-            return true;
-        } else {
-            throw new WrongIdException(ErrorMessage.GOAL_ALREADY_SELECTED + goal.getId());
-        }
+        return !assignedIds.contains(goal.getId());
     }
 
     private void saveUserGoal(GoalRequestDto goal, HabitAssign habitAssign) {
@@ -360,6 +356,9 @@ public class GoalServiceImpl implements GoalService {
         userGoal = userGoalRepo.getOne(goalId);
         if (isActive(userGoal)) {
             changeStatusToDone(userGoal);
+        } else {
+            throw new UserGoalStatusNotUpdatedException(
+                ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + userGoal.getId());
         }
         UserGoalResponseDto updatedUserGoal = modelMapper.map(userGoal, UserGoalResponseDto.class);
         setTextForUserGoal(updatedUserGoal, language);
@@ -367,12 +366,15 @@ public class GoalServiceImpl implements GoalService {
     }
 
     private boolean isActive(UserGoal userGoal) {
-        if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
-            return true;
-        } else {
+        try {
+            if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
+                return true;
+            }
+        } catch (Exception e) {
             throw new UserGoalStatusNotUpdatedException(
-                ErrorMessage.USER_GOAL_STATUS_IS_ALREADY_DONE + userGoal.getId());
+                ErrorMessage.USER_GOAL_NOT_FOUND + userGoal.getId());
         }
+        return false;
     }
 
     private void changeStatusToDone(UserGoal userGoal) {
