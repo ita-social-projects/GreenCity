@@ -216,24 +216,26 @@ class GoalServiceImplTest {
     }
 
     @Test
-    void saveUserGoalsThorows() {
+    void saveUserGoalsThorowsNotFoundException() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
                 .thenReturn(Optional.of(habitAssign));
         when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
                 .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(2));
         assertThrows(NotFoundException.class, () -> goalService
-                .saveUserGoals(userId, 1L, Collections.singletonList(goalRequestDtos.get(2)), "en"));
+                .saveUserGoals(userId, 1L, goalRequestDto, "en"));
     }
 
     @Test
-    void saveUserGoalsThorowss() {
+    void saveUserGoalsThorowsWrongIdException() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
                 .thenReturn(Optional.of(habitAssign));
         when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
                 .thenReturn(Collections.singletonList(1L));
         when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
                 .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(0));
         assertThrows(WrongIdException.class, () -> goalService
-                .saveUserGoals(userId, 1L, Collections.singletonList(goalRequestDtos.get(0)), "en"));
+                .saveUserGoals(userId, 1L, goalRequestDto, "en"));
     }
 }

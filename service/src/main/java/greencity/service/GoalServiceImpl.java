@@ -282,18 +282,12 @@ public class GoalServiceImpl implements GoalService {
 
     private boolean isAssignedToHabit(GoalRequestDto goal, HabitAssign habitAssign) {
         List<Long> ids = userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId());
-            if (ids.contains(goal.getId())) {
-                return true;
-            }
-        return false;
+        return ids.contains(goal.getId());
     }
 
     private boolean isAssignedToUser(GoalRequestDto goal, HabitAssign habitAssign) {
         List<Long> assignedIds = userGoalRepo.getAllAssignedGoals(habitAssign.getId());
-            if (!assignedIds.contains(goal.getId())) {
-                return true;
-            }
-        return false;
+        return !assignedIds.contains(goal.getId());
     }
 
     private void saveUserGoal(GoalRequestDto goal, HabitAssign habitAssign) {
