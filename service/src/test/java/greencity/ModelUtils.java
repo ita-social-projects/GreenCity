@@ -1,7 +1,11 @@
 package greencity;
 
 import greencity.constant.AppConstant;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -51,7 +55,11 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.*;
+import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -64,13 +72,22 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UsersFriendDto;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.*;
+import greencity.enums.AchievementStatus;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.GoalStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.PlaceStatus;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,6 +108,23 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
+    public static UsersFriendDto usersFriendDto = new UsersFriendDto() {
+        @Override
+        public Long getId() {
+            return 1L;
+        }
+
+        @Override
+        public String getName() {
+            return TestConst.NAME;
+        }
+
+        @Override
+        public String getProfilePicture() {
+            return "profile";
+        }
+    };
+
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
@@ -885,15 +919,15 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategory(),1);
+        return new Achievement(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L,"Name",Collections.singletonList(getAchievement()));
+        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategoryVO(),1);
+        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -905,11 +939,11 @@ public class ModelUtils {
     }
 
     public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message");
+        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L,"Category");
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -917,7 +951,7 @@ public class ModelUtils {
     }
 
     public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L,getLanguage(),"Title","Description","Message", getAchievement());
+        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", getAchievement());
     }
 
     public static UserAchievementVO getUserAchievementVO() {
