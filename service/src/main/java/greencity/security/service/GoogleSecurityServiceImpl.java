@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static greencity.constant.AppConstant.GOOGLE_PICTURE;
 import static greencity.constant.AppConstant.USERNAME;
 import static greencity.constant.ErrorMessage.*;
+import static greencity.security.service.OwnSecurityServiceImpl.getUserAchievements;
 
 /**
  * {@inheritDoc}
@@ -127,16 +128,7 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
     }
 
     private List<UserAchievement> createUserAchievements(User user) {
-        List<Achievement> achievementList = modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
-        }.getType());
-        return achievementList.stream()
-                .map(a -> {
-                    UserAchievement userAchievement = new UserAchievement();
-                    userAchievement.setAchievement(a);
-                    userAchievement.setUser(user);
-                    return userAchievement;
-                })
-                .collect(Collectors.toList());
+        return getUserAchievements(user, modelMapper, achievementService);
     }
 
     private SuccessSignInDto getSuccessSignInDto(UserVO user) {

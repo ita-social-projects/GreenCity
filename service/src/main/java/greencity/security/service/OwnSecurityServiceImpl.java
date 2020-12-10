@@ -153,6 +153,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     }
 
     private List<UserAchievement> createUserAchievements(User user) {
+        return getUserAchievements(user, modelMapper, achievementService);
+    }
+
+    static List<UserAchievement> getUserAchievements(User user, ModelMapper modelMapper, AchievementService achievementService) {
         List<Achievement> achievementList = modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
         }.getType());
         return achievementList.stream()
