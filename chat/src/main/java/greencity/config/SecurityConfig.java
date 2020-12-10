@@ -4,7 +4,6 @@ import static greencity.constant.AppConstant.*;
 import greencity.filters.AccessTokenAuthenticationFilter;
 import greencity.jwt.JwtTool;
 import greencity.providers.JwtAuthenticationProvider;
-import greencity.service.ParticipantService;
 import java.util.Arrays;
 import java.util.Collections;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -35,15 +34,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTool jwtTool;
-    private final ParticipantService participantService;
 
     /**
      * Constructor.
      */
     @Autowired
-    public SecurityConfig(JwtTool jwtTool, ParticipantService participantService) {
+    public SecurityConfig(JwtTool jwtTool) {
         this.jwtTool = jwtTool;
-        this.participantService = participantService;
     }
 
     /**
@@ -68,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), participantService),
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager()),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))
@@ -79,7 +76,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/img/**")
             .permitAll()
             .antMatchers(HttpMethod.GET,
-                "/chat")
+                "/chat",
+                "/chat/**")
             .hasAnyRole(USER, ADMIN, MODERATOR);
     }
 

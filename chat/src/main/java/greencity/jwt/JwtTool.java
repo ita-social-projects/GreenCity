@@ -1,13 +1,6 @@
 package greencity.jwt;
 
-import static greencity.constant.AppConstant.AUTHORITIES;
-import greencity.enums.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultJwtParser;
-import java.util.*;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,71 +14,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class JwtTool {
-    private final Integer accessTokenValidTimeInMinutes;
     private final String accessTokenKey;
 
     /**
      * Constructor.
      */
     @Autowired
-    public JwtTool(@Value("${accessTokenValidTimeInMinutes}") Integer accessTokenValidTimeInMinutes,
-                   @Value("${tokenKey}") String accessTokenKey) {
-        this.accessTokenValidTimeInMinutes = accessTokenValidTimeInMinutes;
+    public JwtTool(@Value("${tokenKey}") String accessTokenKey) {
         this.accessTokenKey = accessTokenKey;
-    }
-
-    /**
-     * Method for creating access token.
-     *
-     * @param email this is email of user.
-     * @param role  this is role of user.
-     */
-    public String createAccessToken(String email, Role role) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put(AUTHORITIES, Collections.singleton(role.name()));
-        Date now = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        calendar.add(Calendar.MINUTE, accessTokenValidTimeInMinutes);
-        return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(calendar.getTime())
-            .signWith(SignatureAlgorithm.HS256, accessTokenKey)
-            .compact();
-    }
-
-    /**
-     * Gets email from token and throws an error if token is expired. WARNING: The
-     * method DOESN'T CHECK whether the token's signature is valid.
-     *
-     * @param token - access token
-     * @return - user's email
-     * @throws io.jsonwebtoken.ExpiredJwtException - if token is expired.
-     */
-    public String getEmailOutOfAccessToken(String token) {
-        String[] splitToken = token.split("\\.");
-        String unsignedToken = splitToken[0] + "." + splitToken[1] + ".";
-        DefaultJwtParser parser = new DefaultJwtParser();
-        Jwt<?, ?> jwt = parser.parse(unsignedToken);
-        return ((Claims) jwt.getBody()).getSubject();
-    }
-
-    /**
-     * Method that check if token still valid.
-     *
-     * @param token this is token.
-     * @return {@link Boolean}
-     */
-    public boolean isTokenValid(String token, String tokenKey) {
-        boolean isValid = false;
-        try {
-            Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
-            isValid = true;
-        } catch (Exception e) {
-            log.info("Given token is not valid: " + e.getMessage());
-        }
-        return isValid;
     }
 
     /**
@@ -109,14 +45,5 @@ public class JwtTool {
             .filter(authHeader -> authHeader.startsWith("Bearer "))
             .map(token -> token.substring(7))
             .orElse(null);
-    }
-
-    /**
-     * Generates a random string that can be used as refresh token key.
-     *
-     * @return random generated token key
-     */
-    public String generateTokenKey() {
-        return UUID.randomUUID().toString();
     }
 }

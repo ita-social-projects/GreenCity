@@ -1,17 +1,15 @@
 package greencity.filters;
 
-import greencity.entity.Participant;
 import greencity.jwt.JwtTool;
-import greencity.service.ParticipantService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,23 +19,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * Class that provide Authentication object based on JWT.
- *
  */
 @Slf4j
+@AllArgsConstructor
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTool jwtTool;
     private final AuthenticationManager authenticationManager;
-    private final ParticipantService participantService;
-
-    /**
-     * Constructor.
-     */
-    public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
-                                           ParticipantService participantService) {
-        this.jwtTool = jwtTool;
-        this.authenticationManager = authenticationManager;
-        this.participantService = participantService;
-    }
 
     private String getTokenFromCookies(Cookie[] cookies) {
         return Arrays.stream(cookies)
@@ -57,7 +44,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Checks if request has token in header, if this token still valid, and set
+     * Checks if request has token in header (if this token still valid) and sets
      * authentication for spring.
      *
      * @param request  this is servlet that take request
@@ -66,8 +53,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-        @SuppressWarnings("NullableProblems") HttpServletResponse response,
-        @SuppressWarnings("NullableProblems") FilterChain chain)
+                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
+                                 @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = extractToken(request);
 
@@ -75,12 +62,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-
-                Participant part = participantService.findByEmail((String) authentication.getPrincipal());
-                if (part != null) {
-                    log.debug("User successfully authenticate - {}", authentication.getPrincipal());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                log.debug("User successfully authenticate - {}", authentication.getPrincipal());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
             } catch (Exception e) {
