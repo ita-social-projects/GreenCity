@@ -13,5 +13,5 @@ public interface DirectMessageService {
      */
     List<DirectMessage> findAllMessagesByDirectRoom(Long directRoomId);
 
-    void processMessage(DirectMessage chatMessage);
+    DirectMessage processMessage(DirectMessage chatMessage);
 }

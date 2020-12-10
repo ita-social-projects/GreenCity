@@ -30,12 +30,13 @@ public class DirectMessageServiceImpl implements DirectMessageService {
 
 
     @Override
-    public void processMessage(DirectMessage directMessage) {
+    public DirectMessage processMessage(DirectMessage directMessage) {
       /*  var chatId = directRoomRepo.findByParticipants(chatMessage.ge)
             .getChatId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true);
         chatMessage.setChatId(chatId.get());*/
        // DirectMessage directMessage = modelMapper.map(directMessageVO, DirectMessage.class);
         DirectMessage saved = directMessageRepo.save(directMessage);
+        return saved;
         /*messagingTemplate.convertAndSendToUser(String.valueOf(saved.getSender().getId()), "/queue/messages",
             new Object());*/
     }

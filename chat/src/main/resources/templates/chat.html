@@ -1,10 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-<p>HELLO!</p>
+<form id="messageForm" name="messageForm">
+    <div class="input-message">
+        <input type="text" id="message" autocomplete="off"
+               placeholder="Type a message..."/>
+        <button type="submit">Send</button>
+    </div>
+</form>
 </body>
 </html>

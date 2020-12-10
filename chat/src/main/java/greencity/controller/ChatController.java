@@ -43,7 +43,7 @@ public class ChatController {
     }
 
     @MessageMapping("/direct")
-    public void processMessage(@Payload DirectMessage chatMessage) {
-        directMessageService.processMessage(chatMessage);
+    public DirectMessage processMessage(@Payload DirectMessage chatMessage) {
+        return directMessageService.processMessage(chatMessage);
     }
 }
