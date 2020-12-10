@@ -3,7 +3,6 @@ package greencity.repository;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.User;
-import greencity.enums.HabitAssignStatus;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
