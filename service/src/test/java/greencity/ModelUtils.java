@@ -55,10 +55,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
+import greencity.dto.tipsandtrickscomment.*;
 import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
@@ -581,6 +578,8 @@ public class ModelUtils {
             .build();
     }
 
+
+
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
             TagTranslationVO.builder().id(2L).name("News").build(),
@@ -723,9 +722,12 @@ public class ModelUtils {
     public static TipsAndTricksComment getTipsAndTricksComment() {
         return TipsAndTricksComment.builder()
             .id(1L)
+            .modifiedDate(LocalDateTime.now().withNano(0))
             .text("TipsAndTricksComment")
             .tipsAndTricks(getTipsAndTricks())
             .user(getUser())
+            .usersLiked(Collections.singleton(getUser()))
+            .currentUserLiked(true)
             .build();
     }
 
