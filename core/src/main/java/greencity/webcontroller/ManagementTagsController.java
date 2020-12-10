@@ -49,10 +49,16 @@ public class ManagementTagsController {
         return buildGenericResponseDto(bindingResult);
     }
 
-    @ResponseBody
+    @GetMapping("/{id}")
+    public ResponseEntity<TagVO> findById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tagsService.findById(id));
+    }
+
+    /*
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tagsService.deleteById(id));
-    }
+    }*/
 }

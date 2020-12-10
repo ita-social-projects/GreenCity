@@ -14,6 +14,7 @@ function updateCheckBoxCount(chInt) {
 
 $(document).ready(function () {
     let deleteBtn = $("#btnDelete");
+    console.log('js...');
 
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -87,9 +88,9 @@ $(document).ready(function () {
         });
     }
 
-    function sendAjaxPutRequest(payload, adviceId) {
+    function sendAjaxPutRequest(payload, tagId) {
         $.ajax({
-            url: `/management/tags/${adviceId}`,
+            url: `/management/tags/${tagId}`,
             type: 'put',
             dataType: 'json',
             contentType: 'application/json',
@@ -159,14 +160,15 @@ $(document).ready(function () {
             $(this).find('input.eEdit').val("");
         });
         clearAllErrorsSpan();
-        $('#editAdviceModal').modal();
+        $('#editTagModal').modal();
         var href = $(this).attr('href');
-        $.get(href, function (advice, status) {
-            $('#id').val(advice.id);
-            $('#habit').val(advice.habit.id);
-            advice.translations.forEach(function (translation, index) {
-                $(`#content_${translation.language.id}_${translation.language.code}`)
-                    .val(translation.content);
+        console.log(href);
+        $.get(href, function (tag, status) {
+            $('#id').val(tag.id);
+            $('#habit').val(tag.habit.id);
+            tag.translations.forEach(function (translation, index) {
+                $(`#name_${translation.language.id}_${translation.language.code}`)
+                    .val(translation.name);
             })
         });
     });
@@ -177,7 +179,7 @@ $(document).ready(function () {
 
     $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
-        $('#deleteAdviceModal').modal();
+        $('#deleteTagModal').modal();
         var href = $(this).attr('href');
         $('#deleteOneSubmit').attr('href', href);
     });
@@ -190,12 +192,13 @@ $(document).ready(function () {
 
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
-        var href = '/management/advices/deleteAll';
+        var href = '/management/tags/all';
         var payload = getCheckedValues(checkbox);
         sendAjaxDeleteRequest(href, payload);
     });
 
     $('#submitAddBtn').on('click', function (event) {
+        console.log('method...');
         event.preventDefault();
         clearAllErrorsSpan();
         var formData = getDataFromForm('#addTagForm');
@@ -207,10 +210,10 @@ $(document).ready(function () {
     $('#submitEditBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        var formData = getDataFromForm('#editAdviceForm');
-        var adviceId = formData.id;
+        var formData = getDataFromForm('#editTagForm');
+        var tagId = formData.id;
         var payload = composePayloadFromFormData(formData);
-        sendAjaxPutRequest(payload, adviceId);
+        sendAjaxPutRequest(payload, tagId);
     })
 });
 

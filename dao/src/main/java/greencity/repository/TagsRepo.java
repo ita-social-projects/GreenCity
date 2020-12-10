@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.Tag;
 import java.util.List;
+import java.util.Optional;
 
 import greencity.enums.TagType;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,12 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @return list of tags {@link Page}
      * @author Markiyan Derevetskyi
      * */
-    @Query(value = "select t from Tag t join fetch t.tagTranslations order by t.id",
-        countQuery = "select count(t) from Tag t")
+    @Query(value = "SELECT t FROM Tag t JOIN FETCH t.tagTranslations ORDER BY t.id",
+        countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> findAll(Pageable pageable);
+
+    @Query("SELECT t from Tag t JOIN FETCH t.tagTranslations WHERE t.id = :id")
+    Optional<Tag> findById(Long id);
 
     /**
      * Method that allow you to find list of {@link Tag}s by names and type.

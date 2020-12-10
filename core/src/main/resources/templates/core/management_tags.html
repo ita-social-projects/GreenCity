@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Tags Management</title>
+    <meta charset="utf-8"/>
+    <title>Advice management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <script th:src="@{/management/tags/buttonsAJAX.js}"></script>
+    <!--<script th:src="@{/management/tags/buttonsAJAX.js}"></script>-->
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -37,6 +37,7 @@
                         <div class="col-sm-6">
                                 <span class="search-box-right">
                                     <form action="/management/tags" class="form-inline searching" method="get">
+                                        <!--<i class="material-icons"></i>-->
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
                                         <input type="text" name="query" id="inputSearch" class="form-control"
@@ -46,9 +47,8 @@
                             <a class="btn btn-secondary" data-toggle="modal" href="#addTagModal"
                                id="addTagModalBtn">
                                 <div>Add Tag</div></a>
-                            <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled" data-toggle="modal" >
-                                <div>Delete</div>
-                            </a>
+                            <a class="btn btn-remove disabled" data-toggle="modal" id="btnDelete" href="#deleteAllSelectedModal">
+                                <div>Delete</div></a>
                         </div>
                     </div>
                 </div>
@@ -57,26 +57,55 @@
                     <tr class="table-primary">
                         <th>
                                 <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
+                                    <input id="selectAll" type="checkbox">
                                     <label for="selectAll"></label>
                                 </span>
                         </th>
                         <th>ID</th>
                         <th>Type</th>
                         <th>Translations</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
+                    <tbody>
 
+                    </tbody>
+                    <!--
+                    <form action="/management/tags/filter" id="searchForm" method="POST">
+
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <input placeholder="Search" th:name="id" th:value="${fields eq null ? '' : fields.id }"
+                                       type="search"/>
+                            </td>
+                            <td>
+                                <input placeholder="Search" th:name="habitId" th:value="${fields eq null ? '' : fields.habitId }"
+                                       type="search"/>
+                            </td>
+                            <td>
+                                <input placeholder="Search" style="width: 100%" th:name="translationContent"
+                                       th:value="${fields eq null ? '' : fields.translationContent }"
+                                       type="search"/>
+                            </td>
+                            <td colspan="2">
+                                <button type="submit" id="searchBy"><img alt="search"
+                                                                         src="/img/search.png"></button>
+                            </td>
+                        </tr>
+
+                    </form> -->
                     <th:block th:each="tag, iterStatus :${tags.getPage()}">
                         <tbody>
                         <tr>
                             <td>
-                                        <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                                   name="options[]" th:value="${tag.getId()}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                        </span>
+                                    <span class="custom-checkbox">
+                                        <input id="checkbox1" name="options[]" th:id="checkbox+${iterStatus.count}"
+                                               th:value="${tag.getId()}" type="checkbox"
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                        <label for="checkbox1" th:for="checkbox+${iterStatus.count}"></label>
+                                    </span>
                             </td>
                             <td th:text="${tag.getId()}"></td>
                             <td th:text="${tag.getType()}"></td>
@@ -84,69 +113,48 @@
                                 <table class="table table-borderless m-0">
                                     <thead>
                                     <tr class="table-secondary">
-                                        <th style="width: 8%">TranslationID</th>
-                                        <th style="width: 12%">Name</th>
-                                        <th style="width: 20%">Language</th>
+                                        <th class="py-1">TranslationID</th>
+                                        <th class="py-1">Name</th>
+                                        <th class="py-1">LanguageCode</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <th:block
                                             th:each="translation : ${tags.getPage().get(iterStatus.index).getTagTranslations()}">
                                         <tr>
-                                            <td th:text="${translation.getId()}"></td>
-                                            <td th:text="${translation.getName()}"></td>
-                                            <td th:text="${translation.getLanguageVO().getCode()}"></td>
+                                            <td class="py-1 text-right" th:text="${translation.getId()}"></td>
+                                            <td class="py-1" th:text="${translation.getName()}"></td>
+                                            <td class="py-1" th:text="${translation.getLanguageVO().getCode()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>
                                 </table>
                             </td>
                             <td>
-                                <a th:href="@{/management/tags/{id}(id=${tag.getId()})}" class="edit eBtn">
-                                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-                                <a th:href="@{/management/tags/{id}(id=${tag.getId()})}" class="delete eDelBtn" data-toggle="modal">
-                                    <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
-                                </a>
+                                <a class="edit eBtn" th:href="@{/management/tags/{id}(id=${tag.getId()})}"><i
+                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                <a class="delete eDelBtn" data-toggle="modal"
+                                   th:href="@{/management/tags/{id}(id=${tag.getId()})}"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
                     </th:block>
                 </table>
-                <div class="clearfix" th:if="${tags.getPage().size() ne 0}">
-                    <div class="hint-text">
-                        Showing
-                        <b th:text="${tags.getCurrentPage() eq 0 ? '1 -' : (tags.isHasNext() ? tags.getPage().size() * tags.getCurrentPage() : tags.getTotalElements() - tags.getPage().size()) + 1 + ' - '}"></b>
-                        <b th:text="${tags.getCurrentPage() eq 0 ? tags.getPage().size() : (tags.isHasNext() ? tags.getPage().size() * (tags.getCurrentPage() + 1) : tags.getTotalElements())}">*</b>
-                        out of
-                        <b th:text="${tags.getTotalElements()}"></b>
-                        entries
+                <div class="clearfix">
+                    <div class="hint-text">Showing <b
+                            th:text="${tags.getTotalElements()>20?20:tags.getTotalElements()}">5</b> out of <b
+                            th:text="${tags.getTotalElements()}">25</b> entries
                     </div>
                     <ul class="pagination">
-
-                        <li class="page-item"
-                            th:classappend="${!tags.isFirst()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!tags.isFirst()}"
-                               th:href="@{/management/tags?page={id}(id=${0})}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${tags.isFirst()}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
+                        <li class="page-item" th:classappend="${tags.getCurrentPage()==0?'disabled':''}"><a
+                                class="page-link" th:href="@{tags(page=${tags.getCurrentPage()-1})}">Previous</a>
                         </li>
-
+                        <li class="page-item" th:classappend="${tags.getCurrentPage()==i?'active':''}"
+                            th:each="i : ${#numbers.sequence(0,tags.getTotalPages()-1)}"><a
+                                class="page-link" th:href="@{tags(page=${i})}" th:text="${i+1}">1</a></li>
                         <li class="page-item"
-                            th:if="${pageNumber > -1 && pageNumber < tags.getTotalPages()}"
-                            th:classappend="${pageNumber == tags.getNumber()} ? 'active' : ''"
-                            th:each="pageNumber : ${#numbers.sequence(tags.getNumber()-3, tags.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/tags?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
-                        </li>
-
-                        <li class="page-item"
-                            th:classappend="${!tags.isLast()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!tags.isLast()}"
-                               th:href="@{/management/tags?page={id}(id=${tags.getTotalPages()-1})}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${tags.isLast()}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
+                            th:classappend="${tags.getCurrentPage()==tags.getTotalPages()-1?'disabled':''}"><a
+                                class="page-link" th:href="@{tags(page=${tags.getCurrentPage()+1})}">Next</a>
                         </li>
                     </ul>
                 </div>
@@ -154,10 +162,10 @@
         </div>
     </div>
     <!-- Add Modal HTML -->
-    <div id="addTagModal" class="modal fade">
+    <div class="modal fade" id="addTagModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{management/tags}" method="post" id="addTagForm">
+                <form id="addTagForm" method="post" th:action="@{management/tags}">
                     <div class="modal-header">
                         <h4 class="modal-title">Add Tag</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -189,11 +197,14 @@
                                                th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-9">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <textarea class="form-control" th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
+                                        <label>
+                                            <input class="form-control"
+                                                   th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                                   type="text"/>
+                                        </label>
                                         <span class="errorSpan"
                                               th:id="'errorModalSavetranslations['+${iterInfo.index}+'].name'"></span>
                                     </div>
@@ -210,27 +221,28 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div id="editTagModal" class="modal fade">
+    <div class="modal fade" id="editTagModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="editTagForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit </h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Edit Tag</h4>
+                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="id">Id</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                            <label>ID</label>
+                            <label for="id"></label><input class="form-control" id="id" name="id" readonly required type="text">
                         </div>
                         <div class="form-group">
                             <label>Type</label>
-                            <select name="type" class="form-control">
-                                <option>ECO_NEWS</option>
-                                <option>TIPS_AND_TRICKS</option>
-                                <option>HABIT</option>
-                            </select>
+                            <label>
+                                <select name="tagType" class="form-control">
+                                    <option>ECO_NEWS</option>
+                                    <option>TIPS_AND_TRICKS</option>
+                                    <option>HABIT</option>
+                                </select>
+                            </label>
                             <span class="errorSpan" th:id="errorModalUpdatetype"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
@@ -238,23 +250,30 @@
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Language ID</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getId()}" th:value="${language.getId()}" type="text"/>
+                                        <label>
+                                            <input class="form-control" readonly required
+                                                   th:name="${language.getId()}" th:value="${language.getId()}" type="text"/>
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="col">
                                     <div class="form-group">
                                         <label>Code</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
+                                        <label>
+                                            <input class="form-control" readonly required
+                                                   th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="col-12">
+                                <div class="col-9">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <textarea class="form-control" th:id="name+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                  type="text"></textarea>
+                                        <label>
+                                            <input class="form-control"
+                                                   th:id="name+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                                   th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                                   type="text"/>
+                                        </label>
                                         <span class="errorSpan"
                                               th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].name'"></span>
                                     </div>
@@ -264,28 +283,28 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-info btn-primary" value="Save" id="submitEditBtn">
+                        <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <!-- Delete Modal HTML -->
-    <div id="deleteAchievementModal" class="modal fade">
+    <div class="modal fade" id="deleteTagModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="deleteAchievementForm">
+                <form id="deleteTagForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Achievement</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Delete Tag</h4>
+                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>Are you sure you want to delete that Record?</p>
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteOneSubmit" class="btn btn-remove">
+                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" value="Cancel">
+                        <a class="btn btn-remove" href="" id="deleteOneSubmit">
                             <div>Delete</div></a>
                     </div>
                 </form>
@@ -293,29 +312,250 @@
         </div>
     </div>
     <!-- Delete all selected Modal HTML -->
-    <div id="deleteAllSelectedModal" class="modal fade">
+    <div class="modal fade" id="deleteAllSelectedModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="">
                     <div class="modal-header">
                         <h4 class="modal-title">Delete all selected</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <button aria-hidden="true" class="close" data-dismiss="modal" type="button">&times;</button>
                     </div>
                     <div class="modal-body">
                         <p>Are you sure you want to delete these Records?</p>
                         <p class="text-warning"><small>This action cannot be undone.</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">
+                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" value="Cancel">
+                        <a class="btn btn-danger" href="" id="deleteAllSubmit">
                             <div>Delete</div></a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<script>
+    function clearAllErrorsSpan() {
+        $('.errorSpan').text('');
+    }
+
+    let checkedCh = 0;
+    function updateCheckBoxCount(chInt) {
+        let chBox = $('#checkbox' + chInt);
+        let deleteBtn = $("#btnDelete");
+        chBox.is(":checked") ? checkedCh++ : checkedCh--;
+        if (checkedCh === 0) {
+            deleteBtn.addClass("disabled");
+        } else deleteBtn.removeClass("disabled");
+    }
+
+    $(document).ready(function () {
+        let deleteBtn = $("#btnDelete");
+        console.log('js...');
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        var checkbox = $('table tbody input[type="checkbox"]');
+        $("#selectAll").click(function() {
+            if (this.checked) {
+                checkedCh = 0;
+                checkbox.each(function () {
+                    this.checked = true;
+                    checkedCh++;
+                });
+                deleteBtn.removeClass("disabled");
+            } else {
+                checkbox.each(function () {
+                    checkedCh--;
+                    this.checked = false;
+                });
+                deleteBtn.addClass("disabled");
+            }
+        });
+        checkbox.click(function(){
+            if(!this.checked){
+                $("#selectAll").prop("checked", false);
+            }
+        });
+
+        $('#btnSearchImage').click(function (){
+            let url = "/management/tags?filter=";
+            let query = $('#inputSearch').val();
+            console.log(query);
+            $.ajax({
+                url: url + query,
+                type: 'GET',
+                success: function(res) {
+                    window.location.href= url + query;
+                }
+            });
+        });
+
+        function sendAjaxDeleteRequest(href, payload) {
+            payload = payload !== undefined ? payload : {};
+            $.ajax({
+                url: href,
+                type: 'delete',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function () {
+                    location.reload();
+                },
+                data: JSON.stringify(payload)
+            });
+        }
+
+        function sendAjaxPostRequest(payload) {
+            $.ajax({
+                url: '/management/tags/',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    if (Array.isArray(data.errors) && data.errors.length) {
+                        data.errors.forEach(function (el) {
+                            console.log(el.fieldName);
+                            $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
+                        })
+                    } else {
+                        location.reload();
+                    }
+                },
+                data: JSON.stringify(payload)
+            });
+        }
+
+        function sendAjaxPutRequest(payload, tagId) {
+            $.ajax({
+                url: `/management/tags/${tagId}`,
+                type: 'put',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    if (Array.isArray(data.errors) && data.errors.length) {
+                        data.errors.forEach(function (el) {
+                            console.log(el.fieldName);
+                            $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
+                        })
+                    } else {
+                        location.reload();
+                    }
+                },
+                data: JSON.stringify(payload)
+            });
+        }
+
+        function getCheckedValues(checkbox) {
+            var payload = [];
+            checkbox.each(function () {
+                if (this.checked) {
+                    payload.push(parseInt(this.value));
+                }
+            });
+
+            return payload;
+        }
+
+        function getDataFromForm(formId) {
+            return $(formId).serializeArray().reduce(function (obj, item) {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+        }
+
+        function getTranslationsFromFormData(formData) {
+            var translations = [];
+            for (var key in formData) {
+                if (key.startsWith("name")) {
+                    var nameAndLanguage = key.split("_");
+                    var langId = nameAndLanguage[1];
+                    var langCode = nameAndLanguage[2];
+                    var name = formData["name_" + langId + "_" + langCode];
+                    translations.push({
+                        "name": name,
+                        "language": {
+                            "code": langCode,
+                            "id": langId
+                        }
+                    });
+                }
+            }
+
+            return translations;
+        }
+
+        function composePayloadFromFormData(formData) {
+            return {
+                "type": formData.tagType,
+                "tagTranslations": getTranslationsFromFormData(formData)
+            };
+        }
+
+        $('td .edit.eBtn').on('click', function (event) {
+            event.preventDefault();
+            $("#editTagModal").each(function () {
+                $(this).find('input.eEdit').val("");
+            });
+            clearAllErrorsSpan();
+            $('#editTagModal').modal();
+            var href = $(this).attr('href');
+            console.log(href);
+            $.get(href, function (tag, status) {
+                console.log(tag);
+                $('#id').val(tag.id);
+                $('#tagType').val(tag.type);
+                tag.tagTranslations.forEach(function (translation, index) {
+                    $(`#name_${translation.languageVO.id}_${translation.languageVO.code}`)
+                        .val(translation.name);
+                })
+            });
+        });
+
+        $('#addTagModalBtn').on('click', function (event) {
+            clearAllErrorsSpan();
+        });
+
+        $('td .delete.eDelBtn').on('click', function (event) {
+            event.preventDefault();
+            $('#deleteTagModal').modal();
+            var href = $(this).attr('href');
+            $('#deleteOneSubmit').attr('href', href);
+        });
+
+        $('#deleteOneSubmit').on('click', function (event) {
+            event.preventDefault();
+            var href = $(this).attr('href');
+            sendAjaxDeleteRequest(href);
+        });
+
+        $('#deleteAllSubmit').on('click', function (event) {
+            event.preventDefault();
+            var href = '/management/tags/all';
+            var payload = getCheckedValues(checkbox);
+            sendAjaxDeleteRequest(href, payload);
+        });
+
+        $('#submitAddBtn').on('click', function (event) {
+            console.log('method...');
+            event.preventDefault();
+            clearAllErrorsSpan();
+            var formData = getDataFromForm('#addTagForm');
+            var payload = composePayloadFromFormData(formData);
+            console.log(payload);
+            sendAjaxPostRequest(payload);
+        });
+
+        $('#submitEditBtn').on('click', function (event) {
+            event.preventDefault();
+            clearAllErrorsSpan();
+            var formData = getDataFromForm('#editTagForm');
+            var tagId = formData.id;
+            var payload = composePayloadFromFormData(formData);
+            sendAjaxPutRequest(payload, tagId);
+        })
+    });
+</script>
 </body>
 </html>
+

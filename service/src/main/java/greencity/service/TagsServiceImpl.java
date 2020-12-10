@@ -6,10 +6,7 @@ import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.DuplicatedTagException;
-import greencity.exception.exceptions.InvalidNumOfTagsException;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.TagNotFoundException;
+import greencity.exception.exceptions.*;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
 import java.util.HashSet;
@@ -47,6 +44,13 @@ public class TagsServiceImpl implements TagsService {
         Tag saved = tagRepo.save(toSave);
 
         return modelMapper.map(saved, TagVO.class);
+    }
+
+    @Override public TagVO findById(Long id) {
+        Tag foundTag = tagRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + id));
+
+        return modelMapper.map(foundTag, TagVO.class);
     }
 
     @Override

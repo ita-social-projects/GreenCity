@@ -32,6 +32,14 @@ public interface TagsService {
     TagVO save(TagPostDto tag);
 
     /**
+     * Method that finds one tag by given id.
+     *
+     * @param id - {@link Long}
+     * @return found tag {@Link TagVO}
+     * */
+    TagVO findById(Long id);
+
+    /**
      * Method that deletes by given id.
      *
      * @param id - {@link Long}
