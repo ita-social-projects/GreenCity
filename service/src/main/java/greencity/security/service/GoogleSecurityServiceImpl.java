@@ -59,11 +59,11 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
      */
     @Autowired
     public GoogleSecurityServiceImpl(UserService userService,
-                                     JwtTool jwtTool,
-                                     GoogleIdTokenVerifier googleIdTokenVerifier,
-                                     ModelMapper modelMapper,
-                                     AchievementService achievementService,
-                                     UserRepo userRepo) {
+        JwtTool jwtTool,
+        GoogleIdTokenVerifier googleIdTokenVerifier,
+        ModelMapper modelMapper,
+        AchievementService achievementService,
+        UserRepo userRepo) {
         this.userService = userService;
         this.jwtTool = jwtTool;
         this.googleIdTokenVerifier = googleIdTokenVerifier;

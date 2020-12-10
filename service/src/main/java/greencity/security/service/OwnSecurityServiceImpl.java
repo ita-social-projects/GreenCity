@@ -67,6 +67,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private static final String VALID_PW_CHARS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
     private final AchievementService achievementService;
+
     /**
      * Constructor.
      */
@@ -156,17 +157,19 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         return getUserAchievements(user, modelMapper, achievementService);
     }
 
-    static List<UserAchievement> getUserAchievements(User user, ModelMapper modelMapper, AchievementService achievementService) {
-        List<Achievement> achievementList = modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
-        }.getType());
+    static List<UserAchievement> getUserAchievements(User user, ModelMapper modelMapper,
+        AchievementService achievementService) {
+        List<Achievement> achievementList =
+            modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
+            }.getType());
         return achievementList.stream()
-                .map(a -> {
-                    UserAchievement userAchievement = new UserAchievement();
-                    userAchievement.setAchievement(a);
-                    userAchievement.setUser(user);
-                    return userAchievement;
-                })
-                .collect(Collectors.toList());
+            .map(a -> {
+                UserAchievement userAchievement = new UserAchievement();
+                userAchievement.setAchievement(a);
+                userAchievement.setUser(user);
+                return userAchievement;
+            })
+            .collect(Collectors.toList());
     }
 
     private LocalDateTime calculateExpirationDateTime() {
