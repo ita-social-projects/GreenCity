@@ -19,6 +19,19 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
     /**
+     * Method that allow you to find list of Tags by type and language code.
+     *
+     * @param tagType {@link TagType}
+     * @param languageCode {@link String}
+     * @return list of tag's names.
+     */
+    @Query(nativeQuery = true, value = "select tt.name from tags t "
+        + "inner join tag_translations tt on t.id = tt.tag_id "
+        + "inner join languages l on l.id = tt.language_id "
+        + "where t.type = :tagType and l.code = :languageCode")
+    List<String> findTagsByTypeAndLanguageCode(String tagType, String languageCode);
+
+    /**
      * Method that allow you to find all EcoNews {@link Tag}s.
      *
      * @return list of {@link Tag}'s names
