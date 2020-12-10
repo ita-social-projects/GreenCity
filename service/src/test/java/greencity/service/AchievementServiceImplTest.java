@@ -41,23 +41,23 @@ class AchievementServiceImplTest {
     @InjectMocks
     private AchievementServiceImpl achievementService;
 
-//    @Test
-//    void findAllWithEmptyListTest() {
-//        when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-//        List<AchievementDTO> findAllResult = achievementService.findAll();
-//        assertTrue(findAllResult.isEmpty());
-//    }
-//
-//    @Test
-//    void findAllWithOneValueInRepoTest() {
-//        Achievement achievement = ModelUtils.getAchievement();
-//        when(achievementRepo.findAll())
-//            .thenReturn(Collections.singletonList(achievement));
-//        when(modelMapper.map(achievement, AchievementDTO.class))
-//            .thenReturn(new AchievementDTO(achievement.getId(), null, null, null));
-//        List<AchievementDTO> findAllResult = achievementService.findAll();
-//        assertEquals(1L, (long) findAllResult.get(0).getId());
-//    }
+    @Test
+    void findAllWithEmptyListTest() {
+        when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
+        List<AchievementVO> findAllResult = achievementService.findAll();
+        assertTrue(findAllResult.isEmpty());
+    }
+
+    @Test
+    void findAllWithOneValueInRepoTest() {
+        Achievement achievement = ModelUtils.getAchievement();
+        when(achievementRepo.findAll())
+            .thenReturn(Collections.singletonList(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAll();
+        assertEquals(1L, (long) findAllResult.get(0).getId());
+    }
 
     @Test
     void findAllByPageableTest() {

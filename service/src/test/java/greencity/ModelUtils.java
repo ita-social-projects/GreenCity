@@ -921,4 +921,8 @@ public class ModelUtils {
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
     }
+
+    public static UserAchievement getUserAchievement() {
+        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE);
+    }
 }

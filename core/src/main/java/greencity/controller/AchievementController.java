@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
+import greencity.dto.achievement.AchievementVO;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -32,14 +33,14 @@ public class AchievementController {
      *
      * @return list of {@link AchievementDTO}
      */
-//    @ApiOperation(value = "Get all achievements.")
-//    @ApiResponses(value = {
-//        @ApiResponse(code = 200, message = HttpStatuses.OK),
-//        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-//        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-//    })
-//    @GetMapping("")
-//    public ResponseEntity<List<AchievementDTO>> getAll() {
-//        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
-//    }
+    @ApiOperation(value = "Get all achievements.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("")
+    public ResponseEntity<List<AchievementVO>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
+    }
 }
