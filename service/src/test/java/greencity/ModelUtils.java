@@ -16,10 +16,7 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.*;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -652,6 +649,36 @@ public class ModelUtils {
             .build();
     }
 
+    public static EcoNewsCommentVO getEcoNewsCommentVO() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                .id(76L)
+                .build(),
+                UserVO.builder()
+                .id(543L)
+                .build(),
+                UserVO.builder()
+                .id(349L)
+                .build()
+            )))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
             .id(getUser().getId())
@@ -679,6 +706,15 @@ public class ModelUtils {
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
         return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = new TipsAndTricksDtoRequest();
+        tipsAndTricksDtoRequest.setTitleTranslation(new TitleTranslationEmbeddedPostDTO("title content", "en"));
+        tipsAndTricksDtoRequest.setTextTranslation(new TextTranslationDTO("text content for tips and tricks", "en"));
+        tipsAndTricksDtoRequest.setSource("wiki");
+
+        return tipsAndTricksDtoRequest;
     }
 
     public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
