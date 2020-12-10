@@ -8,6 +8,7 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.entity.TipsAndTricksComment;
 import greencity.enums.CommentStatus;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ class TipsAndTricksCommentDtoMapperTest {
     @BeforeEach
     void init() {
         tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
+        tipsAndTricksComment.setModifiedDate(LocalDateTime.now().withNano(0));
+        tipsAndTricksComment.setUsersLiked(Collections.singleton(ModelUtils.getUser()));
+        tipsAndTricksComment.setCurrentUserLiked(true);
         expected = TipsAndTricksCommentDto.builder()
             .id(1L)
             .modifiedDate(tipsAndTricksComment.getModifiedDate())

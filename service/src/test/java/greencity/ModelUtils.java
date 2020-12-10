@@ -539,7 +539,6 @@ public class ModelUtils {
             .build();
     }
 
-
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
             TagTranslationVO.builder().id(2L).name("News").build(),
@@ -682,12 +681,9 @@ public class ModelUtils {
     public static TipsAndTricksComment getTipsAndTricksComment() {
         return TipsAndTricksComment.builder()
             .id(1L)
-            .modifiedDate(LocalDateTime.now().withNano(0))
             .text("TipsAndTricksComment")
             .tipsAndTricks(getTipsAndTricks())
             .user(getUser())
-            .usersLiked(Collections.singleton(getUser()))
-            .currentUserLiked(true)
             .build();
     }
 
