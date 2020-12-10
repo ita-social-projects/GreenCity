@@ -1,26 +1,26 @@
 package greencity.service;
 
-import greencity.dto.UserVO;
 import greencity.entity.DirectRoom;
+import greencity.entity.Participant;
 import java.util.List;
 
 public interface DirectRoomService {
     /**
-     * Method to find {@link DirectRoom} by two participants {@link UserVO} id's
+     * Method to find {@link DirectRoom} by two {@link Participant} id's
      * (order not matters).
      *
-     * @param firstParticipantId  first participant {@link UserVO} id.
-     * @param secondParticipantId second participant {@link UserVO} id.
+     * @param firstParticipantId  first {@link Participant} id.
+     * @param secondParticipantId second {@link Participant} id.
      * @return {@link DirectRoom} instance.
      */
     DirectRoom findDirectRoomByParticipants(Long firstParticipantId,
-                                              Long secondParticipantId);
+                                            Long secondParticipantId);
 
     /**
-     * Method to find all {@link DirectRoom}'s by participant {@link UserVO} id
+     * Method to find all {@link DirectRoom}'s by {@link Participant} id
      * (order not matters).
      *
-     * @param participantId participant {@link UserVO} id.
+     * @param participantId {@link Participant} id.
      * @return list of {@link DirectRoom} instances.
      */
     List<DirectRoom> findAllDirectRoomsByParticipant(Long participantId);

@@ -6,19 +6,24 @@ import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@ToString
 @Table(name = "direct_rooms")
 public class DirectRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    Long firstParticipantId;
-    Long secondParticipantId;
+    @ManyToOne
+    Participant firstParticipant;
+
+    @ManyToOne
+    Participant secondParticipant;
 
     String lastMessageContent;
     ZonedDateTime lastMessageDate;
