@@ -649,7 +649,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsCommentVO getEcoNewsCommentVO() {
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
         return EcoNewsCommentVO.builder()
             .id(278L)
             .user(UserVO.builder()
@@ -709,10 +709,17 @@ public class ModelUtils {
     }
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
-        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = new TipsAndTricksDtoRequest();
-        tipsAndTricksDtoRequest.setTitleTranslation(new TitleTranslationEmbeddedPostDTO("title content", "en"));
-        tipsAndTricksDtoRequest.setTextTranslation(new TextTranslationDTO("text content for tips and tricks", "en"));
-        tipsAndTricksDtoRequest.setSource("wiki");
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = TipsAndTricksDtoRequest.builder()
+            .titleTranslation(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode("en")
+                .build())
+            .textTranslation(TextTranslationDTO.builder()
+                .content("text content for tips and tricks")
+                .languageCode("en")
+                .build())
+            .source("wiki")
+            .build();
 
         return tipsAndTricksDtoRequest;
     }

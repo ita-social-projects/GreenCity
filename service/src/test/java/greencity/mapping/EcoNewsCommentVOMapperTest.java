@@ -19,7 +19,7 @@ class EcoNewsCommentVOMapperTest {
 
     @Test
     void convert() {
-        EcoNewsCommentVO expected = ModelUtils.getEcoNewsCommentVO();
+        EcoNewsCommentVO expected = ModelUtils.getEcoNewsCommentVOWithData();
 
         EcoNewsComment ecoNewsComment = EcoNewsComment.builder()
             .id(expected.getId())

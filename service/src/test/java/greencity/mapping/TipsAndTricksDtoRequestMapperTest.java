@@ -28,8 +28,6 @@ class TipsAndTricksDtoRequestMapperTest {
     @Mock
     LanguageRepo languageRepo;
 
-
-
     @Test
     void convert() {
         TipsAndTricksDtoRequestMapper mapper = new TipsAndTricksDtoRequestMapper(
