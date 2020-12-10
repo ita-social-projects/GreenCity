@@ -17,13 +17,8 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econews.*;
+import greencity.dto.econewscomment.*;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -52,6 +47,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
@@ -945,5 +941,36 @@ public class ModelUtils {
 
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+    }
+
+    public static EcoNewsDto getEcoNewsDto() {
+        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"));
+    }
+
+    public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
+        return new UpdateEcoNewsDto(1L, "title", "text", Collections.singletonList("tag"),
+            "image", "source");
+    }
+
+    public static SearchNewsDto getSearchNewsDto() {
+        return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
+            Collections.singletonList("tag"));
+    }
+
+    public static EcoNewsCommentVO getEcoNewsCommentVO() {
+        return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
+            new ArrayList<>(), getUserVO(), getEcoNewsVO(), false,
+            false, new HashSet<>());
+    }
+
+    public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
+        return new EcoNewsDtoManagement(1L, "title", "text", ZonedDateTime.now(),
+            Collections.singletonList("tag"), "imagePath", "source");
+    }
+
+    public static EcoNewsViewDto getEcoNewsViewDto() {
+        return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
+            "endDate", "imagePath", "source", "tag");
     }
 }
