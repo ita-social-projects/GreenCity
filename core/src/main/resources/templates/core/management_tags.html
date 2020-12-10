@@ -531,13 +531,13 @@
 
         $('#deleteAllSubmit').on('click', function (event) {
             event.preventDefault();
-            var href = '/management/tags/all';
+            var href = '/management/tags/';
             var payload = getCheckedValues(checkbox);
+            console.log(payload);
             sendAjaxDeleteRequest(href, payload);
         });
 
         $('#submitAddBtn').on('click', function (event) {
-            console.log('method...');
             event.preventDefault();
             clearAllErrorsSpan();
             var formData = getDataFromForm('#addTagForm');

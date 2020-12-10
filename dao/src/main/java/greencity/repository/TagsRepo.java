@@ -9,9 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag> {
+public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag>{
 
     /**
      * Method finds all tags and fetches theirs translations.
@@ -19,7 +20,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @param pageable {@link Pageable}
      * @return list of tags {@link Page}
      * @author Markiyan Derevetskyi
-     * */
+     */
     @Query(value = "SELECT t FROM Tag t JOIN FETCH t.tagTranslations ORDER BY t.id",
         countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> findAll(Pageable pageable);
@@ -73,4 +74,13 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
             + "INNER JOIN languages l ON l.id = tt.language_id "
             + "WHERE l.code = :languageCode")
     List<String> findAllHabitsTags(String languageCode);
+
+    /**
+     * Method that deletes all tags by given ids.
+     *
+     * @param ids - list of {@link Long}.
+     */
+    @Modifying
+    @Query("DELETE FROM Tag t WHERE t.id in :ids")
+    void bulkDelete(List<Long> ids);
 }

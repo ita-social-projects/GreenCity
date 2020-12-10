@@ -198,7 +198,6 @@ $(document).ready(function () {
     });
 
     $('#submitAddBtn').on('click', function (event) {
-        console.log('method...');
         event.preventDefault();
         clearAllErrorsSpan();
         var formData = getDataFromForm('#addTagForm');

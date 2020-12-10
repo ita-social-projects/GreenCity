@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.enums.TagType;
@@ -46,6 +48,23 @@ public interface TagsService {
      * @return id {@link Long} of deleted tag
      * */
     Long deleteById(Long id);
+
+    /**
+     * Method that deletes all tags by given ids.
+     *
+     * @param ids - list of {@link Long}.
+     * @return list of {@link Long} ids of deleted tags.
+     * */
+    List<Long> bulkDelete(List<Long> ids);
+
+    /**
+     * Method that updates tag by given id.
+     *
+     * @param tagPostDto - {@link TagPostDto}
+     * @param id - {@link Long}
+     * @return updated advice - {@link TagVO}
+     * */
+    TagVO update(TagPostDto tagPostDto, Long id);
 
     /**
      * Method that allow you to find list of Tags by names.

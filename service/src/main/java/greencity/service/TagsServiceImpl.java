@@ -2,11 +2,14 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
+import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
 import java.util.HashSet;
@@ -20,11 +23,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class TagsServiceImpl implements TagsService {
     private final TagsRepo tagRepo;
+    private final TagTranslationRepo tagTranslationRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -37,6 +42,9 @@ public class TagsServiceImpl implements TagsService {
         return buildPageableAdvanceDtoFromPage(tags);
     }
 
+    /**
+     * {@inheritDoc}
+     * */
     @Override
     public TagVO save(TagPostDto tag) {
         Tag toSave = modelMapper.map(tag, Tag.class);
@@ -46,13 +54,20 @@ public class TagsServiceImpl implements TagsService {
         return modelMapper.map(saved, TagVO.class);
     }
 
-    @Override public TagVO findById(Long id) {
+    /**
+     * {@inheritDoc}
+     * */
+    @Override
+    public TagVO findById(Long id) {
         Tag foundTag = tagRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + id));
 
         return modelMapper.map(foundTag, TagVO.class);
     }
 
+    /**
+     * {@inheritDoc}
+     * */
     @Override
     public Long deleteById(Long id) {
         try {
@@ -62,6 +77,39 @@ public class TagsServiceImpl implements TagsService {
         }
 
         return id;
+    }
+
+    /**
+     * {@inheritDoc}
+     * */
+    @Override
+    @Transactional
+    public List<Long> bulkDelete(List<Long> ids) {
+        tagTranslationRepo.bulkDeleteByTagId(ids);
+        tagRepo.bulkDelete(ids);
+        return ids;
+    }
+
+    @Override
+    @Transactional
+    public TagVO update(TagPostDto tagPostDto, Long id) {
+        Tag toUpdate = tagRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + id));
+        enhanceTagWithNewData(toUpdate, tagPostDto);
+
+        return modelMapper.map(toUpdate, TagVO.class);
+    }
+
+    private void enhanceTagWithNewData(Tag toUpdate, TagPostDto tagPostDto) {
+        toUpdate.setType(tagPostDto.getType());
+        toUpdate.getTagTranslations()
+            .forEach(tagTranslation -> tagTranslation.setName(
+                tagPostDto.getTagTranslations().stream().filter(newTranslation ->
+                    newTranslation.getLanguage().getId()
+                        .equals(tagTranslation.getLanguage().getId()))
+                    .findFirst()
+                    .get().getName()
+            ));
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {
