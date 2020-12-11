@@ -1,10 +1,12 @@
 package greencity.service.impl;
 
-import greencity.entity.DirectRoom;
+import greencity.dto.DirectRoomDto;
 import greencity.repository.DirectRoomRepo;
 import greencity.service.DirectRoomService;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,21 +16,24 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class DirectRoomServiceImpl implements DirectRoomService {
     private final DirectRoomRepo directRoomRepo;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public DirectRoom findDirectRoomByParticipants(Long firstParticipantId, Long secondParticipantId) {
-        return directRoomRepo.findByParticipants(firstParticipantId, secondParticipantId)
-            .orElseThrow();
+    public DirectRoomDto findDirectRoomByParticipants(Long firstParticipantId, Long secondParticipantId) {
+        return /*directRoomRepo.findByParticipants(firstParticipantId, secondParticipantId)
+            .orElseThrow()*/ null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<DirectRoom> findAllDirectRoomsByParticipant(Long participantId) {
-        return null;
+    public List<DirectRoomDto> findAllDirectRoomsByParticipant(Long participantId) {
+        return modelMapper
+            .map(directRoomRepo.findAllByParticipant(participantId), new TypeToken<List<DirectRoomDto>>() {
+            }.getType());
     }
 }
