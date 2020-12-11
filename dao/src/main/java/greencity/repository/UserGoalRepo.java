@@ -5,7 +5,6 @@ import greencity.entity.UserGoal;
 import java.util.List;
 import java.util.Optional;
 
-import greencity.entity.localization.GoalTranslation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
