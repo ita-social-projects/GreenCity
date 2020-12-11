@@ -136,6 +136,65 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVO getUserVOWithData() {
+        return UserVO.builder()
+            .id(13L)
+            .name("user")
+            .email("namesurname1995@gmail.com")
+            .role(Role.ROLE_USER)
+            .userCredo("save the world")
+            .firstName("name")
+            .emailNotification(EmailNotification.MONTHLY)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastVisit(LocalDateTime.of(2020, 12, 11, 13, 33))
+            .rating(13.4)
+            .verifyEmail(VerifyEmailVO.builder()
+                .id(32L)
+                .user(UserVO.builder()
+                    .id(13L)
+                    .name("user")
+                    .build())
+                .expiryDate(LocalDateTime.of(2021, 7, 7,7,7))
+                .token("toooookkkeeeeen42324532542")
+                .build())
+            .userFriends(Collections.singletonList(
+                UserVO.builder()
+                .id(75L)
+                .name("Andrew")
+                .build()
+            ))
+            .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
+            .ownSecurity(null)
+            .dateOfRegistration(LocalDateTime.of(2020, 6,6,13,47))
+            .city("Lviv")
+            .showShoppingList(true)
+            .showEcoPlace(true)
+            .showLocation(true)
+            .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
+            .userAchievements(List.of(
+                UserAchievementVO.builder()
+                .id(47L)
+                .achievementStatus(AchievementStatus.ACTIVE)
+                .user(UserVO.builder()
+                        .id(13L)
+                        .build())
+                .achievement(AchievementVO.builder()
+                        .id(56L)
+                        .build())
+                .build(),
+                UserAchievementVO.builder()
+                    .id(39L)
+                    .achievementStatus(AchievementStatus.INACTIVE)
+                    .user(UserVO.builder()
+                        .id(13L)
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(14L)
+                        .build())
+                    .build()
+            )).build();
+    }
+
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
