@@ -1,22 +1,17 @@
 package greencity.dto.tag;
 
-import greencity.dto.language.LanguageDTO;
-import lombok.*;
+import greencity.dto.language.LanguageTranslationDTO;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-public class TagTranslationDto {
-    @Valid
-    @NotNull
-    private LanguageDTO language;
+public class TagTranslationDto extends LanguageTranslationDTO {
 
-    @Size(max = 20)
+    @Valid
+    @Size(min = 1, max = 20)
     private String name;
 }

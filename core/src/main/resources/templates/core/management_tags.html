@@ -173,11 +173,13 @@
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
                             <label>Type</label>
-                            <select name="tagType" class="form-control">
-                                <option>ECO_NEWS</option>
-                                <option>TIPS_AND_TRICKS</option>
-                                <option>HABIT</option>
-                            </select>
+                            <label>
+                                <select name="tagType" class="form-control">
+                                    <option>ECO_NEWS</option>
+                                    <option>TIPS_AND_TRICKS</option>
+                                    <option>HABIT</option>
+                                </select>
+                            </label>
                             <span class="errorSpan" th:id="errorModalSavetype"></span>
                         </div>
                         <th:block th:each="language, iterInfo : ${languages}">
@@ -205,7 +207,7 @@
                                                    type="text"/>
                                         </label>
                                         <span class="errorSpan"
-                                              th:id="'errorModalSavetranslations['+${iterInfo.index}+'].name'"></span>
+                                              th:id="'errorModalSavetagTranslations['+${iterInfo.index}+'].name'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -274,7 +276,7 @@
                                                    type="text"/>
                                         </label>
                                         <span class="errorSpan"
-                                              th:id="'errorModalUpdatetranslations['+${iterInfo.index}+'].name'"></span>
+                                              th:id="'errorModalUpdatetagTranslations['+${iterInfo.index}+'].name'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -434,7 +436,6 @@
                 success: function (data) {
                     if (Array.isArray(data.errors) && data.errors.length) {
                         data.errors.forEach(function (el) {
-                            console.log(el.fieldName);
                             $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
                         })
                     } else {
@@ -499,9 +500,7 @@
             clearAllErrorsSpan();
             $('#editTagModal').modal();
             var href = $(this).attr('href');
-            console.log(href);
             $.get(href, function (tag, status) {
-                console.log(tag);
                 $('#id').val(tag.id);
                 $('#tagType').val(tag.type);
                 tag.tagTranslations.forEach(function (translation, index) {
@@ -532,7 +531,6 @@
             event.preventDefault();
             var href = '/management/tags/';
             var payload = getCheckedValues(checkbox);
-            console.log(payload);
             sendAjaxDeleteRequest(href, payload);
         });
 
@@ -541,7 +539,6 @@
             clearAllErrorsSpan();
             var formData = getDataFromForm('#addTagForm');
             var payload = composePayloadFromFormData(formData);
-            console.log(payload);
             sendAjaxPostRequest(payload);
         });
 
