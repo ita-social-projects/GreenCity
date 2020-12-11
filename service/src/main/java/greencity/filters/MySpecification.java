@@ -1,5 +1,6 @@
 package greencity.filters;
 
+import greencity.entity.Tag_;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -51,6 +52,16 @@ public interface MySpecification<T> extends Specification<T> {
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
             : criteriaBuilder.like(root.get(searchCriteria.getKey()),
                 "%" + searchCriteria.getValue() + "%");
+    }
+
+    /**
+     * Used to build predicate for Enum filter.
+     * */
+    default Predicate getEnumPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+            : criteriaBuilder.like(root.get(searchCriteria.getKey()).as(String.class),
+            "%" + searchCriteria.getValue() + "%");
     }
 
     /**

@@ -70,23 +70,22 @@
                     <tbody>
 
                     </tbody>
-                    <!--
-                    <form action="/management/tags/filter" id="searchForm" method="POST">
+                    <form action="/management/tags/search" id="searchForm" method="POST">
 
                         <tr>
                             <td>
                             </td>
                             <td>
-                                <input placeholder="Search" th:name="id" th:value="${fields eq null ? '' : fields.id }"
+                                <input placeholder="Search" th:name="id" th:value="${fields eq null ? null : fields.id }"
                                        type="search"/>
                             </td>
                             <td>
-                                <input placeholder="Search" th:name="habitId" th:value="${fields eq null ? '' : fields.habitId }"
+                                <input placeholder="Search" th:name="type" th:value="${fields eq null ? '' : fields.type }"
                                        type="search"/>
                             </td>
                             <td>
-                                <input placeholder="Search" style="width: 100%" th:name="translationContent"
-                                       th:value="${fields eq null ? '' : fields.translationContent }"
+                                <input placeholder="Search" style="width: 100%" th:name="name"
+                                       th:value="${fields eq null ? null : fields.name }"
                                        type="search"/>
                             </td>
                             <td colspan="2">
@@ -95,7 +94,7 @@
                             </td>
                         </tr>
 
-                    </form> -->
+                    </form>
                     <th:block th:each="tag, iterStatus :${tags.getPage()}">
                         <tbody>
                         <tr>

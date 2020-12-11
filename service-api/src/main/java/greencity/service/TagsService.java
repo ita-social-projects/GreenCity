@@ -1,10 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.enums.TagType;
 import org.springframework.data.domain.Pageable;
 
@@ -24,6 +26,8 @@ public interface TagsService {
      * @return all tags {@link PageableAdvancedDto}
      * */
     PageableAdvancedDto<TagVO> findAll(Pageable pageable);
+
+    PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto);
 
     /**
      * Method that saves new tag.

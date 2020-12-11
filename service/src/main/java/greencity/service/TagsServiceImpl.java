@@ -2,16 +2,19 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
+import greencity.filters.SearchCriteria;
+import greencity.filters.TagSpecification;
 import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,13 @@ public class TagsServiceImpl implements TagsService {
         Page<Tag> tags = tagRepo.findAll(pageable);
 
         return buildPageableAdvanceDtoFromPage(tags);
+    }
+
+    @Override
+    public PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto) {
+        Page<Tag> foundTags = tagRepo.findAll(buildSpecification(tagViewDto), pageable);
+
+        return buildPageableAdvanceDtoFromPage(foundTags);
     }
 
     /**
@@ -123,6 +134,32 @@ public class TagsServiceImpl implements TagsService {
             pageTags.getTotalPages(), pageTags.getNumber(),
             pageTags.hasPrevious(), pageTags.hasNext(),
             pageTags.isFirst(), pageTags.isLast());
+    }
+
+    private List<SearchCriteria> buildSearchCriteriaList(TagViewDto tagViewDto) {
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+
+        setValueIfNotEmpty(searchCriteriaList, "id", tagViewDto.getId());
+        setValueIfNotEmpty(searchCriteriaList, "type", tagViewDto.getType());
+        setValueIfNotEmpty(searchCriteriaList, "name", tagViewDto.getName());
+
+        return searchCriteriaList;
+    }
+
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
+        if (!StringUtils.isEmpty(value)) {
+            searchCriteria.add(SearchCriteria.builder()
+                .key(key)
+                .type(key)
+                .value(value)
+                .build());
+        }
+    }
+
+    private TagSpecification buildSpecification(TagViewDto tagViewDto) {
+        List<SearchCriteria> searchCriteriaList = buildSearchCriteriaList(tagViewDto);
+
+        return new TagSpecification(searchCriteriaList);
     }
 
     /**

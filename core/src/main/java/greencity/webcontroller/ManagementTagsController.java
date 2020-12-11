@@ -5,6 +5,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.service.LanguageService;
 import greencity.service.TagsService;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 import javax.validation.Valid;
@@ -76,5 +79,16 @@ public class ManagementTagsController {
         }
 
         return buildGenericResponseDto(bindingResult);
+    }
+
+    @PostMapping("/search")
+    public String search(Model model, @ApiIgnore Pageable pageable, TagViewDto tagViewDto) {
+        PageableAdvancedDto<TagVO> foundTags = tagsService.search(pageable, tagViewDto);
+
+        model.addAttribute("tags", foundTags);
+        model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("fields", tagViewDto);
+
+        return "core/management_tags";
     }
 }
