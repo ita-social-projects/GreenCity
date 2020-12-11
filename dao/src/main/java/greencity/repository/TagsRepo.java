@@ -40,7 +40,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
 
     @Query(value = "SELECT DISTINCT t FROM Tag t JOIN FETCH t.tagTranslations AS tt "
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
-        + "OR CONCAT(t.type, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
         + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
         + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",

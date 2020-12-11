@@ -383,7 +383,6 @@
         $('#btnSearchImage').click(function (){
             let url = "/management/tags?filter=";
             let query = $('#inputSearch').val();
-            console.log(query);
             $.ajax({
                 url: url + query,
                 type: 'GET',
