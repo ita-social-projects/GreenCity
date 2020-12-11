@@ -31,8 +31,9 @@ public class ManagementTagsController {
     private final LanguageService languageService;
 
     @GetMapping
-    public String findAll(Model model, Pageable pageable) {
-        PageableAdvancedDto<TagVO> tags = tagsService.findAll(pageable);
+    public String findAll(Model model, Pageable pageable,
+        @RequestParam(required = false) String filter) {
+        PageableAdvancedDto<TagVO> tags = tagsService.findAll(pageable, filter);
         List<LanguageDTO> languages = languageService.getAllLanguages();
 
         model.addAttribute("tags", tags);

@@ -40,8 +40,9 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      * */
     @Override
-    public PageableAdvancedDto<TagVO> findAll(Pageable pageable) {
-        Page<Tag> tags = tagRepo.findAll(pageable);
+    public PageableAdvancedDto<TagVO> findAll(Pageable pageable, String filter) {
+        Page<Tag> tags = filter == null ? tagRepo.findAll(pageable)
+            : tagRepo.filterByAllFields(pageable, filter);
 
         return buildPageableAdvanceDtoFromPage(tags);
     }

@@ -23,9 +23,10 @@ public interface TagsService {
      * Method that returns all tags.
      *
      * @param pageable {@link Pageable}
+     * @param filter {@link String}
      * @return all tags {@link PageableAdvancedDto}
      * */
-    PageableAdvancedDto<TagVO> findAll(Pageable pageable);
+    PageableAdvancedDto<TagVO> findAll(Pageable pageable, String filter);
 
     PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto);
 

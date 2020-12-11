@@ -38,6 +38,15 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
+    @Query(value = "SELECT DISTINCT t FROM Tag t JOIN FETCH t.tagTranslations AS tt "
+        + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR CONCAT(t.type, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
+        + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
+        countQuery = "SELECT COUNT(t) FROM Tag t")
+    Page<Tag> filterByAllFields(Pageable pageable, String filter);
+
     /**
      * Method that allow you to find all EcoNews {@link Tag}s.
      *
