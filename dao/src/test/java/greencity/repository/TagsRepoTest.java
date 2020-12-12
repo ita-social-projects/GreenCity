@@ -38,7 +38,7 @@ class TagsRepoTest {
         String tagType = "ECO_NEWS";
         String languageCode = "en";
         List<String> expected = Collections.singletonList("News");
-        List<String> actual =  tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
+        List<String> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
 
         assertEquals(expected, actual);
     }

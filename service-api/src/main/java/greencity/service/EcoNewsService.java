@@ -6,7 +6,6 @@ import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 

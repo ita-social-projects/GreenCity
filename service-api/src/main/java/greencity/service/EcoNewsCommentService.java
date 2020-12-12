@@ -7,7 +7,6 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 
 public interface EcoNewsCommentService {

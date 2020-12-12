@@ -9,6 +9,7 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
+import greencity.enums.AchievementType;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -208,8 +209,7 @@ public class UserServiceImpl implements UserService {
     public PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId) {
         Page<UsersFriendDto> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
         List<RecommendedFriendDto> recommendedFriendDtos = friends.get()
-            .map(user ->
-                new RecommendedFriendDto(user.getId(), user.getName(), user.getProfilePicture()))
+            .map(user -> new RecommendedFriendDto(user.getId(), user.getName(), user.getProfilePicture()))
             .collect(Collectors.toList());
         return new PageableDto<>(
             recommendedFriendDtos,
@@ -431,7 +431,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                           UserProfilePictureDto userProfilePictureDto) {
+        UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -573,7 +573,8 @@ public class UserServiceImpl implements UserService {
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
         userRepo.save(user);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), "Setter", "SocialNetworks", user.getSocialNetworks().size()));
+            .calculateAchievement(user.getId(), AchievementType.SETTER,
+                "SocialNetworks", user.getSocialNetworks().size()));
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 

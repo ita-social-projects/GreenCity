@@ -7,6 +7,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
+import greencity.enums.AchievementType;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
@@ -14,10 +15,12 @@ import greencity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static greencity.enums.AchievementStatus.ACTIVE;
+import static greencity.enums.AchievementType.INCREMENT;
 
 @Component
 public class AchievementCalculation {
@@ -28,13 +31,13 @@ public class AchievementCalculation {
     private final ModelMapper modelMapper;
 
     /**
-     * {@inheritDoc}
-     * Constructor for {@link AchievementCalculation}
-     * @param userService {@link UserService}
-     * @param userActionService {@link UserActionService}
-     * @param achievementService {@link AchievementService}
-     * @param achievementCategoryService  {@link AchievementCategoryService}
-     * @param modelMapper  {@link ModelMapper}
+     * {@inheritDoc} Constructor for {@link AchievementCalculation}
+     * 
+     * @param userService                {@link UserService}
+     * @param userActionService          {@link UserActionService}
+     * @param achievementService         {@link AchievementService}
+     * @param achievementCategoryService {@link AchievementCategoryService}
+     * @param modelMapper                {@link ModelMapper}
      */
     public AchievementCalculation(@Lazy UserService userService,
         UserActionService userActionService,
@@ -49,7 +52,8 @@ public class AchievementCalculation {
     }
 
     /**
-     * {@inheritDoc} Method that changing user actions {@link greencity.entity.UserAction}
+     * {@inheritDoc} Method that changing user actions
+     * {@link greencity.entity.UserAction}
      *
      * @param userId   of {@link User}
      * @param type     of action
@@ -57,19 +61,19 @@ public class AchievementCalculation {
      * @param count    number of specific actions
      * @author Orest Mamchuk
      */
-    public void calculateAchievement(Long userId, String type, String category, Integer count) {
+    public void calculateAchievement(Long userId, AchievementType type, String category, Integer count) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category);
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
         switch (type) {
-            case "Increment":
+            case INCREMENT:
                 count = userActionVO.getCount() + 1;
                 userActionVO.setCount(count);
                 break;
-            case "Setter":
+            case SETTER:
                 userActionVO.setCount(count);
                 break;
-            case "Comparison":
+            case COMPARISON:
                 if (userActionVO.getCount() < count) {
                     userActionVO.setCount(count);
                 }
@@ -89,7 +93,7 @@ public class AchievementCalculation {
      * @param userId                of {@link User}
      * @author Orest Mamchuk
      */
-    private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
+    public void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
         UserVO userVO = userService.findById(userId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
@@ -111,7 +115,7 @@ public class AchievementCalculation {
         if (userAchievement.isPresent()) {
             userAchievement.get().setAchievementStatus(ACTIVE);
             userService.save(modelMapper.map(user, UserVO.class));
-            calculateAchievement(user.getId(), "Increment", "Achievements", 0);
+            calculateAchievement(user.getId(), INCREMENT, "Achievements", 0);
         }
     }
 }

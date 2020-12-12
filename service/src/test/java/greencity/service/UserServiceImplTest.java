@@ -477,7 +477,7 @@ class UserServiceImplTest {
         when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
             }.getType()))
-            .thenReturn(customGoalsDtos);
+                .thenReturn(customGoalsDtos);
         assertNotNull(userService.getAvailableCustomGoals(userId));
         assertEquals(userService.getAvailableCustomGoals(userId), customGoalsDtos);
     }

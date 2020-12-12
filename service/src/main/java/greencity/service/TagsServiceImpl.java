@@ -42,7 +42,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public List<String> findByTypeAndLanguageCode(String type, String languageCode) {
         return tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);

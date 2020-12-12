@@ -7,6 +7,7 @@ import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.HabitAssignRepo;
@@ -289,12 +290,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, "Comparison", "HabitStreak", habitStreak));
+            .calculateAchievement(userId, AchievementType.COMPARISON, "HabitStreak", habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
             CompletableFuture.runAsync(() -> achievementCalculation
-                .calculateAchievement(userId, "Increment", "AcquiredHabit", 0));
+                .calculateAchievement(userId, AchievementType.INCREMENT, "AcquiredHabit", 0));
         }
         habitAssignRepo.save(habitAssign);
     }

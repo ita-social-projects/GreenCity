@@ -23,7 +23,7 @@ public interface TagsService {
     /**
      * Method that allow you to find list of Tags by type and language code.
      *
-     * @param type {@link String}
+     * @param type         {@link String}
      * @param languageCode {@link String}
      * @return list of tag's names.
      */

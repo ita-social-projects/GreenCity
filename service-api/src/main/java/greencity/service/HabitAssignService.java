@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 
 import java.time.LocalDate;
 import java.util.List;

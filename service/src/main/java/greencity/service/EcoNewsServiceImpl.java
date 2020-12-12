@@ -21,6 +21,7 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -41,7 +42,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -109,7 +109,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), "Increment", "EcoNews", 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, "EcoNews", 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -303,7 +303,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), "Increment", "EcoNewsLikes", 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, "EcoNewsLikes", 0));
     }
 
     /**

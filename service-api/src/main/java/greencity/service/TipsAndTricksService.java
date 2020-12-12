@@ -7,7 +7,6 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
 
-import greencity.dto.useraction.UserActionVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
