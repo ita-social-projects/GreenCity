@@ -161,10 +161,9 @@ class UserServiceImplTest {
 
     @Test
     void findUsersRecommendedFriendsTest() {
-
-        List<User> singletonList = Collections.singletonList(ModelUtils.getUser());
+        List<UsersFriendDto> singletonList = Collections.singletonList(ModelUtils.usersFriendDto);
         PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<User> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
+        Page<UsersFriendDto> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
         List<RecommendedFriendDto> dtoList =
             Collections.singletonList(ModelUtils.getRecommendedFriendDto());
         PageableDto<RecommendedFriendDto> pageableDto =
@@ -478,7 +477,7 @@ class UserServiceImplTest {
         when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
             }.getType()))
-                .thenReturn(customGoalsDtos);
+            .thenReturn(customGoalsDtos);
         assertNotNull(userService.getAvailableCustomGoals(userId));
         assertEquals(userService.getAvailableCustomGoals(userId), customGoalsDtos);
     }

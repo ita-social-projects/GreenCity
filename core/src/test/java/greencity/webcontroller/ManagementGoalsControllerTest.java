@@ -1,13 +1,10 @@
 package greencity.webcontroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.GoalManagementDto;
 import greencity.dto.goal.GoalPostDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.service.GoalService;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;

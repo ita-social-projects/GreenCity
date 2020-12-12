@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.EmailConstants;
 import greencity.constant.LogMessage;
-import greencity.constant.ValidationConstants;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
