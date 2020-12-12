@@ -944,12 +944,16 @@ public class ModelUtils {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
     }
 
+    public static UserAchievement getUserAchievement() {
+        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE);
+    }
+
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 1);
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
     }
 
     public static UserActionVO getUserActionVO() {
-        return new UserActionVO(1L, ModelUtils.getUserVO(), ModelUtils.getAchievementCategoryVO(), 1);
+        return new UserActionVO(1L, ModelUtils.getUserVO(), ModelUtils.getAchievementCategoryVO(), 0);
     }
 
     public static EcoNewsDto getEcoNewsDto() {

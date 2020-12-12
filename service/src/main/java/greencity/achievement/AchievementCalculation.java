@@ -15,7 +15,6 @@ import greencity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -93,7 +92,7 @@ public class AchievementCalculation {
      * @param userId                of {@link User}
      * @author Orest Mamchuk
      */
-    public void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
+    private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
         UserVO userVO = userService.findById(userId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
