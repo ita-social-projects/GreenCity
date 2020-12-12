@@ -30,13 +30,6 @@ public interface TipsAndTricksCommentService {
         UserVO user);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userVO {@link UserVO}
-     */
-    void calculateTipsAndTricksComment(UserVO userVO);
-
-    /**
      * Method returns all comments to certain tipsAndTricks specified by
      * tipsAndTricksId.
      *

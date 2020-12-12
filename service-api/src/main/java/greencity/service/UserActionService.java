@@ -1,5 +1,7 @@
 package greencity.service;
 
+import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 
 public interface UserActionService {
@@ -15,9 +17,10 @@ public interface UserActionService {
     /**
      * Method find {@link UserActionVO} by id.
      *
-     * @param id of {@link UserActionVO}
+     * @param userId     of {@link UserVO}
+     * @param categoryId of {@link AchievementCategoryVO}
      * @return {@link UserActionVO}
      * @author Orest Mamchuk
      */
-    UserActionVO findUserActionByUserId(Long id);
+    UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId);
 }

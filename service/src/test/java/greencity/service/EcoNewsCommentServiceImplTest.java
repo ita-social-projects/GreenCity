@@ -8,7 +8,6 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -49,8 +48,6 @@ class EcoNewsCommentServiceImplTest {
     private EcoNewsService ecoNewsService;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    UserActionService userActionService;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
@@ -388,15 +385,5 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.countOfComments(ecoNewsId)).thenReturn(0);
 
         assertEquals(0, ecoNewsCommentService.countOfComments(ecoNewsId));
-    }
-
-    @Test
-    void calculateEcoNewsComment() {
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
-        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        ecoNewsCommentService.calculateEcoNewsComment(userVO);
-        verify(userActionService).findUserActionByUserId(1L);
     }
 }

@@ -97,21 +97,6 @@ public interface HabitAssignService {
     HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId of {@link UserVO}
-     */
-    void calculateAcquiredHabit(Long userId);
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId      of {@link UserVO}
-     * @param habitStreak habit streak
-     */
-    void calculateHabitStreak(Long userId, Integer habitStreak);
-
-    /**
      * Method to unenroll Habit in defined date.
      *
      * @param habitId  {@code Habit} id to unenroll.

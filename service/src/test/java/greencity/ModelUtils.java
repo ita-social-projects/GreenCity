@@ -890,7 +890,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
+        return new AchievementCategory(1L, "Name", null, null);
     }
 
     public static AchievementVO getAchievementVO() {
@@ -910,7 +910,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category");
+        return new AchievementCategoryVO(1L, "Category", null, null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -926,10 +926,10 @@ public class ModelUtils {
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), 1, 0, 0, 0, 0, 0, 0, 0, 0.0, 0);
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 1);
     }
 
     public static UserActionVO getUserActionVO() {
-        return new UserActionVO(1L, ModelUtils.getUserVO(), 1, 0, 0, 0, 0, 0, 0, 0, 0.0, 0);
+        return new UserActionVO(1L, ModelUtils.getUserVO(), ModelUtils.getAchievementCategoryVO(), 1);
     }
 }

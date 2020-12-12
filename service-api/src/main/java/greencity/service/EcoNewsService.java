@@ -23,13 +23,6 @@ public interface EcoNewsService {
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId of {@link UserVO}
-     */
-    void calculateEcoNews(Long userId);
-
-    /**
      * Method for getting last three eco news.
      *
      * @return list of {@link EcoNewsDto} instances.
@@ -127,13 +120,6 @@ public interface EcoNewsService {
      * @author Dovganyuk Taras
      */
     void likeComment(UserVO user, EcoNewsCommentVO comment);
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param user {@link UserVO}
-     */
-    void calculateEcoNewsLikes(UserVO user);
 
     /**
      * Method to mark comment as unliked by User.

@@ -11,7 +11,6 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Tag;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
@@ -57,8 +56,6 @@ class TipsAndTricksServiceImplTest {
     private UserServiceImpl userService;
     @Mock
     private LanguageService languageService;
-    @Mock
-    UserActionService userActionService;
     @InjectMocks
     private TipsAndTricksServiceImpl tipsAndTricksService;
     @Mock
@@ -334,15 +331,5 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
         assertEquals(initial, tipsAndTricksComment);
 
-    }
-
-    @Test
-    void calculateTipsAndTricksLikes() {
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
-        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        tipsAndTricksService.calculateTipsAndTricksLikes(userVO);
-        verify(userActionService).findUserActionByUserId(1L);
     }
 }

@@ -21,21 +21,13 @@ public class UserActionServiceImpl implements UserActionService {
      *
      * @author Orest Mamchuk
      */
+    @Transactional
     @Override
     public UserActionVO updateUserActions(UserActionVO userActionVO) {
         Optional<UserAction> byId = userActionRepo.findById(userActionVO.getId());
         if (byId.isPresent()) {
             UserAction toUpdate = byId.get();
-            toUpdate.setAchievements(userActionVO.getAchievements());
-            toUpdate.setAcquiredHabit(userActionVO.getAcquiredHabit());
-            toUpdate.setEcoNews(userActionVO.getEcoNews());
-            toUpdate.setEcoNewsComments(userActionVO.getEcoNewsComments());
-            toUpdate.setEcoNewsLikes(userActionVO.getEcoNewsLikes());
-            toUpdate.setHabitStreak(userActionVO.getHabitStreak());
-            toUpdate.setRating(userActionVO.getRating());
-            toUpdate.setSocialNetworks(userActionVO.getSocialNetworks());
-            toUpdate.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments());
-            toUpdate.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes());
+            toUpdate.setCount(userActionVO.getCount());
             return modelMapper.map(userActionRepo.save(toUpdate), UserActionVO.class);
         }
         return null;
@@ -48,8 +40,8 @@ public class UserActionServiceImpl implements UserActionService {
      */
     @Transactional
     @Override
-    public UserActionVO findUserActionByUserId(Long id) {
-        UserAction userAction = userActionRepo.findByUserId(id);
+    public UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId) {
+        UserAction userAction = userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
         return modelMapper.map(userAction, UserActionVO.class);
     }
 }

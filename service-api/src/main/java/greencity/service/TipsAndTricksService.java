@@ -147,13 +147,6 @@ public interface TipsAndTricksService {
     void likeComment(UserVO user, TipsAndTricksCommentVO comment);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param user {@link UserVO}
-     */
-    void calculateTipsAndTricksLikes(UserVO user);
-
-    /**
      * Method to mark comment as unliked by User.
      *
      * @param user    {@link UserVO}.

@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.annotations.AchievementCalculation;
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -20,7 +20,6 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -65,8 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
-    private final BeanFactory beanFactory;
-    private final UserActionService userActionService;
+    private final AchievementCalculation achievementCalculation;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
@@ -76,7 +74,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Yuriy Olkhovskyi.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
-    @AchievementCalculation(category = "EcoNews", column = "ecoNews")
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
@@ -111,19 +108,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
-        CompletableFuture.runAsync(() -> calculateEcoNews(user.getId()));
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), "Increment", "EcoNews", 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId of {@link UserVO}
-     */
-    public void calculateEcoNews(Long userId) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
-        userActionVO.setEcoNews(userActionVO.getEcoNews() + 1);
-        userActionService.updateUserActions(userActionVO);
     }
 
     /**
@@ -313,21 +300,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    @AchievementCalculation(category = "EcoNewsLikes", column = "ecoNewsLikes")
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
-        CompletableFuture.runAsync(() -> calculateEcoNewsLikes(user));
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param user {@link UserVO}
-     */
-    public void calculateEcoNewsLikes(UserVO user) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
-        userActionVO.setEcoNewsLikes(userActionVO.getEcoNewsLikes() + 1);
-        userActionService.updateUserActions(userActionVO);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), "Increment", "EcoNewsLikes", 0));
     }
 
     /**

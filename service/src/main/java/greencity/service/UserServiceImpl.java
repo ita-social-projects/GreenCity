@@ -1,15 +1,13 @@
 package greencity.service;
 
-import greencity.annotations.AchievementCalculation;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.*;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -76,7 +74,7 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
-    private final UserActionService userActionService;
+    private final AchievementCalculation achievementCalculation;
     /**
      * Autowired mapper.
      */
@@ -98,6 +96,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
     public UserVO findById(Long id) {
         User source = userRepo.findById(id)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
@@ -572,21 +571,9 @@ public class UserServiceImpl implements UserService {
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
         userRepo.save(user);
-        CompletableFuture.runAsync(() -> calculateSocialNetworks(user.getId(), user.getSocialNetworks().size()));
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), "Setter", "SocialNetworks", user.getSocialNetworks().size()));
         return modelMapper.map(user, UserProfileDtoResponse.class);
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId of {@link UserVO}
-     * @param size   count of {@link SocialNetworkVO}
-     */
-    @AchievementCalculation(category = "SocialNetworks", column = "socialNetworks")
-    public void calculateSocialNetworks(Long userId, int size) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(userId);
-        userActionVO.setSocialNetworks(size);
-        userActionService.updateUserActions(userActionVO);
     }
 
     /**

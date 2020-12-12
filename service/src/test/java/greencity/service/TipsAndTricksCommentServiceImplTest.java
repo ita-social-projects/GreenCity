@@ -8,7 +8,6 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.exception.exceptions.BadRequestException;
@@ -29,7 +28,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -40,8 +38,6 @@ class TipsAndTricksCommentServiceImplTest {
     private TipsAndTricksService tipsAndTricksService;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    UserActionService userActionService;
     @InjectMocks
     private TipsAndTricksCommentServiceImpl tipsAndTricksCommentService;
 
@@ -261,15 +257,5 @@ class TipsAndTricksCommentServiceImplTest {
         int countComments = tipsAndTricksCommentService.countComments(1L);
 
         assertEquals(1, countComments);
-    }
-
-    @Test
-    void calculateTipsAndTricksComment() {
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
-        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        tipsAndTricksCommentService.calculateTipsAndTricksComment(userVO);
-        verify(userActionService).findUserActionByUserId(1L);
     }
 }

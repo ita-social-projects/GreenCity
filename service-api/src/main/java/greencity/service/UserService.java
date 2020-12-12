@@ -274,14 +274,6 @@ public interface UserService {
     UserProfileDtoResponse saveUserProfile(UserProfileDtoRequest userProfileDtoRequest, String name);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userId of {@link UserVO}
-     * @param size   count of {@link SocialNetworkVO}
-     */
-    void calculateSocialNetworks(Long userId, int size);
-
-    /**
      * Updates last activity time for a given user.
      *
      * @param userId               - {@link UserVO}'s id

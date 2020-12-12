@@ -1,5 +1,6 @@
 package greencity.dto.useraction;
 
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import lombok.*;
 
@@ -14,23 +15,7 @@ public class UserActionVO {
 
     private UserVO user;
 
-    private Integer ecoNewsLikes;
+    private AchievementCategoryVO achievementCategory;
 
-    private Integer ecoNews;
-
-    private Integer ecoNewsComments;
-
-    private Integer tipsAndTricksLikes;
-
-    private Integer tipsAndTricksComments;
-
-    private Integer acquiredHabit;
-
-    private Integer habitStreak;
-
-    private Integer socialNetworks;
-
-    private Double rating;
-
-    private Integer achievements;
+    private Integer count;
 }

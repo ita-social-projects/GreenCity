@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.annotations.AchievementCalculation;
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
@@ -11,7 +11,6 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     private EcoNewsService ecoNewsService;
-    private final UserActionService userActionService;
+    private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
 
     /**
@@ -50,7 +49,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
-    @AchievementCalculation(category = "EcoNewsComments", column = "ecoNewsComments")
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
@@ -68,20 +66,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
         }
-        CompletableFuture.runAsync(() -> calculateEcoNewsComment(userVO));
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(userVO.getId(), "Increment", "EcoNewsComment", 0));
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userVO {@link UserVO}
-     */
-    public void calculateEcoNewsComment(UserVO userVO) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
-        int action = userActionVO.getEcoNewsComments();
-        userActionVO.setEcoNewsComments(++action);
-        userActionService.updateUserActions(userActionVO);
     }
 
     /**

@@ -25,13 +25,6 @@ public interface EcoNewsCommentService {
         UserVO user);
 
     /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userVO {@link UserVO}
-     */
-    void calculateEcoNewsComment(UserVO userVO);
-
-    /**
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
      * @param user      current {@link UserVO}

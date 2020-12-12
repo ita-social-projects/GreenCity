@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.annotations.AchievementCalculation;
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.ErrorMessage;
@@ -10,7 +10,6 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
@@ -32,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentService {
     private TipsAndTricksCommentRepo tipsAndTricksCommentRepo;
     private TipsAndTricksService tipsAndTricksService;
-    private final UserActionService userActionService;
+    private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
 
     /**
@@ -49,7 +48,6 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
      * @return {@link AddTipsAndTricksCommentDtoRequest} instance.
      */
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
-    @AchievementCalculation(category = "Tips&TricksComments", column = "tipsAndTricksComments")
     @Override
     public AddTipsAndTricksCommentDtoResponse save(Long tipsandtricksId,
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest,
@@ -81,20 +79,10 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
                 }
             }
         }
-        CompletableFuture.runAsync(() -> calculateTipsAndTricksComment(userVO));
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), "Increment", "Tips&TricksComments", 0));
         return modelMapper
             .map(tipsAndTricksCommentRepo.save(tipsAndTricksComment), AddTipsAndTricksCommentDtoResponse.class);
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param userVO {@link UserVO}
-     */
-    public void calculateTipsAndTricksComment(UserVO userVO) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(userVO.getId());
-        userActionVO.setTipsAndTricksComments(userActionVO.getTipsAndTricksComments() + 1);
-        userActionService.updateUserActions(userActionVO);
     }
 
     /**

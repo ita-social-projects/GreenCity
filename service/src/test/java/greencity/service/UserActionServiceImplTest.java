@@ -3,8 +3,6 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.UserAction;
-import greencity.repository.TextTranslationRepo;
-import greencity.repository.TitleTranslationRepo;
 import greencity.repository.UserActionRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,8 +46,8 @@ class UserActionServiceImplTest {
     void findUserActionByUserId() {
         UserAction userAction = ModelUtils.getUserAction();
         UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionRepo.findByUserId(1L)).thenReturn(userAction);
+        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(userAction);
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
-        assertEquals(userActionVO, userActionService.findUserActionByUserId(1L));
+        assertEquals(userActionVO, userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L));
     }
 }

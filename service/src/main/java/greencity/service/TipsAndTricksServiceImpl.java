@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.annotations.AchievementCalculation;
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -10,7 +10,6 @@ import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.*;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -52,13 +50,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final FileService fileService;
 
-    private final BeanFactory beanFactory;
-
     private final LanguageService languageService;
 
     private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
 
-    private final UserActionService userActionService;
+    private final AchievementCalculation achievementCalculation;
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         MultipartFile image, String email) {
@@ -386,21 +382,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @author Dovganyuk Taras
      */
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
-    @AchievementCalculation(category = "Tips&TricksLikes", column = "tipsAndTricksLikes")
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
-        CompletableFuture.runAsync(() -> calculateTipsAndTricksLikes(user));
-    }
-
-    /**
-     * {@inheritDoc} Method to change UserAction {@link UserActionVO}
-     *
-     * @param user {@link UserVO}
-     */
-    public void calculateTipsAndTricksLikes(UserVO user) {
-        UserActionVO userActionVO = userActionService.findUserActionByUserId(user.getId());
-        userActionVO.setTipsAndTricksLikes(userActionVO.getTipsAndTricksLikes() + 1);
-        userActionService.updateUserActions(userActionVO);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), "Increment", "Tips&TricksLikes", 0));
     }
 
     /**

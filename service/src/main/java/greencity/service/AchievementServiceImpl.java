@@ -12,7 +12,6 @@ import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-import greencity.repository.UserActionRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +20,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @EnableCaching
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
-    private UserActionRepo userActionRepo;
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final AchievementCategoryService achievementCategoryService;
@@ -177,6 +176,7 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
+    @Transactional
     public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
         Achievement achievement =
             achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);

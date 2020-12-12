@@ -13,8 +13,6 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
-import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
@@ -76,9 +74,6 @@ class EcoNewsServiceImplTest {
 
     @Mock
     FileService fileService;
-
-    @Mock
-    UserActionService userActionService;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -282,24 +277,5 @@ class EcoNewsServiceImplTest {
         List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);
 
         assertEquals(dtoList, actual);
-    }
-
-    @Test
-    void calculateEcoNews() {
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
-        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        ecoNewsService.calculateEcoNews(1L);
-        verify(userActionService).findUserActionByUserId(1L);
-    }
-
-    @Test
-    void calculateEcoNewsLikes() {
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionService.findUserActionByUserId(1L)).thenReturn(userActionVO);
-        when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        ecoNewsService.calculateEcoNewsLikes(userVO);
-        verify(userActionService).findUserActionByUserId(1L);
     }
 }
