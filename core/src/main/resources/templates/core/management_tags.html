@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8"/>
-    <title>Advice management</title>
+    <title>Tags management</title>
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
@@ -160,17 +160,15 @@
             </div>
         </div>
     </div>
-    <!-- Add Modal HTML -->
-    <div class="modal fade" id="addTagModal">
+    <div id="addTagModal" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="addTagForm" method="post" th:action="@{management/tags}">
+                <form method="post" id="addTagForm">
                     <div class="modal-header">
                         <h4 class="modal-title">Add Tag</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
                             <label>Type</label>
                             <label>
@@ -186,26 +184,17 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="form-group">
-                                        <label>Language ID</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getId()}" th:value="${language.getId()}" type="text"/>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
                                         <label>Language code</label>
-                                        <input class="form-control" readonly required
-                                               th:name="${language.getCode()}" th:value="${language.getCode()}" type="text"/>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required>
                                     </div>
                                 </div>
+                                <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}" th:value="${language.getId()}">
                                 <div class="col-9">
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <label>
-                                            <input class="form-control"
-                                                   th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
-                                                   type="text"/>
-                                        </label>
+                                        <input type="text" class="form-control eEdit"
+                                               th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}">
                                         <span class="errorSpan"
                                               th:id="'errorModalSavetagTranslations['+${iterInfo.index}+'].name'"></span>
                                     </div>
@@ -222,7 +211,7 @@
         </div>
     </div>
     <!-- Edit Modal HTML -->
-    <div class="modal fade" id="editTagModal">
+    <!-- <div class="modal fade" id="editTagModal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="editTagForm">
@@ -270,7 +259,7 @@
                                     <div class="form-group">
                                         <label>Name</label>
                                         <label>
-                                            <input class="form-control"
+                                            <input class="form-control" th:width="${100}"
                                                    th:id="name+${'_' + language.getId()+'_'}+${language.getCode()}"
                                                    th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}"
                                                    type="text"/>
@@ -285,6 +274,61 @@
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
                         <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> -->
+    <div id="editTagModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" id="editTagForm">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Tag</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>ID</label>
+                            <label for="id"></label><input class="form-control" id="id" name="id" readonly required type="text">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <label>
+                                <select name="tagType" class="form-control">
+                                    <option>ECO_NEWS</option>
+                                    <option>TIPS_AND_TRICKS</option>
+                                    <option>HABIT</option>
+                                </select>
+                            </label>
+                            <span class="errorSpan" th:id="errorModalUpdatetype"></span>
+                        </div>
+                        <th:block th:each="language, iterInfo : ${languages}">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-group">
+                                        <label>Language code</label>
+                                        <input type="text" class="form-control" th:name="${language.getCode()}"
+                                               th:value="${language.getCode()}" readonly required>
+                                    </div>
+                                </div>
+                                <input type="hidden" class="form-control" th:id="id+${language.getCode()}" th:name="id+${language.getCode()}" th:value="${language.getId()}">
+                                <div class="col-9">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <input type="text" class="form-control eEdit"
+                                               th:id="name+${'_' + language.getId()+'_'}+${language.getCode()}"
+                                               th:name="name+${'_' + language.getId()+'_'}+${language.getCode()}">
+                                        <span class="errorSpan"
+                                              th:id="'errorModalUpdatetagTranslations['+${iterInfo.index}+'].name'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitEditBtn">
                     </div>
                 </form>
             </div>

@@ -38,7 +38,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
-    @Query(value = "SELECT DISTINCT t FROM Tag t JOIN FETCH t.tagTranslations AS tt "
+    @Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
         + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
