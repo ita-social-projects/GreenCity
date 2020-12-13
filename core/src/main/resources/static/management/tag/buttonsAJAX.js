@@ -44,7 +44,6 @@ $(document).ready(function () {
     $('#btnSearchImage').click(function (){
         let url = "/management/tags?filter=";
         let query = $('#inputSearch').val();
-        console.log(query);
         $.ajax({
             url: url + query,
             type: 'GET',
@@ -97,7 +96,6 @@ $(document).ready(function () {
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
-                        console.log(el.fieldName);
                         $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
                     })
                 } else {
@@ -156,18 +154,17 @@ $(document).ready(function () {
 
     $('td .edit.eBtn').on('click', function (event) {
         event.preventDefault();
-        $("#editAdviceModal").each(function () {
+        $("#editTagModal").each(function () {
             $(this).find('input.eEdit').val("");
         });
         clearAllErrorsSpan();
         $('#editTagModal').modal();
         var href = $(this).attr('href');
-        console.log(href);
         $.get(href, function (tag, status) {
             $('#id').val(tag.id);
-            $('#habit').val(tag.habit.id);
-            tag.translations.forEach(function (translation, index) {
-                $(`#name_${translation.language.id}_${translation.language.code}`)
+            $('#tagType').val(tag.type);
+            tag.tagTranslations.forEach(function (translation, index) {
+                $(`#name_${translation.languageVO.id}_${translation.languageVO.code}`)
                     .val(translation.name);
             })
         });
@@ -192,7 +189,7 @@ $(document).ready(function () {
 
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
-        var href = '/management/tags/all';
+        var href = '/management/tags/';
         var payload = getCheckedValues(checkbox);
         sendAjaxDeleteRequest(href, payload);
     });
@@ -202,7 +199,6 @@ $(document).ready(function () {
         clearAllErrorsSpan();
         var formData = getDataFromForm('#addTagForm');
         var payload = composePayloadFromFormData(formData);
-        console.log(payload);
         sendAjaxPostRequest(payload);
     });
 
@@ -215,4 +211,3 @@ $(document).ready(function () {
         sendAjaxPutRequest(payload, tagId);
     })
 });
-
