@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import javax.servlet.http.Cookie;
+import java.io.IOException;
 import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)

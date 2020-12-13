@@ -3,7 +3,6 @@ package greencity.webcontroller;
 import com.google.gson.Gson;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;

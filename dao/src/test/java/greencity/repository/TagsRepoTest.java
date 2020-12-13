@@ -97,6 +97,16 @@ class TagsRepoTest {
     }
 
     @Test
+    void findByTypeAndLanguageCode() {
+        String tagType = "ECO_NEWS";
+        String languageCode = "en";
+        List<String> expected = Collections.singletonList("News");
+        List<String> actual =  tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void findTagsByNamesNotFoundTest() {
         List<String> tagNames = Collections.singletonList("news");
         List<Tag> tags = tagsRepo.findTagsByNamesAndType(tagNames, TagType.TIPS_AND_TRICKS);

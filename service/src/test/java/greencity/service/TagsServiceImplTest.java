@@ -203,6 +203,18 @@ class TagsServiceImplTest {
     }
 
     @Test
+    void findByTypeAndLanguageCode() {
+        String tagType = "ECO_NEWS";
+        String languageCode = "en";
+        List<String> actual = Collections.singletonList("News");
+
+        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode)).thenReturn(actual);
+        List<String> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void findTagsByNamesThrowTagNotFoundException() {
         TagType tagType = TagType.TIPS_AND_TRICKS;
         List<String> tagsNames = Collections.singletonList("News");

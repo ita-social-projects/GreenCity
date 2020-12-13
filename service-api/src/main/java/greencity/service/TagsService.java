@@ -85,6 +85,15 @@ public interface TagsService {
     List<TagVO> findTagsByNamesAndType(List<String> tags, TagType tagType);
 
     /**
+     * Method that allow you to find list of Tags by type and language code.
+     *
+     * @param type {@link String}
+     * @param languageCode {@link String}
+     * @return list of tag's names.
+     */
+    List<String> findByTypeAndLanguageCode(String type, String languageCode);
+
+    /**
      * Method that allow you to find all EcoNews Tags.
      *
      * @return list of Tag's names
