@@ -139,21 +139,40 @@
                         </tbody>
                     </th:block>
                 </table>
-                <div class="clearfix">
-                    <div class="hint-text">Showing <b
-                            th:text="${tags.getTotalElements()>20?20:tags.getTotalElements()}">5</b> out of <b
-                            th:text="${tags.getTotalElements()}">25</b> entries
+                <div class="clearfix" th:if="${tags.getPage().size() ne 0}">
+                    <div class="hint-text">
+                        Showing
+                        <b th:text="${tags.getCurrentPage() eq 0 ? '1 -' : (tags.isHasNext() ? tags.getPage().size() * tags.getCurrentPage() : tags.getTotalElements() - tags.getPage().size()) + 1 + ' - '}"></b>
+                        <b th:text="${tags.getCurrentPage() eq 0 ? tags.getPage().size() : (tags.isHasNext() ? tags.getPage().size() * (tags.getCurrentPage() + 1) : tags.getTotalElements())}">*</b>
+                        out of
+                        <b th:text="${tags.getTotalElements()}"></b>
+                        entries
                     </div>
                     <ul class="pagination">
-                        <li class="page-item" th:classappend="${tags.getCurrentPage()==0?'disabled':''}"><a
-                                class="page-link" th:href="@{tags(page=${tags.getCurrentPage()-1})}">Previous</a>
-                        </li>
-                        <li class="page-item" th:classappend="${tags.getCurrentPage()==i?'active':''}"
-                            th:each="i : ${#numbers.sequence(0,tags.getTotalPages()-1)}"><a
-                                class="page-link" th:href="@{tags(page=${i})}" th:text="${i+1}">1</a></li>
+
                         <li class="page-item"
-                            th:classappend="${tags.getCurrentPage()==tags.getTotalPages()-1?'disabled':''}"><a
-                                class="page-link" th:href="@{tags(page=${tags.getCurrentPage()+1})}">Next</a>
+                            th:classappend="${!tags.isFirst()} ? '' : 'disabled'">
+                            <a class="page-link" rel="tooltip" th:if="${!tags.isFirst()}"
+                               th:href="@{/management/tags?page={id}(id=${0})}"><i
+                                    class="arrow fas fa-chevron-left"></i></a>
+                            <a class="page-link" rel="tooltip" th:if="${tags.isFirst()}"><i
+                                    class="arrow fas fa-chevron-left"></i></a>
+                        </li>
+
+                        <li class="page-item"
+                            th:if="${pageNumber > -1 && pageNumber < tags.getTotalPages()}"
+                            th:classappend="${pageNumber == tags.getNumber()} ? 'active' : ''"
+                            th:each="pageNumber : ${#numbers.sequence(tags.getNumber()-3,tags.getNumber()+3)}">
+                            <a class="page-link" th:href="@{/management/tags?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
+                        </li>
+
+                        <li class="page-item"
+                            th:classappend="${!tags.isLast()} ? '' : 'disabled'">
+                            <a class="page-link" rel="tooltip" th:if="${!tags.isLast()}"
+                               th:href="@{/management/tags?page={id}(id=${tags.getTotalPages()-1})}"><i
+                                    class="arrow fas fa-chevron-right"></i></a>
+                            <a class="page-link" rel="tooltip" th:if="${tags.isLast()}"><i
+                                    class="arrow fas fa-chevron-right"></i></a>
                         </li>
                     </ul>
                 </div>
