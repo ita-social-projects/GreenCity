@@ -1,33 +1,29 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Table(name = "direct_rooms")
-public class DirectRoom {
+@Table(name = "chat_messages")
+public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    Participant firstParticipant;
+    private ChatRoom room;
 
     @ManyToOne
-    Participant secondParticipant;
+    private Participant sender;
 
-    String lastMessageContent;
-    ZonedDateTime lastMessageDate;
-
-    @OneToMany(mappedBy = "directRoom")
-    private List<DirectMessage> messages;
+    private String content;
+    private ZonedDateTime createDate;
 }
+
+
