@@ -20,8 +20,8 @@ public class TagTranslationDto extends LanguageTranslationDTO {
     private String name;
 
     /**
-     * Constructor
-     * */
+     * Constructor.
+     */
     @Builder(builderMethodName = "TagTranslationDtoBuilder")
     public TagTranslationDto(
         @Valid @NotNull LanguageDTO language,

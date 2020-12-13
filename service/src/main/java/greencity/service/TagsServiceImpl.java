@@ -38,7 +38,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public PageableAdvancedDto<TagVO> findAll(Pageable pageable, String filter) {
         Page<Tag> tags = filter == null ? tagRepo.findAll(pageable)
@@ -49,7 +49,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto) {
         Page<Tag> foundTags = tagRepo.findAll(buildSpecification(tagViewDto), pageable);
@@ -59,7 +59,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public TagVO save(TagPostDto tag) {
         Tag toSave = modelMapper.map(tag, Tag.class);
@@ -71,7 +71,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public TagVO findById(Long id) {
         Tag foundTag = tagRepo.findById(id)
@@ -82,7 +82,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public Long deleteById(Long id) {
         try {
@@ -96,7 +96,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     @Transactional
     public List<Long> bulkDelete(List<Long> ids) {
@@ -119,12 +119,10 @@ public class TagsServiceImpl implements TagsService {
         toUpdate.setType(tagPostDto.getType());
         toUpdate.getTagTranslations()
             .forEach(tagTranslation -> tagTranslation.setName(
-                tagPostDto.getTagTranslations().stream().filter(newTranslation ->
-                    newTranslation.getLanguage().getId()
-                        .equals(tagTranslation.getLanguage().getId()))
+                tagPostDto.getTagTranslations().stream().filter(newTranslation -> newTranslation.getLanguage().getId()
+                    .equals(tagTranslation.getLanguage().getId()))
                     .findFirst()
-                    .get().getName()
-            ));
+                    .get().getName()));
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {
@@ -184,7 +182,7 @@ public class TagsServiceImpl implements TagsService {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public List<String> findByTypeAndLanguageCode(String type, String languageCode) {
         return tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);

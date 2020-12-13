@@ -1,19 +1,30 @@
 package greencity.mapping;
 
+import greencity.ModelUtils;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
-import org.modelmapper.AbstractConverter;
-import org.springframework.stereotype.Component;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Collectors;
 
-@Component
-public class TagVOMapper extends AbstractConverter<Tag, TagVO> {
-    @Override
-    protected TagVO convert(Tag tag) {
-        return TagVO.builder()
+import static org.junit.jupiter.api.Assertions.*;
+
+@ExtendWith(MockitoExtension.class)
+class TagVOMapperTest {
+
+    @InjectMocks
+    private TagVOMapper mapper;
+
+    @Test
+    void convert() {
+        Tag tag = ModelUtils.getTag();
+
+        TagVO expected = TagVO.builder()
             .id(tag.getId())
             .type(tag.getType())
             .tagTranslations(tag.getTagTranslations().stream()
@@ -27,5 +38,8 @@ public class TagVOMapper extends AbstractConverter<Tag, TagVO> {
                     .build())
                 .collect(Collectors.toList()))
             .build();
+        TagVO actual = mapper.convert(tag);
+
+        assertEquals(expected, actual);
     }
 }

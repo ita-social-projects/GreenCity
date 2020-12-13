@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag> {
-
     /**
      * Method finds all tags and fetches theirs translations.
      *
@@ -25,6 +24,12 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
         countQuery = "SELECT COUNT(t) FROM Tag t")
     Page<Tag> findAll(Pageable pageable);
 
+    /**
+     * Method that finds tag by given id.
+     *
+     * @param id - {link Long}
+     * @return {@link Optional} of found {@link Tag}
+     */
     @Query("SELECT t from Tag t JOIN FETCH t.tagTranslations WHERE t.id = :id")
     Optional<Tag> findById(Long id);
 
@@ -38,6 +43,13 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
+    /**
+     * Method that search tags by all fields using filter.
+     *
+     * @param pageable {@link Pageable}
+     * @param filter   {@link String}
+     * @return found tags {@link Page}
+     */
     @Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
         + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
         + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
@@ -50,7 +62,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     /**
      * Method that allow you to find list of Tags by type and language code.
      *
-     * @param tagType {@link TagType}
+     * @param tagType      {@link TagType}
      * @param languageCode {@link String}
      * @return list of tag's names.
      */

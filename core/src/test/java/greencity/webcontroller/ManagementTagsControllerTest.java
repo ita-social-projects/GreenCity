@@ -163,8 +163,8 @@ class ManagementTagsControllerTest {
 
         mockMvc.perform(post(managementTagsLink + "/search?lang=" + language +
             "&page=" + page + "&size=" + size)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(tagViewDtoAsJson))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(tagViewDtoAsJson))
             .andExpect(status().isOk());
     }
 }

@@ -44,8 +44,8 @@ public class TagSpecification implements MySpecification<Tag> {
 
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
             : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get(TagTranslation_.NAME),
-            "%" + searchCriteria.getValue() + "%"),
-            criteriaBuilder.equal(translationJoin.get(TagTranslation_.tag).get(Tag_.ID),
-                root.get(Tag_.ID)));
+                "%" + searchCriteria.getValue() + "%"),
+                criteriaBuilder.equal(translationJoin.get(TagTranslation_.tag).get(Tag_.ID),
+                    root.get(Tag_.ID)));
     }
 }

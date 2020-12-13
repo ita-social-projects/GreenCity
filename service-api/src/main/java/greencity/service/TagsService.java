@@ -20,18 +20,18 @@ public interface TagsService {
      * Method that returns all tags.
      *
      * @param pageable {@link Pageable}
-     * @param filter {@link String}
+     * @param filter   {@link String}
      * @return all tags {@link PageableAdvancedDto}
-     * */
+     */
     PageableAdvancedDto<TagVO> findAll(Pageable pageable, String filter);
 
     /**
      * Method that search tags by several values using Spring Data Specification.
      *
-     * @param pageable {@link Pageable}
-     * @param tagViewDto {@link TagViewDto} - object that stores values of fields that will be searched.
+     * @param pageable   {@link Pageable}
+     * @param tagViewDto {@link TagViewDto} - object that stores values of fields
+     *                   that will be searched.
      * @return found tags {@link PageableAdvancedDto}
-     *
      */
     PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto);
 
@@ -40,7 +40,7 @@ public interface TagsService {
      *
      * @param tag - new tag {@link greencity.dto.tag.TagPostDto}
      * @return saved tag {@link TagVO}
-     * */
+     */
     TagVO save(TagPostDto tag);
 
     /**
@@ -48,7 +48,7 @@ public interface TagsService {
      *
      * @param id - {@link Long}
      * @return found tag {@Link TagVO}
-     * */
+     */
     TagVO findById(Long id);
 
     /**
@@ -56,7 +56,7 @@ public interface TagsService {
      *
      * @param id - {@link Long}
      * @return id {@link Long} of deleted tag
-     * */
+     */
     Long deleteById(Long id);
 
     /**
@@ -64,16 +64,16 @@ public interface TagsService {
      *
      * @param ids - list of {@link Long}.
      * @return list of {@link Long} ids of deleted tags.
-     * */
+     */
     List<Long> bulkDelete(List<Long> ids);
 
     /**
      * Method that updates tag by given id.
      *
      * @param tagPostDto - {@link TagPostDto}
-     * @param id - {@link Long}
+     * @param id         - {@link Long}
      * @return updated advice - {@link TagVO}
-     * */
+     */
     TagVO update(TagPostDto tagPostDto, Long id);
 
     /**
@@ -87,7 +87,7 @@ public interface TagsService {
     /**
      * Method that allow you to find list of Tags by type and language code.
      *
-     * @param type {@link String}
+     * @param type         {@link String}
      * @param languageCode {@link String}
      * @return list of tag's names.
      */

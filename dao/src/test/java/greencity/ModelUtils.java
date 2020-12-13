@@ -112,12 +112,14 @@ public class ModelUtils {
     }
 
     public static Tag getTagHabit() {
-        return new Tag(2L, TagType.HABIT, getTagTranslationsEducation(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(2L, TagType.HABIT, getTagTranslationsEducation(), Collections.emptyList(),
+            Collections.emptyList(),
             Collections.emptySet());
     }
 
     public static Tag getTagTipsAndTricks() {
-        return new Tag(3L, TagType.TIPS_AND_TRICKS, getTagTranslationsAds(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(3L, TagType.TIPS_AND_TRICKS, getTagTranslationsAds(), Collections.emptyList(),
+            Collections.emptyList(),
             Collections.emptySet());
     }
 
