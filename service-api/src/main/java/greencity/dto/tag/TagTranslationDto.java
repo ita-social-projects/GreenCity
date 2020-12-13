@@ -19,10 +19,14 @@ public class TagTranslationDto extends LanguageTranslationDTO {
     @Size(min = 1, max = 20)
     private String name;
 
+    /**
+     * Constructor
+     * */
     @Builder(builderMethodName = "TagTranslationDtoBuilder")
     public TagTranslationDto(
         @Valid @NotNull LanguageDTO language,
-        @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH, max = ServiceValidationConstants.ADVICE_MAX_LENGTH) String content,
+        @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH,
+            max = ServiceValidationConstants.ADVICE_MAX_LENGTH) String content,
         @Valid @Size(min = 1, max = 20) String name) {
         super(language, content);
         this.name = name;

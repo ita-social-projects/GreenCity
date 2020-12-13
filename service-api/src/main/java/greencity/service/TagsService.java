@@ -1,9 +1,6 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
-import greencity.dto.advice.AdvicePostDto;
-import greencity.dto.advice.AdviceVO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
@@ -28,6 +25,14 @@ public interface TagsService {
      * */
     PageableAdvancedDto<TagVO> findAll(Pageable pageable, String filter);
 
+    /**
+     * Method that search tags by several values using Spring Data Specification.
+     *
+     * @param pageable {@link Pageable}
+     * @param tagViewDto {@link TagViewDto} - object that stores values of fields that will be searched.
+     * @return found tags {@link PageableAdvancedDto}
+     *
+     */
     PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto);
 
     /**

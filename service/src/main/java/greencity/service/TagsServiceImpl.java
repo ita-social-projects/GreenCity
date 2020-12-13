@@ -47,6 +47,9 @@ public class TagsServiceImpl implements TagsService {
         return buildPageableAdvanceDtoFromPage(tags);
     }
 
+    /**
+     * {@inheritDoc}
+     * */
     @Override
     public PageableAdvancedDto<TagVO> search(Pageable pageable, TagViewDto tagViewDto) {
         Page<Tag> foundTags = tagRepo.findAll(buildSpecification(tagViewDto), pageable);
