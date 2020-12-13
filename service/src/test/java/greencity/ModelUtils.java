@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdviceVO;
@@ -46,8 +47,7 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagVO;
+import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -559,9 +559,12 @@ public class ModelUtils {
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
-        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
-            TagTranslationVO.builder().id(2L).name("News").build(),
-            TagTranslationVO.builder().id(3L).name("Новины").build());
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+                .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
+                .build(),
+            TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
+                .build());
     }
 
     public static LanguageVO getLanguageVO() {
@@ -570,6 +573,28 @@ public class ModelUtils {
 
     public static TagVO getTagVO() {
         return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, getTagTranslationDtos());
+    }
+
+    public static List<TagTranslationDto> getTagTranslationDtos() {
+        LanguageDTO language = getLanguageDTO();
+        return Arrays.asList(
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новини").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("News").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новины").language(language).build());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            9, 1, 2, 1,
+            true, false, false, true);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {

@@ -1,16 +1,20 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
 import greencity.enums.TagType;
-import greencity.exception.exceptions.DuplicatedTagException;
-import greencity.exception.exceptions.InvalidNumOfTagsException;
-import greencity.exception.exceptions.TagNotFoundException;
+import greencity.exception.exceptions.*;
+import greencity.filters.TagSpecification;
+import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -19,17 +23,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 class TagsServiceImplTest {
     @Mock
     private TagsRepo tagRepo;
+
+    @Mock
+    private TagTranslationRepo tagTranslationRepo;
 
     @Mock
     private ModelMapper modelMapper;
@@ -39,6 +53,137 @@ class TagsServiceImplTest {
 
     private static final String UKRAINIAN_LANGUAGE = "ua";
     private static final String ENGLISH_LANGUAGE = "en";
+
+    @Test
+    void findAll() {
+        Pageable pageable = PageRequest.of(1, 8);
+        List<Tag> tags = ModelUtils.getTags();
+        Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
+        when(tagRepo.findAll(pageable)).thenReturn(pageTags);
+        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+
+        PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
+        PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, null);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findAllWithFilter() {
+        String filter = "test";
+        Pageable pageable = PageRequest.of(1, 8);
+        List<Tag> tags = ModelUtils.getTags();
+        Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
+        when(tagRepo.filterByAllFields(pageable, filter)).thenReturn(pageTags);
+        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+
+        PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
+        PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, filter);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void search() {
+        Pageable pageable = PageRequest.of(1, 8);
+        TagViewDto tagViewDto = TagViewDto.builder()
+            .id("3").name("News").type("ECO")
+            .build();
+        List<Tag> tags = ModelUtils.getTags();
+        Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
+        when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
+        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+
+        PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
+        PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void save() {
+        TagPostDto tagPostDto = ModelUtils.getTagPostDto();
+        Tag toSave = ModelUtils.getTag();
+        Tag saved = ModelUtils.getTag();
+        saved.setId(1L);
+        TagVO actual = ModelUtils.getTagVO();
+
+        when(modelMapper.map(tagPostDto, Tag.class)).thenReturn(toSave);
+        when(tagRepo.save(toSave)).thenReturn(saved);
+        when(modelMapper.map(saved, TagVO.class)).thenReturn(actual);
+
+        TagVO expected = tagsService.save(tagPostDto);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findById() {
+        Long id = 1L;
+        Tag tag = ModelUtils.getTag();
+        TagVO expected = ModelUtils.getTagVO();
+
+        when(tagRepo.findById(id)).thenReturn(Optional.of(tag));
+        when(modelMapper.map(tag, TagVO.class)).thenReturn(expected);
+        TagVO actual = tagsService.findById(id);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void findByIdThrowNotFoundException() {
+        assertThrows(NotFoundException.class, () -> tagsService.findById(3L));
+    }
+
+    @Test
+    void update() {
+        Long id = 1L;
+        Tag toUpdate = ModelUtils.getTag();
+        TagPostDto tagPostDto = ModelUtils.getTagPostDto();
+        TagVO expected = ModelUtils.getTagVO();
+
+        when(tagRepo.findById(id)).thenReturn(Optional.of(toUpdate));
+        when(modelMapper.map(toUpdate, TagVO.class)).thenReturn(expected);
+        TagVO actual = tagsService.update(tagPostDto, id);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateThrowNotFoundException() {
+        Long id = 1L;
+        TagPostDto tagPostDto = ModelUtils.getTagPostDto();
+        assertThrows(NotFoundException.class, () -> tagsService.update(tagPostDto, id));
+    }
+
+    @Test
+    void deleteById() {
+        Long id = 1L;
+
+        Long actual = tagsService.deleteById(id);
+
+        verify(tagRepo).deleteById(id);
+        assertEquals(id, actual);
+    }
+
+    @Test
+    void deleteByIdThrowNotDeletedException() {
+        Long id = 3L;
+
+        doThrow(EmptyResultDataAccessException.class).when(tagRepo).deleteById(id);
+        assertThrows(NotDeletedException.class, () -> tagsService.deleteById(id));
+    }
+
+    @Test
+    void bulkDelete() {
+        List<Long> ids = Arrays.asList(1L, 2L, 3L);
+
+        List<Long> actual = tagsService.bulkDelete(ids);
+
+        verify(tagTranslationRepo).bulkDeleteByTagId(ids);
+        verify(tagRepo).bulkDelete(ids);
+        assertEquals(ids, actual);
+    }
 
     @Test
     void findTagsByNames() {
