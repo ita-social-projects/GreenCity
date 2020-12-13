@@ -86,7 +86,7 @@ public class ModelUtils {
     }
 
     public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
-        return new PageableAdvancedDto<TagVO>(Collections.singletonList(getTagVO()),
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
             10, 1, 4, 8,
             true, true, true, true);
     }

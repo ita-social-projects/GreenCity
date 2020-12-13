@@ -164,11 +164,7 @@ class ManagementTagsControllerTest {
         mockMvc.perform(post(managementTagsLink + "/search?lang=" + language +
             "&page=" + page + "&size=" + size)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(tagViewDtoAsJson)
-            .content(pageableAsJson))
-            .andExpect(view().name("core/management_tags"))
-            .andExpect(model().attribute("tags", tags))
-            .andExpect(model().attribute("fields", tagViewDto))
-            .andExpect(model().attribute("languages", languages));
+            .content(tagViewDtoAsJson))
+            .andExpect(status().isOk());
     }
 }
