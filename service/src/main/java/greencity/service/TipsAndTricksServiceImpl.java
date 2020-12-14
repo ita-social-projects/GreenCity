@@ -78,6 +78,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
         tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
         tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
+        String str = tipsAndTricksDtoManagement.getImagePath();
         if (tipsAndTricksDtoManagement.getImagePath() != null) {
             image = fileService.convertToMultipartImage(tipsAndTricksDtoManagement.getImagePath());
         }
@@ -404,7 +405,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public PageableDto<TipsAndTricksDtoManagement> getFilteredDataForManagementByPage(
         Pageable pageable,
         TipsAndTricksViewDto tipsAndTricksViewDto) {
-        Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(getSpecification(tipsAndTricksViewDto), pageable);
+        TipsAndTricksSpecification tipsAndTricksSpecification = getSpecification(tipsAndTricksViewDto);
+        Page<TipsAndTricks> pages = tipsAndTricksRepo.findAll(tipsAndTricksSpecification, pageable);
         return getPagesWithTipsAndTricksDtoManagement(pages);
     }
 

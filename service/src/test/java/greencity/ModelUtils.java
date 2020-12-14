@@ -60,10 +60,13 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -142,6 +145,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -753,6 +757,29 @@ public class ModelUtils {
             .tags(Collections.singletonList("tipsAndTricksTag"))
             .imagePath(TestConst.SITE)
             .source(null)
+            .build();
+    }
+
+
+    public static TipsAndTricksDtoManagement getTipsAndTricksDtoManagement() {
+        return TipsAndTricksDtoManagement.builder()
+            .id(1L)
+            .source("sourceExample")
+            .creationDate(getTipsAndTricks().getCreationDate())
+            .authorName("orest@gmail.com")
+            .tags(getTipsAndTricks().getTags()
+                .stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()))
+            .titleTranslations(Collections.singletonList(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content for tips and tricks dto management")
+                .languageCode(getLanguage().getCode())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslationDTO.builder()
+                .content("text content for tips and tricks dto management")
+                .languageCode(getLanguage().getCode())
+                .build()))
             .build();
     }
 
