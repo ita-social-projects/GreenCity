@@ -179,6 +179,24 @@ class UserServiceImplTest {
     }
 
     @Test
+    void findAllUsersFriendsTest() {
+        List<User> singletonList = Collections.singletonList(ModelUtils.getUser());
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<User> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
+        List<RecommendedFriendDto> dtoList =
+            Collections.singletonList(ModelUtils.getRecommendedFriendDto());
+        PageableDto<RecommendedFriendDto> pageableDto =
+            new PageableDto<>(dtoList, dtoList.size(), 0, 1);
+
+        when(userRepo.getAllUserFriends(userId, pageRequest)).thenReturn(page);
+        when(modelMapper.map(singletonList, new TypeToken<List<RecommendedFriendDto>>() {
+        }.getType())).thenReturn(dtoList);
+        PageableDto<RecommendedFriendDto> actual = userService.findAllUsersFriends(pageRequest, 1L);
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
     void saveTest() {
         when(userRepo.findByEmail(userEmail)).thenReturn(Optional.ofNullable(user));
         when(userService.findByEmail(userEmail)).thenReturn(userVO);
