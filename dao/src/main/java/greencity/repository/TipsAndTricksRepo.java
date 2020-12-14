@@ -94,7 +94,6 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      */
     @Query(value = "select distinct t from TipsAndTricks t join fetch t.titleTranslations as title "
         + "join fetch t.author as user "
-        + "join fetch t.tags as tag "
         + "where concat(t.id, '') like lower(concat(:query, '')) or "
         + "lower(concat(t.creationDate,'')) like lower(concat('%', :query, '%')) or "
         + "lower(user.name) like lower(concat('%', :query, '%')) or "
