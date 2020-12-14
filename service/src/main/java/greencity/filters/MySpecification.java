@@ -1,6 +1,5 @@
 package greencity.filters;
 
-import greencity.entity.Tag_;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;

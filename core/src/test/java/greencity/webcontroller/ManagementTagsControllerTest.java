@@ -17,12 +17,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 
 import java.util.Arrays;
@@ -48,6 +50,9 @@ class ManagementTagsControllerTest {
 
     @Mock
     private Validator validator;
+
+    @MockBean
+    private BindingResult bindingResult;
 
     @InjectMocks
     private ManagementTagsController tagsController;

@@ -101,6 +101,23 @@ class TagsServiceImplTest {
     }
 
     @Test
+    void searchByOneField() {
+        Pageable pageable = PageRequest.of(1, 8);
+        TagViewDto tagViewDto = TagViewDto.builder()
+            .name("News").type("ECO")
+            .build();
+        List<Tag> tags = ModelUtils.getTags();
+        Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
+        when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
+        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+
+        PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
+        PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void save() {
         TagPostDto tagPostDto = ModelUtils.getTagPostDto();
         Tag toSave = ModelUtils.getTag();

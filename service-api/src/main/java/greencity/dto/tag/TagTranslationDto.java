@@ -5,6 +5,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class TagTranslationDto extends LanguageTranslationDTO {
     @Valid
     @Size(min = 1, max = 20)
