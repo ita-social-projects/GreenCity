@@ -14,7 +14,10 @@ import greencity.service.UserActionService;
 import greencity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -93,7 +96,7 @@ public class AchievementCalculation {
      * @author Orest Mamchuk
      */
     private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
-        UserVO userVO = userService.findById(userId);
+        UserVO userVO = userService.findByIdTransactional(userId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             changeAchievementStatus(modelMapper.map(userVO, User.class), achievementVO);

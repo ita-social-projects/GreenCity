@@ -57,7 +57,7 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(category)).thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        when(userService.findById(1L)).thenReturn(userVO);
+        when(userService.findByIdTransactional(1L)).thenReturn(userVO);
         when(achievementService.findByCategoryIdAndCondition(1L, 1)).thenReturn(achievementVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);

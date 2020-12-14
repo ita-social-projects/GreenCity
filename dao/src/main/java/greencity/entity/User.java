@@ -43,9 +43,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode(
     exclude = {"lastVisit", "verifyEmail", "ownSecurity",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
-@ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
+//@ToString(
+//    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
+//        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

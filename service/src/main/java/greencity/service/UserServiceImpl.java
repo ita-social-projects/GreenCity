@@ -97,11 +97,23 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional
     public UserVO findById(Long id) {
-        User source = userRepo.findById(id)
-            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(source, UserVO.class);
+        return findUser(id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public UserVO findByIdTransactional(Long id) {
+        return findUser(id);
+    }
+
+    private UserVO findUser(Long id) {
+        User user =
+            userRepo.findById(id).orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(user, UserVO.class);
     }
 
     /**

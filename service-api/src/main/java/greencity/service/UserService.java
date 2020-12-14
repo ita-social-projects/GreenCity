@@ -38,6 +38,14 @@ public interface UserService {
     UserVO findById(Long id);
 
     /**
+     * Method that allow you to find {@link UserVO} by ID.
+     *
+     * @param id a value of {@link Long}
+     * @return {@link UserVO}
+     */
+    UserVO findByIdTransactional(Long id);
+
+    /**
      * Method that allow you to delete {@link UserVO} by ID.
      *
      * @param id a value of {@link Long}
