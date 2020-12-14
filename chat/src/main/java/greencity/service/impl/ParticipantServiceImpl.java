@@ -36,4 +36,15 @@ public class ParticipantServiceImpl implements ParticipantService {
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + id)),
             ParticipantDto.class);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ParticipantDto getCurrentParticipantByEmail(String email) {
+        return modelMapper.map(
+            participantRepo.findNotDeactivatedByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
+            ParticipantDto.class);
+    }
 }

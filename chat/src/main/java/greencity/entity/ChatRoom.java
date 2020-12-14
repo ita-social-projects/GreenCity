@@ -22,13 +22,13 @@ public class ChatRoom {
 
     private String name;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     private List<ChatMessage> messages;
 
     @Enumerated(value = EnumType.STRING)
     private ChatType type;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "chat_rooms_participants",
         joinColumns = @JoinColumn(name = "room_id"),

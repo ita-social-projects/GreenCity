@@ -21,7 +21,8 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @return list of {@link ChatRoom} instances.
      */
     @Query(value = "SELECT dr FROM ChatRoom dr"
-        + " JOIN dr.participants p"
+        + " JOIN FETCH dr.participants p"
+        + " JOIN FETCH dr.messages"
         + " WHERE :partId = p.id")
     List<ChatRoom> findAllByParticipantId(@Param("partId") Long participantId);
 
@@ -34,7 +35,8 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @return list of {@link ChatRoom} instances.
      */
     @Query(value = "SELECT dr FROM ChatRoom dr"
-        + " JOIN dr.participants p"
+        + " JOIN FETCH dr.participants p"
+        + " JOIN FETCH dr.messages"
         + " WHERE p IN (:participants)"
         + " GROUP BY dr"
         + " HAVING COUNT(dr) = CAST(:participantsCount AS long)"

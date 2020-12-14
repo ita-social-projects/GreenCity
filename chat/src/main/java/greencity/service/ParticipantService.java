@@ -5,7 +5,7 @@ import greencity.entity.Participant;
 
 public interface ParticipantService {
     /**
-     * Method that allow you to find not 'DEACTIVATED' {@link Participant} by email.
+     * Method to find not 'DEACTIVATED' {@link Participant}/{@code User} by email.
      *
      * @param email - {@link Participant}'s email
      * @return {@link Participant} instance.
@@ -13,10 +13,18 @@ public interface ParticipantService {
     ParticipantDto findByEmail(String email);
 
     /**
-     * Method that allow you to find not 'DEACTIVATED' {@link Participant} by id.
+     * Method to find not 'DEACTIVATED' {@link Participant}/{@code User} by id.
      *
      * @param id - {@link Participant} id
      * @return {@link Participant} instance.
      */
     ParticipantDto findById(Long id);
+
+    /**
+     * Method to find current {@link Participant}/{@code User} by username.
+     *
+     * @param email - {@link Participant} email.
+     * @return {@link Participant} instance.
+     */
+    ParticipantDto getCurrentParticipantByEmail(String email);
 }
