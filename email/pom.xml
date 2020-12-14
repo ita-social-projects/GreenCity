@@ -14,7 +14,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>email</name>
     <properties>
-    <junit-jupiter.version>5.4.2</junit-jupiter.version>
+    <junit-jupiter.version>5.7.0</junit-jupiter.version>
     <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
     <mockito-core.version>3.3.3</mockito-core.version>
     </properties>
@@ -35,6 +35,12 @@
                     <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
