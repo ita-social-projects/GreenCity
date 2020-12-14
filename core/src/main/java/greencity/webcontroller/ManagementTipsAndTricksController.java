@@ -6,6 +6,7 @@ import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
@@ -46,8 +47,11 @@ public class ManagementTipsAndTricksController {
      * @author Yurii Savchenko
      */
     @GetMapping
-    public String findAll(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<TipsAndTricksDtoManagement> pageableDto = tipsAndTricksService.findAllManagementDtos(pageable);
+    public String findAll(@RequestParam(required = false, name = "query") String query, Model model,
+        @ApiIgnore Pageable pageable) {
+        PageableDto<TipsAndTricksDtoManagement> pageableDto = query == null || query.isEmpty()
+            ? tipsAndTricksService.findAllManagementDtos(pageable)
+            : tipsAndTricksService.searchTipsAndTricksBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_tips_and_tricks";

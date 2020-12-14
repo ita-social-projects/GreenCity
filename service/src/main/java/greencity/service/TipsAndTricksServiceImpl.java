@@ -4,6 +4,7 @@ import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
@@ -461,5 +462,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private TipsAndTricksSpecification getSpecification(TipsAndTricksViewDto tipsAndTricksViewDto) {
         List<SearchCriteria> searchCriteria = buildSearchCriteria(tipsAndTricksViewDto);
         return new TipsAndTricksSpecification(searchCriteria);
+    }
+
+    @Override
+    public PageableDto<TipsAndTricksDtoManagement> searchTipsAndTricksBy(Pageable pageable, String query) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricksBy(pageable, query);
+        return getPagesWithTipsAndTricksDtoManagement(page);
     }
 }
