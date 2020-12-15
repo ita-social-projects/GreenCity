@@ -92,14 +92,14 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @param query    query to search,
      * @return list of {@link TipsAndTricks}.
      */
-    @Query(value = "select distinct t from TipsAndTricks t join fetch t.titleTranslations as title "
-        + "join fetch t.author as user "
-        + "where concat(t.id, '') like lower(concat(:query, '')) or "
-        + "lower(concat(t.creationDate,'')) like lower(concat('%', :query, '%')) or "
-        + "lower(user.name) like lower(concat('%', :query, '%')) or "
-        + "lower(title.content) like lower(concat('%', :query, '%')) or "
-        + "lower(t.imagePath) like lower(concat('%', :query, '%')) or "
-        + "lower(t.source) like lower(concat('%', :query, '%'))",
-        countQuery = "select count(a) from TipsAndTricks t")
+    @Query(value = "SELECT DISTINCT t FROM TipsAndTricks t JOIN FETCH t.titleTranslations AS title "
+        + "JOIN FETCH t.author AS user "
+        + "WHERE CONCAT(t.id, '') LIKE LOWER(concat(:query, '')) OR "
+        + "LOWER(CONCAT(t.creationDate,'')) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(user.name) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(title.content) like LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(t.imagePath) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(t.source) LIKE LOWER(CONCAT('%', :query, '%'))",
+        countQuery = "SELECT COUNT(a) FROM TipsAndTricks t")
     Page<TipsAndTricks> searchTipsAndTricksBy(Pageable pageable, String query);
 }
