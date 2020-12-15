@@ -1,15 +1,10 @@
 package greencity.webcontroller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
-import greencity.entity.Tag;
 import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,9 +43,6 @@ class ManagementTipsAndTricksControllerTest {
     private static final String managementTipsAndTricksLink = "/management/tipsandtricks";
 
     private MockMvc mockMvc;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Mock
     private LanguageService languageService;
 
