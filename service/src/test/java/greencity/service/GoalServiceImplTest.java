@@ -356,7 +356,7 @@ class GoalServiceImplTest {
             .thenReturn(UserGoalResponseDto.builder().id(1L).build());
         when(goalTranslationRepo.findByLangAndUserGoalId("en", 1L))
             .thenReturn(GoalTranslation.builder().id(1L).build());
-        assertEquals(goalService.getUserGoals(userId, 1L, "en").get(0).getId(), 1L);
+        assertEquals(1L, goalService.getUserGoals(userId, 1L, "en").get(0).getId());
     }
 
     @Test
