@@ -2,6 +2,7 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
@@ -29,6 +30,10 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -56,6 +61,34 @@ public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
+    }
+
+    public static List<TagTranslationVO> getTagTranslationsVO() {
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
+            TagTranslationVO.builder().id(2L).name("News").build(),
+            TagTranslationVO.builder().id(3L).name("Новины").build());
+    }
+
+    public static LanguageVO getLanguageVO() {
+        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    }
+
+    public static TagVO getTagVO() {
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, Collections.emptyList());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            10, 1, 4, 8,
+            true, true, true, true);
     }
 
     public static User getUser() {
