@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ManagementRatingStatisticsControllerTest {
+class ManagementRatingStatisticsControllerTest {
 
     private static final String managementRatingStatisticsLink = "/management/rating";
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
