@@ -220,6 +220,22 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<RecommendedFriendDto> findAllUsersFriends(Pageable pageable, Long userId) {
+        Page<User> friends = userRepo.getAllUserFriends(userId, pageable);
+        List<RecommendedFriendDto> friendDtos = modelMapper.map(friends.getContent(),
+            new TypeToken<List<RecommendedFriendDto>>() {
+            }.getType());
+        return new PageableDto<>(
+            friendDtos,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<UserVO> findNotDeactivatedByEmail(String email) {
         return Optional.of(modelMapper.map(userRepo.findNotDeactivatedByEmail(email), UserVO.class));
     }
@@ -699,6 +715,7 @@ public class UserServiceImpl implements UserService {
                 friends.getPageable().getPageNumber(), friends.getTotalPages()))
             .build();
     }
+
 
     /**
      * {@inheritDoc}
