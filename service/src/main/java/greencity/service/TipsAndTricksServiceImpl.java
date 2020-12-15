@@ -462,4 +462,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         List<SearchCriteria> searchCriteria = buildSearchCriteria(tipsAndTricksViewDto);
         return new TipsAndTricksSpecification(searchCriteria);
     }
+
+    @Override
+    public PageableDto<TipsAndTricksDtoManagement> searchTipsAndTricksBy(Pageable pageable, String query) {
+        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricksBy(pageable, query);
+        return getPagesWithTipsAndTricksDtoManagement(page);
+    }
 }
