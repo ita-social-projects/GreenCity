@@ -23,8 +23,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
-@ToString
 public class UserVO {
     private Long id;
 
