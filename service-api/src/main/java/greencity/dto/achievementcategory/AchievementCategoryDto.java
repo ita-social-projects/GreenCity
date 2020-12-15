@@ -12,6 +12,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode
 public class AchievementCategoryDto {
     @Pattern(regexp = "^[a-zA-Z0-9\\s][^<>]*$", message = ServiceValidationConstants.CATEGORY_NAME_BAD_FORMED)
     @Length(
