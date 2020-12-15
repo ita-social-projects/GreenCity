@@ -4,7 +4,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
-import greencity.entity.RatingStatistics;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,16 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import javax.print.attribute.standard.Media;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -86,9 +79,6 @@ public class ManagementRatingStatisticsControllerTest {
     @Test
     void exportToExcelTest() throws Exception {
         HttpServletResponse response = mock(HttpServletResponse.class);
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition",
-                "user_rating_statistics" + dateFormat.format(new Date()) + ".xlsx");
         List<RatingStatisticsDto> list = Collections.singletonList(new RatingStatisticsDto());
         when(ratingStatisticsService.getAllRatingStatistics()).thenReturn(list);
         this.mockMvc.perform(get(managementRatingStatisticsLink + "/export"))
@@ -112,8 +102,22 @@ public class ManagementRatingStatisticsControllerTest {
 
     @Test
     void filterDataTest() throws Exception {
-        this.mockMvc.perform(post(managementRatingStatisticsLink))
+        RatingStatisticsViewDto ratingStatisticsViewDto = new RatingStatisticsViewDto();
+        Pageable pageable = PageRequest.of(0,3);
+        List<RatingStatisticsDtoForTables> list = Collections.singletonList(new RatingStatisticsDtoForTables());
+        PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto = new PageableAdvancedDto<>(list,
+                3,0,3,1,false,true,true,false);
+        when(ratingStatisticsService.getFilteredDataForManagementByPage(pageable,ratingStatisticsViewDto))
+                .thenReturn(pageableDto);
+        this.mockMvc.perform(post(managementRatingStatisticsLink)
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("page","0")
+                .param("size","3"))
+                .andExpect(model().attribute("ratings",pageableDto))
+                .andExpect(model().attribute("fields",ratingStatisticsViewDto))
+                .andExpect(view().name("core/management_user_rating"))
                 .andExpect(status().isOk());
+        verify(ratingStatisticsService).getFilteredDataForManagementByPage(pageable,ratingStatisticsViewDto);
     }
 
 }
