@@ -1,6 +1,5 @@
 package greencity.dto.tag;
 
-import greencity.dto.language.LanguageVO;
 import lombok.*;
 
 @Getter
@@ -9,8 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder
-public class TagTranslationVO {
+public class TagDto {
     private Long id;
     private String name;
-    private LanguageVO languageVO;
 }

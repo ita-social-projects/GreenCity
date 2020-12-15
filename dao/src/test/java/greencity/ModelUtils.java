@@ -2,8 +2,12 @@ package greencity;
 
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.FactOfDayStatus;
+import greencity.enums.TagType;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,7 +59,7 @@ public class ModelUtils {
         return HabitFactTranslation.builder()
             .id(1L)
             .content("Тест факт # 1'")
-            .language(getLanguage())
+            .language(getLanguageUa())
             .factOfDayStatus(FactOfDayStatus.POTENTIAL)
             .habitFact(null)
             .build();
@@ -69,8 +73,18 @@ public class ModelUtils {
             .build();
     }
 
-    public static Language getLanguage() {
-        return new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+    public static Language getLanguageEn() {
+        return new Language(2L, "en", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static Language getLanguageUa() {
+        return new Language(1L, "ua", Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static Language getLanguageRu() {
+        return new Language(3L, "ru", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 
@@ -90,5 +104,43 @@ public class ModelUtils {
                     .build())
                 .translations(List.of(getAdviceTranslationThird()))
                 .build()));
+    }
+
+    public static Tag getTagEcoNews() {
+        return new Tag(1L, TagType.ECO_NEWS, getTagTranslationsNews(), Collections.emptyList(), Collections.emptyList(),
+            Collections.emptySet());
+    }
+
+    public static Tag getTagHabit() {
+        return new Tag(2L, TagType.HABIT, getTagTranslationsEducation(), Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptySet());
+    }
+
+    public static Tag getTagTipsAndTricks() {
+        return new Tag(3L, TagType.TIPS_AND_TRICKS, getTagTranslationsAds(), Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptySet());
+    }
+
+    public static List<TagTranslation> getTagTranslationsNews() {
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Новини").language(getLanguageUa()).build(),
+            TagTranslation.builder().id(2L).name("News").language(getLanguageEn()).build(),
+            TagTranslation.builder().id(3L).name("Новины").language(getLanguageRu()).build());
+    }
+
+    public static List<TagTranslation> getTagTranslationsEducation() {
+        return Arrays.asList(
+            TagTranslation.builder().id(4L).name("Освіта").language(getLanguageUa()).build(),
+            TagTranslation.builder().id(5L).name("Education").language(getLanguageEn()).build(),
+            TagTranslation.builder().id(6L).name("Образование").language(getLanguageRu()).build());
+    }
+
+    public static List<TagTranslation> getTagTranslationsAds() {
+        return Arrays.asList(
+            TagTranslation.builder().id(7L).name("Реклами").language(getLanguageUa()).build(),
+            TagTranslation.builder().id(8L).name("Ads").language(getLanguageEn()).build(),
+            TagTranslation.builder().id(9L).name("Рекламы").language(getLanguageRu()).build());
     }
 }

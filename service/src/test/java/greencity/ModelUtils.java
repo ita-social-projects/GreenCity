@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementTranslationVO;
@@ -17,8 +18,18 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -47,13 +58,16 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.*;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -166,6 +180,10 @@ public class ModelUtils {
             TagTranslation.builder().id(1L).name("Новини").language(language).build(),
             TagTranslation.builder().id(2L).name("News").language(language).build(),
             TagTranslation.builder().id(3L).name("Новины").language(language).build());
+    }
+
+    public static TagDto getTagDto() {
+        return TagDto.builder().id(2L).name("News").build();
     }
 
     public static List<Tag> getTags() {
@@ -610,7 +628,7 @@ public class ModelUtils {
     }
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "image");
+        return new UserProfilePictureDto(1L, "name", "image");
     }
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
@@ -676,9 +694,12 @@ public class ModelUtils {
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
-        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
-            TagTranslationVO.builder().id(2L).name("News").build(),
-            TagTranslationVO.builder().id(3L).name("Новины").build());
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
+                .build(),
+            TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
+                .build());
     }
 
     public static LanguageVO getLanguageVO() {
@@ -687,6 +708,28 @@ public class ModelUtils {
 
     public static TagVO getTagVO() {
         return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, getTagTranslationDtos());
+    }
+
+    public static List<TagTranslationDto> getTagTranslationDtos() {
+        LanguageDTO language = getLanguageDTO();
+        return Arrays.asList(
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новини").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("News").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новины").language(language).build());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            9, 1, 2, 1,
+            true, false, false, true);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
@@ -765,6 +808,36 @@ public class ModelUtils {
             .build();
     }
 
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                .id(76L)
+                .build(),
+                UserVO.builder()
+                .id(543L)
+                .build(),
+                UserVO.builder()
+                .id(349L)
+                .build()
+            )))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
             .id(getUser().getId())
@@ -792,6 +865,22 @@ public class ModelUtils {
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
         return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = TipsAndTricksDtoRequest.builder()
+            .titleTranslation(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode("en")
+                .build())
+            .textTranslation(TextTranslationDTO.builder()
+                .content("text content for tips and tricks")
+                .languageCode("en")
+                .build())
+            .source("wiki")
+            .build();
+
+        return tipsAndTricksDtoRequest;
     }
 
     public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {

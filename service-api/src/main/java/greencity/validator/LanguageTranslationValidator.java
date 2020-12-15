@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LanguageTranslationValidator implements
-    ConstraintValidator<LanguageTranslationConstraint, List<LanguageTranslationDTO>> {
+    ConstraintValidator<LanguageTranslationConstraint, List<? extends LanguageTranslationDTO>> {
     private List<LanguageDTO> languageDTOS;
     @Autowired
     private LanguageService languageService;
@@ -24,7 +24,7 @@ public class LanguageTranslationValidator implements
     }
 
     @Override
-    public boolean isValid(List<LanguageTranslationDTO> value, ConstraintValidatorContext context) {
+    public boolean isValid(List<? extends LanguageTranslationDTO> value, ConstraintValidatorContext context) {
         List<LanguageDTO> valueLanguageDTOS = value
             .stream()
             .map(LanguageTranslationDTO::getLanguage)

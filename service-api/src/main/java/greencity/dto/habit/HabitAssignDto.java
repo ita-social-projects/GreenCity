@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
+@ToString
 public class HabitAssignDto {
     private Long id;
     private HabitAssignStatus status;

@@ -139,9 +139,10 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
-        model.put(EmailConstants.VERIFY_ADDRESS, serverLink + "/ownSecurity/verifyEmail?token="
+        model.put(EmailConstants.VERIFY_ADDRESS, clientLink + "?token="
             + token + PARAM_USER_ID + id);
         changeLocale(language);
+        log.info(Locale.getDefault().toString());
         String template = createEmailTemplate(model, EmailConstants.VERIFY_EMAIL_PAGE);
         sendEmail(email, EmailConstants.VERIFY_EMAIL, template);
     }
@@ -188,17 +189,21 @@ public class EmailServiceImpl implements EmailService {
      *
      * @param language language which will be used for sending recovery letter.
      */
-    public void changeLocale(String language) {
+    private void changeLocale(String language) {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
-        if (language.equals("ua")) {
-            Locale.setDefault(ua);
-        }
-        if (language.equals("ru")) {
-            Locale.setDefault(rus);
-        }
-        if (language.equals("en")) {
-            Locale.setDefault(Locale.ENGLISH);
+        switch (language) {
+            case "ua":
+                Locale.setDefault(ua);
+                break;
+            case "ru":
+                Locale.setDefault(rus);
+                break;
+            case "en":
+                Locale.setDefault(Locale.ENGLISH);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + language);
         }
     }
 

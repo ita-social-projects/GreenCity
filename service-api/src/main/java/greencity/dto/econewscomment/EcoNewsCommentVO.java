@@ -18,6 +18,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class EcoNewsCommentVO {
     private Long id;
 
