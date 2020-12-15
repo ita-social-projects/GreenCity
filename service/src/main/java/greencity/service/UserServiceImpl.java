@@ -205,12 +205,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId) {
-        Page<User> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
+        Page<UsersFriendDto> friends = userRepo.findUsersRecommendedFriends(pageable, userId);
         List<RecommendedFriendDto> recommendedFriendDtos = friends.get()
-            .map(user -> modelMapper.map(user, RecommendedFriendDto.class))
+            .map(user -> new RecommendedFriendDto(user.getId(), user.getName(), user.getProfilePicture()))
             .collect(Collectors.toList());
         return new PageableDto<>(
             recommendedFriendDtos,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<RecommendedFriendDto> findAllUsersFriends(Pageable pageable, Long userId) {
+        Page<User> friends = userRepo.getAllUserFriends(userId, pageable);
+        List<RecommendedFriendDto> friendDtos = modelMapper.map(friends.getContent(),
+            new TypeToken<List<RecommendedFriendDto>>() {
+            }.getType());
+        return new PageableDto<>(
+            friendDtos,
             friends.getTotalElements(),
             friends.getPageable().getPageNumber(),
             friends.getTotalPages());
@@ -699,6 +715,7 @@ public class UserServiceImpl implements UserService {
                 friends.getPageable().getPageNumber(), friends.getTotalPages()))
             .build();
     }
+
 
     /**
      * {@inheritDoc}
