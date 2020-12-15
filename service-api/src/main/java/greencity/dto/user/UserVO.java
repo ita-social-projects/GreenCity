@@ -15,8 +15,11 @@ import java.util.List;
 import java.util.Set;
 import lombok.*;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
 @Builder
