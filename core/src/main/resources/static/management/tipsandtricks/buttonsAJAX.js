@@ -2,7 +2,20 @@ function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
 
+let checkedCh = 0;
+function updateCheckBoxCount(chInt){
+    let chBox = $('#checkbox' + chInt);
+    let deleteBtn = $("#btnDelete");
+    chBox.is(":checked") ? checkedCh++ : checkedCh--;
+    console.log(checkedCh)
+    if(checkedCh === 0) {
+        deleteBtn.addClass("disabled");
+    } else deleteBtn.removeClass("disabled");
+}
+
 $(document).ready(function () {
+    let deleteBtn = $("#btnDelete");
+
     // Activate tooltip
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -10,13 +23,18 @@ $(document).ready(function () {
     var checkbox = $('table tbody input[type="checkbox"]');
     $("#selectAll").click(function () {
         if (this.checked) {
+            checkedCh = 0;
             checkbox.each(function () {
                 this.checked = true;
+                checkedCh++;
             });
+                deleteBtn.removeClass("disabled");
         } else {
             checkbox.each(function () {
+                checkedCh--;
                 this.checked = false;
             });
+                deleteBtn.addClass("disabled");
         }
     });
     checkbox.click(function () {
@@ -24,6 +42,7 @@ $(document).ready(function () {
             $("#selectAll").prop("checked", false);
         }
     });
+
     //delete button on the right in the table
     $('td .delete.eDelBtn').on('click', function (event) {
         event.preventDefault();

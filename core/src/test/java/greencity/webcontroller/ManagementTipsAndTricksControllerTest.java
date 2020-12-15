@@ -84,6 +84,27 @@ class ManagementTipsAndTricksControllerTest {
     }
 
     @Test
+    void findAllByQuery() throws Exception {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<TipsAndTricksDtoManagement> tipsAndTricksDtoManagements =
+            Collections.singletonList(new TipsAndTricksDtoManagement());
+        PageableDto<TipsAndTricksDtoManagement> tipsAndTricksDtoManagementPageableDto =
+            new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
+        when(tipsAndTricksService.searchTipsAndTricksBy(pageable, "query"))
+            .thenReturn(tipsAndTricksDtoManagementPageableDto);
+        List<LanguageDTO> languageDTOS = Collections.singletonList(new LanguageDTO(1L, "ua"));
+        when(languageService.getAllLanguages()).thenReturn(languageDTOS);
+        this.mockMvc.perform(get(managementTipsAndTricksLink + "?query=query")
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(view().name("core/management_tips_and_tricks"))
+            .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
+            .andExpect(model().attribute("languages", languageService.getAllLanguages()))
+            .andExpect(status().isOk());
+        verify(tipsAndTricksService).searchTipsAndTricksBy(pageable, "query");
+    }
+
+    @Test
     void getTipsAndTricksById() throws Exception {
         this.mockMvc.perform(get(managementTipsAndTricksLink + "/find?id=1"))
             .andExpect(status().isOk());

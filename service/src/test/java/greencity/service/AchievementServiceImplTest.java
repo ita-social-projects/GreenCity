@@ -61,10 +61,10 @@ class AchievementServiceImplTest {
 
     @Test
     void findAllByPageableTest() {
-        Pageable pageable = PageRequest.of(0,2);
+        Pageable pageable = PageRequest.of(0, 2);
         Achievement achievement = ModelUtils.getAchievement();
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        Page<Achievement> pages = new PageImpl<>(Collections.singletonList(achievement),pageable,10);
+        Page<Achievement> pages = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
         when(achievementRepo.findAll(pageable)).thenReturn(pages);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.findAll(pageable);
@@ -73,13 +73,13 @@ class AchievementServiceImplTest {
 
     @Test
     void searchAchievementByTest() {
-        Pageable pageable = PageRequest.of(0,2);
+        Pageable pageable = PageRequest.of(0, 2);
         Achievement achievement = ModelUtils.getAchievement();
-        Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement),pageable,10);
+        Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        when(achievementRepo.searchAchievementsBy(pageable,"")).thenReturn(page);
+        when(achievementRepo.searchAchievementsBy(pageable, "")).thenReturn(page);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable,"");
+        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
@@ -92,7 +92,7 @@ class AchievementServiceImplTest {
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
         UserVO userVO = ModelUtils.getUserVO();
         UserAchievementVO userAchievement = ModelUtils.getUserAchievementVO();
-        List <UserAchievementVO> userAchievements = new ArrayList<>();
+        List<UserAchievementVO> userAchievements = new ArrayList<>();
         userAchievements.add(userAchievement);
         userVO.setUserAchievements(userAchievements);
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
@@ -136,7 +136,8 @@ class AchievementServiceImplTest {
     void updateWithUnknownId() {
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
         when(achievementRepo.findById(achievementManagementDto.getId()))
-            .thenThrow(new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID  + achievementManagementDto.getId()));
+            .thenThrow(
+                new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + achievementManagementDto.getId()));
         assertThrows(NotUpdatedException.class, () -> achievementService.update(achievementManagementDto));
     }
 
@@ -153,7 +154,7 @@ class AchievementServiceImplTest {
     @Test
     void deleteWithNonExistingId() {
         doThrow(EmptyResultDataAccessException.class).when(achievementRepo).deleteById(345L);
-        assertThrows(NotDeletedException.class, () -> achievementService.delete(345L) );
+        assertThrows(NotDeletedException.class, () -> achievementService.delete(345L));
     }
 
     @Test

@@ -186,7 +186,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/profileStatistics/",
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
-                "/user/{userId}/recommendedFriends/")
+                "/user/{userId}/recommendedFriends/",
+                "/user/{userId}/friends/")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -220,7 +221,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
-                "/habit/assign/{habitId}",
+                HABIT_ASSIGN_ID,
                 "/goals/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
                 TIPS_AND_TRICKS_COMMENTS,

@@ -1,6 +1,5 @@
 package greencity.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
