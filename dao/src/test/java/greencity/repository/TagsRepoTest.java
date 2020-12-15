@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.ModelUtils;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,10 +99,10 @@ class TagsRepoTest {
 
     @Test
     void findByTypeAndLanguageCode() {
-        String tagType = "ECO_NEWS";
+        TagType tagType = TagType.ECO_NEWS;
         String languageCode = "en";
-        List<String> expected = Collections.singletonList("News");
-        List<String> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
+        List<TagTranslation> expected = Collections.singletonList(ModelUtils.getTagTranslationsNews().get(1));
+        List<TagTranslation> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
 
         assertEquals(expected, actual);
     }

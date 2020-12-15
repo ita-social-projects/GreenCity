@@ -2,10 +2,12 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
 import greencity.filters.TagSpecification;
@@ -221,12 +223,15 @@ class TagsServiceImplTest {
 
     @Test
     void findByTypeAndLanguageCode() {
-        String tagType = "ECO_NEWS";
+        TagType tagType = TagType.ECO_NEWS;
         String languageCode = "en";
-        List<String> actual = Collections.singletonList("News");
+        TagDto tagDto = ModelUtils.getTagDto();
+        List<TagDto> actual = Collections.singletonList(tagDto);
 
-        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode)).thenReturn(actual);
-        List<String> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
+        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode))
+            .thenReturn(Collections.singletonList(ModelUtils.getTagTranslations().get(1)));
+        when(modelMapper.map(any(TagTranslation.class), eq(TagDto.class))).thenReturn(tagDto);
+        List<TagDto> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
 
         assertEquals(expected, actual);
     }
