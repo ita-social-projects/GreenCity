@@ -18,8 +18,18 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -48,14 +58,19 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tag.*;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
+import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -71,7 +86,40 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UsersFriendDto;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.*;
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.Comment;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Goal;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.TextTranslation;
+import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.TitleTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
+import greencity.entity.VerifyEmail;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
@@ -101,6 +149,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -585,7 +634,7 @@ public class ModelUtils {
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+                .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
             TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
                 .build(),
             TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
@@ -737,6 +786,28 @@ public class ModelUtils {
             .tags(Collections.singletonList("tipsAndTricksTag"))
             .imagePath(TestConst.SITE)
             .source(null)
+            .build();
+    }
+
+    public static TipsAndTricksDtoManagement getTipsAndTricksDtoManagement() {
+        return TipsAndTricksDtoManagement.builder()
+            .id(1L)
+            .source("sourceExample")
+            .creationDate(getTipsAndTricks().getCreationDate())
+            .authorName("orest@gmail.com")
+            .tags(getTipsAndTricks().getTags()
+                .stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()))
+            .titleTranslations(Collections.singletonList(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode(getLanguage().getCode())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslationDTO.builder()
+                .content("text content")
+                .languageCode(getLanguage().getCode())
+                .build()))
             .build();
     }
 
