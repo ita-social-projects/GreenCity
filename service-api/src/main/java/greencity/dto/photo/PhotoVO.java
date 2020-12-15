@@ -7,6 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
+@ToString
 public class PhotoVO {
     private Long id;
     private String name;

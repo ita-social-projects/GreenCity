@@ -4,14 +4,12 @@ import greencity.dto.goal.GoalVO;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.enums.GoalStatus;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
 @Builder

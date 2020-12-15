@@ -14,6 +14,8 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "habit_assign")
+@EqualsAndHashCode
+@ToString
 public class HabitAssign {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

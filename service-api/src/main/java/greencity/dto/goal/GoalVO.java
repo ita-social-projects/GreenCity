@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
+@ToString
 public class GoalVO {
     private Long id;
 

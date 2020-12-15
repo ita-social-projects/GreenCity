@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Setter
 @ToString(exclude = {"user"})
+@EqualsAndHashCode
 @Builder
 public class UserGoal {
     @Id

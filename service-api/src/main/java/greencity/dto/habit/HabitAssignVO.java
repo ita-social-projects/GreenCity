@@ -10,6 +10,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
+@ToString
 public class HabitAssignVO {
     private Long id;
     private HabitAssignStatus status;
