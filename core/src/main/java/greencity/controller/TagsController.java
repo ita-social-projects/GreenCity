@@ -26,7 +26,7 @@ public class TagsController {
      * The method which returns all tags' names by type and language code.
      *
      * @param locale {@link Locale}
-     * @param type {@link String}
+     * @param type   {@link String}
      * @return list of {@link String} (tag's names).
      * @author Markiyan Derevetskyi
      */
