@@ -13,7 +13,7 @@ import lombok.ToString;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@ToString(exclude = {"messages"})
 @Table(name = "chat_rooms")
 public class ChatRoom {
     @Id

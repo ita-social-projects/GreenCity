@@ -1,6 +1,5 @@
 package greencity.dto;
 
-import java.time.ZonedDateTime;
 import lombok.*;
 
 @NoArgsConstructor
@@ -10,8 +9,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class ChatMessageDto {
-    private Long chatRoomId;
+    private Long roomId;
     private Long senderId;
     private String content;
-    private ZonedDateTime createDate;
 }

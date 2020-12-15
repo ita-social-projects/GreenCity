@@ -23,13 +23,13 @@ public class ChatRoomDtoMapper extends AbstractConverter<ChatRoom, ChatRoomDto> 
     @Override
     protected ChatRoomDto convert(ChatRoom chatRoom) {
         return ChatRoomDto.builder()
+            .id(chatRoom.getId())
             .chatType(chatRoom.getType())
             .messages(chatRoom.getMessages().stream().map(
                 chatMessage -> ChatMessageDto.builder()
                     .content(chatMessage.getContent())
-                    .createDate(chatMessage.getCreateDate())
                     .senderId(chatMessage.getSender().getId())
-                    .chatRoomId(chatRoom.getId()).build()).collect(Collectors.toList()))
+                    .roomId(chatRoom.getId()).build()).collect(Collectors.toList()))
             .name(chatRoom.getName())
             .participants(chatRoom.getParticipants().stream().map(
                 participant -> ParticipantDto.builder()

@@ -12,6 +12,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class ChatRoomDto {
+    private Long id;
     private String name;
     private List<ChatMessageDto> messages;
     private ChatType chatType;

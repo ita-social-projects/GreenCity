@@ -38,13 +38,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     @Override
     public ChatMessage processMessage(ChatMessage chatMessage) {
-        /*var chatId = directRoomRepo.findByParticipants(chatMessage.ge)
-            .getChatId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true);
-        chatMessage.setChatId(chatId.get());*/
-        // DirectMessage directMessage = modelMapper.map(directMessageVO, DirectMessage.class);
-        ChatMessage saved = chatMessageRepo.save(chatMessage);
-        return saved;
-        /*messagingTemplate.convertAndSendToUser(String.valueOf(saved.getSender().getId()), "/queue/messages",
-            new Object());*/
+        return messagingTemplate.convertAndSendToUser(
+            String.valueOf(chatMessage.getRoomId()), "/queue/messages",
+            chatMessage);
     }
 }

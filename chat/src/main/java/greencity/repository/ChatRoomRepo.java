@@ -20,7 +20,7 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @param participantId {@link Participant} id.
      * @return list of {@link ChatRoom} instances.
      */
-    @Query(value = "SELECT dr FROM ChatRoom dr"
+    @Query(value = "SELECT DISTINCT dr FROM ChatRoom dr"
         + " JOIN FETCH dr.participants p"
         + " JOIN FETCH dr.messages"
         + " WHERE :partId = p.id")
@@ -34,7 +34,7 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @param chatType          {@link ChatType} room type.
      * @return list of {@link ChatRoom} instances.
      */
-    @Query(value = "SELECT dr FROM ChatRoom dr"
+    @Query(value = "SELECT DISTINCT dr FROM ChatRoom dr"
         + " JOIN FETCH dr.participants p"
         + " JOIN FETCH dr.messages"
         + " WHERE p IN (:participants)"
