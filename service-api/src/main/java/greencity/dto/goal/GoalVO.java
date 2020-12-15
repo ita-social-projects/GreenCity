@@ -7,6 +7,8 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
 @Builder
