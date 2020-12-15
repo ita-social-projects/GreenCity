@@ -14,5 +14,8 @@ public class UserProfilePictureDto {
     private Long id;
 
     @NotNull
+    private String name;
+
+    @NotNull
     private String profilePicturePath;
 }

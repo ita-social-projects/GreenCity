@@ -54,6 +54,16 @@ public interface MySpecification<T> extends Specification<T> {
     }
 
     /**
+     * Used to build predicate for Enum filter.
+     */
+    default Predicate getEnumPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,
+        SearchCriteria searchCriteria) {
+        return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
+            : criteriaBuilder.like(root.get(searchCriteria.getKey()).as(String.class),
+                "%" + searchCriteria.getValue() + "%");
+    }
+
+    /**
      * Used for build predicate for author filter.
      */
     default Predicate getAuthorPredicate(Root<T> root, CriteriaBuilder criteriaBuilder,

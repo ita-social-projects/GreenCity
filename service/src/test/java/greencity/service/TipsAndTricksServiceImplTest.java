@@ -33,6 +33,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -331,5 +332,16 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
         assertEquals(initial, tipsAndTricksComment);
 
+    }
+
+    @Test
+    void searchTipsAndTricksByTest() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageable, tipsAndTricks.size());
+        when(tipsAndTricksRepo.searchTipsAndTricksBy(pageable, "query")).thenReturn(page);
+        PageableDto<TipsAndTricksDtoManagement> expected = new PageableDto<>(Collections.emptyList(), 1, 0, 1);
+        PageableDto<TipsAndTricksDtoManagement> actual = tipsAndTricksService.searchTipsAndTricksBy(pageable, "query");
+        assertEquals(expected.getTotalElements(), actual.getTotalElements());
     }
 }

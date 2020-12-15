@@ -16,7 +16,7 @@ public interface VerifyEmailService {
      * @param token  {@link String} - token that confirms the user is the owner of
      *               his/her email.
      */
-    void verifyByToken(Long userId, String token);
+    Boolean verifyByToken(Long userId, String token);
 
     /**
      * Checks whether a user is not late with email verification.

@@ -160,4 +160,13 @@ public interface TipsAndTricksService {
      */
     PageableDto<TipsAndTricksDtoManagement> getFilteredDataForManagementByPage(
         Pageable pageable, TipsAndTricksViewDto tipsAndTricksViewDto);
+
+    /**
+     * Method for finding {@link TipsAndTricksDtoManagement} by query.
+     * 
+     * @param pageable {@link Pageable}.
+     * @param query    query to search,
+     * @return a dto of {@link PageableDto}.
+     */
+    PageableDto<TipsAndTricksDtoManagement> searchTipsAndTricksBy(Pageable pageable, String query);
 }
