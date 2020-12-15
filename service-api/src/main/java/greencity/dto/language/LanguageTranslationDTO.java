@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class LanguageTranslationDTO {
     @Valid
     @NotNull
-    private LanguageDTO language;
+    protected LanguageDTO language;
 
     @Size(min = ServiceValidationConstants.ADVICE_MIN_LENGTH, max = ServiceValidationConstants.ADVICE_MAX_LENGTH)
     private String content;

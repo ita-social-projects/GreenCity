@@ -152,9 +152,10 @@ class HabitAssignServiceImplTest {
 
     @Test
     void enrollHabitThrowWrongIdException() {
+        LocalDate localDate = LocalDate.now();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, LocalDate.now()));
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.enrollHabit(1L, 1L, localDate));
     }
 
     @Test

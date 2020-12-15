@@ -1,7 +1,12 @@
 package greencity;
 
 import greencity.constant.AppConstant;
-import greencity.dto.achievement.*;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -15,11 +20,16 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -28,7 +38,6 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
-import greencity.dto.goal.ShoppingListDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
@@ -49,9 +58,15 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.*;
+import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.*;
+import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -64,13 +79,22 @@ import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.UsersFriendDto;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.*;
+import greencity.enums.AchievementStatus;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.GoalStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.PlaceStatus;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -91,6 +115,23 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
+    public static UsersFriendDto usersFriendDto = new UsersFriendDto() {
+        @Override
+        public Long getId() {
+            return 1L;
+        }
+
+        @Override
+        public String getName() {
+            return TestConst.NAME;
+        }
+
+        @Override
+        public String getProfilePicture() {
+            return "profile";
+        }
+    };
+
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
@@ -203,9 +244,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userGoals(Collections.singletonList(UserGoal.builder()
-                .id(1L)
-                .build()))
+            .userGoals(new ArrayList<>())
             .workingDays(0)
             .duration(0)
             .habitStreak(0)
@@ -508,19 +547,11 @@ public class ModelUtils {
     }
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "image");
+        return new UserProfilePictureDto(1L, "name", "image");
     }
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
         return new FactOfTheDayTranslationDTO(1L, "content");
-    }
-
-    public static ShoppingListDtoResponse getShoppingListDtoResponse() {
-        return ShoppingListDtoResponse.builder()
-            .goalId(1L)
-            .status("ACTIVE")
-            .text("text")
-            .build();
     }
 
     public static LocationAddressAndGeoDto getLocationAddressAndGeoDto() {
@@ -582,9 +613,12 @@ public class ModelUtils {
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
-        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
-            TagTranslationVO.builder().id(2L).name("News").build(),
-            TagTranslationVO.builder().id(3L).name("Новины").build());
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
+                .build(),
+            TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
+                .build());
     }
 
     public static LanguageVO getLanguageVO() {
@@ -593,6 +627,28 @@ public class ModelUtils {
 
     public static TagVO getTagVO() {
         return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, getTagTranslationDtos());
+    }
+
+    public static List<TagTranslationDto> getTagTranslationDtos() {
+        LanguageDTO language = getLanguageDTO();
+        return Arrays.asList(
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новини").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("News").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новины").language(language).build());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            9, 1, 2, 1,
+            true, false, false, true);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
@@ -904,15 +960,15 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategory(),1);
+        return new Achievement(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L,"Name",Collections.singletonList(getAchievement()));
+        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L,Collections.emptyList(),Collections.emptyList(),new AchievementCategoryVO(),1);
+        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -924,11 +980,11 @@ public class ModelUtils {
     }
 
     public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L,getLanguageVO(),"Title","Description","Message");
+        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L,"Category");
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -936,10 +992,41 @@ public class ModelUtils {
     }
 
     public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L,getLanguage(),"Title","Description","Message", getAchievement());
+        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", getAchievement());
     }
 
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+    }
+
+    public static EcoNewsDto getEcoNewsDto() {
+        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"));
+    }
+
+    public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
+        return new UpdateEcoNewsDto(1L, "title", "text", Collections.singletonList("tag"),
+            "image", "source");
+    }
+
+    public static SearchNewsDto getSearchNewsDto() {
+        return new SearchNewsDto(1L, "title", getEcoNewsAuthorDto(), ZonedDateTime.now(),
+            Collections.singletonList("tag"));
+    }
+
+    public static EcoNewsCommentVO getEcoNewsCommentVO() {
+        return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
+            new ArrayList<>(), getUserVO(), getEcoNewsVO(), false,
+            false, new HashSet<>());
+    }
+
+    public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
+        return new EcoNewsDtoManagement(1L, "title", "text", ZonedDateTime.now(),
+            Collections.singletonList("tag"), "imagePath", "source");
+    }
+
+    public static EcoNewsViewDto getEcoNewsViewDto() {
+        return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
+            "endDate", "imagePath", "source", "tag");
     }
 }

@@ -35,13 +35,14 @@ public class VerifyEmailServiceImpl implements VerifyEmailService {
      */
     @Transactional
     @Override
-    public void verifyByToken(Long userId, String token) {
+    public Boolean verifyByToken(Long userId, String token) {
         VerifyEmail verifyEmail = verifyEmailRepo
             .findByTokenAndUserId(userId, token)
             .orElseThrow(() -> new BadVerifyEmailTokenException(ErrorMessage.NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN));
         if (isNotExpired(verifyEmail.getExpiryDate())) {
             int rows = verifyEmailRepo.deleteVerifyEmailByTokenAndUserId(userId, token);
             log.info("User has successfully verify the email by token {}. Records deleted {}.", token, rows);
+            return true;
         } else {
             log.info("User didn't verify his/her email on time with token {}.", token);
             throw new UserActivationEmailTokenExpiredException(ErrorMessage.EMAIL_TOKEN_EXPIRED);

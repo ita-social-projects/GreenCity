@@ -1,5 +1,6 @@
 package greencity.service;
 
+
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
@@ -61,6 +62,7 @@ class GoalServiceImplTest {
     private final GoalPostDto goalPostDto =
         new GoalPostDto(languageTranslationDTOS, new GoalRequestDto(1L));
 
+    private final HabitAssign habitAssign = ModelUtils.getHabitAssign();
     private User user = User.builder()
         .id(1L)
         .name("Test Testing")
@@ -91,6 +93,9 @@ class GoalServiceImplTest {
             .content("TEST")
             .goal(new Goal(2L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .build());
+
+    List<GoalRequestDto> goalRequestDtos = Arrays.asList(new GoalRequestDto(1L), new GoalRequestDto(2L),
+        new GoalRequestDto(3L));
 
     private Long userId = user.getId();
 
@@ -277,7 +282,6 @@ class GoalServiceImplTest {
 
     @Test
     void getUserGoalsTest() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserGoal userGoal = UserGoal.builder().id(1L).status(GoalStatus.ACTIVE).build();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
@@ -286,7 +290,71 @@ class GoalServiceImplTest {
             .thenReturn(UserGoalResponseDto.builder().id(1L).build());
         when(goalTranslationRepo.findByLangAndUserGoalId("en", 1L))
             .thenReturn(GoalTranslation.builder().id(1L).build());
-        assertEquals(goalService.getUserGoals(userId, 1L, "en").get(0).getId(), 1L);
+        assertEquals(1L, goalService.getUserGoals(userId, 1L, "en").get(0).getId());
+    }
+
+    @Test
+    void deleteUserGoalByGoalIdAndUserIdAndHabitIdTest() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        goalService.deleteUserGoalByGoalIdAndUserIdAndHabitId(1L, userId, 1L);
+        verify(userGoalRepo).deleteByGoalIdAndHabitAssignId(1L, 1L);
+    }
+
+    @Test
+    void deleteUserGoalByGoalIdAndUserIdAndHabitIdTestThorows() {
+        assertThrows(NotFoundException.class,
+            () -> goalService.deleteUserGoalByGoalIdAndUserIdAndHabitId(1L, userId, 1L));
+    }
+
+    @Test
+    void saveUserGoals() {
+        ObjectMapper mapper = new ObjectMapper();
+        UserGoal userGoal = mapper.convertValue(goalRequestDtos.get(0), UserGoal.class);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
+            .thenReturn(Collections.singletonList(2L));
+        when(modelMapper.map(goalRequestDtos.get(0), UserGoal.class))
+            .thenReturn(userGoal);
+        getUserGoalsTest();
+        userGoal.setHabitAssign(habitAssign);
+        goalService.saveUserGoals(userId, 1L, Collections.singletonList(goalRequestDtos.get(0)), "en");
+        verify(userGoalRepo).saveAll(Collections.singletonList(userGoal));
+    }
+
+    @Test
+    void saveUserGoalsThorowsNotFoundException() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(2));
+        assertThrows(NotFoundException.class, () -> goalService
+            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
+    }
+
+    @Test
+    void saveUserGoalsThorowsWrongIdException() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
+            .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(0));
+        assertThrows(WrongIdException.class, () -> goalService
+            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
+    }
+
+    @Test
+    void getUserGoalsTestTrows() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
+        assertThrows(UserHasNoGoalsException.class, () -> goalService.getUserGoals(userId, 1L, "en"));
     }
 
     @Test
