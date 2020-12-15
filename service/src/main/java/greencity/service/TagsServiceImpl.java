@@ -2,10 +2,12 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
 import greencity.filters.SearchCriteria;
@@ -184,16 +186,20 @@ public class TagsServiceImpl implements TagsService {
      * {@inheritDoc}
      */
     @Override
-    public List<String> findByTypeAndLanguageCode(String type, String languageCode) {
-        return tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
+    public List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode) {
+        List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
+
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllEcoNewsTags(String languageCode) {
-        return tagRepo.findAllEcoNewsTags(languageCode);
+    public List<TagDto> findAllEcoNewsTags(String languageCode) {
+        List<TagTranslation> tagTranslations = tagTranslationRepo.findAllEcoNewsTags(languageCode);
+
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
     }
 
     /**
