@@ -260,5 +260,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true, value = "select * FROM public.fn_recommended_friends ( :userId )")
     Page<UsersFriendDto> findUsersRecommendedFriends(Pageable pageable,
-                                                     @Param("userId") Long userId);
+        @Param("userId") Long userId);
 }

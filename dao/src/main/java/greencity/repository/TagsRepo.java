@@ -2,12 +2,37 @@ package greencity.repository;
 
 import greencity.entity.Tag;
 import java.util.List;
+import java.util.Optional;
 
 import greencity.enums.TagType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface TagsRepo extends JpaRepository<Tag, Long> {
+public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExecutor<Tag> {
+    /**
+     * Method finds all tags and fetches theirs translations.
+     *
+     * @param pageable {@link Pageable}
+     * @return list of tags {@link Page}
+     * @author Markiyan Derevetskyi
+     */
+    @Query(value = "SELECT t FROM Tag t JOIN FETCH t.tagTranslations ORDER BY t.id",
+        countQuery = "SELECT COUNT(t) FROM Tag t")
+    Page<Tag> findAll(Pageable pageable);
+
+    /**
+     * Method that finds tag by given id.
+     *
+     * @param id - {link Long}
+     * @return {@link Optional} of found {@link Tag}
+     */
+    @Query("SELECT t from Tag t JOIN FETCH t.tagTranslations WHERE t.id = :id")
+    Optional<Tag> findById(Long id);
+
     /**
      * Method that allow you to find list of {@link Tag}s by names and type.
      *
@@ -19,9 +44,25 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
     /**
+     * Method that search tags by all fields using filter.
+     *
+     * @param pageable {@link Pageable}
+     * @param filter   {@link String}
+     * @return found tags {@link Page}
+     */
+    @Query(value = "SELECT DISTINCT t FROM Tag t LEFT JOIN FETCH t.tagTranslations AS tt "
+        + "WHERE CONCAT(t.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR LOWER(CONCAT(t.type, '')) LIKE LOWER(CONCAT('%', :filter, '%'))"
+        + "OR CONCAT(tt.id, '') LIKE LOWER(CONCAT(:filter, '')) "
+        + "OR LOWER(tt.language.code) LIKE LOWER(CONCAT('%', :filter, '%')) "
+        + "OR LOWER(tt.name) LIKE LOWER(CONCAT('%', :filter, '%'))",
+        countQuery = "SELECT COUNT(t) FROM Tag t")
+    Page<Tag> filterByAllFields(Pageable pageable, String filter);
+
+    /**
      * Method that allow you to find list of Tags by type and language code.
      *
-     * @param tagType {@link TagType}
+     * @param tagType      {@link TagType}
      * @param languageCode {@link String}
      * @return list of tag's names.
      */
@@ -67,4 +108,13 @@ public interface TagsRepo extends JpaRepository<Tag, Long> {
             + "INNER JOIN languages l ON l.id = tt.language_id "
             + "WHERE l.code = :languageCode")
     List<String> findAllHabitsTags(String languageCode);
+
+    /**
+     * Method that deletes all tags by given ids.
+     *
+     * @param ids - list of {@link Long}.
+     */
+    @Modifying
+    @Query("DELETE FROM Tag t WHERE t.id in :ids")
+    void bulkDelete(List<Long> ids);
 }
