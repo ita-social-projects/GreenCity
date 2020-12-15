@@ -14,6 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@ToString
+@EqualsAndHashCode
 public class EcoNewsVO {
     private Long id;
 

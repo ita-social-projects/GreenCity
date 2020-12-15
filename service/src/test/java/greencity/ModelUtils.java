@@ -62,10 +62,12 @@ import greencity.dto.tag.*;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -81,7 +83,40 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UsersFriendDto;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.*;
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.Comment;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Goal;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.TextTranslation;
+import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.TitleTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
+import greencity.entity.VerifyEmail;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
@@ -712,6 +747,36 @@ public class ModelUtils {
             .build();
     }
 
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                .id(76L)
+                .build(),
+                UserVO.builder()
+                .id(543L)
+                .build(),
+                UserVO.builder()
+                .id(349L)
+                .build()
+            )))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
             .id(getUser().getId())
@@ -739,6 +804,22 @@ public class ModelUtils {
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
         return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = TipsAndTricksDtoRequest.builder()
+            .titleTranslation(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode("en")
+                .build())
+            .textTranslation(TextTranslationDTO.builder()
+                .content("text content for tips and tricks")
+                .languageCode("en")
+                .build())
+            .source("wiki")
+            .build();
+
+        return tipsAndTricksDtoRequest;
     }
 
     public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
