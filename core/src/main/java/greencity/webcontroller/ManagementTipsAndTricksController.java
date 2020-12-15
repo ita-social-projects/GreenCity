@@ -14,6 +14,7 @@ import greencity.service.TipsAndTricksService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import liquibase.util.StringUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -46,8 +47,11 @@ public class ManagementTipsAndTricksController {
      * @author Yurii Savchenko
      */
     @GetMapping
-    public String findAll(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<TipsAndTricksDtoManagement> pageableDto = tipsAndTricksService.findAllManagementDtos(pageable);
+    public String findAll(@RequestParam(required = false, name = "query") String query, Model model,
+        @ApiIgnore Pageable pageable) {
+        PageableDto<TipsAndTricksDtoManagement> pageableDto = StringUtils.isEmpty(query)
+            ? tipsAndTricksService.findAllManagementDtos(pageable)
+            : tipsAndTricksService.searchTipsAndTricksBy(pageable, query);
         model.addAttribute("pageable", pageableDto);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_tips_and_tricks";
