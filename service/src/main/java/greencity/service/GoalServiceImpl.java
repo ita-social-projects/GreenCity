@@ -48,7 +48,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<GoalDto> findAll(String language) { // done
+    public List<GoalDto> findAll(String language) {
         return goalTranslationRepo
             .findAllByLanguageCode(language)
             .stream()
@@ -60,7 +60,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) { // done
+    public List<LanguageTranslationDTO> saveGoal(GoalPostDto goal) {
         Goal savedGoal = modelMapper.map(goal, Goal.class);
         savedGoal.getTranslations().forEach(a -> a.setGoal(savedGoal));
         goalRepo.save(savedGoal);
@@ -73,7 +73,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) { // done
+    public List<LanguageTranslationDTO> update(GoalPostDto goalPostDto) {
         Optional<Goal> optionalGoal = goalRepo.findById(goalPostDto.getGoal().getId());
         if (optionalGoal.isPresent()) {
             Goal updatedGoal = optionalGoal.get();
@@ -88,7 +88,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     private void updateTranslations(List<GoalTranslation> oldTranslations,
-        List<LanguageTranslationDTO> newTranslations) {
+                                    List<LanguageTranslationDTO> newTranslations) {
         oldTranslations.forEach(goalTranslation -> goalTranslation.setContent(newTranslations.stream()
             .filter(newTranslation -> newTranslation.getLanguage().getCode()
                 .equals(goalTranslation.getLanguage().getCode()))
@@ -100,7 +100,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public GoalResponseDto findGoalById(Long id) {   //done
+    public GoalResponseDto findGoalById(Long id) {
         Optional<Goal> goal = goalRepo.findById(id);
         if (goal.isPresent()) {
             return modelMapper.map(goal.get(), GoalResponseDto.class);
@@ -113,7 +113,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public Long delete(Long goalId) {  //done
+    public Long delete(Long goalId) {
         try {
             goalRepo.deleteById(goalId);
         } catch (EmptyResultDataAccessException e) {
@@ -126,7 +126,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<GoalManagementDto> findGoalForManagementByPage(Pageable pageable) {  //done
+    public PageableAdvancedDto<GoalManagementDto> findGoalForManagementByPage(Pageable pageable) {
         Page<Goal> goals = goalRepo.findAll(pageable);
         List<GoalManagementDto> goalManagementDtos =
             goals.getContent().stream()
@@ -153,7 +153,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public List<Long> deleteAllGoalByListOfId(List<Long> listId) { //done
+    public List<Long> deleteAllGoalByListOfId(List<Long> listId) {
         listId.forEach(this::delete);
         return listId;
     }
@@ -162,7 +162,7 @@ public class GoalServiceImpl implements GoalService {
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query) { //done
+    public PageableAdvancedDto<GoalManagementDto> searchBy(Pageable paging, String query) {
         Page<Goal> goals = goalRepo.searchBy(paging, query);
         List<GoalManagementDto> goalManagementDtos = goals.stream()
             .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
@@ -216,7 +216,7 @@ public class GoalServiceImpl implements GoalService {
      */
     @Override
     public PageableAdvancedDto<GoalManagementDto> getFilteredDataForManagementByPage(Pageable pageable,
-        GoalViewDto goal) {
+                                                                                     GoalViewDto goal) {
         Page<Goal> pages = goalRepo.findAll(getSpecification(goal), pageable);
         return getPagesFilteredPages(pages);
     }
@@ -235,7 +235,7 @@ public class GoalServiceImpl implements GoalService {
     @Transactional
     @Override
     public List<UserGoalResponseDto> saveUserGoals(Long userId, Long habitId, List<GoalRequestDto> goalDtos,
-        String language) {
+                                                   String language) {
         if (goalDtos != null) {
             saveGoalsForHabitAssign(getHabitAssignIfExist(userId, habitId), goalDtos);
         }
@@ -307,7 +307,7 @@ public class GoalServiceImpl implements GoalService {
      */
     @Transactional
     @Override
-    public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {     // done
+    public List<UserGoalResponseDto> getUserGoals(Long userId, Long habitId, String language) {
         List<UserGoalResponseDto> goalDtos = getAllUserGoals(getHabitAssignIfExist(userId, habitId));
         if (goalDtos.isEmpty()) {
             throw new UserHasNoGoalsException(ErrorMessage.USER_HAS_NO_GOALS);
@@ -348,7 +348,7 @@ public class GoalServiceImpl implements GoalService {
      */
     @Transactional
     @Override
-    public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {  //done
+    public UserGoalResponseDto updateUserGoalStatus(Long userId, Long goalId, String language) {
         UserGoal userGoal;
         userGoal = userGoalRepo.getOne(goalId);
         if (isActive(userGoal)) {
@@ -359,7 +359,7 @@ public class GoalServiceImpl implements GoalService {
         return updatedUserGoal;
     }
 
-    private boolean isActive(UserGoal userGoal) {  //done
+    private boolean isActive(UserGoal userGoal) {
         if (GoalStatus.ACTIVE.equals(userGoal.getStatus())) {
             return true;
         } else {
@@ -368,7 +368,7 @@ public class GoalServiceImpl implements GoalService {
         }
     }
 
-    private void changeStatusToDone(UserGoal userGoal) {   //done
+    private void changeStatusToDone(UserGoal userGoal) {
         userGoal.setStatus(GoalStatus.DONE);
         userGoal.setDateCompleted(LocalDateTime.now());
         userGoalRepo.save(userGoal);
