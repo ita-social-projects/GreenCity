@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
@@ -87,18 +88,18 @@ public interface TagsService {
     /**
      * Method that allow you to find list of Tags by type and language code.
      *
-     * @param type         {@link String}
+     * @param type         {@link TagType}
      * @param languageCode {@link String}
-     * @return list of tag's names.
+     * @return {@link List} of {@link TagDto}
      */
-    List<String> findByTypeAndLanguageCode(String type, String languageCode);
+    List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode);
 
     /**
      * Method that allow you to find all EcoNews Tags.
      *
      * @return list of Tag's names
      */
-    List<String> findAllEcoNewsTags(String languageCode);
+    List<TagDto> findAllEcoNewsTags(String languageCode);
 
     /**
      * Method that allow you to find all Tips & Tricks Tags.

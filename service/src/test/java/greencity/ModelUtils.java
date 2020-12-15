@@ -145,6 +145,10 @@ public class ModelUtils {
             TagTranslation.builder().id(3L).name("Новины").language(language).build());
     }
 
+    public static TagDto getTagDto() {
+        return TagDto.builder().id(2L).name("News").build();
+    }
+
     public static List<Tag> getTags() {
         return Collections.singletonList(getTag());
     }

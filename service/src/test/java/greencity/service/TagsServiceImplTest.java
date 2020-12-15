@@ -2,10 +2,12 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.*;
 import greencity.filters.TagSpecification;
@@ -221,12 +223,16 @@ class TagsServiceImplTest {
 
     @Test
     void findByTypeAndLanguageCode() {
-        String tagType = "ECO_NEWS";
+        TagType tagType = TagType.ECO_NEWS;
         String languageCode = "en";
-        List<String> actual = Collections.singletonList("News");
+        TagDto tagDto = ModelUtils.getTagDto();
+        List<TagDto> actual = Collections.singletonList(tagDto);
+        List<TagTranslation> tagTranslations = Collections.singletonList(ModelUtils.getTagTranslations().get(1));
 
-        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode)).thenReturn(actual);
-        List<String> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
+        when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode))
+            .thenReturn(tagTranslations);
+        when(modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType())).thenReturn(actual);
+        List<TagDto> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
 
         assertEquals(expected, actual);
     }
@@ -247,9 +253,11 @@ class TagsServiceImplTest {
 
     @Test
     void findAllEcoNewsTags() {
-        List<String> actual = Collections.singletonList("News");
-        when(tagRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE)).thenReturn(actual);
-        List<String> expected = tagsService.findAllEcoNewsTags(ENGLISH_LANGUAGE);
+        List<TagTranslation> tagTranslations = Collections.singletonList(ModelUtils.getTagTranslations().get(1));
+        List<TagDto> actual = Collections.singletonList(TagDto.builder().id(1L).name("News").build());
+        when(tagTranslationRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE)).thenReturn(tagTranslations);
+        when(modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType())).thenReturn(actual);
+        List<TagDto> expected = tagsService.findAllEcoNewsTags(ENGLISH_LANGUAGE);
 
         assertEquals(expected, actual);
     }
