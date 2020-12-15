@@ -104,7 +104,10 @@ class TagsRepoTest {
         List<TagTranslation> expected = Collections.singletonList(ModelUtils.getTagTranslationsNews().get(1));
         List<TagTranslation> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
 
-        assertEquals(expected, actual);
+        List<Long> expectedIds = expected.stream().map(TagTranslation::getId).collect(Collectors.toList());
+        List<Long> actualIds = actual.stream().map(TagTranslation::getId).collect(Collectors.toList());
+
+        assertEquals(expectedIds, actualIds);
     }
 
     @Test

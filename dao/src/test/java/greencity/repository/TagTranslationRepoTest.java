@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,6 +25,10 @@ class TagTranslationRepoTest {
 
     private static final String UKRAINIAN_LANGUAGE = "ua";
     private static final String ENGLISH_LANGUAGE = "en";
+
+    private static List<Long> convertTagTranslationsListToLongList(List<TagTranslation> tagTranslations) {
+        return tagTranslations.stream().map(TagTranslation::getId).collect(Collectors.toList());
+    }
 
     @Test
     void bulkDeleteByTagId() {
@@ -39,19 +44,25 @@ class TagTranslationRepoTest {
     void findAllEcoNewsTagsWithEnglishTest() {
         List<TagTranslation> actual = tagTranslationRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE);
         List<TagTranslation> expected =
-            Arrays.asList(ModelUtils.getTagTranslationsAds().get(1), ModelUtils.getTagTranslationsEducation().get(1),
-                ModelUtils.getTagTranslationsNews().get(1));
+            Arrays.asList(ModelUtils.getTagTranslationsNews().get(1), ModelUtils.getTagTranslationsEducation().get(1),
+                ModelUtils.getTagTranslationsAds().get(1));
+        List<Long> expectedIds = convertTagTranslationsListToLongList(expected);
+        List<Long> actualIds = convertTagTranslationsListToLongList(actual);
+
         assertEquals(3, actual.size());
-        assertEquals(expected, actual);
+        assertEquals(expectedIds, actualIds);
     }
 
     @Test
     void findAllEcoNewsTagsWithUkrainianTest() {
         List<TagTranslation> actual = tagTranslationRepo.findAllEcoNewsTags(UKRAINIAN_LANGUAGE);
         List<TagTranslation> expected =
-            Arrays.asList(ModelUtils.getTagTranslationsAds().get(0), ModelUtils.getTagTranslationsEducation().get(0),
-                ModelUtils.getTagTranslationsNews().get(0));
+            Arrays.asList(ModelUtils.getTagTranslationsNews().get(0), ModelUtils.getTagTranslationsEducation().get(0),
+                ModelUtils.getTagTranslationsAds().get(0));
+        List<Long> expectedIds = convertTagTranslationsListToLongList(expected);
+        List<Long> actualIds = convertTagTranslationsListToLongList(actual);
+
         assertEquals(3, actual.size());
-        assertEquals(expected, actual);
+        assertEquals(expectedIds, actualIds);
     }
 }

@@ -227,10 +227,11 @@ class TagsServiceImplTest {
         String languageCode = "en";
         TagDto tagDto = ModelUtils.getTagDto();
         List<TagDto> actual = Collections.singletonList(tagDto);
+        List<TagTranslation> tagTranslations = Collections.singletonList(ModelUtils.getTagTranslations().get(1));
 
         when(tagRepo.findTagsByTypeAndLanguageCode(tagType, languageCode))
-            .thenReturn(Collections.singletonList(ModelUtils.getTagTranslations().get(1)));
-        when(modelMapper.map(any(TagTranslation.class), eq(TagDto.class))).thenReturn(tagDto);
+            .thenReturn(tagTranslations);
+        when(modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType())).thenReturn(actual);
         List<TagDto> expected = tagsService.findByTypeAndLanguageCode(tagType, languageCode);
 
         assertEquals(expected, actual);
