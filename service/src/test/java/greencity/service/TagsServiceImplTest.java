@@ -252,9 +252,11 @@ class TagsServiceImplTest {
 
     @Test
     void findAllEcoNewsTags() {
-        List<String> actual = Collections.singletonList("News");
-        when(tagRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE)).thenReturn(actual);
-        List<String> expected = tagsService.findAllEcoNewsTags(ENGLISH_LANGUAGE);
+        List<TagTranslation> tagTranslations = Collections.singletonList(ModelUtils.getTagTranslations().get(1));
+        List<TagDto> actual = Collections.singletonList(TagDto.builder().id(1L).name("News").build());
+        when(tagTranslationRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE)).thenReturn(tagTranslations);
+        when(modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType())).thenReturn(actual);
+        List<TagDto> expected = tagsService.findAllEcoNewsTags(ENGLISH_LANGUAGE);
 
         assertEquals(expected, actual);
     }

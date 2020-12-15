@@ -189,17 +189,17 @@ public class TagsServiceImpl implements TagsService {
     public List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode) {
         List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
 
-        return tagTranslations.stream()
-            .map(t -> modelMapper.map(t, TagDto.class))
-            .collect(Collectors.toList());
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<String> findAllEcoNewsTags(String languageCode) {
-        return tagRepo.findAllEcoNewsTags(languageCode);
+    public List<TagDto> findAllEcoNewsTags(String languageCode) {
+        List<TagTranslation> tagTranslations = tagTranslationRepo.findAllEcoNewsTags(languageCode);
+
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
     }
 
     /**

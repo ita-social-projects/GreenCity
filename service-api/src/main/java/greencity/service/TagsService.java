@@ -99,7 +99,7 @@ public interface TagsService {
      *
      * @return list of Tag's names
      */
-    List<String> findAllEcoNewsTags(String languageCode);
+    List<TagDto> findAllEcoNewsTags(String languageCode);
 
     /**
      * Method that allow you to find all Tips & Tricks Tags.

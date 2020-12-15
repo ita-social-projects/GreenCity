@@ -72,18 +72,6 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
 
     /**
-     * Method that allow you to find all EcoNews {@link Tag}s.
-     *
-     * @return list of {@link Tag}'s names
-     */
-    @Query(nativeQuery = true,
-        value = "SELECT DISTINCT tt.name FROM tag_translations tt "
-            + "INNER JOIN eco_news_tags ent ON tt.tag_id = ent.tags_id "
-            + "INNER JOIN languages l ON l.id = tt.language_id "
-            + "WHERE l.code = :languageCode")
-    List<String> findAllEcoNewsTags(String languageCode);
-
-    /**
      * Method that allow you to find all Tips & Tricks {@link Tag}s.
      *
      * @return list of {@link Tag}'s names
