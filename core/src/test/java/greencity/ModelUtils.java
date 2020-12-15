@@ -20,7 +20,11 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.goal.GoalPostDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.*;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -38,13 +42,19 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.*;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,10 +62,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -426,7 +442,7 @@ public class ModelUtils {
     }
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "image");
+        return new UserProfilePictureDto(1L, "name", "image");
     }
 
     public static FactOfTheDayDTO getFactOfTheDayDto() {
