@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode(exclude = {"ecoNewsComments", "tags"})
 public class EcoNewsVO {
     private Long id;
 
