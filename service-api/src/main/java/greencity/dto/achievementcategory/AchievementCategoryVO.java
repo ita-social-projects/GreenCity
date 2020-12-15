@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
 public class AchievementCategoryVO {
     @NotEmpty
     private Long id;

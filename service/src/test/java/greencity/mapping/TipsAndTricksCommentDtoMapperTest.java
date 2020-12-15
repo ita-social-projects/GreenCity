@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.ModelUtils;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
