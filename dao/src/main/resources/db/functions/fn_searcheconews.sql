@@ -18,15 +18,15 @@ BEGIN
                         en.source
         FROM eco_news en
                  JOIN public.eco_news_tags et on en.id=et.eco_news_id
-                 JOIN public.tags tg on tg.id=et.tags_id
+                 JOIN public.tag_translations tg on tg.tag_id=et.tags_id
 
         WHERE
                 LOWER(en.title) LIKE LOWER(CONCAT('%', search_query, '%'))
            OR LOWER(en.text) LIKE LOWER(CONCAT('%', search_query, '%'))
            OR et.tags_id IN (
             SELECT  et.tags_id FROM eco_news_tags et
-                                        JOIN tags ttt
-                                             ON ttt.id = et.tags_id
+                                        JOIN tag_translations ttt
+                                             ON ttt.tag_id = et.tags_id
             WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')))
 
     ;
