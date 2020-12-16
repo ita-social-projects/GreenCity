@@ -148,7 +148,6 @@ class GoalServiceImplTest {
             .saveUserGoals(userId, 1L, goalRequestDto, "en"));
     }
 
-
     @Test
     void saveUserGoalsThorowsWrongIdException() {
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
@@ -161,8 +160,6 @@ class GoalServiceImplTest {
         assertThrows(WrongIdException.class, () -> goalService
             .saveUserGoals(userId, 1L, goalRequestDto, "en"));
     }
-
-
 
     @Test
     void findAllTest() {
@@ -277,8 +274,7 @@ class GoalServiceImplTest {
         Page<Goal> pageGoals = new PageImpl<>(goals, pageable, goals.size());
 
         List<GoalManagementDto> dtoList = Collections.singletonList(
-            goals.stream().map(g ->
-                (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
+            goals.stream().map(g -> (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
         PageableAdvancedDto<GoalManagementDto> expected = new PageableAdvancedDto<>(dtoList, dtoList.size(),
             0, 1, 0, false, false, true, true);
 
@@ -300,8 +296,7 @@ class GoalServiceImplTest {
         Page<Goal> pageGoals = new PageImpl<>(goals, pageable, goals.size());
 
         List<GoalManagementDto> dtoList = Collections.singletonList(
-            goals.stream().map(g ->
-                (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
+            goals.stream().map(g -> (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
         PageableAdvancedDto<GoalManagementDto> expected = new PageableAdvancedDto<>(dtoList, dtoList.size(),
             0, 1, 0, false, false, true, true);
 
@@ -343,7 +338,6 @@ class GoalServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> goalService.deleteUserGoals(ids));
     }
-
 
     @Test
     void getUserGoalsTest() {
