@@ -398,7 +398,7 @@ public class ModelUtils {
             .goal(Goal.builder()
                 .id(1L)
                 .build())
-            .dateCompleted(LocalDateTime.of(2021, 2, 2,14,2))
+            .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
             .build();
     }
 

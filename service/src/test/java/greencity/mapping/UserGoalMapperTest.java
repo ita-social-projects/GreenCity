@@ -32,8 +32,7 @@ class UserGoalMapperTest {
                 .build())
             .goal(GoalVO.builder()
                 .id(expected.getGoal().getId())
-                .build()
-            )
+                .build())
             .dateCompleted(expected.getDateCompleted())
             .build();
 
