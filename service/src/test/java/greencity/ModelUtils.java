@@ -1164,8 +1164,4 @@ public class ModelUtils {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
             "endDate", "imagePath", "source", "tag");
     }
-
-    public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE);
-    }
 }

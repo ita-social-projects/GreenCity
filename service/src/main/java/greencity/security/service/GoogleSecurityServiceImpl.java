@@ -7,6 +7,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
+import greencity.entity.UserAction;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -31,6 +32,7 @@ import static greencity.constant.AppConstant.GOOGLE_PICTURE;
 import static greencity.constant.AppConstant.USERNAME;
 import static greencity.constant.ErrorMessage.*;
 import static greencity.security.service.OwnSecurityServiceImpl.getUserAchievements;
+import static greencity.security.service.OwnSecurityServiceImpl.getUserActions;
 
 /**
  * {@inheritDoc}
@@ -87,7 +89,9 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
                     String profilePicture = (String) payload.get(GOOGLE_PICTURE);
                     User user = createNewUser(email, userName, profilePicture);
                     List<UserAchievement> userAchievementList = createUserAchievements(user);
+                    List<UserAction> userActionsList = createUserActions(user);
                     user.setUserAchievements(userAchievementList);
+                    user.setUserActions(userActionsList);
                     User savedUser = userRepo.save(user);
                     user.setId(savedUser.getId());
                     userVO = modelMapper.map(user, UserVO.class);
@@ -126,6 +130,10 @@ public class GoogleSecurityServiceImpl implements GoogleSecurityService {
 
     private List<UserAchievement> createUserAchievements(User user) {
         return getUserAchievements(user, modelMapper, achievementService);
+    }
+
+    private List<UserAction> createUserActions(User user) {
+        return getUserActions(user, modelMapper, achievementService);
     }
 
     private SuccessSignInDto getSuccessSignInDto(UserVO user) {

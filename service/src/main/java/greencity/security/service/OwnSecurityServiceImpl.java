@@ -104,9 +104,11 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         OwnSecurity ownSecurity = createOwnSecurity(dto, user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
         List<UserAchievement> userAchievementList = createUserAchievements(user);
+        List<UserAction> userActionsList = createUserActions(user);
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
         user.setUserAchievements(userAchievementList);
+        user.setUserActions(userActionsList);
         try {
             User savedUser = userRepo.save(user);
             user.setId(savedUser.getId());
@@ -155,6 +157,10 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         return getUserAchievements(user, modelMapper, achievementService);
     }
 
+    private List<UserAction> createUserActions(User user) {
+        return getUserActions(user, modelMapper, achievementService);
+    }
+
     static List<UserAchievement> getUserAchievements(User user, ModelMapper modelMapper,
         AchievementService achievementService) {
         List<Achievement> achievementList =
@@ -166,6 +172,21 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
                 userAchievement.setAchievement(a);
                 userAchievement.setUser(user);
                 return userAchievement;
+            })
+            .collect(Collectors.toList());
+    }
+
+    static List<UserAction> getUserActions(User user, ModelMapper modelMapper,
+        AchievementService achievementService) {
+        List<Achievement> achievementList =
+            modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
+            }.getType());
+        return achievementList.stream()
+            .map(a -> {
+                UserAction userAction = new UserAction();
+                userAction.setAchievementCategory(a.getAchievementCategory());
+                userAction.setUser(user);
+                return userAction;
             })
             .collect(Collectors.toList());
     }

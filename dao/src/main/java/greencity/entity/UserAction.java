@@ -24,5 +24,5 @@ public class UserAction {
     private AchievementCategory achievementCategory;
 
     @Column(name = "count")
-    private Integer count;
+    private Integer count = 0;
 }
