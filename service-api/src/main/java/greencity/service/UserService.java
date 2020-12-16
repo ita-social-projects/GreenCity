@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
@@ -43,7 +44,7 @@ public interface UserService {
      * @param id a value of {@link Long}
      * @return {@link UserVO}
      */
-    UserVO findByIdTransactional(Long id);
+    UserVOAchievement findUserForAchievement(Long id);
 
     /**
      * Method that allow you to delete {@link UserVO} by ID.
@@ -394,6 +395,7 @@ public interface UserService {
      */
 
     PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId);
+
     /**
      * Method that finds all user's friends.
      *

@@ -51,7 +51,6 @@ class TipsAndTricksDtoRequestMapperTest {
             .source("wiki")
             .build();
 
-
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(language));
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = ModelUtils.getTipsAndTricksDtoRequestWithData();
 

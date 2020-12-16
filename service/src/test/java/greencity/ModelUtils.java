@@ -2,11 +2,7 @@ package greencity;
 
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.AchievementManagementDto;
-import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -186,6 +182,13 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVOAchievement getUserVOAchievement() {
+        return UserVOAchievement.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .build();
+    }
+
     public static UserVO getUserVOWithData() {
         return UserVO.builder()
             .id(13L)
@@ -204,18 +207,17 @@ public class ModelUtils {
                     .id(13L)
                     .name("user")
                     .build())
-                .expiryDate(LocalDateTime.of(2021, 7, 7,7,7))
+                .expiryDate(LocalDateTime.of(2021, 7, 7, 7, 7))
                 .token("toooookkkeeeeen42324532542")
                 .build())
             .userFriends(Collections.singletonList(
                 UserVO.builder()
-                .id(75L)
-                .name("Andrew")
-                .build()
-            ))
+                    .id(75L)
+                    .name("Andrew")
+                    .build()))
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
-            .dateOfRegistration(LocalDateTime.of(2020, 6,6,13,47))
+            .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
             .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
@@ -223,15 +225,15 @@ public class ModelUtils {
             .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
             .userAchievements(List.of(
                 UserAchievementVO.builder()
-                .id(47L)
-                .achievementStatus(AchievementStatus.ACTIVE)
-                .user(UserVO.builder()
+                    .id(47L)
+                    .achievementStatus(AchievementStatus.ACTIVE)
+                    .user(UserVO.builder()
                         .id(13L)
                         .build())
-                .achievement(AchievementVO.builder()
+                    .achievement(AchievementVO.builder()
                         .id(56L)
                         .build())
-                .build(),
+                    .build(),
                 UserAchievementVO.builder()
                     .id(39L)
                     .achievementStatus(AchievementStatus.INACTIVE)
@@ -241,8 +243,8 @@ public class ModelUtils {
                     .achievement(AchievementVO.builder()
                         .id(14L)
                         .build())
-                    .build()
-            )).build();
+                    .build()))
+            .build();
     }
 
     public static Language getLanguage() {
@@ -791,15 +793,14 @@ public class ModelUtils {
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<UserVO>(Arrays.asList(
                 UserVO.builder()
-                .id(76L)
-                .build(),
+                    .id(76L)
+                    .build(),
                 UserVO.builder()
-                .id(543L)
-                .build(),
+                    .id(543L)
+                    .build(),
                 UserVO.builder()
-                .id(349L)
-                .build()
-            )))
+                    .id(349L)
+                    .build())))
             .ecoNews(EcoNewsVO.builder()
                 .id(32L)
                 .build())

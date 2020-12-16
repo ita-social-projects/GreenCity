@@ -11,6 +11,7 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
@@ -386,7 +387,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, "Tips&TricksLikes", 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS, 0));
     }
 
     /**

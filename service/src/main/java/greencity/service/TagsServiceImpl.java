@@ -189,7 +189,8 @@ public class TagsServiceImpl implements TagsService {
     public List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode) {
         List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
 
-        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>() {
+        }.getType());
     }
 
     /**
@@ -199,7 +200,8 @@ public class TagsServiceImpl implements TagsService {
     public List<TagDto> findAllEcoNewsTags(String languageCode) {
         List<TagTranslation> tagTranslations = tagTranslationRepo.findAllEcoNewsTags(languageCode);
 
-        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>(){}.getType());
+        return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>() {
+        }.getType());
     }
 
     /**

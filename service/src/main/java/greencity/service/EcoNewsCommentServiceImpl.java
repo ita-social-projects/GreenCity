@@ -14,6 +14,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
+import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -68,7 +69,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             }
         }
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userVO.getId(), AchievementType.INCREMENT, "EcoNewsComment", 0));
+            .calculateAchievement(userVO.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS_COMMENT, 0));
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 

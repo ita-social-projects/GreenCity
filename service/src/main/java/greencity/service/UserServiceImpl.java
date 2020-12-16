@@ -5,10 +5,12 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
+import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -98,22 +100,19 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findById(Long id) {
-        return findUser(id);
+        User user = userRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(user, UserVO.class);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    @Transactional
-    public UserVO findByIdTransactional(Long id) {
-        return findUser(id);
-    }
-
-    private UserVO findUser(Long id) {
-        User user =
-            userRepo.findById(id).orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(user, UserVO.class);
+    public UserVOAchievement findUserForAchievement(Long id) {
+        User user = userRepo.findUserForAchievement(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(user, UserVOAchievement.class);
     }
 
     /**
@@ -602,7 +601,7 @@ public class UserServiceImpl implements UserService {
         userRepo.save(user);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.SETTER,
-                "SocialNetworks", user.getSocialNetworks().size()));
+                AchievementCategory.SOCIAL_NETWORK, user.getSocialNetworks().size()));
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
@@ -732,7 +731,6 @@ public class UserServiceImpl implements UserService {
                 friends.getPageable().getPageNumber(), friends.getTotalPages()))
             .build();
     }
-
 
     /**
      * {@inheritDoc}
