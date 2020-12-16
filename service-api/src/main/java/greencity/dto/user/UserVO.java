@@ -24,12 +24,10 @@ import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 @ToString
 @Getter
 @Setter
 @Builder
-@ToString
 @EqualsAndHashCode
 public class UserVO {
     private Long id;
