@@ -14,7 +14,7 @@ import lombok.*;
 @Builder
 @ToString(
     exclude = {"achievement", "user"})
-public class UserAchievement {
+public class    UserAchievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

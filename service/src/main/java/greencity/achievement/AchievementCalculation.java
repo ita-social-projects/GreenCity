@@ -9,7 +9,6 @@ import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserActionRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
