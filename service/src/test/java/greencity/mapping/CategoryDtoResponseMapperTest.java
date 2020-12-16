@@ -19,7 +19,7 @@ class CategoryDtoResponseMapperTest {
     @Test
     void convert() {
         Category category = ModelUtils.getCategory();
-        CategoryDtoResponse expected =  CategoryDtoResponse.builder()
+        CategoryDtoResponse expected = CategoryDtoResponse.builder()
             .id(category.getId())
             .name(category.getName())
             .build();
