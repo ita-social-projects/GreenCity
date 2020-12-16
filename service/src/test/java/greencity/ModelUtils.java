@@ -59,6 +59,7 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationDto;
 import greencity.dto.tag.TagTranslationVO;
