@@ -28,21 +28,21 @@ class UserVOAchievementMapperTest {
         UserAchievement userAchievements = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievements));
         UserVOAchievement expected = UserVOAchievement.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .userAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
-                        .stream().map(userAchievement -> UserAchievementVO.builder()
-                                .id(userAchievement.getId())
-                                .achievementStatus(userAchievement.getAchievementStatus())
-                                .user(UserVO.builder()
-                                        .id(userAchievement.getUser().getId())
-                                        .build())
-                                .achievement(AchievementVO.builder()
-                                        .id(userAchievement.getAchievement().getId())
-                                        .build())
-                                .build())
-                        .collect(Collectors.toList()) : null)
-                .build();
+            .id(user.getId())
+            .name(user.getName())
+            .userAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
+                .stream().map(userAchievement -> UserAchievementVO.builder()
+                    .id(userAchievement.getId())
+                    .achievementStatus(userAchievement.getAchievementStatus())
+                    .user(UserVO.builder()
+                        .id(userAchievement.getUser().getId())
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(userAchievement.getAchievement().getId())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : null)
+            .build();
         assertEquals(expected, userVOAchievementMapper.convert(user));
     }
 }
