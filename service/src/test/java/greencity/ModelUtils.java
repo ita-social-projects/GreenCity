@@ -383,6 +383,25 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserGoal getUserGoal() {
+        return UserGoal.builder()
+            .id(1L)
+            .status(GoalStatus.DONE)
+            .habitAssign(HabitAssign.builder()
+                .id(1L)
+                .status(HabitAssignStatus.ACQUIRED)
+                .habitStreak(10)
+                .duration(300)
+                .lastEnrollmentDate(ZonedDateTime.now())
+                .workingDays(5)
+                .build())
+            .goal(Goal.builder()
+                .id(1L)
+                .build())
+            .dateCompleted(LocalDateTime.of(2021, 2, 2,14,2))
+            .build();
+    }
+
     public static UserGoalResponseDto getPredefinedUserGoalDto() {
         return UserGoalResponseDto.builder()
             .id(2L)

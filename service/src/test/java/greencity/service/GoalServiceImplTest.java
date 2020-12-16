@@ -1,33 +1,62 @@
 package greencity.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.dto.goal.*;
+import greencity.ModelUtils;
+import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.goal.GoalDto;
+import greencity.dto.goal.GoalManagementDto;
+import greencity.dto.goal.GoalPostDto;
+import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.goal.GoalResponseDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserGoalResponseDto;
-import greencity.entity.*;
+import greencity.entity.Goal;
+import greencity.entity.HabitAssign;
+import greencity.entity.Language;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
+import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
 import greencity.enums.Role;
 import static greencity.enums.UserStatus.ACTIVATED;
-
 import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.repository.GoalRepo;
+import greencity.repository.GoalTranslationRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserGoalRepo;
+import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import greencity.ModelUtils;
-import greencity.constant.AppConstant;
-import greencity.entity.localization.GoalTranslation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.util.stream.Collectors;
 import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class GoalServiceImplTest {
@@ -91,6 +120,51 @@ class GoalServiceImplTest {
     private Long userId = user.getId();
 
     @Test
+    void saveUserGoals() {
+        ObjectMapper mapper = new ObjectMapper();
+        UserGoal userGoal = mapper.convertValue(goalRequestDtos.get(0), UserGoal.class);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
+            .thenReturn(Collections.singletonList(2L));
+        when(modelMapper.map(goalRequestDtos.get(0), UserGoal.class))
+            .thenReturn(userGoal);
+        getUserGoalsTest();
+        userGoal.setHabitAssign(habitAssign);
+        goalService.saveUserGoals(userId, 1L, Collections.singletonList(goalRequestDtos.get(0)), "en");
+        verify(userGoalRepo).saveAll(Collections.singletonList(userGoal));
+    }
+
+    @Test
+    void saveUserGoalsThorowsNotFoundException() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(2));
+        assertThrows(NotFoundException.class, () -> goalService
+            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
+    }
+
+
+    @Test
+    void saveUserGoalsThorowsWrongIdException() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
+            .thenReturn(Collections.singletonList(1L));
+        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
+            .thenReturn(Collections.singletonList(1L));
+        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(0));
+        assertThrows(WrongIdException.class, () -> goalService
+            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
+    }
+
+
+
+    @Test
     void findAllTest() {
         List<GoalTranslation> goalTranslations = ModelUtils.getGoalTranslations();
         List<GoalDto> goalsDto = goalTranslations
@@ -132,12 +206,6 @@ class GoalServiceImplTest {
     }
 
     @Test
-    void deleteTest() {
-        goalService.delete(1L);
-        verify(goalRepo).deleteById(1L);
-    }
-
-    @Test
     void updateUserGoalStatusWithNonExistentGoalIdTest() {
         assertThrows(NullPointerException.class, () -> goalService.updateUserGoalStatus(userId, 2L, "en"));
     }
@@ -171,7 +239,115 @@ class GoalServiceImplTest {
     }
 
     @Test
+    void deleteTest() {
+        goalService.delete(1L);
+        verify(goalRepo).deleteById(1L);
+    }
+
+    @Test
+    void deleteTestFailed() {
+        doThrow(EmptyResultDataAccessException.class).when(goalRepo).deleteById(300000L);
+
+        assertThrows(NotDeletedException.class, () -> goalService.delete(300000L));
+    }
+
+    @Test
+    void findGoalByIdTest() {
+        Optional<Goal> object = Optional.of(goal);
+        when(goalRepo.findById(anyLong())).thenReturn(object);
+        when(modelMapper.map(object.get(), GoalResponseDto.class)).thenReturn(new GoalResponseDto());
+
+        assertNotNull(goalService.findGoalById(30L));
+    }
+
+    @Test
+    void findGoalByIdTestFailed() {
+        Optional<Goal> object = null;
+
+        assertThrows(GoalNotFoundException.class, () -> goalService.findGoalById(30L));
+    }
+
+    @Test
+    void getAllFactsOfTheDay() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        List<Goal> goals = Collections.singletonList(goal);
+        Page<Goal> pageGoals = new PageImpl<>(goals, pageable, goals.size());
+
+        List<GoalManagementDto> dtoList = Collections.singletonList(
+            goals.stream().map(g ->
+                (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
+        PageableAdvancedDto<GoalManagementDto> expected = new PageableAdvancedDto<>(dtoList, dtoList.size(),
+            0, 1, 0, false, false, true, true);
+
+        when(goalRepo.findAll(pageable)).thenReturn(pageGoals);
+        when(modelMapper.map(goals.get(0), GoalManagementDto.class)).thenReturn(dtoList.get(0));
+
+        PageableAdvancedDto<GoalManagementDto> actual = goalService.findGoalForManagementByPage(pageable);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void searchBy() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        List<Goal> goals = Collections.singletonList(goal);
+        Page<Goal> pageGoals = new PageImpl<>(goals, pageable, goals.size());
+
+        List<GoalManagementDto> dtoList = Collections.singletonList(
+            goals.stream().map(g ->
+                (GoalManagementDto.builder().id(g.getId())).build()).findFirst().get());
+        PageableAdvancedDto<GoalManagementDto> expected = new PageableAdvancedDto<>(dtoList, dtoList.size(),
+            0, 1, 0, false, false, true, true);
+
+        when(goalRepo.searchBy(pageable, "uk")).thenReturn(pageGoals);
+        when(modelMapper.map(goals.get(0), GoalManagementDto.class)).thenReturn(dtoList.get(0));
+
+        PageableAdvancedDto<GoalManagementDto> actual = goalService.searchBy(pageable, "uk");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void deleteAllGoalByListOfId() {
+        List<Long> idsToBeDeleted = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L);
+
+        goalService.deleteAllGoalByListOfId(idsToBeDeleted);
+        verify(goalRepo, times(6)).deleteById(anyLong());
+    }
+
+    @Test
+    void deleteUserGoals() {
+        String ids = "1,2,3,4,5,6";
+        List<Long> expected = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L);
+        UserGoal userGoal = new UserGoal(1L, null, goal, GoalStatus.ACTIVE, null);
+
+        when(userGoalRepo.findById(anyLong())).thenReturn(Optional.of(userGoal));
+
+        assertEquals(expected, goalService.deleteUserGoals(ids));
+        verify(userGoalRepo, times(6)).delete(userGoal);
+    }
+
+    @Test
+    void deleteUserGoalsFailed() {
+        String ids = "1,2,3,4,5,6";
+        UserGoal userGoal = new UserGoal(1L, null, goal, GoalStatus.ACTIVE, null);
+
+        when(userGoalRepo.findById(anyLong())).thenReturn(Optional.of(userGoal));
+        when(userGoalRepo.findById(3L)).thenThrow(NotFoundException.class);
+
+        assertThrows(NotFoundException.class, () -> goalService.deleteUserGoals(ids));
+    }
+
+
+    @Test
     void getUserGoalsTest() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserGoal userGoal = UserGoal.builder().id(1L).status(GoalStatus.ACTIVE).build();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
@@ -181,6 +357,14 @@ class GoalServiceImplTest {
         when(goalTranslationRepo.findByLangAndUserGoalId("en", 1L))
             .thenReturn(GoalTranslation.builder().id(1L).build());
         assertEquals(1L, goalService.getUserGoals(userId, 1L, "en").get(0).getId());
+    }
+
+    @Test
+    void getUserGoalsTestTrows() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
+        assertThrows(UserHasNoGoalsException.class, () -> goalService.getUserGoals(userId, 1L, "en"));
     }
 
     @Test
@@ -198,52 +382,12 @@ class GoalServiceImplTest {
     }
 
     @Test
-    void saveUserGoals() {
-        ObjectMapper mapper = new ObjectMapper();
-        UserGoal userGoal = mapper.convertValue(goalRequestDtos.get(0), UserGoal.class);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
-            .thenReturn(Collections.singletonList(2L));
-        when(modelMapper.map(goalRequestDtos.get(0), UserGoal.class))
-            .thenReturn(userGoal);
-        getUserGoalsTest();
-        userGoal.setHabitAssign(habitAssign);
-        goalService.saveUserGoals(userId, 1L, Collections.singletonList(goalRequestDtos.get(0)), "en");
-        verify(userGoalRepo).saveAll(Collections.singletonList(userGoal));
-    }
-
-    @Test
-    void saveUserGoalsThorowsNotFoundException() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(2));
-        assertThrows(NotFoundException.class, () -> goalService
-            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
-    }
-
-    @Test
-    void saveUserGoalsThorowsWrongIdException() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
-            .thenReturn(Optional.of(habitAssign));
-        when(userGoalRepo.getAllGoalsIdForHabit(habitAssign.getHabit().getId()))
-            .thenReturn(Collections.singletonList(1L));
-        when(userGoalRepo.getAllAssignedGoals(habitAssign.getId()))
-            .thenReturn(Collections.singletonList(1L));
-        List<GoalRequestDto> goalRequestDto = Collections.singletonList(goalRequestDtos.get(0));
-        assertThrows(WrongIdException.class, () -> goalService
-            .saveUserGoals(userId, 1L, goalRequestDto, "en"));
-    }
-
-    @Test
-    void getUserGoalsTestTrows() {
+    void getUserGoalsIfThereAreNoGoals() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
+
         assertThrows(UserHasNoGoalsException.class, () -> goalService.getUserGoals(userId, 1L, "en"));
     }
 }
