@@ -394,4 +394,13 @@ public interface UserService {
      */
 
     PageableDto<RecommendedFriendDto> findUsersRecommendedFriends(Pageable pageable, Long userId);
+    /**
+     * Method that finds all user's friends.
+     *
+     * @param pageable {@link Pageable}.
+     * @param userId   {@link Long} -current user's id.
+     * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
+     */
+
+    PageableDto<RecommendedFriendDto> findAllUsersFriends(Pageable pageable, Long userId);
 }
