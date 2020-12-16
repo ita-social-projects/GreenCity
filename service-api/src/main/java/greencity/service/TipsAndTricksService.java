@@ -107,7 +107,7 @@ public interface TipsAndTricksService {
      * @param searchQuery query to search
      * @return list of {@link SearchTipsAndTricksDto}
      */
-    PageableDto<SearchTipsAndTricksDto> search(String searchQuery);
+    PageableDto<SearchTipsAndTricksDto> search(String searchQuery, String languageCode);
 
     /**
      * Method for getting all Tips & Tricks by searchQuery.
@@ -116,7 +116,7 @@ public interface TipsAndTricksService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
      */
-    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery);
+    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method for getting Tips & Tricks by searchQuery.

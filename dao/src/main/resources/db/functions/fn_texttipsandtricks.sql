@@ -32,7 +32,9 @@ BEGIN
                 SELECT trt.tags_id FROM tips_and_tricks_tags trt
                                       JOIN tag_translations ttt
                                            ON ttt.tag_id = trt.tags_id
-                WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')))
+                                      JOIN languages l
+                                           ON ttt.language_id = l.id
+                WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')) AND l.code = language_code)
             )
           AND l.code = language_code;
 

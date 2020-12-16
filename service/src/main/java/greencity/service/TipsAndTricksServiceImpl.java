@@ -321,9 +321,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchTipsAndTricksDto> search(String searchQuery) {
+    public PageableDto<SearchTipsAndTricksDto> search(String searchQuery, String languageCode) {
         Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(PageRequest.of(0, 3), searchQuery,
-            languageService.extractLanguageCodeFromRequest());
+            languageCode);
 
         return getSearchTipsAndTricksDtoPageableDto(page);
     }
@@ -332,9 +332,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery) {
+    public PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery, String languageCode) {
         Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, searchQuery,
-            languageService.extractLanguageCodeFromRequest());
+            languageCode);
 
         return getSearchTipsAndTricksDtoPageableDto(page);
     }

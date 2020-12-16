@@ -71,8 +71,8 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @param searchQuery query to search
      * @return list of {@link EcoNews}
      */
-    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searcheconews ( :searchQuery ) ")
-    Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery);
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searcheconews ( :searchQuery, :languageCode) ")
+    Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method for getting amount of published news by user id.

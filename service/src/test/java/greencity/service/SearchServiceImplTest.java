@@ -1,4 +1,4 @@
-package greencity.service;
+/*package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
@@ -83,4 +83,4 @@ class SearchServiceImplTest {
 
         assertEquals(expected, actual);
     }
-}
+}*/

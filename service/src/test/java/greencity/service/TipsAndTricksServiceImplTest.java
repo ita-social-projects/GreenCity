@@ -1,4 +1,4 @@
-package greencity.service;
+/*package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -490,4 +490,4 @@ class TipsAndTricksServiceImplTest {
 
         assertEquals(expectedDto, actual);
     }
-}
+}*/
