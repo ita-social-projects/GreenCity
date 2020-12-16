@@ -84,4 +84,22 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
         value = " SELECT COUNT(author_id) "
             + " FROM tips_and_tricks WHERE author_id = :userId")
     Long getAmountOfWrittenTipsAndTrickByUserId(@Param("userId") Long id);
+
+    /**
+     * Method for finding {@link TipsAndTricks} by query.
+     * 
+     * @param pageable {@link Pageable}.
+     * @param query    query to search,
+     * @return list of {@link TipsAndTricks}.
+     */
+    @Query(value = "SELECT DISTINCT t FROM TipsAndTricks t JOIN FETCH t.titleTranslations AS title "
+        + "JOIN FETCH t.author AS user "
+        + "WHERE CONCAT(t.id, '') LIKE LOWER(concat(:query, '')) OR "
+        + "LOWER(CONCAT(t.creationDate,'')) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(user.name) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(title.content) like LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(t.imagePath) LIKE LOWER(CONCAT('%', :query, '%')) OR "
+        + "LOWER(t.source) LIKE LOWER(CONCAT('%', :query, '%'))",
+        countQuery = "SELECT COUNT(a) FROM TipsAndTricks t")
+    Page<TipsAndTricks> searchTipsAndTricksBy(Pageable pageable, String query);
 }

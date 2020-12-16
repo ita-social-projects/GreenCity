@@ -1,6 +1,7 @@
 package greencity;
 
 import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementTranslationVO;
@@ -17,8 +18,18 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -47,13 +58,16 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.*;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
+import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
@@ -69,13 +83,47 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UsersFriendDto;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.*;
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.Comment;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Goal;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.TextTranslation;
+import greencity.entity.TipsAndTricks;
+import greencity.entity.TipsAndTricksComment;
+import greencity.entity.TitleTranslation;
+import greencity.entity.User;
+import greencity.entity.UserGoal;
+import greencity.entity.VerifyEmail;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementStatus;
 import greencity.enums.CommentStatus;
+import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.GoalStatus;
 import greencity.enums.HabitAssignStatus;
@@ -83,6 +131,7 @@ import greencity.enums.HabitRate;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.enums.UserStatus;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -133,6 +182,10 @@ public class ModelUtils {
             TagTranslation.builder().id(3L).name("Новины").language(language).build());
     }
 
+    public static TagDto getTagDto() {
+        return TagDto.builder().id(2L).name("News").build();
+    }
+
     public static List<Tag> getTags() {
         return Collections.singletonList(getTag());
     }
@@ -163,6 +216,65 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(LocalDateTime.now())
             .build();
+    }
+
+    public static UserVO getUserVOWithData() {
+        return UserVO.builder()
+            .id(13L)
+            .name("user")
+            .email("namesurname1995@gmail.com")
+            .role(Role.ROLE_USER)
+            .userCredo("save the world")
+            .firstName("name")
+            .emailNotification(EmailNotification.MONTHLY)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastVisit(LocalDateTime.of(2020, 12, 11, 13, 33))
+            .rating(13.4)
+            .verifyEmail(VerifyEmailVO.builder()
+                .id(32L)
+                .user(UserVO.builder()
+                    .id(13L)
+                    .name("user")
+                    .build())
+                .expiryDate(LocalDateTime.of(2021, 7, 7,7,7))
+                .token("toooookkkeeeeen42324532542")
+                .build())
+            .userFriends(Collections.singletonList(
+                UserVO.builder()
+                .id(75L)
+                .name("Andrew")
+                .build()
+            ))
+            .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
+            .ownSecurity(null)
+            .dateOfRegistration(LocalDateTime.of(2020, 6,6,13,47))
+            .city("Lviv")
+            .showShoppingList(true)
+            .showEcoPlace(true)
+            .showLocation(true)
+            .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
+            .userAchievements(List.of(
+                UserAchievementVO.builder()
+                .id(47L)
+                .achievementStatus(AchievementStatus.ACTIVE)
+                .user(UserVO.builder()
+                        .id(13L)
+                        .build())
+                .achievement(AchievementVO.builder()
+                        .id(56L)
+                        .build())
+                .build(),
+                UserAchievementVO.builder()
+                    .id(39L)
+                    .achievementStatus(AchievementStatus.INACTIVE)
+                    .user(UserVO.builder()
+                        .id(13L)
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(14L)
+                        .build())
+                    .build()
+            )).build();
     }
 
     public static Language getLanguage() {
@@ -516,7 +628,7 @@ public class ModelUtils {
     }
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "image");
+        return new UserProfilePictureDto(1L, "name", "image");
     }
 
     public static FactOfTheDayTranslationDTO getFactOfTheDayTranslationDTO() {
@@ -582,9 +694,12 @@ public class ModelUtils {
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
-        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
-            TagTranslationVO.builder().id(2L).name("News").build(),
-            TagTranslationVO.builder().id(3L).name("Новины").build());
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
+                .build(),
+            TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
+                .build());
     }
 
     public static LanguageVO getLanguageVO() {
@@ -593,6 +708,28 @@ public class ModelUtils {
 
     public static TagVO getTagVO() {
         return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, getTagTranslationDtos());
+    }
+
+    public static List<TagTranslationDto> getTagTranslationDtos() {
+        LanguageDTO language = getLanguageDTO();
+        return Arrays.asList(
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новини").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("News").language(language).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новины").language(language).build());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            9, 1, 2, 1,
+            true, false, false, true);
     }
 
     public static TitleTranslationVO getTitleTranslationVO() {
@@ -671,6 +808,36 @@ public class ModelUtils {
             .build();
     }
 
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                .id(76L)
+                .build(),
+                UserVO.builder()
+                .id(543L)
+                .build(),
+                UserVO.builder()
+                .id(349L)
+                .build()
+            )))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
     public static EcoNewsCommentAuthorDto getEcoNewsCommentAuthorDto() {
         return EcoNewsCommentAuthorDto.builder()
             .id(getUser().getId())
@@ -698,6 +865,22 @@ public class ModelUtils {
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
         return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+    }
+
+    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = TipsAndTricksDtoRequest.builder()
+            .titleTranslation(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode("en")
+                .build())
+            .textTranslation(TextTranslationDTO.builder()
+                .content("text content for tips and tricks")
+                .languageCode("en")
+                .build())
+            .source("wiki")
+            .build();
+
+        return tipsAndTricksDtoRequest;
     }
 
     public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
