@@ -1,25 +1,21 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.TestConst;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.user.UserGoalResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.entity.UserGoal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class UserVOAchievementMapperTest {
