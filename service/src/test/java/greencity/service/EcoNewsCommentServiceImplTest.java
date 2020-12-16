@@ -1,5 +1,12 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserVO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -7,6 +14,7 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -15,6 +23,11 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EcoNewsCommentRepo;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,18 +40,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-
-import static greencity.ModelUtils.getUser;
-import static greencity.ModelUtils.getUserVO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
@@ -276,7 +277,6 @@ class EcoNewsCommentServiceImplTest {
 
     @Test
     void update() {
-        User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
         Long commentId = 1L;
         String newText = "new text";
@@ -289,7 +289,6 @@ class EcoNewsCommentServiceImplTest {
 
     @Test
     void updateCommentThatDoesntExistsThrowException() {
-        User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
         Long commentId = 1L;
         String newText = "new text";
@@ -304,7 +303,6 @@ class EcoNewsCommentServiceImplTest {
     @Test
     void updateCommentThatDoesntBelongsToUserThrowException() {
         User user = ModelUtils.getUser();
-        User userToUpdate = ModelUtils.getUser();
         UserVO userToUpdateVO = getUserVO();
         user.setId(2L);
         Long commentId = 1L;
@@ -321,8 +319,48 @@ class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    void likeCommentThatDoesntExistThrowException() {
+    void likeComment() {
+        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
+        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
         User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
+        userVO.setId(2L);
+        Long commentId = 1L;
+
+        ecoNewsComment.setUsersLiked(Collections.singleton(user));
+        ecoNewsCommentVO.setUsersLiked(Collections.singleton(userVO));
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
+        when(modelMapper.map(ecoNewsComment, EcoNewsCommentVO.class)).thenReturn(ecoNewsCommentVO);
+        when(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class)).thenReturn(ecoNewsComment);
+
+        ecoNewsCommentService.like(commentId, userVO);
+
+        verify(ecoNewsService).likeComment(userVO, ecoNewsCommentVO);
+    }
+
+    @Test
+    void unlikeComment() {
+        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
+        EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();
+        User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
+        Long commentId = 1L;
+
+        ecoNewsComment.setUsersLiked(Collections.singleton(user));
+        ecoNewsCommentVO.setUsersLiked(Collections.singleton(userVO));
+
+        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
+        when(modelMapper.map(ecoNewsComment, EcoNewsCommentVO.class)).thenReturn(ecoNewsCommentVO);
+        when(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class)).thenReturn(ecoNewsComment);
+
+        ecoNewsCommentService.like(commentId, userVO);
+
+        verify(ecoNewsService).unlikeComment(userVO, ecoNewsCommentVO);
+    }
+
+    @Test
+    void likeCommentThatDoesntExistThrowException() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
 
@@ -385,5 +423,54 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.countOfComments(ecoNewsId)).thenReturn(0);
 
         assertEquals(0, ecoNewsCommentService.countOfComments(ecoNewsId));
+    }
+
+    @Test
+    void getAllActiveComments() {
+        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(Collections.singleton(ModelUtils.getUser()));
+        UserVO userVO = ModelUtils.getUserVO();
+
+        List<EcoNewsComment> ecoNewsComments = Collections.singletonList(ecoNewsComment);
+        EcoNewsCommentDto ecoNewsCommentDto = ModelUtils.getEcoNewsCommentDto();
+
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNewsComment> page = new PageImpl<>(ecoNewsComments, pageRequest, ecoNewsComments.size());
+        List<EcoNewsCommentDto> dtoList = Collections.singletonList(ecoNewsCommentDto);
+        PageableDto<EcoNewsCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
+
+        when(ecoNewsCommentRepo
+            .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L))
+            .thenReturn(page);
+        when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
+        when(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId())).thenReturn(10);
+
+        PageableDto<EcoNewsCommentDto> actual = ecoNewsCommentService.getAllActiveComments(pageRequest, userVO, 1L);
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllActiveReplies() {
+        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(Collections.singleton(ModelUtils.getUser()));
+        UserVO userVO = ModelUtils.getUserVO();
+
+        List<EcoNewsComment> ecoNewsComments = Collections.singletonList(ecoNewsComment);
+        EcoNewsCommentDto ecoNewsCommentDto = ModelUtils.getEcoNewsCommentDto();
+
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNewsComment> page = new PageImpl<>(ecoNewsComments, pageRequest, ecoNewsComments.size());
+        List<EcoNewsCommentDto> dtoList = Collections.singletonList(ecoNewsCommentDto);
+        PageableDto<EcoNewsCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
+
+        when(ecoNewsCommentRepo
+            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
+            .thenReturn(page);
+
+        when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
+
+        PageableDto<EcoNewsCommentDto> actual = ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO);
+        assertEquals(pageableDto, actual);
     }
 }

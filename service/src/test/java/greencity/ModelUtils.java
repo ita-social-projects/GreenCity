@@ -54,12 +54,16 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tag.*;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.tipsandtricks.TextTranslationDTO;
 import greencity.dto.tipsandtricks.TextTranslationVO;
+import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
@@ -112,6 +116,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -665,7 +670,7 @@ public class ModelUtils {
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+                .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
             TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
                 .build(),
             TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
@@ -862,6 +867,28 @@ public class ModelUtils {
             .tags(Collections.singletonList("tipsAndTricksTag"))
             .imagePath(TestConst.SITE)
             .source(null)
+            .build();
+    }
+
+    public static TipsAndTricksDtoManagement getTipsAndTricksDtoManagement() {
+        return TipsAndTricksDtoManagement.builder()
+            .id(1L)
+            .source("sourceExample")
+            .creationDate(getTipsAndTricks().getCreationDate())
+            .authorName("orest@gmail.com")
+            .tags(getTipsAndTricks().getTags()
+                .stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()))
+            .titleTranslations(Collections.singletonList(TitleTranslationEmbeddedPostDTO.builder()
+                .content("title content")
+                .languageCode(getLanguage().getCode())
+                .build()))
+            .textTranslations(Collections.singletonList(TextTranslationDTO.builder()
+                .content("text content")
+                .languageCode(getLanguage().getCode())
+                .build()))
             .build();
     }
 
