@@ -20,6 +20,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -167,6 +168,19 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
         return modelMapper.map(updated, AchievementPostDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    @Transactional
+    public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
+        Achievement achievement =
+            achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
+        return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
     private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {

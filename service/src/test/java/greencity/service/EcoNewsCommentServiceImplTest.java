@@ -441,7 +441,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo
             .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L))
-            .thenReturn(page);
+                .thenReturn(page);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId())).thenReturn(10);
 
@@ -466,7 +466,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
-            .thenReturn(page);
+                .thenReturn(page);
 
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
 

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
      * @author Orest Mamchuk
      */
     @Override
+    @Transactional
     public AchievementCategoryVO findByName(String name) {
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(name);
         return modelMapper.map(achievementCategory, AchievementCategoryVO.class);

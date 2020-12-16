@@ -79,7 +79,6 @@ class UserVOMapperTest {
                 .collect(Collectors.toList()) : null)
             .build();
 
-
         assertEquals(expected, mapper.convert(userToBeConverted));
     }
 }
