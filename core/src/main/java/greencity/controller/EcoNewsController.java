@@ -8,6 +8,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.tag.TagVO;
@@ -223,7 +224,7 @@ public class EcoNewsController {
     @ApiOperation(value = "Find all eco news tags")
     @GetMapping("/tags/all")
     @ApiLocale
-    public ResponseEntity<List<String>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
+    public ResponseEntity<List<TagDto>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
     }
 }

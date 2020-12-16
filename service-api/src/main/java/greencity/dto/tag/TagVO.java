@@ -7,20 +7,17 @@ import java.util.List;
 import java.util.Set;
 
 import greencity.enums.TagType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Builder
 public class TagVO {
     private Long id;
-    private TagType tagType;
+    private TagType type;
     private List<TagTranslationVO> tagTranslations;
     private List<EcoNewsVO> ecoNews;
     private List<TipsAndTricksVO> tipsAndTricks;
