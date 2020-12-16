@@ -15,13 +15,14 @@ import java.util.List;
 import java.util.Set;
 import lombok.*;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
-@ToString
 public class UserVO {
     private Long id;
 
