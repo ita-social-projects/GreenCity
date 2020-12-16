@@ -44,7 +44,7 @@ class AchievementServiceImplTest {
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertTrue(findAllResult.isEmpty());
     }
 
@@ -53,9 +53,9 @@ class AchievementServiceImplTest {
         Achievement achievement = ModelUtils.getAchievement();
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
-        when(modelMapper.map(achievement, AchievementDTO.class))
-            .thenReturn(new AchievementDTO(achievement.getId(), null, null, null));
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        when(modelMapper.map(achievement, AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 

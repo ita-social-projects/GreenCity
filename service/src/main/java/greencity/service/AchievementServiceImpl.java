@@ -65,10 +65,10 @@ public class AchievementServiceImpl implements AchievementService {
      */
     @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
     @Override
-    public List<AchievementDTO> findAll() {
+    public List<AchievementVO> findAll() {
         return achievementRepo.findAll()
             .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementDTO.class))
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
     }
 
