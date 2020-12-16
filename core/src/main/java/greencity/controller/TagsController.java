@@ -2,6 +2,8 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
+import greencity.dto.tag.TagDto;
+import greencity.enums.TagType;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
@@ -26,15 +28,15 @@ public class TagsController {
      * The method which returns all tags' names by type and language code.
      *
      * @param locale {@link Locale}
-     * @param type   {@link String}
-     * @return list of {@link String} (tag's names).
+     * @param type   {@link TagType}
+     * @return list of {@link TagDto} (tag's names).
      * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Find all tags by type and language code")
     @GetMapping("/search")
     @ApiLocale
-    public ResponseEntity<List<String>> findByTypeAndLanguageCode(@ApiIgnore @ValidLanguage Locale locale,
-        @RequestParam String type) {
+    public ResponseEntity<List<TagDto>> findByTypeAndLanguageCode(@ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam TagType type) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tagsService.findByTypeAndLanguageCode(type, locale.getLanguage()));
     }

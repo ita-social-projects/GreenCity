@@ -1,6 +1,7 @@
 package greencity.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "achievement_categories")
+@EqualsAndHashCode
 public class AchievementCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +26,7 @@ public class AchievementCategory {
 
     @OneToMany(mappedBy = "achievementCategory")
     private List<Achievement> achievementList;
+
+    @OneToMany(mappedBy = "achievementCategory")
+    private List<UserAction> userActions;
 }

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
+import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.service.LanguageService;
 import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,7 +43,6 @@ class ManagementTipsAndTricksControllerTest {
     private static final String managementTipsAndTricksLink = "/management/tipsandtricks";
 
     private MockMvc mockMvc;
-
     @Mock
     private LanguageService languageService;
 
@@ -87,21 +87,21 @@ class ManagementTipsAndTricksControllerTest {
     void findAllByQuery() throws Exception {
         Pageable pageable = PageRequest.of(0, 10);
         List<TipsAndTricksDtoManagement> tipsAndTricksDtoManagements =
-                Collections.singletonList(new TipsAndTricksDtoManagement());
+            Collections.singletonList(new TipsAndTricksDtoManagement());
         PageableDto<TipsAndTricksDtoManagement> tipsAndTricksDtoManagementPageableDto =
-                new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
-        when(tipsAndTricksService.searchTipsAndTricksBy(pageable,"query"))
-                .thenReturn(tipsAndTricksDtoManagementPageableDto);
+            new PageableDto<>(tipsAndTricksDtoManagements, 2, 0, 3);
+        when(tipsAndTricksService.searchTipsAndTricksBy(pageable, "query"))
+            .thenReturn(tipsAndTricksDtoManagementPageableDto);
         List<LanguageDTO> languageDTOS = Collections.singletonList(new LanguageDTO(1L, "ua"));
         when(languageService.getAllLanguages()).thenReturn(languageDTOS);
         this.mockMvc.perform(get(managementTipsAndTricksLink + "?query=query")
-                .param("page", "0")
-                .param("size", "10"))
-                .andExpect(view().name("core/management_tips_and_tricks"))
-                .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
-                .andExpect(model().attribute("languages", languageService.getAllLanguages()))
-                .andExpect(status().isOk());
-        verify(tipsAndTricksService).searchTipsAndTricksBy(pageable,"query");
+            .param("page", "0")
+            .param("size", "10"))
+            .andExpect(view().name("core/management_tips_and_tricks"))
+            .andExpect(model().attribute("pageable", tipsAndTricksDtoManagementPageableDto))
+            .andExpect(model().attribute("languages", languageService.getAllLanguages()))
+            .andExpect(status().isOk());
+        verify(tipsAndTricksService).searchTipsAndTricksBy(pageable, "query");
     }
 
     @Test
@@ -177,4 +177,24 @@ class ManagementTipsAndTricksControllerTest {
         verify(tipsAndTricksService, never()).saveTipsAndTricksWithTranslations(tipsAndTricksDtoManagement, jsonFile,
             principal.getName());
     }
+
+    @Test
+    void filterDataTest() throws Exception {
+        Pageable pageable = PageRequest.of(0, 3);
+        TipsAndTricksViewDto tipsAndTricksViewDto = new TipsAndTricksViewDto();
+        List<TipsAndTricksDtoManagement> list = Collections.singletonList(new TipsAndTricksDtoManagement());
+        PageableDto<TipsAndTricksDtoManagement> pageableDto = new PageableDto<>(list, 3, 0, 3);
+        when(tipsAndTricksService.getFilteredDataForManagementByPage(pageable, tipsAndTricksViewDto))
+            .thenReturn(pageableDto);
+        this.mockMvc.perform(post(managementTipsAndTricksLink)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(model().attribute("pageable", pageableDto))
+            .andExpect(model().attribute("fields", tipsAndTricksViewDto))
+            .andExpect(view().name("core/management_tips_and_tricks"))
+            .andExpect(status().isOk());
+        verify(tipsAndTricksService).getFilteredDataForManagementByPage(pageable, tipsAndTricksViewDto);
+    }
+
 }
