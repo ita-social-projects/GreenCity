@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -20,6 +21,8 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -33,13 +36,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -62,7 +65,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
-    private final BeanFactory beanFactory;
+    private final AchievementCalculation achievementCalculation;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
@@ -77,7 +80,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
-        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        User user = modelMapper.map(userService.findByEmail(email), User.class);
+        toSave.setAuthor(user);
         if (addEcoNewsDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
         }
@@ -105,7 +109,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
             buildAddEcoNewsMessage(toSave));
-
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS, 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -298,6 +303,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS_COMMENT, 0));
     }
 
     /**

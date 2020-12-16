@@ -154,7 +154,6 @@ class FactOfTheDayServiceImplTest {
         verify(modelMapper, times(1)).map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class);
     }
 
-
     @Test
     void updateFactOfTheDayWithTranslationsTestFailed() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();

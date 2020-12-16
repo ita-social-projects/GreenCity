@@ -133,7 +133,6 @@ class TagsRepoTest {
         assertEquals(expected, actual);
     }
 
-
     @Test
     void findAllHabitsTagsWithEnglishTest() {
         List<String> actual = tagsRepo.findAllHabitsTags(ENGLISH_LANGUAGE);

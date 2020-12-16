@@ -1,16 +1,17 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
-import greencity.entity.SocialNetwork;
-import greencity.entity.SocialNetworkImage;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
+import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementType;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -41,6 +42,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,6 +77,7 @@ public class UserServiceImpl implements UserService {
     private final SocialNetworkImageService socialNetworkImageService;
     private final HabitStatisticRepo habitStatisticRepo;
     private final SocialNetworkRepo socialNetworkRepo;
+    private final AchievementCalculation achievementCalculation;
     /**
      * Autowired mapper.
      */
@@ -97,9 +100,19 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO findById(Long id) {
-        User source = userRepo.findById(id)
+        User user = userRepo.findById(id)
             .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
-        return modelMapper.map(source, UserVO.class);
+        return modelMapper.map(user, UserVO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserVOAchievement findUserForAchievement(Long id) {
+        User user = userRepo.findUserForAchievement(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        return modelMapper.map(user, UserVOAchievement.class);
     }
 
     /**
@@ -586,6 +599,9 @@ public class UserServiceImpl implements UserService {
         user.setShowEcoPlace(userProfileDtoRequest.getShowEcoPlace());
         user.setShowShoppingList(userProfileDtoRequest.getShowShoppingList());
         userRepo.save(user);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), AchievementType.SETTER,
+                AchievementCategory.SOCIAL_NETWORK, user.getSocialNetworks().size()));
         return modelMapper.map(user, UserProfileDtoResponse.class);
     }
 
@@ -715,7 +731,6 @@ public class UserServiceImpl implements UserService {
                 friends.getPageable().getPageNumber(), friends.getTotalPages()))
             .build();
     }
-
 
     /**
      * {@inheritDoc}

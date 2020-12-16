@@ -85,8 +85,8 @@ class TipsAndTricksServiceImplTest {
     private User user = ModelUtils.getUser();
     private UserVO userVO = ModelUtils.getUserVO();
     private List<TagTranslationVO> tagTranslationVOList = Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-            .languageVO(LanguageVO.builder().id(1L).code("ua").build())
-            .build(),
+        .languageVO(LanguageVO.builder().id(1L).code("ua").build())
+        .build(),
         TagTranslationVO.builder().id(2L).name("News")
             .languageVO(LanguageVO.builder().id(2L).code("en").build())
             .build(),
@@ -167,8 +167,7 @@ class TipsAndTricksServiceImplTest {
             .thenReturn(tagVOList);
 
         TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
-            tipsAndTricksDtoManagement, null, ModelUtils.getUser().getEmail()
-        );
+            tipsAndTricksDtoManagement, null, ModelUtils.getUser().getEmail());
 
         verify(tipsAndTricksRepo).save(any(TipsAndTricks.class));
         verify(tipsAndTricksTranslationService)
@@ -195,8 +194,7 @@ class TipsAndTricksServiceImplTest {
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
 
         TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
-            tipsAndTricksDtoManagement, image, ModelUtils.getUser().getEmail()
-        );
+            tipsAndTricksDtoManagement, image, ModelUtils.getUser().getEmail());
 
         assertEquals(tipsAndTricksDtoManagement, actual);
     }
@@ -339,7 +337,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
@@ -393,7 +391,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
@@ -419,7 +417,7 @@ class TipsAndTricksServiceImplTest {
         when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
         when(tipsAndTricksRepo
             .searchBy(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-            .thenReturn(page);
+                .thenReturn(page);
 
         assertEquals(tipsAndTricksDtoResponsePageableDto, tipsAndTricksService
             .searchBy(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent()));
@@ -471,7 +469,6 @@ class TipsAndTricksServiceImplTest {
             Collections.singletonList(tipsAndTricksDtoManagement);
         PageableDto<TipsAndTricksDtoManagement> expectedDto =
             new PageableDto<>(dtoManagementList, dtoManagementList.size(), 0, 1);
-
 
         TipsAndTricksViewDto tipsAndTricksViewDto = TipsAndTricksViewDto.builder()
             .id("1")
