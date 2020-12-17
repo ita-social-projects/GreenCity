@@ -15,6 +15,9 @@ public class RedirectChatController {
     UserService userService;
     ModelMapper modelMapper;
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping
     public RedirectView redirectToChatService() {
         RedirectView redirectView = new RedirectView();

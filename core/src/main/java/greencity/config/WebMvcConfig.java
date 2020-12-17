@@ -91,6 +91,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolvers.add(new UserArgumentResolver(userService, modelMapper));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         return builder.build();
