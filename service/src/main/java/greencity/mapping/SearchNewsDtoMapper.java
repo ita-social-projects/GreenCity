@@ -7,8 +7,6 @@ import greencity.entity.User;
 import java.util.stream.Collectors;
 
 import greencity.entity.localization.TagTranslation;
-import greencity.service.LanguageService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;

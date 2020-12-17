@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
-import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;

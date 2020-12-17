@@ -5,7 +5,6 @@ import greencity.dto.user.AuthorDto;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import greencity.service.LanguageService;
 import org.modelmapper.AbstractConverter;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
