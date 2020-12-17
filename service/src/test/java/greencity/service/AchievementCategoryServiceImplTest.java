@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.ErrorMessage;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.entity.AchievementCategory;
@@ -36,8 +35,8 @@ class AchievementCategoryServiceImplTest {
     @Test
     void saveThrowExceptionTest() {
         AchievementCategoryDto achievementCategoryDto = ModelUtils.getAchievementCategoryDto();
-        doThrow(new BadCategoryRequestException(ErrorMessage.CATEGORY_ALREADY_EXISTS_BY_THIS_NAME))
-            .when(achievementCategoryRepo).findByName(achievementCategoryDto.getName());
+        when(achievementCategoryRepo.findByName(achievementCategoryDto.getName()))
+            .thenReturn(ModelUtils.getAchievementCategory());
         assertThrows(BadCategoryRequestException.class, () -> achievementCategoryService.save(achievementCategoryDto));
     }
 
@@ -77,8 +76,7 @@ class AchievementCategoryServiceImplTest {
 
     @Test
     void findByNameThrowException() {
-        doThrow(new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME))
-            .when(achievementCategoryRepo).findByName("Not Exist");
+        when(achievementCategoryRepo.findByName("Not Exist")).thenReturn(null);
         assertThrows(BadCategoryRequestException.class, () -> achievementCategoryService.findByName("Not Exist"));
     }
 }
