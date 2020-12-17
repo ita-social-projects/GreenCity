@@ -11,10 +11,10 @@ public interface ChatRoomService {
     /**
      * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} id.
      *
-     * @param participantId {@link Participant} id.
+     * @param name {@link String} name(email) of user.
      * @return {@link ChatRoom} instance.
      */
-    List<ChatRoomDto> findAllByParticipantId(Long participantId);
+    List<ChatRoomDto> findAllByParticipantName(String name);
 
     /**
      * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} and {@link ChatType}.

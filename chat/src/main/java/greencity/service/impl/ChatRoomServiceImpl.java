@@ -7,7 +7,6 @@ import greencity.entity.Participant;
 import greencity.enums.ChatType;
 import greencity.exception.exceptions.ChatRoomNotFoundException;
 import greencity.repository.ChatRoomRepo;
-import greencity.repository.ParticipantRepo;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
 import java.util.List;
@@ -27,13 +26,12 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ParticipantService participantService;
     private final ModelMapper modelMapper;
 
-
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<ChatRoomDto> findAllByParticipantId(Long participantId) {
-        Participant participant = modelMapper.map(participantService.findById(participantId), Participant.class);
+    public List<ChatRoomDto> findAllByParticipantName(String name) {
+        Participant participant = modelMapper.map(participantService.findByEmail(name), Participant.class);
         return modelMapper
             .map(chatRoomRepo.findAllByParticipant(participant), new TypeToken<List<ChatRoomDto>>() {
             }.getType());
@@ -64,18 +62,25 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public ChatRoomDto findPrivateByParticipants(Long id, String name) {
-        Participant first = modelMapper.map(participantService.findByEmail(name), Participant.class);
-        Participant second = modelMapper.map(participantService.findById(id), Participant.class);
-        Set<Participant> participants = Set.of(first, second);
+        ChatRoom toReturn;
+
+        Set<Participant> participants = Set.of(
+            participantService.findByEmail(name),
+            participantService.findById(id));
+
         List<ChatRoom> chatRoom = chatRoomRepo.findByParticipantsAndStatus(
             participants, participants.size(), ChatType.PRIVATE);
+
         if (chatRoom.isEmpty()) {
-            ChatRoom newChatRoom = ChatRoom.builder()
-                .name("p2").participants(participants)
-                .type(ChatType.PRIVATE)
-                .build();
-            return (modelMapper.map(chatRoomRepo.save(newChatRoom), ChatRoomDto.class));
+            toReturn = chatRoomRepo.save(
+                ChatRoom.builder()
+                    .name("chatName")
+                    .participants(participants)
+                    .type(ChatType.PRIVATE)
+                    .build());
+        } else {
+            toReturn = chatRoom.get(0);
         }
-        return modelMapper.map(chatRoom.get(0), ChatRoomDto.class);
+        return modelMapper.map(toReturn, ChatRoomDto.class);
     }
 }

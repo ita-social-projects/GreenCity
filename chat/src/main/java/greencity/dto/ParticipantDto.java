@@ -1,5 +1,6 @@
 package greencity.dto;
 
+import greencity.enums.UserStatus;
 import lombok.*;
 
 @NoArgsConstructor
@@ -13,4 +14,5 @@ public class ParticipantDto {
     private String name;
     private String email;
     private String profilePicture;
+    private UserStatus userStatus;
 }

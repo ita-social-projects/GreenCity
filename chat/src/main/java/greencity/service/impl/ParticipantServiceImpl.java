@@ -2,6 +2,7 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.ParticipantDto;
+import greencity.entity.Participant;
 import greencity.exception.exceptions.UserNotFoundException;
 import greencity.repository.ParticipantRepo;
 import greencity.service.ParticipantService;
@@ -19,22 +20,18 @@ public class ParticipantServiceImpl implements ParticipantService {
      * {@inheritDoc}
      */
     @Override
-    public ParticipantDto findByEmail(String email) {
-        return modelMapper.map(
-            participantRepo.findNotDeactivatedByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
-            ParticipantDto.class);
+    public Participant findByEmail(String email) {
+        return participantRepo.findNotDeactivatedByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public ParticipantDto findById(Long id) {
-        return modelMapper.map(
-            participantRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + id)),
-            ParticipantDto.class);
+    public Participant findById(Long id) {
+        return participantRepo.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
     }
 
     /**

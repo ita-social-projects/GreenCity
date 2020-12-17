@@ -26,12 +26,12 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final ParticipantService participantService;
     private final ChatMessageService chatMessageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @GetMapping
     public ResponseEntity<List<ChatRoomDto>> findAllRooms(Principal principal) {
-        ParticipantDto participant = participantService.findByEmail(principal.getName());
         return ResponseEntity.status(HttpStatus.OK)
-            .body(chatRoomService.findAllByParticipantId(participant.getId()));
+            .body(chatRoomService.findAllByParticipantName(principal.getName()));
     }
 
     @GetMapping("/user/{id}")

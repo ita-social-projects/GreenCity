@@ -21,7 +21,7 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @return list of {@link ChatRoom} instances.
      */
     @Query(value = "SELECT dr FROM ChatRoom dr"
-        + " WHERE (:part) IN dr.participants")
+        + " WHERE :part IN elements(dr.participants)")
     List<ChatRoom> findAllByParticipant(@Param("part") Participant participant);
 
     /**
@@ -32,12 +32,15 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @param chatType          {@link ChatType} room type.
      * @return list of {@link ChatRoom} instances.
      */
-    @Query(value = "SELECT dr FROM ChatRoom dr"
-        + " WHERE dr.participants IN (:participants)"
-        + " GROUP BY dr"
-        + " HAVING COUNT(dr) = CAST(:participantsCount AS long)"
-        + " AND UPPER(dr.type) = :chatType")
+    @Query(value = "SELECT cr FROM ChatRoom cr"
+        + " JOIN cr.participants p"
+        + " WHERE p IN :participants"
+        + " AND UPPER(cr.type) = :chatType"
+        + " GROUP BY cr.id"
+        + " HAVING COUNT(cr.id) = CAST(:participantsCount AS long)")
     List<ChatRoom> findByParticipantsAndStatus(@Param("participants") Set<Participant> participants,
                                                @Param("participantsCount") Integer participantsCount,
                                                @Param("chatType") ChatType chatType);
+
+    /**/
 }
