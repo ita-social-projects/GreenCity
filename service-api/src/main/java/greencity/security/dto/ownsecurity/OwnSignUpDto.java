@@ -19,7 +19,7 @@ public class OwnSignUpDto {
         min = ServiceValidationConstants.USERNAME_MIN_LENGTH,
         max = ServiceValidationConstants.USERNAME_MAX_LENGTH)
     @Pattern(
-        regexp = "^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$",
+        regexp = "^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)++$",
         message = ServiceValidationConstants.INVALID_USERNAME)
     private String name;
 
