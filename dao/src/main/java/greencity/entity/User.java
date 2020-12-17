@@ -43,9 +43,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @EqualsAndHashCode(
     exclude = {"lastVisit", "verifyEmail", "ownSecurity",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
-@ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
-        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
+//@ToString(
+//    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
+//        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -118,7 +118,7 @@ public class User {
     @Column(name = "user_credo")
     private String userCredo;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
     @Column(name = "social_networks")
     private List<SocialNetwork> socialNetworks;
 
@@ -133,4 +133,7 @@ public class User {
 
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserAction> userActions;
 }

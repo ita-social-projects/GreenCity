@@ -64,9 +64,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-//import greencity.service.SocialNetworkImageService;
-//import org.powermock.api.mockito.PowerMockito;
-
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
     @Mock

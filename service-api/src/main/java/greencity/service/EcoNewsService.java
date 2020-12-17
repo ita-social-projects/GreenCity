@@ -26,7 +26,6 @@ public interface EcoNewsService {
      *
      * @return list of {@link EcoNewsDto} instances.
      */
-
     List<EcoNewsDto> getThreeLastEcoNews();
 
     /**

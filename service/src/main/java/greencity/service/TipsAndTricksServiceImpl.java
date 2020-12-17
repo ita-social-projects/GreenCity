@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.CacheConstants;
@@ -10,6 +11,8 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementType;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -19,11 +22,11 @@ import greencity.repository.TipsAndTricksRepo;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -49,11 +52,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final FileService fileService;
 
-    private final BeanFactory beanFactory;
-
     private final LanguageService languageService;
 
     private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
+
+    private final AchievementCalculation achievementCalculation;
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         MultipartFile image, String email) {
@@ -383,6 +386,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS, 0));
     }
 
     /**

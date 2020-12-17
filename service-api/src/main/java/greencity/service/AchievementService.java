@@ -15,7 +15,7 @@ public interface AchievementService {
      *
      * @return list of all{@link AchievementDTO}.
      */
-    List<AchievementDTO> findAll();
+    List<AchievementVO> findAll();
 
     /**
      * Find {@link AchievementVO} for management by page .
@@ -67,7 +67,7 @@ public interface AchievementService {
      *
      * @param id of {@link AchievementVO}
      * @return {@link AchievementVO}
-     * @author Orest Mamchuck
+     * @author Orest Mamchuk
      */
     AchievementVO findById(Long id);
 
@@ -76,7 +76,17 @@ public interface AchievementService {
      *
      * @param achievementManagementDto {@link AchievementManagementDto}
      * @return instance of {@link AchievementPostDto}
-     * @author Orest Mamchuck
+     * @author Orest Mamchuk
      */
     AchievementPostDto update(AchievementManagementDto achievementManagementDto);
+
+    /**
+     * Method find {@link AchievementVO} by categoryId and condition.
+     *
+     * @param categoryId of {@link AchievementVO}
+     * @param condition  of {@link AchievementVO}
+     * @return {@link AchievementVO}
+     * @author Orest Mamchuk
+     */
+    AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
 }

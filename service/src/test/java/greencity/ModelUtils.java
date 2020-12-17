@@ -2,11 +2,7 @@ package greencity;
 
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.AchievementManagementDto;
-import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -86,41 +82,9 @@ import greencity.dto.user.UserGoalVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UsersFriendDto;
+import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.Advice;
-import greencity.entity.BreakTime;
-import greencity.entity.Category;
-import greencity.entity.Comment;
-import greencity.entity.DiscountValue;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.FactOfTheDay;
-import greencity.entity.FactOfTheDayTranslation;
-import greencity.entity.FavoritePlace;
-import greencity.entity.Goal;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitFact;
-import greencity.entity.HabitFactTranslation;
-import greencity.entity.HabitStatistic;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.Specification;
-import greencity.entity.Tag;
-import greencity.entity.TextTranslation;
-import greencity.entity.TipsAndTricks;
-import greencity.entity.TipsAndTricksComment;
-import greencity.entity.TitleTranslation;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
@@ -223,6 +187,13 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVOAchievement getUserVOAchievement() {
+        return UserVOAchievement.builder()
+            .id(1L)
+            .name(TestConst.NAME)
+            .build();
+    }
+
     public static UserVO getUserVOWithData() {
         return UserVO.builder()
             .id(13L)
@@ -241,18 +212,17 @@ public class ModelUtils {
                     .id(13L)
                     .name("user")
                     .build())
-                .expiryDate(LocalDateTime.of(2021, 7, 7,7,7))
+                .expiryDate(LocalDateTime.of(2021, 7, 7, 7, 7))
                 .token("toooookkkeeeeen42324532542")
                 .build())
             .userFriends(Collections.singletonList(
                 UserVO.builder()
-                .id(75L)
-                .name("Andrew")
-                .build()
-            ))
+                    .id(75L)
+                    .name("Andrew")
+                    .build()))
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
-            .dateOfRegistration(LocalDateTime.of(2020, 6,6,13,47))
+            .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
             .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
@@ -260,15 +230,15 @@ public class ModelUtils {
             .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
             .userAchievements(List.of(
                 UserAchievementVO.builder()
-                .id(47L)
-                .achievementStatus(AchievementStatus.ACTIVE)
-                .user(UserVO.builder()
+                    .id(47L)
+                    .achievementStatus(AchievementStatus.ACTIVE)
+                    .user(UserVO.builder()
                         .id(13L)
                         .build())
-                .achievement(AchievementVO.builder()
+                    .achievement(AchievementVO.builder()
                         .id(56L)
                         .build())
-                .build(),
+                    .build(),
                 UserAchievementVO.builder()
                     .id(39L)
                     .achievementStatus(AchievementStatus.INACTIVE)
@@ -278,8 +248,8 @@ public class ModelUtils {
                     .achievement(AchievementVO.builder()
                         .id(14L)
                         .build())
-                    .build()
-            )).build();
+                    .build()))
+            .build();
     }
 
     public static Language getLanguage() {
@@ -410,6 +380,25 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .status(GoalStatus.DONE)
+            .build();
+    }
+
+    public static UserGoal getUserGoal() {
+        return UserGoal.builder()
+            .id(1L)
+            .status(GoalStatus.DONE)
+            .habitAssign(HabitAssign.builder()
+                .id(1L)
+                .status(HabitAssignStatus.ACQUIRED)
+                .habitStreak(10)
+                .duration(300)
+                .lastEnrollmentDate(ZonedDateTime.now())
+                .workingDays(5)
+                .build())
+            .goal(Goal.builder()
+                .id(1L)
+                .build())
+            .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
             .build();
     }
 
@@ -700,7 +689,7 @@ public class ModelUtils {
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-                .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
             TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
                 .build(),
             TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
@@ -828,15 +817,14 @@ public class ModelUtils {
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<UserVO>(Arrays.asList(
                 UserVO.builder()
-                .id(76L)
-                .build(),
+                    .id(76L)
+                    .build(),
                 UserVO.builder()
-                .id(543L)
-                .build(),
+                    .id(543L)
+                    .build(),
                 UserVO.builder()
-                .id(349L)
-                .build()
-            )))
+                    .id(349L)
+                    .build())))
             .ecoNews(EcoNewsVO.builder()
                 .id(32L)
                 .build())
@@ -1118,7 +1106,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", Collections.singletonList(getAchievement()));
+        return new AchievementCategory(1L, "Name", null, null);
     }
 
     public static AchievementVO getAchievementVO() {
@@ -1138,7 +1126,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category");
+        return new AchievementCategoryVO(1L, "Category", null, null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -1151,6 +1139,18 @@ public class ModelUtils {
 
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+    }
+
+    public static UserAchievement getUserAchievement() {
+        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE);
+    }
+
+    public static UserAction getUserAction() {
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
+    }
+
+    public static UserActionVO getUserActionVO() {
+        return new UserActionVO(1L, ModelUtils.getUserVO(), ModelUtils.getAchievementCategoryVO(), 0);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
