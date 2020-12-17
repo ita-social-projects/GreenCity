@@ -5,6 +5,7 @@ import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.BadCategoryRequestException;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.AchievementCategoryRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,9 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
     @Transactional
     public AchievementCategoryVO findByName(String name) {
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(name);
+        if (achievementCategory == null) {
+            throw new BadRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME);
+        }
         return modelMapper.map(achievementCategory, AchievementCategoryVO.class);
     }
 }
