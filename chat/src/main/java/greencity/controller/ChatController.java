@@ -34,25 +34,14 @@ public class ChatController {
             .body(chatRoomService.findAllByParticipantId(participant.getId()));
     }
 
-    @GetMapping("/{id}")
-    public String findMessageRoom(@PathVariable Long id, Principal principal) {
-        ParticipantDto partSecond = participantService.findById(id);
-        ParticipantDto partFirst = participantService.findByEmail(principal.getName());
-        //DirectRoom directRoom = directRoomService.findDirectRoomByParticipants(partFirst.getId(), partSecond.getId());
-        //System.out.println(directRoom);
-        System.out.println(partFirst);
-        System.out.println(partSecond);
-        return "/chat";
-    }
-
-    @GetMapping("/participant/{id}")
-    public ResponseEntity<ParticipantDto> findParticipant(@PathVariable Long id) {
+    @GetMapping("/user/{id}")
+    public ResponseEntity<ChatRoomDto> findPrivateRoomWithUser(@PathVariable Long id, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(participantService.findById(id));
+            .body(chatRoomService.findPrivateByParticipants(id, principal.getName()));
     }
 
-    @GetMapping("/participant")
-    public ResponseEntity<ParticipantDto> getCurrentParticipant(Principal principal) {
+    @GetMapping("/user")
+    public ResponseEntity<ParticipantDto> getCurrentUser(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(participantService.getCurrentParticipantByEmail(principal.getName()));
     }

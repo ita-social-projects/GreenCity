@@ -32,4 +32,6 @@ public interface ChatRoomService {
      * @return {@link ChatRoom} instance.
      */
     ChatRoom findChatRoomById(Long id);
+
+    ChatRoomDto findPrivateByParticipants(Long id, String name);
 }

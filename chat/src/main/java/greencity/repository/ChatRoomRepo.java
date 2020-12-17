@@ -17,14 +17,12 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
     /**
      * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} id.
      *
-     * @param participantId {@link Participant} id.
+     * @param participant {@link Participant} id.
      * @return list of {@link ChatRoom} instances.
      */
-    @Query(value = "SELECT DISTINCT dr FROM ChatRoom dr"
-        + " JOIN FETCH dr.participants p"
-        + " JOIN FETCH dr.messages"
-        + " WHERE :partId = p.id")
-    List<ChatRoom> findAllByParticipantId(@Param("partId") Long participantId);
+    @Query(value = "SELECT dr FROM ChatRoom dr"
+        + " WHERE (:part) IN dr.participants")
+    List<ChatRoom> findAllByParticipant(@Param("part") Participant participant);
 
     /**
      * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User}'s and {@link ChatType}.
@@ -34,10 +32,8 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @param chatType          {@link ChatType} room type.
      * @return list of {@link ChatRoom} instances.
      */
-    @Query(value = "SELECT DISTINCT dr FROM ChatRoom dr"
-        + " JOIN FETCH dr.participants p"
-        + " JOIN FETCH dr.messages"
-        + " WHERE p IN (:participants)"
+    @Query(value = "SELECT dr FROM ChatRoom dr"
+        + " WHERE dr.participants IN (:participants)"
         + " GROUP BY dr"
         + " HAVING COUNT(dr) = CAST(:participantsCount AS long)"
         + " AND UPPER(dr.type) = :chatType")

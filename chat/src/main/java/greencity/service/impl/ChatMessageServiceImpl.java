@@ -37,9 +37,12 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public ChatMessage processMessage(ChatMessage chatMessage) {
-        return messagingTemplate.convertAndSendToUser(
-            String.valueOf(chatMessage.getRoomId()), "/queue/messages",
-            chatMessage);
+    public void processMessage(ChatMessageDto chatMessageDto) {
+        ChatMessage message = modelMapper.map(chatMessageDto, ChatMessage.class);
+        chatMessageRepo.save(message);
+
+        messagingTemplate.convertAndSendToUser(
+            String.valueOf(chatMessageDto.getRoomId()), "/queue/messages",
+            chatMessageDto);
     }
 }
