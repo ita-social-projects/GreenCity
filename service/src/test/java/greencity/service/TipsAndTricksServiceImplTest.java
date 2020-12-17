@@ -395,7 +395,8 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
-            tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en");
+            tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(),
+                "en");
 
         assertEquals(pageableDto, actual);
     }
