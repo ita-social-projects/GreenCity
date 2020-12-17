@@ -26,24 +26,36 @@ public class ChatController {
     private final ParticipantService participantService;
     private final ChatMessageService chatMessageService;
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping
     public ResponseEntity<List<ChatRoomDto>> findAllRooms(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(chatRoomService.findAllByParticipantName(principal.getName()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping("/user/{id}")
     public ResponseEntity<ChatRoomDto> findPrivateRoomWithUser(@PathVariable Long id, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(chatRoomService.findPrivateByParticipants(id, principal.getName()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping("/user")
     public ResponseEntity<ParticipantDto> getCurrentUser(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(participantService.getCurrentParticipantByEmail(principal.getName()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);

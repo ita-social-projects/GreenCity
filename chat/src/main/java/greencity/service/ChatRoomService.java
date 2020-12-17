@@ -35,5 +35,8 @@ public interface ChatRoomService {
      */
     ChatRoom findChatRoomById(Long id);
 
+    /**
+     * {@inheritDoc}
+     */
     ChatRoomDto findPrivateByParticipants(Long id, String name);
 }
