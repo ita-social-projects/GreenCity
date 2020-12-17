@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-public class AchievementCategoryServiceImplTest {
+class AchievementCategoryServiceImplTest {
 
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
