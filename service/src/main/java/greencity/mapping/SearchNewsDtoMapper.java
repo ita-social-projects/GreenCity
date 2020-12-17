@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SearchNewsDtoMapper extends AbstractConverter<EcoNews, SearchNewsDto> {
-
     @Override
     protected SearchNewsDto convert(EcoNews ecoNews) {
         User author = ecoNews.getAuthor();

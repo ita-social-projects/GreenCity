@@ -47,7 +47,8 @@ public class SearchController {
     @ApiLocale
     @GetMapping("")
     public ResponseEntity<SearchResponseDto> search(
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery, @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery, locale.getLanguage()));
     }
 
@@ -67,7 +68,8 @@ public class SearchController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
         @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery, @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
     }
@@ -88,7 +90,8 @@ public class SearchController {
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchTipsAndTricksDto>> searchTipsAndTricks(
         @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery, @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
+        @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllTipsAndTricks(pageable, searchQuery, locale.getLanguage()));
     }

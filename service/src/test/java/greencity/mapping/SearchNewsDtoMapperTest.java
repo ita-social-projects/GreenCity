@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 class SearchNewsDtoMapperTest {
@@ -31,6 +32,7 @@ class SearchNewsDtoMapperTest {
 
     @Test
     void convertTest() {
+        String language = LocaleContextHolder.getLocale().getLanguage();
 
         SearchNewsDto searchedNews = SearchNewsDto.builder()
             .id(1L)
@@ -41,6 +43,7 @@ class SearchNewsDtoMapperTest {
             .tags(ecoNewsTest.getTags()
                 .stream()
                 .flatMap(t -> t.getTagTranslations().stream())
+                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
             .build();

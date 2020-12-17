@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class SearchTipsAndTricksDtoMapper extends AbstractConverter<TipsAndTricks, SearchTipsAndTricksDto> {
-
     @Override
     protected SearchTipsAndTricksDto convert(TipsAndTricks tipsAndTricks) {
         User author = tipsAndTricks.getAuthor();

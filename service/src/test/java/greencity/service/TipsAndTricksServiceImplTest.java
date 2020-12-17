@@ -1,4 +1,4 @@
-/*package greencity.service;
+package greencity.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -343,7 +343,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
-            tipsAndTricksService.search(tipsAndTricks.get(0).getTitleTranslations().get(0).getContent());
+            tipsAndTricksService.search(tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en");
 
         assertEquals(pageableDto, actual);
     }
@@ -397,7 +397,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
 
         PageableDto<SearchTipsAndTricksDto> actual =
-            tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent());
+            tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en");
 
         assertEquals(pageableDto, actual);
     }
@@ -490,4 +490,4 @@ class TipsAndTricksServiceImplTest {
 
         assertEquals(expectedDto, actual);
     }
-}*/
+}

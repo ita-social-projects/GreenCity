@@ -37,5 +37,6 @@ public interface SearchService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
      */
-    PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery, String languageCode);
+    PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery,
+        String languageCode);
 }
