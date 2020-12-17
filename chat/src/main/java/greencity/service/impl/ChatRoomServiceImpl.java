@@ -31,7 +31,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public List<ChatRoomDto> findAllByParticipantName(String name) {
-        Participant participant = modelMapper.map(participantService.findByEmail(name), Participant.class);
+        Participant participant = participantService.findByEmail(name);
         return modelMapper
             .map(chatRoomRepo.findAllByParticipant(participant), new TypeToken<List<ChatRoomDto>>() {
             }.getType());

@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import greencity.enums.ChatType;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,7 @@ public class ChatRoom {
     private String name;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-    private List<ChatMessage> messages;
+    private List<ChatMessage> messages = new LinkedList<>();
 
     @Enumerated(value = EnumType.STRING)
     private ChatType type;

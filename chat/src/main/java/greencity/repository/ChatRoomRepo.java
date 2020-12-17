@@ -41,6 +41,4 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
     List<ChatRoom> findByParticipantsAndStatus(@Param("participants") Set<Participant> participants,
                                                @Param("participantsCount") Integer participantsCount,
                                                @Param("chatType") ChatType chatType);
-
-    /**/
 }
