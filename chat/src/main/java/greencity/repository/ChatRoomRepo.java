@@ -25,9 +25,11 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
     List<ChatRoom> findAllByParticipant(@Param("part") Participant participant);
 
     /**
-     * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User}'s and {@link ChatType}.
+     * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User}'s
+     * and {@link ChatType}.
      *
-     * @param participants      {@link Set} of {@link Participant}'s that are in certain rooms.
+     * @param participants      {@link Set} of {@link Participant}'s that are in
+     *                          certain rooms.
      * @param participantsCount participants count from passed {@link Set}.
      * @param chatType          {@link ChatType} room type.
      * @return list of {@link ChatRoom} instances.
@@ -39,6 +41,6 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
         + " GROUP BY cr.id"
         + " HAVING COUNT(cr.id) = CAST(:participantsCount AS long)")
     List<ChatRoom> findByParticipantsAndStatus(@Param("participants") Set<Participant> participants,
-                                               @Param("participantsCount") Integer participantsCount,
-                                               @Param("chatType") ChatType chatType);
+        @Param("participantsCount") Integer participantsCount,
+        @Param("chatType") ChatType chatType);
 }

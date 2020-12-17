@@ -28,11 +28,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
-     * exception.
+     *         exception.
      */
     @ExceptionHandler(UserNotFoundException.class)
     public final ResponseEntity<Object> handleParticipantNotFoundException(UserNotFoundException ex,
-                                                                           WebRequest request) {
+        WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);

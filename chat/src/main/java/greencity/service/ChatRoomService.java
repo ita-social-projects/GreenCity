@@ -17,9 +17,11 @@ public interface ChatRoomService {
     List<ChatRoomDto> findAllByParticipantName(String name);
 
     /**
-     * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} and {@link ChatType}.
+     * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} and
+     * {@link ChatType}.
      *
-     * @param participants {@link Set} of {@link Participant}'s that are in certain rooms.
+     * @param participants {@link Set} of {@link Participant}'s that are in certain
+     *                     rooms.
      * @param chatType     {@link ChatType} room type.
      * @return list of {@link ChatRoom} instances.
      */

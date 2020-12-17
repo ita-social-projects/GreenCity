@@ -53,8 +53,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
-                                 @SuppressWarnings("NullableProblems") FilterChain chain)
+        @SuppressWarnings("NullableProblems") HttpServletResponse response,
+        @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = extractToken(request);
 

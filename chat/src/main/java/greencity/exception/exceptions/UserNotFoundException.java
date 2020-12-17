@@ -3,8 +3,8 @@ package greencity.exception.exceptions;
 import greencity.entity.Participant;
 
 /**
- * Exception that we get when we send request to find by it's parameters and there is
- * no {@link Participant}, then we get {@link UserNotFoundException}.
+ * Exception that we get when we send request to find by it's parameters and
+ * there is no {@link Participant}, then we get {@link UserNotFoundException}.
  */
 public class UserNotFoundException extends RuntimeException {
     /**

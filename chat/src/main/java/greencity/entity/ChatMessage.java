@@ -27,5 +27,3 @@ public class ChatMessage {
     private String content;
     private ZonedDateTime createDate;
 }
-
-

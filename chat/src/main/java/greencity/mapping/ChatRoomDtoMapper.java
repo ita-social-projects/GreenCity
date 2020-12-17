@@ -29,14 +29,16 @@ public class ChatRoomDtoMapper extends AbstractConverter<ChatRoom, ChatRoomDto> 
                 chatMessage -> ChatMessageDto.builder()
                     .content(chatMessage.getContent())
                     .senderId(chatMessage.getSender().getId())
-                    .roomId(chatRoom.getId()).build()).collect(Collectors.toList()))
+                    .roomId(chatRoom.getId()).build())
+                .collect(Collectors.toList()))
             .name(chatRoom.getName())
             .participants(chatRoom.getParticipants().stream().map(
                 participant -> ParticipantDto.builder()
                     .name(participant.getName())
                     .profilePicture(participant.getProfilePicture())
                     .id(participant.getId())
-                    .email(participant.getEmail()).build()).collect(Collectors.toSet())
-            ).build();
+                    .email(participant.getEmail()).build())
+                .collect(Collectors.toSet()))
+            .build();
     }
 }
