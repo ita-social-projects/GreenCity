@@ -6,6 +6,7 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -160,4 +161,13 @@ public interface TipsAndTricksService {
      */
     PageableDto<TipsAndTricksDtoManagement> getFilteredDataForManagementByPage(
         Pageable pageable, TipsAndTricksViewDto tipsAndTricksViewDto);
+
+    /**
+     * Method for finding {@link TipsAndTricksDtoManagement} by query.
+     * 
+     * @param pageable {@link Pageable}.
+     * @param query    query to search,
+     * @return a dto of {@link PageableDto}.
+     */
+    PageableDto<TipsAndTricksDtoManagement> searchTipsAndTricksBy(Pageable pageable, String query);
 }

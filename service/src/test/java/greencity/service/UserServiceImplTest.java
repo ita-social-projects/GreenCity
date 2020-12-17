@@ -64,9 +64,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-//import greencity.service.SocialNetworkImageService;
-//import org.powermock.api.mockito.PowerMockito;
-
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
     @Mock
@@ -164,10 +161,9 @@ class UserServiceImplTest {
 
     @Test
     void findUsersRecommendedFriendsTest() {
-
-        List<User> singletonList = Collections.singletonList(ModelUtils.getUser());
+        List<UsersFriendDto> singletonList = Collections.singletonList(ModelUtils.usersFriendDto);
         PageRequest pageRequest = PageRequest.of(0, 1);
-        Page<User> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
+        Page<UsersFriendDto> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
         List<RecommendedFriendDto> dtoList =
             Collections.singletonList(ModelUtils.getRecommendedFriendDto());
         PageableDto<RecommendedFriendDto> pageableDto =
@@ -175,6 +171,24 @@ class UserServiceImplTest {
         when(userRepo.findUsersRecommendedFriends(pageRequest, userId)).thenReturn(page);
         when(modelMapper.map(singletonList.get(0), RecommendedFriendDto.class)).thenReturn(dtoList.get(0));
         PageableDto<RecommendedFriendDto> actual = userService.findUsersRecommendedFriends(pageRequest, 1L);
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllUsersFriendsTest() {
+        List<User> singletonList = Collections.singletonList(ModelUtils.getUser());
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<User> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
+        List<RecommendedFriendDto> dtoList =
+            Collections.singletonList(ModelUtils.getRecommendedFriendDto());
+        PageableDto<RecommendedFriendDto> pageableDto =
+            new PageableDto<>(dtoList, dtoList.size(), 0, 1);
+
+        when(userRepo.getAllUserFriends(userId, pageRequest)).thenReturn(page);
+        when(modelMapper.map(singletonList, new TypeToken<List<RecommendedFriendDto>>() {
+        }.getType())).thenReturn(dtoList);
+        PageableDto<RecommendedFriendDto> actual = userService.findAllUsersFriends(pageRequest, 1L);
 
         assertEquals(pageableDto, actual);
     }

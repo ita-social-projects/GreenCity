@@ -187,6 +187,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
                 "/user/{userId}/recommendedFriends/",
+                "/user/{userId}/friends/",
                 "/chat")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,

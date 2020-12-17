@@ -2,6 +2,13 @@ package greencity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
@@ -19,7 +26,11 @@ import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.goal.GoalPostDto;
 import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.*;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -29,17 +40,27 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.*;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,15 +68,49 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet());
+    }
+
+    public static List<TagTranslationVO> getTagTranslationsVO() {
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини").build(),
+            TagTranslationVO.builder().id(2L).name("News").build(),
+            TagTranslationVO.builder().id(3L).name("Новины").build());
+    }
+
+    public static LanguageVO getLanguageVO() {
+        return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
+    }
+
+    public static TagVO getTagVO() {
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagPostDto getTagPostDto() {
+        return new TagPostDto(TagType.ECO_NEWS, Collections.emptyList());
+    }
+
+    public static TagViewDto getTagViewDto() {
+        return new TagViewDto("3", "ECO_NEWS", "News");
+    }
+
+    public static PageableAdvancedDto<TagVO> getPageableAdvancedDtoForTag() {
+        return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
+            10, 1, 4, 8,
+            true, true, true, true);
     }
 
     public static User getUser() {
@@ -393,7 +448,7 @@ public class ModelUtils {
     }
 
     public static UserProfilePictureDto getUserProfilePictureDto() {
-        return new UserProfilePictureDto(1L, "image");
+        return new UserProfilePictureDto(1L, "name", "image");
     }
 
     public static FactOfTheDayDTO getFactOfTheDayDto() {
@@ -527,5 +582,26 @@ public class ModelUtils {
 
     public static GoalPostDto getGoalPostDto() {
         return new GoalPostDto(getLanguageTranslationsDTOs(), new GoalRequestDto(1L));
+    }
+
+    public static List<AchievementTranslationVO> getAchievementTranslationVOS() {
+        return Arrays.asList(
+            new AchievementTranslationVO(1L, getLanguageVO(), "title", "description", "message"),
+            new AchievementTranslationVO(2L, getLanguageVO(), "title", "description", "message"),
+            new AchievementTranslationVO(3L, getLanguageVO(), "title", "description", "message"));
+    }
+
+    public static AchievementCategoryDto getAchievementCategoryDto() {
+        return new AchievementCategoryDto("name");
+    }
+
+    public static AchievementPostDto getAchievementPostDto() {
+        return new AchievementPostDto(getAchievementTranslationVOS(), getAchievementCategoryDto(), 1);
+    }
+
+    public static AchievementVO getAchievementVO() {
+        return new AchievementVO(1L, getAchievementTranslationVOS(),
+            Collections.singletonList(new UserAchievementVO()),
+            new AchievementCategoryVO(1L, "name", null, null), 1);
     }
 }

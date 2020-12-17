@@ -1,10 +1,7 @@
 package greencity.dto.achievement;
 
 import greencity.dto.achievementcategory.AchievementCategoryDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -12,6 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 public class AchievementPostDto {
     private List<AchievementTranslationVO> translations;
 

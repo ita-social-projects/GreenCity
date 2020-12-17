@@ -492,6 +492,27 @@ public class UserController {
     }
 
     /**
+     * The method finds {@link RecommendedFriendDto} for the current userId.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Find all friends")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/friends/")
+    @ApiPageable
+    public ResponseEntity<PageableDto<RecommendedFriendDto>> findAllUsersFriends(
+        @ApiIgnore Pageable page,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.findAllUsersFriends(page, userId));
+    }
+
+    /**
      * Method for save user profile information {@link UserProfileDtoResponse}.
      *
      * @param userProfileDtoRequest - dto for {@link UserVO} entity.

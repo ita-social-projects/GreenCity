@@ -44,7 +44,7 @@ class AchievementServiceImplTest {
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertTrue(findAllResult.isEmpty());
     }
 
@@ -53,9 +53,9 @@ class AchievementServiceImplTest {
         Achievement achievement = ModelUtils.getAchievement();
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
-        when(modelMapper.map(achievement, AchievementDTO.class))
-            .thenReturn(new AchievementDTO(achievement.getId(), null, null, null));
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        when(modelMapper.map(achievement, AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
@@ -166,5 +166,16 @@ class AchievementServiceImplTest {
             verify(achievementRepo, times(1)).deleteById(l);
         });
         achievementService.deleteAll(listId);
+    }
+
+    @Test
+    void findByCategoryIdAndCondition() {
+        Achievement achievement = ModelUtils.getAchievement();
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        achievement.setAchievementCategory(ModelUtils.getAchievementCategory());
+        achievementVO.setAchievementCategory(ModelUtils.getAchievementCategoryVO());
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
+        assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
     }
 }

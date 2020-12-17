@@ -26,7 +26,7 @@
     </modules>
 
     <properties>
-        <junit-jupiter.version>5.4.2</junit-jupiter.version>
+        <junit-jupiter.version>5.7.0</junit-jupiter.version>
         <mockito-junit-jupiter.version>3.3.3</mockito-junit-jupiter.version>
         <mockito-core.version>3.3.3</mockito-core.version>
         <modelmapper.version>2.3.5</modelmapper.version>
@@ -71,10 +71,7 @@
                 <version>2.13.0</version>
                 <executions>
                     <execution>
-                        <id>formatter</id>
-                        <phase>validate</phase>
                         <goals>
-                            <goal>format</goal>
                             <goal>validate</goal>
                         </goals>
                     </execution>

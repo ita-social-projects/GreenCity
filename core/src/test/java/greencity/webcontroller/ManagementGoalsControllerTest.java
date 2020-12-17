@@ -1,13 +1,12 @@
 package greencity.webcontroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.goal.GoalManagementDto;
 import greencity.dto.goal.GoalPostDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.goal.GoalViewDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.service.GoalService;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -139,4 +137,46 @@ class ManagementGoalsControllerTest {
 
         verify(goalService).update(goalPostDto);
     }
+
+    @Test
+    void filterDataTest() throws Exception {
+        Pageable pageable = PageRequest.of(0, 3);
+        GoalViewDto goalViewDto = new GoalViewDto();
+        List<GoalManagementDto> list = Collections.singletonList(new GoalManagementDto());
+        PageableAdvancedDto<GoalManagementDto> pageableDto = new PageableAdvancedDto<>(list, 3, 0, 3,
+            0, false, true, true, false);
+        when(goalService.getFilteredDataForManagementByPage(pageable, goalViewDto)).thenReturn(pageableDto);
+        when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(ModelUtils.getLanguageDTO()));
+        this.mockMvc.perform(post(managementGoalLink + "/filter")
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(model().attribute("goals", pageableDto))
+            .andExpect(model().attribute("languages", languageService.getAllLanguages()))
+            .andExpect(model().attribute("fields", goalViewDto))
+            .andExpect(view().name("core/management_goals"))
+            .andExpect(status().isOk());
+        verify(goalService).getFilteredDataForManagementByPage(pageable, goalViewDto);
+        verify(languageService, times(2)).getAllLanguages();
+    }
+
+    @Test
+    void getAllGoalsSearchByQueryTest() throws Exception {
+        Pageable paging = PageRequest.of(0, 3, Sort.by("id").ascending());
+        List<GoalManagementDto> goalManagementDtos = Collections.singletonList(new GoalManagementDto());
+        PageableAdvancedDto<GoalManagementDto> goalManagementDtoPageableDto =
+            new PageableAdvancedDto<>(goalManagementDtos, 1, 0, 1, 1,
+                true, true, true, true);
+        when(goalService.searchBy(paging, "query")).thenReturn(goalManagementDtoPageableDto);
+        when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO()));
+        this.mockMvc.perform(get(managementGoalLink + "?query=query")
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(model().attribute("goals", goalManagementDtoPageableDto))
+            .andExpect(model().attribute("languages", languageService.getAllLanguages()))
+            .andExpect(view().name("core/management_goals"))
+            .andExpect(status().isOk());
+        verify(goalService).searchBy(paging, "query");
+        verify(languageService, times(2)).getAllLanguages();
+    }
+
 }
