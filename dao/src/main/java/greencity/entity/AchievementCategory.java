@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 @Setter
 @Table(name = "achievement_categories")
 @EqualsAndHashCode
+@Builder
 public class AchievementCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

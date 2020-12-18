@@ -5,6 +5,7 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -59,7 +60,7 @@ public class UserVO {
 
     private List<UserVO> userFriends = new ArrayList<>();
 
-    private List<UserAchievementVO> userAchievements;
+    private List<UserAchievementVO> userAchievements = new ArrayList<>();
 
     private String refreshTokenKey;
 
@@ -80,4 +81,6 @@ public class UserVO {
     private Boolean showShoppingList;
 
     private LocalDateTime lastActivityTime;
+
+    private List<UserActionVO> userActions = new ArrayList<>();
 }

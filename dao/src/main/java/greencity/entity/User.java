@@ -104,7 +104,7 @@ public class User {
     private List<User> userFriends = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<UserAchievement> userAchievements;
+    private List<UserAchievement> userAchievements = new ArrayList<>();
 
     @Column(name = "rating")
     private Double rating;
@@ -135,5 +135,5 @@ public class User {
     private LocalDateTime lastActivityTime;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAction> userActions;
+    private List<UserAction> userActions = new ArrayList<>();
 }

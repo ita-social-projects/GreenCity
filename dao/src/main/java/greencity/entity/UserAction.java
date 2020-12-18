@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "user_actions")
 @Builder
+@EqualsAndHashCode
 public class UserAction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

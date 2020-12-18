@@ -23,4 +23,13 @@ public interface UserActionService {
      * @author Orest Mamchuk
      */
     UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId);
+
+    /**
+     * Method saves {@link UserActionVO}.
+     *
+     * @param userActionVO {@link UserActionVO}
+     * @return {@link UserActionVO}
+     * @author Orest Mamchuk
+     */
+    UserActionVO save(UserActionVO userActionVO);
 }

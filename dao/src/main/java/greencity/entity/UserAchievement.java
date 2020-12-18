@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import greencity.enums.AchievementStatus;
-import java.util.Objects;
 import javax.persistence.*;
 
 import lombok.*;
@@ -12,8 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(
-    exclude = {"achievement", "user"})
+@EqualsAndHashCode
 public class UserAchievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,24 +26,4 @@ public class UserAchievement {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UserAchievement that = (UserAchievement) o;
-        return id.equals(that.id)
-            && user.equals(that.user)
-            && achievement.equals(that.achievement)
-            && achievementStatus == that.achievementStatus;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, user, achievement, achievementStatus);
-    }
 }

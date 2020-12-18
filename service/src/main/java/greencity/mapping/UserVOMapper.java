@@ -2,13 +2,16 @@ package greencity.mapping;
 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
@@ -68,7 +71,19 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                         .id(userAchievement.getAchievement().getId())
                         .build())
                     .build())
-                .collect(Collectors.toList()) : null)
+                .collect(Collectors.toList()) : new ArrayList<>())
+            .userActions(user.getUserActions() != null ? user.getUserActions()
+                .stream().map(userAction -> UserActionVO.builder()
+                    .id(userAction.getId())
+                    .achievementCategory(AchievementCategoryVO.builder()
+                        .id(userAction.getAchievementCategory().getId())
+                        .build())
+                    .count(userAction.getCount())
+                    .user(UserVO.builder()
+                        .id(userAction.getUser().getId())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : new ArrayList<>())
             .build();
     }
 }
