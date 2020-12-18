@@ -17,5 +17,5 @@ public class UserActionVO {
 
     private AchievementCategoryVO achievementCategory;
 
-    private Integer count;
+    private Integer count = 0;
 }

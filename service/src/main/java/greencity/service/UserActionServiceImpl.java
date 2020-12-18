@@ -42,6 +42,12 @@ public class UserActionServiceImpl implements UserActionService {
     @Override
     public UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId) {
         UserAction userAction = userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
-        return modelMapper.map(userAction, UserActionVO.class);
+        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
+    }
+
+    @Override
+    public UserActionVO save(UserActionVO userActionVO) {
+        UserAction save = userActionRepo.save(modelMapper.map(userActionVO, UserAction.class));
+        return modelMapper.map(save, UserActionVO.class);
     }
 }
