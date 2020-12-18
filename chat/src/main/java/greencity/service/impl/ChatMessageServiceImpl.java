@@ -40,8 +40,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     public void processMessage(ChatMessageDto chatMessageDto) {
         ChatMessage message = modelMapper.map(chatMessageDto, ChatMessage.class);
         chatMessageRepo.save(message);
-        messagingTemplate.convertAndSendToUser(
-            String.valueOf(chatMessageDto.getRoomId()), "/queue/messages",
-            chatMessageDto);
+        messagingTemplate.convertAndSend(
+            "/room/" + chatMessageDto.getRoomId() + "/queue/messages", chatMessageDto);
     }
 }
