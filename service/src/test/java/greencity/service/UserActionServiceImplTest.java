@@ -50,4 +50,14 @@ class UserActionServiceImplTest {
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
         assertEquals(userActionVO, userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L));
     }
+
+    @Test
+    void save() {
+        UserAction userAction = ModelUtils.getUserAction();
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(modelMapper.map(userActionVO, UserAction.class)).thenReturn(userAction);
+        when(userActionRepo.save(userAction)).thenReturn(userAction);
+        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
+        assertEquals(userActionVO, userActionService.save(userActionVO));
+    }
 }

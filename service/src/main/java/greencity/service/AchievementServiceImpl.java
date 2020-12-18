@@ -60,9 +60,9 @@ public class AchievementServiceImpl implements AchievementService {
             if (userActionByUserIdAndAchievementCategory == null) {
                 userActionVO.setAchievementCategory(achievementCategoryVO);
                 userActionVO.setUser(userVO);
+                userActionService.save(userActionVO);
             }
             userVO.getUserAchievements().add(userAchievementVO);
-            userVO.getUserActions().add(userActionVO);
             userAchievementVO.setUser(userVO);
             userService.save(userVO);
         });
