@@ -17,6 +17,7 @@ public class SearchTipsAndTricksDtoMapper extends AbstractConverter<TipsAndTrick
     protected SearchTipsAndTricksDto convert(TipsAndTricks tipsAndTricks) {
         User author = tipsAndTricks.getAuthor();
         String language = LocaleContextHolder.getLocale().getLanguage();
+
         return SearchTipsAndTricksDto.builder()
             .id(tipsAndTricks.getId())
             .title(tipsAndTricks.getTitleTranslations()
@@ -27,6 +28,7 @@ public class SearchTipsAndTricksDtoMapper extends AbstractConverter<TipsAndTrick
                 author.getName()))
             .creationDate(tipsAndTricks.getCreationDate())
             .tags(tipsAndTricks.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .build();
     }
