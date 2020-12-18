@@ -8,7 +8,11 @@ import greencity.repository.ParticipantRepo;
 import greencity.service.ParticipantService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +36,14 @@ public class ParticipantServiceImpl implements ParticipantService {
     public Participant findById(Long id) {
         return participantRepo.findById(id)
             .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public List<ParticipantDto> findAll() {
+        return modelMapper.map(participantRepo.findAll(), new TypeToken<List<ParticipantDto>>() {
+        }.getType());
     }
 
     /**

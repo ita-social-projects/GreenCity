@@ -56,6 +56,15 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
+    @GetMapping("/users")
+    public ResponseEntity<List<ParticipantDto>> getAllParticipants() {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(participantService.findAll());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @MessageMapping("/chat")
     public void processMessage(@Payload ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);

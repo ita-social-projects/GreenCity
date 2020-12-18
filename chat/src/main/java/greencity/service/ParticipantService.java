@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.dto.ParticipantDto;
 import greencity.entity.Participant;
 
+import java.util.List;
+
 public interface ParticipantService {
     /**
      * Method to find not 'DEACTIVATED' {@link Participant}/{@code User} by email.
@@ -27,4 +29,9 @@ public interface ParticipantService {
      * @return {@link Participant} instance.
      */
     ParticipantDto getCurrentParticipantByEmail(String email);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ParticipantDto> findAll();
 }
