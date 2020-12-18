@@ -20,17 +20,21 @@ BEGIN
                            ON title.tips_and_tricks_id = tt.id
                  LEFT JOIN text_translations textTrans
                            ON textTrans.tips_and_tricks_id = tt.id
+                 LEFT JOIN tips_and_tricks_tags trt
+                           ON tt.id = trt.tips_and_tricks_id
                  JOIN languages l
                       ON l.id = title.language_id
                           AND l.id = textTrans.language_id
         WHERE (
                     LOWER(title.content) LIKE LOWER(CONCAT('%', search_query, '%'))
                 OR LOWER(textTrans.content) LIKE LOWER(CONCAT('%', search_query, '%'))
-                OR tt.id IN (
-                SELECT tt.id FROM tips_and_tricks tt
-                                      JOIN tags ttt
-                                           ON ttt.id = tt.id
-                WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')))
+                OR trt.tags_id IN (
+                SELECT trt.tags_id FROM tips_and_tricks_tags trt
+                                      JOIN tag_translations ttt
+                                           ON ttt.tag_id = trt.tags_id
+                                      JOIN languages l
+                                           ON ttt.language_id = l.id
+                WHERE LOWER(ttt.name) LIKE LOWER(CONCAT('%', search_query, '%')) AND l.code = language_code)
             )
           AND l.code = language_code;
 
