@@ -46,7 +46,7 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitId}")
     public ResponseEntity<HabitAssignManagementDto> assignDefault(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+                                                                  @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignDefaultHabitForUser(habitId, userVO));
     }
@@ -68,8 +68,9 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitId}/custom")
     public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+                                                                 @ApiIgnore @CurrentUser UserVO userVO,
+                                                                 @Valid @RequestBody
+                                                                     HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignPropertiesDto));
     }
@@ -90,7 +91,7 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{id}")
     public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+                                                         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getById(id, locale.getLanguage()));
     }
@@ -102,7 +103,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get active habit assigns for current user")
+    @ApiOperation(value = "Get assigned habits for current user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -127,7 +128,7 @@ public class HabitAssignController {
      * @param locale  needed language code.
      * @return {@link List} of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all active assigns by certain habit.")
+    @ApiOperation(value = "Get all inprogress assigns by certain habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -136,7 +137,8 @@ public class HabitAssignController {
     @ApiLocale
     @GetMapping("/{habitId}/all")
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long habitId,
-        @ApiIgnore @ValidLanguage Locale locale) {
+                                                                                       @ApiIgnore @ValidLanguage
+                                                                                           Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId,
                 locale.getLanguage()));
@@ -150,7 +152,7 @@ public class HabitAssignController {
      * @param locale  needed language code.
      * @return {@link HabitAssignDto} instance.
      */
-    @ApiOperation(value = "Get active assign by habit id for current user.")
+    @ApiOperation(value = "Get inprogress assign by habit id for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -177,7 +179,7 @@ public class HabitAssignController {
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    @ApiOperation(value = "Update active user habit assign acquired or suspended status.")
+    @ApiOperation(value = "Update inprogress user habit assign acquired or suspended status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -208,8 +210,9 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitId}/enroll/{date}")
     public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+                                                      @ApiIgnore @CurrentUser UserVO userVO,
+                                                      @PathVariable(value = "date")
+                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId(), date));
     }
 
@@ -230,8 +233,9 @@ public class HabitAssignController {
     })
     @PostMapping("/{habitId}/unenroll/{date}")
     public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+                                                        @ApiIgnore @CurrentUser UserVO userVO,
+                                                        @PathVariable(value = "date")
+                                                        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         habitAssignService.unenrollHabit(habitId, userVO.getId(), date);
         return ResponseEntity.ok().build();
     }
@@ -244,7 +248,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return {@link HabitAssignDto} instance.
      */
-    @ApiOperation(value = "Get active user habit assigns on certain date.")
+    @ApiOperation(value = "Get inprogress user habit assigns on certain date.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

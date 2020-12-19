@@ -322,28 +322,6 @@ public class UserController {
     }
 
     /**
-     * Method for finding all active habit assigns by {@link UserVO} id.
-     *
-     * @param userId {@link UserVO} id.
-     * @return list of {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Get active habit assigns for certain user by acquired status.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @GetMapping("/{userId}/habit/assign")
-    @ApiLocale
-    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long userId, @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(
-                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, locale.getLanguage()));
-    }
-
-    /**
      * Counts all users by user {@link UserStatus} ACTIVATED.
      *
      * @return amount of users with {@link UserStatus} ACTIVATED.
