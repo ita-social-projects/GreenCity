@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Builder
 @EqualsAndHashCode
 public class AddEcoNewsCommentDtoRequest {
-    @NotBlank
+    @NotBlank(message = "The text of comment can not be empty")
     @Length(min = 1, max = 8000)
     private String text;
 
