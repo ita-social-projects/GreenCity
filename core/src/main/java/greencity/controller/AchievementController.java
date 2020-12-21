@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
+import greencity.dto.achievement.AchievementVO;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -39,7 +40,7 @@ public class AchievementController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("")
-    public ResponseEntity<List<AchievementDTO>> getAll() {
+    public ResponseEntity<List<AchievementVO>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
     }
 }

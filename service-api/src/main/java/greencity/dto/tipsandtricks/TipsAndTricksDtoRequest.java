@@ -11,6 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class TipsAndTricksDtoRequest {
     @Valid
     private TitleTranslationEmbeddedPostDTO titleTranslation;
