@@ -244,15 +244,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras
      */
     @Override
-    public PageableDto<SearchNewsDto> search(String searchQuery) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery);
+    public PageableDto<SearchNewsDto> search(String searchQuery, String languageCode) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery, languageCode);
 
         return getSearchNewsDtoPageableDto(page);
     }
 
     @Override
-    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(pageable, searchQuery);
+    public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode) {
+        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(pageable, searchQuery, languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 

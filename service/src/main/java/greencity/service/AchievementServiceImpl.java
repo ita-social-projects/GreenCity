@@ -7,6 +7,7 @@ import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
@@ -37,6 +38,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final AchievementCategoryService achievementCategoryService;
+    private final UserActionService userActionService;
     private UserAchievementRepo userAchievementRepo;
 
     /**
@@ -53,9 +55,18 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
+        UserActionVO userActionVO = new UserActionVO();
         userAchievementVO.setAchievement(achievementVO);
         List<UserVO> all = userService.findAll();
         all.forEach(userVO -> {
+            UserActionVO userActionByUserIdAndAchievementCategory =
+                userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
+                    achievementCategoryVO.getId());
+            if (userActionByUserIdAndAchievementCategory == null) {
+                userActionVO.setAchievementCategory(achievementCategoryVO);
+                userActionVO.setUser(userVO);
+                userActionService.save(userActionVO);
+            }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
             userService.save(userVO);

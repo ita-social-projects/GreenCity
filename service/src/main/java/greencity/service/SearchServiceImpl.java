@@ -21,9 +21,9 @@ public class SearchServiceImpl implements SearchService {
      * @return list of {@link SearchResponseDto} and {@link SearchTipsAndTricksDto}
      */
     @Override
-    public SearchResponseDto search(String searchQuery) {
-        PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery);
-        PageableDto<SearchTipsAndTricksDto> tipsAndTricks = tipsAndTricksService.search(searchQuery);
+    public SearchResponseDto search(String searchQuery, String languageCode) {
+        PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery, languageCode);
+        PageableDto<SearchTipsAndTricksDto> tipsAndTricks = tipsAndTricksService.search(searchQuery, languageCode);
 
         return SearchResponseDto.builder()
             .ecoNews(ecoNews.getPage())
@@ -36,15 +36,16 @@ public class SearchServiceImpl implements SearchService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery) {
-        return ecoNewsService.search(pageable, searchQuery);
+    public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode) {
+        return ecoNewsService.search(pageable, searchQuery, languageCode);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery) {
-        return tipsAndTricksService.search(pageable, searchQuery);
+    public PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery,
+        String languageCode) {
+        return tipsAndTricksService.search(pageable, searchQuery, languageCode);
     }
 }

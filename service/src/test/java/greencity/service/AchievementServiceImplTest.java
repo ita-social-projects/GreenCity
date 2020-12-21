@@ -6,6 +6,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.localization.AchievementTranslation;
@@ -38,6 +39,8 @@ class AchievementServiceImplTest {
     private AchievementCategoryService achievementCategoryService;
     @Mock
     private UserService userService;
+    @Mock
+    private UserActionService userActionService;
     @InjectMocks
     private AchievementServiceImpl achievementService;
 
@@ -95,12 +98,18 @@ class AchievementServiceImplTest {
         List<UserAchievementVO> userAchievements = new ArrayList<>();
         userAchievements.add(userAchievement);
         userVO.setUserAchievements(userAchievements);
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        List<UserActionVO> userActionVOS = new ArrayList<>();
+        userActionVOS.add(userActionVO);
+        userVO.setUserActions(userActionVOS);
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
         when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         when(userService.findAll()).thenReturn(Collections.singletonList(userVO));
+        when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
+
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
     }

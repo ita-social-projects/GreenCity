@@ -91,7 +91,7 @@ public interface EcoNewsService {
      * @return list of {@link SearchNewsDto}
      * @author Kovaliv Taras
      */
-    PageableDto<SearchNewsDto> search(String searchQuery);
+    PageableDto<SearchNewsDto> search(String searchQuery, String languageCode);
 
     /**
      * Method for getting all EcoNews by searchQuery.
@@ -101,7 +101,7 @@ public interface EcoNewsService {
      * @return PageableDto of {@link SearchNewsDto} instances.
      * @author Yurii Savchenko
      */
-    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery);
+    PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method for getting amount of published news by user id.

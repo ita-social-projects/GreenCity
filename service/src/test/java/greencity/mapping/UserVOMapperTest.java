@@ -3,10 +3,14 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.user.UserVO;
 import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
 import greencity.entity.OwnSecurity;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
+import greencity.entity.UserAction;
 import greencity.entity.VerifyEmail;
+
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -50,6 +54,12 @@ class UserVOMapperTest {
                     .build())
                 .collect(Collectors.toList()) : null)
             .refreshTokenKey(expected.getRefreshTokenKey())
+            .dateOfRegistration(expected.getDateOfRegistration())
+            .profilePicturePath(expected.getProfilePicturePath())
+            .city(expected.getCity())
+            .showShoppingList(expected.getShowShoppingList())
+            .showEcoPlace(expected.getShowEcoPlace())
+            .showLocation(expected.getShowLocation())
             .ownSecurity(expected.getOwnSecurity() != null ? OwnSecurity.builder()
                 .id(expected.getOwnSecurity().getId())
                 .password(expected.getOwnSecurity().getPassword())
@@ -58,12 +68,6 @@ class UserVOMapperTest {
                     .email(expected.getOwnSecurity().getUser().getEmail())
                     .build())
                 .build() : null)
-            .dateOfRegistration(expected.getDateOfRegistration())
-            .profilePicturePath(expected.getProfilePicturePath())
-            .city(expected.getCity())
-            .showShoppingList(expected.getShowShoppingList())
-            .showEcoPlace(expected.getShowEcoPlace())
-            .showLocation(expected.getShowLocation())
             .lastActivityTime(expected.getLastActivityTime())
             .userAchievements(expected.getUserAchievements() != null ? expected.getUserAchievements()
                 .stream().map(userAchievement -> UserAchievement.builder()
@@ -76,7 +80,19 @@ class UserVOMapperTest {
                         .id(userAchievement.getAchievement().getId())
                         .build())
                     .build())
-                .collect(Collectors.toList()) : null)
+                .collect(Collectors.toList()) : new ArrayList<>())
+            .userActions(expected.getUserActions() != null ? expected.getUserActions()
+                .stream().map(userAction -> UserAction.builder()
+                    .id(userAction.getId())
+                    .achievementCategory(AchievementCategory.builder()
+                        .id(userAction.getAchievementCategory().getId())
+                        .build())
+                    .count(userAction.getCount())
+                    .user(User.builder()
+                        .id(userAction.getUser().getId())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : new ArrayList<>())
             .build();
 
         assertEquals(expected, mapper.convert(userToBeConverted));
