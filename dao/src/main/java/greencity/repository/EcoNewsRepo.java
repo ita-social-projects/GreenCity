@@ -1,16 +1,16 @@
 package greencity.repository;
 
 import greencity.entity.EcoNews;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificationExecutor<EcoNews> {
@@ -21,6 +21,16 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      */
     @Query(nativeQuery = true, value = "SELECT * FROM eco_news ORDER BY creation_date DESC LIMIT 3")
     List<EcoNews> getThreeLastEcoNews();
+
+    /**
+     * Method for deleting eco news by list of ids.
+     *
+     * @param ids list of deleted eco news ids.
+     */
+
+    @Modifying
+    @Query("DELETE FROM EcoNews e WHERE e.id IN (?1)")
+    void deleteEcoNewsWithIds(List<Long> ids);
 
     /**
      * Method for getting three recommended eco news. Query is based on database
@@ -57,10 +67,9 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
 
     /**
      * Method that finds {@link EcoNews} by id.
-     * 
+     *
      * @param id {@link Long}.
      * @return {@link Optional} of {@link EcoNews}
-     *
      */
     @Query("SELECT e FROM EcoNews e LEFT JOIN FETCH e.tags WHERE e.id = :id")
     Optional<EcoNews> findById(Long id);
