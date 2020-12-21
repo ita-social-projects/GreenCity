@@ -1120,7 +1120,8 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategory(), 1);
+        return new Achievement(1L, Collections.singletonList(getAchievementTranslation()), Collections.emptyList(),
+            new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
@@ -1152,7 +1153,7 @@ public class ModelUtils {
     }
 
     public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", getAchievement());
+        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", null);
     }
 
     public static UserAchievementVO getUserAchievementVO() {
