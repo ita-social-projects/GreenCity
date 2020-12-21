@@ -52,26 +52,26 @@ class ManagementRatingStatisticsControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementRatingStatisticsController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
 
     }
 
     @Test
     void getUserRatingStatisticsTest() throws Exception {
-        Pageable pageable = PageRequest.of(0,3,new Sort(Sort.Direction.DESC,"createDate"));
+        Pageable pageable = PageRequest.of(0, 3, new Sort(Sort.Direction.DESC, "createDate"));
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                Sort.by("createDate").descending());
+            Sort.by("createDate").descending());
         List<RatingStatisticsDtoForTables> list = Collections.singletonList(new RatingStatisticsDtoForTables());
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto = new PageableAdvancedDto<>(list,
-                3,0,3,1,false,true,true,false);
+            3, 0, 3, 1, false, true, true, false);
         when(ratingStatisticsService.getRatingStatisticsForManagementByPage(paging)).thenReturn(pageableDto);
         this.mockMvc.perform(get(managementRatingStatisticsLink)
-                .param("page","0")
-                .param("size","3"))
-                .andExpect(view().name("core/management_user_rating"))
-                .andExpect(model().attribute("ratings",pageableDto))
-                .andExpect(status().isOk());
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(view().name("core/management_user_rating"))
+            .andExpect(model().attribute("ratings", pageableDto))
+            .andExpect(status().isOk());
 
         verify(ratingStatisticsService).getRatingStatisticsForManagementByPage(pageable);
     }
@@ -82,8 +82,8 @@ class ManagementRatingStatisticsControllerTest {
         List<RatingStatisticsDto> list = Collections.singletonList(new RatingStatisticsDto());
         when(ratingStatisticsService.getAllRatingStatistics()).thenReturn(list);
         this.mockMvc.perform(get(managementRatingStatisticsLink + "/export"))
-                .andExpect(status().isOk());
-        verify(ratingExcelExporter,never()).export(response.getOutputStream(),list);
+            .andExpect(status().isOk());
+        verify(ratingExcelExporter, never()).export(response.getOutputStream(), list);
     }
 
     @Test
@@ -93,31 +93,32 @@ class ManagementRatingStatisticsControllerTest {
         List<RatingStatisticsDto> list = Collections.singletonList(new RatingStatisticsDto());
         when(ratingStatisticsService.getFilteredRatingStatisticsForExcel(ratingStatisticsViewDto)).thenReturn(list);
         this.mockMvc.perform(post(managementRatingStatisticsLink + "/exportFiltered/")
-                .accept(MediaType.APPLICATION_OCTET_STREAM)
-                .header("Content-Disposition","attachment; filename=user_rating_statistics" + dateFormat.format(new Date()) + ".xlsx")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk());
-        verify(ratingExcelExporter,never()).export(response.getOutputStream(),list);
+            .accept(MediaType.APPLICATION_OCTET_STREAM)
+            .header("Content-Disposition",
+                "attachment; filename=user_rating_statistics" + dateFormat.format(new Date()) + ".xlsx")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+            .andExpect(status().isOk());
+        verify(ratingExcelExporter, never()).export(response.getOutputStream(), list);
     }
 
     @Test
     void filterDataTest() throws Exception {
         RatingStatisticsViewDto ratingStatisticsViewDto = new RatingStatisticsViewDto();
-        Pageable pageable = PageRequest.of(0,3);
+        Pageable pageable = PageRequest.of(0, 3);
         List<RatingStatisticsDtoForTables> list = Collections.singletonList(new RatingStatisticsDtoForTables());
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto = new PageableAdvancedDto<>(list,
-                3,0,3,1,false,true,true,false);
-        when(ratingStatisticsService.getFilteredDataForManagementByPage(pageable,ratingStatisticsViewDto))
-                .thenReturn(pageableDto);
+            3, 0, 3, 1, false, true, true, false);
+        when(ratingStatisticsService.getFilteredDataForManagementByPage(pageable, ratingStatisticsViewDto))
+            .thenReturn(pageableDto);
         this.mockMvc.perform(post(managementRatingStatisticsLink)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("page","0")
-                .param("size","3"))
-                .andExpect(model().attribute("ratings",pageableDto))
-                .andExpect(model().attribute("fields",ratingStatisticsViewDto))
-                .andExpect(view().name("core/management_user_rating"))
-                .andExpect(status().isOk());
-        verify(ratingStatisticsService).getFilteredDataForManagementByPage(pageable,ratingStatisticsViewDto);
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("page", "0")
+            .param("size", "3"))
+            .andExpect(model().attribute("ratings", pageableDto))
+            .andExpect(model().attribute("fields", ratingStatisticsViewDto))
+            .andExpect(view().name("core/management_user_rating"))
+            .andExpect(status().isOk());
+        verify(ratingStatisticsService).getFilteredDataForManagementByPage(pageable, ratingStatisticsViewDto);
     }
 
 }
