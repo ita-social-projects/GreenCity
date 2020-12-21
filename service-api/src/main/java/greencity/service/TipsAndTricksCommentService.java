@@ -6,6 +6,7 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
 import greencity.dto.user.UserVO;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
 public interface TipsAndTricksCommentService {

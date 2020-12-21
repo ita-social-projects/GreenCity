@@ -261,4 +261,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true, value = "select * FROM public.fn_recommended_friends ( :userId )")
     Page<UsersFriendDto> findUsersRecommendedFriends(Pageable pageable,
         @Param("userId") Long userId);
+
+    /**
+     * Method that finds user.
+     *
+     * @param id {@link Long} -current user's id.
+     * @return {@link User}.
+     */
+    @Query(value = "select u from User u join fetch u.userAchievements where u.id = :id")
+    Optional<User> findUserForAchievement(Long id);
 }

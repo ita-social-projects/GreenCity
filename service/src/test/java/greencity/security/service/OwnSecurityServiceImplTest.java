@@ -3,11 +3,14 @@ package greencity.security.service;
 import static greencity.constant.RabbitConstants.SEND_USER_APPROVAL_ROUTING_KEY;
 
 import greencity.ModelUtils;
+import greencity.dto.achievement.AchievementVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.entity.Achievement;
 import greencity.entity.User;
+import greencity.entity.UserAchievement;
 import greencity.entity.VerifyEmail;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -21,6 +24,7 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
+import greencity.service.AchievementService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 
@@ -37,10 +41,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Collections;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -70,6 +78,9 @@ class OwnSecurityServiceImplTest {
     @Mock
     UserRepo userRepo;
 
+    @Mock
+    AchievementService achievementService;
+
     private OwnSecurityService ownSecurityService;
 
     private UserVO verifiedUser;
@@ -86,7 +97,7 @@ class OwnSecurityServiceImplTest {
         initMocks(this);
         ownSecurityService = new OwnSecurityServiceImpl(ownSecurityRepo, userService, passwordEncoder,
             jwtTool, 1, rabbitTemplate, restorePasswordEmailRepo, modelMapper,
-            userRepo);
+            userRepo, achievementService);
 
         verifiedUser = UserVO.builder()
             .email("test@gmail.com")
@@ -124,6 +135,13 @@ class OwnSecurityServiceImplTest {
     void signUp() {
         User user = ModelUtils.getUser();
         UserVO userVO = ModelUtils.getUserVO();
+        List<Achievement> achievementList = Collections.singletonList(ModelUtils.getAchievement());
+        List<AchievementVO> achievementVOList = Collections.singletonList(ModelUtils.getAchievementVO());
+        List<UserAchievement> userAchievementList = Collections.singletonList(ModelUtils.getUserAchievement());
+        user.setUserAchievements(userAchievementList);
+        when(achievementService.findAll()).thenReturn(achievementVOList);
+        when(modelMapper.map(achievementVOList, new TypeToken<List<Achievement>>() {
+        }.getType())).thenReturn(achievementList);
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(userRepo.save(any(User.class))).thenReturn(user);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
@@ -144,6 +162,13 @@ class OwnSecurityServiceImplTest {
         OwnSignUpDto ownSignUpDto = new OwnSignUpDto();
         User user = User.builder().verifyEmail(new VerifyEmail()).build();
         UserVO userVO = UserVO.builder().verifyEmail(new VerifyEmailVO()).build();
+        List<Achievement> achievementList = Collections.singletonList(ModelUtils.getAchievement());
+        List<AchievementVO> achievementVOList = Collections.singletonList(ModelUtils.getAchievementVO());
+        List<UserAchievement> userAchievementList = Collections.singletonList(ModelUtils.getUserAchievement());
+        user.setUserAchievements(userAchievementList);
+        when(achievementService.findAll()).thenReturn(achievementVOList);
+        when(modelMapper.map(achievementVOList, new TypeToken<List<Achievement>>() {
+        }.getType())).thenReturn(achievementList);
         when(modelMapper.map(any(User.class), eq(UserVO.class))).thenReturn(userVO);
         when(jwtTool.generateTokenKey()).thenReturn("New-token-key");
         when(userRepo.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);

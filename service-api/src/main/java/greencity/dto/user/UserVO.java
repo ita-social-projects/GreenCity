@@ -5,6 +5,7 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
@@ -15,15 +16,19 @@ import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
 public class UserVO {
     private Long id;
 
@@ -55,7 +60,7 @@ public class UserVO {
 
     private List<UserVO> userFriends = new ArrayList<>();
 
-    private List<UserAchievementVO> userAchievements;
+    private List<UserAchievementVO> userAchievements = new ArrayList<>();
 
     private String refreshTokenKey;
 
@@ -76,4 +81,6 @@ public class UserVO {
     private Boolean showShoppingList;
 
     private LocalDateTime lastActivityTime;
+
+    private List<UserActionVO> userActions = new ArrayList<>();
 }

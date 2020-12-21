@@ -16,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -31,6 +32,7 @@ class SearchServiceImplTest {
 
     @Test
     void searchTest() {
+        String languageCode = "en";
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
         PageableDto<SearchNewsDto> ecoNews = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1, 1);
         SearchTipsAndTricksDto searchTipsAndTricksDto =
@@ -38,13 +40,13 @@ class SearchServiceImplTest {
         PageableDto<SearchTipsAndTricksDto> tipsAndTricks =
             new PageableDto<>(Collections.singletonList(searchTipsAndTricksDto), 4, 1, 1);
 
-        when(ecoNewsService.search(anyString())).thenReturn(ecoNews);
-        when(tipsAndTricksService.search(anyString())).thenReturn(tipsAndTricks);
+        when(ecoNewsService.search(anyString(), eq(languageCode))).thenReturn(ecoNews);
+        when(tipsAndTricksService.search(anyString(), eq(languageCode))).thenReturn(tipsAndTricks);
 
-        assertEquals(ecoNews.getPage(), searchService.search("tag").getEcoNews());
-        assertEquals(tipsAndTricks.getPage(), searchService.search("tag").getTipsAndTricks());
+        assertEquals(ecoNews.getPage(), searchService.search("tag", languageCode).getEcoNews());
+        assertEquals(tipsAndTricks.getPage(), searchService.search("tag", languageCode).getTipsAndTricks());
         assertEquals(Long.valueOf(ecoNews.getTotalElements() + tipsAndTricks.getTotalElements()),
-            searchService.search("tag").getCountOfResults());
+            searchService.search("tag", languageCode).getCountOfResults());
     }
 
     @Test
@@ -57,11 +59,11 @@ class SearchServiceImplTest {
         PageableDto<SearchTipsAndTricksDto> pageableDto =
             new PageableDto<>(searchDto, searchDto.size(), 0, 1);
 
-        when(tipsAndTricksService.search(pageRequest, "Author")).thenReturn(pageableDto);
+        when(tipsAndTricksService.search(pageRequest, "Author", "en")).thenReturn(pageableDto);
 
         List<SearchTipsAndTricksDto> expected = pageableDto.getPage();
         List<SearchTipsAndTricksDto> actual =
-            searchService.searchAllTipsAndTricks(pageRequest, "Author").getPage();
+            searchService.searchAllTipsAndTricks(pageRequest, "Author", "en").getPage();
 
         assertEquals(expected, actual);
     }
@@ -76,10 +78,10 @@ class SearchServiceImplTest {
         PageableDto<SearchNewsDto> pageableDto =
             new PageableDto<>(searchDto, searchDto.size(), 0, 1);
 
-        when(ecoNewsService.search(pageRequest, "title")).thenReturn(pageableDto);
+        when(ecoNewsService.search(pageRequest, "title", "en")).thenReturn(pageableDto);
 
         List<SearchNewsDto> expected = pageableDto.getPage();
-        List<SearchNewsDto> actual = searchService.searchAllNews(pageRequest, "title").getPage();
+        List<SearchNewsDto> actual = searchService.searchAllNews(pageRequest, "title", "en").getPage();
 
         assertEquals(expected, actual);
     }
