@@ -29,6 +29,9 @@ public class UserAchievement {
     @Enumerated(value = EnumType.STRING)
     private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
 
+    @Column
+    private boolean notified;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

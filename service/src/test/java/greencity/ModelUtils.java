@@ -1142,7 +1142,7 @@ public class ModelUtils {
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE);
+        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE, false);
     }
 
     public static UserAction getUserAction() {

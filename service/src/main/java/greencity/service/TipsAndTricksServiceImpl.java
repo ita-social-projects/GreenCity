@@ -387,7 +387,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS, 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS_LIKES,
+                0));
     }
 
     /**
