@@ -592,12 +592,10 @@ public class UserServiceImpl implements UserService {
             .map(user -> modelMapper.map(user, UserProfilePictureDto.class))
             .collect(Collectors.toList());
 
-        SixFriendsPageResponceDto andAllAmountDto = SixFriendsPageResponceDto.builder()
+        return SixFriendsPageResponceDto.builder()
             .pagedFriends(getPageableDto(userProfilePictureDtoList,
                 pageUsers))
             .amountOfFriends(userRepo.getAllUserFriendsCount(userId)).build();
-
-        return andAllAmountDto;
     }
 
     private PageableDto<UserProfilePictureDto> getPageableDto(
