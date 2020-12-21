@@ -1,11 +1,14 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.HabitAssignRepo;
@@ -15,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,6 +35,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
+    private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
 
     /**
@@ -240,7 +245,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(dateTime).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
 
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
@@ -274,7 +279,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar) {
+        HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -283,10 +288,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitStatusCalendars.add(habitCalendar);
         habitAssign.setHabitStatusCalendars(habitStatusCalendars);
 
-        habitAssign.setHabitStreak(countNewHabitStreak(habitAssign.getHabitStatusCalendars()));
+        int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
+        habitAssign.setHabitStreak(habitStreak);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(userId, AchievementType.COMPARISON, AchievementCategory.HABIT_STREAK, habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+            CompletableFuture.runAsync(() -> achievementCalculation
+                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategory.HABIT_STREAK, 0));
         }
         habitAssignRepo.save(habitAssign);
     }

@@ -2,10 +2,7 @@ package greencity.dto.achievement;
 
 import greencity.dto.user.UserVO;
 import greencity.enums.AchievementStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -13,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class UserAchievementVO {
     @NotEmpty
     private Long id;

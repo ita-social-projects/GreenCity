@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.ModelUtils;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,12 +99,15 @@ class TagsRepoTest {
 
     @Test
     void findByTypeAndLanguageCode() {
-        String tagType = "ECO_NEWS";
+        TagType tagType = TagType.ECO_NEWS;
         String languageCode = "en";
-        List<String> expected = Collections.singletonList("News");
-        List<String> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
+        List<TagTranslation> expected = Collections.singletonList(ModelUtils.getTagTranslationsNews().get(1));
+        List<TagTranslation> actual = tagsRepo.findTagsByTypeAndLanguageCode(tagType, languageCode);
 
-        assertEquals(expected, actual);
+        List<Long> expectedIds = expected.stream().map(TagTranslation::getId).collect(Collectors.toList());
+        List<Long> actualIds = actual.stream().map(TagTranslation::getId).collect(Collectors.toList());
+
+        assertEquals(expectedIds, actualIds);
     }
 
     @Test
@@ -126,22 +130,6 @@ class TagsRepoTest {
         List<String> actual = tagsRepo.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE);
         List<String> expected = Collections.singletonList("Реклами");
         assertEquals(1, actual.size());
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findAllEcoNewsTagsWithEnglishTest() {
-        List<String> actual = tagsRepo.findAllEcoNewsTags(ENGLISH_LANGUAGE);
-        List<String> expected = Arrays.asList("Ads", "Education", "News");
-        assertEquals(3, actual.size());
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void findAllEcoNewsTagsWithUkrainianTest() {
-        List<String> actual = tagsRepo.findAllEcoNewsTags(UKRAINIAN_LANGUAGE);
-        List<String> expected = Arrays.asList("Новини", "Освіта", "Реклами");
-        assertEquals(3, actual.size());
         assertEquals(expected, actual);
     }
 

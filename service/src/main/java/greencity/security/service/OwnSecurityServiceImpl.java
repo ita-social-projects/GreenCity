@@ -4,10 +4,7 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.OwnSecurity;
-import greencity.entity.RestorePasswordEmail;
-import greencity.entity.User;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -24,6 +21,7 @@ import greencity.security.dto.ownsecurity.UpdatePasswordDto;
 import greencity.security.jwt.JwtTool;
 import greencity.security.repository.OwnSecurityRepo;
 import greencity.security.repository.RestorePasswordEmailRepo;
+import greencity.service.AchievementService;
 import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.security.SecureRandom;
@@ -34,6 +32,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,6 +64,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     private final UserRepo userRepo;
     private static final String VALID_PW_CHARS =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+{}[]|:;<>?,./";
+    private final AchievementService achievementService;
 
     /**
      * Constructor.
@@ -78,7 +78,8 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         RabbitTemplate rabbitTemplate,
         RestorePasswordEmailRepo restorePasswordEmailRepo,
         ModelMapper modelMapper,
-        UserRepo userRepo) {
+        UserRepo userRepo,
+        AchievementService achievementService) {
         this.ownSecurityRepo = ownSecurityRepo;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -88,6 +89,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         this.restorePasswordEmailRepo = restorePasswordEmailRepo;
         this.modelMapper = modelMapper;
         this.userRepo = userRepo;
+        this.achievementService = achievementService;
     }
 
     /**
@@ -101,8 +103,12 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         User user = createNewRegisteredUser(dto, jwtTool.generateTokenKey());
         OwnSecurity ownSecurity = createOwnSecurity(dto, user);
         VerifyEmail verifyEmail = createVerifyEmail(user, jwtTool.generateTokenKey());
+        List<UserAchievement> userAchievementList = createUserAchievements(user);
+        List<UserAction> userActionsList = createUserActions(user);
         user.setOwnSecurity(ownSecurity);
         user.setVerifyEmail(verifyEmail);
+        user.setUserAchievements(userAchievementList);
+        user.setUserActions(userActionsList);
         try {
             User savedUser = userRepo.save(user);
             user.setId(savedUser.getId());
@@ -145,6 +151,44 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
             .token(emailVerificationToken)
             .expiryDate(calculateExpirationDateTime())
             .build();
+    }
+
+    private List<UserAchievement> createUserAchievements(User user) {
+        return getUserAchievements(user, modelMapper, achievementService);
+    }
+
+    private List<UserAction> createUserActions(User user) {
+        return getUserActions(user, modelMapper, achievementService);
+    }
+
+    static List<UserAchievement> getUserAchievements(User user, ModelMapper modelMapper,
+        AchievementService achievementService) {
+        List<Achievement> achievementList =
+            modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
+            }.getType());
+        return achievementList.stream()
+            .map(a -> {
+                UserAchievement userAchievement = new UserAchievement();
+                userAchievement.setAchievement(a);
+                userAchievement.setUser(user);
+                return userAchievement;
+            })
+            .collect(Collectors.toList());
+    }
+
+    static List<UserAction> getUserActions(User user, ModelMapper modelMapper,
+        AchievementService achievementService) {
+        List<Achievement> achievementList =
+            modelMapper.map(achievementService.findAll(), new TypeToken<List<Achievement>>() {
+            }.getType());
+        return achievementList.stream()
+            .map(a -> {
+                UserAction userAction = new UserAction();
+                userAction.setAchievementCategory(a.getAchievementCategory());
+                userAction.setUser(user);
+                return userAction;
+            })
+            .collect(Collectors.toList());
     }
 
     private LocalDateTime calculateExpirationDateTime() {

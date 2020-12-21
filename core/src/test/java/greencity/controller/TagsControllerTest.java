@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.enums.TagType;
 import greencity.service.TagsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class TagsControllerTest {
     void findAllEcoNewsTags() throws Exception {
         String tagsLink = "/tags";
         Locale locale = new Locale("en");
-        String type = "ECO_NEWS";
+        TagType type = TagType.ECO_NEWS;
 
         mockMvc.perform(get(tagsLink + "/search?type=" + type))
             .andExpect(status().isOk());
