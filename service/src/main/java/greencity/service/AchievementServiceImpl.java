@@ -6,6 +6,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.exception.exceptions.NotDeletedException;
@@ -20,6 +21,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final ModelMapper modelMapper;
     private final UserService userService;
     private final AchievementCategoryService achievementCategoryService;
+    private final UserActionService userActionService;
 
     /**
      * {@inheritDoc}
@@ -47,9 +50,18 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
+        UserActionVO userActionVO = new UserActionVO();
         userAchievementVO.setAchievement(achievementVO);
         List<UserVO> all = userService.findAll();
         all.forEach(userVO -> {
+            UserActionVO userActionByUserIdAndAchievementCategory =
+                userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
+                    achievementCategoryVO.getId());
+            if (userActionByUserIdAndAchievementCategory == null) {
+                userActionVO.setAchievementCategory(achievementCategoryVO);
+                userActionVO.setUser(userVO);
+                userActionService.save(userActionVO);
+            }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
             userService.save(userVO);
@@ -64,10 +76,10 @@ public class AchievementServiceImpl implements AchievementService {
      */
     @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
     @Override
-    public List<AchievementDTO> findAll() {
+    public List<AchievementVO> findAll() {
         return achievementRepo.findAll()
             .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementDTO.class))
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
     }
 
@@ -167,6 +179,19 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
         return modelMapper.map(updated, AchievementPostDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    @Transactional
+    public AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition) {
+        Achievement achievement =
+            achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
+        return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
     private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {

@@ -6,6 +6,7 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -107,7 +108,7 @@ public interface TipsAndTricksService {
      * @param searchQuery query to search
      * @return list of {@link SearchTipsAndTricksDto}
      */
-    PageableDto<SearchTipsAndTricksDto> search(String searchQuery);
+    PageableDto<SearchTipsAndTricksDto> search(String searchQuery, String languageCode);
 
     /**
      * Method for getting all Tips & Tricks by searchQuery.
@@ -116,7 +117,7 @@ public interface TipsAndTricksService {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
      */
-    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery);
+    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method for getting Tips & Tricks by searchQuery.

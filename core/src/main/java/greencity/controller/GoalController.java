@@ -142,7 +142,7 @@ public class GoalController {
     @DeleteMapping("/user-goals")
     public ResponseEntity<List<Long>> bulkDeleteUserGoals(
         @ApiParam(value = "Ids of user goals separated by a comma \n e.g. 1,2", required = true) @Pattern(
-            regexp = "^\\d+(,\\d+)*$",
+            regexp = "^\\d+(,\\d+)++$",
             message = ValidationConstants.BAD_COMMA_SEPARATED_NUMBERS) @RequestParam String ids,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(goalService

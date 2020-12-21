@@ -6,6 +6,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
+import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.localization.AchievementTranslation;
@@ -38,13 +39,15 @@ class AchievementServiceImplTest {
     private AchievementCategoryService achievementCategoryService;
     @Mock
     private UserService userService;
+    @Mock
+    private UserActionService userActionService;
     @InjectMocks
     private AchievementServiceImpl achievementService;
 
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertTrue(findAllResult.isEmpty());
     }
 
@@ -53,9 +56,9 @@ class AchievementServiceImplTest {
         Achievement achievement = ModelUtils.getAchievement();
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
-        when(modelMapper.map(achievement, AchievementDTO.class))
-            .thenReturn(new AchievementDTO(achievement.getId(), null, null, null));
-        List<AchievementDTO> findAllResult = achievementService.findAll();
+        when(modelMapper.map(achievement, AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAll();
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
@@ -95,12 +98,18 @@ class AchievementServiceImplTest {
         List<UserAchievementVO> userAchievements = new ArrayList<>();
         userAchievements.add(userAchievement);
         userVO.setUserAchievements(userAchievements);
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        List<UserActionVO> userActionVOS = new ArrayList<>();
+        userActionVOS.add(userActionVO);
+        userVO.setUserActions(userActionVOS);
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
         when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         when(userService.findAll()).thenReturn(Collections.singletonList(userVO));
+        when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
+
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
     }
@@ -166,5 +175,16 @@ class AchievementServiceImplTest {
             verify(achievementRepo, times(1)).deleteById(l);
         });
         achievementService.deleteAll(listId);
+    }
+
+    @Test
+    void findByCategoryIdAndCondition() {
+        Achievement achievement = ModelUtils.getAchievement();
+        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        achievement.setAchievementCategory(ModelUtils.getAchievementCategory());
+        achievementVO.setAchievementCategory(ModelUtils.getAchievementCategoryVO());
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
+        assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
     }
 }
