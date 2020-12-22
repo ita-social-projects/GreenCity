@@ -229,6 +229,7 @@ public class AchievementServiceImpl implements AchievementService {
                         .build())
                     .collect(Collectors.toList()))
                 .build());
+            userAchievement.setNotified(true);
         });
         return achievementNotifications;
     }
