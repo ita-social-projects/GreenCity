@@ -62,6 +62,9 @@ public class AchievementCategoryServiceImpl implements AchievementCategoryServic
     @Transactional
     public AchievementCategoryVO findByName(String name) {
         AchievementCategory achievementCategory = achievementCategoryRepo.findByName(name);
+        if (achievementCategory == null) {
+            throw new BadCategoryRequestException(ErrorMessage.CATEGORY_NOT_FOUND_BY_NAME);
+        }
         return modelMapper.map(achievementCategory, AchievementCategoryVO.class);
     }
 }

@@ -102,7 +102,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get active habit assigns for current user")
+    @ApiOperation(value = "Get assigned habits for current user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -127,7 +127,7 @@ public class HabitAssignController {
      * @param locale  needed language code.
      * @return {@link List} of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all active assigns by certain habit.")
+    @ApiOperation(value = "Get all inprogress assigns by certain habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -150,7 +150,7 @@ public class HabitAssignController {
      * @param locale  needed language code.
      * @return {@link HabitAssignDto} instance.
      */
-    @ApiOperation(value = "Get active assign by habit id for current user.")
+    @ApiOperation(value = "Get inprogress assign by habit id for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -177,7 +177,7 @@ public class HabitAssignController {
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    @ApiOperation(value = "Update active user habit assign acquired or suspended status.")
+    @ApiOperation(value = "Update inprogress user habit assign acquired or suspended status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -244,7 +244,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return {@link HabitAssignDto} instance.
      */
-    @ApiOperation(value = "Get active user habit assigns on certain date.")
+    @ApiOperation(value = "Get inprogress user habit assigns on certain date.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

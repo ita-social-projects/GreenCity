@@ -52,6 +52,7 @@ import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
@@ -227,6 +228,13 @@ public class ModelUtils {
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
+            .ownSecurity(OwnSecurityVO.builder()
+                .id(1L)
+                .password("password")
+                .user(UserVO.builder()
+                    .id(13L)
+                    .build())
+                .build())
             .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
             .userAchievements(List.of(
                 UserAchievementVO.builder()
@@ -249,6 +257,16 @@ public class ModelUtils {
                         .id(14L)
                         .build())
                     .build()))
+            .userActions(Collections.singletonList(UserActionVO.builder()
+                .id(13L)
+                .achievementCategory(AchievementCategoryVO.builder()
+                    .id(1L)
+                    .build())
+                .count(0)
+                .user(UserVO.builder()
+                    .id(13L)
+                    .build())
+                .build()))
             .build();
     }
 
