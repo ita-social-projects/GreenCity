@@ -1,10 +1,8 @@
 package greencity.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
 import greencity.dto.ParticipantDto;
-import greencity.entity.Participant;
 import greencity.service.ChatMessageService;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
@@ -14,12 +12,9 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.model.IModel;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @AllArgsConstructor
@@ -73,16 +68,6 @@ public class ChatController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(participantService.getCurrentParticipantByEmail(principal.getName()));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    /*
-     * @GetMapping("/users") public ResponseEntity<List<ParticipantDto>>
-     * getAllParticipants(Principal principal) { return
-     * ResponseEntity.status(HttpStatus.OK)
-     * .body(participantService.findAllExceptCurrentUser(principal.getName())); }
-     */
 
     /**
      * {@inheritDoc}

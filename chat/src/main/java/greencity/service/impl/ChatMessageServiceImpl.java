@@ -25,8 +25,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ModelMapper modelMapper;
 
-    private static final String roomLink = "/room/";
-    private static final String messageLink = "/queue/messages";
+    private static final String ROOM_LINK = "/room/";
+    private static final String MESSAGE_LINK = "/queue/messages";
 
     /**
      * {@inheritDoc}
@@ -45,6 +45,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage message = modelMapper.map(chatMessageDto, ChatMessage.class);
         chatMessageRepo.save(message);
         messagingTemplate.convertAndSend(
-            roomLink + chatMessageDto.getRoomId() + messageLink, chatMessageDto);
+            ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto);
     }
 }
