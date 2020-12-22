@@ -25,14 +25,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ModelMapper modelMapper;
 
+    private static final String roomLink = "/room/";
+    private static final String messageLink = "/queue/messages";
+
     /**
      * {@inheritDoc}
      */
     @Override
     public List<ChatMessageDto> findAllMessagesByChatRoomId(Long chatRoomId) {
-        ChatRoom chatRoom = chatRoomService.findChatRoomById(chatRoomId);
-        return modelMapper.map(chatMessageRepo.findAllByRoom(chatRoom),
-            new TypeToken<List<ChatRoomDto>>() {
+        ChatRoomDto chatRoom = chatRoomService.findChatRoomById(chatRoomId);
+        List<ChatMessage> list = chatMessageRepo.findAllByRoom(modelMapper.map(chatRoom,ChatRoom.class));
+        return modelMapper.map(list,
+            new TypeToken<List<ChatMessageDto>>() {
             }.getType());
     }
 
@@ -41,6 +45,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage message = modelMapper.map(chatMessageDto, ChatMessage.class);
         chatMessageRepo.save(message);
         messagingTemplate.convertAndSend(
-            "/room/" + chatMessageDto.getRoomId() + "/queue/messages", chatMessageDto);
+            roomLink + chatMessageDto.getRoomId() + messageLink, chatMessageDto);
     }
 }

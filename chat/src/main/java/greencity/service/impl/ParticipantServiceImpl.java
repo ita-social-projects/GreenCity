@@ -41,19 +41,25 @@ public class ParticipantServiceImpl implements ParticipantService {
     /**
      * {@inheritDoc}
      */
-    public List<ParticipantDto> findAll() {
-        return modelMapper.map(participantRepo.findAll(), new TypeToken<List<ParticipantDto>>() {
-        }.getType());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ParticipantDto getCurrentParticipantByEmail(String email) {
         return modelMapper.map(
             participantRepo.findNotDeactivatedByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email)),
             ParticipantDto.class);
+    }
+
+    @Override
+    public List<ParticipantDto> findAllExceptCurrentUser(String email) {
+        return modelMapper.map(
+                participantRepo.findAllExceptCurrentUser(email),
+                new TypeToken<List<ParticipantDto>>(){}.getType());
+    }
+
+    @Override
+    public List<ParticipantDto> findAllParticipantsByQuery(String query, String currentUser) {
+        return modelMapper.map(
+                participantRepo.findAllParticipantsByQuery(query, currentUser),
+                new TypeToken<List<ParticipantDto>>(){}.getType());
     }
 }

@@ -12,8 +12,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @AllArgsConstructor
 @RequestMapping("/chat")
 public class RedirectChatController {
-    UserService userService;
-    ModelMapper modelMapper;
+    private UserService userService;
+    private ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}

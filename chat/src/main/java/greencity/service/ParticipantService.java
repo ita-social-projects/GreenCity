@@ -33,5 +33,10 @@ public interface ParticipantService {
     /**
      * {@inheritDoc}
      */
-    List<ParticipantDto> findAll();
+    List<ParticipantDto> findAllExceptCurrentUser(String email);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ParticipantDto> findAllParticipantsByQuery(String query, String currentUser);
 }

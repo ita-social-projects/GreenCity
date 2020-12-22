@@ -33,7 +33,7 @@ public interface ChatRoomService {
      * @param id {@link ChatRoom} id.
      * @return {@link ChatRoom} instance.
      */
-    ChatRoom findChatRoomById(Long id);
+    ChatRoomDto findChatRoomById(Long id);
 
     /**
      * {@inheritDoc}
