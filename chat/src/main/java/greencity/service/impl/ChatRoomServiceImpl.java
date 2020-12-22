@@ -57,8 +57,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     @Override
     public ChatRoomDto findChatRoomById(Long id) {
-        ChatRoom chatRoom = chatRoomRepo.findById(id).orElseThrow(() -> new ChatRoomNotFoundException(ErrorMessage.CHAT_ROOM_NOT_FOUND_BY_ID));
-        return modelMapper.map(chatRoom,ChatRoomDto.class);
+        ChatRoom chatRoom = chatRoomRepo.findById(id)
+            .orElseThrow(() -> new ChatRoomNotFoundException(ErrorMessage.CHAT_ROOM_NOT_FOUND_BY_ID));
+        return modelMapper.map(chatRoom, ChatRoomDto.class);
     }
 
     /**
@@ -67,12 +68,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public ChatRoomDto findPrivateByParticipants(Long id, String name) {
         Set<Participant> participants = new HashSet<>();
-           participants.add(participantService.findByEmail(name));
-           participants.add(participantService.findById(id));
-           List<ChatRoom> chatRoom = chatRoomRepo.findByParticipantsAndStatus(participants, participants.size(),
-                   ChatType.PRIVATE);
-           return filterPrivateRoom(chatRoom, participants);
+        participants.add(participantService.findByEmail(name));
+        participants.add(participantService.findById(id));
+        List<ChatRoom> chatRoom = chatRoomRepo.findByParticipantsAndStatus(participants, participants.size(),
+            ChatType.PRIVATE);
+        return filterPrivateRoom(chatRoom, participants);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -80,11 +82,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom toReturn;
         if (chatRoom.isEmpty()) {
             toReturn = chatRoomRepo.save(
-                    ChatRoom.builder()
-                            .name("chatName")
-                            .participants(participants)
-                            .type(ChatType.PRIVATE)
-                            .build());
+                ChatRoom.builder()
+                    .name("chatName")
+                    .participants(participants)
+                    .type(ChatType.PRIVATE)
+                    .build());
         } else {
             toReturn = chatRoom.get(0);
         }

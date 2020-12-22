@@ -34,7 +34,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Override
     public List<ChatMessageDto> findAllMessagesByChatRoomId(Long chatRoomId) {
         ChatRoomDto chatRoom = chatRoomService.findChatRoomById(chatRoomId);
-        List<ChatMessage> list = chatMessageRepo.findAllByRoom(modelMapper.map(chatRoom,ChatRoom.class));
+        List<ChatMessage> list = chatMessageRepo.findAllByRoom(modelMapper.map(chatRoom, ChatRoom.class));
         return modelMapper.map(list,
             new TypeToken<List<ChatMessageDto>>() {
             }.getType());

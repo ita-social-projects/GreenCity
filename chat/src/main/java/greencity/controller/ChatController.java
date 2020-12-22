@@ -44,7 +44,7 @@ public class ChatController {
     @GetMapping("/messages/{room_id}")
     public ResponseEntity<List<ChatMessageDto>> findAllMessages(@PathVariable("room_id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatMessageService.findAllMessagesByChatRoomId(id));
+            .body(chatMessageService.findAllMessagesByChatRoomId(id));
     }
 
     /**
@@ -56,10 +56,13 @@ public class ChatController {
             .body(chatRoomService.findPrivateByParticipants(id, principal.getName()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping("/room/{room_id}")
     public ResponseEntity<ChatRoomDto> findRoomById(@PathVariable("room_id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findChatRoomById(id));
+            .body(chatRoomService.findChatRoomById(id));
     }
 
     /**
@@ -74,27 +77,26 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
-   /* @GetMapping("/users")
-    public ResponseEntity<List<ParticipantDto>> getAllParticipants(Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(participantService.findAllExceptCurrentUser(principal.getName()));
-    }
-    */
+    /*
+     * @GetMapping("/users") public ResponseEntity<List<ParticipantDto>>
+     * getAllParticipants(Principal principal) { return
+     * ResponseEntity.status(HttpStatus.OK)
+     * .body(participantService.findAllExceptCurrentUser(principal.getName())); }
+     */
 
-   /**
+    /**
      * {@inheritDoc}
      */
     @GetMapping(value = {"/users", "/users/{query}"})
-    public ResponseEntity<List<ParticipantDto>> getAllParticipantsBy(@PathVariable(required = false, value = "query") String query, Principal principal) {
-        if(StringUtils.isEmpty(query)) {
+    public ResponseEntity<List<ParticipantDto>> getAllParticipantsBy(
+        @PathVariable(required = false, value = "query") String query, Principal principal) {
+        if (StringUtils.isEmpty(query)) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(participantService.findAllExceptCurrentUser(principal.getName()));
+                .body(participantService.findAllExceptCurrentUser(principal.getName()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(participantService.findAllParticipantsByQuery(query, principal.getName()));
+            .body(participantService.findAllParticipantsByQuery(query, principal.getName()));
     }
-
-
 
     /**
      * {@inheritDoc}

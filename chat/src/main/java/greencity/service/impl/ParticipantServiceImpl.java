@@ -52,14 +52,16 @@ public class ParticipantServiceImpl implements ParticipantService {
     @Override
     public List<ParticipantDto> findAllExceptCurrentUser(String email) {
         return modelMapper.map(
-                participantRepo.findAllExceptCurrentUser(email),
-                new TypeToken<List<ParticipantDto>>(){}.getType());
+            participantRepo.findAllExceptCurrentUser(email),
+            new TypeToken<List<ParticipantDto>>() {
+            }.getType());
     }
 
     @Override
     public List<ParticipantDto> findAllParticipantsByQuery(String query, String currentUser) {
         return modelMapper.map(
-                participantRepo.findAllParticipantsByQuery(query, currentUser),
-                new TypeToken<List<ParticipantDto>>(){}.getType());
+            participantRepo.findAllParticipantsByQuery(query, currentUser),
+            new TypeToken<List<ParticipantDto>>() {
+            }.getType());
     }
 }

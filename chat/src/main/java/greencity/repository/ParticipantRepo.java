@@ -20,9 +20,15 @@ public interface ParticipantRepo extends JpaRepository<Participant, Long>,
     @Query("FROM Participant WHERE email=:email AND userStatus <> 1")
     Optional<Participant> findNotDeactivatedByEmail(String email);
 
+    /**
+     * {@inheritDoc}
+     */
     @Query("From Participant WHERE email!=:email")
     List<Participant> findAllExceptCurrentUser(String email);
 
+    /**
+     * {@inheritDoc}
+     */
     @Query("FROM Participant p WHERE LOWER(p.name) LIKE LOWER(concat(?1, '%')) AND p.email!=?2")
     List<Participant> findAllParticipantsByQuery(String query, String currentUser);
 }
