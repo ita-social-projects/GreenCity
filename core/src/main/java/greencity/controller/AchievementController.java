@@ -56,7 +56,8 @@ public class AchievementController {
      */
     @MessageMapping("")
     @SendTo("/topic/notification")
-    public List<AchievementNotification> getNotification(Long userId) {
+    public List<AchievementNotification> getNotification(Long userId) throws InterruptedException {
+        Thread.sleep(60000);
         return achievementService.findAchievementsWithStatusActive(userId);
     }
 }
