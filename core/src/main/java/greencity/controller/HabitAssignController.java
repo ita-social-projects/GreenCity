@@ -219,7 +219,7 @@ public class HabitAssignController {
      * @param habitId - id of {@link HabitVO}.
      * @param userVO  {@link UserVO} user.
      * @param date    - {@link LocalDate} we want to unenroll.
-     * @return {@link ResponseEntity}.
+     * @return {@link HabitAssignDto} instance.
      */
     @ApiOperation(value = "Unenroll assigned habit for a specific day.")
     @ApiResponses(value = {
@@ -232,8 +232,8 @@ public class HabitAssignController {
     public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        habitAssignService.unenrollHabit(habitId, userVO.getId(), date);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.unenrollHabit(habitId, userVO.getId(), date));
     }
 
     /**
