@@ -7,19 +7,17 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatusCalendar;
 import greencity.repository.HabitStatusCalendarRepo;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class HabitStatusCalendarServiceImplTest {
@@ -40,7 +38,6 @@ class HabitStatusCalendarServiceImplTest {
         when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
         when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(), habitAssign))
             .thenReturn(habitStatusCalendar);
-
         when(modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class)).thenReturn(habitStatusCalendarVO);
         assertEquals(habitStatusCalendarVO, habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(), habitAssignVO));

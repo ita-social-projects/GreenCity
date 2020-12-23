@@ -104,9 +104,9 @@ class HabitServiceImplTest {
     void getShoppingListForHabit() {
         GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
         List<GoalTranslation> goalTranslations = Collections.singletonList(goalTranslation);
-        GoalDto goalDto = modelMapper.map(goalTranslations, GoalDto.class);
+        GoalDto goalDto =  new GoalDto(1L,"test");
         List<GoalDto> goalDtos = Collections.singletonList(goalDto);
-        when(modelMapper.map(goalTranslations, GoalDto.class)).thenReturn(goalDto);
+        when(modelMapper.map(goalTranslation, GoalDto.class)).thenReturn(goalDto);
         when(goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode("en", 1l))
             .thenReturn(goalTranslations);
         assertEquals(goalDtos, habitService.getShoppingListForHabit(1L, "en"));
