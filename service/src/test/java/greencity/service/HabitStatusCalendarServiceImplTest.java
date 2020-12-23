@@ -46,8 +46,6 @@ class HabitStatusCalendarServiceImplTest {
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(), habitAssignVO));
         assertEquals(null, habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(),
             new HabitAssignVO()));
-
-        // assertEquals(null,null);
     }
 
     @Test
@@ -68,9 +66,8 @@ class HabitStatusCalendarServiceImplTest {
         when(modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class))
             .thenReturn(habitStatusCalendar);
         doNothing().when(habitStatusCalendarRepo).delete(habitStatusCalendar);
-        habitStatusCalendarRepo.delete(habitStatusCalendar);
-        verify(habitStatusCalendarRepo, times(1)).delete(habitStatusCalendar);
         habitStatusCalendarService.delete(habitStatusCalendarVO);
+        verify(habitStatusCalendarRepo, times(1)).delete(habitStatusCalendar);
     }
 
     @Test
@@ -106,12 +103,10 @@ class HabitStatusCalendarServiceImplTest {
         HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
         List<HabitStatusCalendar> list = Collections.singletonList(habitStatusCalendar);
         List<LocalDate> dates = new ArrayList<>();
+        dates.add(habitStatusCalendar.getEnrollDate());
         when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
         when(habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitAssign(LocalDate.now(), habitAssign))
             .thenReturn(list);
-        for (HabitStatusCalendar calendar : list) {
-            dates.add(calendar.getEnrollDate());
-        }
         assertEquals(dates, habitStatusCalendarService.findEnrolledDatesBefore(LocalDate.now(), habitAssignVO));
     }
 
@@ -121,8 +116,8 @@ class HabitStatusCalendarServiceImplTest {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
         doNothing().when(habitStatusCalendarRepo).deleteAllByHabitAssign(habitAssign);
-        habitStatusCalendarRepo.deleteAllByHabitAssign(habitAssign);
-        verify(habitStatusCalendarRepo, times(1)).deleteAllByHabitAssign(habitAssign);
         habitStatusCalendarService.deleteAllByHabitAssign(habitAssignVO);
+        verify(habitStatusCalendarRepo, times(1)).deleteAllByHabitAssign(habitAssign);
+
     }
 }
