@@ -5,14 +5,17 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.UserAchievement;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
+import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserService userService;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
+    private UserAchievementRepo userAchievementRepo;
 
     /**
      * {@inheritDoc}
@@ -192,6 +197,41 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement =
             achievementRepo.findByAchievementCategoryIdAndCondition(categoryId, condition).orElse(null);
         return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
+    }
+
+    @Override
+    public List<AchievementNotification> findAchievementsWithStatusActive(Long userId) {
+        List<UserAchievement> userAchievementList = userAchievementRepo.findAchievementsWithStatusActive(userId);
+        return setAchievementNotifications(new ArrayList<>(), userAchievementList);
+    }
+
+    private List<AchievementNotification> setAchievementNotifications(
+        List<AchievementNotification> achievementNotifications,
+        List<UserAchievement> userAchievementList) {
+        userAchievementList.forEach(userAchievement -> {
+            Achievement achievement = userAchievement.getAchievement();
+            achievementNotifications.add(AchievementNotification.builder()
+                .id(userAchievement.getId())
+                .achievementCategory(AchievementCategoryVO.builder()
+                    .id(achievement.getAchievementCategory().getId())
+                    .name(achievement.getAchievementCategory().getName())
+                    .build())
+                .translations(achievement.getTranslations().stream()
+                    .map(achievementTranslation -> AchievementTranslationVO.builder()
+                        .id(achievementTranslation.getId())
+                        .language(LanguageVO.builder()
+                            .id(achievementTranslation.getLanguage().getId())
+                            .code(achievementTranslation.getLanguage().getCode())
+                            .build())
+                        .message(achievementTranslation.getMessage())
+                        .description(achievementTranslation.getDescription())
+                        .title(achievementTranslation.getTitle())
+                        .build())
+                    .collect(Collectors.toList()))
+                .build());
+            userAchievement.setNotified(true);
+        });
+        return achievementNotifications;
     }
 
     private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {
