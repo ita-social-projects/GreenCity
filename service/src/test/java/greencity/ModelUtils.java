@@ -46,6 +46,7 @@ import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
@@ -1200,5 +1201,15 @@ public class ModelUtils {
     public static EcoNewsViewDto getEcoNewsViewDto() {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
             "endDate", "imagePath", "source", "tag");
+    }
+
+    public static HabitDto getHabitDto() {
+        return HabitDto.builder()
+            .id(1L)
+            .image("image")
+            .habitTranslation(new HabitTranslationDto())
+            .defaultDuration(1)
+            .tags(new ArrayList<>())
+            .build();
     }
 }
