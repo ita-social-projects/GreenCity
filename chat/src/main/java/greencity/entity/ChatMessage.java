@@ -2,6 +2,9 @@ package greencity.entity;
 
 import java.time.ZonedDateTime;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +27,8 @@ public class ChatMessage {
     @ManyToOne
     private Participant sender;
 
+    @NotEmpty
+    @Size(min = 1, max = 20000)
     private String content;
     private ZonedDateTime createDate;
 }
