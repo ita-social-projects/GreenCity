@@ -5,15 +5,20 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import greencity.repository.UserAchievementRepo;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -41,6 +46,8 @@ class AchievementServiceImplTest {
     private UserService userService;
     @Mock
     private UserActionService userActionService;
+    @Mock
+    private UserAchievementRepo userAchievementRepo;
     @InjectMocks
     private AchievementServiceImpl achievementService;
 
@@ -186,5 +193,36 @@ class AchievementServiceImplTest {
         when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
+    }
+
+    @Test
+    void findAchievementsWithStatusActive() {
+        UserAchievement userAchievementt = ModelUtils.getUserAchievement();
+        List<AchievementNotification> achievementNotifications = new ArrayList<>();
+        List<UserAchievement> userAchievementList = Collections.singletonList(userAchievementt);
+        userAchievementList.forEach(userAchievement -> {
+            Achievement achievement = userAchievement.getAchievement();
+            achievementNotifications.add(AchievementNotification.builder()
+                .id(userAchievement.getId())
+                .achievementCategory(AchievementCategoryVO.builder()
+                    .id(achievement.getAchievementCategory().getId())
+                    .name(achievement.getAchievementCategory().getName())
+                    .build())
+                .translations(achievement.getTranslations().stream()
+                    .map(achievementTranslation -> AchievementTranslationVO.builder()
+                        .id(achievementTranslation.getId())
+                        .language(LanguageVO.builder()
+                            .id(achievementTranslation.getLanguage().getId())
+                            .code(achievementTranslation.getLanguage().getCode())
+                            .build())
+                        .message(achievementTranslation.getMessage())
+                        .description(achievementTranslation.getDescription())
+                        .title(achievementTranslation.getTitle())
+                        .build())
+                    .collect(Collectors.toList()))
+                .build());
+        });
+        when(userAchievementRepo.findAchievementsWithStatusActive(1L)).thenReturn(userAchievementList);
+        assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
     }
 }
