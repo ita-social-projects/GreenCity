@@ -2,7 +2,7 @@ package greencity.security.eventlisteners;
 
 import greencity.dto.user.UserVO;
 import greencity.security.events.SignInEvent;
-import greencity.service.UserService;
+import greencity.service.HabitAssignService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationListener;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class SignInEventListener implements ApplicationListener<SignInEvent> {
-    private final UserService userService;
+    private final HabitAssignService habitAssignService;
     private final ModelMapper modelMapper;
 
     /**
@@ -26,6 +26,6 @@ public class SignInEventListener implements ApplicationListener<SignInEvent> {
      */
     @Override
     public void onApplicationEvent(SignInEvent event) {
-        userService.addDefaultHabit(modelMapper.map(event.getUser(), UserVO.class), "en");
+        habitAssignService.addDefaultHabit(modelMapper.map(event.getUser(), UserVO.class), "en");
     }
 }

@@ -227,4 +227,16 @@ public class EcoNewsController {
     public ResponseEntity<List<TagDto>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
     }
+
+    /**
+     * The method find count of published eco news.
+     *
+     * @return count of published eco news.
+     * @author Mamchuk Orest
+     */
+    @ApiOperation(value = "Find count of published eco news")
+    @GetMapping("/count")
+    public ResponseEntity<Long> findAmountOfPublishedNews(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNewsByUserId(userId));
+    }
 }

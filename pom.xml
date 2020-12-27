@@ -23,6 +23,7 @@
         <module>email</module>
         <module>service</module>
         <module>chat</module>
+        <module>user</module>
     </modules>
 
     <properties>

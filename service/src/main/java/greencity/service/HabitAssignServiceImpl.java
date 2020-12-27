@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
-    @Transactional
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
@@ -411,5 +411,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<HabitAssign> list = habitAssignRepo.findAllActiveHabitAssignsOnDate(userId, date);
         return list.stream().map(
             habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDefaultHabit(UserVO user, String language) {
+        if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
+            UserVO userVO = modelMapper.map(user, UserVO.class);
+            assignDefaultHabitForUser(1L, userVO);
+        }
     }
 }
