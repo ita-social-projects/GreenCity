@@ -23,6 +23,7 @@ public final class SwaggerExampleModel {
             + "  \"profilePicturePath\": \"string\"\n"
             + "}\n"
             + AFTER_EXAMPLE;
+
     private SwaggerExampleModel() {
     }
 }

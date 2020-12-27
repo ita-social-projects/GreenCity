@@ -11,6 +11,7 @@ public final class AppConstant {
     public static final Double DEFAULT_RATING = 0.0;
     public static final String USERNAME = "name";
     public static final String FACEBOOK_OBJECT_ID = "me";
+
     private AppConstant() {
     }
 }
