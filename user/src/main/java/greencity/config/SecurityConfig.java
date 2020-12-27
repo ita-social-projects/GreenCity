@@ -88,9 +88,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
-            .antMatchers("/management/**",
-                "/econews/comments/replies/{parentCommentId}")
-            .hasRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**")
             .permitAll()
@@ -104,52 +101,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/googleSecurity",
                 "/facebookSecurity/generateFacebookAuthorizeURL",
                 "/facebookSecurity/facebook",
-                "/factoftheday/",
-                "/factoftheday/all",
-                "/factoftheday/find",
-                "/factoftheday/languages",
-                "/category",
-                "/place/info/{id}",
-                "/place/info/favorite/{placeId}",
-                "/favorite_place/favorite/{placeId}",
-                "/place/statuses",
-                "/habit",
-                "/habit/{id}",
-                "/habit/{id}/shopping-list",
-                "/habit/tags/search",
-                "/habit/tags/all",
-                "/habit/assign/{id}",
-                HABIT_ASSIGN_ID,
-                HABIT_ASSIGN_ID + "/all",
-                "/habit/assign/active/{date}",
-                "/habit/statistic/{habitId}",
-                "/habit/statistic/assign/{habitAssignId}",
-                "/habit/statistic/todayStatisticsForAllHabitItems",
-                "/place/about/{id}",
-                "/specification",
-                "/econews",
-                "/econews/newest",
-                "/econews/tags",
-                "/econews/tags/all",
-                "/econews/recommended",
-                "/econews/{id}",
-                "/econews/comments/count/comments/{ecoNewsId}",
-                "/econews/comments/count/replies/{parentCommentId}",
-                "/econews/comments/count/likes",
-                "/econews/comments/replies/active/{parentCommentId}",
-                "/econews/comments/active",
-                TIPS_AND_TRICKS_COMMENTS,
-                "/tipsandtricks/comments/count/comments",
-                "/tipsandtricks/comments/replies/{parentCommentId}",
-                "/tipsandtricks/comments/count/likes",
-                "/tipsandtricks/comments/count/replies",
-                "/tipsandtricks/{id}",
-                "/tipsandtricks",
-                "/tipsandtricks/tags",
-                "/tipsandtricks/tags/all",
-                "/search",
-                "/search/econews",
-                "/search/tipsandtricks",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
@@ -159,24 +110,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
                 "/ownSecurity/signIn",
-                "/ownSecurity/changePassword",
-                "/place/getListPlaceLocationByMapsBounds",
-                "/place/filter")
+                "/ownSecurity/changePassword")
             .permitAll()
             .antMatchers(HttpMethod.GET,
-                "/achievements",
-                "/advices/random/{habitId}",
-                "/advices",
-                "/favorite_place/",
-                "/goals",
-                "/habit/assign",
-                HABIT_ASSIGN_ID + "/active",
-                HABIT_ASSIGN_ID,
-                "/facts",
-                "/facts/random/{habitId}",
-                "/facts/dayFact/{languageId}",
-                "/newsSubscriber/unsubscribe",
-                "/place/{status}",
                 "/user",
                 "/user/goals/habits/{habitId}/shopping-list",
                 USER_CUSTOM_GOALS,
@@ -188,101 +124,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
                 "/user/{userId}/recommendedFriends/",
-                "/user/{userId}/friends/",
-                "/chat")
+                "/user/{userId}/friends/")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                "/category",
-                "/econews",
-                "/econews/comments/{econewsId}",
-                "/econews/comments/like",
-                "/files/image",
-                HABIT_ASSIGN_ID,
-                HABIT_ASSIGN_ID + "/custom",
-                HABIT_ASSIGN_ID + "/enroll/{date}",
-                HABIT_ASSIGN_ID + "/unenroll/{date}",
-                "/habit/statistic/{habitId}",
-                "/newsSubscriber",
-                "/place/{placeId}/comments",
-                "/place/propose",
-                "/place/save/favorite/",
-                "/tipsandtricks/comments/{tipsAndTricksId}",
-                "/tipsandtricks/comments/like",
-                "/tipsandtricks",
                 USER_CUSTOM_GOALS,
                 "/user/goals",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
-                "/habit/statistic/{id}",
-                "/econews/update",
-                "/favorite_place/",
                 "/ownSecurity",
                 "/user/profile")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
-                ECONEWS_COMMENTS,
-                HABIT_ASSIGN_ID,
-                "/goals/shoppingList/{userId}",
-                HABIT_ASSIGN_ID,
-                TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
                 "/user/goals/{userGoalId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
-                ECONEWS_COMMENTS,
-                "/econews/{econewsId}",
-                "/favorite_place/{placeId}",
-                TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
                 "/user/goals/user-goals",
                 "/user/goals",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,
-                "/newsSubscriber",
-                "/comments",
-                "/comments/{id}",
                 "/user/all",
                 "/user/roles")
             .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
-                "/place/filter/predicate")
-            .hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.PUT,
-                "/place/update/")
-            .hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.PATCH,
-                "/place/status",
-                "/place/statuses")
-            .hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.DELETE,
-                "/place/{id}",
-                "/place")
-            .hasAnyRole(ADMIN, MODERATOR)
-            .antMatchers(HttpMethod.POST,
-                "/advices",
-                "/facts",
                 "/user/filter")
-            .hasRole(ADMIN)
-            .antMatchers(HttpMethod.PUT,
-                "/advices/{adviceId}",
-                "/facts/{factId}")
             .hasRole(ADMIN)
             .antMatchers(HttpMethod.PATCH,
                 "/user",
                 "/user/status",
                 "/user/role",
                 "/user/update/role")
-            .hasRole(ADMIN)
-            .antMatchers(HttpMethod.DELETE,
-                "/advices/{adviceId}",
-                "/facts/{factId}",
-                "/comments",
-                "/tipsandtricks/{id}")
             .hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN);
     }

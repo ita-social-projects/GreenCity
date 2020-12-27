@@ -1,20 +1,15 @@
 package greencity.config;
 
 import greencity.converters.UserArgumentResolver;
-import greencity.security.interceptor.RestTemplateHeaderModifierInterceptor;
 import greencity.security.interceptor.UserActivityInterceptor;
 import greencity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -22,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
