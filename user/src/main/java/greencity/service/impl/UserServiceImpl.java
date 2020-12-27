@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
      * Autowired mapper.
      */
     @Value("${greencity.server.address}")
-    private final String greenCityServerAddress;
+    private String greenCityServerAddress;
     private final ModelMapper modelMapper;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
