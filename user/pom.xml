@@ -168,7 +168,7 @@
                 <configuration>
                     <schemaVersion>V2</schemaVersion>
                     <resourceGroup>GreenCity</resourceGroup>
-                    <appName>greencity-chat</appName>
+                    <appName>greencity-user</appName>
                     <pricingTier>B1</pricingTier>
                     <region>centralus</region>
                     <runtime>
