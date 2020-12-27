@@ -89,6 +89,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Autowired mapper.
      */
+    @Value("${greencity.server.address}")
+    private final String greenCityServerAddress;
     private final ModelMapper modelMapper;
     @Value("${greencity.time.after.last.activity}")
     private long timeAfterLastActivity;
@@ -420,7 +422,7 @@ public class UserServiceImpl implements UserService {
     public List<CustomGoalResponseDto> getAvailableCustomGoals(Long userId, String accessToken) {
         final HttpEntity<String> entity = setHeader(accessToken);
         CustomGoalResponseDto[] restTemplateForObject =
-            restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+            restTemplate.exchange(greenCityServerAddress
                 + RestTemplateLinks.CUSTOM_GOALS + userId, HttpMethod.GET, entity, CustomGoalResponseDto[].class)
                 .getBody();
         assert restTemplateForObject != null;
@@ -467,7 +469,7 @@ public class UserServiceImpl implements UserService {
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
         if (userProfilePictureDto.getProfilePicturePath() != null) {
-            image = restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+            image = restTemplate.exchange(greenCityServerAddress
                 + RestTemplateLinks.FILES_CONVERT + RestTemplateLinks.IMAGE
                 + userProfilePictureDto.getProfilePicturePath(),
                 HttpMethod.POST, entity, MultipartFile.class).getBody();
@@ -476,7 +478,7 @@ public class UserServiceImpl implements UserService {
             LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
             map.add("images", image);
             HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
-            user.setProfilePicturePath(restTemplate.postForObject(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+            user.setProfilePicturePath(restTemplate.postForObject(greenCityServerAddress
                 + RestTemplateLinks.FILES_IMAGE, requestEntity, String.class));
         } else {
             throw new BadRequestException(ErrorMessage.IMAGE_EXISTS);
@@ -631,7 +633,7 @@ public class UserServiceImpl implements UserService {
         user.setCity(userProfileDtoRequest.getCity());
         user.setUserCredo(userProfileDtoRequest.getUserCredo());
         List<SocialNetwork> socialNetworks = user.getSocialNetworks();
-        socialNetworks.forEach(socialNetwork -> restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+        socialNetworks.forEach(socialNetwork -> restTemplate.exchange(greenCityServerAddress
             + RestTemplateLinks.SOCIAL_NETWORKS + RestTemplateLinks.ID + socialNetwork.getId(),
             HttpMethod.DELETE, entity, Long.class).getBody());
         user.getSocialNetworks().clear();
@@ -641,7 +643,7 @@ public class UserServiceImpl implements UserService {
                 .url(url)
                 .user(user)
                 .socialNetworkImage(modelMapper.map(
-                    Objects.requireNonNull(restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+                    Objects.requireNonNull(restTemplate.exchange(greenCityServerAddress
                         + RestTemplateLinks.SOCIAL_NETWORKS_IMAGE + RestTemplateLinks.URL + url,
                         HttpMethod.GET, entity, SocialNetworkImageVO.class).getBody()),
                     SocialNetworkImage.class))
@@ -717,16 +719,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileStatisticsDto getUserProfileStatistics(Long userId, String accessToken) {
         final HttpEntity<String> entity = setHeader(accessToken);
-        Long amountOfPublishedNewsByUserId = restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+        Long amountOfPublishedNewsByUserId = restTemplate.exchange(greenCityServerAddress
             + RestTemplateLinks.ECONEWS_COUNT + RestTemplateLinks.USER_ID + userId, HttpMethod.GET, entity, Long.class)
             .getBody();
-        Long amountOfWrittenTipsAndTrickByUserId = restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+        Long amountOfWrittenTipsAndTrickByUserId = restTemplate.exchange(greenCityServerAddress
             + RestTemplateLinks.TIPSANDTRICKS_COUNT + RestTemplateLinks.USER_ID + userId, HttpMethod.GET, entity,
             Long.class).getBody();
-        Long amountOfAcquiredHabitsByUserId = restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+        Long amountOfAcquiredHabitsByUserId = restTemplate.exchange(greenCityServerAddress
             + RestTemplateLinks.HABIT_STATISTIC_ACQUIRED_COUNT + RestTemplateLinks.USER_ID + userId, HttpMethod.GET,
             entity, Long.class).getBody();
-        Long amountOfHabitsInProgressByUserId = restTemplate.exchange(RestTemplateLinks.GREEN_CITY_SERVER_PORT
+        Long amountOfHabitsInProgressByUserId = restTemplate.exchange(greenCityServerAddress
             + RestTemplateLinks.HABIT_STATISTIC_IN_PROGRESS_COUNT + RestTemplateLinks.USER_ID + userId, HttpMethod.GET,
             entity, Long.class).getBody();
 
