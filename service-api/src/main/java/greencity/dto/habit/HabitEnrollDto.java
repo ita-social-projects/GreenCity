@@ -6,6 +6,8 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
+@ToString
 @Builder
 public class HabitEnrollDto {
     private Long habitId;

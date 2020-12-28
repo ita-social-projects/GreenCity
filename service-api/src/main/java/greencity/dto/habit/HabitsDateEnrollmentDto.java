@@ -9,6 +9,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
+@ToString
 public class HabitsDateEnrollmentDto {
     private LocalDate enrollDate;
     private List<HabitEnrollDto> habitAssigns;

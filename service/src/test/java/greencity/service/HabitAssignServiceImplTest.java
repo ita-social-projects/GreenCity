@@ -4,17 +4,18 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getHabitAssign;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +100,53 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
+    }
+
+    @Test
+    void getHabitTranslationTest() {
+        HabitAssign habit1 = ModelUtils.getHabitAssign();
+        HabitAssign habit2 = ModelUtils.getHabitAssign();
+        habit2.setId(2L);
+        habit2.getHabit().setId(2L);
+        habit1.setDuration(3);
+        habit2.setDuration(3);
+        habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
+            12,12,12,12, ZoneId.of("Europe/Kiev")));
+        habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
+            12,12,12,12, ZoneId.of("Europe/Kiev")));
+        habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
+            .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()));
+        habit2.setHabitStatusCalendars(Collections.emptyList());
+        List<HabitAssign> habitAssignList = Arrays.asList(habit1, habit2);
+//        HabitTranslation habitTranslation = HabitTranslation.builder()
+//            .id(1L)
+//            .name("")
+//            .description("")
+//            .habitItem("")
+//            .language(ModelUtils.getLanguage())
+//            .build();
+        List<HabitsDateEnrollmentDto> dtos = Arrays.asList(
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,27))
+            .habitAssigns(Collections.emptyList()).build(),
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,28))
+                .habitAssigns(Arrays.asList(
+                    new HabitEnrollDto(1L, "", "", true),
+                    new HabitEnrollDto(2L, "", "", false)
+                )).build(),
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,29))
+                .habitAssigns(Arrays.asList(
+                    new HabitEnrollDto(1L, "", "", false),
+                    new HabitEnrollDto(2L, "", "", false)
+                )).build()
+        );
+
+        when(habitAssignRepo.findAllActiveHabitAssignsBetweenDates(anyLong(),
+            eq(LocalDate.of(2020,12,27)), eq(LocalDate.of(2020,12,29))))
+            .thenReturn(habitAssignList);
+
+        assertEquals(dtos, habitAssignService.findActiveHabitAssignsBetweenDates(13L,
+            LocalDate.of(2020,12,27), LocalDate.of(2020,12,29),
+            "en"));
     }
 
     @Test

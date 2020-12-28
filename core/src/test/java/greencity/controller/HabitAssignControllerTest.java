@@ -9,10 +9,11 @@ import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
@@ -88,5 +89,14 @@ class HabitAssignControllerTest {
         mockMvc.perform(post(habitLink + "/{habitId}/unenroll/{date}", 1, LocalDate.now()))
             .andExpect(status().isOk());
         verify(habitAssignService).unenrollHabit(1L, null, LocalDate.now());
+    }
+
+    @Test
+    void getActiveHabitAssignBetweenDatesTest() throws Exception {
+        Locale locale = new Locale("en", "US");
+        mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}",   LocalDate.now(), LocalDate.now().plusDays(2L)))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).findActiveHabitAssignsBetweenDates(null, LocalDate.now(), LocalDate.now().plusDays(2L), "en");
     }
 }
