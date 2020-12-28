@@ -111,9 +111,9 @@ class HabitAssignServiceImplTest {
         habit1.setDuration(3);
         habit2.setDuration(3);
         habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
-            12,12,12,12, ZoneId.of("Europe/Kiev")));
+            12, 12, 12, 12, ZoneId.of("Europe/Kiev")));
         habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
-            12,12,12,12, ZoneId.of("Europe/Kiev")));
+            12, 12, 12, 12, ZoneId.of("Europe/Kiev")));
         habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
             .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()));
         habit2.setHabitStatusCalendars(Collections.emptyList());
@@ -126,26 +126,25 @@ class HabitAssignServiceImplTest {
 //            .language(ModelUtils.getLanguage())
 //            .build();
         List<HabitsDateEnrollmentDto> dtos = Arrays.asList(
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,27))
-            .habitAssigns(Collections.emptyList()).build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,28))
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 27))
+                .habitAssigns(Collections.emptyList()).build(),
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 28))
                 .habitAssigns(Arrays.asList(
                     new HabitEnrollDto(1L, "", "", true),
-                    new HabitEnrollDto(2L, "", "", false)
-                )).build(),
-            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020,12,29))
+                    new HabitEnrollDto(2L, "", "", false)))
+                .build(),
+            HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 29))
                 .habitAssigns(Arrays.asList(
                     new HabitEnrollDto(1L, "", "", false),
-                    new HabitEnrollDto(2L, "", "", false)
-                )).build()
-        );
+                    new HabitEnrollDto(2L, "", "", false)))
+                .build());
 
         when(habitAssignRepo.findAllActiveHabitAssignsBetweenDates(anyLong(),
-            eq(LocalDate.of(2020,12,27)), eq(LocalDate.of(2020,12,29))))
-            .thenReturn(habitAssignList);
+            eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
+                .thenReturn(habitAssignList);
 
         assertEquals(dtos, habitAssignService.findActiveHabitAssignsBetweenDates(13L,
-            LocalDate.of(2020,12,27), LocalDate.of(2020,12,29),
+            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }
 
