@@ -291,4 +291,3 @@ public class HabitAssignController {
                 .findActiveHabitAssignsBetweenDates(userVO.getId(), from, to, locale.getLanguage()));
     }
 }
-
