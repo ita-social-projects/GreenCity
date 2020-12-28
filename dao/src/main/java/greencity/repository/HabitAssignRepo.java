@@ -79,7 +79,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'ACTIVE'")
+        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'ACTIVE' OR upper(ha.status) = 'ACQUIRED'")
     List<HabitAssign> findAllByUserIdAndActive(@Param("userId") Long userId);
 
     /**

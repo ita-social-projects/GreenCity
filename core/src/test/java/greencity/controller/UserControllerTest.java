@@ -229,24 +229,6 @@ class UserControllerTest {
     }
 
     @Test
-    void getActiveUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{id}/habit/assign?lang=en", 1))
-            .andExpect(status().isOk());
-
-        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
-            eq(1L), eq("en"));
-    }
-
-    @Test
-    void getAcquiredUserHabitAssigns() throws Exception {
-        mockMvc.perform(get(userLink + "/{id}/habit/assign?lang=en", 1))
-            .andExpect(status().isOk());
-
-        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(
-            eq(1L), eq("en"));
-    }
-
-    @Test
     void findAllByUserTest() throws Exception {
         mockMvc.perform(get(userLink + "/{userId}/customGoals", 1))
             .andExpect(status().isOk());
@@ -409,7 +391,7 @@ class UserControllerTest {
         mockMvc.perform(get(userLink + "/{userId}/sixUserFriends/", 1))
             .andExpect(status().isOk());
 
-        verify(userService).getSixFriendsWithTheHighestRating(eq(1L));
+        verify(userService).getSixFriendsWithTheHighestRatingPaged(eq(1L));
     }
 
     @Test

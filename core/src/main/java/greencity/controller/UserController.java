@@ -1,18 +1,16 @@
 package greencity.controller;
 
-import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.friends.SixFriendsPageResponceDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
-import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.UserStatus;
@@ -25,7 +23,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -322,28 +319,6 @@ public class UserController {
     }
 
     /**
-     * Method for finding all active habit assigns by {@link UserVO} id.
-     *
-     * @param userId {@link UserVO} id.
-     * @return list of {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Get active habit assigns for certain user by acquired status.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @GetMapping("/{userId}/habit/assign")
-    @ApiLocale
-    public ResponseEntity<List<HabitAssignDto>> getUserHabitAssignsByIdAndAcquired(
-        @PathVariable Long userId, @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(
-                habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(userId, locale.getLanguage()));
-    }
-
-    /**
      * Counts all users by user {@link UserStatus} ACTIVATED.
      *
      * @return amount of users with {@link UserStatus} ACTIVATED.
@@ -454,7 +429,7 @@ public class UserController {
      * Method returns list profile picture with the highest rating.
      *
      * @return {@link ResponseEntity}.
-     * @author Datsko Marian
+     * @author Datsko Marian + Oleh Bilonizhka
      */
     @ApiOperation(value = "Get six friends profile picture with the highest rating")
     @ApiResponses(value = {
@@ -463,11 +438,11 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/sixUserFriends/")
-    public ResponseEntity<List<UserProfilePictureDto>> getSixFriendsWithTheHighestRating(
+    public ResponseEntity<SixFriendsPageResponceDto> getSixFriendsWithTheHighestRating(
         @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getSixFriendsWithTheHighestRating(userId));
+            .body(userService.getSixFriendsWithTheHighestRatingPaged(userId));
     }
 
     /**

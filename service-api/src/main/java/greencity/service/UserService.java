@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.friends.SixFriendsPageResponceDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
@@ -272,6 +273,15 @@ public interface UserService {
      * @author Marian Datsko
      */
     List<UserProfilePictureDto> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Get six friends with the highest rating {@link UserVO}. by page.
+     *
+     * @param userId {@link Long}
+     * @return {@link SixFriendsPageResponceDto}.
+     * @author Oleh Bilonizhka
+     */
+    SixFriendsPageResponceDto getSixFriendsWithTheHighestRatingPaged(Long userId);
 
     /**
      * Save user profile information {@link UserVO}.

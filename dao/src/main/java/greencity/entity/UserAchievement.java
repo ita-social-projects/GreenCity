@@ -26,4 +26,7 @@ public class UserAchievement {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
+
+    @Column
+    private boolean notified;
 }

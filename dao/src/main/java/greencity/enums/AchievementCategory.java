@@ -4,13 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum AchievementCategory {
-    ACHIEVEMENTS("Achievements"),
     ECO_NEWS("EcoNews"),
-    ECO_NEWS_COMMENT("EcoNewsComment"),
+    ECO_NEWS_COMMENT("EcoNewsComments"),
     ECO_NEWS_LIKE("EcoNewsLikes"),
-    TIPS_AND_TRICKS("Tips&Tricks"),
+    ACHIEVEMENTS("Achievements"),
+    TIPS_AND_TRICKS_LIKES("Tips&TricksLikes"),
     HABIT_STREAK("HabitStreak"),
-    ACQUIRED_HABIT("AcquiredHabit"),
+    ACQUIRED_HABIT("AcquiredHabits"),
     TIPS_AND_TRICKS_COMMENTS("Tips&TricksComments"),
     SOCIAL_NETWORK("SocialNetworks");
 
