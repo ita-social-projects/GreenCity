@@ -461,9 +461,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         for (HabitsDateEnrollmentDto dto : list) {
             if (dto.getEnrollDate()
-                .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1))
+                .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
                 && dto.getEnrollDate()
-                    .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1))) {
+                    .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L))) {
                 boolean isDateEnrolled = false;
                 for (int i = 0; i < habitAssign.getHabitStatusCalendars().size(); i++) {
                     if (habitAssign.getHabitStatusCalendars().get(i).getEnrollDate()
@@ -474,7 +474,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         isDateEnrolled = true;
                     }
                 }
-                if (isDateEnrolled == false) {
+                if (!isDateEnrolled) {
                     dto.getHabitAssigns().add(HabitEnrollDto.builder()
                         .habitDescription(habitTranslation.getDescription()).habitName(habitTranslation.getName())
                         .isEnrolled(false).habitId(habitAssign.getHabit().getId()).build());
