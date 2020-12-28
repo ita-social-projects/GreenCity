@@ -110,21 +110,14 @@ class HabitAssignServiceImplTest {
         habit2.getHabit().setId(2L);
         habit1.setDuration(3);
         habit2.setDuration(3);
-        habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
-            12, 12, 12, 12, ZoneId.of("Europe/Kiev")));
-        habit1.setCreateDate(ZonedDateTime.of(2020, 12, 28,
-            12, 12, 12, 12, ZoneId.of("Europe/Kiev")));
+        ZonedDateTime creation = ZonedDateTime.of(2020, 12, 28,
+            12, 12, 12, 12, ZoneId.of("Europe/Kiev"));
+        habit1.setCreateDate(creation);
+        habit1.setCreateDate(creation);
         habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
             .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()));
         habit2.setHabitStatusCalendars(Collections.emptyList());
         List<HabitAssign> habitAssignList = Arrays.asList(habit1, habit2);
-//        HabitTranslation habitTranslation = HabitTranslation.builder()
-//            .id(1L)
-//            .name("")
-//            .description("")
-//            .habitItem("")
-//            .language(ModelUtils.getLanguage())
-//            .build();
         List<HabitsDateEnrollmentDto> dtos = Arrays.asList(
             HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, 27))
                 .habitAssigns(Collections.emptyList()).build(),
