@@ -93,6 +93,7 @@ public final class ErrorMessage {
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
+    public static final String NOT_FOUND_REQUEST = "Not found friend request from user with id: ";
     public static final String CUSTOM_GOAL_WHERE_NOT_SAVED = "This CustomGoal(s) already exist(s): ";
     public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";

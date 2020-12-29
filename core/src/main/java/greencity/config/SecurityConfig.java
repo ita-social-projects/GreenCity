@@ -187,7 +187,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/userAndSixFriendsWithOnlineStatus",
                 "/user/userAndAllFriendsWithOnlineStatus",
                 "/user/{userId}/recommendedFriends/",
-                "/user/{userId}/friends/")
+                "/user/{userId}/friends/",
+                "/user/{userId}/friendRequests/")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -210,7 +211,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_CUSTOM_GOALS,
                 "/user/goals",
                 "/user/{userId}/habit",
-                "/user/{userId}/userFriend/{friendId}")
+                "/user/{userId}/userFriend/{friendId}",
+                "/user/{userId}/declineFriend/{friendId}",
+                "/user/{userId}/acceptFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/habit/statistic/{id}",

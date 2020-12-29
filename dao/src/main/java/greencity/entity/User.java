@@ -96,7 +96,8 @@ public class User {
 
     @ManyToMany(mappedBy = "usersLiked")
     private Set<EcoNewsComment> ecoNewsCommentsLiked;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserFriends> friends = new ArrayList<>();
     @OneToMany
     @JoinTable(name = "users_friends",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

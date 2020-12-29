@@ -156,6 +156,17 @@ class UserControllerTest {
     }
 
     @Test
+    void findAllUsersFriendRequestTest() throws Exception {
+        int pageNumber = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(userLink + "/{userId}/friendRequests/", 1))
+            .andExpect(status().isOk());
+
+        verify(userService).getAllUserFriendRequests(eq(1L), eq(pageable));
+    }
+
+    @Test
     void getRolesTest() throws Exception {
         mockMvc.perform(get(userLink + "/roles"))
             .andExpect(status().isOk());
@@ -384,6 +395,22 @@ class UserControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).addNewFriend(eq(1L), eq(1L));
+    }
+
+    @Test
+    void acceptFriendRequestTest() throws Exception {
+        mockMvc.perform(post(userLink + "/{userId}/acceptFriend/{friendId}", 1, 2))
+            .andExpect(status().isOk());
+
+        verify(userService).acceptFriendRequest(eq(1L), eq(2L));
+    }
+
+    @Test
+    void declineFriendRequestTest() throws Exception {
+        mockMvc.perform(post(userLink + "/{userId}/declineFriend/{friendId}", 1, 2))
+            .andExpect(status().isOk());
+
+        verify(userService).declineFriendRequest(eq(1L), eq(2L));
     }
 
     @Test

@@ -9,7 +9,10 @@ import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.entity.SocialNetwork;
+import greencity.entity.SocialNetworkImage;
+import greencity.entity.User;
+import greencity.entity.VerifyEmail;
 import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.EmailNotification;
@@ -21,6 +24,7 @@ import greencity.exception.exceptions.CheckRepeatingValueException;
 import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoRequestException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.CustomGoalRepo;
@@ -211,7 +215,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
-        return modelMapper.map(userRepo.findUsersFriendsById(id),
+        return modelMapper.map(userRepo.getAllUserFriends(id),
             new TypeToken<List<UserManagementDto>>() {
             }.getType());
     }
@@ -243,6 +247,64 @@ public class UserServiceImpl implements UserService {
             friends.getTotalElements(),
             friends.getPageable().getPageNumber(),
             friends.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void acceptFriendRequest(Long userId, Long friendId) {
+        checkFriendRequest(userId, friendId);
+        userRepo.acceptFriendRequest(userId, friendId);
+    }
+
+    private void checkFriendRequest(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
+            throw new CheckRepeatingValueException(ErrorMessage.OWN_USER_ID + friendId);
+        }
+        UserVO friend = findById(friendId);
+        List<UserVO> users = getAllUserFriendRequests(userId);
+        if (!users.contains(friend)) {
+            throw new UserHasNoRequestException(ErrorMessage.NOT_FOUND_REQUEST + friendId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void declineFriendRequest(Long userId, Long friendId) {
+        checkFriendRequest(userId, friendId);
+        userRepo.declineFriendRequest(userId, friendId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public PageableDto<RecommendedFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable) {
+        Page<User> friendsRequests = userRepo.getAllUserFriendRequests(userId, pageable);
+        List<RecommendedFriendDto> friendDtos = modelMapper.map(friendsRequests.getContent(),
+            new TypeToken<List<RecommendedFriendDto>>() {
+            }.getType());
+        return new PageableDto<>(
+            friendDtos,
+            friendsRequests.getTotalElements(),
+            friendsRequests.getPageable().getPageNumber(),
+            friendsRequests.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserVO> getAllUserFriendRequests(Long userId) {
+        List<User> allUserFriends = userRepo.getAllUserFriendRequests(userId);
+        return modelMapper.map(allUserFriends, new TypeToken<List<UserVO>>() {
+        }.getType());
     }
 
     /**
@@ -458,7 +520,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVO updateUserProfilePicture(MultipartFile image, String email,
-        UserProfilePictureDto userProfilePictureDto) {
+                                           UserProfilePictureDto userProfilePictureDto) {
         User user = userRepo
             .findByEmail(email)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
@@ -539,6 +601,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void addNewFriend(Long userId, Long friendId) {
         List<UserVO> allUserFriends = getAllUserFriends(userId);
+
         findById(friendId);
         if (userId.equals(friendId)) {
             throw new CheckRepeatingValueException(ErrorMessage.OWN_USER_ID + friendId);
