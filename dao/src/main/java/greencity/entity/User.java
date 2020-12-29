@@ -94,16 +94,6 @@ public class User {
     @Column(name = "profile_picture")
     private String profilePicturePath;
 
-    @ManyToMany(mappedBy = "usersLiked")
-    private Set<EcoNewsComment> ecoNewsCommentsLiked;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserFriends> friends = new ArrayList<>();
-    @OneToMany
-    @JoinTable(name = "users_friends",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
-    private List<User> userFriends = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserAchievement> userAchievements = new ArrayList<>();
 
