@@ -208,7 +208,7 @@ public class UserController {
     })
     @PatchMapping
     public ResponseEntity<UserUpdateDto> updateUser(@Valid @RequestBody UserUpdateDto dto,
-        @ApiIgnore @AuthenticationPrincipal Principal principal) {
+                                                    @ApiIgnore @AuthenticationPrincipal Principal principal) {
         String email = principal.getName();
         return ResponseEntity.status(HttpStatus.OK).body(userService.update(dto, email));
     }
@@ -271,7 +271,7 @@ public class UserController {
     })
     @PatchMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
-        @Valid @RequestBody BulkCustomGoalDto dto) {
+                                                                  @Valid @RequestBody BulkCustomGoalDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customGoalService.updateBulk(dto));
     }
@@ -426,6 +426,48 @@ public class UserController {
     }
 
     /**
+     * Method for accepting request from user.
+     *
+     * @param friendId id user friend.
+     * @param userId   id current user.
+     */
+    @ApiOperation(value = "Accept friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/acceptFriend/{friendId}")
+    public ResponseEntity<Object> acceptFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId
+    ) {
+        userService.acceptFriendRequest(userId, friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for declining request from user.
+     *
+     * @param friendId id user friend.
+     * @param userId   id current user.
+     */
+    @ApiOperation(value = "Decline friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/{userId}/declineFriend/{friendId}")
+    public ResponseEntity<Object> declineFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId
+    ) {
+        userService.declineFriendRequest(userId, friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
      * Method returns list profile picture with the highest rating.
      *
      * @return {@link ResponseEntity}.
@@ -464,6 +506,27 @@ public class UserController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.findUsersRecommendedFriends(page, userId));
+    }
+
+    /**
+     * The method finds  for the current userId.
+     *
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Find user's requests")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}/friendRequests/")
+    @ApiPageable
+    public ResponseEntity<PageableDto<RecommendedFriendDto>> getAllUserFriendsRequests(
+        @ApiIgnore Pageable page,
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getAllUserFriendRequests(userId, page));
     }
 
     /**
