@@ -129,9 +129,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
      */
-    @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
-        + "WHERE upper(ha.status) = 'ACTIVE'"
-        + "GROUP BY ha.id")
+    @Query(value = "SELECT COUNT(ha) FROM HabitAssign ha "
+        + "WHERE upper(ha.status) = 'ACTIVE' "
+        + "AND ha.user.id = :userId")
     int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(Long userId);
 
     /**
