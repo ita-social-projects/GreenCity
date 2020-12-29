@@ -26,7 +26,7 @@
                        tableName="users_friends"
         />
     </changeSet>
-    <changeSet id="Yurii-3" author="Yurii Savchenko">
+    <changeSet id="Yurii-5" author="Yurii Savchenko">
         <addColumn tableName="users_friends">
             <column name="status" type="BIGINT">
                 <constraints nullable="false"/>
