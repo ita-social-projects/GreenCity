@@ -31,6 +31,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     private static final String ROOM_LINK = "/room/";
     private static final String MESSAGE_LINK = "/queue/messages";
+    private static final String HEADER_DELETE = "delete";
+    private static final String HEADER_UPDATE = "update";
 
     /**
      * {@inheritDoc}
@@ -57,7 +59,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
         chatMessageRepo.delete(chatMessage);
         Map<String, Object> headers = new HashMap<>();
-        headers.put("delete", new Object());
+        headers.put(HEADER_DELETE, new Object());
         messagingTemplate.convertAndSend(
             ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto, headers);
     }
@@ -67,7 +69,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
         chatMessageRepo.save(chatMessage);
         Map<String, Object> headers = new HashMap<>();
-        headers.put("update", new Object());
+        headers.put(HEADER_UPDATE, new Object());
         messagingTemplate.convertAndSend(
             ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto, headers);
     }
