@@ -245,4 +245,3 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNewsByUserId(userId));
     }
 }
-
