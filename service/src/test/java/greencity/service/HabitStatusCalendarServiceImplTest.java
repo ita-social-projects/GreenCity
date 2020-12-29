@@ -1,102 +1,120 @@
 package greencity.service;
 
-/*
- * import greencity.ModelUtils; import greencity.entity.Habit; import
- * greencity.entity.HabitStatus; import greencity.entity.HabitStatusCalendar;
- * import greencity.entity.User; import
- * greencity.repository.HabitStatusCalendarRepo; import
- * org.junit.jupiter.api.Test; import
- * org.junit.jupiter.api.extension.ExtendWith; import org.mockito.InjectMocks;
- * import org.mockito.Mock; import org.mockito.junit.jupiter.MockitoExtension;
- * 
- * import java.time.LocalDate; import java.time.LocalDateTime; import
- * java.util.Collections; import java.util.List;
- * 
- * import static org.junit.jupiter.api.Assertions.assertEquals; import static
- * org.mockito.Mockito.verify; import static org.mockito.Mockito.when;
- * 
- * 
- * @ExtendWith(MockitoExtension.class) class HabitStatusCalendarServiceImplTest
- * {
- * 
- * 
- * @Mock private HabitStatusCalendarRepo habitStatusCalendarRepo;
- * 
- * @InjectMocks HabitStatusCalendarServiceImpl habitStatusCalendarService;
- * 
- * @Test void save() { HabitStatusCalendar habitStatusCalendar = new
- * HabitStatusCalendar(); habitStatusCalendarService.save(habitStatusCalendar);
- * verify(habitStatusCalendarRepo).save(habitStatusCalendar); }
- * 
- * @Test void findHabitStatusCalendarByEnrollDateAndHabitStatus() { Habit habit
- * = ModelUtils.getHabit(); User user = ModelUtils.getUser(); HabitStatus
- * habitStatus = new HabitStatus(); habitStatus.setHabitStreak(0);
- * habitStatus.setHabit(habit); habitStatus.setWorkingDays(0);
- * habitStatus.setUser(user); habitStatus.setCreateDate(LocalDateTime.now());
- * habitStatus.setLastEnrollmentDate(LocalDateTime.now()); LocalDate date =
- * LocalDate.now(); HabitStatusCalendar habitStatusCalendar = new
- * HabitStatusCalendar(date, habitStatus);
- * 
- * when(habitStatusCalendarRepo.
- * findHabitStatusCalendarByEnrollDateAndHabitStatus(date,
- * habitStatus)).thenReturn(habitStatusCalendar);
- * assertEquals(habitStatusCalendar,
- * habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitStatus(
- * date, habitStatus)); }
- * 
- * @Test void delete() { Habit habit = ModelUtils.getHabit(); User user =
- * ModelUtils.getUser(); HabitStatus habitStatus = new HabitStatus();
- * habitStatus.setHabitStreak(0); habitStatus.setHabit(habit);
- * habitStatus.setWorkingDays(0); habitStatus.setUser(user);
- * habitStatus.setCreateDate(LocalDateTime.now());
- * habitStatus.setLastEnrollmentDate(LocalDateTime.now()); LocalDate date =
- * LocalDate.now(); HabitStatusCalendar habitStatusCalendar = new
- * HabitStatusCalendar(date, habitStatus);
- * 
- * habitStatusCalendarService.delete(habitStatusCalendar);
- * verify(habitStatusCalendarRepo).delete(habitStatusCalendar); }
- * 
- * @Test void findTopByEnrollDateAndHabitStatus() { Habit habit =
- * ModelUtils.getHabit(); User user = ModelUtils.getUser(); HabitStatus
- * habitStatus = new HabitStatus(); habitStatus.setHabitStreak(0);
- * habitStatus.setHabit(habit); habitStatus.setWorkingDays(0);
- * habitStatus.setUser(user); habitStatus.setCreateDate(LocalDateTime.now());
- * habitStatus.setLastEnrollmentDate(LocalDateTime.now()); LocalDate date =
- * LocalDate.now();
- * 
- * when(habitStatusCalendarRepo.findTopByEnrollDateAndHabitStatus(habitStatus)).
- * thenReturn(date); assertEquals(date
- * ,habitStatusCalendarService.findTopByEnrollDateAndHabitStatus(habitStatus));
- * }
- * 
- * @Test void findEnrolledDatesAfter() { Habit habit = ModelUtils.getHabit();
- * User user = ModelUtils.getUser(); HabitStatus habitStatus = new
- * HabitStatus(); habitStatus.setHabitStreak(0); habitStatus.setHabit(habit);
- * habitStatus.setWorkingDays(0); habitStatus.setUser(user);
- * habitStatus.setCreateDate(LocalDateTime.now());
- * habitStatus.setLastEnrollmentDate(LocalDateTime.now()); LocalDate date =
- * LocalDate.now(); HabitStatusCalendar habitStatusCalendar = new
- * HabitStatusCalendar(date, habitStatus); List<HabitStatusCalendar>
- * calendarList = Collections.singletonList(habitStatusCalendar);
- * List<LocalDate> localDates = Collections.singletonList(date);
- * 
- * when(habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitStatus(date,
- * habitStatus)).thenReturn(calendarList); assertEquals(localDates,
- * habitStatusCalendarService.findEnrolledDatesAfter(date,habitStatus)); }
- * 
- * @Test void findEnrolledDatesBefore() { Habit habit = ModelUtils.getHabit();
- * User user = ModelUtils.getUser(); HabitStatus habitStatus = new
- * HabitStatus(); habitStatus.setHabitStreak(0); habitStatus.setHabit(habit);
- * habitStatus.setWorkingDays(0); habitStatus.setUser(user);
- * habitStatus.setCreateDate(LocalDateTime.now());
- * habitStatus.setLastEnrollmentDate(LocalDateTime.now()); LocalDate date =
- * LocalDate.now(); HabitStatusCalendar habitStatusCalendar = new
- * HabitStatusCalendar(date, habitStatus); List<HabitStatusCalendar>
- * calendarList = Collections.singletonList(habitStatusCalendar);
- * List<LocalDate> localDates = Collections.singletonList(date);
- * when(habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitStatus(date,
- * habitStatus)).thenReturn(calendarList); assertEquals(localDates,
- * habitStatusCalendarService.findEnrolledDatesBefore(date,habitStatus)); }
- * 
- * }
- */
+import greencity.ModelUtils;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.repository.HabitStatusCalendarRepo;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.modelmapper.ModelMapper;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+@ExtendWith(SpringExtension.class)
+class HabitStatusCalendarServiceImplTest {
+    @Mock
+    private HabitStatusCalendarRepo habitStatusCalendarRepo;
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private HabitStatusCalendarServiceImpl habitStatusCalendarService;
+
+    @Test
+    void findHabitStatusCalendarByEnrollDateAndHabitAssign() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(), habitAssign))
+            .thenReturn(habitStatusCalendar);
+        when(modelMapper.map(habitStatusCalendar, HabitStatusCalendarVO.class)).thenReturn(habitStatusCalendarVO);
+        assertEquals(habitStatusCalendarVO, habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(), habitAssignVO));
+        assertEquals(null, habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(LocalDate.now(),
+            new HabitAssignVO()));
+    }
+
+    @Test
+    void save() {
+        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        when(modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class))
+            .thenReturn(habitStatusCalendar);
+        when(modelMapper.map(habitStatusCalendarRepo.save(habitStatusCalendar), HabitStatusCalendarVO.class))
+            .thenReturn(habitStatusCalendarVO);
+        assertEquals(habitStatusCalendarVO, habitStatusCalendarService.save(habitStatusCalendarVO));
+    }
+
+    @Test
+    void delete() {
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
+        when(modelMapper.map(habitStatusCalendarVO, HabitStatusCalendar.class))
+            .thenReturn(habitStatusCalendar);
+        doNothing().when(habitStatusCalendarRepo).delete(habitStatusCalendar);
+        habitStatusCalendarService.delete(habitStatusCalendarVO);
+        verify(habitStatusCalendarRepo, times(1)).delete(habitStatusCalendar);
+    }
+
+    @Test
+    void findTopByEnrollDateAndHabitAssign() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        when(habitStatusCalendarRepo.findTopByEnrollDateAndHabitAssign(habitAssign))
+            .thenReturn(LocalDate.now());
+        assertEquals(LocalDate.now(), habitStatusCalendarService.findTopByEnrollDateAndHabitAssign(habitAssignVO));
+    }
+
+    @Test
+    void findEnrolledDatesAfter() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        List<HabitStatusCalendar> list = Collections.singletonList(habitStatusCalendar);
+        List<LocalDate> dates = new ArrayList<>();
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        when(habitStatusCalendarRepo.findAllByEnrollDateAfterAndHabitAssign(LocalDate.now(), habitAssign))
+            .thenReturn(list);
+        for (HabitStatusCalendar calendar : list) {
+            dates.add(calendar.getEnrollDate());
+        }
+        assertEquals(dates, habitStatusCalendarService.findEnrolledDatesAfter(LocalDate.now(), habitAssignVO));
+    }
+
+    @Test
+    void findEnrolledDatesBefore() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        List<HabitStatusCalendar> list = Collections.singletonList(habitStatusCalendar);
+        List<LocalDate> dates = new ArrayList<>();
+        dates.add(habitStatusCalendar.getEnrollDate());
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        when(habitStatusCalendarRepo.findAllByEnrollDateBeforeAndHabitAssign(LocalDate.now(), habitAssign))
+            .thenReturn(list);
+        assertEquals(dates, habitStatusCalendarService.findEnrolledDatesBefore(LocalDate.now(), habitAssignVO));
+    }
+
+    @Test
+    void deleteAllByHabitAssign() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        when(modelMapper.map(habitAssignVO, HabitAssign.class)).thenReturn(habitAssign);
+        doNothing().when(habitStatusCalendarRepo).deleteAllByHabitAssign(habitAssign);
+        habitStatusCalendarService.deleteAllByHabitAssign(habitAssignVO);
+        verify(habitStatusCalendarRepo, times(1)).deleteAllByHabitAssign(habitAssign);
+
+    }
+}
