@@ -2,7 +2,6 @@ package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.ChatRoomDto;
-import greencity.entity.ChatMessage;
 import greencity.entity.ChatRoom;
 import greencity.entity.Participant;
 import greencity.enums.ChatType;
@@ -12,7 +11,6 @@ import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
