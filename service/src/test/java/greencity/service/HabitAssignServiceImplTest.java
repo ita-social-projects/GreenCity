@@ -103,7 +103,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getHabitTranslationTest() {
+    void findActiveHabitAssignsBetweenDatesTest() {
         HabitAssign habit1 = ModelUtils.getHabitAssign();
         HabitAssign habit2 = ModelUtils.getHabitAssign();
         habit2.setId(2L);
@@ -113,7 +113,7 @@ class HabitAssignServiceImplTest {
         ZonedDateTime creation = ZonedDateTime.of(2020, 12, 28,
             12, 12, 12, 12, ZoneId.of("Europe/Kiev"));
         habit1.setCreateDate(creation);
-        habit1.setCreateDate(creation);
+        habit2.setCreateDate(creation);
         habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
             .builder().enrollDate(LocalDate.of(2020, 12, 28)).build()));
         habit2.setHabitStatusCalendars(Collections.emptyList());
