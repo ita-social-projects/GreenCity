@@ -1,17 +1,22 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidEcoNewsDtoRequest;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.tag.TagDto;
-import greencity.dto.user.UserVO;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -240,3 +245,4 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNewsByUserId(userId));
     }
 }
+
