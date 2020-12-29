@@ -497,7 +497,7 @@ class UserServiceImplTest {
         when(modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
             new TypeToken<List<CustomGoalResponseDto>>() {
             }.getType()))
-            .thenReturn(customGoalsDtos);
+                .thenReturn(customGoalsDtos);
         assertNotNull(userService.getAvailableCustomGoals(userId));
         assertEquals(userService.getAvailableCustomGoals(userId), customGoalsDtos);
     }
@@ -676,9 +676,9 @@ class UserServiceImplTest {
         when(modelMapper.map(Collections.emptyList(),
             new TypeToken<List<UserVO>>() {
             }.getType())).thenReturn(Collections.emptyList());
-        assertThrows(UserHasNoRequestException.class, ()
-            -> userService.acceptFriendRequest(1L, 2L));
+        assertThrows(UserHasNoRequestException.class, () -> userService.acceptFriendRequest(1L, 2L));
     }
+
     @Test
     void declineFriendRequestTest() {
         List<User> users = Collections.singletonList(user2);
@@ -694,16 +694,19 @@ class UserServiceImplTest {
         userService.declineFriendRequest(1L, 2L);
         verify(userRepo).declineFriendRequest(1L, 2L);
     }
+
     @Test
     void acceptFriendRequestCheckRepeatingValueExceptionWithSameIdTest() {
         assertThrows(CheckRepeatingValueException.class, () -> userService.acceptFriendRequest(1L, 1L));
     }
+
     @Test
     void getSixFriendsWithTheHighestRatingExceptionTest() {
         assertThrows(NotFoundException.class, () -> userService.getSixFriendsWithTheHighestRating(1L));
     }
+
     @Test
-    void getAllUserFriendRequestsTest(){
+    void getAllUserFriendRequestsTest() {
         List<User> singletonList = Collections.singletonList(ModelUtils.getUser());
         PageRequest pageRequest = PageRequest.of(0, 1);
         Page<User> page = new PageImpl<>(singletonList, pageRequest, singletonList.size());
