@@ -17,4 +17,9 @@ public interface ChatMessageRepo extends JpaRepository<ChatMessage, Long>,
      * @return list of {@link ChatMessage} instances.
      */
     List<ChatMessage> findAllByRoom(ChatRoom chatRoom);
+
+    /**
+     * {@inheritDoc}
+     */
+    ChatMessage findTopByOrderByIdDesc();
 }

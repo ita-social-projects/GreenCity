@@ -24,6 +24,7 @@ public class ChatMessageMapper extends AbstractConverter<ChatMessageDto, ChatMes
     @Override
     protected ChatMessage convert(ChatMessageDto chatMessageDto) {
         return ChatMessage.builder()
+            .id(chatMessageDto.getId())
             .content(chatMessageDto.getContent())
             .sender(
                 Participant.builder()

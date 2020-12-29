@@ -7,7 +7,11 @@ import greencity.entity.ChatRoom;
 import greencity.repository.ChatMessageRepo;
 import greencity.service.ChatMessageService;
 import greencity.service.ChatRoomService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -46,5 +50,30 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         chatMessageRepo.save(message);
         messagingTemplate.convertAndSend(
             ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto);
+    }
+
+    @Override
+    public void deleteMessage(ChatMessageDto chatMessageDto) {
+        ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
+        chatMessageRepo.delete(chatMessage);
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("delete", new Object());
+        messagingTemplate.convertAndSend(
+            ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto, headers);
+    }
+
+    @Override
+    public void updateMessage(ChatMessageDto chatMessageDto) {
+        ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
+        chatMessageRepo.save(chatMessage);
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("update", new Object());
+        messagingTemplate.convertAndSend(
+            ROOM_LINK + chatMessageDto.getRoomId() + MESSAGE_LINK, chatMessageDto, headers);
+    }
+
+    @Override
+    public ChatMessageDto findTopByOrderByIdDesc() {
+        return modelMapper.map(chatMessageRepo.findTopByOrderByIdDesc(), ChatMessageDto.class);
     }
 }
