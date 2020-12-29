@@ -148,10 +148,10 @@ class UserRepoTest {
 
     @Test
     void addNewFriendTest() {
-        userRepo.addNewFriend(1L, 3L);
-        User user = userRepo.findById(1L).get();
-        List<User> userFriends = user.getUserFriends();
-        assertEquals(3, userFriends.get(7).getId());
+        userRepo.addNewFriend(9L, 1L);
+        List<User> userFriends = userRepo.getAllUserFriendRequests(1L);
+
+        assertEquals(9L, userFriends.get(0).getId());
     }
 
     @Test

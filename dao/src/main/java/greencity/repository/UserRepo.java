@@ -179,7 +179,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * Get six friends with the highest rating {@link User}.
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE users.id IN ( "
-        + "(SELECT user_id FROM users_friends WHERE friend_id = :userdId AND status = 1) "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 1) "
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 1)) "
         + "ORDER BY users.rating DESC LIMIT 6;")
     List<User> getSixFriendsWithTheHighestRating(Long userId);
