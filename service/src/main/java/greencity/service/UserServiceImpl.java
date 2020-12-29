@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.friends.SixFriendsPageResponceDto;
 import greencity.dto.goal.CustomGoalResponseDto;
 import greencity.dto.user.*;
 import greencity.entity.SocialNetwork;
@@ -54,6 +55,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -632,6 +635,39 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(ErrorMessage.NOT_FOUND_ANY_FRIENDS + userId.toString());
         }
         return userProfilePictureDtoList;
+    }
+
+    /**
+     * Get six friends with the highest rating {@link UserVO}. by page.
+     *
+     * @param userId {@link Long}
+     * @return {@link SixFriendsPageResponceDto}.
+     * @author Oleh Bilonizhka
+     */
+    @Override
+    public SixFriendsPageResponceDto getSixFriendsWithTheHighestRatingPaged(Long userId) {
+        Pageable pageable = PageRequest.of(0, 6);
+        List<User> users = userRepo.getSixFriendsWithTheHighestRating(userId);
+        Page<User> pageUsers = new PageImpl<>(users, pageable, users.size());
+
+        List<UserProfilePictureDto> userProfilePictureDtoList = users
+            .stream()
+            .map(user -> modelMapper.map(user, UserProfilePictureDto.class))
+            .collect(Collectors.toList());
+
+        return SixFriendsPageResponceDto.builder()
+            .pagedFriends(getPageableDto(userProfilePictureDtoList,
+                pageUsers))
+            .amountOfFriends(userRepo.getAllUserFriendsCount(userId)).build();
+    }
+
+    private PageableDto<UserProfilePictureDto> getPageableDto(
+        List<UserProfilePictureDto> userProfilePictureDtoList, Page<User> pageUsers) {
+        return new PageableDto<>(
+            userProfilePictureDtoList,
+            pageUsers.getTotalElements(),
+            pageUsers.getPageable().getPageNumber(),
+            pageUsers.getTotalPages());
     }
 
     /**

@@ -418,7 +418,7 @@ class UserControllerTest {
         mockMvc.perform(get(userLink + "/{userId}/sixUserFriends/", 1))
             .andExpect(status().isOk());
 
-        verify(userService).getSixFriendsWithTheHighestRating(eq(1L));
+        verify(userService).getSixFriendsWithTheHighestRatingPaged(eq(1L));
     }
 
     @Test

@@ -7,6 +7,7 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.friends.SixFriendsPageResponceDto;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -458,7 +459,7 @@ public class UserController {
      * Method returns list profile picture with the highest rating.
      *
      * @return {@link ResponseEntity}.
-     * @author Datsko Marian
+     * @author Datsko Marian + Oleh Bilonizhka
      */
     @ApiOperation(value = "Get six friends profile picture with the highest rating")
     @ApiResponses(value = {
@@ -467,11 +468,11 @@ public class UserController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{userId}/sixUserFriends/")
-    public ResponseEntity<List<UserProfilePictureDto>> getSixFriendsWithTheHighestRating(
+    public ResponseEntity<SixFriendsPageResponceDto> getSixFriendsWithTheHighestRating(
         @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getSixFriendsWithTheHighestRating(userId));
+            .body(userService.getSixFriendsWithTheHighestRatingPaged(userId));
     }
 
     /**

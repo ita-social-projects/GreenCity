@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignControllerTest {
-
     private MockMvc mockMvc;
 
     @Mock
@@ -82,5 +81,12 @@ class HabitAssignControllerTest {
         mockMvc.perform(post(habitLink + "/{habitId}/enroll/{date}", 1, LocalDate.now()))
             .andExpect(status().isOk());
         verify(habitAssignService).enrollHabit(1L, null, LocalDate.now());
+    }
+
+    @Test
+    void unenrollHabit() throws Exception {
+        mockMvc.perform(post(habitLink + "/{habitId}/unenroll/{date}", 1, LocalDate.now()))
+            .andExpect(status().isOk());
+        verify(habitAssignService).unenrollHabit(1L, null, LocalDate.now());
     }
 }

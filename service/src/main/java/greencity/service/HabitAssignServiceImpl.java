@@ -324,7 +324,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public void unenrollHabit(Long habitId, Long userId, LocalDate date) {
+    public HabitAssignDto unenrollHabit(Long habitId, Long userId, LocalDate date) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
@@ -332,6 +332,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         deleteHabitStatusCalendarIfExists(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
+
+        return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
     /**

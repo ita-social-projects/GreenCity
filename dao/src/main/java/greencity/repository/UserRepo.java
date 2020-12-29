@@ -186,6 +186,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
 
     /**
+     * Get all user friends count.
+     *
+     * @param userId - {@link User}'s id
+     * @return - {@link Integer} count of user friends
+     */
+    @Query(nativeQuery = true,
+        value = " SELECT count(id) FROM users_friends "
+            + " LEFT JOIN users ON users.id = users_friends.friend_id "
+            + " WHERE users_friends.user_id = :userId ")
+    Integer getAllUserFriendsCount(Long userId);
+
+    /**
      * Updates last activity time for a given user.
      *
      * @param userId               - {@link User}'s id
