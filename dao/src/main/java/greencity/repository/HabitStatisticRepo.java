@@ -163,7 +163,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      */
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND upper(ha.status) = 'ACQURIED' ")
+        + " AND upper(ha.status) = 'INPROGRESS' ")
     Long getAmountOfHabitsInProgressByUserId(@Param("userId") Long id);
 
     /**
@@ -175,6 +175,6 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
      */
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + " WHERE ha.user.id = :userId"
-        + " AND upper(ha.status) = 'SUSPENDED'")
+        + " AND upper(ha.status) = 'ACQUIRED'")
     Long getAmountOfAcquiredHabitsByUserId(@Param("userId") Long id);
 }
