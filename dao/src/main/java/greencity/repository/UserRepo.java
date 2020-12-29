@@ -162,8 +162,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "UPDATE users_friends SET status=1 "
-            + "WHERE user_id=:friendId AND friend_id=:userId")
+        value = "UPDATE users_friends SET status = 1 "
+            + "WHERE user_id = :friendId AND friend_id = :userId")
     void acceptFriendRequest(Long userId, Long friendId);
 
     /**
@@ -171,8 +171,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "UPDATE users_friends SET status=2 "
-            + "WHERE user_id=:friendId AND friend_id=:userId")
+        value = "UPDATE users_friends SET status = 2 "
+            + "WHERE user_id = :friendId AND friend_id = :userId")
     void declineFriendRequest(Long userId, Long friendId);
 
     /**
