@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class HabitStatusCalendarVO {
     private Long id;
     private LocalDate enrollDate;
