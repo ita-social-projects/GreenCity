@@ -83,7 +83,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO userVO,
-                                                             HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        HabitAssignPropertiesDto habitAssignPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
         Habit habit = habitRepo.findById(habitId)
@@ -104,7 +104,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param props       {@link HabitAssignPropertiesDto} instance.
      */
     private void enhanceAssignWithCustomProperties(HabitAssign habitAssign,
-                                                   HabitAssignPropertiesDto props) {
+        HabitAssignPropertiesDto props) {
         habitAssign.setDuration(props.getDuration());
     }
 
@@ -208,7 +208,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
-                                                                             String language) {
+        String language) {
         return habitAssignRepo.findAllByHabitIdAndActive(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -219,7 +219,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
-                                                                   HabitAssignStatDto dto) {
+        HabitAssignStatDto dto) {
         HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
@@ -291,7 +291,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-                                              HabitStatusCalendar habitCalendar, Long userId) {
+        HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -430,7 +430,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
-                                                                            String language) {
+        String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
             .findAllActiveHabitAssignsBetweenDates(userId, from, to);
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
@@ -454,10 +454,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param habitAssign {@code HabitAssign} habit assign.
      * @param language    {@link String} of language code value.
-     * @param list        of {@link HabitsDateEnrollmentDto}.
+     * @param list        of {@link HabitsDateEnrollmentDto} instances.
      */
     private void buildHabitsDateEnrollmentDto(HabitAssign habitAssign, String language,
-                                              List<HabitsDateEnrollmentDto> list) {
+        List<HabitsDateEnrollmentDto> list) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
 
         for (HabitsDateEnrollmentDto dto : list) {
@@ -471,13 +471,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method to mark if habit was enrolled on concrete date.
      *
-     * @param dto {@link HabitsDateEnrollmentDto}.
-     * @param isEnrolled {@link boolean} shows if habit was enrolled.
-     * @param habitTranslation {@link HabitTranslation}.
-     * @param habitAssign {@link HabitAssign}.
+     * @param dto              {@link HabitsDateEnrollmentDto}.
+     * @param isEnrolled       {@link boolean} shows if habit was enrolled.
+     * @param habitTranslation {@link HabitTranslation} contains content.
+     * @param habitAssign      {@link HabitAssign} contains habit id.
      */
     private void markHabitOnHabitsEnrollmentDto(HabitsDateEnrollmentDto dto, boolean isEnrolled,
-                                                HabitTranslation habitTranslation, HabitAssign habitAssign) {
+        HabitTranslation habitTranslation, HabitAssign habitAssign) {
         dto.getHabitAssigns().add(HabitEnrollDto.builder()
             .habitDescription(habitTranslation.getDescription()).habitName(habitTranslation.getName())
             .isEnrolled(isEnrolled).habitId(habitAssign.getHabit().getId()).build());
@@ -486,7 +486,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method to check if {@code HabitAssign} was enrolled on concrete date.
      *
-     * @param dto {@link HabitsDateEnrollmentDto} which contains date.
+     * @param dto         {@link HabitsDateEnrollmentDto} which contains date.
      * @param habitAssign {@link HabitAssign} contains enroll dates.
      * @return boolean.
      */
@@ -503,14 +503,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method to check if {@code HabitAssign} is active on concrete date.
      *
-     * @param dto {@link HabitsDateEnrollmentDto} which contains date.
-     * @param habitAssign {@link HabitAssign} contains borders.
+     * @param dto         {@link HabitsDateEnrollmentDto} which contains date.
+     * @param habitAssign {@link HabitAssign} contains habit date borders.
      * @return boolean.
      */
     private boolean checkIfHabitIsActiveOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
         return dto.getEnrollDate()
             .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
             && dto.getEnrollDate()
-            .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
+                .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
     }
 }
