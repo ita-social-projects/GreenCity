@@ -81,7 +81,7 @@ class HabitManagementControllerTest {
     }
 
     @Test
-    void getHabitById() throws Exception{
+    void getHabitById() throws Exception {
         this.mockMvc.perform(get(habitManagementLink + "/find?id=1"))
             .andExpect(status().isOk());
 
@@ -89,12 +89,13 @@ class HabitManagementControllerTest {
     }
 
     @Test
-    void save() throws Exception{
+    void save() throws Exception {
         HabitManagementDto habitManagementDto = new HabitManagementDto();
         Gson gson = new Gson();
         String json = gson.toJson(habitManagementDto);
 
-        MockMultipartFile jsonFile = new MockMultipartFile("habitManagementDto", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("habitManagementDto", "", "application/json", json.getBytes());
         this.mockMvc.perform(multipart(habitManagementLink + "/save")
             .file(jsonFile)
             .accept(MediaType.APPLICATION_JSON)
@@ -110,17 +111,18 @@ class HabitManagementControllerTest {
         Gson gson = new Gson();
         String json = gson.toJson(habitManagementDto);
 
-        MockMultipartFile jsonFile = new MockMultipartFile("habitManagementDto", "", "application/json", json.getBytes());
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("habitManagementDto", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(habitManagementLink + "/update")
-                .file(jsonFile)
-                .with(new RequestPostProcessor() {
-                          @Override
-                          public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                              mockHttpServletRequest.setMethod("PUT");
-                              return mockHttpServletRequest;
-                          }
-                      })).andExpect(status().isOk());
+            .file(jsonFile)
+            .with(new RequestPostProcessor() {
+                @Override
+                public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
+                    mockHttpServletRequest.setMethod("PUT");
+                    return mockHttpServletRequest;
+                }
+            })).andExpect(status().isOk());
 
         verify(managementHabitService, never()).update(habitManagementDto, jsonFile);
     }
