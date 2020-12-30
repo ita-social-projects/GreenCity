@@ -38,7 +38,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private PhotoService photoService;
     private ModelMapper modelMapper;
 
-
     /**
      * {@inheritDoc}
      *
