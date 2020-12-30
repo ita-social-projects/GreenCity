@@ -1,10 +1,19 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidEcoNewsDtoRequest;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
@@ -24,7 +33,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -214,5 +231,17 @@ public class EcoNewsController {
     @ApiLocale
     public ResponseEntity<List<TagDto>> findAllEcoNewsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllEcoNewsTags(locale.getLanguage()));
+    }
+
+    /**
+     * The method find count of published eco news.
+     *
+     * @return count of published eco news.
+     * @author Mamchuk Orest
+     */
+    @ApiOperation(value = "Find count of published eco news")
+    @GetMapping("/count")
+    public ResponseEntity<Long> findAmountOfPublishedNews(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNewsByUserId(userId));
     }
 }

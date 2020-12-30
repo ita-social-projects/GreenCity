@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,6 +159,16 @@ public class CustomGoalServiceImpl implements CustomGoalService {
             deleted.add(delete(id));
         }
         return deleted;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CustomGoalResponseDto> findAllAvailableCustomGoals(Long userId) {
+        return modelMapper.map(customGoalRepo.findAllAvailableCustomGoalsForUserId(userId),
+            new TypeToken<List<CustomGoalResponseDto>>() {
+            }.getType());
     }
 
     /**

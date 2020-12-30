@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
+    private static final String CUSTOM_GOALS = "/{userId}/customGoals";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private final JwtTool jwtTool;
     private final UserService userService;
@@ -166,16 +167,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements",
                 "/advices/random/{habitId}",
                 "/advices",
+                CUSTOM_GOALS,
+                "/econews/count",
                 "/favorite_place/",
                 "/goals",
                 "/habit/assign",
                 HABIT_ASSIGN_ID + "/active",
                 HABIT_ASSIGN_ID,
+                "/habit/statistic/acquired/count",
+                "/habit/statistic/in-progress/count",
                 "/facts",
                 "/facts/random/{habitId}",
                 "/facts/dayFact/{languageId}",
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
+                "/social-networks/image",
+                "/tipsandtricks/count",
                 "/user",
                 "/user/goals/habits/{habitId}/shopping-list",
                 USER_CUSTOM_GOALS,
@@ -195,7 +202,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
+                CUSTOM_GOALS,
                 "/files/image",
+                "/files/convert",
                 HABIT_ASSIGN_ID,
                 HABIT_ASSIGN_ID + "/custom",
                 HABIT_ASSIGN_ID + "/enroll/{date}",
@@ -222,6 +231,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
+                CUSTOM_GOALS,
                 HABIT_ASSIGN_ID,
                 "/goals/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
@@ -234,7 +244,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
                 "/econews/{econewsId}",
+                CUSTOM_GOALS,
                 "/favorite_place/{placeId}",
+                "/social-networks",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_GOALS,
                 "/user/goals/user-goals",
