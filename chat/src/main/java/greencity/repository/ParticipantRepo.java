@@ -30,4 +30,9 @@ public interface ParticipantRepo extends JpaRepository<Participant, Long>,
      */
     @Query("FROM Participant p WHERE LOWER(p.name) LIKE LOWER(concat(?1, '%')) AND p.email!=?2")
     List<Participant> findAllParticipantsByQuery(String query, String currentUser);
+
+    /**
+     * {@inheritDoc}
+     */
+    Participant findByEmail(String email);
 }

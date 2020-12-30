@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -86,8 +85,33 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
+    @GetMapping("/last/message")
+    public ResponseEntity<Long> getLastId() {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatMessageService.findTopByOrderByIdDesc().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @MessageMapping("/chat")
-    public void processMessage(@Payload ChatMessageDto chatMessageDto) {
+    public void processMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @MessageMapping("/chat/delete")
+    public void deleteMessage(ChatMessageDto chatMessageDto) {
+        chatMessageService.deleteMessage(chatMessageDto);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @MessageMapping("/chat/update")
+    public void updateMessage(ChatMessageDto chatMessageDto) {
+        chatMessageService.updateMessage(chatMessageDto);
     }
 }
