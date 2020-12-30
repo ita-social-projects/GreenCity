@@ -13,7 +13,6 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.PlaceCommentRepo;
-import greencity.repository.PlaceRepo;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -38,7 +37,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private PlaceService placeService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
-    private PlaceRepo placeRepo;
+
 
     /**
      * {@inheritDoc}

@@ -26,12 +26,10 @@ import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.CustomGoalRepo;
 import greencity.repository.EcoNewsRepo;
-import greencity.repository.GoalTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitStatisticRepo;
 import greencity.repository.SocialNetworkRepo;
 import greencity.repository.TipsAndTricksRepo;
-import greencity.repository.UserGoalRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import java.sql.Timestamp;
@@ -69,11 +67,9 @@ public class UserServiceImpl implements UserService {
      * Autowired repository.
      */
     private final UserRepo userRepo;
-    private final UserGoalRepo userGoalRepo;
     private final CustomGoalRepo customGoalRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final HabitAssignService habitAssignService;
-    private final GoalTranslationRepo goalTranslationRepo;
     private final FileService fileService;
     private final TipsAndTricksRepo tipsAndTricksRepo;
     private final EcoNewsRepo ecoNewsRepo;

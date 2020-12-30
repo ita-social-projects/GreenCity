@@ -1,14 +1,6 @@
 package greencity.constant;
 
 public final class ValidationConstants {
-    public static final int USERNAME_MIN_LENGTH = 6;
-    public static final int USERNAME_MAX_LENGTH = 30;
-    public static final String INVALID_EMAIL = "{greenCity.validation.invalid.email}";
-    public static final String INVALID_PASSWORD = "{greenCity.validation.invalid.password}";
-    public static final String INVALID_USERNAME = "{greenCity.validation.invalid.username}";
-
-    public static final String NEGATIVE_ID = "{greenCity.validation.negative.id}";
-
     public static final int PLACE_NAME_MAX_LENGTH = 30;
     public static final int PLACE_ADDRESS_MAX_LENGTH = 120;
     public static final int PLACE_ADDRESS_MIN_LENGTH = 3;
@@ -35,30 +27,9 @@ public final class ValidationConstants {
     public static final String LNG_MIN_VALIDATION = "{greenCity.validation.min.lng}";
     public static final String LNG_MAX_VALIDATION = "{greenCity.validation.max.lng}";
 
-    public static final int ADVICE_MIN_LENGTH = 3;
-    public static final int ADVICE_MAX_LENGTH = 300;
-
-    public static final int HABIT_FACT_MIN_LENGTH = 3;
-    public static final int HABIT_FACT_MAX_LENGTH = 300;
-
-    public static final String BAD_PHOTO_LIST_REQUEST = "{greenCity.validation.bad.photo.request}";
-    public static final String BAD_OPENING_HOURS_LIST_REQUEST = "{greenCity.validation.bad.openingHoursList}";
-    public static final String BAD_DISCOUNT_VALUES_LIST_REQUEST = "{greenCity.validation.bad.discountValues}";
-
-    public static final int MIN_AMOUNT_OF_ITEMS = 0;
-    public static final int MAX_AMOUNT_OF_ITEMS = 16;
-
-    public static final int MAX_AMOUNT_OF_SOCIAL_NETWORK_LINKS = 5;
-
     public static final int MAX_AMOUNT_OF_TAGS = 3;
-
     public static final String BAD_COMMA_SEPARATED_NUMBERS = "{greenCity.validation.bad.comma.separated.numbers}";
-
     public static final String USER_CREATED = "{greenCity.validation.user.created}";
-
-    public static final int NUMBER_OF_RECOMMENDED_ECO_NEWS = 3;
-
-    public static final String MIN_AMOUNT_OF_TAGS = "{greenCity.validation.empty.tags}";
 
     private ValidationConstants() {
     }
