@@ -10,9 +10,8 @@ import greencity.repository.ChatRoomRepo;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -88,6 +87,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         } else {
             toReturn = chatRoom.get(0);
         }
+
         return modelMapper.map(toReturn, ChatRoomDto.class);
     }
 }

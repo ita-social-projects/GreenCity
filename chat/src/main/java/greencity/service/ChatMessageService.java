@@ -21,4 +21,19 @@ public interface ChatMessageService {
      * @param chatMessage {@link ChatMessageDto} chatMessage.
      */
     void processMessage(ChatMessageDto chatMessage);
+
+    /**
+     * {@inheritDoc}
+     */
+    void deleteMessage(ChatMessageDto chatMessage);
+
+    /**
+     * {@inheritDoc}
+     */
+    void updateMessage(ChatMessageDto chatMessageDto);
+
+    /**
+     * {@inheritDoc}
+     */
+    ChatMessageDto findTopByOrderByIdDesc();
 }
