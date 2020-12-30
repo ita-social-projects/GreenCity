@@ -79,7 +79,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'ACTIVE' OR upper(ha.status) = 'ACQUIRED'")
+        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS' OR upper(ha.status) = 'ACQUIRED'")
     List<HabitAssign> findAllByUserIdAndActive(@Param("userId") Long userId);
 
     /**
@@ -92,7 +92,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE h.id = :habitId AND upper(ha.status) = 'ACTIVE'")
+        + " WHERE h.id = :habitId AND upper(ha.status) = 'INPROGRESS'")
     List<HabitAssign> findAllByHabitIdAndActive(@Param("habitId") Long habitId);
 
     /**
@@ -129,9 +129,10 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
      */
-    @Query(value = "SELECT COUNT(ha) FROM HabitAssign ha "
-        + "WHERE upper(ha.status) = 'ACTIVE' "
-        + "AND ha.user.id = :userId")
+
+    @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
+        + "WHERE upper(ha.status) = 'INPROGRESS'"
+        + "GROUP BY ha.id")
     int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(Long userId);
 
     /**
@@ -162,7 +163,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE upper(ha.status) = 'ACTIVE'"
+        + "WHERE upper(ha.status) = 'INPROGRESS'"
         + "AND ha.user.id = :userId "
         + "AND cast(ha.createDate as date) <= cast(:date as date) "
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:date as date)")
