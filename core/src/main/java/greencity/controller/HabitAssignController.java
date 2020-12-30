@@ -261,4 +261,33 @@ public class HabitAssignController {
             .body(habitAssignService
                 .findActiveHabitAssignsOnDate(userVO.getId(), date, locale.getLanguage()));
     }
+
+    /**
+     * Method to find all user activity {@link HabitsDateEnrollmentDto} between 2
+     * {@link LocalDate}s.
+     *
+     * @param userVO {@link UserVO} user.
+     * @param from   {@link LocalDate} date to check if has active assigns.
+     * @param to     {@link LocalDate} date to check if has active assigns.
+     * @param locale needed language code.
+     * @return {@link HabitsDateEnrollmentDto} instance.
+     */
+    @ApiOperation(value = "Get user assigns between 2 days.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/activity/{from}/to/{to}")
+    public ResponseEntity<List<HabitsDateEnrollmentDto>> getActiveHabitAssignBetweenDates(
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable(value = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @PathVariable(value = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .findActiveHabitAssignsBetweenDates(userVO.getId(), from, to, locale.getLanguage()));
+    }
 }

@@ -116,6 +116,18 @@ public interface HabitAssignService {
     List<HabitAssignDto> findActiveHabitAssignsOnDate(Long userId, LocalDate date, String language);
 
     /**
+     * Method to find all active habit assigns between 2 {@link LocalDate}s.
+     *
+     * @param userId   {@code User} id.
+     * @param from     {@link LocalDate} instance.
+     * @param to       {@link LocalDate} instance.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto} instances.
+     */
+    List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId,
+        LocalDate from, LocalDate to, String language);
+
+    /**
      * Method add default habit.
      *
      * @param user {@link UserVO} instance.
