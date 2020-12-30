@@ -114,4 +114,11 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto} instances.
      */
     List<HabitAssignDto> findActiveHabitAssignsOnDate(Long userId, LocalDate date, String language);
+
+    /**
+     * Method add default habit.
+     *
+     * @param user {@link UserVO} instance.
+     */
+    void addDefaultHabit(UserVO user, String language);
 }

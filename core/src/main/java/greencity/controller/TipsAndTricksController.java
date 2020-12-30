@@ -143,4 +143,17 @@ public class TipsAndTricksController {
     public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
     }
+
+    /**
+     * The method find count of published tip&tricks.
+     *
+     * @return count of published tip&tricks.
+     * @author Mamchuk Orest
+     */
+    @ApiOperation(value = "Find count of published tip&tricks")
+    @GetMapping("/count")
+    public ResponseEntity<Long> findAmountOfWrittenTipsAndTrick(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tipsAndTricksService.getAmountOfWrittenTipsAndTrickByUserId((userId)));
+    }
 }
