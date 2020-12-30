@@ -118,7 +118,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.save(
             HabitAssign.builder()
                 .habit(habit)
-                .status(HabitAssignStatus.INPROGRESS)
+                .status(HabitAssignStatus.ACTIVE)
                 .createDate(ZonedDateTime.now())
                 .user(user)
                 .duration(0)

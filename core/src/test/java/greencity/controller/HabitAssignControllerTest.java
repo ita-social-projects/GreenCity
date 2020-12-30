@@ -67,7 +67,7 @@ class HabitAssignControllerTest {
     @Test
     void updateAssignByHabitId() throws Exception {
         HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
-        habitAssignStatDto.setStatus(HabitAssignStatus.INPROGRESS);
+        habitAssignStatDto.setStatus(HabitAssignStatus.ACTIVE);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
         mockMvc.perform(patch(habitLink + "/{habitId}", 1)

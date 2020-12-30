@@ -1,7 +1,7 @@
 package greencity.enums;
 
 public enum HabitAssignStatus {
-    INPROGRESS,
+    ACTIVE,
     ACQUIRED,
     SUSPENDED
 }
