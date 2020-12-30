@@ -22,7 +22,7 @@ public interface ParticipantRepo extends JpaRepository<Participant, Long>,
     /**
      * {@inheritDoc}
      */
-    @Query("From Participant WHERE email=:email")
+    @Query("From Participant WHERE email!=:email")
     List<Participant> findAllExceptCurrentUser(String email);
 
     /**
