@@ -512,7 +512,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
             && dto.getEnrollDate()
                 .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addDefaultHabit(UserVO user, String language) {
         if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
             UserVO userVO = modelMapper.map(user, UserVO.class);
