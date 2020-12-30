@@ -126,4 +126,10 @@ public interface HabitAssignService {
      */
     List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId,
         LocalDate from, LocalDate to, String language);
+
+     * Method add default habit.
+     *
+     * @param user {@link UserVO} instance.
+     */
+    void addDefaultHabit(UserVO user, String language);
 }

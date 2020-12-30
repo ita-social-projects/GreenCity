@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.DEACTIVATED;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
 @Sql("classpath:sql/populate_users_for_test.sql")
 class UserRepoTest {
-    @Autowired
-    private UserRepo userRepo;
-
     private final User testUser =
         User.builder()
             .id(1L)
@@ -44,7 +40,6 @@ class UserRepoTest {
             .refreshTokenKey("secret")
             .city("New York")
             .build();
-
     private final User testUser2 =
         User.builder()
             .id(2L)
@@ -58,6 +53,8 @@ class UserRepoTest {
             .refreshTokenKey("secret2")
             .city("Kyiv")
             .build();
+    @Autowired
+    private UserRepo userRepo;
 
     @Test
     void findByEmailTest() {
@@ -151,10 +148,10 @@ class UserRepoTest {
 
     @Test
     void addNewFriendTest() {
-        userRepo.addNewFriend(1L, 3L);
-        User user = userRepo.findById(1L).get();
-        List<User> userFriends = user.getUserFriends();
-        assertEquals(3, userFriends.get(7).getId());
+        userRepo.addNewFriend(9L, 1L);
+        List<User> userFriends = userRepo.getAllUserFriendRequests(1L);
+
+        assertEquals(9L, userFriends.get(0).getId());
     }
 
     @Test

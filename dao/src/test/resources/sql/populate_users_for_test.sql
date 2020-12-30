@@ -18,14 +18,18 @@ VALUES (1, '2020-09-30T00:00', 'test@email.com', 0, 'SuperTest', '2020-09-30T00:
        (7, '2020-09-24T00:00', 'test7@email.com', 0, 'SuperTest7', '2020-09-24T00:00', 0, 2, 'secret7', 70, 'New York'),
        (8, '2020-09-23T00:00', 'test8@email.com', 0, 'SuperTest8', '2020-09-23T00:00', 0, 2, 'secret8', 80, 'New York'),
        (9, '2020-09-22T00:00', 'test9@email.com', 0, 'SuperTest9', '2020-09-22T00:00', 0, 2, 'secret9', 90, 'New York'),
-       (10, '2020-09-21T00:00', 'test10@email.com', 0, 'SuperTest10', '2020-09-21T00:00', 0, 2, 'secret10', 100, 'New York');
+       (10, '2020-09-21T00:00', 'test10@email.com', 0, 'SuperTest10', '2020-09-21T00:00', 0, 2, 'secret10', 100,
+        'New York');
 
-UPDATE users SET profile_picture = 'someSecretPathToPicture' WHERE id = 1;
+UPDATE users
+SET profile_picture = 'someSecretPathToPicture'
+WHERE id = 1;
 
-INSERT INTO users_friends VALUES (1, 2),
-                                 (1, 4),
-                                 (1, 5),
-                                 (1, 6),
-                                 (1, 7),
-                                 (1, 8),
-                                 (1, 9);
+INSERT INTO users_friends
+VALUES (1, 2, 1, CURRENT_TIMESTAMP),
+       (1, 4, 1, CURRENT_TIMESTAMP),
+       (1, 5, 1, CURRENT_TIMESTAMP),
+       (1, 6, 1, CURRENT_TIMESTAMP),
+       (1, 7, 1, CURRENT_TIMESTAMP),
+       (1, 8, 1, CURRENT_TIMESTAMP),
+       (1, 9, 1, CURRENT_TIMESTAMP);

@@ -143,4 +143,33 @@ public class HabitStatisticController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitStatisticService.getTodayStatisticsForAllHabitItems(locale.getLanguage()));
     }
+
+    /**
+     * Method for getting amount of acquired {@link HabitVO} by {@link UserVO} id.
+     *
+     * @param userId {@link UserVO} id.
+     * @return amount of acquired habits by {@link UserVO} id.
+     * @author Mamchuk Orest
+     */
+    @ApiOperation(value = "Get amount of acquired habit")
+    @GetMapping("acquired/count")
+    public ResponseEntity<Long> findAmountOfAcquiredHabits(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getAmountOfAcquiredHabitsByUserId(userId));
+    }
+
+    /**
+     * Method for getting amount of in progress {@link HabitVO} by {@link UserVO}
+     * id.
+     *
+     * @param userId {@link UserVO} id.
+     * @return amount of acquired habits by {@link UserVO} id.
+     * @author Mamchuk Orest
+     */
+    @ApiOperation(value = "Get amount of in progress habit")
+    @GetMapping("in-progress/count")
+    public ResponseEntity<Long> findAmountOfHabitsInProgress(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitStatisticService.getAmountOfHabitsInProgressByUserId(userId));
+    }
 }

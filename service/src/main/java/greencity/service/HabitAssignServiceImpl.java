@@ -53,7 +53,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
-    @Transactional
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
@@ -429,6 +428,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+
     public List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
         String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
@@ -512,5 +512,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
             && dto.getEnrollDate()
                 .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
+
+    public void addDefaultHabit(UserVO user, String language) {
+        if (habitAssignRepo.findAllByUserId(user.getId()).isEmpty()) {
+            UserVO userVO = modelMapper.map(user, UserVO.class);
+            assignDefaultHabitForUser(1L, userVO);
+        }
     }
 }
