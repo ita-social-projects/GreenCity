@@ -139,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/count/likes",
                 "/econews/comments/replies/active/{parentCommentId}",
                 "/econews/comments/active",
+                "/language",
                 TIPS_AND_TRICKS_COMMENTS,
                 "/tipsandtricks/comments/count/comments",
                 "/tipsandtricks/comments/replies/{parentCommentId}",
