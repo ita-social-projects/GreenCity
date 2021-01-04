@@ -84,6 +84,9 @@ public class SwaggerConfig {
     }
 
     private boolean include(String path) {
+        if (path.equals("/ownSecurity")) {
+            return true;
+        }
         return !path.startsWith("/ownSecurity");
     }
 }
