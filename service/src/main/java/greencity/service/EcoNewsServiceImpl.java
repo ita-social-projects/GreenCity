@@ -25,6 +25,8 @@ import greencity.entity.EcoNewsComment;
 import greencity.entity.EcoNews_;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -68,7 +70,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
-
+    private final AchievementCalculation achievementCalculation;
     @Value("${messaging.rabbit.email.topic}")
     private String sendEmailTopic;
 
