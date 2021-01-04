@@ -291,9 +291,9 @@ class EcoNewsServiceImplTest {
     @Test
     void deleteAllTest() {
         List<Long> listId = Collections.singletonList(1L);
-        doNothing().when(ecoNewsRepo).deleteById(anyLong());
+        doNothing().when(ecoNewsRepo).deleteEcoNewsWithIds(listId);
         ecoNewsService.deleteAll(listId);
-        verify(ecoNewsRepo, times(1)).deleteById(1L);
+        verify(ecoNewsRepo, times(1)).deleteEcoNewsWithIds(listId);
     }
 
     @Test
