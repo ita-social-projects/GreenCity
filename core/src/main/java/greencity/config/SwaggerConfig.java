@@ -71,7 +71,6 @@ public class SwaggerConfig {
     private SecurityContext securityContext() {
         return SecurityContext.builder()
             .securityReferences(defaultAuth())
-            .forPaths(this::include)
             .build();
     }
 
@@ -81,12 +80,5 @@ public class SwaggerConfig {
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
         return Lists.newArrayList(new SecurityReference("JWT", authorizationScopes));
-    }
-
-    private boolean include(String path) {
-        if (path.equals("/ownSecurity")) {
-            return true;
-        }
-        return !path.startsWith("/ownSecurity");
     }
 }
