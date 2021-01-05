@@ -41,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
@@ -50,6 +51,8 @@ class EcoNewsCommentServiceImplTest {
     private EcoNewsService ecoNewsService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
@@ -395,6 +398,8 @@ class EcoNewsCommentServiceImplTest {
         ecoNewsComment.setUsersLiked(new HashSet<>());
 
         when(ecoNewsCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.of(ecoNewsComment));
+        doNothing().when(messagingTemplate).convertAndSend("/topic/"
+            + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
         ecoNewsCommentService.countLikes(amountCommentLikesDto);
         verify(ecoNewsCommentRepo).findById(1L);
     }
