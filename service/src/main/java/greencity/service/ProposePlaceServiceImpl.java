@@ -10,7 +10,6 @@ import greencity.exception.exceptions.BadRequestException;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,7 +23,6 @@ public class ProposePlaceServiceImpl implements ProposePlaceService {
     private final SpecificationService specService;
     private final PhotoService photoService;
     private final LocationService locationService;
-    private final ModelMapper modelMapper;
 
     /**
      * Method check if input location is new.
