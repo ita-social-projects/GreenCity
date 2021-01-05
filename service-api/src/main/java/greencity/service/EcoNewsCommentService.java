@@ -1,10 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.*;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
@@ -71,10 +68,9 @@ public interface EcoNewsCommentService {
      * Method returns count of likes to certain {@link EcoNewsCommentVO} specified
      * by id.
      *
-     * @param id of {@link EcoNewsCommentVO} to which we get count of likes.
-     * @return count of likes to certain {@link EcoNewsCommentVO} specified by id.
+     * @param amountCommentLikesDto dto with id and count likes for comments.
      */
-    int countLikes(Long id);
+    void countLikes(AmountCommentLikesDto amountCommentLikesDto);
 
     /**
      * Method to count replies to certain {@link EcoNewsCommentVO}.
