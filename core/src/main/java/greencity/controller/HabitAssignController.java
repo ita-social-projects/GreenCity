@@ -44,6 +44,7 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @PostMapping("/{habitId}")
     public ResponseEntity<HabitAssignManagementDto> assignDefault(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO) {
@@ -66,6 +67,7 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @PostMapping("/{habitId}/custom")
     public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
