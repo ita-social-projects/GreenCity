@@ -20,7 +20,11 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
@@ -38,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -52,6 +55,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -123,15 +128,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeLastEcoNews() {
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeLastEcoNews();
-
         if (ecoNewsList.isEmpty()) {
             throw new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND);
         }
-
-        return ecoNewsList
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+        return getEcoNewsList(ecoNewsList);
     }
 
     /**
@@ -142,10 +142,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
-        return ecoNewsList
-            .stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-            .collect(Collectors.toList());
+        return getEcoNewsList(ecoNewsList);
     }
 
     /**
@@ -231,9 +228,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
 
+    @Transactional
     @Override
     public void deleteAll(List<Long> listId) {
-        listId.forEach(ecoNewsRepo::deleteById);
+        ecoNewsRepo.deleteEcoNewsWithIds(listId);
     }
 
     /**
@@ -409,38 +407,15 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public List<SearchCriteria> buildSearchCriteria(EcoNewsViewDto ecoNewsViewDto) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         SearchCriteria searchCriteria;
-        if (!ecoNewsViewDto.getId().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.ID)
-                .type(EcoNews_.ID)
-                .value(ecoNewsViewDto.getId())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!ecoNewsViewDto.getTitle().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.TITLE)
-                .type(EcoNews_.TITLE)
-                .value(ecoNewsViewDto.getTitle())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!ecoNewsViewDto.getAuthor().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.AUTHOR)
-                .type(EcoNews_.AUTHOR)
-                .value(ecoNewsViewDto.getAuthor())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!ecoNewsViewDto.getText().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.TEXT)
-                .type(EcoNews_.TEXT)
-                .value(ecoNewsViewDto.getText())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
+
+        setValueIfNotEmpty(criteriaList, EcoNews_.ID, ecoNewsViewDto.getId());
+        setValueIfNotEmpty(criteriaList, EcoNews_.TITLE, ecoNewsViewDto.getTitle());
+        setValueIfNotEmpty(criteriaList, EcoNews_.AUTHOR, ecoNewsViewDto.getAuthor());
+        setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
+        setValueIfNotEmpty(criteriaList, EcoNews_.IMAGE_PATH, ecoNewsViewDto.getImagePath());
+        setValueIfNotEmpty(criteriaList, EcoNews_.SOURCE, ecoNewsViewDto.getSource());
+        setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
+
         if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
             searchCriteria = SearchCriteria.builder()
                 .key(EcoNews_.CREATION_DATE)
@@ -449,30 +424,24 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .build();
             criteriaList.add(searchCriteria);
         }
-        if (!ecoNewsViewDto.getImagePath().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.IMAGE_PATH)
-                .type(EcoNews_.IMAGE_PATH)
-                .value(ecoNewsViewDto.getImagePath())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!ecoNewsViewDto.getSource().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.SOURCE)
-                .type(EcoNews_.SOURCE)
-                .value(ecoNewsViewDto.getSource())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
-        if (!ecoNewsViewDto.getTags().isEmpty()) {
-            searchCriteria = SearchCriteria.builder()
-                .key(EcoNews_.TAGS)
-                .type(EcoNews_.TAGS)
-                .value(ecoNewsViewDto.getTags())
-                .build();
-            criteriaList.add(searchCriteria);
-        }
+
         return criteriaList;
+    }
+
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
+        if (!StringUtils.isEmpty(value)) {
+            searchCriteria.add(SearchCriteria.builder()
+                .key(key)
+                .type(key)
+                .value(value)
+                .build());
+        }
+    }
+
+    private List<EcoNewsDto> getEcoNewsList(List<EcoNews> ecoNewsList) {
+        return ecoNewsList
+            .stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 }
