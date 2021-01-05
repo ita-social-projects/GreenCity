@@ -8,6 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
@@ -24,6 +25,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsService ecoNewsService;
     private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -204,17 +207,17 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method returns count of likes to certain
      * {@link greencity.entity.EcoNewsComment} specified by id.
      *
-     * @param id of {@link greencity.entity.EcoNewsComment} to which we get count of
-     *           likes.
-     * @return count of likes to certain {@link greencity.entity.EcoNewsComment}
-     *         specified by id.
+     * @param amountCommentLikesDto dto with id and count likes for comments.
      */
     @Override
     @Transactional
-    public int countLikes(Long id) {
-        EcoNewsComment comment = ecoNewsCommentRepo.findById(id).orElseThrow(
+    public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
+        EcoNewsComment comment = ecoNewsCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-        return comment.getUsersLiked().size();
+        int size = comment.getUsersLiked().size();
+        amountCommentLikesDto.setAmountLikes(size);
+        messagingTemplate
+            .convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
     }
 
     /**

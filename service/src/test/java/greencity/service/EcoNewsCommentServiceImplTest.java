@@ -13,6 +13,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
@@ -40,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
@@ -49,6 +51,8 @@ class EcoNewsCommentServiceImplTest {
     private EcoNewsService ecoNewsService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
@@ -373,24 +377,31 @@ class EcoNewsCommentServiceImplTest {
 
     @Test
     void countLikesCommentThatDoesntExistsThrowException() {
-        Long commentId = 1L;
+        AmountCommentLikesDto amountCommentLikesDto = AmountCommentLikesDto.builder()
+            .id(1L)
+            .amountLikes(2)
+            .build();
 
-        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
-
+        when(ecoNewsCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.empty());
         BadRequestException badRequestException =
-            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countLikes(commentId));
+            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countLikes(amountCommentLikesDto));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
     }
 
     @Test
     void countLikes() {
-        Long commentId = 1L;
+        AmountCommentLikesDto amountCommentLikesDto = AmountCommentLikesDto.builder()
+            .id(1L)
+            .amountLikes(2)
+            .build();
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
         ecoNewsComment.setUsersLiked(new HashSet<>());
 
-        when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
-
-        assertEquals(0, ecoNewsCommentService.countLikes(commentId));
+        when(ecoNewsCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.of(ecoNewsComment));
+        doNothing().when(messagingTemplate).convertAndSend("/topic/"
+            + amountCommentLikesDto.getId() + "/comment", amountCommentLikesDto);
+        ecoNewsCommentService.countLikes(amountCommentLikesDto);
+        verify(ecoNewsCommentRepo).findById(1L);
     }
 
     @Test

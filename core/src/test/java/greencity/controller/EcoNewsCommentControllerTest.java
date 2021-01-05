@@ -1,9 +1,11 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.EcoNewsCommentService;
@@ -207,13 +209,5 @@ class EcoNewsCommentControllerTest {
 
         verify(userService).findByEmail(eq("test@gmail.com"));
         verify(ecoNewsCommentService).like(eq(1L), eq(userVO));
-    }
-
-    @Test
-    void getCountOfLikes() throws Exception {
-        mockMvc.perform(get(ecoNewsCommentControllerLink + "/count/likes?id=1"))
-            .andExpect(status().isOk());
-
-        verify(ecoNewsCommentService).countLikes(eq(1L));
     }
 }

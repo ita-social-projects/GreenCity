@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -158,32 +157,13 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method to count likes to certain {@link EcoNewsCommentVO}.
-     *
-     * @param id specifies comment
-     * @return amount of likes
-     */
-    @ApiOperation(value = "Count comment likes.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
-    })
-    @GetMapping("/count/likes")
-    public int getCountOfLikes(Long id) {
-        return ecoNewsCommentService.countLikes(id);
-    }
-
-    /**
      * Method to like/dislike comment and count likes.
      *
-     * @param id specifies comment
-     * @return amount of likes
+     * @param amountCommentLikesDto dto with id and count likes for comments.
      */
     @MessageMapping("/likeAndCount")
-    @SendTo("/topic/comment")
-    public AmountCommentLikesDto getCountOfLike(Long id) {
-        int amountLikes = ecoNewsCommentService.countLikes(id);
-        return AmountCommentLikesDto.builder().amountLikes(amountLikes).id(id).build();
+    public void getCountOfLike(AmountCommentLikesDto amountCommentLikesDto) {
+        ecoNewsCommentService.countLikes(amountCommentLikesDto);
     }
 
     /**
