@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.client.RestClient;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -44,7 +45,7 @@ class TipsAndTricksCommentControllerTest {
     @Mock
     private TipsAndTricksCommentService tipsAndTricksCommentService;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private ModelMapper modelMapper;
 
@@ -54,7 +55,7 @@ class TipsAndTricksCommentControllerTest {
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(tipsAndTricksCommentController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+                new UserArgumentResolver(restClient, modelMapper))
             .build();
     }
 
@@ -62,7 +63,7 @@ class TipsAndTricksCommentControllerTest {
     void saveTest() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         String content = "{\n" +
@@ -80,7 +81,7 @@ class TipsAndTricksCommentControllerTest {
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest =
             mapper.readValue(content, AddTipsAndTricksCommentDtoRequest.class);
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).save(eq(1L), eq(addTipsAndTricksCommentDtoRequest), eq(userVO));
     }
 
@@ -96,7 +97,7 @@ class TipsAndTricksCommentControllerTest {
     void findAllTest() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         int pageNumber = 5;
@@ -107,7 +108,7 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).findAllComments(eq(pageable), eq(userVO), eq(1L));
     }
 
@@ -131,14 +132,14 @@ class TipsAndTricksCommentControllerTest {
     void deleteTest() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(delete(tipsAndTricksCommentLink + "?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).deleteById(eq(1L), eq(userVO));
     }
 
@@ -146,14 +147,14 @@ class TipsAndTricksCommentControllerTest {
     void updateTest() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(patch(tipsAndTricksCommentLink + "?id=1&text=text")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).update(eq("text"), eq(1L), eq(userVO));
     }
 
@@ -161,14 +162,14 @@ class TipsAndTricksCommentControllerTest {
     void likeTest() throws Exception {
         User user = getUser();
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
         mockMvc.perform(post(tipsAndTricksCommentLink + "/like?id=1")
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail(eq("test@gmail.com"));
         verify(tipsAndTricksCommentService).like(eq(1L), eq(userVO));
     }
 
