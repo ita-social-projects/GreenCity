@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class ChatMessageServiceImplTest {
     @InjectMocks
@@ -45,10 +44,10 @@ class ChatMessageServiceImplTest {
     @BeforeEach
     void init() {
         expectedChatMessageDto = ChatMessageDto.builder()
-                .roomId(1L)
-                .senderId(1L)
-                .content("test")
-                .build();
+            .roomId(1L)
+            .senderId(1L)
+            .content("test")
+            .build();
     }
 
     @Test
@@ -67,7 +66,8 @@ class ChatMessageServiceImplTest {
         when(modelMapper.map(expectedChatMessageDto, ChatMessage.class)).thenReturn(expectedChatMessage);
         when(chatMessageRepo.save(expectedChatMessage)).thenReturn(expectedChatMessage);
         chatMessageServiceImpl.processMessage(expectedChatMessageDto);
-        verify(messagingTemplate).convertAndSend("/room/" + expectedChatMessageDto.getRoomId() + "/queue/messages", expectedChatMessageDto);
+        verify(messagingTemplate).convertAndSend("/room/" + expectedChatMessageDto.getRoomId() + "/queue/messages",
+            expectedChatMessageDto);
 
     }
 }

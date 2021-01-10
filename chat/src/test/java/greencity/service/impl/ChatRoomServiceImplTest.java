@@ -50,33 +50,33 @@ class ChatRoomServiceImplTest {
         expectedListEmpty = new ArrayList<>();
         expectedSet = new HashSet<>();
         expectedParticipant = Participant.builder()
-                .id(1L)
-                .name("artur")
-                .email(email)
-                .profilePicture(null)
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .id(1L)
+            .name("artur")
+            .email(email)
+            .profilePicture(null)
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
         expectedSet.add(expectedParticipant);
         expected = ChatRoom.builder()
-                .id(1L)
-                .name("test")
-                .messages(new LinkedList<>())
-                .type(ChatType.PRIVATE)
-                .participants(new HashSet<>())
-                .build();
+            .id(1L)
+            .name("test")
+            .messages(new LinkedList<>())
+            .type(ChatType.PRIVATE)
+            .participants(new HashSet<>())
+            .build();
         expectedList.add(expected);
         expectedToReturn = ChatRoom.builder()
-                .name("chatName")
-                .participants(expectedSet)
-                .type(ChatType.PRIVATE)
-                .build();
+            .name("chatName")
+            .participants(expectedSet)
+            .type(ChatType.PRIVATE)
+            .build();
         expectedDto = ChatRoomDto.builder()
-                .id(1L)
-                .name("test")
-                .messages(new LinkedList<>())
-                .chatType(ChatType.PRIVATE)
-                .participants(new HashSet<>())
-                .build();
+            .id(1L)
+            .name("test")
+            .messages(new LinkedList<>())
+            .chatType(ChatType.PRIVATE)
+            .participants(new HashSet<>())
+            .build();
     }
 
     @Test
@@ -91,7 +91,8 @@ class ChatRoomServiceImplTest {
 
     @Test
     void findAllRoomsByParticipantsAndStatus() {
-        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.GROUP)).thenReturn(expectedList);
+        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.GROUP))
+            .thenReturn(expectedList);
         when(modelMapper.map(expectedList, new TypeToken<List<ChatRoomDto>>() {
         }.getType())).thenReturn(expectedListDto);
         List<ChatRoomDto> actual = chatRoomService.findAllRoomsByParticipantsAndStatus(expectedSet, ChatType.GROUP);
@@ -110,12 +111,14 @@ class ChatRoomServiceImplTest {
     void findPrivateByParticipants() {
         when(participantService.findByEmail(email)).thenReturn(expectedParticipant);
         when(participantService.findById(1L)).thenReturn(expectedParticipant);
-        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.PRIVATE)).thenReturn(expectedListEmpty);
+        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.PRIVATE))
+            .thenReturn(expectedListEmpty);
         when(chatRoomRepo.save(expectedToReturn)).thenReturn(expectedToReturn);
         when(modelMapper.map(expectedToReturn, ChatRoomDto.class)).thenReturn(expectedDto);
         ChatRoomDto actualExpectedListEmpty = chatRoomService.findPrivateByParticipants(1L, email);
         assertEquals(expectedDto, actualExpectedListEmpty);
-        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.PRIVATE)).thenReturn(expectedList);
+        when(chatRoomRepo.findByParticipantsAndStatus(expectedSet, expectedSet.size(), ChatType.PRIVATE))
+            .thenReturn(expectedList);
         when(modelMapper.map(expected, ChatRoomDto.class)).thenReturn(expectedDto);
         ChatRoomDto actualExpectedList = chatRoomService.findPrivateByParticipants(1L, email);
         assertEquals(expectedDto, actualExpectedList);

@@ -44,10 +44,10 @@ class ChatMessageServiceTest {
     @BeforeEach
     void init() {
         expectedChatMessageDto = ChatMessageDto.builder()
-                .roomId(1L)
-                .senderId(1L)
-                .content("test")
-                .build();
+            .roomId(1L)
+            .senderId(1L)
+            .content("test")
+            .build();
     }
 
     @Test
@@ -66,6 +66,7 @@ class ChatMessageServiceTest {
         when(modelMapper.map(expectedChatMessageDto, ChatMessage.class)).thenReturn(expectedChatMessage);
         when(chatMessageRepo.save(expectedChatMessage)).thenReturn(expectedChatMessage);
         chatMessageServiceImpl.processMessage(expectedChatMessageDto);
-        verify(messagingTemplate).convertAndSend("/room/" + expectedChatMessageDto.getRoomId() + "/queue/messages", expectedChatMessageDto);
+        verify(messagingTemplate).convertAndSend("/room/" + expectedChatMessageDto.getRoomId() + "/queue/messages",
+            expectedChatMessageDto);
     }
 }

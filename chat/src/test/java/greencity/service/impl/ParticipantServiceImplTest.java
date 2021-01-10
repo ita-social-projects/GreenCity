@@ -1,6 +1,5 @@
 package greencity.service.impl;
 
-
 import greencity.dto.ParticipantDto;
 import greencity.entity.Participant;
 import greencity.enums.UserStatus;
@@ -41,19 +40,19 @@ class ParticipantServiceImplTest {
     @BeforeEach
     void init() {
         expected = Participant.builder()
-                .id(1L)
-                .name("artur")
-                .email(email)
-                .profilePicture(null)
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .id(1L)
+            .name("artur")
+            .email(email)
+            .profilePicture(null)
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
         expectedDto = ParticipantDto.builder()
-                .id(1L)
-                .name("artur")
-                .email(email)
-                .profilePicture(null)
-                .userStatus(UserStatus.ACTIVATED)
-                .build();
+            .id(1L)
+            .name("artur")
+            .email(email)
+            .profilePicture(null)
+            .userStatus(UserStatus.ACTIVATED)
+            .build();
         expectedList = new ArrayList<>();
         expectedList.add(expected);
         expectedDtoList = new ArrayList<>();
@@ -62,7 +61,8 @@ class ParticipantServiceImplTest {
 
     @Test
     void findByEmail() {
-        when(participantRepo.findNotDeactivatedByEmail(email)).thenReturn(Optional.of(expected)).thenThrow(UserNotFoundException.class);
+        when(participantRepo.findNotDeactivatedByEmail(email)).thenReturn(Optional.of(expected))
+            .thenThrow(UserNotFoundException.class);
         Optional<Participant> actual = Optional.ofNullable(participantServiceImpl.findByEmail(email));
         assertEquals(Optional.of(expected), actual);
     }
@@ -76,7 +76,8 @@ class ParticipantServiceImplTest {
 
     @Test
     void getCurrentParticipantByEmail() {
-        when(participantRepo.findNotDeactivatedByEmail(email)).thenReturn(Optional.of(expected)).thenThrow(UserNotFoundException.class);
+        when(participantRepo.findNotDeactivatedByEmail(email)).thenReturn(Optional.of(expected))
+            .thenThrow(UserNotFoundException.class);
         when(modelMapper.map(expected, ParticipantDto.class)).thenReturn(expectedDto);
         ParticipantDto actualDto = participantServiceImpl.getCurrentParticipantByEmail(email);
         assertEquals(expectedDto, actualDto);
