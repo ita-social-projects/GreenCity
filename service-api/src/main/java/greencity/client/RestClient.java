@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 public class RestClient {
     private final RestTemplate restTemplate;
     @Value("${greencityuser.server.address}")
-    private String greenCityUserServerAddress;
+    private final String greenCityUserServerAddress;
 
     /**
      * Method find user by principal.
@@ -25,8 +25,9 @@ public class RestClient {
      */
     public UserVO findByEmail(String email) {
         HttpHeaders headers = new HttpHeaders();
-        return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
+        String url = greenCityUserServerAddress
+                + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email;
+        return restTemplate.exchange(url, HttpMethod.GET,
             new HttpEntity<>(headers), UserVO.class).getBody();
     }
 }
