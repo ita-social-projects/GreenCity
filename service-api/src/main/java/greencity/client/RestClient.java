@@ -26,7 +26,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpHeaders headers = new HttpHeaders();
         String url = greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email;
+            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email;
         return restTemplate.exchange(url, HttpMethod.GET,
             new HttpEntity<>(headers), UserVO.class).getBody();
     }
