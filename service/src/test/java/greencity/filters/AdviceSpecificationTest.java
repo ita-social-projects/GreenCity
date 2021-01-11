@@ -8,12 +8,14 @@ import greencity.entity.localization.AdviceTranslation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.ListAttribute;
+import javax.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import static greencity.entity.localization.AdviceTranslation_.content;
 
 @ExtendWith(MockitoExtension.class)
 class AdviceSpecificationTest {
@@ -52,6 +54,14 @@ class AdviceSpecificationTest {
     private Predicate andTranslationPredicate;
 
     @Mock
+    private SingularAttribute<Advice, Habit> habit;
+
+    @Mock
+    private ListAttribute<Advice, AdviceTranslation> translations;
+
+    @Mock
+    private SingularAttribute<Habit, Long> id;
+
     private AdviceSpecification adviceSpecification;
 
     private List<SearchCriteria> criteriaList;
@@ -82,6 +92,9 @@ class AdviceSpecificationTest {
                 .build()
         );
 
+        Advice_.habit = habit;
+        Advice_.translations = translations;
+        Habit_.id = id;
         adviceSpecification = new AdviceSpecification(criteriaList);
     }
 
@@ -114,7 +127,7 @@ class AdviceSpecificationTest {
         verify(criteriaBuilderMock).and(predicateMock, andIdNumericPredicate);
         verify(criteriaBuilderMock).and(andIdNumericPredicate, andHabitIdPredicate);
         verify(criteriaBuilderMock).and(andHabitIdPredicate, andTranslationPredicate);
-        verify(criteriaBuilderMock, never()).like(translationJoinMock.get(Translation_.content), "%" + criteriaList.get(2).getValue() + "%");
+        verify(criteriaBuilderMock, never()).like(translationJoinMock.get(content), "%" + criteriaList.get(2).getValue() + "%");
     }
 
 }
