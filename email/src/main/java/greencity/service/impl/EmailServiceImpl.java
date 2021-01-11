@@ -193,7 +193,7 @@ public class EmailServiceImpl implements EmailService {
         Locale rus = new Locale("ru", "RU");
         Locale ua = new Locale("uk", "UA");
         switch (language) {
-            case "uk":
+            case "ua":
                 Locale.setDefault(ua);
                 break;
             case "ru":
