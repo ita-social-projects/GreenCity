@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PlaceCommentServiceImpl implements PlaceCommentService {
-    private UserService userService;
+    private RestClient restClient;
     private PlaceCommentRepo placeCommentRepo;
     private PlaceService placeService;
     private PhotoService photoService;
@@ -58,7 +59,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         Place place = modelMapper.map(placeService.findById(placeId), Place.class);
-        User user = modelMapper.map(userService.findByEmail(email), User.class);
+        User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);

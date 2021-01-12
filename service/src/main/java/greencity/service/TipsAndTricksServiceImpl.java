@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -44,7 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final TipsAndTricksRepo tipsAndTricksRepo;
 
-    private final UserService userService;
+    private final RestClient restClient;
 
     private final ModelMapper modelMapper;
 
@@ -60,7 +61,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         MultipartFile image, String email) {
-        toSave.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
         if (tipsAndTricksDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
@@ -78,7 +79,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private void enhanceWithNewManagementData(TipsAndTricks tipsAndTricks,
         TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
         MultipartFile image, String email) {
-        tipsAndTricks.setAuthor(modelMapper.map(userService.findByEmail(email), User.class));
+        tipsAndTricks.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
         tipsAndTricks.getTitleTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
         tipsAndTricks.getTextTranslations().forEach(el -> el.setTipsAndTricks(tipsAndTricks));
         if (tipsAndTricksDtoManagement.getImagePath() != null) {

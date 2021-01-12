@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -68,7 +69,7 @@ class TipsAndTricksServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private UserServiceImpl userService;
+    private RestClient restClient;
     @Mock
     private LanguageService languageService;
     @InjectMocks
@@ -98,7 +99,7 @@ class TipsAndTricksServiceImplTest {
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
@@ -126,7 +127,7 @@ class TipsAndTricksServiceImplTest {
         String email = ModelUtils.getUser().getEmail();
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
@@ -144,7 +145,7 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksDtoRequest.setImage(imageToEncode);
 
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
@@ -162,7 +163,7 @@ class TipsAndTricksServiceImplTest {
     void saveTipsAndTricksWithTranslationsTest() {
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(modelMapper.map(languageService.findByCode(any()), Language.class)).thenReturn(ModelUtils.getLanguage());
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
 
@@ -188,7 +189,7 @@ class TipsAndTricksServiceImplTest {
 
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(modelMapper.map(languageService.findByCode(any()), Language.class)).thenReturn(ModelUtils.getLanguage());
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
@@ -353,7 +354,7 @@ class TipsAndTricksServiceImplTest {
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
-        when(userService.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
 
