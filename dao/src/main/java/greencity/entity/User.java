@@ -41,11 +41,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"lastVisit", "verifyEmail", "ownSecurity",
+    exclude = {"lastVisit", "verifyEmail", "ownSecurity", "ecoNewsCommentsLiked",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
-//@ToString(
-//    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey",
-//        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
+@ToString(
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsCommentsLiked",
+        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
