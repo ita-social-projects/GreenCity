@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
@@ -134,7 +135,7 @@ class PlaceServiceImplTest {
     @Spy
     private ModelMapper modelMapper;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private ProposePlaceServiceImpl proposePlaceMapper;
     @Mock
@@ -154,7 +155,7 @@ class PlaceServiceImplTest {
     void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
-            locationService, specificationService, userService, openingHoursService, discountService,
+            locationService, specificationService, restClient, openingHoursService, discountService,
             notificationService, zoneId, rabbitTemplate, proposePlaceMapper, categoryRepo);
     }
 
@@ -164,7 +165,7 @@ class PlaceServiceImplTest {
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);
         when(modelMapper.map(place, PlaceVO.class)).thenReturn(placeVO);

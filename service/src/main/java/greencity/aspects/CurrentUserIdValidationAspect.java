@@ -1,6 +1,7 @@
 package greencity.aspects;
 
 import greencity.annotations.CurrentUserId;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotCurrentUserException;
 import greencity.service.UserService;
@@ -21,17 +22,17 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class CurrentUserIdValidationAspect {
-    private final UserService userService;
+    private final RestClient restClient;
 
     /**
      * Constructor with UserService dependency declaration. UserService is used for
      * current user id acquisition.
      *
-     * @param userService {@link UserService} is used for current user id
-     *                    acquisition.
+     * @param restClient {@link UserService} is used for current user id
+     *                   acquisition.
      */
-    public CurrentUserIdValidationAspect(UserService userService) {
-        this.userService = userService;
+    public CurrentUserIdValidationAspect(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     /**
@@ -51,7 +52,7 @@ public class CurrentUserIdValidationAspect {
     public void validateCurrentUserIdParameter(JoinPoint joinPoint) throws NoSuchMethodException {
         getAnnotatedArgument(joinPoint).ifPresent(userId -> {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            Long currentUserId = userService.findByEmail(authentication.getName()).getId();
+            Long currentUserId = restClient.findByEmail(authentication.getName()).getId();
             if (!currentUserId.equals(userId)) {
                 throw new NotCurrentUserException(ErrorMessage.NOT_A_CURRENT_USER);
             }

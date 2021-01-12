@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
@@ -60,7 +61,7 @@ class EcoNewsServiceImplTest {
     NewsSubscriberService newsSubscriberService;
 
     @Mock
-    UserService userService;
+    RestClient restClient;
 
     @Mock
     TagsService tagService;
@@ -88,7 +89,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(languageService.extractLanguageCodeFromRequest()).thenReturn(AppConstant.DEFAULT_LANGUAGE_CODE);
         when(newsSubscriberService.findAll()).thenReturn(Collections.emptyList());
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
@@ -116,7 +117,7 @@ class EcoNewsServiceImplTest {
         addEcoNewsDtoRequest.setImage(imageToEncode);
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
@@ -133,7 +134,7 @@ class EcoNewsServiceImplTest {
         addEcoNewsDtoRequest.setTags(Arrays.asList("tags", "tags"));
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
 
         assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, null, TestConst.EMAIL));
     }
@@ -144,7 +145,7 @@ class EcoNewsServiceImplTest {
 
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenThrow(DataIntegrityViolationException.class);
-        when(userService.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl());
 
         assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL));

@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
@@ -46,7 +47,7 @@ class EcoNewsControllerTest {
     @Mock
     private TagsService tagsService;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private ModelMapper modelMapper;
 
@@ -57,7 +58,7 @@ class EcoNewsControllerTest {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+                new UserArgumentResolver(restClient, modelMapper))
             .build();
     }
 
@@ -129,7 +130,7 @@ class EcoNewsControllerTest {
     @Test
     void deleteTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(delete(ecoNewsLink + "/{econewsId}", 1)
             .principal(principal))
