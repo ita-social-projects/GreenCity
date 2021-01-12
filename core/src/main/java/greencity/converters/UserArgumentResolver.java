@@ -1,8 +1,8 @@
 package greencity.converters;
 
 import greencity.annotations.CurrentUser;
+import greencity.client.RestClient;
 import greencity.dto.user.UserVO;
-import greencity.service.UserService;
 import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -16,7 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 @AllArgsConstructor
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
-    UserService userService;
+    RestClient restClient;
     ModelMapper modelMapper;
 
     /**
@@ -41,6 +41,6 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         Principal principal = webRequest.getUserPrincipal();
-        return principal != null ? userService.findByEmail(principal.getName()) : null;
+        return principal != null ? restClient.findByEmail(principal.getName()) : null;
     }
 }

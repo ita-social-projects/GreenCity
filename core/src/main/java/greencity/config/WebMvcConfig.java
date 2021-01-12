@@ -1,5 +1,6 @@
 package greencity.config;
 
+import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.security.interceptor.UserActivityInterceptor;
 import greencity.service.UserService;
@@ -8,13 +9,11 @@ import java.util.Locale;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -28,6 +27,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private RestClient restClient;
 
     /**
      * Method for configuring message source.
@@ -88,14 +89,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new UserArgumentResolver(userService, modelMapper));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder.build();
+        resolvers.add(new UserArgumentResolver(restClient, modelMapper));
     }
 }

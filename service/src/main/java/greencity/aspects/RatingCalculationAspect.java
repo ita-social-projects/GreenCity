@@ -2,6 +2,7 @@ package greencity.aspects;
 
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import greencity.client.RestClient;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 @Builder
 public class RatingCalculationAspect {
     private UserService userService;
+    private RestClient restClient;
     private RatingStatisticsService ratingStatisticsService;
     private final ModelMapper modelMapper;
 
@@ -56,7 +58,7 @@ public class RatingCalculationAspect {
         argNames = "ratingCalculation")
     private void ratingCalculation(RatingCalculation ratingCalculation) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = modelMapper.map(userService.findByEmail(authentication.getName()), User.class);
+        User user = modelMapper.map(restClient.findByEmail(authentication.getName()), User.class);
         RatingCalculationEnum rating = ratingCalculation.rating();
 
         user.setRating(user.getRating() + rating.getRatingPoints());

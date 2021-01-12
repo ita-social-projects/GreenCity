@@ -1,7 +1,7 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
-import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -9,7 +9,6 @@ import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
 import greencity.service.EcoNewsService;
 import greencity.service.UserService;
 import java.security.Principal;
@@ -56,7 +55,7 @@ class ManagementEcoNewsControllerTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
 
     private Principal principal = getPrincipal();
 
@@ -64,7 +63,7 @@ class ManagementEcoNewsControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(userService, modelMapper))
+                new UserArgumentResolver(restClient, modelMapper))
             .build();
     }
 
@@ -89,7 +88,7 @@ class ManagementEcoNewsControllerTest {
     @Test
     void delete() throws Exception {
         UserVO userVO = getUserVO();
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
 
         this.mockMvc.perform(MockMvcRequestBuilders
             .delete(managementEcoNewsLink + "/delete?id=1")

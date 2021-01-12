@@ -3,6 +3,7 @@ package greencity.service;
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
@@ -52,7 +53,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final CategoryService categoryService;
     private final LocationService locationService;
     private final SpecificationService specificationService;
-    private final UserService userService;
+    private final RestClient restClient;
     private final OpenHoursService openingHoursService;
     private final DiscountService discountService;
     private final NotificationService notificationService;
@@ -72,7 +73,7 @@ public class PlaceServiceImpl implements PlaceService {
         CategoryService categoryService,
         LocationService locationService,
         SpecificationService specificationService,
-        UserService userService,
+        RestClient restClient,
         OpenHoursService openingHoursService,
         DiscountService discountService,
         NotificationService notificationService,
@@ -85,7 +86,7 @@ public class PlaceServiceImpl implements PlaceService {
         this.categoryService = categoryService;
         this.locationService = locationService;
         this.specificationService = specificationService;
-        this.userService = userService;
+        this.restClient = restClient;
         this.openingHoursService = openingHoursService;
         this.discountService = discountService;
         this.notificationService = notificationService;
@@ -148,7 +149,7 @@ public class PlaceServiceImpl implements PlaceService {
      * @author Kateryna Horokh
      */
     private UserVO setUserToPlaceByEmail(String email, PlaceVO placeVO) {
-        UserVO userVO = userService.findByEmail(email);
+        UserVO userVO = restClient.findByEmail(email);
         placeVO.setAuthor(userVO);
         if (userVO.getRole() == Role.ROLE_ADMIN || userVO.getRole() == Role.ROLE_MODERATOR) {
             placeVO.setStatus(PlaceStatus.APPROVED);

@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
@@ -30,7 +31,7 @@ class PlaceCommentServiceImplTest {
     @Mock
     private PlaceService placeService;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private ModelMapper modelMapper;
     @InjectMocks
@@ -62,7 +63,7 @@ class PlaceCommentServiceImplTest {
         AddCommentDto addCommentDto = ModelUtils.getAddCommentDto();
         Comment comment = ModelUtils.getComment();
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
-        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(addCommentDto, Comment.class)).thenReturn(comment);
         when(modelMapper.map(comment, CommentReturnDto.class))
             .thenReturn(ModelUtils.getCommentReturnDto());

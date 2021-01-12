@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.constant.RabbitConstants;
@@ -64,7 +65,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
-    private final UserService userService;
+    private final RestClient restClient;
     private final ModelMapper modelMapper;
     private final RabbitTemplate rabbitTemplate;
     private final NewsSubscriberService newsSubscriberService;
@@ -85,7 +86,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
-        User user = modelMapper.map(userService.findByEmail(email), User.class);
+        User user = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setAuthor(user);
         if (addEcoNewsDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
