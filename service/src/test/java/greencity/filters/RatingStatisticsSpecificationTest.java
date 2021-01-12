@@ -1,6 +1,5 @@
 package greencity.filters;
 
-
 import static org.mockito.Mockito.*;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
@@ -76,7 +75,6 @@ class RatingStatisticsSpecificationTest {
     @Mock
     private SingularAttribute<User, String> email;
 
-
     private RatingStatisticsSpecification ratingStatisticsSpecification;
 
     private List<SearchCriteria> criteriaList;
@@ -92,36 +90,31 @@ class RatingStatisticsSpecificationTest {
                 .key(RatingStatistics_.ID)
                 .type(RatingStatistics_.ID)
                 .value(ratingStatisticsViewDto.getId())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key(RatingStatistics_.RATING_CALCULATION_ENUM)
                 .type("enum")
                 .value(ratingStatisticsViewDto.getEventName())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key(RatingStatistics_.USER)
                 .type("userId")
                 .value(ratingStatisticsViewDto.getUserId())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key(RatingStatistics_.CREATE_DATE)
                 .type("dateRange")
                 .value(new String[] {ratingStatisticsViewDto.getStartDate(), ratingStatisticsViewDto.getEndDate()})
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key(RatingStatistics_.RATING)
                 .type("currentRating")
                 .value(ratingStatisticsViewDto.getCurrentRating())
-                .build()
-        );
+                .build());
 
         RatingStatistics_.user = user;
         User_.id = id;
@@ -136,15 +129,18 @@ class RatingStatisticsSpecificationTest {
 
         when(ratingStatisticsRootMock.get("id")).thenReturn(pathRatingStatisticsIdMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsIdMock, criteriaList.get(0).getValue())).thenReturn(andIdNumericPredicate);
+        when(criteriaBuilderMock.equal(pathRatingStatisticsIdMock, criteriaList.get(0).getValue()))
+            .thenReturn(andIdNumericPredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
 
-        when(ratingStatisticsRootMock.get(RatingStatistics_.RATING_CALCULATION_ENUM)).thenReturn(pathRatingStatisticsEnumMock);
+        when(ratingStatisticsRootMock.get(RatingStatistics_.RATING_CALCULATION_ENUM))
+            .thenReturn(pathRatingStatisticsEnumMock);
 
         when(criteriaBuilderMock.disjunction()).thenReturn(predicateMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.ADD_COMMENT)).thenReturn(andEventNamePredicate);
+        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.ADD_COMMENT))
+            .thenReturn(andEventNamePredicate);
 
         when(criteriaBuilderMock.or(predicateMock, andEventNamePredicate)).thenReturn(andEventNamePredicate);
 
@@ -160,15 +156,18 @@ class RatingStatisticsSpecificationTest {
 
         when(ratingStatisticsRootMock.get(RatingStatistics_.CREATE_DATE)).thenReturn(pathCreateDate);
 
-        when(criteriaBuilderMock.between(eq(ratingStatisticsRootMock.get(RatingStatistics_.CREATE_DATE)), any(ZonedDateTime.class), any(ZonedDateTime.class))).thenReturn(andDataRangePredicate);
+        when(criteriaBuilderMock.between(eq(ratingStatisticsRootMock.get(RatingStatistics_.CREATE_DATE)),
+            any(ZonedDateTime.class), any(ZonedDateTime.class))).thenReturn(andDataRangePredicate);
 
         when(criteriaBuilderMock.and(andUserIdPredicate, andDataRangePredicate)).thenReturn(andDataRangePredicate);
 
         when(ratingStatisticsRootMock.get(RatingStatistics_.RATING)).thenReturn(pathRatingStatisticsRatingMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsRatingMock, criteriaList.get(4).getValue())).thenReturn(andCurrentRatingPredicate);
+        when(criteriaBuilderMock.equal(pathRatingStatisticsRatingMock, criteriaList.get(4).getValue()))
+            .thenReturn(andCurrentRatingPredicate);
 
-        when(criteriaBuilderMock.and(andDataRangePredicate, andCurrentRatingPredicate)).thenReturn(andCurrentRatingPredicate);
+        when(criteriaBuilderMock.and(andDataRangePredicate, andCurrentRatingPredicate))
+            .thenReturn(andCurrentRatingPredicate);
 
         ratingStatisticsSpecification.toPredicate(ratingStatisticsRootMock, criteriaQueryMock, criteriaBuilderMock);
 

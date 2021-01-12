@@ -1,6 +1,5 @@
 package greencity.filters;
 
-
 import static org.mockito.Mockito.*;
 import greencity.dto.advice.AdviceViewDto;
 import greencity.entity.*;
@@ -75,22 +74,19 @@ class AdviceSpecificationTest {
                 .key("id")
                 .type("id")
                 .value(adviceViewDto.getId())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key("habitId")
                 .type("habitId")
                 .value(adviceViewDto.getHabitId())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key("translationContent")
                 .type("translationContent")
                 .value(adviceViewDto.getTranslationContent())
-                .build()
-        );
+                .build());
 
         Advice_.habit = habit;
         Advice_.translations = translations;
@@ -105,7 +101,8 @@ class AdviceSpecificationTest {
 
         when(adviceRootMock.get(criteriaList.get(0).getKey())).thenReturn(pathAdviceIdMock);
 
-        when(criteriaBuilderMock.equal(pathAdviceIdMock, criteriaList.get(0).getValue())).thenReturn(andIdNumericPredicate);
+        when(criteriaBuilderMock.equal(pathAdviceIdMock, criteriaList.get(0).getValue()))
+            .thenReturn(andIdNumericPredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
 
@@ -115,7 +112,8 @@ class AdviceSpecificationTest {
 
         when(adviceRootMock.join(Advice_.translations)).thenReturn(translationJoinMock);
 
-        when(criteriaBuilderMock.equal(pathHabitIdMock, criteriaList.get(1).getValue())).thenReturn(andHabitIdPredicate);
+        when(criteriaBuilderMock.equal(pathHabitIdMock, criteriaList.get(1).getValue()))
+            .thenReturn(andHabitIdPredicate);
 
         when(criteriaBuilderMock.and(andIdNumericPredicate, andHabitIdPredicate)).thenReturn(andHabitIdPredicate);
 
@@ -127,7 +125,8 @@ class AdviceSpecificationTest {
         verify(criteriaBuilderMock).and(predicateMock, andIdNumericPredicate);
         verify(criteriaBuilderMock).and(andIdNumericPredicate, andHabitIdPredicate);
         verify(criteriaBuilderMock).and(andHabitIdPredicate, andTranslationPredicate);
-        verify(criteriaBuilderMock, never()).like(translationJoinMock.get(content), "%" + criteriaList.get(2).getValue() + "%");
+        verify(criteriaBuilderMock, never()).like(translationJoinMock.get(content),
+            "%" + criteriaList.get(2).getValue() + "%");
     }
 
 }
