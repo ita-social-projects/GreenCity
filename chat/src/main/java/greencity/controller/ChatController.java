@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
 import greencity.dto.ParticipantDto;
-import greencity.entity.ChatRoom;
 import greencity.enums.ChatType;
 import greencity.repository.ChatRoomRepo;
 import greencity.service.ChatMessageService;
