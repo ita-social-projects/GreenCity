@@ -36,6 +36,9 @@ public class ChatController {
             .body(chatRoomService.findAllByParticipantName(principal.getName()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping("/rooms/visible")
     public ResponseEntity<List<ChatRoomDto>> findAllVisibleRooms(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
