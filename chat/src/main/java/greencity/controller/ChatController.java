@@ -133,8 +133,6 @@ public class ChatController {
      */
     @GetMapping("/groups")
     public ResponseEntity<List<ChatRoomDto>> getGroupChats(Principal principal) {
-        List<ChatRoom> list =
-            chatRoomRepo.findGroupChats(participantService.findByEmail(principal.getName()), ChatType.GROUP);
         return ResponseEntity.status(HttpStatus.OK)
             .body(chatRoomService.findGroupChatRooms(participantService.findByEmail(principal.getName()),
                 ChatType.GROUP));

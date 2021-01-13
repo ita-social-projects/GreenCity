@@ -48,7 +48,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         return modelMapper
             .map(
                 list.stream()
-                    .filter(chatRoom -> chatRoom.getMessages().size() > 0 && chatRoom.getType().equals(ChatType.PRIVATE)
+                    .filter(chatRoom -> !chatRoom.getMessages().isEmpty() && chatRoom.getType().equals(ChatType.PRIVATE)
                         || chatRoom.getType().equals(ChatType.GROUP))
                     .collect(Collectors.toList()),
                 new TypeToken<List<ChatRoomDto>>() {
