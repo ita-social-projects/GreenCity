@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.ChatRoomDto;
-import greencity.dto.ParticipantDto;
 import greencity.entity.ChatRoom;
 import greencity.entity.Participant;
 import greencity.enums.ChatType;
