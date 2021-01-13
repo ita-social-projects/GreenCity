@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.ChatRoomDto;
+import greencity.dto.ParticipantDto;
 import greencity.entity.ChatRoom;
 import greencity.entity.Participant;
 import greencity.enums.ChatType;
@@ -39,4 +40,24 @@ public interface ChatRoomService {
      * {@inheritDoc}
      */
     ChatRoomDto findPrivateByParticipants(Long id, String name);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findGroupByParticipants(List <Long> id, String name, String chatName);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findGroupChatRooms(Participant participant, ChatType chatType);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findAllChatRoomsByQuery(String query, Participant participant);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findAllVisibleRooms(String name);
 }
