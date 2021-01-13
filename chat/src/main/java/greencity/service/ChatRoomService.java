@@ -43,7 +43,7 @@ public interface ChatRoomService {
     /**
      * {@inheritDoc}
      */
-    List<ChatRoomDto> findGroupByParticipants(List <Long> id, String name, String chatName);
+    List<ChatRoomDto> findGroupByParticipants(List<Long> id, String name, String chatName);
 
     /**
      * {@inheritDoc}

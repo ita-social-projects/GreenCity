@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
-        JpaSpecificationExecutor<ChatRoom> {
+    JpaSpecificationExecutor<ChatRoom> {
     /**
      * Method to find all {@link ChatRoom}'s by {@link Participant}/{@code User} id.
      *
@@ -21,7 +21,7 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @return list of {@link ChatRoom} instances.
      */
     @Query(value = "SELECT room FROM ChatRoom room"
-            + " WHERE :part IN elements(room.participants)")
+        + " WHERE :part IN elements(room.participants)")
     List<ChatRoom> findAllByParticipant(@Param("part") Participant participant);
 
     /**
@@ -35,31 +35,29 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
      * @return list of {@link ChatRoom} instances.
      */
     @Query(value = "SELECT cr FROM ChatRoom cr"
-            + " JOIN cr.participants p"
-            + " WHERE p IN :participants"
-            + " AND UPPER(cr.type) = :chatType"
-            + " GROUP BY cr.id"
-            + " HAVING COUNT(cr.id) = CAST(:participantsCount AS long)")
+        + " JOIN cr.participants p"
+        + " WHERE p IN :participants"
+        + " AND UPPER(cr.type) = :chatType"
+        + " GROUP BY cr.id"
+        + " HAVING COUNT(cr.id) = CAST(:participantsCount AS long)")
     List<ChatRoom> findByParticipantsAndStatus(@Param("participants") Set<Participant> participants,
-                                               @Param("participantsCount") Integer participantsCount,
-                                               @Param("chatType") ChatType chatType);
+        @Param("participantsCount") Integer participantsCount,
+        @Param("chatType") ChatType chatType);
 
     @Query(value = "SELECT cr FROM ChatRoom cr"
-            + " JOIN cr.participants p"
-            + " WHERE p IN :participant"
-            + " AND UPPER(cr.type) = :chatType")
+        + " JOIN cr.participants p"
+        + " WHERE p IN :participant"
+        + " AND UPPER(cr.type) = :chatType")
     List<ChatRoom> findGroupChats(@Param("participant") Participant participant, @Param("chatType") ChatType chatType);
 
     /**
      * {@inheritDoc}
      */
     @Query(value = "SELECT cr FROM ChatRoom cr " +
-            "JOIN cr.participants p " +
-            "WHERE LOWER(cr.name) " +
-            "LIKE LOWER(concat(?1, '%')) " +
-            "AND p IN ?2")
+        "JOIN cr.participants p " +
+        "WHERE LOWER(cr.name) " +
+        "LIKE LOWER(concat(?1, '%')) " +
+        "AND p IN ?2")
     List<ChatRoom> findAllChatRoomsByQuery(String query, Participant participant);
 
-
 }
-

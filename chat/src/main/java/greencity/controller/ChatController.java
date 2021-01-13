@@ -33,13 +33,13 @@ public class ChatController {
     @GetMapping
     public ResponseEntity<List<ChatRoomDto>> findAllRooms(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findAllByParticipantName(principal.getName()));
+            .body(chatRoomService.findAllByParticipantName(principal.getName()));
     }
 
     @GetMapping("/rooms/visible")
     public ResponseEntity<List<ChatRoomDto>> findAllVisibleRooms(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findAllVisibleRooms(principal.getName()));
+            .body(chatRoomService.findAllVisibleRooms(principal.getName()));
     }
 
     /**
@@ -48,7 +48,7 @@ public class ChatController {
     @GetMapping("/messages/{room_id}")
     public ResponseEntity<List<ChatMessageDto>> findAllMessages(@PathVariable("room_id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatMessageService.findAllMessagesByChatRoomId(id));
+            .body(chatMessageService.findAllMessagesByChatRoomId(id));
     }
 
     /**
@@ -57,7 +57,7 @@ public class ChatController {
     @GetMapping("/user/{id}")
     public ResponseEntity<ChatRoomDto> findPrivateRoomWithUser(@PathVariable Long id, Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findPrivateByParticipants(id, principal.getName()));
+            .body(chatRoomService.findPrivateByParticipants(id, principal.getName()));
     }
 
     /**
@@ -66,7 +66,7 @@ public class ChatController {
     @GetMapping("/room/{room_id}")
     public ResponseEntity<ChatRoomDto> findRoomById(@PathVariable("room_id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findChatRoomById(id));
+            .body(chatRoomService.findChatRoomById(id));
     }
 
     /**
@@ -75,7 +75,7 @@ public class ChatController {
     @GetMapping("/user")
     public ResponseEntity<ParticipantDto> getCurrentUser(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(participantService.getCurrentParticipantByEmail(principal.getName()));
+            .body(participantService.getCurrentParticipantByEmail(principal.getName()));
     }
 
     /**
@@ -83,13 +83,13 @@ public class ChatController {
      */
     @GetMapping(value = {"/users", "/users/{query}"})
     public ResponseEntity<List<ParticipantDto>> getAllParticipantsBy(
-            @PathVariable(required = false, value = "query") String query, Principal principal) {
+        @PathVariable(required = false, value = "query") String query, Principal principal) {
         if (StringUtils.isEmpty(query)) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(participantService.findAllExceptCurrentUser(principal.getName()));
+                .body(participantService.findAllExceptCurrentUser(principal.getName()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(participantService.findAllParticipantsByQuery(query, principal.getName()));
+            .body(participantService.findAllParticipantsByQuery(query, principal.getName()));
     }
 
     /**
@@ -97,12 +97,12 @@ public class ChatController {
      */
     @GetMapping(value = {"/rooms", "/rooms/{query}"})
     public ResponseEntity<List<ChatRoomDto>> getAllChatRoomsBy(
-            @PathVariable(required = false, value = "query") String query, Principal principal) {
+        @PathVariable(required = false, value = "query") String query, Principal principal) {
         if (StringUtils.isEmpty(query)) {
             return this.findAllVisibleRooms(principal);
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findAllChatRoomsByQuery(query, participantService.findByEmail(principal.getName())));
+            .body(chatRoomService.findAllChatRoomsByQuery(query, participantService.findByEmail(principal.getName())));
     }
 
     /**
@@ -111,7 +111,7 @@ public class ChatController {
     @GetMapping("/last/message")
     public ResponseEntity<Long> getLastId() {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatMessageService.findTopByOrderByIdDesc().getId());
+            .body(chatMessageService.findTopByOrderByIdDesc().getId());
     }
 
     /**
@@ -119,10 +119,10 @@ public class ChatController {
      */
     @GetMapping("/users/{ids}/room/{room_name}")
     public ResponseEntity<List<ChatRoomDto>> getGroupChatRoomsWithUsers(@PathVariable("ids") List<Long> ids,
-                                                                        @PathVariable("room_name") String chatName,
-                                                                        Principal principal) {
+        @PathVariable("room_name") String chatName,
+        Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findGroupByParticipants(ids, principal.getName(), chatName));
+            .body(chatRoomService.findGroupByParticipants(ids, principal.getName(), chatName));
     }
 
     /**
@@ -130,9 +130,11 @@ public class ChatController {
      */
     @GetMapping("/groups")
     public ResponseEntity<List<ChatRoomDto>> getGroupChats(Principal principal) {
-        List<ChatRoom> list = chatRoomRepo.findGroupChats(participantService.findByEmail(principal.getName()), ChatType.GROUP);
+        List<ChatRoom> list =
+            chatRoomRepo.findGroupChats(participantService.findByEmail(principal.getName()), ChatType.GROUP);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(chatRoomService.findGroupChatRooms(participantService.findByEmail(principal.getName()),ChatType.GROUP));
+            .body(chatRoomService.findGroupChatRooms(participantService.findByEmail(principal.getName()),
+                ChatType.GROUP));
     }
 
     /**
