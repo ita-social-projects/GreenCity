@@ -43,4 +43,23 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
     List<ChatRoom> findByParticipantsAndStatus(@Param("participants") Set<Participant> participants,
         @Param("participantsCount") Integer participantsCount,
         @Param("chatType") ChatType chatType);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Query(value = "SELECT cr FROM ChatRoom cr"
+        + " JOIN cr.participants p"
+        + " WHERE p IN :participant"
+        + " AND UPPER(cr.type) = :chatType")
+    List<ChatRoom> findGroupChats(@Param("participant") Participant participant, @Param("chatType") ChatType chatType);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Query(value = "SELECT cr FROM ChatRoom cr "
+        + "JOIN cr.participants p "
+        + "WHERE LOWER(cr.name) "
+        + "LIKE LOWER(concat(?1, '%')) "
+        + "AND p IN ?2")
+    List<ChatRoom> findAllChatRoomsByQuery(String query, Participant participant);
 }

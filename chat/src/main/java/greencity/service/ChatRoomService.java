@@ -39,4 +39,24 @@ public interface ChatRoomService {
      * {@inheritDoc}
      */
     ChatRoomDto findPrivateByParticipants(Long id, String name);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findGroupByParticipants(List<Long> id, String name, String chatName);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findGroupChatRooms(Participant participant, ChatType chatType);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findAllChatRoomsByQuery(String query, Participant participant);
+
+    /**
+     * {@inheritDoc}
+     */
+    List<ChatRoomDto> findAllVisibleRooms(String name);
 }
