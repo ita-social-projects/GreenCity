@@ -92,22 +92,19 @@ class TipsAndTricksSpecificationTest {
                 .key(TipsAndTricks_.ID)
                 .type(TipsAndTricks_.ID)
                 .value(tipsAndTricksViewDto.getId())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key(TipsAndTricks_.TITLE_TRANSLATIONS)
                 .type(TipsAndTricks_.TITLE_TRANSLATIONS)
                 .value(tipsAndTricksViewDto.getTitleTranslations())
-                .build()
-        );
+                .build());
         criteriaList.add(
             SearchCriteria.builder()
                 .key("creationDate")
                 .type("dateRange")
                 .value(new String[] {tipsAndTricksViewDto.getStartDate(), tipsAndTricksViewDto.getEndDate()})
-                .build()
-        );
+                .build());
 
         Translation_.content = content;
         TipsAndTricks_.id = id;
@@ -123,7 +120,8 @@ class TipsAndTricksSpecificationTest {
 
         when(tipsAndTricksRootMock.get(TipsAndTricks_.ID)).thenReturn(pathTipsAndTricksIdMock);
 
-        when(criteriaBuilderMock.equal(pathTipsAndTricksIdMock, criteriaList.get(0).getValue())).thenReturn(andIdNumericPredicate);
+        when(criteriaBuilderMock.equal(pathTipsAndTricksIdMock, criteriaList.get(0).getValue()))
+            .thenReturn(andIdNumericPredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
 
@@ -131,7 +129,8 @@ class TipsAndTricksSpecificationTest {
 
         when(titleTranslationRootMock.get(content)).thenReturn(pathTranslationContentMock);
 
-        when(criteriaBuilderMock.like(pathTranslationContentMock, "%" + criteriaList.get(1).getValue() + "%")).thenReturn(contentPredicate);
+        when(criteriaBuilderMock.like(pathTranslationContentMock, "%" + criteriaList.get(1).getValue() + "%"))
+            .thenReturn(contentPredicate);
 
         when(titleTranslationRootMock.get(TitleTranslation_.tipsAndTricks)).thenReturn(pathTipsAndTricksMock);
 
@@ -139,7 +138,8 @@ class TipsAndTricksSpecificationTest {
 
         when(tipsAndTricksRootMock.get(TipsAndTricks_.id)).thenReturn(pathTipsAndTricksIdLongMock);
 
-        when(criteriaBuilderMock.equal(pathTitleTranslationsTipsAndTricksIdMock, pathTipsAndTricksIdLongMock)).thenReturn(idPredicate);
+        when(criteriaBuilderMock.equal(pathTitleTranslationsTipsAndTricksIdMock, pathTipsAndTricksIdLongMock))
+            .thenReturn(idPredicate);
 
         when(criteriaBuilderMock.and(contentPredicate, idPredicate)).thenReturn(andTitleTranslationPredicate);
 
@@ -148,9 +148,11 @@ class TipsAndTricksSpecificationTest {
 
         when(tipsAndTricksRootMock.get("creationDate")).thenReturn(pathTipsAndTricksCreationDateMock);
 
-        when(criteriaBuilderMock.between(eq(tipsAndTricksRootMock.get("creationDate")), any(ZonedDateTime.class), any(ZonedDateTime.class))).thenReturn(andDataRangePredicate);
+        when(criteriaBuilderMock.between(eq(tipsAndTricksRootMock.get("creationDate")), any(ZonedDateTime.class),
+            any(ZonedDateTime.class))).thenReturn(andDataRangePredicate);
 
-        when(criteriaBuilderMock.and(andTitleTranslationPredicate, andDataRangePredicate)).thenReturn(andDataRangePredicate);
+        when(criteriaBuilderMock.and(andTitleTranslationPredicate, andDataRangePredicate))
+            .thenReturn(andDataRangePredicate);
 
         tipsAndTricksSpecification.toPredicate(tipsAndTricksRootMock, criteriaQueryMock, criteriaBuilderMock);
 
