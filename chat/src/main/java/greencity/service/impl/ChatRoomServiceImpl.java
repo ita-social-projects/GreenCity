@@ -168,7 +168,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     public ChatRoomDto deleteChatRoom(Long roomId, String email) {
         Participant participant = participantService.findByEmail(email);
         List<ChatRoom> list = chatRoomRepo.findAllByParticipant(participant);
-        ChatRoom deleteRoom = list.stream().filter(chatRoom -> chatRoom.getId().equals(roomId)).findAny().get();
+        ChatRoom deleteRoom = list.stream().filter(chatRoom -> chatRoom.getId().equals(roomId)).findAny().orElseThrow();
         ChatRoomDto chatRoomDto = modelMapper.map(deleteRoom, ChatRoomDto.class);
         chatRoomRepo.delete(deleteRoom);
         return chatRoomDto;
