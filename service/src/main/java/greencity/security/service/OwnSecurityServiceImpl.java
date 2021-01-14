@@ -202,6 +202,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
     @Override
     public SuccessSignInDto signIn(final OwnSignInDto dto) {
         UserVO user = userService.findByEmail(dto.getEmail());
+
         if (user == null) {
             throw new WrongEmailException(USER_NOT_FOUND_BY_EMAIL + dto.getEmail());
         }
@@ -216,6 +217,7 @@ public class OwnSecurityServiceImpl implements OwnSecurityService {
         }
         String accessToken = jwtTool.createAccessToken(user.getEmail(), user.getRole());
         String refreshToken = jwtTool.createRefreshToken(user);
+
         return new SuccessSignInDto(user.getId(), accessToken, refreshToken, user.getName(), true);
     }
 
