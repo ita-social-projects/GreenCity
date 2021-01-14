@@ -18,10 +18,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +47,7 @@ class ChatRoomServiceImplTest {
     void init() {
         expectedList = new ArrayList<>();
         expectedListEmpty = new ArrayList<>();
-        expectedSet = new HashSet<>();
+        expectedSet = new LinkedHashSet<>();
         expectedParticipant = Participant.builder()
             .id(1L)
             .name("artur")
@@ -66,7 +65,8 @@ class ChatRoomServiceImplTest {
             .build();
         expectedList.add(expected);
         expectedToReturn = ChatRoom.builder()
-            .name("chatName")
+            .name(expectedSet.stream().map(Participant::getName).collect(Collectors.joining("+")))
+            .messages(new ArrayList<>())
             .participants(expectedSet)
             .type(ChatType.PRIVATE)
             .build();
