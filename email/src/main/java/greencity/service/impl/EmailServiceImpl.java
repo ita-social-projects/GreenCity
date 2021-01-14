@@ -139,7 +139,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, name);
-        model.put(EmailConstants.VERIFY_ADDRESS, clientLink + "?token="
+        model.put(EmailConstants.VERIFY_ADDRESS, clientLink + "#/?token="
             + token + PARAM_USER_ID + id);
         changeLocale(language);
         log.info(Locale.getDefault().toString());
@@ -176,7 +176,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> model = new HashMap<>();
         model.put(EmailConstants.CLIENT_LINK, clientLink);
         model.put(EmailConstants.USER_NAME, userName);
-        model.put(EmailConstants.RESTORE_PASS, clientLink + "/#/auth/restore?" + "token=" + token
+        model.put(EmailConstants.RESTORE_PASS, clientLink + "#/auth/restore?" + "token=" + token
             + PARAM_USER_ID + userId);
         changeLocale(language);
         log.info(Locale.getDefault().toString());
