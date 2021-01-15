@@ -11,38 +11,55 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
-import static greencity.entity.HabitFactTranslation_.content;
 
 @ExtendWith(MockitoExtension.class)
 public class HabitFactSpecificationTest {
     @Mock
-    Join<HabitFact, Habit> habitFactHabitJoin;
+    private Join<HabitFact, Habit> habitFactHabitJoin;
     @Mock
-    Root<HabitFact> root;
+    private Root<HabitFact> root;
     @Mock
-    Root<HabitFactTranslation> habitFactTranslationRoot;
+    private Root<HabitFactTranslation> habitFactTranslationRoot;
     @Mock
-    CriteriaQuery<Habit> criteriaQuery;
+    private CriteriaQuery<Habit> criteriaQuery;
     @Mock
-    CriteriaBuilder criteriaBuilder;
+    private CriteriaBuilder criteriaBuilder;
     @Mock
-    Predicate expected;
+    private Predicate expected;
     @Mock
-    Path<Object> objectPath;
+    private Path<Object> objectPath;
     @Mock
-    Path<Long> longPath;
+    private Path<Long> longPath;
     @Mock
-    Path<String> stringPath;
+    private Path<String> stringPath;
+    @Mock
+    Path<HabitFact> pathHabitFact;
+    @Mock
+    private SingularAttribute<HabitFact, Habit> habit;
+    @Mock
+    private SingularAttribute<Habit, Long> id;
+    @Mock
+    private SingularAttribute<HabitFactTranslation, HabitFact> habitFact;
+    @Mock
+    SingularAttribute<HabitFact, Long> habitId;
+    @Mock
+    SingularAttribute<Translation, String> content;
     HabitFactSpecification habitFactSpecification;
     private List<SearchCriteria> searchCriteriaList;
 
     @BeforeEach
     void init() {
+        HabitFactTranslation_.content = content;
+        HabitFactTranslation_.habitFact = habitFact;
+        HabitFact_.id = habitId;
+        HabitFact_.habit = habit;
+        Habit_.id = id;
         MockitoAnnotations.initMocks(this);
         HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
         searchCriteriaList = new ArrayList<>();
@@ -93,9 +110,10 @@ public class HabitFactSpecificationTest {
         when(criteriaBuilder.and(expected, expected)).thenReturn(expected);
         when(criteriaQuery.from(HabitFactTranslation.class)).thenReturn(habitFactTranslationRoot);
         when(criteriaBuilder.conjunction()).thenReturn(expected);
-        when(habitFactTranslationRoot.get(content)).thenReturn(stringPath);
+        when(habitFactTranslationRoot.get(HabitFactTranslation_.content)).thenReturn(stringPath);
         when(criteriaBuilder.like(stringPath, "%" + build2.getValue() + "%")).thenReturn(expected);
-        when(habitFactTranslationRoot.get(HabitFactTranslation_.habitFact).get(HabitFact_.id)).thenReturn(longPath);
+        when(habitFactTranslationRoot.get(HabitFactTranslation_.habitFact)).thenReturn(pathHabitFact);
+        when(pathHabitFact.get(HabitFact_.id)).thenReturn(longPath);
         when(root.get(HabitFact_.id)).thenReturn(longPath);
         when(criteriaBuilder.equal(longPath, longPath)).thenReturn(expected);
         when(criteriaBuilder.and(expected, expected)).thenReturn(expected);
