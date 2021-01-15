@@ -160,4 +160,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             new TypeToken<List<ChatRoomDto>>() {
             }.getType());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ChatRoomDto deleteChatRoom(Long roomId, String email) {
+        Participant participant = participantService.findByEmail(email);
+        List<ChatRoom> list = chatRoomRepo.findAllByParticipant(participant);
+        ChatRoom deleteRoom = list.stream().filter(chatRoom -> chatRoom.getId().equals(roomId)).findAny().orElseThrow();
+        ChatRoomDto chatRoomDto = modelMapper.map(deleteRoom, ChatRoomDto.class);
+        chatRoomRepo.delete(deleteRoom);
+        return chatRoomDto;
+    }
 }

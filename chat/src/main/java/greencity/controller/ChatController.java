@@ -140,6 +140,15 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
+    @DeleteMapping("/delete/room/{room_id}")
+    public ResponseEntity<ChatRoomDto> deleteChatRoom(@PathVariable("room_id") Long roomId, Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.deleteChatRoom(roomId, principal.getName()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @MessageMapping("/chat")
     public void processMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);
