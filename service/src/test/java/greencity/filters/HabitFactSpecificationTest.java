@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class HabitFactSpecificationTest {
+class HabitFactSpecificationTest {
     @Mock
     private Join<HabitFact, Habit> habitFactHabitJoin;
     @Mock
@@ -39,7 +39,7 @@ public class HabitFactSpecificationTest {
     @Mock
     private Path<String> stringPath;
     @Mock
-    Path<HabitFact> pathHabitFact;
+    private Path<HabitFact> pathHabitFact;
     @Mock
     private SingularAttribute<HabitFact, Habit> habit;
     @Mock
@@ -47,9 +47,9 @@ public class HabitFactSpecificationTest {
     @Mock
     private SingularAttribute<HabitFactTranslation, HabitFact> habitFact;
     @Mock
-    SingularAttribute<HabitFact, Long> habitId;
+    private SingularAttribute<HabitFact, Long> habitId;
     @Mock
-    SingularAttribute<Translation, String> content;
+    private SingularAttribute<Translation, String> content;
     HabitFactSpecification habitFactSpecification;
     private List<SearchCriteria> searchCriteriaList;
 
@@ -64,20 +64,20 @@ public class HabitFactSpecificationTest {
         HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
         searchCriteriaList = new ArrayList<>();
         searchCriteriaList.add(SearchCriteria.builder()
-            .key("id")
-            .type("id")
-            .value(habitFactDto.getId())
-            .build());
+                .key("id")
+                .type("id")
+                .value(habitFactDto.getId())
+                .build());
         searchCriteriaList.add(SearchCriteria.builder()
-            .key("habitId")
-            .type("habitId")
-            .value(habitFactDto.getHabit().getId())
-            .build());
+                .key("habitId")
+                .type("habitId")
+                .value(habitFactDto.getHabit().getId())
+                .build());
         searchCriteriaList.add(SearchCriteria.builder()
-            .key("content")
-            .type("content")
-            .value(habitFactDto.getContent())
-            .build());
+                .key("content")
+                .type("content")
+                .value(habitFactDto.getContent())
+                .build());
         habitFactSpecification = new HabitFactSpecification(searchCriteriaList);
     }
 
@@ -85,20 +85,20 @@ public class HabitFactSpecificationTest {
     void toPredicate() {
         HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
         SearchCriteria build = SearchCriteria.builder()
-            .key("id")
-            .type("id")
-            .value(habitFactDto.getId())
-            .build();
+                .key("id")
+                .type("id")
+                .value(habitFactDto.getId())
+                .build();
         SearchCriteria build1 = SearchCriteria.builder()
-            .key("habitId")
-            .type("habitId")
-            .value(habitFactDto.getHabit().getId())
-            .build();
+                .key("habitId")
+                .type("habitId")
+                .value(habitFactDto.getHabit().getId())
+                .build();
         SearchCriteria build2 = SearchCriteria.builder()
-            .key("content")
-            .type("content")
-            .value(habitFactDto.getContent())
-            .build();
+                .key("content")
+                .type("content")
+                .value(habitFactDto.getContent())
+                .build();
         when(criteriaBuilder.conjunction()).thenReturn(expected);
         when(root.get(build.getKey())).thenReturn(objectPath);
         when(criteriaBuilder.equal(objectPath, build.getValue())).thenThrow(NumberFormatException.class);
