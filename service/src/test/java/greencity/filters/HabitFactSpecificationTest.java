@@ -64,20 +64,20 @@ class HabitFactSpecificationTest {
         HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
         searchCriteriaList = new ArrayList<>();
         searchCriteriaList.add(SearchCriteria.builder()
-                .key("id")
-                .type("id")
-                .value(habitFactDto.getId())
-                .build());
+            .key("id")
+            .type("id")
+            .value(habitFactDto.getId())
+            .build());
         searchCriteriaList.add(SearchCriteria.builder()
-                .key("habitId")
-                .type("habitId")
-                .value(habitFactDto.getHabit().getId())
-                .build());
+            .key("habitId")
+            .type("habitId")
+            .value(habitFactDto.getHabit().getId())
+            .build());
         searchCriteriaList.add(SearchCriteria.builder()
-                .key("content")
-                .type("content")
-                .value(habitFactDto.getContent())
-                .build());
+            .key("content")
+            .type("content")
+            .value(habitFactDto.getContent())
+            .build());
         habitFactSpecification = new HabitFactSpecification(searchCriteriaList);
     }
 
@@ -85,20 +85,20 @@ class HabitFactSpecificationTest {
     void toPredicate() {
         HabitFactDto habitFactDto = ModelUtils.getHabitFactDto();
         SearchCriteria build = SearchCriteria.builder()
-                .key("id")
-                .type("id")
-                .value(habitFactDto.getId())
-                .build();
+            .key("id")
+            .type("id")
+            .value(habitFactDto.getId())
+            .build();
         SearchCriteria build1 = SearchCriteria.builder()
-                .key("habitId")
-                .type("habitId")
-                .value(habitFactDto.getHabit().getId())
-                .build();
+            .key("habitId")
+            .type("habitId")
+            .value(habitFactDto.getHabit().getId())
+            .build();
         SearchCriteria build2 = SearchCriteria.builder()
-                .key("content")
-                .type("content")
-                .value(habitFactDto.getContent())
-                .build();
+            .key("content")
+            .type("content")
+            .value(habitFactDto.getContent())
+            .build();
         when(criteriaBuilder.conjunction()).thenReturn(expected);
         when(root.get(build.getKey())).thenReturn(objectPath);
         when(criteriaBuilder.equal(objectPath, build.getValue())).thenThrow(NumberFormatException.class);
