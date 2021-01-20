@@ -42,11 +42,11 @@ class GoalSpecificationTest {
     @Mock
     private Path<Goal> goalPath;
     @Mock
-    private SingularAttribute<Goal,Long> id;
+    private SingularAttribute<Goal, Long> id;
     @Mock
-    private SingularAttribute<GoalTranslation,Goal> goal;
+    private SingularAttribute<GoalTranslation, Goal> goal;
     @Mock
-    private SingularAttribute<Translation,String> contentAttr;
+    private SingularAttribute<Translation, String> contentAttr;
 
     private GoalSpecification goalSpecification;
 
@@ -54,7 +54,7 @@ class GoalSpecificationTest {
     private List<SearchCriteria> searchCriteriaList;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         GoalDto goalDto = new GoalDto();
@@ -104,10 +104,9 @@ class GoalSpecificationTest {
         when(goalTranslationRootMock.get(GoalTranslation_.goal)).thenReturn(goalPath);
         when(goalPath.get(Goal_.id)).thenReturn(longPathMock);
         when(rootGoalMock.get(Goal_.id)).thenReturn(longPathMock);
-        when(criteriaBuilderMock.equal(longPathMock,longPathMock)).thenReturn(expected);
-        when(criteriaBuilderMock.and(expected,expected)).thenReturn(expected);
-        Predicate predicate = goalSpecification.toPredicate(rootGoalMock,criteriaQueryMock,criteriaBuilderMock);
-        assertEquals(expected,predicate);
-
+        when(criteriaBuilderMock.equal(longPathMock, longPathMock)).thenReturn(expected);
+        when(criteriaBuilderMock.and(expected, expected)).thenReturn(expected);
+        Predicate predicate = goalSpecification.toPredicate(rootGoalMock, criteriaQueryMock, criteriaBuilderMock);
+        assertEquals(expected, predicate);
     }
 }
