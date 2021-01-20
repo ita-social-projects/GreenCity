@@ -40,7 +40,7 @@ public class TagSpecification implements MySpecification<Tag> {
 
     private Predicate getTranslationPredicate(Root<Tag> root,
         CriteriaBuilder criteriaBuilder, SearchCriteria searchCriteria) {
-        Join<Tag, TagTranslation> translationJoin = root.join(Tag_.TAG_TRANSLATIONS);
+        ListJoin<Tag, TagTranslation> translationJoin = root.join(Tag_.tagTranslations);
 
         return searchCriteria.getValue().toString().trim().equals("") ? criteriaBuilder.conjunction()
             : criteriaBuilder.and(criteriaBuilder.like(translationJoin.get(TagTranslation_.NAME),
