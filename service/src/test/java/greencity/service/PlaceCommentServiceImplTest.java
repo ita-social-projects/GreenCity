@@ -6,7 +6,9 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
+import greencity.enums.UserStatus;
 import greencity.repository.PlaceCommentRepo;
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +65,9 @@ class PlaceCommentServiceImplTest {
         AddCommentDto addCommentDto = ModelUtils.getAddCommentDto();
         Comment comment = ModelUtils.getComment();
         when(placeService.findById(anyLong())).thenReturn(ModelUtils.getPlaceVO());
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
+        UserVO userVO = ModelUtils.getUserVO();
+        userVO.setUserStatus(UserStatus.ACTIVATED);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(addCommentDto, Comment.class)).thenReturn(comment);
         when(modelMapper.map(comment, CommentReturnDto.class))
             .thenReturn(ModelUtils.getCommentReturnDto());

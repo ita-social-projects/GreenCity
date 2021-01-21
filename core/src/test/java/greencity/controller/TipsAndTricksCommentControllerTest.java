@@ -8,7 +8,6 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.service.TipsAndTricksCommentService;
-import greencity.service.UserService;
 import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

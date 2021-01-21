@@ -19,7 +19,7 @@ public interface FavoritePlaceService {
      * @return {@link FavoritePlaceDto} instance
      * @author Zakhar Skaletskyi
      */
-    FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail);
+    FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail, String accessToken);
 
     /**
      * Update favorite place name for user.

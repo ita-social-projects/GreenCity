@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.goal.BulkCustomGoalDto;
 import greencity.dto.goal.BulkSaveCustomGoalDto;
 import greencity.dto.goal.CustomGoalResponseDto;
@@ -41,7 +42,7 @@ class CustomGoalServiceImplTest {
     private ModelMapper modelMapper;
 
     @Mock
-    private UserService userService;
+    private RestClient restClient;
 
     @InjectMocks
     private CustomGoalServiceImpl customGoalService;
@@ -61,43 +62,47 @@ class CustomGoalServiceImplTest {
 
     @Test
     void saveEmptyBulkSaveCustomGoalDtoTest() {
+        String accessToken = "accessToken";
         UserVO userVO = ModelUtils.getUserVO();
-        when(userService.findById(1L)).thenReturn(userVO);
+        when(restClient.findById(1L, accessToken)).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.emptyList()),
-            1L);
+            1L, accessToken);
         assertTrue(saveResult.isEmpty());
         assertTrue(user.getCustomGoals().isEmpty());
     }
 
     @Test
     void saveNonExistentBulkSaveCustomGoalDtoTest() {
+        String accessToken = "accessToken";
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null, null);
         UserVO userVO = ModelUtils.getUserVO();
-        when(userService.findById(1L)).thenReturn(userVO);
+        when(restClient.findById(1L, accessToken)).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         when(modelMapper.map(customGoal, CustomGoalResponseDto.class)).thenReturn(new CustomGoalResponseDto(1L, "bar"));
         List<CustomGoalResponseDto> saveResult = customGoalService.save(
             new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave)),
-            1L);
+            1L, accessToken);
         assertEquals(user.getCustomGoals().get(0), customGoal);
         assertEquals("bar", saveResult.get(0).getText());
     }
 
     @Test
     void saveDuplicatedBulkSaveCustomGoalDtoTest() {
+        String accessToken = "accessToken";
         CustomGoalSaveRequestDto customGoalDtoToSave = new CustomGoalSaveRequestDto("foo");
         CustomGoal customGoal = new CustomGoal(1L, customGoalDtoToSave.getText(), null, null, null);
         user.setCustomGoals(Collections.singletonList(customGoal));
         UserVO userVO = ModelUtils.getUserVO();
-        when(userService.findById(1L)).thenReturn(userVO);
+        when(restClient.findById(1L, accessToken)).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(customGoalDtoToSave, CustomGoal.class)).thenReturn(customGoal);
         BulkSaveCustomGoalDto bulkSave = new BulkSaveCustomGoalDto(Collections.singletonList(customGoalDtoToSave));
-        Assertions.assertThrows(CustomGoalNotSavedException.class, () -> customGoalService.save(bulkSave, 1L));
+        Assertions.assertThrows(CustomGoalNotSavedException.class,
+            () -> customGoalService.save(bulkSave, 1L, accessToken));
     }
 
     @Test

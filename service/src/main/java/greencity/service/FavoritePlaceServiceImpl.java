@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FavoritePlaceServiceImpl implements FavoritePlaceService {
     private final FavoritePlaceRepo favoritePlaceRepo;
-    private final UserService userService;
+    private final RestClient restClient;
     private final PlaceService placeService;
     private final ModelMapper modelMapper;
 
@@ -34,7 +35,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail) {
+    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail, String accessToken) {
         log.info(LogMessage.IN_SAVE, favoritePlaceDto);
         FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
@@ -44,7 +45,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new WrongIdException(String.format(
                 ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
         }
-        favoritePlace.setUser(User.builder().email(userEmail).id(userService.findIdByEmail(userEmail)).build());
+        favoritePlace
+            .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail, accessToken)).build());
         return modelMapper.map(favoritePlaceRepo.save(favoritePlace), FavoritePlaceDto.class);
     }
 

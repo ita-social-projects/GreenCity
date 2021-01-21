@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
-import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Builder
 public class RatingCalculationAspect {
-    private UserService userService;
     private RestClient restClient;
     private RatingStatisticsService ratingStatisticsService;
     private final ModelMapper modelMapper;
@@ -60,10 +58,8 @@ public class RatingCalculationAspect {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = modelMapper.map(restClient.findByEmail(authentication.getName()), User.class);
         RatingCalculationEnum rating = ratingCalculation.rating();
-
         user.setRating(user.getRating() + rating.getRatingPoints());
-        userService.save(modelMapper.map(user, UserVO.class));
-
+        /* restClient.save(modelMapper.map(user, UserVO.class), accessToken); */
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
             .rating(user.getRating())

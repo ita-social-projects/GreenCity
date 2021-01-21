@@ -2,37 +2,35 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
-import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
+
+import java.security.Principal;
 
 import static greencity.ModelUtils.getUserVO;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,12 +40,6 @@ class PlaceCommentControllerTest {
 
     @Mock
     private PlaceCommentService placeCommentService;
-    @Mock
-    private UserService userService;
-    @Mock
-    private PlaceService placeService;
-    @Mock
-    private ModelMapper modelMapper;
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
@@ -90,12 +82,9 @@ class PlaceCommentControllerTest {
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
-        PlaceVO placeVO = ModelUtils.getPlaceVO();
 
         user.setUserStatus(UserStatus.ACTIVATED);
         userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(placeService.findById(anyLong())).thenReturn(placeVO);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
@@ -107,8 +96,7 @@ class PlaceCommentControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
 
-        verify(userService).findByEmail(eq("test@gmail.com"));
-        verify(placeCommentService).save(eq(1L), eq(addCommentDto), eq(userVO.getEmail()));
+        verify(placeCommentService).save(eq(1L), eq(addCommentDto), eq(principal.getName()));
     }
 
     @Test
@@ -119,31 +107,6 @@ class PlaceCommentControllerTest {
                 .content("{}"))
             .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
-    }
-
-    @Test
-    void saveRequestByBlockedUserTest() {
-        Principal principal = ModelUtils.getPrincipal();
-        User user = ModelUtils.getUser();
-        UserVO userVO = getUserVO();
-
-        user.setUserStatus(UserStatus.BLOCKED);
-        userVO.setUserStatus(UserStatus.BLOCKED);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-
-        Exception exception = assertThrows(
-            NestedServletException.class,
-            () -> mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
-                placeCommentLinkSecondPart, 1)
-                    .principal(principal)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(content))
-                .andExpect(status().isCreated()));
-
-        String expectedMessage = ErrorMessage.USER_HAS_BLOCKED_STATUS;
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
         verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
     }
 

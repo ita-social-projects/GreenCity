@@ -1,12 +1,14 @@
 package greencity.webcontroller;
 
+import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
-import greencity.security.service.OwnSecurityService;
-import greencity.service.UserService;
+
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,9 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RequestMapping("/management/users")
 public class ManagementUserController {
-    private final UserService userService;
     private final ModelMapper modelMapper;
-    private final OwnSecurityService ownSecurityService;
+    private final RestClient restClient;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -40,11 +41,11 @@ public class ManagementUserController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-        Model model) {
+        Model model, @RequestHeader(AUTHORIZATION) String accessToken) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? userService.findUserForManagementByPage(paging)
-            : userService.searchBy(paging, query);
+            ? restClient.findUserForManagementByPage(paging, accessToken)
+            : restClient.searchBy(paging, query, accessToken);
         model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
@@ -58,9 +59,10 @@ public class ManagementUserController {
      */
     @PostMapping("/register")
     @ResponseBody
-    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
+    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
         if (!bindingResult.hasErrors()) {
-            ownSecurityService.managementRegisterUser(userDto);
+            restClient.managementRegisterUser(userDto, accessToken);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -74,9 +76,10 @@ public class ManagementUserController {
      */
     @PutMapping
     @ResponseBody
-    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
+    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
         if (!bindingResult.hasErrors()) {
-            userService.updateUser(userDto);
+            restClient.updateUser(userDto, accessToken);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -90,8 +93,8 @@ public class ManagementUserController {
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserManagementDto findById(@RequestParam("id") Long id) {
-        UserVO byId = userService.findById(id);
+    public UserManagementDto findById(@RequestParam("id") Long id, @RequestHeader(AUTHORIZATION) String accessToken) {
+        UserVO byId = restClient.findById(id, accessToken);
         return modelMapper.map(byId, UserManagementDto.class);
     }
 
@@ -104,8 +107,9 @@ public class ManagementUserController {
      */
     @GetMapping("/{id}/friends")
     @ResponseBody
-    public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
-        return userService.findUserFriendsByUserId(id);
+    public List<UserManagementDto> findFriendsById(@PathVariable Long id,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
+        return restClient.findUserFriendsByUserId(id, accessToken);
     }
 
     /**
@@ -116,8 +120,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
-        userService.deactivateUser(id);
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
+        restClient.deactivateUser(id, accessToken);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -128,8 +133,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/activate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
-        userService.setActivatedStatus(id);
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
+        restClient.setActivatedStatus(id, accessToken);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -142,8 +148,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")
-    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
+    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.deactivateAllUsers(listId));
+            .body(restClient.deactivateAllUsers(listId, accessToken));
     }
 }

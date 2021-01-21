@@ -1,9 +1,15 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementNotification;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
@@ -36,7 +42,7 @@ import java.util.stream.Collectors;
 public class AchievementServiceImpl implements AchievementService {
     private final AchievementRepo achievementRepo;
     private final ModelMapper modelMapper;
-    private final UserService userService;
+    private final RestClient restClient;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
     private UserAchievementRepo userAchievementRepo;
@@ -47,7 +53,7 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public AchievementVO save(AchievementPostDto achievementPostDto) {
+    public AchievementVO save(AchievementPostDto achievementPostDto, String accessToken) {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
@@ -57,7 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
         UserAchievementVO userAchievementVO = new UserAchievementVO();
         UserActionVO userActionVO = new UserActionVO();
         userAchievementVO.setAchievement(achievementVO);
-        List<UserVO> all = userService.findAll();
+        List<UserVO> all = restClient.findAll(accessToken);
         all.forEach(userVO -> {
             UserActionVO userActionByUserIdAndAchievementCategory =
                 userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
@@ -69,7 +75,7 @@ public class AchievementServiceImpl implements AchievementService {
             }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
-            userService.save(userVO);
+            restClient.save(userVO, accessToken);
         });
         return achievementVO;
     }

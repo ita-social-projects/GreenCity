@@ -1,6 +1,6 @@
 package greencity.security.interceptor;
 
-import greencity.service.UserService;
+import greencity.client.RestClient;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -8,6 +8,9 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Enumeration;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
 
 /**
  * The class provides intercepting and updating last user activity time.
@@ -16,15 +19,15 @@ import java.util.Date;
  * @version 1.0
  */
 public class UserActivityInterceptor extends HandlerInterceptorAdapter {
-    private final UserService userService;
+    private final RestClient restClient;
 
     /**
      * Constructor.
      *
-     * @param userService {@link UserService}
+     * @param restClient {@link RestClient}
      */
-    public UserActivityInterceptor(UserService userService) {
-        this.userService = userService;
+    public UserActivityInterceptor(RestClient restClient) {
+        this.restClient = restClient;
     }
 
     /**
@@ -46,9 +49,9 @@ public class UserActivityInterceptor extends HandlerInterceptorAdapter {
         if (authentication != null) {
             String email = authentication.getPrincipal().toString();
             if (!email.equals("anonymousUser")) {
-                Long userId = userService.findIdByEmail(email);
+                Long userId = restClient.findIdByEmail(email, request.getHeader(AUTHORIZATION));
                 Date userLastActivityTime = new Date();
-                userService.updateUserLastActivityTime(userId, userLastActivityTime);
+                restClient.updateUserLastActivityTime(userId, userLastActivityTime, request.getHeader(AUTHORIZATION));
             }
         }
         return super.preHandle(request, response, handler);

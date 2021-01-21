@@ -21,7 +21,7 @@ public interface CustomGoalService {
      * @param userId                {@link UserVO} current user id
      * @return list of saved {@link CustomGoalResponseDto}
      */
-    List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSaveCustomGoalDto, Long userId);
+    List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSaveCustomGoalDto, Long userId, String accessToken);
 
     /**
      * Method for finding all custom goals.

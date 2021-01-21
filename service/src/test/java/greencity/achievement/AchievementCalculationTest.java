@@ -1,10 +1,10 @@
 package greencity.achievement;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
@@ -12,7 +12,6 @@ import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.repository.UserAchievementRepo;
 import greencity.service.*;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -23,14 +22,13 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementCalculationTest {
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private UserActionService userActionService;
     @Mock
@@ -62,7 +60,7 @@ class AchievementCalculationTest {
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
-        when(userService.findUserForAchievement(1L)).thenReturn(userVOAchievement);
+        when(restClient.findUserForAchievement(1L)).thenReturn(userVOAchievement);
         when(achievementService.findByCategoryIdAndCondition(1L, 1)).thenReturn(achievementVO);
         when(modelMapper.map(userVOAchievement, User.class)).thenReturn(user);
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);

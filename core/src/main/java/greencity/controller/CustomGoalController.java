@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/custom/goals")
@@ -80,10 +82,11 @@ public class CustomGoalController {
     @PostMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
         @Valid @RequestBody BulkSaveCustomGoalDto dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @RequestHeader(AUTHORIZATION) String accessToken) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customGoalService.save(dto, userId));
+            .body(customGoalService.save(dto, userId, accessToken));
     }
 
     /**

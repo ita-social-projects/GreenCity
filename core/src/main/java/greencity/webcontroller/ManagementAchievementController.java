@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller
@@ -63,9 +64,9 @@ public class ManagementAchievementController {
     @PostMapping
     @ResponseBody
     public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-        BindingResult bindingResult) {
+        BindingResult bindingResult, @RequestHeader(AUTHORIZATION) String accessToken) {
         if (!bindingResult.hasErrors()) {
-            achievementService.save(achievementPostDto);
+            achievementService.save(achievementPostDto, accessToken);
         }
         return buildGenericResponseDto(bindingResult);
     }

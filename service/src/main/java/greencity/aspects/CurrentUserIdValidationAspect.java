@@ -4,7 +4,6 @@ import greencity.annotations.CurrentUserId;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotCurrentUserException;
-import greencity.service.UserService;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 import org.aspectj.lang.JoinPoint;
@@ -25,11 +24,10 @@ public class CurrentUserIdValidationAspect {
     private final RestClient restClient;
 
     /**
-     * Constructor with UserService dependency declaration. UserService is used for
+     * Constructor with RestClient dependency declaration. RestClient is used for
      * current user id acquisition.
      *
-     * @param restClient {@link UserService} is used for current user id
-     *                   acquisition.
+     * @param restClient {@link RestClient} is used for current user id acquisition.
      */
     public CurrentUserIdValidationAspect(RestClient restClient) {
         this.restClient = restClient;
