@@ -117,7 +117,7 @@ class FavoritePlaceServiceImplTest {
         verify(favoritePlaceRepo, times(1)).save(any(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlaceDto.class), eq(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlace.class), eq(FavoritePlaceDto.class));
-        verify(restClient, times(1)).findIdByEmail(anyString(), accessToken);
+        verify(restClient, times(1)).findIdByEmail(anyString(), eq(accessToken));
 
         assertEquals(dto, actual);
     }
