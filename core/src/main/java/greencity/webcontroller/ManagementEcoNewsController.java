@@ -57,7 +57,7 @@ public class ManagementEcoNewsController {
         StringBuffer orderUrl = new StringBuffer("");
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl.toString()+order.getProperty()+","+order.getDirection());
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
             }
             model.addAttribute("sortModel", orderUrl);
         }
