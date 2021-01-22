@@ -25,6 +25,7 @@ public class ChatRoomDtoMapper extends AbstractConverter<ChatRoom, ChatRoomDto> 
         return ChatRoomDto.builder()
             .id(chatRoom.getId())
             .chatType(chatRoom.getType())
+            .ownerId(chatRoom.getOwner().getId())
             .messages(chatRoom.getMessages().stream().map(
                 chatMessage -> ChatMessageDto.builder()
                     .id(chatMessage.getId())

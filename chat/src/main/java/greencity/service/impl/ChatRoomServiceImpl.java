@@ -97,7 +97,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         if (chatRoom.isEmpty()) {
             toReturn = chatRoomRepo.save(
                 ChatRoom.builder()
-                    .name(participants.stream().map(Participant::getName).collect(Collectors.joining("+")))
+                    .name(participants.stream().map(Participant::getName).collect(Collectors.joining(":")))
                     .messages(new ArrayList<>())
                     .participants(participants)
                     .type(ChatType.PRIVATE)
@@ -115,28 +115,32 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public List<ChatRoomDto> findGroupByParticipants(List<Long> ids, String name, String chatName) {
         Set<Participant> participants = new HashSet<>();
-        participants.add(participantService.findByEmail(name));
+        Participant owner = participantService.findByEmail(name);
+        participants.add(owner);
         ids.forEach(id -> participants.add(participantService.findById(id)));
         List<ChatRoom> chatRoom = chatRoomRepo.findByParticipantsAndStatus(participants, participants.size(),
             ChatType.GROUP);
-        return filterGroupRoom(chatRoom, participants, chatName);
+        return filterGroupRoom(chatRoom, participants, chatName, owner);
     }
 
     /**
      * {@inheritDoc}
      */
-    private List<ChatRoomDto> filterGroupRoom(List<ChatRoom> chatRoom, Set<Participant> participants, String chatName) {
+    private List<ChatRoomDto> filterGroupRoom(List<ChatRoom> chatRoom, Set<Participant> participants,
+        String chatName, Participant owner) {
         List<ChatRoom> toReturn = new ArrayList<>();
         if (chatRoom.isEmpty()) {
             toReturn.add(chatRoomRepo.save(
                 ChatRoom.builder()
                     .name(chatName)
                     .participants(participants)
+                    .owner(owner)
                     .type(ChatType.GROUP)
                     .build()));
         } else {
             toReturn = chatRoom;
         }
+
         return toReturn.stream().map(room -> modelMapper.map(room, ChatRoomDto.class)).collect(Collectors.toList());
     }
 
