@@ -96,7 +96,6 @@ class AchievementServiceImplTest {
 
     @Test
     void saveTest() {
-        String accessToken = "accessToken";
         Achievement achievement = ModelUtils.getAchievement();
         AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
@@ -116,10 +115,10 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        when(restClient.findAll(accessToken)).thenReturn(Collections.singletonList(userVO));
+        when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
 
-        AchievementVO expected = achievementService.save(achievementPostDto, accessToken);
+        AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
     }
 

@@ -35,7 +35,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
      * @author Zakhar Skaletskyi
      */
     @Override
-    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail, String accessToken) {
+    public FavoritePlaceDto save(FavoritePlaceDto favoritePlaceDto, String userEmail) {
         log.info(LogMessage.IN_SAVE, favoritePlaceDto);
         FavoritePlace favoritePlace = modelMapper.map(favoritePlaceDto, FavoritePlace.class);
         if (!placeService.existsById(favoritePlace.getPlace().getId())) {
@@ -46,7 +46,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
                 ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
         }
         favoritePlace
-            .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail, accessToken)).build());
+            .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail)).build());
         return modelMapper.map(favoritePlaceRepo.save(favoritePlace), FavoritePlaceDto.class);
     }
 

@@ -31,7 +31,7 @@ public interface AchievementService {
      * @return a dto of {@link AchievementVO}
      * @author Orest Mamchuk
      */
-    AchievementVO save(AchievementPostDto achievementPostDto, String accessToken);
+    AchievementVO save(AchievementPostDto achievementPostDto);
 
     /**
      * Method for getting {@link AchievementVO} by search query.

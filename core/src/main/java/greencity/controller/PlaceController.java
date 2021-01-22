@@ -149,10 +149,9 @@ public class PlaceController {
     })
     @PostMapping("/save/favorite/")
     public ResponseEntity<FavoritePlaceDto> saveAsFavoritePlace(
-        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @ApiIgnore Principal principal,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
+        @Valid @RequestBody FavoritePlaceDto favoritePlaceDto, @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(favoritePlaceService.save(favoritePlaceDto, principal.getName(), accessToken));
+            .body(favoritePlaceService.save(favoritePlaceDto, principal.getName()));
     }
 
     /**

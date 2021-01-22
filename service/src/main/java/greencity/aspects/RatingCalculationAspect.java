@@ -59,7 +59,7 @@ public class RatingCalculationAspect {
         User user = modelMapper.map(restClient.findByEmail(authentication.getName()), User.class);
         RatingCalculationEnum rating = ratingCalculation.rating();
         user.setRating(user.getRating() + rating.getRatingPoints());
-        /* restClient.save(modelMapper.map(user, UserVO.class), accessToken); */
+        restClient.save(modelMapper.map(user, UserVO.class));
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
             .rating(user.getRating())

@@ -22,10 +22,8 @@ import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-import static greencity.constant.ErrorMessage.*;
+import static greencity.constant.ErrorMessage.CUSTOM_GOAL_NOT_FOUND_BY_ID;
 
 /**
  * The class provides implementation of the {@code CustomGoalService}.
@@ -47,8 +45,8 @@ public class CustomGoalServiceImpl implements CustomGoalService {
      */
     @Transactional
     @Override
-    public List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSave, Long userId, String accessToken) {
-        UserVO userVO = restClient.findById(userId, accessToken);
+    public List<CustomGoalResponseDto> save(BulkSaveCustomGoalDto bulkSave, Long userId) {
+        UserVO userVO = restClient.findById(userId);
         User user = modelMapper.map(userVO, User.class);
         List<CustomGoalSaveRequestDto> dto = bulkSave.getCustomGoalSaveRequestDtoList();
         List<String> errorMessages = findDuplicates(dto, user);

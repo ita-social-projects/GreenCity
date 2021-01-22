@@ -67,7 +67,7 @@ class AccessTokenAuthenticationFilterTest {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn("SuperSecretAccessToken");
         when(authenticationManager.authenticate(any()))
             .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
-        when(restClient.findNotDeactivatedByEmail("test@mail.com", "SuperSecretAccessToken"))
+        when(restClient.findNotDeactivatedByEmail("test@mail.com"))
             .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
         doNothing().when(chain).doFilter(request, response);
 
@@ -93,7 +93,7 @@ class AccessTokenAuthenticationFilterTest {
         when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
         when(authenticationManager.authenticate(any()))
             .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
-        when(restClient.findNotDeactivatedByEmail("test@mail.com", token)).thenThrow(RuntimeException.class);
+        when(restClient.findNotDeactivatedByEmail("test@mail.com")).thenThrow(RuntimeException.class);
         authenticationFilter.doFilterInternal(request, response, chain);
         assertTrue(systemOutContent.toString().contains("Access denied with token: "));
     }

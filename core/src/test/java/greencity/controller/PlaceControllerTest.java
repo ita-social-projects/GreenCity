@@ -293,9 +293,6 @@ class PlaceControllerTest {
 
     @Test
     void saveAsFavoritePlace() throws Exception {
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
         Principal principal = mock(Principal.class);
         FavoritePlaceDto favoritePlaceDto = FavoritePlaceDto.builder().name("test").placeId(1L).build();
         this.mockMvc.perform(post(placeLink + "/save/favorite/")
@@ -304,11 +301,10 @@ class PlaceControllerTest {
                 "  \"placeId\": 1\n" +
                 "}")
             .principal(principal)
-            .headers(headers)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(favoritePlaceService).save(favoritePlaceDto, principal.getName(), accessToken);
+        verify(favoritePlaceService).save(favoritePlaceDto, principal.getName());
     }
 
     @Test

@@ -64,9 +64,9 @@ public class ManagementAchievementController {
     @PostMapping
     @ResponseBody
     public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-        BindingResult bindingResult, @RequestHeader(AUTHORIZATION) String accessToken) {
+        BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            achievementService.save(achievementPostDto, accessToken);
+            achievementService.save(achievementPostDto);
         }
         return buildGenericResponseDto(bindingResult);
     }

@@ -41,11 +41,11 @@ public class ManagementUserController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-        Model model, @RequestHeader(AUTHORIZATION) String accessToken) {
+        Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? restClient.findUserForManagementByPage(paging, accessToken)
-            : restClient.searchBy(paging, query, accessToken);
+            ? restClient.findUserForManagementByPage(paging)
+            : restClient.searchBy(paging, query);
         model.addAttribute("users", pageableDto);
         return "core/management_user";
     }
@@ -59,10 +59,9 @@ public class ManagementUserController {
      */
     @PostMapping("/register")
     @ResponseBody
-    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
+    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            restClient.managementRegisterUser(userDto, accessToken);
+            restClient.managementRegisterUser(userDto);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -76,10 +75,9 @@ public class ManagementUserController {
      */
     @PutMapping
     @ResponseBody
-    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
+    public GenericResponseDto updateUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            restClient.updateUser(userDto, accessToken);
+            restClient.updateUser(userDto);
         }
         return buildGenericResponseDto(bindingResult);
     }
@@ -93,8 +91,8 @@ public class ManagementUserController {
      */
     @GetMapping("/findById")
     @ResponseBody
-    public UserManagementDto findById(@RequestParam("id") Long id, @RequestHeader(AUTHORIZATION) String accessToken) {
-        UserVO byId = restClient.findById(id, accessToken);
+    public UserManagementDto findById(@RequestParam("id") Long id) {
+        UserVO byId = restClient.findById(id);
         return modelMapper.map(byId, UserManagementDto.class);
     }
 
@@ -107,9 +105,8 @@ public class ManagementUserController {
      */
     @GetMapping("/{id}/friends")
     @ResponseBody
-    public List<UserManagementDto> findFriendsById(@PathVariable Long id,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
-        return restClient.findUserFriendsByUserId(id, accessToken);
+    public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
+        return restClient.findUserFriendsByUserId(id);
     }
 
     /**
@@ -120,9 +117,8 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
-        restClient.deactivateUser(id, accessToken);
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
+        restClient.deactivateUser(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -133,9 +129,8 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/activate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
-        restClient.setActivatedStatus(id, accessToken);
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
+        restClient.setActivatedStatus(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -148,9 +143,8 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")
-    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
+    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(restClient.deactivateAllUsers(listId, accessToken));
+            .body(restClient.deactivateAllUsers(listId));
     }
 }

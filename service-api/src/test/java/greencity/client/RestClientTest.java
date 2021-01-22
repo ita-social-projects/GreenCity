@@ -5,7 +5,6 @@ import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import org.junit.jupiter.api.Test;
@@ -15,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
@@ -25,18 +22,22 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
     @Mock
     private RestTemplate restTemplate;
+    @Mock
+    private HttpServletRequest httpServletRequest;
     @Mock
     private java.lang.Object Object;
     @Value("${greencityuser.server.address}")
@@ -61,10 +62,11 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_BY_ID + RestTemplateLinks.ID + 1L, HttpMethod.GET, entity, UserVO.class))
                 .thenReturn(ResponseEntity.ok(userVO));
-        assertEquals(userVO, restClient.findById(1L, accessToken));
+        assertEquals(userVO, restClient.findById(1L));
     }
 
     @Test
@@ -86,13 +88,13 @@ class RestClientTest {
         List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
         PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
             + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             })).thenReturn(ResponseEntity.ok(pageableAdvancedDto));
-        assertEquals(pageableAdvancedDto, restClient.findUserForManagementByPage(pageable, accessToken));
+        assertEquals(pageableAdvancedDto, restClient.findUserForManagementByPage(pageable));
     }
 
     @Test
@@ -106,14 +108,14 @@ class RestClientTest {
         List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
         PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
             + RestTemplateLinks.SIZE + pageable.getPageSize()
             + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             })).thenReturn(ResponseEntity.ok(pageableAdvancedDto));
-        assertEquals(pageableAdvancedDto, restClient.searchBy(pageable, query, accessToken));
+        assertEquals(pageableAdvancedDto, restClient.searchBy(pageable, query));
     }
 
     @Test
@@ -123,10 +125,10 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-        restClient.updateUser(userManagementDto, accessToken);
+        restClient.updateUser(userManagementDto);
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
     }
@@ -139,11 +141,12 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
         UserVO[] userVOS = new UserVO[] {userVO};
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_ALL, HttpMethod.GET, entity, UserVO[].class))
                 .thenReturn(ResponseEntity.of(Optional.of(userVOS)));
 
-        assertEquals(Arrays.asList(userVOS), restClient.findAll(accessToken));
+        assertEquals(Arrays.asList(userVOS), restClient.findAll());
     }
 
     @Test
@@ -154,10 +157,11 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserManagementDto userManagementDto = new UserManagementDto();
         UserManagementDto[] userManagementDtos = new UserManagementDto[] {userManagementDto};
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER + "/" + 1L + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
             UserManagementDto[].class)).thenReturn(ResponseEntity.ok(userManagementDtos));
-        restClient.findUserFriendsByUserId(1L, accessToken);
+        restClient.findUserFriendsByUserId(1L);
 
         verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER + "/"
             + 1L + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity, UserManagementDto[].class);
@@ -171,12 +175,12 @@ class RestClientTest {
         headers.set(AUTHORIZATION, "Bearer " + accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
             + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
 
-        assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email, accessToken));
+        assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email));
     }
 
     @Test
@@ -186,13 +190,13 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
             + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class))
                 .thenReturn(ResponseEntity.ok(1L));
 
-        assertEquals(1L, restClient.findIdByEmail(email, accessToken));
+        assertEquals(1L, restClient.findIdByEmail(email));
     }
 
     @Test
@@ -204,12 +208,12 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS");
         String strDate = dateFormat.format(date);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER + "/" + 1L
             + RestTemplateLinks.UPDATE_USER_LAST_ACTIVITY_TIME
             + strDate, HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
 
-        restClient.updateUserLastActivityTime(1L, date, accessToken);
+        restClient.updateUserLastActivityTime(1L, date);
         verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER + "/" + 1L
             + RestTemplateLinks.UPDATE_USER_LAST_ACTIVITY_TIME
             + strDate, HttpMethod.PUT, entity, Object.class);
@@ -221,11 +225,11 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
-        restClient.deactivateUser(1L, accessToken);
+        restClient.deactivateUser(1L);
         verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
     }
@@ -236,11 +240,11 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
-        restClient.setActivatedStatus(1L, accessToken);
+        restClient.setActivatedStatus(1L);
         verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
     }
@@ -255,12 +259,12 @@ class RestClientTest {
         Gson gson = new Gson();
         String json = gson.toJson(listId);
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class))
                 .thenReturn(ResponseEntity.ok(longs));
-        assertEquals(listId, restClient.deactivateAllUsers(listId, accessToken));
+        assertEquals(listId, restClient.deactivateAllUsers(listId));
     }
 
     @Test
@@ -270,11 +274,11 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
-
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
-        restClient.managementRegisterUser(userManagementDto, accessToken);
+        restClient.managementRegisterUser(userManagementDto);
 
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
@@ -287,9 +291,10 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-        restClient.save(userVO, accessToken);
+        restClient.save(userVO);
 
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);

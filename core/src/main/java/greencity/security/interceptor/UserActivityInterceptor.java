@@ -8,9 +8,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Enumeration;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 /**
  * The class provides intercepting and updating last user activity time.
@@ -49,9 +46,9 @@ public class UserActivityInterceptor extends HandlerInterceptorAdapter {
         if (authentication != null) {
             String email = authentication.getPrincipal().toString();
             if (!email.equals("anonymousUser")) {
-                Long userId = restClient.findIdByEmail(email, request.getHeader(AUTHORIZATION));
+                Long userId = restClient.findIdByEmail(email);
                 Date userLastActivityTime = new Date();
-                restClient.updateUserLastActivityTime(userId, userLastActivityTime, request.getHeader(AUTHORIZATION));
+                restClient.updateUserLastActivityTime(userId, userLastActivityTime);
             }
         }
         return super.preHandle(request, response, handler);

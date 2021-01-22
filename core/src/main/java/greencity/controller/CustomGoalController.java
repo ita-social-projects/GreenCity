@@ -82,11 +82,10 @@ public class CustomGoalController {
     @PostMapping("/{userId}/customGoals")
     public ResponseEntity<List<CustomGoalResponseDto>> saveUserCustomGoals(
         @Valid @RequestBody BulkSaveCustomGoalDto dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @RequestHeader(AUTHORIZATION) String accessToken) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customGoalService.save(dto, userId, accessToken));
+            .body(customGoalService.save(dto, userId));
     }
 
     /**

@@ -96,7 +96,7 @@ class PlaceCommentControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
 
-        verify(placeCommentService).save(eq(1L), eq(addCommentDto), eq(principal.getName()));
+        verify(placeCommentService).save(1L, addCommentDto, principal.getName());
     }
 
     @Test

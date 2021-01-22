@@ -43,16 +43,15 @@ class UserActivityInterceptorTest {
 
     @Test
     void preHandleTest() throws Exception {
-        String accessToken = "accessToken";
         Principal principal = mock(Principal.class);
         List<GrantedAuthority> authority = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         Authentication authentication = new AnonymousAuthenticationToken("k", principal, authority);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getPrincipal().toString()).thenReturn("test@mail.com");
-        when(restClient.findIdByEmail("test@mail.com", accessToken)).thenReturn(1L);
+        when(restClient.findIdByEmail("test@mail.com")).thenReturn(1L);
         Date time = new Date();
-        doNothing().when(restClient).updateUserLastActivityTime(1L, time, accessToken);
+        doNothing().when(restClient).updateUserLastActivityTime(1L, time);
         assertTrue(userActivityInterceptor.preHandle(request, response, handler));
     }
 }

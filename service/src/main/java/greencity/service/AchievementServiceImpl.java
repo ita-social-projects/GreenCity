@@ -53,7 +53,7 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public AchievementVO save(AchievementPostDto achievementPostDto, String accessToken) {
+    public AchievementVO save(AchievementPostDto achievementPostDto) {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
@@ -63,7 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
         UserAchievementVO userAchievementVO = new UserAchievementVO();
         UserActionVO userActionVO = new UserActionVO();
         userAchievementVO.setAchievement(achievementVO);
-        List<UserVO> all = restClient.findAll(accessToken);
+        List<UserVO> all = restClient.findAll();
         all.forEach(userVO -> {
             UserActionVO userActionByUserIdAndAchievementCategory =
                 userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
@@ -75,7 +75,7 @@ public class AchievementServiceImpl implements AchievementService {
             }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
-            restClient.save(userVO, accessToken);
+            restClient.save(userVO);
         });
         return achievementVO;
     }
