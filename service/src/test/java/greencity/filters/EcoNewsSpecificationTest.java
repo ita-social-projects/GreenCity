@@ -81,7 +81,7 @@ class EcoNewsSpecificationTest {
     @BeforeEach
     void setUp() {
         EcoNewsViewDto ecoNewsViewDto =
-            new EcoNewsViewDto("", "anyTitle", "anyAuthor", "weather", "", "", "", "", "News");
+            new EcoNewsViewDto("", "anyTitle", "anyAuthor", "weather", "", "", "News");
 
         criteriaList = new ArrayList<>();
         criteriaList.add(
