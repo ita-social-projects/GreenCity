@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
@@ -31,7 +32,7 @@ class FavoritePlaceServiceImplTest {
     @Mock
     private FavoritePlaceRepo favoritePlaceRepo;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private PlaceService placeService;
     @Mock
@@ -106,13 +107,13 @@ class FavoritePlaceServiceImplTest {
 
         FavoritePlaceDto actual = favoritePlaceService.save(dto, userEmail);
 
-        verify(userService, times(1)).findIdByEmail(userEmail);
+        verify(restClient, times(1)).findIdByEmail(userEmail);
         verify(placeService, times(1)).existsById(any());
         verify(favoritePlaceRepo, times(1)).findByPlaceIdAndUserEmail(anyLong(), anyString());
         verify(favoritePlaceRepo, times(1)).save(any(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlaceDto.class), eq(FavoritePlace.class));
         verify(modelMapper, times(1)).map(any(FavoritePlace.class), eq(FavoritePlaceDto.class));
-        verify(userService, times(1)).findIdByEmail(anyString());
+        verify(restClient, times(1)).findIdByEmail(anyString());
 
         assertEquals(dto, actual);
     }

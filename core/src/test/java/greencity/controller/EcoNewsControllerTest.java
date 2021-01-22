@@ -7,7 +7,6 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
-import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;

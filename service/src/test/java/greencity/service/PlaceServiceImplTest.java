@@ -20,6 +20,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.CategoryRepo;
@@ -165,6 +166,7 @@ class PlaceServiceImplTest {
         PlaceVO placeVO = ModelUtils.getPlaceVO();
         PlaceAddDto placeAddDto = ModelUtils.getPlaceAddDto();
         when(modelMapper.map(placeAddDto, Place.class)).thenReturn(place);
+        userVO.setUserStatus(UserStatus.ACTIVATED);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
         when(categoryRepo.findByName(anyString())).thenReturn(new Category());
         when(placeRepo.save(any())).thenReturn(place);

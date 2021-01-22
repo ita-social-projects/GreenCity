@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
@@ -43,7 +44,7 @@ class AchievementServiceImplTest {
     @Mock
     private AchievementCategoryService achievementCategoryService;
     @Mock
-    private UserService userService;
+    private RestClient restClient;
     @Mock
     private UserActionService userActionService;
     @Mock
@@ -114,7 +115,7 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        when(userService.findAll()).thenReturn(Collections.singletonList(userVO));
+        when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
 
         AchievementVO expected = achievementService.save(achievementPostDto);

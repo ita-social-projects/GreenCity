@@ -9,7 +9,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
-import greencity.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,15 +22,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.lang.annotation.Annotation;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RatingCalculationAspectTest {
     @InjectMocks
     RatingCalculationAspect ratingCalculationAspect;
-    @Mock
-    private UserService userService;
     @Mock
     private RatingStatisticsService ratingStatisticsService;
     @Mock
@@ -48,7 +44,6 @@ class RatingCalculationAspectTest {
     @Test
     void myAnnotationPointcut() {
         ratingCalculationAspect = RatingCalculationAspect.builder()
-            .userService(userService)
             .modelMapper(modelMapper)
             .restClient(restClient)
             .ratingStatisticsService(ratingStatisticsService)
@@ -87,7 +82,7 @@ class RatingCalculationAspectTest {
         when(restClient.findByEmail("email")).thenReturn(userVO);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
-        when(userService.save(userVO)).thenReturn(userVO);
+        doNothing().when(restClient).save(userVO);
         when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
         ratingCalculationAspectMock.myAnnotationPointcut(test);

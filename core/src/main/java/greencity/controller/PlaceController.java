@@ -1,29 +1,27 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.PlaceStatus;
-import greencity.enums.UserStatus;
-import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -32,12 +30,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
     private final FavoritePlaceService favoritePlaceService;
-    private UserService userService;
     /**
      * Autowired PlaceService instance.
      */
@@ -60,10 +64,6 @@ public class PlaceController {
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
-        UserVO user = userService.findByEmail(principal.getName());
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(modelMapper.map(placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }

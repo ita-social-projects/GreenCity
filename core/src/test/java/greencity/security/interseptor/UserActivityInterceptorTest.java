@@ -3,8 +3,8 @@ package greencity.security.interseptor;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+import greencity.client.RestClient;
 import greencity.security.interceptor.UserActivityInterceptor;
-import greencity.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,7 +36,7 @@ class UserActivityInterceptorTest {
     @Mock
     SecurityContext securityContext;
     @Mock
-    UserService userService;
+    RestClient restClient;
 
     @InjectMocks
     UserActivityInterceptor userActivityInterceptor;
@@ -49,9 +49,9 @@ class UserActivityInterceptorTest {
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getPrincipal().toString()).thenReturn("test@mail.com");
-        when(userService.findIdByEmail("test@mail.com")).thenReturn(1L);
+        when(restClient.findIdByEmail("test@mail.com")).thenReturn(1L);
         Date time = new Date();
-        doNothing().when(userService).updateUserLastActivityTime(1L, time);
+        doNothing().when(restClient).updateUserLastActivityTime(1L, time);
         assertTrue(userActivityInterceptor.preHandle(request, response, handler));
     }
 }

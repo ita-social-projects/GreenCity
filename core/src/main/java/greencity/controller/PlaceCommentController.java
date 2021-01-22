@@ -1,23 +1,14 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
-import greencity.dto.place.PlaceVO;
-import greencity.dto.user.UserVO;
-import greencity.enums.UserStatus;
-import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,6 +17,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import java.security.Principal;
+
 @RestController
 @AllArgsConstructor
 public class PlaceCommentController {
@@ -33,8 +27,6 @@ public class PlaceCommentController {
      * Autowired CommentService instance.
      */
     private PlaceCommentService placeCommentService;
-    private UserService userService;
-    private PlaceService placeService;
 
     /**
      * Method witch save comment by Place Id.
@@ -53,13 +45,8 @@ public class PlaceCommentController {
     public ResponseEntity<Object> save(@PathVariable Long placeId,
         @Valid @RequestBody AddCommentDto addCommentDto,
         @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        UserVO user = userService.findByEmail(principal.getName());
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
-        PlaceVO place = placeService.findById(placeId);
         return ResponseEntity
-            .status(HttpStatus.CREATED).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
+            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, addCommentDto, principal.getName()));
     }
 
     /**
