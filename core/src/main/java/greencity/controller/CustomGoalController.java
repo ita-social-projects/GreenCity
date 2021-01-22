@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/custom/goals")

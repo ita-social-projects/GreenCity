@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller

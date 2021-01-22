@@ -37,8 +37,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 @RestController
 @RequestMapping("/place")
 @AllArgsConstructor

@@ -4,7 +4,6 @@ import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
