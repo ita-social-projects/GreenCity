@@ -3,6 +3,8 @@ package greencity.controller;
 import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
 import greencity.dto.ParticipantDto;
+import greencity.enums.ChatType;
+import greencity.repository.ChatRoomRepo;
 import greencity.service.ChatMessageService;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
@@ -22,6 +24,7 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final ParticipantService participantService;
     private final ChatMessageService chatMessageService;
+    private final ChatRoomRepo chatRoomRepo;
 
     /**
      * {@inheritDoc}
@@ -30,6 +33,15 @@ public class ChatController {
     public ResponseEntity<List<ChatRoomDto>> findAllRooms(Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(chatRoomService.findAllByParticipantName(principal.getName()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @GetMapping("/rooms/visible")
+    public ResponseEntity<List<ChatRoomDto>> findAllVisibleRooms(Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.findAllVisibleRooms(principal.getName()));
     }
 
     /**
@@ -85,10 +97,53 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
+    @GetMapping(value = {"/rooms", "/rooms/{query}"})
+    public ResponseEntity<List<ChatRoomDto>> getAllChatRoomsBy(
+        @PathVariable(required = false, value = "query") String query, Principal principal) {
+        if (StringUtils.isEmpty(query)) {
+            return this.findAllVisibleRooms(principal);
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.findAllChatRoomsByQuery(query, participantService.findByEmail(principal.getName())));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @GetMapping("/last/message")
     public ResponseEntity<Long> getLastId() {
         return ResponseEntity.status(HttpStatus.OK)
             .body(chatMessageService.findTopByOrderByIdDesc().getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @GetMapping("/users/{ids}/room/{room_name}")
+    public ResponseEntity<List<ChatRoomDto>> getGroupChatRoomsWithUsers(@PathVariable("ids") List<Long> ids,
+        @PathVariable("room_name") String chatName,
+        Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.findGroupByParticipants(ids, principal.getName(), chatName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @GetMapping("/groups")
+    public ResponseEntity<List<ChatRoomDto>> getGroupChats(Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.findGroupChatRooms(participantService.findByEmail(principal.getName()),
+                ChatType.GROUP));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @DeleteMapping("/delete/room/{room_id}")
+    public ResponseEntity<ChatRoomDto> deleteChatRoom(@PathVariable("room_id") Long roomId, Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.deleteChatRoom(roomId, principal.getName()));
     }
 
     /**

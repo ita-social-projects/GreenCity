@@ -21,7 +21,7 @@ public class ChatRoom {
 
     private String name;
 
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new LinkedList<>();
 
     @Enumerated(value = EnumType.STRING)
