@@ -53,15 +53,15 @@ public class ManagementEcoNewsController {
             ? ecoNewsService.findAll(pageable)
             : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
-        Sort sort =  pageable.getSort();
-        String orderUrl="";
+        Sort sort = pageable.getSort();
+        String orderUrl = "";
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
                 orderUrl = orderUrl + order.getProperty() + "," + order.getDirection();
             }
-        model.addAttribute("sortModel",orderUrl);
+            model.addAttribute("sortModel", orderUrl);
         }
-        model.addAttribute("pageSize",pageable.getPageSize());
+        model.addAttribute("pageSize", pageable.getPageSize());
 
         return "core/management_eco_news";
     }
@@ -87,8 +87,6 @@ public class ManagementEcoNewsController {
      */
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
-        System.out.println("=========================");
-        System.out.println(listId.size());
         ecoNewsService.deleteAll(listId);
         return ResponseEntity.status(HttpStatus.OK).body(listId);
     }
@@ -123,9 +121,7 @@ public class ManagementEcoNewsController {
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
         @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
-            System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             System.out.println(addEcoNewsDtoRequest.getText());
-            System.out.println("=============================");
             System.out.println(principal.getName());
             ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
         }
@@ -166,8 +162,6 @@ public class ManagementEcoNewsController {
     public String filterData(Model model,
         @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
         EcoNewsViewDto ecoNewsViewDto) {
-        System.out.println("==================");
-        System.out.println(ecoNewsViewDto.getAuthor());
         Pageable paging = PageRequest.of(pageable.getPageNumber(),
             pageable.getPageSize(), Sort.by("creationDate").descending());
         PageableAdvancedDto<EcoNewsDto> pageableDto =

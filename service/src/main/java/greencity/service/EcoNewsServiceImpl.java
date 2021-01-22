@@ -156,7 +156,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> pages;
         if (page.getSort().isEmpty()) {
             pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
-        }else {
+        } else {
             pages = ecoNewsRepo.findAll(page);
         }
         return buildPageableAdvancedDto(pages);
@@ -418,8 +418,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         setValueIfNotEmpty(criteriaList, EcoNews_.TITLE, ecoNewsViewDto.getTitle());
         setValueIfNotEmpty(criteriaList, EcoNews_.AUTHOR, ecoNewsViewDto.getAuthor());
         setValueIfNotEmpty(criteriaList, EcoNews_.TEXT, ecoNewsViewDto.getText());
-//        setValueIfNotEmpty(criteriaList, EcoNews_.IMAGE_PATH, ecoNewsViewDto.getImagePath());
-//        setValueIfNotEmpty(criteriaList, EcoNews_.SOURCE, ecoNewsViewDto.getSource());
         setValueIfNotEmpty(criteriaList, EcoNews_.TAGS, ecoNewsViewDto.getTags());
 
         if (!ecoNewsViewDto.getStartDate().isEmpty() && !ecoNewsViewDto.getEndDate().isEmpty()) {
