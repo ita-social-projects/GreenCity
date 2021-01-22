@@ -47,10 +47,15 @@ class RestClientTest {
 
     @Test
     void findByEmail() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
-        when(restTemplate.getForObject(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + "taras@gmail.com", UserVO.class))
-                .thenReturn(userVO);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_FIND_BY_EMAIL
+            + RestTemplateLinks.EMAIL + "taras@gmail.com", HttpMethod.GET,
+            entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
 
         assertEquals(userVO, restClient.findByEmail("taras@gmail.com"));
     }
@@ -71,10 +76,15 @@ class RestClientTest {
 
     @Test
     void findUserForAchievement() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVOAchievement userVOAchievement = new UserVOAchievement();
-        when(restTemplate.getForObject(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT
-            + RestTemplateLinks.ID + 1L, UserVOAchievement.class)).thenReturn(userVOAchievement);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + 1L,
+            HttpMethod.GET, entity, UserVOAchievement.class)).thenReturn(ResponseEntity.ok(userVOAchievement));
         assertEquals(userVOAchievement, restClient.findUserForAchievement(1L));
     }
 
@@ -172,7 +182,7 @@ class RestClientTest {
         String email = "test@gmail.com";
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, "Bearer " + accessToken);
+        headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
