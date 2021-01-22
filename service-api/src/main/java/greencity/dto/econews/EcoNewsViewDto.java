@@ -15,7 +15,7 @@ public class EcoNewsViewDto {
     private String text;
     private String startDate;
     private String endDate;
-    private String imagePath;
-    private String source;
+//    private String imagePath;
+//    private String source;
     private String tags;
 }

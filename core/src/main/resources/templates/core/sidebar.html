@@ -1,0 +1,84 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div id="mySidepanel" class="sidepanel">
+    <div>
+        <ul class="nav">
+            <li  class="nav-item" style="margin-top: 5%">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            <li class=" list-itemnav-item" style="margin-left: 15%;">
+                <img  style="width: 50px;height: 50px; border-radius: 100px; margin-left: 20%" th:src="@{/img/user_icon.png}">
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white " th:href="@{/management/advices}">
+                    Advices
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/achievement}">
+                    Achievement
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a id="eco-news-nav" class="nav-link" style="color: white" th:href="@{/management/eco-news}">
+                    Eco news
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/tipsandtricks}">
+                    Tips & Tricks
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/factoftheday}">
+                    Fact of the day
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/users}">
+                    Users
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/habits/}">
+                    Habits
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/facts}">
+                    Habit Facts
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/rating/}">
+                    Rating
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/places/}">
+                    Places
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/tags/}">
+                    Tags
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/socialnetworkimages/}">
+                    Social network images
+                </a>
+            </li>
+            <li class="list-item nav-item">
+                <a class="nav-link" style="color: white" th:href="@{/management/goals/}">
+                    Goals
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<button id ="openbtnId" class="openbtn" onclick="openNav()">
+    <i class="fas fa-chevron-right"></i>
+</button>
