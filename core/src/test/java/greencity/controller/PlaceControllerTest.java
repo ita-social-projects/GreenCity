@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.client.RestClient;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.discount.DiscountValueDto;
@@ -12,15 +13,17 @@ import greencity.dto.location.LocationAddressAndGeoForUpdateDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.*;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Place;
-import greencity.entity.User;
 import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,6 +36,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -43,6 +47,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.enums.PlaceStatus.APPROVED;
 import static greencity.enums.PlaceStatus.PROPOSED;
 import static org.mockito.ArgumentMatchers.eq;
@@ -67,7 +72,7 @@ class PlaceControllerTest {
     private FavoritePlaceService favoritePlaceService;
 
     @Mock
-    private UserService userService;
+    private RestClient restClient;
 
     @Mock
     private ModelMapper modelMapper;
@@ -134,7 +139,7 @@ class PlaceControllerTest {
             .status(APPROVED)
             .build();
 
-        when(userService.findByEmail(principal.getName())).thenReturn(user);
+        when(restClient.findByEmail(principal.getName())).thenReturn(user);
         when(placeService.save(placeAddDto, principal.getName())).thenReturn(place);
 
         when(modelMapper.map(placeService.save(placeAddDto, principal.getName()), PlaceWithUserDto.class))
@@ -183,7 +188,6 @@ class PlaceControllerTest {
             .principal(principal))
             .andExpect(status().isCreated());
 
-        verify(userService).findByEmail(eq(principal.getName()));
         verify(placeService, times(1))
             .save(placeAddDto, principal.getName());
 

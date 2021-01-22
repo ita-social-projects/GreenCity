@@ -1,5 +1,6 @@
 package greencity.achievement;
 
+import greencity.client.RestClient;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
@@ -12,7 +13,6 @@ import greencity.repository.UserAchievementRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
-import greencity.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ import static greencity.enums.AchievementType.INCREMENT;
 
 @Component
 public class AchievementCalculation {
-    private UserService userService;
+    private RestClient restClient;
     private UserActionService userActionService;
     private AchievementService achievementService;
     private AchievementCategoryService achievementCategoryService;
@@ -34,19 +34,19 @@ public class AchievementCalculation {
     /**
      * Constructor for {@link AchievementCalculation}.
      * 
-     * @param userService                {@link UserService}
+     * @param restClient                 {@link RestClient}
      * @param userActionService          {@link UserActionService}
      * @param achievementService         {@link AchievementService}
      * @param achievementCategoryService {@link AchievementCategoryService}
      * @param modelMapper                {@link ModelMapper}
      */
-    public AchievementCalculation(@Lazy UserService userService,
+    public AchievementCalculation(RestClient restClient,
         UserActionService userActionService,
         @Lazy AchievementService achievementService,
         AchievementCategoryService achievementCategoryService,
         ModelMapper modelMapper,
         UserAchievementRepo userAchievementRepo) {
-        this.userService = userService;
+        this.restClient = restClient;
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -81,7 +81,7 @@ public class AchievementCalculation {
      * @author Orest Mamchuk
      */
     private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
-        UserVOAchievement userForAchievement = userService.findUserForAchievement(userId);
+        UserVOAchievement userForAchievement = restClient.findUserForAchievement(userId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             changeAchievementStatus(modelMapper.map(userForAchievement, User.class), achievementVO);

@@ -3,10 +3,10 @@ package greencity.config;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import greencity.client.RestClient;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
-import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +47,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String CUSTOM_GOALS = "/{userId}/customGoals";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private final JwtTool jwtTool;
-    private final UserService userService;
+    private final RestClient restClient;
 
     /**
      * Constructor.
      */
 
     @Autowired
-    public SecurityConfig(JwtTool jwtTool, UserService userService) {
+    public SecurityConfig(JwtTool jwtTool, RestClient restClient) {
         this.jwtTool = jwtTool;
-        this.userService = userService;
+        this.restClient = restClient;
     }
 
     /**
@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), restClient),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))

@@ -10,7 +10,6 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
-import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
