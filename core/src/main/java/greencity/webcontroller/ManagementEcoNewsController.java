@@ -54,7 +54,7 @@ public class ManagementEcoNewsController {
             : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
-        StringBuffer orderUrl = new StringBuffer("");
+        StringBuilder orderUrl = new StringBuilder("");
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
                 orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
