@@ -54,10 +54,10 @@ public class ManagementEcoNewsController {
             : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
-        String orderUrl = "";
+        StringBuffer orderUrl = new StringBuffer("");
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl = orderUrl + order.getProperty() + "," + order.getDirection();
+                orderUrl.append(orderUrl.toString()+order.getProperty()+","+order.getDirection());
             }
             model.addAttribute("sortModel", orderUrl);
         }
@@ -121,8 +121,6 @@ public class ManagementEcoNewsController {
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
         @ApiIgnore Principal principal) {
         if (!bindingResult.hasErrors()) {
-            System.out.println(addEcoNewsDtoRequest.getText());
-            System.out.println(principal.getName());
             ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
