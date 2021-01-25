@@ -107,7 +107,7 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(restClient).findByEmail("test@gmail.com");
-        verify(ecoNewsCommentService).getAllActiveComments(pageable, userVO,1L);
+        verify(ecoNewsCommentService).getAllActiveComments(pageable, userVO, 1L);
     }
 
     @Test
@@ -183,7 +183,7 @@ class EcoNewsCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(restClient).findByEmail("test@gmail.com");
-        verify(ecoNewsCommentService).update("text",1L, userVO);
+        verify(ecoNewsCommentService).update("text", 1L, userVO);
     }
 
     @Test

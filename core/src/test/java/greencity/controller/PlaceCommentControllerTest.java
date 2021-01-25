@@ -58,34 +58,34 @@ class PlaceCommentControllerTest {
     private UserVO userVO;
     private AddCommentDto addCommentDto;
     private static final String content = "{\n" +
-            "  \"estimate\": {\n" +
-            "    \"rate\": 1\n" +
-            "  },\n" +
-            "  \"photos\": [\n" +
-            "    {\n" +
-            "      \"name\": \"string\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"text\": \"string\"\n" +
-            "}";
+        "  \"estimate\": {\n" +
+        "    \"rate\": 1\n" +
+        "  },\n" +
+        "  \"photos\": [\n" +
+        "    {\n" +
+        "      \"name\": \"string\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"text\": \"string\"\n" +
+        "}";
 
     private static final String getContent = "{\n" +
-            "  \"estimate\": {\n" +
-            "    \"rate\": 1\n" +
-            "  },\n" +
-            "  \"photos\": [\n" +
-            "    {\n" +
-            "      \"name\": \"test\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"text\": \"test\"\n" +
-            "}";
+        "  \"estimate\": {\n" +
+        "    \"rate\": 1\n" +
+        "  },\n" +
+        "  \"photos\": [\n" +
+        "    {\n" +
+        "      \"name\": \"test\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"text\": \"test\"\n" +
+        "}";
 
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(placeCommentController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
@@ -101,11 +101,11 @@ class PlaceCommentControllerTest {
         when(placeService.findById(anyLong())).thenReturn(placeVO);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
-                placeCommentLinkSecondPart, 1)
+            placeCommentLinkSecondPart, 1)
                 .principal(principal)
                 .content(content)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         addCommentDto = mapper.readValue(content, AddCommentDto.class);
@@ -117,12 +117,12 @@ class PlaceCommentControllerTest {
     @Test
     void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
-                placeCommentLinkSecondPart, 1)
+            placeCommentLinkSecondPart, 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(1L, addCommentDto,"fewfwefwe@ukr.net");
+        verify(placeCommentService, times(0)).save(1L, addCommentDto, "fewfwefwe@ukr.net");
     }
 
     @Test
@@ -136,13 +136,13 @@ class PlaceCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         Exception exception = assertThrows(
-                NestedServletException.class,
-                () -> mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
-                        placeCommentLinkSecondPart, 1)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                        .andExpect(status().isCreated()));
+            NestedServletException.class,
+            () -> mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
+                placeCommentLinkSecondPart, 1)
+                    .principal(principal)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(content))
+                .andExpect(status().isCreated()));
 
         String expectedMessage = ErrorMessage.USER_HAS_BLOCKED_STATUS;
         String actualMessage = exception.getMessage();
@@ -157,7 +157,7 @@ class PlaceCommentControllerTest {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         mockMvc.perform(get(placeCommentLinkSecondPart + "?page=5"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeCommentService, times(1)).getAllComments(pageable);
     }
@@ -165,16 +165,16 @@ class PlaceCommentControllerTest {
     @Test
     void findByIdTest() throws Exception {
         mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeCommentService, times(1))
-                .findById(1L);
+            .findById(1L);
     }
 
     @Test
     void findByIdFailedTest() throws Exception {
         mockMvc.perform(get(placeCommentLinkSecondPart + "/{id}", "invalidID"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
         verify(placeCommentService, times(0)).findById(1L);
     }
@@ -182,16 +182,16 @@ class PlaceCommentControllerTest {
     @Test
     void deleteByIdTest() throws Exception {
         this.mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(placeCommentService, times(1))
-                .deleteById(eq(1L));
+            .deleteById(eq(1L));
     }
 
     @Test
     void deleteByIdFailedTest() throws Exception {
         mockMvc.perform(delete(placeCommentLinkSecondPart + "?id={id}", "invalidID"))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
         verify(placeCommentService, times(0)).findById(1L);
     }

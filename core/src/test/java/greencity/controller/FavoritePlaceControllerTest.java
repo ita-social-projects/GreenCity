@@ -50,7 +50,6 @@ class FavoritePlaceControllerTest {
     void findAllByUserEmail() throws Exception {
         mockMvc.perform(get(favoritePlaceLink + "/")
             .principal(ModelUtils.getPrincipal())).andExpect(status().isOk());
-
         verify(favoritePlaceService, times(1)).findAllByUserEmail("test@gmail.com");
     }
 

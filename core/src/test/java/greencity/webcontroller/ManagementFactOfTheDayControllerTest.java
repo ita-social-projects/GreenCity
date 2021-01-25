@@ -84,7 +84,6 @@ class ManagementFactOfTheDayControllerTest {
             .andExpect(model().attribute("pageable", allFactsOfTheDay))
             .andExpect(model().attribute("languages", languageDTOS))
             .andExpect(status().isOk());
-
         verify(factOfTheDayService).getAllFactsOfTheDay(pageable);
         verify(languageService).getAllLanguages();
     }

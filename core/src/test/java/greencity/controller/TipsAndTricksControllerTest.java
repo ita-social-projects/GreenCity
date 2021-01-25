@@ -133,7 +133,6 @@ class TipsAndTricksControllerTest {
         this.mockMvc.perform(get(tipsAndTricksLink + "/tags?lang=en&page=1&tags=education"))
             .andExpect(status().isOk());
         String language = "en";
-
         verify(tipsAndTricksService, times(1))
             .find(pageable, tags, language);
     }

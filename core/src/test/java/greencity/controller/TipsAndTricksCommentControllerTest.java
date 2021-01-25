@@ -81,7 +81,7 @@ class TipsAndTricksCommentControllerTest {
             mapper.readValue(content, AddTipsAndTricksCommentDtoRequest.class);
 
         verify(restClient).findByEmail("test@gmail.com");
-        verify(tipsAndTricksCommentService).save(1L,addTipsAndTricksCommentDtoRequest, userVO);
+        verify(tipsAndTricksCommentService).save(1L, addTipsAndTricksCommentDtoRequest, userVO);
     }
 
     @Test
@@ -169,7 +169,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).like(1L,userVO);
+        verify(tipsAndTricksCommentService).like(1L, userVO);
     }
 
     @Test

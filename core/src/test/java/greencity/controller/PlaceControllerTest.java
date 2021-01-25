@@ -428,7 +428,6 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-
         verify(placeService).updateStatus(updatePlaceStatusDto.getId(), updatePlaceStatusDto.getStatus());
 
     }

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 public class AchievementManagementDto extends AchievementPostDto {
     @NotNull
     @Min(1)

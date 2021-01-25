@@ -45,7 +45,6 @@ class NewsSubscriberControllerTest {
     void getAll() throws Exception {
         when(newsSubscriberService.findAll())
             .thenReturn(Collections.singletonList(new NewsSubscriberResponseDto()));
-
         mockMvc.perform(get(newsSubscriberControllerLink)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))

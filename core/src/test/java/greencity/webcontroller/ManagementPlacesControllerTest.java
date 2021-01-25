@@ -158,7 +158,6 @@ class ManagementPlacesControllerTest {
         placeUpdateDto.setName("test");
         placeUpdateDto.setCategory(new CategoryDto("Food", null));
         placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto("address", 111.1, 111.1));
-
         return placeUpdateDto;
     }
 

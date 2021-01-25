@@ -98,6 +98,6 @@ class GoalControllerTest {
         mockMvc.perform(get(goalLink + "/habits/1/shopping-list", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).getUserGoals(null,1L,"en");
+        verify(goalService).getUserGoals(null, 1L, "en");
     }
 }

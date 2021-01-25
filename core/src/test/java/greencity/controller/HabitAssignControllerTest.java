@@ -95,7 +95,6 @@ class HabitAssignControllerTest {
         Locale locale = new Locale("en", "US");
         mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", LocalDate.now(), LocalDate.now().plusDays(2L)))
             .andExpect(status().isOk());
-
         verify(habitAssignService).findActiveHabitAssignsBetweenDates(null, LocalDate.now(),
             LocalDate.now().plusDays(2L), "en");
     }
