@@ -2,7 +2,6 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
-import greencity.constant.ErrorMessage;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
@@ -11,30 +10,30 @@ import greencity.enums.UserStatus;
 import greencity.service.PlaceCommentService;
 import greencity.service.PlaceService;
 import greencity.service.UserService;
-
 import java.security.Principal;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.NestedServletException;
+
+import java.security.Principal;
 
 import static greencity.ModelUtils.getUserVO;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,12 +43,6 @@ class PlaceCommentControllerTest {
 
     @Mock
     private PlaceCommentService placeCommentService;
-    @Mock
-    private UserService userService;
-    @Mock
-    private PlaceService placeService;
-    @Mock
-    private ModelMapper modelMapper;
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
@@ -94,11 +87,10 @@ class PlaceCommentControllerTest {
         User user = ModelUtils.getUser();
         userVO = getUserVO();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
+        UserVO userVO = getUserVO();
 
         user.setUserStatus(UserStatus.ACTIVATED);
         userVO.setUserStatus(UserStatus.ACTIVATED);
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
-        when(placeService.findById(anyLong())).thenReturn(placeVO);
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
@@ -109,9 +101,11 @@ class PlaceCommentControllerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         addCommentDto = mapper.readValue(content, AddCommentDto.class);
-
         verify(userService).findByEmail("test@gmail.com");
         verify(placeCommentService).save(1L, addCommentDto, userVO.getEmail());
+
+        verify(placeCommentService).save(1L, addCommentDto, principal.getName());
+
     }
 
     @Test

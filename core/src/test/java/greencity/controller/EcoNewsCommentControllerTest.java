@@ -26,6 +26,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.*;
+
+import java.security.Principal;
+
+import static greencity.ModelUtils.getPrincipal;
+import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

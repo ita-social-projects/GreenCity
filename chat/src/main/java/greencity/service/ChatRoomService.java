@@ -59,4 +59,9 @@ public interface ChatRoomService {
      * {@inheritDoc}
      */
     List<ChatRoomDto> findAllVisibleRooms(String name);
+
+    /**
+     * {@inheritDoc}
+     */
+    ChatRoomDto deleteChatRoom(Long roomId, String email);
 }

@@ -8,11 +8,14 @@ import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Comment;
 import greencity.entity.Place;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,8 +61,12 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
+        UserVO userVO = restClient.findByEmail(email);
+        if (userVO.getUserStatus().equals(UserStatus.BLOCKED)) {
+            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
+        }
         Place place = modelMapper.map(placeService.findById(placeId), Place.class);
-        User user = modelMapper.map(restClient.findByEmail(email), User.class);
+        User user = modelMapper.map(userVO, User.class);
         Comment comment = modelMapper.map(addCommentDto, Comment.class);
         comment.setPlace(place);
         comment.setUser(user);

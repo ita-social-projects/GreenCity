@@ -19,8 +19,10 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
+import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
@@ -119,6 +121,10 @@ public class PlaceServiceImpl implements PlaceService {
     @Transactional
     @Override
     public PlaceVO save(PlaceAddDto dto, String email) {
+        UserVO user = restClient.findByEmail(email);
+        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
+        }
         log.info(LogMessage.IN_SAVE, dto.getName(), email);
 
         proposePlaceService.checkLocationValues(dto.getLocation());
