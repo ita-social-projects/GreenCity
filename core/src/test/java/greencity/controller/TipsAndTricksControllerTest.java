@@ -80,7 +80,7 @@ class TipsAndTricksControllerTest {
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = mapper.readValue(json, TipsAndTricksDtoRequest.class);
 
         verify(tipsAndTricksService, times(1))
-            .save(tipsAndTricksDtoRequest, isNull(), "Jane.Smith@gmail.com");
+            .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
     }
 
     @Test

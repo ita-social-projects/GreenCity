@@ -41,6 +41,7 @@ class PlaceCommentControllerTest {
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
+    private AddCommentDto addCommentDto;
     private static final String placeCommentLinkFirstPart = "/place";
     private static final String placeCommentLinkSecondPart = "/comments";
 
@@ -92,7 +93,7 @@ class PlaceCommentControllerTest {
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
-        AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
+        addCommentDto = mapper.readValue(content, AddCommentDto.class);
 
         verify(placeCommentService).save(1L, addCommentDto, principal.getName());
     }
@@ -105,7 +106,7 @@ class PlaceCommentControllerTest {
                 .content("{}"))
             .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(1L, any(), anyString());
+        verify(placeCommentService, times(0)).save(1L, addCommentDto, "fail@ukr.net");
     }
 
     @Test
