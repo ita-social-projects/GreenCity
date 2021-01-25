@@ -76,7 +76,7 @@ class NewsSubscriberControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(newsSubscriberService).save(eq(ModelUtils.getNewsSubscriberRequestDto()));
+        verify(newsSubscriberService).save(ModelUtils.getNewsSubscriberRequestDto());
     }
 
     @Test
@@ -90,7 +90,7 @@ class NewsSubscriberControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(newsSubscriberService).unsubscribe(eq("test@gmail.com"),
-            eq("55275726-de58-45f4-818d-f6dcb5403946"));
+        verify(newsSubscriberService).unsubscribe("test@gmail.com",
+            "55275726-de58-45f4-818d-f6dcb5403946");
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.validation.Validator;
@@ -49,7 +48,7 @@ class GoalControllerTest {
         mockMvc.perform(delete(goalLink + "/user-goals?ids=1,2", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).deleteUserGoals(eq("1,2"));
+        verify(goalService).deleteUserGoals("1,2");
     }
 
     @Test
@@ -58,7 +57,7 @@ class GoalControllerTest {
             .locale(new Locale("ru")))
             .andExpect(status().isCreated());
 
-        verify(goalService).updateUserGoalStatus(eq(null), eq(1L), eq("ru"));
+        verify(goalService).updateUserGoalStatus(null, 1L, "ru");
     }
 
     @Test
@@ -66,7 +65,7 @@ class GoalControllerTest {
         mockMvc.perform(patch(goalLink + "/{userGoalId}", 1, 1))
             .andExpect(status().isCreated());
 
-        verify(goalService).updateUserGoalStatus(eq(null), eq(1L), eq("en"));
+        verify(goalService).updateUserGoalStatus(null, 1L, "en");
     }
 
     @Test
@@ -91,7 +90,7 @@ class GoalControllerTest {
         mockMvc.perform(get(goalLink + "/habits/1/shopping-list?lang=en", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).getUserGoals(eq(null), eq(1L), eq("en"));
+        verify(goalService).getUserGoals(null, 1L, "en");
     }
 
     @Test
@@ -99,6 +98,6 @@ class GoalControllerTest {
         mockMvc.perform(get(goalLink + "/habits/1/shopping-list", 1))
             .andExpect(status().isOk());
 
-        verify(goalService).getUserGoals(eq(null), eq(1L), eq("en"));
+        verify(goalService).getUserGoals(null,1L,"en");
     }
 }

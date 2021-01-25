@@ -7,7 +7,6 @@ import java.security.Principal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -52,7 +51,7 @@ class FavoritePlaceControllerTest {
         mockMvc.perform(get(favoritePlaceLink + "/")
             .principal(ModelUtils.getPrincipal())).andExpect(status().isOk());
 
-        verify(favoritePlaceService, times(1)).findAllByUserEmail(eq("test@gmail.com"));
+        verify(favoritePlaceService, times(1)).findAllByUserEmail("test@gmail.com");
     }
 
     @Test
