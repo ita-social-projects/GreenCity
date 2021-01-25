@@ -13,7 +13,6 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.never;
@@ -54,7 +53,7 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isCreated());
         Long id = 1L;
-        verify(habitAssignService, never()).assignDefaultHabitForUser(eq(id), eq(user));
+        verify(habitAssignService, never()).assignDefaultHabitForUser(id, user);
     }
 
     @Test

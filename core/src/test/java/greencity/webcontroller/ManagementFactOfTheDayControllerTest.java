@@ -16,7 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -123,7 +122,7 @@ class ManagementFactOfTheDayControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(factOfTheDayService).saveFactOfTheDayAndTranslations(eq(factOfTheDayPostDTO));
+        verify(factOfTheDayService).saveFactOfTheDayAndTranslations(factOfTheDayPostDTO);
     }
 
     private FactOfTheDayPostDTO getFactOfTheDayPostDTO() {
@@ -156,7 +155,7 @@ class ManagementFactOfTheDayControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(factOfTheDayService).updateFactOfTheDayAndTranslations(eq(factOfTheDayPostDTO));
+        verify(factOfTheDayService).updateFactOfTheDayAndTranslations(factOfTheDayPostDTO);
     }
 
     @Test

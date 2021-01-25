@@ -24,7 +24,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -81,7 +80,7 @@ class TipsAndTricksControllerTest {
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = mapper.readValue(json, TipsAndTricksDtoRequest.class);
 
         verify(tipsAndTricksService, times(1))
-            .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
+            .save(tipsAndTricksDtoRequest, isNull(), "Jane.Smith@gmail.com");
     }
 
     @Test
@@ -99,7 +98,7 @@ class TipsAndTricksControllerTest {
             .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-            .findDtoById(eq(1L));
+            .findDtoById(1L);
     }
 
     @Test
@@ -112,7 +111,7 @@ class TipsAndTricksControllerTest {
             .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-            .findAll(eq(pageable));
+            .findAll(pageable);
     }
 
     @Test
@@ -121,7 +120,7 @@ class TipsAndTricksControllerTest {
             .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-            .delete(eq(1L));
+            .delete(1L);
     }
 
     @Test
@@ -136,7 +135,7 @@ class TipsAndTricksControllerTest {
         String language = "en";
 
         verify(tipsAndTricksService, times(1))
-            .find(eq(pageable), eq(tags), eq(language));
+            .find(pageable, tags, language);
     }
 
     @Test

@@ -111,7 +111,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "/{id}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findDtoById(eq(1L));
+        verify(ecoNewsService).findDtoById(1L);
     }
 
     @Test
@@ -123,7 +123,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
+        verify(ecoNewsService).findAll(pageable);
     }
 
     @Test
@@ -148,7 +148,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get("/econews/tags?page=5&tags=eco"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(eq(pageable), eq(tags));
+        verify(ecoNewsService).find(pageable, tags);
     }
 
     @Test
@@ -160,7 +160,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get("/econews/tags?page=5"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
+        verify(ecoNewsService).findAll(pageable);
     }
 
     @Test
@@ -168,7 +168,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "/recommended?openedEcoNewsId=" + 1L))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).getThreeRecommendedEcoNews(eq(1L));
+        verify(ecoNewsService).getThreeRecommendedEcoNews(1L);
     }
 
     @Test
