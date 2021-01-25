@@ -9,78 +9,35 @@
                         <img alt="logo" th:src="@{/img/logo_M.png}">
                     </a>
                 </div>
-                <div class="navigation-menu">
-                    <div class="navigation-menu-left">
-                        <ul>
-                            <li>
-                                <a href="/management/advices">
-                                    Advices
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/achievement">
-                                    Achievement
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/eco-news">
-                                    Eco news
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/tipsandtricks">
-                                    Tips & Tricks
-                                </a>
-                            </li>
-                            <li>
-                                <a th:href="@{/management/factoftheday}">
-                                    Fact of the day
-                                </a>
-                            </li>
-                            <li>
-                                <a th:href="@{/management/users}">
-                                    Users
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/habits/">
-                                    Habits
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/facts">
-                                    Habit Facts
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/rating/">
-                                    Rating
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/places/">
-                                    Places
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/tags/">
-                                    Tags
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/socialnetworkimages/">
-                                    Social network images
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/goals/">
-                                    Goals
-                                </a>
-                            </li>
-                        </ul>
+                <div class="main-search">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/users" method="get">
+                                        <img alt="search" id="btnSearchImage"
+                                             src="/img/search.png">
+                                        <input type="search" name="query" id="inputSearch" class="form-control"
+                                               placeholder="Search…">
+
+                                    </form>
+                                </span>
+
+                </div>
+                <div class="logo-admin">
+                    <img class="rounded-circle" th:src="@{/img/view-user.jpg}">
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">En
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="#">Ru</a>
+                        <a href="#">Ua</a>
                     </div>
                 </div>
             </div>
+            </ul>
         </div>
+    </div>
+    </div>
+    </div>
     </div>
 </header>

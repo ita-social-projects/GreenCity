@@ -12,7 +12,6 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -41,11 +40,19 @@ public class ManagementUserController {
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
         Model model) {
-        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? restClient.findUserForManagementByPage(paging)
-            : restClient.searchBy(paging, query);
+            ? restClient.findUserForManagementByPage(pageable)
+            : restClient.searchBy(pageable, query);
         model.addAttribute("users", pageableDto);
+        model.addAttribute("paging", pageable);
+        Sort sort = pageable.getSort();
+        StringBuilder orderUrl = new StringBuilder("");
+        if (!sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+            }
+            model.addAttribute("sortModel", orderUrl);
+        }
         return "core/management_user";
     }
 
