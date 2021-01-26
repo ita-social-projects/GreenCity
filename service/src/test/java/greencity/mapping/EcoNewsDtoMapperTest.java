@@ -30,7 +30,7 @@ class EcoNewsDtoMapperTest {
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()), 0);
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+
+    <changeSet id="novosad1" author="Novosad R.">
+        <createTable tableName="eco_news_users_likes">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="novosad2" author="Novosad R.">
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="eco_news_users_likes"
+                                 constraintName="fk_eco_news_users_likes_eco_news"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="eco_news_users_likes"
+                                 constraintName="fk_eco_news_users_likes_users"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

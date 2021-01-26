@@ -84,7 +84,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        MultipartFile image, String email) {
+                                      MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setAuthor(user);
@@ -272,7 +272,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @param ecoNews {@link EcoNews} which was added.
      * @return {@link AddEcoNewsMessage} which contains needed info about
-     *         {@link EcoNews} and subscribers.
+     * {@link EcoNews} and subscribers.
      */
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
@@ -325,7 +325,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
-        MultipartFile image) {
+                                              MultipartFile image) {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
@@ -338,12 +338,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void enhanceWithNewData(EcoNews toUpdate, UpdateEcoNewsDto updateEcoNewsDto,
-        MultipartFile image) {
+                                    MultipartFile image) {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
         toUpdate.setTags(modelMapper.map(tagService
-            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+                .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (updateEcoNewsDto.getImage() != null) {
@@ -386,6 +386,36 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         Page<EcoNews> page = ecoNewsRepo.findAll(getSpecification(ecoNewsViewDto), pageable);
         return buildPageableAdvancedDto(page);
+    }
+
+    /**
+     * Method to like or dislike {@link EcoNews} by id.
+     *
+     * @param userVO - current {@link User} that like/dislike news.
+     * @param id     - @{@link Long} eco news id.
+     */
+    @Override
+    public void like(UserVO userVO, Long id) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+            ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        } else {
+            ecoNewsVO.getUsersLikedNews().add(userVO);
+        }
+
+        ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+    }
+
+    /**
+     * Method to get amount of likes by eco news id.
+     *
+     * @param id - @{@link Integer} eco news id.
+     * @return amount of likes by eco news id.
+     */
+    @Override
+    public Integer countLikesForEcoNews(Long id) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        return ecoNewsVO.getUsersLikedNews().size();
     }
 
     /**

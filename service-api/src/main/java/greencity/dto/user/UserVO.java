@@ -1,6 +1,7 @@
 package greencity.dto.user;
 
 import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.goal.CustomGoalVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
@@ -67,6 +68,8 @@ public class UserVO {
     private OwnSecurityVO ownSecurity;
 
     private String profilePicturePath;
+
+    private Set<EcoNewsVO> ecoNewsLiked;
 
     private Set<EcoNewsCommentVO> ecoNewsCommentsLiked;
 

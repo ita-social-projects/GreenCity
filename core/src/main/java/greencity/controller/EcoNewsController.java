@@ -244,4 +244,34 @@ public class EcoNewsController {
     public ResponseEntity<Long> findAmountOfPublishedNews(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.getAmountOfPublishedNewsByUserId(userId));
     }
+
+    /**
+     * Method to like/dislike EcoNews.
+     */
+    @ApiOperation(value = "Like eco news")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/like")
+    public void like(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
+        ecoNewsService.like(user, id);
+    }
+
+    /**
+     * Method to get amount of likes by eco news id.
+     *
+     * @return count of likes for eco news;
+     */
+    @ApiOperation(value = "Count likes by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/countLikes/{econewsId}")
+    public ResponseEntity<Integer> countLikesForEcoNews(@PathVariable Long econewsId) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.countLikesForEcoNews(econewsId));
+    }
 }

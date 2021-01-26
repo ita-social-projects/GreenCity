@@ -203,6 +203,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST,
                 "/category",
                 "/econews",
+                "/econews/like",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 CUSTOM_GOALS,

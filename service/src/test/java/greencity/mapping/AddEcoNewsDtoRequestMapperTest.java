@@ -28,6 +28,7 @@ class AddEcoNewsDtoRequestMapperTest {
         actual.setId(1L);
         actual.setCreationDate(ecoNews.getCreationDate());
         actual.setTags(Collections.singletonList(ModelUtils.getTag()));
+        actual.setUsersLikedNews(Collections.emptySet());
 
         assertEquals(ecoNews, actual);
     }
