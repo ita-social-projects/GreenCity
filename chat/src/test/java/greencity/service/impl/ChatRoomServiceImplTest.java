@@ -65,7 +65,8 @@ class ChatRoomServiceImplTest {
             .build();
         expectedList.add(expected);
         expectedToReturn = ChatRoom.builder()
-            .name(expectedSet.stream().map(Participant::getName).collect(Collectors.joining("+")))
+            .name(expectedSet.stream().map(Participant::getName).collect(Collectors.joining(":")))
+            .owner(expectedParticipant)
             .messages(new ArrayList<>())
             .participants(expectedSet)
             .type(ChatType.PRIVATE)
