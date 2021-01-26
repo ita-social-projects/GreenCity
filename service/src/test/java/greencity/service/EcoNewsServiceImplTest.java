@@ -28,7 +28,9 @@ import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +45,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
@@ -429,4 +432,39 @@ class EcoNewsServiceImplTest {
         assertEquals(8, actual.size());
     }
 
+    @Test
+    void likeTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        ecoNewsService.like(userVO, 1L);
+
+        assertEquals(1, ecoNewsVO.getUsersLikedNews().size());
+        assertTrue(ecoNewsVO.getUsersLikedNews().contains(userVO));
+        verify(ecoNewsRepo).save(ecoNews);
+    }
+
+
+    @Test
+    void countLikesForEcoNews() {
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        Set<UserVO> usersLiked = new HashSet<>();
+        usersLiked.add(UserVO.builder().id(1L).build());
+        usersLiked.add(UserVO.builder().id(2L).build());
+
+        ecoNewsVO.setUsersLikedNews(usersLiked);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+
+        int actualAmountOfLikes = ecoNewsService.countLikesForEcoNews(1L);
+
+        assertEquals(2, actualAmountOfLikes);
+    }
 }

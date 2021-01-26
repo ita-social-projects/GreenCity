@@ -402,7 +402,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } else {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
-
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
     }
 

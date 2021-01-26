@@ -179,4 +179,24 @@ class EcoNewsControllerTest {
 
         verify(tagsService).findAllEcoNewsTags(language);
     }
+
+    @Test
+    void likeTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(post(ecoNewsLink + "/like?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).like(userVO, 1L);
+    }
+
+    @Test
+    void countLikesForEcoNewsTest() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/countLikes/{econewsId}", 1L))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).countLikesForEcoNews(1L);
+    }
 }
