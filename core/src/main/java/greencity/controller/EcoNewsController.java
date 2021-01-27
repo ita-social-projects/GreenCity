@@ -274,4 +274,16 @@ public class EcoNewsController {
     public ResponseEntity<Integer> countLikesForEcoNews(@PathVariable Long econewsId) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.countLikesForEcoNews(econewsId));
     }
+
+    /**
+     * Check if user liked news.
+     *
+     * @return user liked news or not.
+     */
+    @ApiOperation(value = "Check if user liked news")
+    @GetMapping("/isLikedByUser")
+    public ResponseEntity<Boolean> checkNewsIsLikedByUser(@RequestParam("econewsId") Long econewsId,
+                                                          @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(econewsId, user));
+    }
 }

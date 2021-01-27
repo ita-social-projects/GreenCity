@@ -467,4 +467,21 @@ class EcoNewsServiceImplTest {
 
         assertEquals(2, actualAmountOfLikes);
     }
+
+    @Test
+    void checkNewsIsLikedByUserTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        Set<UserVO> usersLiked = new HashSet<>();
+        usersLiked.add(UserVO.builder().id(2L).build());
+        usersLiked.add(UserVO.builder().id(3L).build());
+        ecoNewsVO.setUsersLikedNews(usersLiked);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+
+        boolean isLikedByUser = ecoNewsService.checkNewsIsLikedByUser(1L, userVO);
+
+        assertFalse(isLikedByUser);
+    }
 }

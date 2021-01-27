@@ -199,4 +199,16 @@ class EcoNewsControllerTest {
 
         verify(ecoNewsService).countLikesForEcoNews(1L);
     }
+
+    @Test
+    void checkNewsIsLikedByUserTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(ecoNewsLink + "/isLikedByUser?econewsId=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).checkNewsIsLikedByUser(1L, userVO);
+    }
 }
