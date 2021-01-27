@@ -3,7 +3,6 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.comment.AddCommentDto;
-import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.UserStatus;
@@ -26,7 +25,6 @@ import java.security.Principal;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,6 +41,7 @@ class PlaceCommentControllerTest {
     @InjectMocks
     private PlaceCommentController placeCommentController;
 
+    private AddCommentDto addCommentDto;
     private static final String placeCommentLinkFirstPart = "/place";
     private static final String placeCommentLinkSecondPart = "/comments";
 
@@ -94,7 +93,7 @@ class PlaceCommentControllerTest {
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
-        AddCommentDto addCommentDto = mapper.readValue(content, AddCommentDto.class);
+        addCommentDto = mapper.readValue(content, AddCommentDto.class);
 
         verify(placeCommentService).save(1L, addCommentDto, principal.getName());
     }
@@ -107,7 +106,7 @@ class PlaceCommentControllerTest {
                 .content("{}"))
             .andExpect(status().isBadRequest());
 
-        verify(placeCommentService, times(0)).save(eq(1L), any(), anyString());
+        verify(placeCommentService, times(0)).save(1L, addCommentDto, "fail@ukr.net");
     }
 
     @Test
@@ -119,7 +118,7 @@ class PlaceCommentControllerTest {
         mockMvc.perform(get(placeCommentLinkSecondPart + "?page=5"))
             .andExpect(status().isOk());
 
-        verify(placeCommentService, times(1)).getAllComments(eq(pageable));
+        verify(placeCommentService, times(1)).getAllComments(pageable);
     }
 
     @Test
@@ -145,7 +144,7 @@ class PlaceCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(placeCommentService, times(1))
-            .deleteById(eq(1L));
+            .deleteById(1L);
     }
 
     @Test

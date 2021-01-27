@@ -36,7 +36,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -47,10 +46,8 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import static greencity.enums.PlaceStatus.APPROVED;
 import static greencity.enums.PlaceStatus.PROPOSED;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -279,7 +276,7 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .getInfoById(eq(1L));
+            .getInfoById(1L);
     }
 
     @Test
@@ -288,7 +285,7 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(favoritePlaceService, times(1))
-            .getInfoFavoritePlace(eq(1L));
+            .getInfoFavoritePlace(1L);
     }
 
     @Test
@@ -419,7 +416,7 @@ class PlaceControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(placeService).getPlacesByFilter(eq(filterPlaceDto));
+        verify(placeService).getPlacesByFilter(filterPlaceDto);
     }
 
     @Test
@@ -500,7 +497,7 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .getInfoForUpdatingById(eq(1L));
+            .getInfoForUpdatingById(1L);
     }
 
     @Test
@@ -540,7 +537,7 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .deleteById(eq(1L));
+            .deleteById(1L);
     }
 
     @Test
