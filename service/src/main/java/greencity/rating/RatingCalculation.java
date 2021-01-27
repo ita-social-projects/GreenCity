@@ -18,6 +18,13 @@ public class RatingCalculation {
     private RatingStatisticsService ratingStatisticsService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Method that calculates the user rating.
+     * 
+     * @param rating      of {@link RatingCalculationEnum}
+     * @param userVo      of {@link UserVO}
+     * @param accessToken accessToken for security
+     */
     public void ratingCalculation(RatingCalculationEnum rating, UserVO userVo, String accessToken) {
         User user = modelMapper.map(userVo, User.class);
         userVo.setRating(userVo.getRating() + rating.getRatingPoints());
@@ -31,5 +38,4 @@ public class RatingCalculation {
             .build();
         ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
     }
-
 }

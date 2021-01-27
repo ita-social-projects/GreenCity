@@ -107,7 +107,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
-
     }
 
     /**
