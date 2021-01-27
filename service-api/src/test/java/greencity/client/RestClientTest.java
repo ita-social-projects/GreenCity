@@ -310,7 +310,7 @@ class RestClientTest {
     }
 
     @Test
-    public void saveTest() {
+    void saveTest() {
         UserVO userVO = ModelUtils.getUserVO();
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
