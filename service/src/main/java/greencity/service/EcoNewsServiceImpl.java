@@ -427,8 +427,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public Boolean checkNewsIsLikedByUser(Long id, UserVO userVO) {
         EcoNewsVO ecoNewsVO = findById(id);
-        boolean newsIsLiked = ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
-        return newsIsLiked;
+        return ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
     }
 
     /**
