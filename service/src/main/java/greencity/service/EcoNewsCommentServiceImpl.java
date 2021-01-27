@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -21,6 +21,7 @@ import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EcoNewsCommentRepo;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
+    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final HttpServletRequest httpServletRequest;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -53,7 +56,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @param userVO                      {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
-    @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
+
     @Override
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
@@ -73,6 +76,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         }
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(userVO.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS_COMMENT, 0));
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -146,7 +152,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @param id     of {@link greencity.entity.EcoNewsComment} to delete.
      * @param userVO current {@link User} that wants to delete.
      */
-    @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
     public void deleteById(Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
@@ -159,6 +164,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             comment.getComments().forEach(c -> c.setDeleted(true));
         }
         comment.setDeleted(true);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
         ecoNewsCommentRepo.save(comment);
     }
 

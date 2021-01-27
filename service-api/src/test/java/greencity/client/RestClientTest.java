@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -29,8 +30,6 @@ import java.util.*;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
@@ -308,5 +307,21 @@ class RestClientTest {
 
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    public void saveTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
+        restClient.save(userVO, accessToken);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);
+
     }
 }

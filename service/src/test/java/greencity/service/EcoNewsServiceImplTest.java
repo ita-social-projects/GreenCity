@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -28,6 +29,7 @@ import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +73,9 @@ class EcoNewsServiceImplTest {
 
     @Mock
     FileService fileService;
+
+    @Mock
+    HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -239,9 +244,11 @@ class EcoNewsServiceImplTest {
 
     @Test
     void delete() {
+        String accessToken = "Token";
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         ecoNewsService.delete(1L, ecoNewsVO.getAuthor());
 
