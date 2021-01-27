@@ -6,6 +6,13 @@ function applyFilters() {
     document.getElementById("searchForm").action = "/management/eco-news";
     document.getElementById("searchForm").submit();
 }
+function toggle(source) {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
+}
 
 let checkedCh = 0;
 function updateCheckBoxCount(chInt){
@@ -76,7 +83,7 @@ $(document).ready(function () {
     });
 
     //delete button on the right in the table
-    $('td .delete.eDelBtn').on('click', function (event) {
+    $('.delete.eDelBtn').on('click', function (event) {
         event.preventDefault();
         $('#deleteEcoNewsModal').modal();
         var href = $(this).attr('href');
@@ -86,7 +93,7 @@ $(document).ready(function () {
     //delete button in deleteAllSelectedModal
     $('#deleteAllSubmit').on('click', function (event) {
         event.preventDefault();
-        var checkbox = $('table tbody input[type="checkbox"]');
+        var checkbox = $('input[type="checkbox"]');
         var payload = [];
         checkbox.each(function () {
             if (this.checked) {
@@ -158,7 +165,7 @@ $(document).ready(function () {
     });
 
     //edit button on the right in the table
-    $('td .edit.eBtn').on('click', function (event) {
+    $('.edit.eBtn').on('click', function (event) {
         event.preventDefault();
         $("#editEcoNewsModal").each(function () {
             $(this).find('input.eEdit').val("");
@@ -237,3 +244,105 @@ $(document).ready(function () {
         });
     });
 });
+
+function markCurentPageOnNav(){
+    document.getElementById("eco-news-nav").classList.add("eco-news-active-link");
+}
+
+function orderByNameField(nameField){
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var page = urlSearch.get("page");
+    if (page!==null){
+        urlSearch.set("page","0");
+    }
+    if (sort==null){
+        urlSearch.set("sort",nameField+",ASC");
+    }
+    else if (sort.includes(nameField)) {
+        sort = sort.toUpperCase();
+        if (sort.includes("ASC")){
+            urlSearch.set("sort",nameField+",DESC");
+        }
+        else if(sort.includes("DESC")) {
+            urlSearch.set("sort",nameField+',ASC');
+        }
+    }else {
+        urlSearch.set("sort",nameField+",ASC");
+    }
+
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function(res) {
+            window.location.href= url + urlSearch.toString();
+            console.log("RESULT")
+        }
+    });
+}
+// mark order
+function markOrder(){
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    if (sort!==null){
+        if(sort.includes('id')){
+            if (sort.includes('ASC')){
+                document.getElementById("id-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("id-icon").className="fas fa-chevron-down";
+            }
+        }else if(sort.includes('author.name')){
+            if (sort.includes('ASC')){
+                document.getElementById("author-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("author-icon").className="fas fa-chevron-down";
+            }
+        }else if(sort.includes('title')){
+            if (sort.includes('ASC')){
+                document.getElementById("title-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("title-icon").className="fas fa-chevron-down";
+            }
+        }else if (sort.includes('text')){
+            if (sort.includes('ASC')){
+                document.getElementById("text-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("text-icon").className="fas fa-chevron-down";
+            }
+        }else if(sort.includes('creationDate')){
+            if (sort.includes('ASC')){
+                document.getElementById("date-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("date-icon").className="fas fa-chevron-down";
+            }
+        }else if(sort.includes('tags')){
+            if (sort.includes('ASC')){
+                document.getElementById("tags-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("tags-icon").className="fas fa-chevron-down";
+            }
+        }else if(sort.includes('likes')){
+            if (sort.includes('ASC')){
+                document.getElementById("likes-icon").className='fas fa-chevron-up';
+            }else {
+                document.getElementById("likes-icon").className="fas fa-chevron-down";
+            }
+        }
+    }
+}
+
+//sidebar
+function openNav() {
+    document.getElementById("mySidepanel").style.width = "250px";
+    document.getElementById("openbtnId").hidden = true;
+    document.getElementById("tab-content").style.marginLeft="15%";
+}
+
+function closeNav() {
+    document.getElementById("mySidepanel").style.width = "0";
+    document.getElementById("openbtnId").hidden = false;
+    document.getElementById("tab-content").style.marginLeft="0";
+}

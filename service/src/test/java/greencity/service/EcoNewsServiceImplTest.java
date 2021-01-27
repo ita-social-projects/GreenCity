@@ -426,7 +426,7 @@ class EcoNewsServiceImplTest {
     void buildSearchCriteriaTest() {
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         List<SearchCriteria> actual = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
-        assertEquals(8, actual.size());
+        assertEquals(6, actual.size());
     }
 
 }
