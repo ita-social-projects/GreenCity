@@ -80,8 +80,8 @@ class TipsAndTricksCommentControllerTest {
         AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest =
             mapper.readValue(content, AddTipsAndTricksCommentDtoRequest.class);
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).save(eq(1L), eq(addTipsAndTricksCommentDtoRequest), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(tipsAndTricksCommentService).save(1L, addTipsAndTricksCommentDtoRequest, userVO);
     }
 
     @Test
@@ -108,7 +108,7 @@ class TipsAndTricksCommentControllerTest {
             .andExpect(status().isOk());
 
         verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).findAllComments(eq(pageable), eq(userVO), eq(1L));
+        verify(tipsAndTricksCommentService).findAllComments(pageable, userVO, 1L);
     }
 
     @Test
@@ -116,7 +116,7 @@ class TipsAndTricksCommentControllerTest {
         mockMvc.perform(get(tipsAndTricksCommentLink + "/count/comments?id=1"))
             .andExpect(status().isOk());
 
-        verify(tipsAndTricksCommentService).countComments(eq(1L));
+        verify(tipsAndTricksCommentService).countComments(1L);
     }
 
     @Test
@@ -124,7 +124,7 @@ class TipsAndTricksCommentControllerTest {
         mockMvc.perform(get(tipsAndTricksCommentLink + "/replies/{parentCommentId}", 1))
             .andExpect(status().isOk());
 
-        verify(tipsAndTricksCommentService).findAllReplies(eq(1L));
+        verify(tipsAndTricksCommentService).findAllReplies(1L);
     }
 
     @Test
@@ -138,8 +138,8 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).deleteById(eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(tipsAndTricksCommentService).deleteById(1L, userVO);
     }
 
     @Test
@@ -153,8 +153,8 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).update(eq("text"), eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(tipsAndTricksCommentService).update("text", 1L, userVO);
     }
 
     @Test
@@ -168,8 +168,8 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(tipsAndTricksCommentService).like(eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(tipsAndTricksCommentService).like(1L, userVO);
     }
 
     @Test
@@ -177,7 +177,7 @@ class TipsAndTricksCommentControllerTest {
         mockMvc.perform(get(tipsAndTricksCommentLink + "/count/likes?id=1"))
             .andExpect(status().isOk());
 
-        verify(tipsAndTricksCommentService).countLikes(eq(1L));
+        verify(tipsAndTricksCommentService).countLikes(1L);
     }
 
     @Test
@@ -185,6 +185,6 @@ class TipsAndTricksCommentControllerTest {
         mockMvc.perform(get(tipsAndTricksCommentLink + "/count/replies?parentCommentId=1"))
             .andExpect(status().isOk());
 
-        verify(tipsAndTricksCommentService).countReplies(eq(1L));
+        verify(tipsAndTricksCommentService).countReplies(1L);
     }
 }

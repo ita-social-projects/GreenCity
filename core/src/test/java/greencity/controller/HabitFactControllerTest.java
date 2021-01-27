@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -136,7 +135,7 @@ class HabitFactControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         HabitFactPostDto habitFactPostDto = mapper.readValue(content, HabitFactPostDto.class);
         verify(habitFactService, times(1))
-            .save(eq(habitFactPostDto));
+            .save(habitFactPostDto);
     }
 
     @Test
