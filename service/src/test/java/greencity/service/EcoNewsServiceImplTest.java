@@ -450,7 +450,6 @@ class EcoNewsServiceImplTest {
         verify(ecoNewsRepo).save(ecoNews);
     }
 
-
     @Test
     void countLikesForEcoNews() {
         EcoNews ecoNews = ModelUtils.getEcoNews();

@@ -283,7 +283,7 @@ public class EcoNewsController {
     @ApiOperation(value = "Check if user liked news")
     @GetMapping("/isLikedByUser")
     public ResponseEntity<Boolean> checkNewsIsLikedByUser(@RequestParam("econewsId") Long econewsId,
-                                                          @ApiIgnore @CurrentUser UserVO user) {
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(econewsId, user));
     }
 }

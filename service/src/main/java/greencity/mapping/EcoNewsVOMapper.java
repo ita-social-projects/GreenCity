@@ -36,7 +36,7 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                 .map(user -> UserVO.builder()
                     .id(user.getId())
                     .build())
-                    .collect(Collectors.toSet()))
+                .collect(Collectors.toSet()))
             .ecoNewsComments(ecoNews.getEcoNewsComments().stream()
                 .map(ecoNewsComment -> EcoNewsCommentVO.builder()
                     .id(ecoNewsComment.getId())
