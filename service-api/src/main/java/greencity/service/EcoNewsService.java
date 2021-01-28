@@ -161,4 +161,29 @@ public interface EcoNewsService {
      */
     PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
         Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
+
+    /**
+     * Method to mark news as liked by User.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} eco news id.
+     */
+    void like(UserVO user, Long id);
+
+    /**
+     * Method to get amount of likes by eco news id.
+     *
+     * @param id - {@link Integer} eco news id.
+     * @return amount of likes by eco news id.
+     */
+    Integer countLikesForEcoNews(Long id);
+
+    /**
+     * Method to check if user liked news.
+     *
+     * @param id   - id of {@link EcoNewsVO} to check liked or not.
+     * @param user - current {@link UserVO}.
+     * @return user liked news or not.
+     */
+    Boolean checkNewsIsLikedByUser(Long id, UserVO user);
 }

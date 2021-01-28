@@ -17,4 +17,5 @@ public class ChatRoomDto {
     private List<ChatMessageDto> messages;
     private ChatType chatType;
     private Set<ParticipantDto> participants;
+    private Long ownerId;
 }

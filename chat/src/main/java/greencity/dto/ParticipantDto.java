@@ -3,6 +3,8 @@ package greencity.dto;
 import greencity.enums.UserStatus;
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -15,4 +17,5 @@ public class ParticipantDto {
     private String email;
     private String profilePicture;
     private UserStatus userStatus;
+    private List<ChatRoomDto> rooms;
 }

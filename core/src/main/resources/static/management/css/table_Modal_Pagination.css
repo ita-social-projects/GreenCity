@@ -97,7 +97,6 @@ table.table tr th:last-child {
 }
 table.table-striped tbody tr:nth-of-type(odd) {
     background-color: #f5f6f6;
-
 }
 
 table.table-striped tbody tr:nth-of-type(even) {
@@ -601,6 +600,7 @@ input[type=search] {
     margin: 0;
     box-sizing: border-box;
     -webkit-appearance: none;
+
 }
 
 .search-box-right img {
@@ -771,4 +771,53 @@ button#searchByForUser {
 
 .col.action {
     width: 90px;
+}
+
+/* sidepanel*/
+.eco-news-active-link{
+    background-color: #a2b5af;
+    font-weight: bold;
+}
+li {
+    list-style-type: none;
+}
+.sidepanel  {
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    height: 100%;
+    background-color: #839d94;
+    overflow-x: hidden;
+    transition: 0.5s;
+}
+
+.sidepanel a:hover {
+    color: #f1f1f1;
+}
+.sidepanel a{
+    font-size: 12px;
+    padding-left: 15%;
+}
+.sidepanel .closebtn {
+    position: absolute;
+    color: black;
+    top: 0;
+    right: 25px;
+    font-size: 30px;
+}
+.openbtn {
+    position: fixed;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #839d94;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+}
+.openbtn:hover {
+    background-color:#444;
+}
+.list-item{
+    margin-top: 5%;
+    width: 100%;
 }

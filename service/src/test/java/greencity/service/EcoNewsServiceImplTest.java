@@ -28,7 +28,9 @@ import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +45,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
 
@@ -157,7 +160,7 @@ class EcoNewsServiceImplTest {
 
         EcoNewsDto ecoNewsDto =
             new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList());
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1);
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
@@ -192,7 +195,7 @@ class EcoNewsServiceImplTest {
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
             new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList()));
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1));
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
 
@@ -426,7 +429,58 @@ class EcoNewsServiceImplTest {
     void buildSearchCriteriaTest() {
         EcoNewsViewDto ecoNewsViewDto = ModelUtils.getEcoNewsViewDto();
         List<SearchCriteria> actual = ecoNewsService.buildSearchCriteria(ecoNewsViewDto);
-        assertEquals(8, actual.size());
+        assertEquals(6, actual.size());
     }
 
+    @Test
+    void likeTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        ecoNewsService.like(userVO, 1L);
+
+        assertEquals(1, ecoNewsVO.getUsersLikedNews().size());
+        assertTrue(ecoNewsVO.getUsersLikedNews().contains(userVO));
+        verify(ecoNewsRepo).save(ecoNews);
+    }
+
+    @Test
+    void countLikesForEcoNews() {
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        Set<UserVO> usersLiked = new HashSet<>();
+        usersLiked.add(UserVO.builder().id(1L).build());
+        usersLiked.add(UserVO.builder().id(2L).build());
+
+        ecoNewsVO.setUsersLikedNews(usersLiked);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+
+        int actualAmountOfLikes = ecoNewsService.countLikesForEcoNews(1L);
+
+        assertEquals(2, actualAmountOfLikes);
+    }
+
+    @Test
+    void checkNewsIsLikedByUserTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        Set<UserVO> usersLiked = new HashSet<>();
+        usersLiked.add(UserVO.builder().id(2L).build());
+        usersLiked.add(UserVO.builder().id(3L).build());
+        ecoNewsVO.setUsersLikedNews(usersLiked);
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+
+        boolean isLikedByUser = ecoNewsService.checkNewsIsLikedByUser(1L, userVO);
+
+        assertFalse(isLikedByUser);
+    }
 }

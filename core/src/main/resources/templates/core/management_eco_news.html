@@ -29,194 +29,225 @@
     <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
 </head>
 
-<body>
+<body onload="markCurentPageOnNav(), markOrder()">
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
     <div class="container-xl">
-        <div class="table-responsive">
-            <div class="table-wrapper">
-                <div class="table-title">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h2>Manage Eco News</h2>
-                        </div>
-                            <div class="col-sm-6">
-                                <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/eco-news" method="get">
-                                        <img alt="search" id="btnSearchImage"
-                                             src="/img/search.png">
-                                        <input type="text" name="query" id="inputSearch" class="form-control"
-                                               placeholder="Search…">
-                                    </form>
-                                </span>
-                                <a href="#addEcoNewsModal" id="addEcoNewsModalBtn" class="btn btn-secondary" data-toggle="modal">
-                                    <div>Add Eco News</div>
-                                </a>
-                                <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled" data-toggle="modal" >
-                                    <div>Delete</div>
-                                </a>
+        <div class="row" id ="eco-news-content">
+            <!--            SIDEBAR-->
+            <div>
+                <div id="sidebar" th:insert="core/sidebar"></div>
+            </div>
+            <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
+                <div id="eco-news" class="row " style="margin-top: 3%; ">
+                    <div class="col-sm-8">
+                        <h2 class="text-success">Manage Eco News</h2>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row" >
+                            <div class="col-sm-12" >
+                                <div class="d-flex justify-content-end" >
+                                    <a href="#addEcoNewsModal" addEcoNewsForm id="addEcoNewsModalBtn" class="btn btn-success" data-toggle="modal">
+                                        <div style="width: 100px;">Add</div>
+                                    </a>
+                                    <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled" data-toggle="modal" >
+                                        <div class="text-danger" style="width: 100px;">Delete</div>
+                                    </a>
+                                </div>
                             </div>
+                        </div>
                     </div>
                 </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr class="table-primary">
-                        <th style="width: 3%">
-                                <span class="custom-checkbox">
+                <div class="row" style="margin-top: 3%">
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-sm-12">
+                               <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll">
                                     <label for="selectAll"></label>
                                 </span>
-                        </th>
-                        <th>Id</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Text</th>
-                        <th>Creation Date</th>
-                        <th>Image</th>
-                        <th>Source</th>
-                        <th>Tags</th>
-                        <th>Actions</th>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <!--                SOME BUTTONS TO SHANGE FORM-->
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="d-flex justify-content-end">
+                                    <select style="margin-right: 5%;" onchange="location = this.value">
+                                        <option>[[${pageSize}]] </option>
+                                        <option value="/management/eco-news?size=20">20</option>
+                                        <option value="/management/eco-news?size=40">40</option>
+                                        <option value="/management/eco-news?size=60">60</option>
+                                        <option value="/management/eco-news?size=80">80</option>
+                                        <option value="/management/eco-news?size=100">100</option>
 
-                    </tr>
-                    </thead>
-
-                        <tbody>
-
-                        <form method="POST" action="/management/eco-news" id="searchForm" onsubmit="applyFilters()">
-                            <tr>
-                                <td>
-
-                                </td>
-                                <td>
-                                    <input type="search" th:name="id" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.id }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="title" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.title }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="author" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.author }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="text" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.text }"/>
-                                </td>
-                                <td>
-                                    <div class="input-group input-daterange">
-                                        <input type="search" name="startDate" class="form-control"
-                                               th:value="${fields eq null ? '' : fields.startDate }" style="height: 3ch"/>
-                                        <div>to</div>
-                                        <input type="search" name="endDate" class="form-control"
-                                               th:value="${fields eq null ? '' : fields.endDate }" style="height: 3ch"/>
-                                    </div>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="imagePath" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.imagePath }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="source" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.source }"/>
-                                </td>
-                                <td>
-                                    <input type="search" th:name="tags" placeholder="Search"
-                                           th:value="${fields eq null ? '' : fields.tags }"/>
-                                </td>
-                                <td>
-                                    <button type="submit" id="searchBy"><img alt="search" src="/img/search.png"></button>
-                                </td>
-
+                                    </select>
+                                    <a style="margin-right: 5%;">
+                                        <i class="fas fa-filter" style="font-size: 20px;color: black; margin-left: 5%;"></i>
+                                    </a>
+                                    <a style="margin-right: 5%;">
+                                        <i class="fas fa-th-large" style="font-size: 20px;color: black; margin-left: 5%;"></i>
+                                    </a>
+                                    <a style="margin-right: 5%;">
+                                        <i class="fas fa-align-justify" style="font-size: 20px; color: green; margin-left: 5%;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 3%">
+                    <div class="col-sm-12" >
+                        <table class="table table-striped">
+                            <thead>
+                            <tr style="background-color: #afbfbd">
+                                <th>
+                                    <span onclick="orderByNameField('id')">Id
+                                        <i id="id-icon" style="color: #8ea59f;"></i>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span onclick="orderByNameField('author.name')" >Author
+                                        <i id="author-icon" style="color: #8ea59f;"></i>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span onclick="orderByNameField('title')" >Title
+                                        <i id="title-icon" style="color: #8ea59f;"></i>
+                                    </span>
+                                </th>
+                                <th>
+                                    <span onclick="orderByNameField('text')">Text
+                                    <i id="text-icon"  style="color: #8ea59f;"></i>
+                                    </span>
+                                </th>
+                                <th>Image</th>
+                                <th style="padding: 0;"> <span onclick="orderByNameField('creationDate')">Date
+                                    <i id="date-icon" style="color: #8ea59f;"></i>
+                                </span>
+                                </th>
+                                <th>
+                                    <span onclick="orderByNameField('tags')">Tags
+                                        <i id="tags-icon"  style="color: #8ea59f;"></i>
+                                    </span>
+                                </th>
+                                <th>
+                                    <i class="fas fa-star" style="color: green"></i>
+                                    <i id="likes-icon"  style="color: #8ea59f;"></i>
+                                </th>
+                                <th>Actions</th>
                             </tr>
-                        </form>
+                            </thead>
 
+                            <tbody>
 
-                        <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
-                        <tr>
-                            <td>
-                                    <span class="custom-checkbox">
+                            <form method="POST" action="/management/eco-news" id="searchForm" onsubmit="applyFilters()">
+                                <tr>
+                                    <td>
+                                        <input placeholder="" class="input-search-form" type="search" th:name="id"
+                                               th:value="${fields eq null ? '' : fields.id }"/>
+                                    </td>
+                                    <td>
+                                        <input class="input-search-form" type="search" th:name="author"
+                                               th:value="${fields eq null ? '' : fields.author }"/>
+                                    </td>
+                                    <td>
+                                        <input class="input-search-form" type="search" th:name="title"
+                                               th:value="${fields eq null ? '' : fields.title }"/>
+                                    </td>
+                                    <td>
+                                        <input class="input-search-form"  type="search" th:name="text"
+                                               th:value="${fields eq null ? '' : fields.text }"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <div  class="input-group input-daterange">
+                                            <input  type="search" name="startDate" class="form-control input-search-form"
+                                                   th:value="${fields eq null ? '' : fields.startDate }"/>
+                                            <div>to</div>
+                                            <input  type="search" name="endDate" class="form-control input-search-form"
+                                                   th:value="${fields eq null ? '' : fields.endDate }" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input class="input-search-form" type="search" th:name="tags"
+                                               th:value="${fields eq null ? '' : fields.tags }"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button type="submit" id="searchBy"><img alt="search" src="/img/search.png"></button>
+                                    </td>
+                                </tr>
+                            </form>
+
+                            <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
+                                <tr>
+                                    <td style="width: 8%">
+                                        <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${allEcoNews.getId()}"
-                                        th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
-                            </td>
-                            <td th:text="${allEcoNews.getId()}"></td>
-                            <td class="col title" th:text="${allEcoNews.getTitle()}" style="overflow: hidden;
-                                                                           text-overflow: ellipsis;
-                                                                           display: -webkit-box;
-                                                                           -webkit-line-clamp: 10; /* number of lines to show */
-                                                                           -webkit-box-orient: vertical;"></td>
-                            <td th:text="${allEcoNews.getAuthor().getName()}"></td>
-                            <td class="col text" th:text="${allEcoNews.getText()}" style="overflow: hidden;
-                                                                           text-overflow: ellipsis;
-                                                                           display: -webkit-box;
-                                                                           -webkit-line-clamp: 10; /* number of lines to show */
-                                                                           -webkit-box-orient: vertical;">
-                            </td>
-                            <td th:text="${#temporals.format(allEcoNews.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
-                            <td>
-                                <img th:src="${allEcoNews.getImagePath()} == null ? @{/img/default-image-list-view.png} : ${allEcoNews.getImagePath()}" th:width="120" th:height="100">
-                            </td>
-                            <td class="col source" th:text="${allEcoNews.getSource()}" style="overflow: hidden;
-                                                                           text-overflow: ellipsis;
-                                                                           display: -webkit-box;
-                                                                           -webkit-line-clamp: 10; /* number of lines to show */
-                                                                           -webkit-box-orient: vertical;"></td>
-                            <td>
-                                <th:block th:each="translation : ${pageable.getPage().get(iterStatus.index).getTags()}">
-                                    <li th:type="1" th:text="${translation}"></li>
-                                </th:block>
-                            </td>
-                            <td>
-                                <a th:href="@{/management/eco-news/find/(id=${allEcoNews.getId()})}" class="edit eBtn">
-                                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-                                <a th:href="@{/management/eco-news/delete/(id=${allEcoNews.getId()})}" class="delete eDelBtn" data-toggle="modal">
-                                    <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
-                                </a>
-                            </td>
-                        </tr>
-                        </th:block>
-                    </tbody>
-                </table>
-                <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
-                    <div class="hint-text">
-                        Showing
-                        <b th:text="${pageable.getCurrentPage() eq 0 ? '1 -' : (pageable.isHasNext() ? pageable.getPage().size() * pageable.getCurrentPage() : pageable.getTotalElements() - pageable.getPage().size()) + 1 + ' - '}"></b>
-                        <b th:text="${pageable.getCurrentPage() eq 0 ? pageable.getPage().size() : (pageable.isHasNext() ? pageable.getPage().size() * (pageable.getCurrentPage() + 1) : pageable.getTotalElements())}">*</b>
-                        out of
-                        <b th:text="${pageable.getTotalElements()}"></b>
-                        entries
+                                        <span>[[${allEcoNews.getId()}]]</span>
+                                    </td>
+                                    <td th:text="${allEcoNews.getAuthor().getName()}"></td>
+                                    <td class="col title" th:text="${allEcoNews.getTitle()}"></td>
+                                    <td class="col text" th:text="${allEcoNews.getText()}" ></td>
+                                    <td>
+                                        <img th:src="${allEcoNews.getImagePath()} == null ? @{/img/default-image-list-view.png} : ${allEcoNews.getImagePath()}" th:width="120" th:height="100">
+                                    </td>
+                                    <td th:text="${#temporals.format(allEcoNews.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
+                                    <td>
+                                        <th:block th:each="translation : ${pageable.getPage().get(iterStatus.index).getTags()}">
+                                            <li th:type="1" th:text="${translation}"></li>
+                                        </th:block>
+                                    </td>
+                                    <td>Likes</td>
+                                    <td>
+                                        <a th:href="@{/management/eco-news/find/(id=${allEcoNews.getId()})}" class="edit eBtn">
+                                            <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                                        </a>
+                                        <a th:href="@{/management/eco-news/delete/(id=${allEcoNews.getId()})}" class="delete eDelBtn" data-toggle="modal">
+                                            <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                        <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
+                            <div class="d-flex justify-content-center">
+                                <ul class="pagination">
+                                    <li class="page-item"
+                                        th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
+                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
+                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i
+                                                class="arrow fas fa-chevron-left"></i></a>
+                                        <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
+                                                class="arrow fas fa-chevron-left"></i></a>
+                                    </li>
+
+                                    <li class="page-item"
+                                        th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
+                                        th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
+                                        th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
+                                        <a class="page-link" th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>
+                                    </li>
+
+                                    <li class="page-item"
+                                        th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
+                                        <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
+                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize})}"><i
+                                                class="arrow fas fa-chevron-right"></i></a>
+                                        <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
+                                                class="arrow fas fa-chevron-right"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="pagination">
-
-                        <li class="page-item"
-                            th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                               th:href="@{/management/eco-news?page={id}(id=${0})}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                        </li>
-
-                        <li class="page-item"
-                            th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
-                            th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
-                            th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/eco-news?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
-                        </li>
-
-                        <li class="page-item"
-                            th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                               th:href="@{/management/eco-news?page={id}(id=${pageable.getTotalPages()-1})}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>

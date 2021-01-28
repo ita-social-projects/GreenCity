@@ -71,4 +71,7 @@
     <include file="db/changelog/logs/ch-add-type-column-to-tags-Derevetskyi.xml"/>
     <include file="db/changelog/logs/ch-change-user-action-Mamchuk.xml"/>
     <include file="db/changelog/logs/ch-change-user-achievements-Mamchuk.xml"/>
+    <include file="db/changelog/logs/ch-change-eco-news-Novosad.xml"/>
+    <include file="db/changelog/logs/ch-add-column-Bilonizhka.xml"/>
+    <include file="db/changelog/logs/ch-add-all-ubs-tables-Bilonizhka.xml"/>
 </databaseChangeLog>

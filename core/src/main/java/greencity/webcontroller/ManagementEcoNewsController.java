@@ -53,6 +53,16 @@ public class ManagementEcoNewsController {
             ? ecoNewsService.findAll(pageable)
             : ecoNewsService.searchEcoNewsBy(pageable, query);
         model.addAttribute("pageable", allEcoNews);
+        Sort sort = pageable.getSort();
+        StringBuilder orderUrl = new StringBuilder("");
+        if (!sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+            }
+            model.addAttribute("sortModel", orderUrl);
+        }
+        model.addAttribute("pageSize", pageable.getPageSize());
+
         return "core/management_eco_news";
     }
 
