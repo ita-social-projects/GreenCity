@@ -394,6 +394,48 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method to like or dislike {@link EcoNews} by id.
+     *
+     * @param userVO - current {@link User} that like/dislike news.
+     * @param id     - @{@link Long} eco news id.
+     */
+    @Override
+    public void like(UserVO userVO, Long id) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+            ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        } else {
+            ecoNewsVO.getUsersLikedNews().add(userVO);
+        }
+        ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+    }
+
+    /**
+     * Method to get amount of likes by eco news id.
+     *
+     * @param id - @{@link Integer} eco news id.
+     * @return amount of likes by eco news id.
+     */
+    @Override
+    public Integer countLikesForEcoNews(Long id) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        return ecoNewsVO.getUsersLikedNews().size();
+    }
+
+    /**
+     * Method to check if user liked news.
+     *
+     * @param id     - id of {@link EcoNewsVO} to check liked or not.
+     * @param userVO - current {@link UserVO}.
+     * @return user liked news or not.
+     */
+    @Override
+    public Boolean checkNewsIsLikedByUser(Long id, UserVO userVO) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        return ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+    }
+
+    /**
      * Returns {@link EcoNewsSpecification} for entered filter parameters.
      *
      * @param ecoNewsViewDto contains data from filters
