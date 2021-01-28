@@ -1,5 +1,7 @@
 package greencity.entity;
 
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
@@ -43,4 +45,11 @@ public class EcoNews {
 
     @ManyToMany
     private List<Tag> tags;
+
+    @ManyToMany
+    @JoinTable(
+        name = "eco_news_users_likes",
+        joinColumns = @JoinColumn(name = "eco_news_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> usersLikedNews = new HashSet<>();
 }

@@ -41,10 +41,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"lastVisit", "verifyEmail", "ownSecurity", "ecoNewsCommentsLiked",
+    exclude = {"lastVisit", "verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 @ToString(
-    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsCommentsLiked",
+    exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
 public class User {
     @Id
@@ -93,6 +93,9 @@ public class User {
 
     @Column(name = "profile_picture")
     private String profilePicturePath;
+
+    @ManyToMany(mappedBy = "usersLikedNews")
+    private Set<EcoNews> ecoNewsLiked;
 
     @ManyToMany(mappedBy = "usersLiked")
     private Set<EcoNewsComment> ecoNewsCommentsLiked;
