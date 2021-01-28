@@ -185,4 +185,23 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoomRepo.delete(deleteRoom);
         return chatRoomDto;
     }
+
+    @Override
+    public ChatRoomDto leaveChatRoom(ChatRoomDto chatRoomDto, String email, Long ownerId) {
+        ChatRoom chatRoom = modelMapper.map(chatRoomDto, ChatRoom.class);
+        chatRoom.setOwner(participantService.findById(ownerId));
+        chatRoom.setType(ChatType.GROUP);
+        chatRoom.getParticipants().removeIf(participant -> participant.getEmail().equals(email));
+        chatRoomRepo.save(chatRoom);
+        return null;
+    }
+
+    @Override
+    public ChatRoomDto manageParticipantsAndNameChatRoom(ChatRoomDto chatRoomDto, String email) {
+        ChatRoom chatRoom = modelMapper.map(chatRoomDto, ChatRoom.class);
+        chatRoom.setOwner(participantService.findByEmail(email));
+        chatRoom.setType(ChatType.GROUP);
+        chatRoomRepo.save(chatRoom);
+        return chatRoomDto;
+    }
 }
