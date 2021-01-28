@@ -339,10 +339,12 @@ function openNav() {
     document.getElementById("mySidepanel").style.width = "250px";
     document.getElementById("openbtnId").hidden = true;
     document.getElementById("tab-content").style.marginLeft="15%";
+    document.getElementById("eco-news-content").style.marginRight="15%";
 }
 
 function closeNav() {
     document.getElementById("mySidepanel").style.width = "0";
     document.getElementById("openbtnId").hidden = false;
     document.getElementById("tab-content").style.marginLeft="0";
+    document.getElementById("eco-news-content").style.marginRight="0";
 }
