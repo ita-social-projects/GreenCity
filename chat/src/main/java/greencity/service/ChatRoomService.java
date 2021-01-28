@@ -64,4 +64,14 @@ public interface ChatRoomService {
      * {@inheritDoc}
      */
     ChatRoomDto deleteChatRoom(Long roomId, String email);
+
+    /**
+     * {@inheritDoc}
+     */
+    ChatRoomDto leaveChatRoom(ChatRoomDto chatRoomDto, String email, Long ownerId);
+
+    /**
+     * {@inheritDoc}
+     */
+    ChatRoomDto manageParticipantsAndNameChatRoom(ChatRoomDto chatRoomDto, String email);
 }

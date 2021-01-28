@@ -149,6 +149,25 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
+    @PostMapping("/room/leave")
+    public ResponseEntity<ChatRoomDto> leaveChatRoom(@RequestBody ChatRoomDto chatRoomDto, Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.leaveChatRoom(chatRoomDto, principal.getName(), chatRoomDto.getOwnerId()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @PostMapping("/room/manage/participants")
+    public ResponseEntity<ChatRoomDto> manageParticipantsChatRoom(@RequestBody ChatRoomDto chatRoomDto,
+        Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(chatRoomService.manageParticipantsAndNameChatRoom(chatRoomDto, principal.getName()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @MessageMapping("/chat")
     public void processMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);
