@@ -1,5 +1,6 @@
 package greencity.service;
 
+import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -55,6 +56,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,6 +76,12 @@ class TipsAndTricksServiceImplTest {
     private RestClient restClient;
     @Mock
     private LanguageService languageService;
+    @Mock
+    private HttpServletRequest httpServletRequest;
+    @Mock
+    private SecurityContext securityContext;
+    @Mock
+    private Authentication authentication;
     @InjectMocks
     private TipsAndTricksServiceImpl tipsAndTricksService;
     @Mock
@@ -95,11 +105,13 @@ class TipsAndTricksServiceImplTest {
             .languageVO(LanguageVO.builder().id(1L).code("ru").build())
             .build());
     private TagVO tagVO = new TagVO(1L, TagType.TIPS_AND_TRICKS, tagTranslationVOList, null, null, null);
+    private String accessToken = "Token";
 
     @Test
     void saveTest() {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
@@ -302,6 +314,10 @@ class TipsAndTricksServiceImplTest {
         doNothing().when(tipsAndTricksRepo).deleteById(1L);
         when(tipsAndTricksRepo.findById(1L))
             .thenReturn(Optional.of(ModelUtils.getTipsAndTricks()));
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn("email");
+        when(restClient.findByEmail("email")).thenReturn(userVO);
         tipsAndTricksService.delete(1L);
 
         verify(tipsAndTricksRepo, times(1)).deleteById(1L);
@@ -436,6 +452,7 @@ class TipsAndTricksServiceImplTest {
     void likeComment() {
         TipsAndTricksCommentVO initial = tipsAndTricksCommentVO;
         tipsAndTricksService.likeComment(userVO, initial);
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
         assertTrue(initial.getUsersLiked().contains(userVO));
     }
 
