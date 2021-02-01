@@ -6,6 +6,8 @@ import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -323,5 +326,34 @@ class RestClientTest {
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);
 
+    }
+
+    @Test
+    void searchTest() {
+        Pageable pageable = PageRequest.of(0, 20, Sort.unsorted());
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        UserManagementViewDto userViewDto =
+            UserManagementViewDto.builder()
+                .id("1L")
+                .name("vivo")
+                .email("test@ukr.net")
+                .userCredo("Hello")
+                .role("1")
+                .userStatus("1")
+                .build();
+        List<UserManagementVO> userManagementVOS = Collections.singletonList(new UserManagementVO());
+        PageableAdvancedDto<UserManagementVO> userAdvancedDto =
+            new PageableAdvancedDto<>(userManagementVOS, 20, 0, 0, 0,
+                true, true, true, true);
+        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE + pageable.getPageNumber()
+            + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.POST, entity,
+            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
+            })).thenReturn(ResponseEntity.ok(userAdvancedDto));
+        assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));
     }
 }
