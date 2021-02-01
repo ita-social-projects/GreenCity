@@ -278,12 +278,12 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text", null, Collections.singletonList(getTag()));
+            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
     public static EcoNewsVO getEcoNewsVO() {
         return new EcoNewsVO(1L, ZonedDateTime.now(), TestConst.SITE, null, getUserVO(),
-            "title", "text", null, Collections.singletonList(getTagVO()));
+            "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()));
     }
 
     public static GoalTranslation getGoalTranslation() {
@@ -1175,7 +1175,7 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"));
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
@@ -1201,7 +1201,7 @@ public class ModelUtils {
 
     public static EcoNewsViewDto getEcoNewsViewDto() {
         return new EcoNewsViewDto("1", "title", "author", "text", "startDate",
-            "endDate", "imagePath", "source", "tag");
+            "endDate", "tag");
     }
 
     public static HabitDto getHabitDto() {

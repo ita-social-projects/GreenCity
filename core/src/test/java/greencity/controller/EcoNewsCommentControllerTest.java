@@ -30,7 +30,6 @@ import java.security.Principal;
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -86,8 +85,8 @@ class EcoNewsCommentControllerTest {
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest =
             mapper.readValue(content, AddEcoNewsCommentDtoRequest.class);
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).save(eq(1L), eq(addEcoNewsCommentDtoRequest), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).save(1L, addEcoNewsCommentDtoRequest, userVO);
     }
 
     @Test
@@ -110,8 +109,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).getAllActiveComments(eq(pageable), eq(userVO), eq(1L));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).getAllActiveComments(pageable, userVO, 1L);
     }
 
     @Test
@@ -119,7 +118,7 @@ class EcoNewsCommentControllerTest {
         mockMvc.perform(get(ecoNewsCommentControllerLink + "/count/comments/{ecoNewsId}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsCommentService).countOfComments(eq(1L));
+        verify(ecoNewsCommentService).countOfComments(1L);
     }
 
     @Test
@@ -135,8 +134,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllReplies(eq(pageable), eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).findAllReplies(pageable, 1L, userVO);
     }
 
     @Test
@@ -152,8 +151,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).findAllActiveReplies(eq(pageable), eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).findAllActiveReplies(pageable, 1L, userVO);
     }
 
     @Test
@@ -161,7 +160,7 @@ class EcoNewsCommentControllerTest {
         mockMvc.perform(get(ecoNewsCommentControllerLink + "/count/replies/{parentCommentId}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsCommentService).countReplies(eq(1L));
+        verify(ecoNewsCommentService).countReplies(1L);
     }
 
     @Test
@@ -173,8 +172,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).deleteById(eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).deleteById(1L, userVO);
     }
 
     @Test
@@ -186,8 +185,8 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).update(eq("text"), eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).update("text", 1L, userVO);
     }
 
     @Test
@@ -199,7 +198,7 @@ class EcoNewsCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
-        verify(ecoNewsCommentService).like(eq(1L), eq(userVO));
+        verify(restClient).findByEmail("test@gmail.com");
+        verify(ecoNewsCommentService).like(1L, userVO);
     }
 }

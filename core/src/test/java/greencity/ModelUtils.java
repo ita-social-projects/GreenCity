@@ -144,7 +144,7 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
-            "title", "text", null, Collections.singletonList(getTag()));
+            "title", "text", null, Collections.singletonList(getTag()), null);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {

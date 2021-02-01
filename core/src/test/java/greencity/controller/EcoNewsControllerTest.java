@@ -111,7 +111,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "/{id}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findDtoById(eq(1L));
+        verify(ecoNewsService).findDtoById(1L);
     }
 
     @Test
@@ -123,7 +123,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
+        verify(ecoNewsService).findAll(pageable);
     }
 
     @Test
@@ -148,7 +148,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get("/econews/tags?page=5&tags=eco"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).find(eq(pageable), eq(tags));
+        verify(ecoNewsService).find(pageable, tags);
     }
 
     @Test
@@ -160,7 +160,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get("/econews/tags?page=5"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(eq(pageable));
+        verify(ecoNewsService).findAll(pageable);
     }
 
     @Test
@@ -168,7 +168,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "/recommended?openedEcoNewsId=" + 1L))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).getThreeRecommendedEcoNews(eq(1L));
+        verify(ecoNewsService).getThreeRecommendedEcoNews(1L);
     }
 
     @Test
@@ -178,5 +178,37 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(tagsService).findAllEcoNewsTags(language);
+    }
+
+    @Test
+    void likeTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(post(ecoNewsLink + "/like?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).like(userVO, 1L);
+    }
+
+    @Test
+    void countLikesForEcoNewsTest() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/countLikes/{econewsId}", 1L))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).countLikesForEcoNews(1L);
+    }
+
+    @Test
+    void checkNewsIsLikedByUserTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(ecoNewsLink + "/isLikedByUser?econewsId=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).checkNewsIsLikedByUser(1L, userVO);
     }
 }
