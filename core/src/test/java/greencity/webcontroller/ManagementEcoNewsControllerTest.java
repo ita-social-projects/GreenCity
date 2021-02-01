@@ -8,8 +8,10 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
+import greencity.service.TagsService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,6 +57,8 @@ class ManagementEcoNewsControllerTest {
     private ModelMapper modelMapper;
     @Mock
     private RestClient restClient;
+    @Mock
+    private TagsService tagsService;
 
     private Principal principal = getPrincipal();
 
@@ -72,6 +76,10 @@ class ManagementEcoNewsControllerTest {
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
         PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
+            .id(1L)
+            .name("News").build());
+        when(tagsService.findAllEcoNewsTags("en")).thenReturn(tagDtoList);
         when(ecoNewsService.findAll(pageable)).thenReturn(ecoNewsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEcoNewsLink)
