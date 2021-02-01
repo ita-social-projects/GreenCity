@@ -312,6 +312,25 @@ class RestClientTest {
     }
 
     @Test
+    void findUserForManagementByPage() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+        List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
+        PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
+            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
+            + RestTemplateLinks.SIZE + pageable.getPageSize() + "&sort=id,ASC", HttpMethod.GET, entity,
+            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
+            })).thenReturn(ResponseEntity.ok(pageableAdvancedDto));
+        assertEquals(pageableAdvancedDto, restClient.findUserForManagementByPage(pageable));
+    }
+
+    @Test
     void searchTest() {
         Pageable pageable = PageRequest.of(0, 20, Sort.unsorted());
         String accessToken = "accessToken";
