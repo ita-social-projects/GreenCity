@@ -45,7 +45,7 @@ function Order() {
 }
 
 
-function orderByNameField(nameField) {
+function byNameField(nameField) {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");

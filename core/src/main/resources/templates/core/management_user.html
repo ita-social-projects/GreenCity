@@ -64,25 +64,23 @@
                     <table class="table table-striped">
                         <thead>
                         <tr class="table-primary ">
-                            <th>
-                            </th>
-                            <th>
-                                <span onclick="orderByNameField('id')">ID
+                            <th></th>
+                            <th><span onclick="byNameField('id')">ID
                                         <i id="id-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="orderByNameField('name')">User name
+                            <th><span onclick="byNameField('name')">User name
                                         <i id="user-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="orderByNameField('email')">Email
+                            <th><span onclick="byNameField('email')">Email
                                         <i id="email-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="orderByNameField('userCredo')">Credo
+                            <th><span onclick="byNameField('userCredo')">Credo
                                         <i id="credo-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="orderByNameField('role')">Role
+                            <th><span onclick="byNameField('role')">Role
                                         <i id="role-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="orderByNameField('userStatus')">Status
+                            <th><span onclick="byNameField('userStatus')">Status
                                         <i id="status-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
                         </tr>
@@ -332,7 +330,8 @@
                                 reason to do it: </p>
                             <fieldset>
                                 <input type="checkbox" id="first-click"> inappropriate credo content in profile<br>
-                                <input type="checkbox" id="second-click"> inappropriate behavior in news publications<br>
+                                <input type="checkbox" id="second-click"> inappropriate behavior in news
+                                publications<br>
                                 <input type="checkbox" id="other" onclick="otherCheck()"> other<br>
                                 <input type="text" id="othertext" name="othertext" disabled="disabled">
                             </fieldset>
