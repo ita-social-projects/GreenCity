@@ -96,6 +96,5 @@ class ManagementUserControllerTest {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(restClient).search(pageable, userViewDto);
     }
 }
