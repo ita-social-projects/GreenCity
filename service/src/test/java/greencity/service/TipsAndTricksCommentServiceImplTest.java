@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.tipsandtricks.TipsAndTricksVO;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +40,8 @@ class TipsAndTricksCommentServiceImplTest {
     private TipsAndTricksService tipsAndTricksService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private HttpServletRequest httpServletRequest;
     @InjectMocks
     private TipsAndTricksCommentServiceImpl tipsAndTricksCommentService;
 
@@ -46,6 +50,7 @@ class TipsAndTricksCommentServiceImplTest {
     private AddTipsAndTricksCommentDtoRequest addTipsAndTricksCommentDtoRequest =
         ModelUtils.getAddTipsAndTricksCommentDtoRequest();
     private TipsAndTricksCommentDto tipsAndTricksCommentDto = TipsAndTricksCommentDto.builder().id(1L).build();
+    private String token = "token";
 
     @Test
     void saveTest() {
@@ -61,6 +66,7 @@ class TipsAndTricksCommentServiceImplTest {
         when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
         when(modelMapper.map(tipsAndTricksComment, AddTipsAndTricksCommentDtoResponse.class))
             .thenReturn(addTipsAndTricksCommentDtoResponse);
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
 
         AddTipsAndTricksCommentDtoResponse actual = tipsAndTricksCommentService.save(tipsAndTricksComment.getId(),
@@ -107,6 +113,7 @@ class TipsAndTricksCommentServiceImplTest {
         when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
         when(modelMapper.map(tipsAndTricksComment, AddTipsAndTricksCommentDtoResponse.class))
             .thenReturn(addTipsAndTricksCommentDtoResponse);
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
 
         try {
@@ -186,7 +193,7 @@ class TipsAndTricksCommentServiceImplTest {
 
         when(tipsAndTricksCommentRepo.findById(anyLong())).thenReturn(Optional.of(tipsAndTricksComment));
         when(tipsAndTricksCommentRepo.save(tipsAndTricksComment)).thenReturn(tipsAndTricksComment);
-
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         tipsAndTricksCommentService.deleteById(1L, ModelUtils.getUserVO());
 
         assertTrue(reply.isDeleted());

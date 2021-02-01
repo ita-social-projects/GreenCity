@@ -273,6 +273,21 @@ public class RestClient {
     }
 
     /**
+     * Method that allow you to save new {@link UserVO}.
+     *
+     * @param userVO for save User.
+     * @author Orest Mamchuk
+     */
+    public void save(UserVO userVO, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
      * Method makes headers for RestTemplate.
      *
      * @return {@link HttpEntity}

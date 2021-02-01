@@ -2,6 +2,7 @@ package greencity.service;
 
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
+import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -53,8 +54,12 @@ class EcoNewsCommentServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private SimpMessagingTemplate messagingTemplate;
+    @Mock
+    private HttpServletRequest httpServletRequest;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
+
+    private String token = "token";
 
     @Test
     void saveCommentWithNoParentCommentId() {
@@ -214,7 +219,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         EcoNewsComment comment = verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -228,7 +233,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -239,7 +244,7 @@ class EcoNewsCommentServiceImplTest {
         UserVO userVO = getUserVO();
         user.setRole(Role.ROLE_ADMIN);
         Long commentId = 1L;
-
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
 
