@@ -7,8 +7,10 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
+import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -38,6 +40,7 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 @RequestMapping("/management/eco-news")
 public class ManagementEcoNewsController {
     private final EcoNewsService ecoNewsService;
+    private final TagsService tagsService;
 
     /**
      * Method that returns management page with all {@link EcoNewsVO}.
@@ -61,6 +64,7 @@ public class ManagementEcoNewsController {
             }
             model.addAttribute("sortModel", orderUrl);
         }
+        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
         model.addAttribute("pageSize", pageable.getPageSize());
 
         return "core/management_eco_news";
@@ -100,6 +104,16 @@ public class ManagementEcoNewsController {
     @GetMapping("/find")
     public ResponseEntity<EcoNewsDto> getEcoNewsById(@RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findDtoById(id));
+    }
+
+    /**
+     * Method for getting all econews tag.
+     *
+     * @return {@link TagDto} instance.
+     */
+    @GetMapping("/tags")
+    public ResponseEntity<List<TagDto>> getAllEcoNewsTag() {
+        return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllEcoNewsTags("en"));
     }
 
     /**
