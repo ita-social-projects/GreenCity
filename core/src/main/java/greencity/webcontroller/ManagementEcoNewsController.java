@@ -107,7 +107,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for getting all  econews  tag.
+     * Method for getting all econews tag.
      *
      * @return {@link TagDto} instance.
      */
