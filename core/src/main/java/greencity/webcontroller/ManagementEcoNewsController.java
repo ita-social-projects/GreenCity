@@ -105,13 +105,14 @@ public class ManagementEcoNewsController {
     public ResponseEntity<EcoNewsDto> getEcoNewsById(@RequestParam("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findDtoById(id));
     }
+
     /**
      * Method for getting all  econews  tag.
      *
-     * @return {@link List<TagDto>} instance.
+     * @return {@link TagDto} instance.
      */
     @GetMapping("/tags")
-    public ResponseEntity<List<TagDto>> getAllEcoNewsTag(){
+    public ResponseEntity<List<TagDto>> getAllEcoNewsTag() {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllEcoNewsTags("en"));
     }
 
