@@ -6,8 +6,13 @@ import org.junit.jupiter.api.Test;
 class EcoNewsViewDtoTest {
 
     @Test
-    void isEmpty() {
+    void isEmptyTrue() {
         EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("", "", "", "", "", "", "");
         assertEquals(true, ecoNewsViewDto.isEmpty());
+    }
+    @Test
+    void isEmptyFalse() {
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1", "title", "author", "text", "", "", "News");
+        assertEquals(false, ecoNewsViewDto.isEmpty());
     }
 }
