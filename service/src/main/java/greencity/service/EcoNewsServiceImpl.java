@@ -6,7 +6,6 @@ import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -46,8 +45,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -67,24 +64,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
-    private final RabbitTemplate rabbitTemplate;
     private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
-    @Value("${messaging.rabbit.email.topic}")
-    private String sendEmailTopic;
 
     /**
      * {@inheritDoc}
      *
      * @author Yuriy Olkhovskyi.
      */
+    @SuppressWarnings("checkstyle:CommentsIndentation")
     @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        MultipartFile image, String email) {
+                                      MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setAuthor(user);
@@ -112,9 +107,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-
-        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            buildAddEcoNewsMessage(toSave));
+        restClient.addEcoNews(buildAddEcoNewsMessage(toSave));
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS, 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
@@ -277,7 +270,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @param ecoNews {@link EcoNews} which was added.
      * @return {@link AddEcoNewsMessage} which contains needed info about
-     *         {@link EcoNews} and subscribers.
+     * {@link EcoNews} and subscribers.
      */
     private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
@@ -330,7 +323,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void enhanceWithNewManagementData(EcoNews toUpdate, EcoNewsDtoManagement ecoNewsDtoManagement,
-        MultipartFile image) {
+                                              MultipartFile image) {
         toUpdate.setTitle(ecoNewsDtoManagement.getTitle());
         toUpdate.setText(ecoNewsDtoManagement.getText());
         toUpdate.setTags(modelMapper
@@ -343,12 +336,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void enhanceWithNewData(EcoNews toUpdate, UpdateEcoNewsDto updateEcoNewsDto,
-        MultipartFile image) {
+                                    MultipartFile image) {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
         toUpdate.setText(updateEcoNewsDto.getText());
         toUpdate.setSource(updateEcoNewsDto.getSource());
         toUpdate.setTags(modelMapper.map(tagService
-            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+                .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (updateEcoNewsDto.getImage() != null) {

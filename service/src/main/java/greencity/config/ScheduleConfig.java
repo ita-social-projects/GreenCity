@@ -1,7 +1,9 @@
 package greencity.config;
 
+import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.RabbitConstants;
+import greencity.dto.user.UserVO;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import static greencity.enums.EmailNotification.*;
@@ -11,6 +13,7 @@ import greencity.repository.*;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
@@ -32,9 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final RabbitTemplate rabbitTemplate;
     private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
+    private final RestClient restClient;
 
     /**
      * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email
@@ -48,10 +51,7 @@ public class ScheduleConfig {
         for (User user : users) {
             int count = habitAssignRepo.countMarkedHabitAssignsByUserIdAndPeriod(user.getId(), start, end);
             if (count == 0) {
-                rabbitTemplate.convertAndSend(
-                    RabbitConstants.EMAIL_TOPIC_EXCHANGE_NAME,
-                    RabbitConstants.SEND_HABIT_NOTIFICATION_ROUTING_KEY,
-                    new SendHabitNotification(user.getName(), user.getEmail()));
+                restClient.sendHabitNotification(new SendHabitNotification(user.getName(), user.getEmail()));
             }
         }
     }
@@ -61,7 +61,8 @@ public class ScheduleConfig {
      * field {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or
      * DAILY.
      */
-    @Scheduled(cron = "0 0 19 * * ?")
+    //    @Scheduled(cron = "0 0 19 * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     void sendHabitNotificationEveryDay() {
         List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(userRepo.findAllByEmailNotification(DAILY));

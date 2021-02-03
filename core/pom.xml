@@ -38,7 +38,7 @@
             <groupId>greencity</groupId>
             <artifactId>service</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

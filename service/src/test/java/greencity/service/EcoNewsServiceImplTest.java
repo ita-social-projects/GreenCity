@@ -1,13 +1,22 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
+
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
@@ -26,18 +35,20 @@ import greencity.repository.EcoNewsRepo;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,9 +57,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
     @Mock
@@ -56,9 +64,6 @@ class EcoNewsServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
-
-    @Mock
-    RabbitTemplate rabbitTemplate;
 
     @Mock
     NewsSubscriberService newsSubscriberService;
@@ -109,8 +114,7 @@ class EcoNewsServiceImplTest {
 
         addEcoNewsDtoResponse.setTitle("Title");
 
-        verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
+        verify(restClient).addEcoNews(new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
     }
 
     @Test

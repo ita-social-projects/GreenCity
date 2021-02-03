@@ -1,11 +1,25 @@
 package greencity.client;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,17 +29,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @RequiredArgsConstructor
 @Component
@@ -44,7 +49,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
+                + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
 
@@ -72,7 +77,7 @@ public class RestClient {
     public UserVOAchievement findUserForAchievement(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
+                + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
             HttpMethod.GET, entity, UserVOAchievement.class).getBody();
     }
 
@@ -86,8 +91,8 @@ public class RestClient {
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.GET, entity,
+                + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
+                + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
     }
@@ -103,9 +108,9 @@ public class RestClient {
     public PageableAdvancedDto<UserManagementDto> searchBy(Pageable pageable, String query) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize()
-            + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
+                + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
+                + RestTemplateLinks.SIZE + pageable.getPageSize()
+                + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
     }
@@ -147,7 +152,7 @@ public class RestClient {
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<UserManagementDto[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
+                + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
             UserManagementDto[].class);
         UserManagementDto[] responseDtos = exchange.getBody();
         assert responseDtos != null;
@@ -273,10 +278,66 @@ public class RestClient {
     }
 
     /**
+     * send AddEcoNewsMessage to GreenCityUser.
+     *
+     * @param addEcoNewsMessage with information for sending email about adding new eco news.
+     * @author Taras Kavkalo
+     */
+    public void addEcoNews(AddEcoNewsMessage addEcoNewsMessage) {
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(addEcoNewsMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendReportEmailMessage to GreenCityUser.
+     *
+     * @param reportEmailMessage with information for sending email report about new places.
+     * @author Taras Kavkalo
+     */
+    public void sendReport(SendReportEmailMessage reportEmailMessage) {
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendChangePlaceStatusEmailMessage to GreenCityUser.
+     *
+     * @param changePlaceStatusEmailMessage with information for sending email during status
+     *                                      update for {@link PlaceVO} when PlaceStatus.PROPOSED.
+     * @author Taras Kavkalo
+     */
+    public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
+        HttpEntity<SendChangePlaceStatusEmailMessage> entity =
+            new HttpEntity<>(changePlaceStatusEmailMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendHabitNotification to GreenCityUser.
+     *
+     * @param sendHabitNotification with information for sending email to each user
+     *                              that hasn't marked any habit during some period.
+     * @author Taras Kavkalo
+     */
+    public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
      * Method makes headers for RestTemplate.
      *
      * @return {@link HttpEntity}
      */
+
     private HttpHeaders setHeader() {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         HttpHeaders headers = new HttpHeaders();

@@ -1,7 +1,6 @@
 package greencity.service;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
-import static greencity.constant.RabbitConstants.CHANGE_PLACE_STATUS_ROUTING_KEY;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -14,9 +13,21 @@ import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
-import greencity.dto.place.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -27,22 +38,25 @@ import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.options.PlaceFilter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import javax.validation.Valid;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -60,10 +74,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final DiscountService discountService;
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
-    private final RabbitTemplate rabbitTemplate;
     private final ProposePlaceService proposePlaceService;
-    @Value("${messaging.rabbit.email.topic}")
-    private String sendEmailTopic;
     private CategoryRepo categoryRepo;
 
     /**
@@ -71,18 +82,17 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
-        ModelMapper modelMapper,
-        CategoryService categoryService,
-        LocationService locationService,
-        SpecificationService specificationService,
-        RestClient restClient,
-        OpenHoursService openingHoursService,
-        DiscountService discountService,
-        NotificationService notificationService,
-        @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-        RabbitTemplate rabbitTemplate,
-        ProposePlaceServiceImpl proposePlaceService,
-        CategoryRepo categoryRepo) {
+                            ModelMapper modelMapper,
+                            CategoryService categoryService,
+                            LocationService locationService,
+                            SpecificationService specificationService,
+                            RestClient restClient,
+                            OpenHoursService openingHoursService,
+                            DiscountService discountService,
+                            NotificationService notificationService,
+                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+                            ProposePlaceServiceImpl proposePlaceService,
+                            CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -93,7 +103,6 @@ public class PlaceServiceImpl implements PlaceService {
         this.discountService = discountService;
         this.notificationService = notificationService;
         this.datasourceTimezone = datasourceTimezone;
-        this.rabbitTemplate = rabbitTemplate;
         this.proposePlaceService = proposePlaceService;
         this.categoryRepo = categoryRepo;
     }
@@ -321,10 +330,9 @@ public class PlaceServiceImpl implements PlaceService {
             notificationService.sendImmediatelyReport(modelMapper.map(updatable, PlaceVO.class));
         }
         if (oldStatus.equals(PlaceStatus.PROPOSED)) {
-            rabbitTemplate.convertAndSend(sendEmailTopic, CHANGE_PLACE_STATUS_ROUTING_KEY,
-                new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getName(),
-                    updatable.getName(), updatable.getStatus().toString().toLowerCase(),
-                    updatable.getAuthor().getEmail()));
+            restClient.changePlaceStatus(new SendChangePlaceStatusEmailMessage(updatable.getAuthor().getName(),
+                updatable.getName(), updatable.getStatus().toString().toLowerCase(),
+                updatable.getAuthor().getEmail()));
         }
         return modelMapper.map(placeRepo.save(updatable), UpdatePlaceStatusDto.class);
     }
@@ -500,7 +508,7 @@ public class PlaceServiceImpl implements PlaceService {
                         * Math.cos(placeLatRad)
                         * Math.cos(placeLngRad - userLngRad)
                         + Math.sin(userLatRad)
-                            * Math.sin(placeLatRad));
+                        * Math.sin(placeLatRad));
                 return distance <= distanceFromUserDto.getDistance();
             }).collect(Collectors.toList());
         }

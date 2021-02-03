@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.constant.RabbitConstants;
+import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
 import greencity.dto.category.CategoryDto;
@@ -16,13 +16,15 @@ import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -32,22 +34,19 @@ public class NotificationServiceImpl implements NotificationService {
     private static final ZoneId ZONE_ID = ZoneId.of(AppConstant.UKRAINE_TIMEZONE);
     private final UserRepo userRepo;
     private final PlaceRepo placeRepo;
-    private final RabbitTemplate rabbitTemplate;
-    @Value("${messaging.rabbit.email.topic}")
-    private String sendEmailTopic;
     private final ModelMapper modelMapper;
+    private final RestClient restClient;
 
     /**
      * Constructor.
      */
     @Autowired
     public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo,
-        RabbitTemplate rabbitTemplate,
-        ModelMapper modelMapper) {
+                                   ModelMapper modelMapper, RestClient restClient) {
         this.userRepo = userRepo;
         this.placeRepo = placeRepo;
-        this.rabbitTemplate = rabbitTemplate;
         this.modelMapper = modelMapper;
+        this.restClient = restClient;
     }
 
     @Override
@@ -66,8 +65,8 @@ public class NotificationServiceImpl implements NotificationService {
             .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
             .collect(Collectors.toList());
 
-        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.SEND_REPORT_ROUTING_KEY,
-            new SendReportEmailMessage(placeAuthorDto, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
+        restClient.sendReport(new SendReportEmailMessage(placeAuthorDto,
+            categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
     }
 
     /**
@@ -120,7 +119,7 @@ public class NotificationServiceImpl implements NotificationService {
             categoriesDtoWithPlacesDtoMap = getCategoriesDtoWithPlacesDtoMap(places);
         }
         if (!categoriesDtoWithPlacesDtoMap.isEmpty()) {
-            rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.SEND_REPORT_ROUTING_KEY,
+            restClient.sendReport(
                 new SendReportEmailMessage(subscribers, categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
         }
     }
