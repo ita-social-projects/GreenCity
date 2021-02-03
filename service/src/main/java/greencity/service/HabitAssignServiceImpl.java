@@ -121,7 +121,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .status(HabitAssignStatus.INPROGRESS)
                 .createDate(ZonedDateTime.now())
                 .user(user)
-                .duration(0)
+                .duration(habit.getDefaultDuration())
                 .habitStreak(0)
                 .workingDays(0)
                 .lastEnrollmentDate(ZonedDateTime.now())
