@@ -22,8 +22,8 @@ public class EcoNewsViewDto {
      * This method check if object is empty.
      */
     public boolean isEmpty() {
-        return id.isEmpty() == true && title.isEmpty() == true && author.isEmpty() == true && text.isEmpty() == true
-            && startDate.isEmpty() == true
-            && endDate.isEmpty() == true && tags.isEmpty();
+        return id.isEmpty() && title.isEmpty() && author.isEmpty() && text.isEmpty()
+            && startDate.isEmpty()
+            && endDate.isEmpty() && tags.isEmpty();
     }
 }

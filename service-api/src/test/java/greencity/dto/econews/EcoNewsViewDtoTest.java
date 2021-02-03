@@ -7,7 +7,7 @@ class EcoNewsViewDtoTest {
 
     @Test
     void isEmpty() {
-        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto();
-        assertEquals(true,ecoNewsViewDto.isEmpty());
+        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("", "", "", "", "", "", "");
+        assertEquals(true, ecoNewsViewDto.isEmpty());
     }
 }
