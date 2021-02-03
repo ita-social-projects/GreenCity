@@ -183,14 +183,12 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getAllEcoNewsSearchByQueryTest() throws Exception {
-//        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1","","","","","","");
         Pageable pageable = PageRequest.of(0, 10);
         List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
         PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
                 true, true, true, true);
         when(ecoNewsService.searchEcoNewsBy(pageable, "query")).thenReturn(ecoNewsDtoPageableDto);
-//        when(ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto)).thenReturn(ecoNewsDtoPageableDto);
         this.mockMvc.perform(get(managementEcoNewsLink + "?query=query")
             .param("page", "0")
             .param("size", "10"))
