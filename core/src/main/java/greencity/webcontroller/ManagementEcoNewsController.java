@@ -51,10 +51,20 @@ public class ManagementEcoNewsController {
      */
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore Pageable pageable) {
-        PageableAdvancedDto<EcoNewsDto> allEcoNews = query == null || query.isEmpty()
-            ? ecoNewsService.findAll(pageable)
-            : ecoNewsService.searchEcoNewsBy(pageable, query);
+        @ApiIgnore Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
+        PageableAdvancedDto<EcoNewsDto> allEcoNews;
+        if (!ecoNewsViewDto.isEmpty()) {
+            allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+            model.addAttribute("fields", ecoNewsViewDto);
+            model.addAttribute("query", "");
+        } else {
+            allEcoNews = query == null || query.isEmpty()
+                ? ecoNewsService.findAll(pageable)
+                : ecoNewsService.searchEcoNewsBy(pageable, query);
+            model.addAttribute("fields", new EcoNewsViewDto());
+            model.addAttribute("query", query);
+        }
+
         model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder("");
@@ -66,7 +76,6 @@ public class ManagementEcoNewsController {
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
         model.addAttribute("pageSize", pageable.getPageSize());
-
         return "core/management_eco_news";
     }
 
@@ -161,25 +170,5 @@ public class ManagementEcoNewsController {
             ecoNewsService.update(ecoNewsDtoManagement, file);
         }
         return buildGenericResponseDto(bindingResult);
-    }
-
-    /**
-     * Returns management page with Eco news filtered data.
-     *
-     * @param model          ModelAndView that will be configured and returned to
-     *                       user.
-     * @param ecoNewsViewDto used for receive parameters for filters from UI.
-     */
-    @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String filterData(Model model,
-        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
-        EcoNewsViewDto ecoNewsViewDto) {
-        Pageable paging = PageRequest.of(pageable.getPageNumber(),
-            pageable.getPageSize(), Sort.by("creationDate").descending());
-        PageableAdvancedDto<EcoNewsDto> pageableDto =
-            ecoNewsService.getFilteredDataForManagementByPage(paging, ecoNewsViewDto);
-        model.addAttribute("pageable", pageableDto);
-        model.addAttribute("fields", ecoNewsViewDto);
-        return "core/management_eco_news";
     }
 }
