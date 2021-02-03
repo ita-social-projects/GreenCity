@@ -10,6 +10,7 @@ class EcoNewsViewDtoTest {
         EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("", "", "", "", "", "", "");
         assertEquals(true, ecoNewsViewDto.isEmpty());
     }
+
     @Test
     void isEmptyFalse() {
         EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1", "title", "author", "text", "", "", "News");
