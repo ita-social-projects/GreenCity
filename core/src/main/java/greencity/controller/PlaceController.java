@@ -98,7 +98,7 @@ public class PlaceController {
      */
     @ApiOperation(value = "Get info about place")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceInfoDto.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
