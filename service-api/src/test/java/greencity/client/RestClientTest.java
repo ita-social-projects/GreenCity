@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -186,6 +187,24 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
+            + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
+
+        assertEquals(Optional.of(userVO), restClient.findNotDeactivatedByEmail(email));
+    }
+
+    @Test
+    void findNotDeactivatedByEmailFromCookies() {
+        String email = "test@gmail.com";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, "Bearer testToken");
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        UserVO userVO = ModelUtils.getUserVO();
+        Cookie[] cookies = new Cookie[]{new Cookie("accessToken", "testToken")};
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(null);
+        when(httpServletRequest.getCookies()).thenReturn(cookies);
+        when(httpServletRequest.getRequestURI()).thenReturn("/management");
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_NOT_DEACTIVATED_BY_EMAIL + RestTemplateLinks.EMAIL
             + email, HttpMethod.GET, entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
