@@ -201,7 +201,7 @@ class RestClientTest {
         headers.set(AUTHORIZATION, "Bearer testToken");
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
-        Cookie[] cookies = new Cookie[]{new Cookie("accessToken", "testToken")};
+        Cookie[] cookies = new Cookie[] {new Cookie("accessToken", "testToken")};
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(null);
         when(httpServletRequest.getCookies()).thenReturn(cookies);
         when(httpServletRequest.getRequestURI()).thenReturn("/management");
