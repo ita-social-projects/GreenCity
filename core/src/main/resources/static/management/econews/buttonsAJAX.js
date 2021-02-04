@@ -5,9 +5,44 @@ function clearAllTagsInTagList(){
     document.getElementById("tagsEdit").innerHTML='';
 }
 
-function applyFilters() {
-    document.getElementById("searchForm").action = "/management/eco-news";
-    document.getElementById("searchForm").submit();
+function sendDataFromSearchForm(){
+    var url = "/management/eco-news?"
+    var id = document.getElementById("idSearchForm").value;
+    var author = document.getElementById("authorSearchForm").value;
+    var title = document.getElementById("titleSearchForm").value;
+    var text = document.getElementById("textSearchForm").value;
+    var startDateS = document.getElementById("startDateSearchForm").value;
+    var endDateS = document.getElementById("endDateSearchForm").value;
+    var tag = document.getElementById("tagSearchForm").value;
+
+    if (id!==""){
+        url = url.concat("id="+id+"&");
+    }
+    if (author!==""){
+        url = url.concat("author="+author+"&");
+    }
+    if (title!==""){
+        url = url.concat("title="+title+"&");
+    }
+    if (text!==""){
+        url = url.concat("text="+text+"&");
+    }
+    if (startDateS!==""){
+        url = url.concat("startDate="+startDateS+"&");
+    }
+    if (endDateS!==""){
+        url = url.concat("endDate="+endDateS+"&");
+    }
+    if (tag!==""){
+        url = url.concat("tags="+tag+"&");
+    }
+    $.ajax({
+        url: url,
+        type: 'GET',
+        success: function(res) {
+            window.location.href= url;
+        }
+    });
 }
 function toggle(source) {
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -76,13 +111,12 @@ function tagClick(){
             }
         }
     }else if (count<3){
-        for (var i=0;i<tagsCheckBoxes.length;i= i+1){
+        for (var i=0;i<tagsCheckBoxes.length;i = i+1){
             if (tagsCheckBoxes.item(i).disabled){
                 tagsCheckBoxes.item(i).disabled = false;
             }
         }
     }
-
 }
 function countOfCheckedItem() {
     var  tagsCheckBoxes = document.getElementsByName('EditTags[]');
@@ -293,7 +327,8 @@ $(document).ready(function () {
                             $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
                         })
                     } else {
-                        location.reload();
+                        // location.reload();
+                        window.location.href = "/management/eco-news"
                     }
                 },
                 data: result
@@ -335,9 +370,10 @@ $(document).ready(function () {
                             checkBoxstatus = "checked";
                         }
                     })
-                    box.innerHTML=`
+                    box.innerHTML=`<span class="modal-checkbox">
                 <input onclick="tagEditModalClick()" type="checkbox" value="${item.name}"  id="checkboxEditTag1" name="EditTags[]" ${checkBoxstatus}>
                 <label for="checkboxTag1">${item.name}</label>
+                <span>
                 `;
                     document.querySelector('#tagsEdit').appendChild(box);
                 });
@@ -484,7 +520,7 @@ function markOrder(){
             }else {
                 document.getElementById("tags-icon").className="fas fa-chevron-down";
             }
-        }else if(sort.includes('likes')){
+        }else if(sort.includes('usersLikedNews')){
             if (sort.includes('ASC')){
                 document.getElementById("likes-icon").className='fas fa-chevron-up';
             }else {

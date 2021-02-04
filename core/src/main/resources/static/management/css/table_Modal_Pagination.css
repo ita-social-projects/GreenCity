@@ -229,6 +229,7 @@ table.table .avatar {
     position: absolute;
     margin: 5px 0 0 3px;
     z-index: 9;
+    border: 1px solid;
 }
 
 .custom-checkbox-select-all label:before {
@@ -286,8 +287,8 @@ table.table .avatar {
     z-index: 9;
 }
 
-.custom-checkbox label:before {
-
+.custom-checkbox .modal-checkbox label:before {
+    border: 1px solid green;
 }
 
 .custom-checkbox label:before {
@@ -597,6 +598,16 @@ table.table .avatar {
 input[type=search] {
     border: 1px dotted #999;
     border-radius: 0;
+    width: 110px;
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+}
+
+td input[type=search] {
+    border: none;
+    border-bottom: 1px solid;
+    background-color: #f2f5f7;
     width: 110px;
     margin: 0;
     box-sizing: border-box;
