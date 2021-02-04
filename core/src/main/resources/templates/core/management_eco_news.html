@@ -33,7 +33,7 @@
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
     <div class="container-xl">
-        <div class="row" id ="eco-news-content">
+        <div class="row" id ="eco-news-content" style="margin:auto">
             <!--            SIDEBAR-->
             <div>
                 <div id="sidebar" th:insert="core/sidebar"></div>
@@ -47,7 +47,7 @@
                         <div class="row" >
                             <div class="col-sm-12" >
                                 <div class="d-flex justify-content-end" >
-                                    <a href="#addEcoNewsModal" addEcoNewsForm id="addEcoNewsModalBtn" class="btn btn-success" data-toggle="modal">
+                                    <a href="#addEcoNewsModal" addEcoNewsForm id="addEcoNewsModalBtn" class="btn btn-success" data-toggle="modal" th:onclick="addBtnDisabled()" > <!-- -->
                                         <div style="width: 100px;">Add</div>
                                     </a>
                                     <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled" data-toggle="modal" >
@@ -98,7 +98,7 @@
                     </div>
                 </div>
                 <div class="row" style="margin-top: 3%">
-                    <div class="col-sm-12" >
+                    <div class="col-sm-12"  >
                         <table class="table table-striped">
                             <thead>
                             <tr style="background-color: #afbfbd">
@@ -142,7 +142,7 @@
 
                             <tbody>
 
-                            <form method="POST" action="/management/eco-news" id="searchForm" onsubmit="applyFilters()">
+                            <form method="GET" action="/management/eco-news" id="searchForm" onsubmit="applyFilters()">
                                 <tr>
                                     <td>
                                         <input placeholder="" class="input-search-form" type="search" th:name="id"
@@ -164,10 +164,10 @@
                                     <td>
                                         <div  class="input-group input-daterange">
                                             <input  type="search" name="startDate" class="form-control input-search-form"
-                                                   th:value="${fields eq null ? '' : fields.startDate }"/>
+                                                    th:value="${fields eq null ? '' : fields.startDate }"/>
                                             <div>to</div>
                                             <input  type="search" name="endDate" class="form-control input-search-form"
-                                                   th:value="${fields eq null ? '' : fields.endDate }" />
+                                                    th:value="${fields eq null ? '' : fields.endDate }" />
                                         </div>
                                     </td>
                                     <td>
@@ -183,7 +183,7 @@
 
                             <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
                                 <tr>
-                                    <td style="width: 8%">
+                                    <td style="width: 8%" >
                                         <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${allEcoNews.getId()}"
@@ -192,9 +192,23 @@
                                     </span>
                                         <span>[[${allEcoNews.getId()}]]</span>
                                     </td>
-                                    <td th:text="${allEcoNews.getAuthor().getName()}"></td>
-                                    <td class="col title" th:text="${allEcoNews.getTitle()}"></td>
-                                    <td class="col text" th:text="${allEcoNews.getText()}" ></td>
+                                    <td th:text="${allEcoNews.getAuthor().getName()}" style="white-space: nowrap; /* Заборона переносу */
+                                                                                            overflow: hidden;
+                                                                                            max-width: 0px;
+
+                                                                                            text-overflow: ellipsis; /* ... */" >
+
+                                    </td>
+                                    <td th:text="${allEcoNews.getTitle()}" style="white-space: nowrap; /* Заборона переносу */
+                                                                                                overflow: hidden;
+                                                                                                max-width: 150px;
+                                                                                                text-overflow: ellipsis; /* ... */" >
+                                    </td>
+                                    <td  th:text="${allEcoNews.getText()}" style="white-space: nowrap; /* Заборона переносу */
+                                                                                                overflow: hidden;
+                                                                                                max-width: 150px;
+                                                                                                text-overflow: ellipsis;">
+                                    </td>
                                     <td>
                                         <img th:src="${allEcoNews.getImagePath()} == null ? @{/img/default-image-list-view.png} : ${allEcoNews.getImagePath()}" th:width="120" th:height="100">
                                     </td>
@@ -266,17 +280,27 @@
                         <div class="form-group">
                             <label>Title</label>
                             <textarea type="text" class="form-control" name="title" required></textarea>
-                            <span th:id="errorModalSavetitle" class="errorSpan"></span>
+                            <span th:id="errorModalSavetitle" id ="errorModalSavetitle"  class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label>Text</label>
                             <textarea type="text" class="form-control" name="text" required></textarea>
-                            <span th:id="errorModalSavetext" class="errorSpan"></span>
+                            <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
                             <label>Tags</label>
-                            <textarea type="text" class="form-control" name="tags" required></textarea>
-                            <span th:id="errorModalSavetags" class="errorSpan"></span>
+                                <div style="width: 100%; display: inline-block;">
+                                    <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
+                                        <div style="margin-right: 5%" class="custom-checkbox" >
+                                            <input class="tag-checkbox" type="checkbox" th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
+                                                   name="Tags[]" th:value="${allTags.getName()}" th:onclick="tagClick()">
+                                            <label th:for="checkboxTag+${iterStatus.count}" th:text="${allTags.getName()}" for="checkboxTag1"></label>
+                                        </div>
+                                    <span th:id="errorModalAddTags" class="errorSpan"></span>
+                                </th:block>
+                                </div>
+                                <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
+
                         </div>
                         <div class="form-group">
                             <label>Source</label>
@@ -291,7 +315,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
+                        <input type="submit"  class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -323,9 +347,10 @@
                             <span th:id="errorModalUpdatetext" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="tags">Tags</label>
-                            <textarea type="text" class="form-control" id="tags" name="tags" required></textarea>
-                            <span th:id="errorModalUpdatetags" class="errorSpan"></span>
+                            <label for="tagsEdit">Tags</label>
+                            <div id="tagsEdit" style="width: 100%; display: inline-block;">
+
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="imagePath">Image</label>

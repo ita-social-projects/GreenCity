@@ -1,8 +1,8 @@
 package greencity.service;
 
-import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -18,12 +18,16 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -41,6 +45,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private PlaceService placeService;
     private PhotoService photoService;
     private ModelMapper modelMapper;
+    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final HttpServletRequest httpServletRequest;
 
     /**
      * {@inheritDoc}
@@ -58,7 +64,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      *
      * @author Marian Milian
      */
-    @RatingCalculation(rating = RatingCalculationEnum.ADD_COMMENT)
     @Override
     public CommentReturnDto save(Long placeId, AddCommentDto addCommentDto, String email) {
         UserVO userVO = restClient.findByEmail(email);
@@ -82,7 +87,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
 
@@ -91,11 +98,15 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      *
      * @author Marian Milian
      */
-    @RatingCalculation(rating = RatingCalculationEnum.DELETE_COMMENT)
     @Override
     public void deleteById(Long id) {
         placeCommentRepo.delete(placeCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserVO userVO = restClient.findByEmail(authentication.getName());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
     }
 
     /**

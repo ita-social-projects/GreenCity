@@ -20,6 +20,8 @@ public class RestTemplateLinks {
     public static final String USER_DEACTIVATE = "user/deactivate";
     public static final String USER_ACTIVATE = "user/activate";
     public static final String OWN_SECURITY_REGISTER = "ownSecurity/register";
+    public static final String USER_SEARCH = "/user/search";
+    public static final String SORT = "&sort=";
 
     private RestTemplateLinks() {
     }

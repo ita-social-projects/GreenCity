@@ -5,12 +5,15 @@ import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -85,10 +88,21 @@ public class RestClient {
      * @author Orest Mamchuk
      */
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
+        Sort sort = pageable.getSort();
+        StringBuilder orderUrl = new StringBuilder("");
+        if (!sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+            }
+        }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.GET, entity,
+            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
+                .getPageNumber()
+            + RestTemplateLinks.SIZE + pageable
+                .getPageSize()
+            + RestTemplateLinks.SORT + orderUrl,
+            HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
     }
@@ -271,6 +285,40 @@ public class RestClient {
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)
             .getBody();
+    }
+
+    /**
+     * Method that allow you to save new {@link UserVO}.
+     *
+     * @param userVO for save User.
+     * @author Orest Mamchuk
+     */
+    public void save(UserVO userVO, String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * Method that allow you to search users by several values
+     * {@link UserManagementViewDto}.
+     *
+     * @param pageable    {@link Pageable}.
+     * @param userViewDto for search User.
+     * @return a dto of {@link PageableAdvancedDto}.
+     */
+    public PageableAdvancedDto<UserManagementVO> search(Pageable pageable, UserManagementViewDto userViewDto) {
+        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, setHeader());
+        return restTemplate.exchange(
+            greenCityUserServerAddress + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE
+                + pageable.getPageNumber()
+                + RestTemplateLinks.SIZE + pageable.getPageSize(),
+            HttpMethod.POST, entity,
+            new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
+            }).getBody();
     }
 
     /**

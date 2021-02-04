@@ -6,13 +6,14 @@ import greencity.dto.genericresponse.GenericResponseDto;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @AllArgsConstructor
@@ -39,13 +41,22 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @GetMapping
-    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Pageable pageable,
-        Model model) {
-        Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
+    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Model model,
+        @ApiIgnore Pageable pageable) {
         PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? restClient.findUserForManagementByPage(paging)
-            : restClient.searchBy(paging, query);
+            ? restClient.findUserForManagementByPage(pageable)
+            : restClient.searchBy(pageable, query);
         model.addAttribute("users", pageableDto);
+        model.addAttribute("paging", pageable);
+        Sort sort = pageable.getSort();
+        StringBuilder orderUrl = new StringBuilder("");
+        if (!sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+            }
+            model.addAttribute("sortModel", orderUrl);
+        }
+
         return "core/management_user";
     }
 
@@ -145,5 +156,22 @@ public class ManagementUserController {
     public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(restClient.deactivateAllUsers(listId));
+    }
+
+    /**
+     * Method accepts request to search users by several values.
+     *
+     * @param model       {@link Model}
+     * @param pageable    {@link Pageable}
+     * @param userViewDto {@link UserManagementViewDto} - stores values.
+     * @return path to html view.
+     */
+    @PostMapping("/search")
+    public String search(Model model, @ApiIgnore Pageable pageable, UserManagementViewDto userViewDto) {
+        PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
+        model.addAttribute("users", found);
+        model.addAttribute("fields", userViewDto);
+        model.addAttribute("paging", pageable);
+        return "core/management_user";
     }
 }
