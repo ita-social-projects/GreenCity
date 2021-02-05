@@ -82,17 +82,17 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Autowired
     public PlaceServiceImpl(PlaceRepo placeRepo,
-                            ModelMapper modelMapper,
-                            CategoryService categoryService,
-                            LocationService locationService,
-                            SpecificationService specificationService,
-                            RestClient restClient,
-                            OpenHoursService openingHoursService,
-                            DiscountService discountService,
-                            NotificationService notificationService,
-                            @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-                            ProposePlaceServiceImpl proposePlaceService,
-                            CategoryRepo categoryRepo) {
+        ModelMapper modelMapper,
+        CategoryService categoryService,
+        LocationService locationService,
+        SpecificationService specificationService,
+        RestClient restClient,
+        OpenHoursService openingHoursService,
+        DiscountService discountService,
+        NotificationService notificationService,
+        @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
+        ProposePlaceServiceImpl proposePlaceService,
+        CategoryRepo categoryRepo) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
@@ -508,7 +508,7 @@ public class PlaceServiceImpl implements PlaceService {
                         * Math.cos(placeLatRad)
                         * Math.cos(placeLngRad - userLngRad)
                         + Math.sin(userLatRad)
-                        * Math.sin(placeLatRad));
+                            * Math.sin(placeLatRad));
                 return distance <= distanceFromUserDto.getDistance();
             }).collect(Collectors.toList());
         }

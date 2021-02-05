@@ -145,7 +145,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param end    {@link ZonedDateTime} end time.
      * @return amount of items in Optional in case of absence such info.
      */
-    
+
     @Query(value = "SELECT COUNT(ha) "
         + "FROM HabitAssign ha "
         + "WHERE upper(ha.status) <> 'SUSPENDED' "

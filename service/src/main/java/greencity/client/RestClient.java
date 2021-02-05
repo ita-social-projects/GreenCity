@@ -52,7 +52,7 @@ public class RestClient {
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
+            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
 
@@ -80,7 +80,7 @@ public class RestClient {
     public UserVOAchievement findUserForAchievement(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
+            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
             HttpMethod.GET, entity, UserVOAchievement.class).getBody();
     }
 
@@ -101,11 +101,11 @@ public class RestClient {
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
+            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
                 .getPageNumber()
-                + RestTemplateLinks.SIZE + pageable
+            + RestTemplateLinks.SIZE + pageable
                 .getPageSize()
-                + RestTemplateLinks.SORT + orderUrl,
+            + RestTemplateLinks.SORT + orderUrl,
             HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
@@ -122,9 +122,9 @@ public class RestClient {
     public PageableAdvancedDto<UserManagementDto> searchBy(Pageable pageable, String query) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
-                + RestTemplateLinks.SIZE + pageable.getPageSize()
-                + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
+            + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
+            + RestTemplateLinks.SIZE + pageable.getPageSize()
+            + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
     }
@@ -166,7 +166,7 @@ public class RestClient {
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<UserManagementDto[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
+            + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
             UserManagementDto[].class);
         UserManagementDto[] responseDtos = exchange.getBody();
         assert responseDtos != null;
@@ -281,7 +281,8 @@ public class RestClient {
     /**
      * send AddEcoNewsMessage to GreenCityUser.
      *
-     * @param addEcoNewsMessage with information for sending email about adding new eco news.
+     * @param addEcoNewsMessage with information for sending email about adding new
+     *                          eco news.
      * @author Taras Kavkalo
      */
     public void addEcoNews(AddEcoNewsMessage addEcoNewsMessage) {
@@ -294,7 +295,8 @@ public class RestClient {
     /**
      * send SendReportEmailMessage to GreenCityUser.
      *
-     * @param reportEmailMessage with information for sending email report about new places.
+     * @param reportEmailMessage with information for sending email report about new
+     *                           places.
      * @author Taras Kavkalo
      */
     public void sendReport(SendReportEmailMessage reportEmailMessage) {
@@ -307,8 +309,9 @@ public class RestClient {
     /**
      * send SendChangePlaceStatusEmailMessage to GreenCityUser.
      *
-     * @param changePlaceStatusEmailMessage with information for sending email during status
-     *                                      update for {@link PlaceVO} when PlaceStatus.PROPOSED.
+     * @param changePlaceStatusEmailMessage with information for sending email
+     *                                      during status update for {@link PlaceVO}
+     *                                      when PlaceStatus.PROPOSED.
      * @author Taras Kavkalo
      */
     public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
