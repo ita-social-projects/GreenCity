@@ -1,9 +1,9 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
+import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -35,6 +36,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +61,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final TipsAndTricksTranslationService tipsAndTricksTranslationService;
 
     private final AchievementCalculation achievementCalculation;
+
+    private final greencity.rating.RatingCalculation ratingCalculation;
+
+    private final HttpServletRequest httpServletRequest;
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         MultipartFile image, String email) {
@@ -98,7 +105,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
-    @RatingCalculation(rating = RatingCalculationEnum.ADD_TIPS_AND_TRICKS)
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     @Transactional
@@ -108,6 +114,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         enhanceWithNewData(toSave, tipsAndTricksDtoRequest, image, email);
         try {
             tipsAndTricksRepo.save(toSave);
+            UserVO userVO = restClient.findByEmail(email);
+            String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+            CompletableFuture.runAsync(() -> ratingCalculation
+                .ratingCalculation(RatingCalculationEnum.ADD_TIPS_AND_TRICKS, userVO, accessToken));
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
@@ -274,11 +284,15 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     /**
      * {@inheritDoc}
      */
-    @RatingCalculation(rating = RatingCalculationEnum.DELETE_TIPS_AND_TRICKS)
     @CacheEvict(value = CacheConstants.TIPS_AND_TRICKS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id) {
         tipsAndTricksRepo.deleteById(findTipsAndTricksById(id).getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserVO userVO = restClient.findByEmail(authentication.getName());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(() -> ratingCalculation
+            .ratingCalculation(RatingCalculationEnum.DELETE_TIPS_AND_TRICKS, userVO, accessToken));
     }
 
     /**
@@ -384,9 +398,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @param comment {@link TipsAndTricksComment}
      * @author Dovganyuk Taras
      */
-    @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
     public void likeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().add(user);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture
+            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS_LIKES,
                 0));
@@ -399,9 +415,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @param comment {@link TipsAndTricksComment}
      * @author Dovganyuk Taras
      */
-    @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, TipsAndTricksCommentVO comment) {
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT, user, accessToken));
     }
 
     /**

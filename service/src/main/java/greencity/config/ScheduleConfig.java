@@ -1,20 +1,20 @@
 package greencity.config;
 
-import greencity.client.RestClient;
-import greencity.constant.CacheConstants;
-import greencity.constant.RabbitConstants;
-import greencity.dto.user.UserVO;
-import greencity.entity.HabitFactTranslation;
-import greencity.entity.User;
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
+
+import greencity.client.RestClient;
+import greencity.constant.CacheConstants;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.User;
 import greencity.message.SendHabitNotification;
-import greencity.repository.*;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitFactTranslationRepo;
+import greencity.repository.RatingStatisticsRepo;
+import greencity.repository.UserRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;

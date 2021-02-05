@@ -22,323 +22,405 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
-    <style>
-        .modal-title {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
 </head>
-<body>
+<body onload="Order()">
 <div id="header" th:insert="core/header"></div>
 <div class="main-content">
     <div class="container-xl">
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h2>Manage Users <a class="statistic-style" th:href="@{displayGraph}"><i
-                                    class="fas fa-chart-bar graph"></i></a></h2>
-                        </div>
-                        <div class="col-sm-6">
-                                <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/users" method="get">
-                                        <img alt="search" id="btnSearchImage"
-                                             src="/img/search.png">
-                                        <input type="text" name="query" id="inputSearch" class="form-control"
-                                               placeholder="Search…">
-                                    </form>
-                                </span>
-                            <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
-                                <div>Add New User</div>
-                            </a>
-                            <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
-                               data-toggle="modal">
-                                <div>Deactivate</div>
-                            </a>
-                        </div>
+                    <div class="row manager-user">
+                        <h2>Manage Users</h2>
+                        <div class="buttons"></div>
+                        <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
+                            <div>Add new user</div>
+                        </a>
+                        <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
+                           data-toggle="modal">
+                            <div>Deactivated</div>
+                        </a>
                     </div>
-                </div>
-                <table class="table table-hover">
-                    <thead>
-                    <tr class="table-primary">
-                        <th>
-                                <span class="custom-checkbox">
+                    <div class="row-box-and-sort">
+                        <span class="custom-checkbox-select-all">
                                     <input type="checkbox" id="selectAll">
                                     <label for="selectAll"></label>
                                 </span>
-                        </th>
-                        <th>ID</th>
-                        <th>User name</th>
-                        <th>Email</th>
-                        <th>Credo</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <th:block th:each="user, iterStatus :${users.getPage()}">
-                        <tbody>
-                        <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
-                            <td>
+                        <div class="filter-list-grid">
+                            <div class="dropdown size">
+                                <button class="dropbtn size" th:text="${paging.pageSize}">
+                                </button>
+                                <div class="dropdown-content size">
+                                    <a href="/management/users?size=20">20</a>
+                                    <a href="/management/users?size=40">40</a>
+                                    <a href="/management/users?size=100">100</a>
+                                </div>
+                            </div>
+                            <i class="fas fa-filter"></i>
+                            <i class="fas fa-th-large"></i>
+                            <i class="fas fa-bars"></i>
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr class="table-primary ">
+                            <th></th>
+                            <th><span onclick="byNameField('id')">ID
+                                        <i id="id-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                            <th><span onclick="byNameField('name')">User name
+                                        <i id="user-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                            <th><span onclick="byNameField('email')">Email
+                                        <i id="email-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                            <th><span onclick="byNameField('userCredo')">Credo
+                                        <i id="credo-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                            <th><span onclick="byNameField('role')">Role
+                                        <i id="role-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                            <th><span onclick="byNameField('userStatus')">Status
+                                        <i id="status-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
+                                </span></th>
+                        </tr>
+                        </thead>
+                        <form action="/management/users/search" id="searchForm" method="POST">
+                            <tr>
+                                <td>
+                                    <button type="submit" id="searchByForUser"><i class="fas fa-search"></i>
+                                    </button>
+                                </td>
+                                <td>
+                                    <input placeholder="Search" th:name="id"
+                                           th:value="${fields eq null ? '' : fields.id }"
+                                           type="search"/>
+                                </td>
+                                <td>
+                                    <input placeholder="Search" th:name="name"
+                                           th:value="${fields eq null ? '' : fields.name}"
+                                           type="search"/>
+                                </td>
+                                <td>
+                                    <input placeholder="Search" style="width: 100%" th:name="email"
+                                           th:value="${fields eq null ? '' : fields.email }"
+                                           type="search"/>
+                                </td>
+                                <td>
+                                    <input placeholder="Search" style="width: 100%" th:name="userCredo"
+                                           th:value="${fields eq null ? '' : fields.userCredo }"
+                                           type="search"/>
+                                </td>
+                                <td>
+                                    <select class="role-pop" name="role">
+                                        <option style="display: none"></option>
+                                        <option value="1">ROLE_ADMIN</option>
+                                        <option value="0">ROLE_USER</option>
+                                        <option value="2">ROLE_MODERATOR</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="status-pop" name="userStatus">
+                                        <option style="display: none"></option>
+                                        <option value="1">DEACTIVATED</option>
+                                        <option value="2">ACTIVATED</option>
+                                    </select>
+                                </td>
+
+                            </tr>
+
+                        </form>
+                        <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
+                            <tbody.table-striped>
+                                <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
+                                    <td>
                                     <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${user.id}"
                                                th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
-                            </td>
-                            <td th:text="${user.id}"></td>
-                            <td th:text="${user.name}"></td>
-                            <td th:text="${user.email}"></td>
-                            <td th:text="${user.userCredo}"></td>
-                            <td th:text="${user.role}"></td>
-                            <td th:text="${user.userStatus}"></td>
-                            <td>
-                                <a th:href="@{/management/users/findById/(id=${user.id})}" class="edit eBtn">
-                                    <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                </a>
-                                <a th:href="@{/management/users/deactivate/(id=${user.id})}"
-                                   class="deactivate-user eDeactBtn" data-toggle="modal">
-                                    <i class="material-icons" data-toggle="tooltip" title="Deactivate">&#xe897;</i>
-                                </a>
-                                <a th:href="@{/management/users/activate/(id=${user.id})}" class="activate-user eActBtn"
-                                   data-toggle="modal">
-                                    <i class="material-icons" data-toggle="tooltip" title="Activate">&#xe898;</i></a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </th:block>
-                </table>
-                <!-- Start of Paging -->
-                <div class="clearfix" th:if="${users.getPage().size() ne 0}">
-                    <div class="hint-text">
-                        Showing
-                        <b th:text="${users.getCurrentPage() eq 0 ? '1 -' : (users.isHasNext() ? users.getPage().size() * users.getCurrentPage() : users.getTotalElements() - users.getPage().size()) + 1 + ' - '}"></b>
-                        <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b>
-                        out of
-                        <b th:text="${users.getTotalElements()}"></b>
-                        entries
-                    </div>
-                    <ul class="pagination">
-
-                        <li class="page-item"
-                            th:classappend="${!users.isFirst()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"
-                               th:href="@{/management/users?page={id}(id=${0})}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${users.isFirst()}"><i
-                                    class="arrow fas fa-chevron-left"></i></a>
-                        </li>
-
-                        <li class="page-item"
-                            th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"
-                            th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"
-                            th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">
-                            <a class="page-link" th:href="@{/management/users?page={id}(id=${pageNumber})}">[[${pageNumber}+1]]</a>
-                        </li>
-
-                        <li class="page-item"
-                            th:classappend="${!users.isLast()} ? '' : 'disabled'">
-                            <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"
-                               th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                            <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i
-                                    class="arrow fas fa-chevron-right"></i></a>
-                        </li>
-                    </ul>
-                </div>
-                <!-- End of Paging -->
-            </div>
-        </div>
-    </div>
-    <!-- Add Modal HTML -->
-    <div id="addUserModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{#}" method="post" id="addUserForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Add User</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                        <div class="form-group">
-                            <label>User name</label>
-                            <input type="text" class="form-control" name="name" required>
-                            <span th:id="errorModalSavename" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="text" class="form-control" name="email" required>
-                            <span th:id="errorModalSaveemail" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Role</label>
-                            <select class="form-control" name="role">
-                                <option selected="selected">ROLE_USER</option>
-                                <option>ROLE_ADMIN</option>
-                                <option>ROLE_MODERATOR</option>
-                            </select>
-                            <span th:id="errorModalSaverole" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <input type="text" class="form-control" name="userStatus" value="CREATED" readonly required>
-                            <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Edit user Modal HTML -->
-    <div id="editUserModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editUserForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Edit User</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>ID</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>User name</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                            <span th:id="errorModalUpdatename" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="text" class="form-control" id="email" name="email" required>
-                            <span th:id="errorModalUpdateemail" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Credo</label>
-                            <input type="text" class="form-control" id="userCredo" name="userCredo" required>
-                            <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Role</label>
-                            <input type="text" class="form-control" id="role" name="role" required>
-                            <span th:id="errorModalUpdaterole" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="userStatus">Status</label>
-                            <input type="text" class="form-control" id="userStatus" name="userStatus" required readonly>
-                            <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Deactivate user Modal HTML -->
-    <div id="deactivateUserModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="deactivateUserForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Deactivate User</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to deactivate this User?</p>
-                        <p class="text-warning"><small>This user will not be able to login anymore.</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deactivateOneSubmit" class="btn btn-remove">
-                            <div>Deactivate</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Activate user Modal HTML -->
-    <div id="activateUserModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="activateUserForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Activate User</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to set User's status to <b>ACTIVATED</b>?</p>
-                        <p class="text-warning"><small>This user will be able to login again.</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
-                            <div>Activate</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Deactivate all selected users Modal HTML -->
-    <div id="deactivateAllSelectedModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Deactivate all selected</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to deactivate these Users?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deactivateAllSubmit" class="btn btn-remove">
-                            <div>Deactivate marked</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- User's friends Modal HTML -->
-    <div id="userFriendsModal" class="modal fade">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <h4 class="modal-title">User's Friends</h4>
-                <div class="modal-body">
-                    <table class="table table-hover" id="friendsTable">
-                        <thead>
-                        <tr class="table-primary">
-                            <th>ID</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Credo</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
+                                    </td>
+                                    <td th:text="${user.id}"></td>
+                                    <td th:text="${user.name}"></td>
+                                    <td th:text="${user.email}"></td>
+                                    <td th:text="${user.userCredo}"></td>
+                                    <td>
+                                        <div class="dropdown role">
+                                            <button class="dropbtn role" th:text="${user.role}">
+                                                <span><i class="fas fa-caret-down"></i></span>
+                                            </button>
+                                            <div class="dropdown-content role">
+                                                <a href="#">ADMIN</a>
+                                                <a href="#">USER
+                                                </a>
+                                                <a href="#">MODERATOR</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown status">
+                                            <button class="dropbtn status" th:text="${user.userStatus}">
+                                            </button>
+                                            <div class="dropdown-content status">
+                                                <a th:href="@{/management/users/activate/(id=${user.id})}"
+                                                   class="activate-user eActBtn" disabled="true"
+                                                   data-toggle="modal">ACTIVATED</a>
+                                                <a th:href="@{/management/users/deactivate/(id=${user.id})}"
+                                                   class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
+                                                </a>
+                                                <a href="#">WARNED</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody.table-striped>
+                        </th:block>
                     </table>
+                    <!-- Start of Paging -->
+                    <div class="clearfix" th:if="${users.getPage().size() ne 0}">
+                        <div class="hint-text">
+                            Showing
+                            <b th:text="${users.getCurrentPage() eq 0 ? '1 -' : (users.isHasNext() ? users.getPage().size() * users.getCurrentPage() : users.getTotalElements() - users.getPage().size()) + 1 + ' - '}"></b>
+                            <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b>
+                            out of
+                            <b th:text="${users.getTotalElements()}"></b>
+                            entries
+                        </div>
+                        <ul class="pagination">
+
+                            <li class="page-item"
+                                th:classappend="${!users.isFirst()} ? '' : 'disabled'">
+                                <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"
+                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i
+                                        class="arrow fas fa-chevron-left"></i></a>
+                                <a class="page-link" rel="tooltip" th:if="${users.isFirst()}"><i
+                                        class="arrow fas fa-chevron-left"></i></a>
+                            </li>
+
+                            <li class="page-item"
+                                th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"
+                                th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"
+                                th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">
+                                <a class="page-link"
+                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>
+                            </li>
+
+                            <li class="page-item"
+                                th:classappend="${!users.isLast()} ? '' : 'disabled'">
+                                <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"
+                                   th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i
+                                        class="arrow fas fa-chevron-right"></i></a>
+                                <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i
+                                        class="arrow fas fa-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End of Paging -->
+                </div>
+            </div>
+        </div>
+        <!-- Add Modal HTML -->
+        <div id="addUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{#}" method="post" id="addUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add User</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+                            <div class="form-group">
+                                <label>User name</label>
+                                <input type="text" class="form-control" name="name" required>
+                                <span th:id="errorModalSavename" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" name="email" required>
+                                <span th:id="errorModalSaveemail" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select class="form-control" name="role">
+                                    <option selected="selected">ROLE_USER</option>
+                                    <option>ROLE_ADMIN</option>
+                                    <option>ROLE_MODERATOR</option>
+                                </select>
+                                <span th:id="errorModalSaverole" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
+                                       required>
+                                <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Edit user Modal HTML -->
+        <div id="editUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="editUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Edit User</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>ID</label>
+                                <input type="text" class="form-control" id="id" name="id" readonly required>
+                                <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>User name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <span th:id="errorModalUpdatename" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                                <span th:id="errorModalUpdateemail" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Credo</label>
+                                <input type="text" class="form-control" id="userCredo" name="userCredo" required>
+                                <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <input type="text" class="form-control" id="role" name="role" required>
+                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="userStatus">Status</label>
+                                <input type="text" class="form-control" id="userStatus" name="userStatus" required
+                                       readonly>
+                                <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Deactivate user Modal HTML -->
+        <div id="deactivateUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="deactivateUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title-deac">Deactivate User</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p class="text-warning">If you intend to Deactivate User, you have to specify one more
+                                reason to do it: </p>
+                            <fieldset>
+                                <input type="checkbox" id="first-click"> inappropriate credo content in profile<br>
+                                <input type="checkbox" id="second-click"> inappropriate behavior in news
+                                publications<br>
+                                <input type="checkbox" id="other" onclick="otherCheck()"> other<br>
+                                <input type="text" id="othertext" name="othertext" disabled="disabled">
+                            </fieldset>
+
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <a href="" id="deactivateOneSubmit" class="btn btn-remove">
+                                <div>Deactivate</div>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Activate user Modal HTML -->
+        <div id="activateUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="activateUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Activate User</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to set User's status to <b>ACTIVATED</b>?</p>
+                            <p class="text-warning"><small>This user will be able to login again.</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
+                                <div>Activate</div>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Deactivate all selected users Modal HTML -->
+        <div id="deactivateAllSelectedModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Deactivate all selected</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to deactivate these Users?</p>
+                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <a href="" id="deactivateAllSubmit" class="btn btn-remove">
+                                <div>Deactivate marked</div>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- User's friends Modal HTML -->
+        <div id="userFriendsModal" class="modal fade">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <h4 class="modal-title">User's Friends</h4>
+                    <div class="modal-body">
+                        <table class="table table-hover" id="friendsTable">
+                            <thead>
+                            <tr class="table-primary">
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Credo</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <div id="footer" th:insert="core/footer"></div>
 </div>
-<div id="footer" th:insert="core/footer"></div>
 </body>
 </html>

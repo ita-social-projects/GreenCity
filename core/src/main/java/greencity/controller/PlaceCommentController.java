@@ -56,6 +56,10 @@ public class PlaceCommentController {
      * @return CommentDto
      * @author Marian Milian
      */
+    @ApiOperation(value = "Get comment by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CommentReturnDto.class)
+    })
     @GetMapping("comments/{id}")
     public ResponseEntity<Object> getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)

@@ -106,7 +106,8 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Get assigned habits for current user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
@@ -131,7 +132,8 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Get all inprogress assigns by certain habit.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -248,7 +250,8 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Get inprogress user habit assigns on certain date.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
@@ -276,7 +279,8 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Get user assigns between 2 days.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitsDateEnrollmentDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)

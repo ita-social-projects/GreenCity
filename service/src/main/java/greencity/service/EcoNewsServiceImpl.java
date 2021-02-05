@@ -1,30 +1,21 @@
 package greencity.service;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.RatingCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.EcoNews_;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
@@ -42,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -68,20 +60,21 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final TagsService tagService;
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
+    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final HttpServletRequest httpServletRequest;
 
     /**
      * {@inheritDoc}
      *
      * @author Yuriy Olkhovskyi.
      */
-    @SuppressWarnings("checkstyle:CommentsIndentation")
-    @RatingCalculation(rating = RatingCalculationEnum.ADD_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
                                       MultipartFile image, String email) {
         EcoNews toSave = modelMapper.map(addEcoNewsDtoRequest, EcoNews.class);
-        User user = modelMapper.map(restClient.findByEmail(email), User.class);
+        UserVO byEmail = restClient.findByEmail(email);
+        User user = modelMapper.map(byEmail, User.class);
         toSave.setAuthor(user);
         if (addEcoNewsDtoRequest.getImage() != null) {
             image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
@@ -104,6 +97,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             }.getType()));
         try {
             ecoNewsRepo.save(toSave);
+            String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_ECO_NEWS, byEmail, accessToken));
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
@@ -216,7 +212,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @author Yuriy Olkhovskyi.
      */
-    @RatingCalculation(rating = RatingCalculationEnum.DELETE_ECO_NEWS)
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
     @Override
     public void delete(Long id, UserVO user) {
@@ -224,6 +219,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_ECO_NEWS, user, accessToken));
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
 
@@ -297,9 +295,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param comment {@link EcoNewsComment}
      * @author Dovganyuk Taras
      */
-    @RatingCalculation(rating = RatingCalculationEnum.LIKE_COMMENT)
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture
+            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS_LIKE, 0));
     }
@@ -311,9 +311,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param comment {@link EcoNewsComment}
      * @author Dovganyuk Taras
      */
-    @RatingCalculation(rating = RatingCalculationEnum.UNLIKE_COMMENT)
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
+        CompletableFuture
+            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
     }
 
     @Override

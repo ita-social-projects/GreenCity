@@ -10,13 +10,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
@@ -35,14 +29,9 @@ import greencity.repository.EcoNewsRepo;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -79,6 +68,9 @@ class EcoNewsServiceImplTest {
 
     @Mock
     FileService fileService;
+
+    @Mock
+    HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -246,9 +238,11 @@ class EcoNewsServiceImplTest {
 
     @Test
     void delete() {
+        String accessToken = "Token";
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
         ecoNewsService.delete(1L, ecoNewsVO.getAuthor());
 
