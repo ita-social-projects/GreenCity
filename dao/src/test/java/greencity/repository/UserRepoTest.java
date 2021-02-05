@@ -1,4 +1,8 @@
-package greencity.repository;
+package greencity.repository;//package greencity.repository;
+
+import static greencity.enums.UserStatus.ACTIVATED;
+import static greencity.enums.UserStatus.DEACTIVATED;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
@@ -18,10 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static greencity.enums.UserStatus.ACTIVATED;
-import static greencity.enums.UserStatus.DEACTIVATED;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @ExtendWith(SpringExtension.class)
@@ -53,6 +53,7 @@ class UserRepoTest {
             .refreshTokenKey("secret2")
             .city("Kyiv")
             .build();
+
     @Autowired
     private UserRepo userRepo;
 

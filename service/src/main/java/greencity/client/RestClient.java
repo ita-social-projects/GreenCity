@@ -9,6 +9,8 @@ import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.User;
+import greencity.enums.EmailNotification;
 import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -326,7 +328,7 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
-        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, setHeader());
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
             .getBody();

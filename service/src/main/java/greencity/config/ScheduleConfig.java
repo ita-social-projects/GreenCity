@@ -61,8 +61,7 @@ public class ScheduleConfig {
      * field {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or
      * DAILY.
      */
-    //    @Scheduled(cron = "0 0 19 * * ?")
-    @Scheduled(cron = "0/10 * * * * ?")
+    @Scheduled(cron = "0 0 19 * * ?")
     void sendHabitNotificationEveryDay() {
         List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(userRepo.findAllByEmailNotification(DAILY));
