@@ -1,4 +1,4 @@
-package greencity.repository;//package greencity.repository;
+package greencity.repository;
 
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.DEACTIVATED;

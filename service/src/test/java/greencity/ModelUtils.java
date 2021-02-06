@@ -52,9 +52,11 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagDto;
@@ -75,15 +77,7 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.RecommendedFriendDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserVO;
-import greencity.dto.user.UsersFriendDto;
+import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
@@ -102,6 +96,10 @@ import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1204,6 +1202,20 @@ public class ModelUtils {
             "endDate", "tag");
     }
 
+    public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
+        return NewsSubscriberResponseDto.builder()
+            .email("test@gmail.com")
+            .unsubscribeToken("someUnsubscribeToken")
+            .build();
+    }
+
+    public static AddEcoNewsMessage getAddEcoNewsMessage() {
+        return AddEcoNewsMessage.builder()
+            .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
+            .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
+            .build();
+    }
+
     public static HabitDto getHabitDto() {
         return HabitDto.builder()
             .id(1L)
@@ -1211,6 +1223,53 @@ public class ModelUtils {
             .habitTranslation(new HabitTranslationDto())
             .defaultDuration(1)
             .tags(new ArrayList<>())
+            .build();
+    }
+
+    public static CategoryDto getCategoryDto() {
+        return CategoryDto.builder()
+            .name("name")
+            .parentCategoryId(1L)
+            .build();
+    }
+
+    public static PlaceNotificationDto getPlaceNotificationDto() {
+        return PlaceNotificationDto.builder()
+            .category(getCategoryDto())
+            .name("name")
+            .build();
+    }
+
+    public static SendReportEmailMessage getSendReportEmailMessage() {
+        return SendReportEmailMessage.builder()
+            .emailNotification("notification")
+            .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
+                getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
+            .subscribers(Collections.singletonList(getPlaceAuthorDto()))
+            .build();
+    }
+
+    private static PlaceAuthorDto getPlaceAuthorDto() {
+        return PlaceAuthorDto.builder()
+            .id(1L)
+            .email("test@gmail.com")
+            .name("taras")
+            .build();
+    }
+
+    public static SendChangePlaceStatusEmailMessage getSendChangePlaceStatusEmailMessage() {
+        return SendChangePlaceStatusEmailMessage.builder()
+            .placeStatus("status")
+            .authorEmail("test@gmail.com")
+            .placeName("placeName")
+            .authorFirstName("taras")
+            .build();
+    }
+
+    public static SendHabitNotification getSendHabitNotification() {
+        return SendHabitNotification.builder()
+            .email("test@gmail.com")
+            .name("taras")
             .build();
     }
 }
