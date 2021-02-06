@@ -131,9 +131,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      */
 
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
-        + "WHERE upper(ha.status) = 'INPROGRESS'"
-        + "GROUP BY ha.id")
-    int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(Long userId);
+        + "WHERE upper(ha.status) = 'INPROGRESS' AND ha.user.id = :userId")
+    int countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(@Param("userId") Long userId);
 
     /**
      * Method for counting {@link HabitAssign} by {@link User} id and period between
