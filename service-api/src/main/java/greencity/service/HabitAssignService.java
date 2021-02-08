@@ -133,4 +133,6 @@ public interface HabitAssignService {
      * @param user {@link UserVO} instance.
      */
     void addDefaultHabit(UserVO user, String language);
+
+    Long cancelHabitAssign(Long habitId, Long userId);
 }
