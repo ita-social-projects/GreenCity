@@ -1,7 +1,6 @@
 package greencity.repository;
 
 import greencity.entity.Habit;
-import greencity.entity.localization.AdviceTranslation;
 import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

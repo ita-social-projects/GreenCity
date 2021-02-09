@@ -419,10 +419,9 @@ public class GoalServiceImpl implements GoalService {
     @Override
     public List<GoalManagementDto> getGoalByHabitId(Long habitId) {
         List<Goal> goals = goalRepo.getGoalByListOfId(goalRepo.getAllGoalByHabitIdISContained(habitId));
-        List<GoalManagementDto> goalManagementDtos = goals.stream()
+        return goals.stream()
             .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
             .collect(Collectors.toList());
-        return goalManagementDtos;
     }
 
     @Override
