@@ -10,8 +10,8 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class HabitTranslationDto implements Serializable {
-    private String name;
-    private String habitItem;
     private String description;
+    private String habitItem;
     private String languageCode;
+    private String name;
 }

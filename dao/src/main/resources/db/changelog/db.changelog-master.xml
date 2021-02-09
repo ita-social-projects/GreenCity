@@ -76,5 +76,7 @@
     <include file="db/changelog/logs/ch-add-all-ubs-tables-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-id-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-change-habit-goal-add-status-Diakiv.xml"/>
+    <include file="db/changelog/logs/ch-add-coordinates-Bilonizhka.xml"/>
+    <include file="db/changelog/logs/ch-add-column-1-Bilonizhka.xml"/>
 </databaseChangeLog>
 
