@@ -13,9 +13,9 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class HabitStatusCalendarDto {
+    @NotEmpty
+    private LocalDate enrollDate;
     @NotNull
     @Min(1)
     private Long id;
-    @NotEmpty
-    private LocalDate enrollDate;
 }
