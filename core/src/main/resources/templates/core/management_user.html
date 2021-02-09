@@ -1,6 +1,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
+    <meta charset=UTF-8/>
     <title>User management</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
@@ -22,6 +22,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
 <body onload="Order()">
 <div id="header" th:insert="core/header"></div>
@@ -31,15 +32,16 @@
             <div class="table-wrapper">
                 <div class="table-title">
                     <div class="row manager-user">
-                        <h2>Manage Users</h2>
-                        <div class="buttons"></div>
-                        <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
-                            <div>Add new user</div>
-                        </a>
-                        <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
-                           data-toggle="modal">
-                            <div>Deactivated</div>
-                        </a>
+                        <h2 class="text-describe">[[#{greenCity.user.page.h}]]</h2>
+                        <div class="buttons">
+                            <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
+                               data-toggle="modal">
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
+                            </a>
+                            <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                <div>[[#{greenCity.user.page.add.user}]]</div>
+                            </a>
+                        </div>
                     </div>
                     <div class="row-box-and-sort">
                         <span class="custom-checkbox-select-all">
@@ -65,22 +67,22 @@
                         <thead>
                         <tr class="table-primary ">
                             <th></th>
-                            <th><span onclick="byNameField('id')">ID
+                            <th><span onclick="byNameField('id')">[[#{greenCity.pages.table.id}]]
                                         <i id="id-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="byNameField('name')">User name
+                            <th class="username"><span class="userNameAuto" onclick="byNameField('name')">[[#{greenCity.pages.table.userName}]]
                                         <i id="user-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="byNameField('email')">Email
+                            <th><span onclick="byNameField('email')">[[#{greenCity.pages.table.email}]]
                                         <i id="email-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="byNameField('userCredo')">Credo
+                            <th><span onclick="byNameField('userCredo')">[[#{greenCity.pages.table.credo}]]
                                         <i id="credo-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="byNameField('role')">Role
+                            <th><span onclick="byNameField('role')">[[#{greenCity.pages.table.role}]]
                                         <i id="role-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
-                            <th><span onclick="byNameField('userStatus')">Status
+                            <th><span onclick="byNameField('userStatus')">[[#{greenCity.pages.table.status}]]
                                         <i id="status-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
                                 </span></th>
                         </tr>
@@ -131,6 +133,7 @@
 
                         </form>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
+                            <div th:with="id=${user.id}"></div>
                             <tbody.table-striped>
                                 <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                                     <td>
@@ -174,18 +177,19 @@
                                         </div>
                                     </td>
                                 </tr>
+
                             </tbody.table-striped>
                         </th:block>
                     </table>
                     <!-- Start of Paging -->
                     <div class="clearfix" th:if="${users.getPage().size() ne 0}">
                         <div class="hint-text">
-                            Showing
+                            [[#{greenCity.page.paging.show}]]
                             <b th:text="${users.getCurrentPage() eq 0 ? '1 -' : (users.isHasNext() ? users.getPage().size() * users.getCurrentPage() : users.getTotalElements() - users.getPage().size()) + 1 + ' - '}"></b>
                             <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b>
-                            out of
+                            [[#{greenCity.page.paging.out.of}]]
                             <b th:text="${users.getTotalElements()}"></b>
-                            entries
+                            [[#{greenCity.page.paging.entries}]]
                         </div>
                         <ul class="pagination">
 
@@ -226,23 +230,23 @@
                 <div class="modal-content">
                     <form th:action="@{#}" method="post" id="addUserForm">
                         <div class="modal-header">
-                            <h4 class="modal-title">Add User</h4>
+                            <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                             <div class="form-group">
-                                <label>User name</label>
+                                <label>[[#{greenCity.pages.table.userName}]]</label>
                                 <input type="text" class="form-control" name="name" required>
                                 <span th:id="errorModalSavename" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
-                                <label>Email</label>
+                                <label>[[#{greenCity.pages.table.email}]]</label>
                                 <input type="text" class="form-control" name="email" required>
                                 <span th:id="errorModalSaveemail" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
-                                <label>Role</label>
+                                <label>[[#{greenCity.pages.table.credo}]]</label>
                                 <select class="form-control" name="role">
                                     <option selected="selected">ROLE_USER</option>
                                     <option>ROLE_ADMIN</option>
@@ -251,7 +255,7 @@
                                 <span th:id="errorModalSaverole" class="errorSpan"></span>
                             </div>
                             <div class="form-group">
-                                <label>Status</label>
+                                <label>[[#{greenCity.pages.table.role}]]</label>
                                 <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
                                        required>
                                 <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
@@ -259,8 +263,8 @@
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   value="Cancel">
-                            <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
+                                   th:value="#{greenCity.pages.popup.cancel.}">
+                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
                         </div>
                     </form>
                 </div>
@@ -311,7 +315,7 @@
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
                                    value="Cancel">
-                            <input type="submit" class="btn btn-success btn-primary" value="Save" id="submitEditBtn">
+                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                         </div>
                     </form>
                 </div>
@@ -323,25 +327,20 @@
                 <div class="modal-content">
                     <form id="deactivateUserForm">
                         <div class="modal-header">
-                            <h4 class="modal-title-deac">Deactivate User</h4>
+                            <h4 class="modal-title-deac">[[#{greenCity.user.page.popup.deactivated.h}]]</h4>
                         </div>
                         <div class="modal-body">
-                            <p class="text-warning">If you intend to Deactivate User, you have to specify one more
-                                reason to do it: </p>
-                            <fieldset>
-                                <input type="checkbox" id="first-click"> inappropriate credo content in profile<br>
-                                <input type="checkbox" id="second-click"> inappropriate behavior in news
-                                publications<br>
-                                <input type="checkbox" id="other" onclick="otherCheck()"> other<br>
-                                <input type="text" id="othertext" name="othertext" disabled="disabled">
-                            </fieldset>
-
+                            <p class="text-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
+                                <input type="checkbox"  id="first-click"> [[#{greenCity.user.page.popup.deactivated.fieldset.input}]]<br>
+                                <input type="checkbox" id="second-click"> [[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]<br>
+                            <input type="checkbox"  id="other" onclick="otherCheck()"> [[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]<br>
+                       <input type="text" id="othertext" disabled="disabled">
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   value="Cancel">
+                                   th:value="#{greenCity.pages.popup.cancel.}">
                             <a href="" id="deactivateOneSubmit" class="btn btn-remove">
-                                <div>Deactivate</div>
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
                             </a>
                         </div>
                     </form>
@@ -354,18 +353,17 @@
                 <div class="modal-content">
                     <form id="activateUserForm">
                         <div class="modal-header">
-                            <h4 class="modal-title">Activate User</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you want to set User's status to <b>ACTIVATED</b>?</p>
-                            <p class="text-warning"><small>This user will be able to login again.</small></p>
+                            <p>[[#{greenCity.user.page.popup.activated.p1}]]</p>
+                            <p class="text-warning"><small>[[#{greenCity.user.page.popup.activated.p2}]]</small></p>
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   value="Cancel">
+                                   th:value="#{greenCity.pages.popup.cancel.}">
                             <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
-                                <div>Activate</div>
+                                <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
                             </a>
                         </div>
                     </form>
@@ -378,18 +376,18 @@
                 <div class="modal-content">
                     <form id="">
                         <div class="modal-header">
-                            <h4 class="modal-title">Deactivate all selected</h4>
+                            <h4 class="modal-title-deac">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         </div>
                         <div class="modal-body">
-                            <p>Are you sure you want to deactivate these Users?</p>
-                            <p class="text-warning"><small>This action cannot be undone.</small></p>
+                            <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
-                                   value="Cancel">
+                                   th:value="#{greenCity.pages.popup.cancel.}">
                             <a href="" id="deactivateAllSubmit" class="btn btn-remove">
-                                <div>Deactivate marked</div>
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
                             </a>
                         </div>
                     </form>

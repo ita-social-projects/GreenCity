@@ -22,6 +22,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/factoftheday/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -95,8 +96,8 @@
                                 </td>
                                 <td th:text="${#temporals.format(factOfTheDay.getCreateDate(), 'dd/MM/yyyy HH:mm')}"></td>
                                 <td>
-                                    <a th:href="@{/factoftheday/find/(id=${factOfTheDay.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
-                                    <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                    <a th:href="@{/factoftheday/find/(id=${factOfTheDay.getId()})}" class="edit eBtn" ><i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
+                                    <a th:href="@{/management/factoftheday/(id=${factOfTheDay.getId()})}" class="delete eDelBtn" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                                 </td>
                             </tr>
                         </tbody>
