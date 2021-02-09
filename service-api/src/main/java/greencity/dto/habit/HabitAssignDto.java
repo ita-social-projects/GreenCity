@@ -14,14 +14,14 @@ import lombok.*;
 @Builder
 @ToString
 public class HabitAssignDto {
-    private Long id;
-    private HabitAssignStatus status;
     private ZonedDateTime createDateTime;
-    private HabitDto habit;
-    private Long userId;
     private Integer duration;
-    private Integer workingDays;
-    private Integer habitStreak;
-    private ZonedDateTime lastEnrollmentDate;
+    private HabitDto habit;
     private List<HabitStatusCalendarDto> habitStatusCalendarDtoList;
+    private Integer habitStreak;
+    private Long id;
+    private ZonedDateTime lastEnrollmentDate;
+    private HabitAssignStatus status;
+    private Long userId;
+    private Integer workingDays;
 }
