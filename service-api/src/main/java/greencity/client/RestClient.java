@@ -8,6 +8,7 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
+import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -327,8 +328,21 @@ public class RestClient {
      */
     private HttpHeaders setHeader() {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        Cookie[] cookies = httpServletRequest.getCookies();
+        String uri = httpServletRequest.getRequestURI();
+        if (cookies != null && uri.startsWith("/management")) {
+            accessToken = getTokenFromCookies(cookies);
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         return headers;
+    }
+
+    private String getTokenFromCookies(Cookie[] cookies) {
+        String token = Arrays.stream(cookies)
+            .filter(c -> c.getName().equals("accessToken"))
+            .findFirst()
+            .map(Cookie::getValue).orElse(null);
+        return token == null ? null : "Bearer " + token;
     }
 }

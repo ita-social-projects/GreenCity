@@ -59,7 +59,8 @@ public class HabitStatisticController {
     @ApiOperation(value = "Find all statistics by habit assign id.")
     @GetMapping("/assign/{habitAssignId}")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
@@ -133,7 +134,8 @@ public class HabitStatisticController {
      */
     @ApiOperation(value = "Get today's statistic for all habit items.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitItemsAmountStatisticDto.class,
+            responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/todayStatisticsForAllHabitItems")

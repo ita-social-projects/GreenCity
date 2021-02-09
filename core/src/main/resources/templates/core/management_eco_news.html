@@ -64,8 +64,10 @@
                         <div class="row">
                             <div class="col-sm-12">
                                <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
+                                   <span class="modal-checkbox">
+                                       <input type="checkbox" id="selectAll">
+                                        <label for="selectAll"></label>
+                                   </span>
                                 </span>
                             </div>
                         </div>
@@ -130,12 +132,16 @@
                                 </th>
                                 <th>
                                     <span onclick="orderByNameField('tags')">[[#{greenCity.pages.table.tags}]]
-                                        <i id="tags-icon"  style="color: #8ea59f;"></i>
+                                        <i id="tags-icon"  style="color: #8ea59f;"></i>                                  
+
                                     </span>
                                 </th>
                                 <th>
-                                    <i class="fas fa-star" style="color: green"></i>
-                                    <i id="likes-icon"  style="color: #8ea59f;"></i>
+                                    <span ><!--onclick="orderByNameField('usersLikedNews')"-->
+                                        <i class="fas fa-star"  style="color: green"></i>
+                                        <i id="likes-icon" class="fas fa-chevron-down"  style="color: #8ea59f;"></i>
+                                    </span>
+
                                 </th>
                                 <th>[[#{greenCity.pages.table.actions}]]</th>
                             </tr>
@@ -143,41 +149,44 @@
 
                             <tbody>
 
-                            <form method="GET" action="/management/eco-news" id="searchForm" onsubmit="applyFilters()">
+                            <form>
                                 <tr>
                                     <td>
-                                        <input placeholder="" class="input-search-form" type="search" th:name="id"
-                                               th:value="${fields eq null ? '' : fields.id }"/>
+                                        <input  id="idSearchForm" placeholder="" class="input-search-form" type="search"
+                                                th:value="${fields eq null ? '' : fields.id }"/>
                                     </td>
                                     <td>
-                                        <input class="input-search-form" type="search" th:name="author"
-                                               th:value="${fields eq null ? '' : fields.author }"/>
+                                        <input id ="authorSearchForm" class="input-search-form" type="search"
+                                               th:value="${fields eq null ? '' : fields.author }"
+                                        />
                                     </td>
                                     <td>
-                                        <input class="input-search-form" type="search" th:name="title"
-                                               th:value="${fields eq null ? '' : fields.title }"/>
+                                        <input id = "titleSearchForm" class="input-search-form" type="search"
+                                               th:value="${fields eq null ? '' : fields.title }"
+                                        />
                                     </td>
                                     <td>
-                                        <input class="input-search-form"  type="search" th:name="text"
+                                        <input id = "textSearchForm" class="input-search-form"  type="search"
                                                th:value="${fields eq null ? '' : fields.text }"/>
                                     </td>
                                     <td></td>
                                     <td>
                                         <div  class="input-group input-daterange">
-                                            <input  type="search" name="startDate" class="form-control input-search-form"
-                                                    th:value="${fields eq null ? '' : fields.startDate }"/>
+                                            <input id="startDateSearchForm"  type="search"  class="form-control input-search-form"
+                                                   th:value="${fields eq null ? '' : fields.startDate }"/>
                                             <div>to</div>
-                                            <input  type="search" name="endDate" class="form-control input-search-form"
-                                                    th:value="${fields eq null ? '' : fields.endDate }" />
+                                            <input id = "endDateSearchForm"  type="search" class="form-control input-search-form"
+                                                   th:value="${fields eq null ? '' : fields.endDate }"/>
                                         </div>
                                     </td>
                                     <td>
-                                        <input class="input-search-form" type="search" th:name="tags"
-                                               th:value="${fields eq null ? '' : fields.tags }"/>
+                                        <input id = "tagSearchForm" class="input-search-form" type="search" />
                                     </td>
                                     <td></td>
                                     <td>
-                                        <button type="submit" id="searchBy"><img alt="search" src="/img/search.png"></button>
+                                        <span id="searchBy" onclick="sendDataFromSearchForm()">
+                                            <img alt="search" src="/img/search.png">
+                                        </span>
                                     </td>
                                 </tr>
                             </form>
@@ -196,7 +205,6 @@
                                     <td th:text="${allEcoNews.getAuthor().getName()}" style="white-space: nowrap; /* Заборона переносу */
                                                                                             overflow: hidden;
                                                                                             max-width: 0px;
-
                                                                                             text-overflow: ellipsis; /* ... */" >
 
                                     </td>
@@ -219,7 +227,7 @@
                                             <li th:type="1" th:text="${translation}"></li>
                                         </th:block>
                                     </td>
-                                    <td>Likes</td>
+                                    <td th:text="${allEcoNews.getLikes()}" ></td>
                                     <td>
                                         <a th:href="@{/management/eco-news/find/(id=${allEcoNews.getId()})}" class="edit eBtn">
                                             <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
@@ -238,7 +246,7 @@
                                     <li class="page-item"
                                         th:classappend="${!pageable.isFirst()} ? '' : 'disabled'">
                                         <a class="page-link" rel="tooltip" th:if="${!pageable.isFirst()}"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i
+                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${0}, sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
                                                 class="arrow fas fa-chevron-left"></i></a>
                                         <a class="page-link" rel="tooltip" th:if="${pageable.isFirst()}"><i
                                                 class="arrow fas fa-chevron-left"></i></a>
@@ -248,13 +256,13 @@
                                         th:if="${pageNumber > -1 && pageNumber < pageable.getTotalPages()}"
                                         th:classappend="${pageNumber == pageable.getNumber()} ? 'active' : ''"
                                         th:each="pageNumber : ${#numbers.sequence(pageable.getNumber()-3, pageable.getNumber()+3)}">
-                                        <a class="page-link" th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>
+                                        <a class="page-link" th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}">[[${pageNumber}+1]]</a>
                                     </li>
 
                                     <li class="page-item"
                                         th:classappend="${!pageable.isLast()} ? '' : 'disabled'">
                                         <a class="page-link" rel="tooltip" th:if="${!pageable.isLast()}"
-                                           th:href="@{/management/eco-news?page={id}&size={pageSize}&sort={sort}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize})}"><i
+                                           th:href="@{/management/eco-news?&page={id}&size={pageSize}&sort={sort}&query={query}&id={elId}&author={author}&title={title}&text={text}&startDate={startDate}&endDate={endDate}&tags={tags}(id=${pageable.getTotalPages()-1},sort=${sortModel}, pageSize=${pageSize},elId=${fields.id},author=${fields.author},title=${fields.title},text=${fields.text},startDate=${fields.startDate},endDate=${fields.endDate},tags=${fields.tags},query=${query})}"><i
                                                 class="arrow fas fa-chevron-right"></i></a>
                                         <a class="page-link" rel="tooltip" th:if="${pageable.isLast()}"><i
                                                 class="arrow fas fa-chevron-right"></i></a>
@@ -293,9 +301,11 @@
                                 <div style="width: 100%; display: inline-block;">
                                     <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
                                         <div style="margin-right: 5%" class="custom-checkbox" >
-                                            <input class="tag-checkbox" type="checkbox" th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
-                                                   name="Tags[]" th:value="${allTags.getName()}" th:onclick="tagClick()">
-                                            <label th:for="checkboxTag+${iterStatus.count}" th:text="${allTags.getName()}" for="checkboxTag1"></label>
+                                            <span class="modal-checkbox" >
+                                                <input class="tag-checkbox" type="checkbox" th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
+                                                       name="Tags[]" th:value="${allTags.getName()}" th:onclick="tagClick()">
+                                                <label th:for="checkboxTag+${iterStatus.count}" th:text="${allTags.getName()}" for="checkboxTag1"></label>
+                                            </span>
                                         </div>
                                     <span th:id="errorModalAddTags" class="errorSpan"></span>
                                 </th:block>
