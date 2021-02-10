@@ -22,6 +22,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/places/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <style>
         .displayNone {
             display: none;
@@ -40,7 +41,7 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <strong>Place</strong></h2>
+                            <h2>[[#{greenCity.places.page.h}]]</h2>
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
@@ -50,9 +51,9 @@
                                     </form>
                                 </span>
                             <a href="#addPlaceModal" id="addPlaceModalBtn" class="btn btn-success"
-                               data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add Place</span></a>
+                               data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>[[#{greenCity.places.page.add.place}]]</span></a>
                             <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                                    class="material-icons">&#xE15C;</i> <span>[[#{greenCity.pages.delete}]]</span></a>
                         </div>
                     </div>
                 </div>
@@ -65,11 +66,11 @@
                                     <label for="selectAll"></label>
                                 </span>
                         </th>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Opening Hours</th>
-                        <th>Actions</th>
+                        <th>[[#{greenCity.pages.table.id}]]</th>
+                        <th>[[#{greenCity.pages.table.name}]]</th>
+                        <th>[[#{greenCity.pages.table.status}]]</th>
+                        <th>[[#{greenCity.pages.table.opening.hours}]]</th>
+                        <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     </thead>
                     <th:block th:each="place, iterStatus :${pageable.getPage()}">
@@ -91,11 +92,11 @@
                                 <table class="table table-borderless m-0">
                                     <thead>
                                     <tr class="table-secondary">
-                                        <th class="py-1">Week Day</th>
-                                        <th class="py-1">openTime</th>
-                                        <th class="py-1">closeTime</th>
-                                        <th class="py-1">Break(Start)</th>
-                                        <th class="py-1">Break(End)</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.week.day}]]</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.open.time}]]</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.close.time}]]</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.break.start}]]</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.break.end}]]</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -117,22 +118,22 @@
                             <td>
 
                                 <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places/find(id=${place.getId()})}" class="edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                        class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
                                 <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
-                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
                     </th:block>
                 </table>
                 <div class="clearfix">
-                    <div class="hint-text">Showing <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
-                            th:text="${pageable.getTotalElements()}">25</b> entries
+                    <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
+                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                                th:href="@{(page=${pageable.getCurrentPage()-1})}" class="page-link">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                             th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
@@ -140,7 +141,7 @@
                         <li class="page-item"
                             th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
                                 th:href="@{(page=${pageable.getCurrentPage()+1})}"
-                                class="page-link">Next</a></li>
+                                class="page-link">[[#{greenCity.page.paging.next}]]</a></li>
                     </ul>
                 </div>
             </div>
@@ -152,30 +153,30 @@
             <div class="modal-content">
                 <form th:action="@{places}" method="post" id="addPlaceForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Place</h4>
+                        <h4 class="modal-title">[[#{greenCity.places.page.add.place}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <input style="display: none" name="id" id="id">
                     <div name="map" id="map"></div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>Address</label>
+                            <label>[[#{greenCity.pages.table.address}]]</label>
                             <input type="hidden" name="latitude" value="2.5" id="latitude"/>
                             <input type="hidden" name="longitude" value="2.5" id="longitude"/>
                             <input type="text" class="form-control" id='address' name="address">
                             <span th:id="errorModalSavelocation.address" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Place name</label>
+                            <label>[[#{greenCity.pages.table.place.name}]]</label>
                             <input type="text" class="form-control" id ="placeName" name="name">
                             <span th:id="errorModalSavename" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Status</label>
+                            <label>[[#{greenCity.pages.table.status}]]</label>
                             <input type="text" class="form-control" name="status" value="APPROVED" readonly required>
                         </div>
                         <div class="form-group">
-                            <label>Category</label>
+                            <label>[[#{greenCity.pages.table.category}]]</label>
                             <select class="form-control" name="category" id="category">
                                 <option selected="selected" id="empty-category"></option>
                                 <th:block th:each="category : ${categoryList}">
@@ -190,7 +191,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Opening Hours</label>
+                            <label>[[#{greenCity.pages.table.opening.hours}]]</label>
                             <div th:each="day: ${#strings.arraySplit('MONDAY,TUESDAY,WEDNESDAY,THURSDAY,FRIDAY,SATURDAY,SUNDAY',',')}">
                                 <div class="form-row">
                                     <div class="form-group col-md-3 week-day">
@@ -202,32 +203,32 @@
                                     <div class="form-group col-md-4 work-hours">
                                         <div class="form-row">
                                             <div class="form-group col-6">
-                                                <label>start time</label>
+                                                <label>[[#{greenCity.pages.table.start.time}]]</label>
                                                 <input type="time" class="form-control-sm" name="openTime">
                                             </div>
                                             <div class="form-group col-6">
-                                                <label>end time</label>
+                                                <label>[[#{greenCity.pages.table.end.time}]]</label>
                                                 <input type="time" class="form-control-sm" name="closeTime">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group col-md-5 break-time">
-                                        <button class="btn btn-success btn-sm add-break">Add break hours
+                                        <button class="btn btn-success btn-sm add-break">[[#{greenCity.pages.table.add.break.hourse}]]
                                         </button>
                                         <div class="form-row break-hours displayNone">
                                             <div class="form-group">
                                                 <div class="form-row">
                                                     <div class="form-group col-5">
-                                                        <label>start break</label>
+                                                        <label>[[#{greenCity.pages.table.break.start.p}]]</label>
                                                         <input type="time" class="form-control-sm" name="startTime">
                                                     </div>
                                                     <div class="form-group col-5">
-                                                        <label>end break</label>
+                                                        <label>[[#{greenCity.pages.table.break.end.p}]]</label>
                                                         <input type="time" class="form-control-sm" name="endTime">
                                                     </div>
                                                     <div class="=col-2">
                                                         <i class="material-icons removeBreak" data-toggle="tooltip"
-                                                           title="Delete break hours">&#xE872;</i>
+                                                          th:title="#{greenCity.pages.table.delete.break.title}">&#xE872;</i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -240,17 +241,17 @@
                         </div>
                         <div class="form-group">
                             <div id="discounts"></div>
-                            <button class="btn btn-info" id="addDiscount">Add Discount</button>
+                            <button class="btn btn-info" id="addDiscount">[[#{greenCity.pages.table.delete.add.discount}]]</button>
                         </div>
                         <div class="form-group">
-                            <label>Photo</label>
+                            <label>[[#{greenCity.pages.table.photo}]]</label>
                             <input type="file" class="form-control" name="photo" id="creationFile">
                             <span th:id="errorModalSavefile" class="errorSpan"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success" value="Add" id="submitAddBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -262,16 +263,16 @@
             <div class="modal-content">
                 <form id="deletePlaceForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Place</h4>
+                        <h4 class="modal-title">[[#{greenCity.places.page.delete}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete that Record?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>
@@ -283,16 +284,16 @@
             <div class="modal-content">
                 <form id="">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete all selected</h4>
+                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete these Records?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>

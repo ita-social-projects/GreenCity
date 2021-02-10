@@ -21,7 +21,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
 </head>
 <body>
@@ -33,15 +33,15 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <strong>User rating statistics</strong></h2>
+                            <h2>[[#{greenCity.facts.rating.page.h}]]</h2>
                         </div>
                         <div class="col-sm-6">
                             <a href="/management/rating">
-                                <button type="button" class="btn btn-success">Clear filters</button>
+                                <button type="button" class="btn btn-success">[[#{greenCity.facts.rating.page.clear}]]</button>
                             </a>
-                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">Export filtered to Excel</button>
+                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">[[#{greenCity.facts.rating.page.export.filtered}]]</button>
                             <a href="/management/rating/export">
-                                <button type="button" class="btn btn-success">Export all to Excel</button>
+                                <button type="button" class="btn btn-success">[[#{greenCity.facts.rating.page.export.all}]]</button>
                             </a>
                         </div>
                     </div>
@@ -49,13 +49,13 @@
                 <table id="datatable" class="table table-striped table-hover">
                     <thead>
                     <tr class="table-primary">
-                        <th>ID</th>
-                        <th>Event name</th>
-                        <th>User ID</th>
-                        <th>User email</th>
-                        <th>Date</th>
-                        <th>Points changed</th>
-                        <th>Current rating</th>
+                        <th>[[#{greenCity.pages.table.id}]]</th>
+                        <th>[[#{greenCity.pages.table.event.name}]]</th>
+                        <th>[[#{greenCity.pages.table.user.id}]]</th>
+                        <th>[[#{greenCity.pages.table.user.email}]]</th>
+                        <th>[[#{greenCity.pages.table.date}]]</th>
+                        <th>[[#{greenCity.pages.table.points.changed}]]</th>
+                        <th>[[#{greenCity.pages.table.current.rating}]]</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -128,12 +128,12 @@
 
                 <div class="clearfix" th:if="${ratings.getPage().size() ne 0}">
                     <div class="hint-text">
-                        Showing
+                        [[#{greenCity.page.paging.show}]]
                         <b th:text="${ratings.getCurrentPage() eq 0 ? '1 -' : (ratings.isHasNext() ? ratings.getPage().size() * ratings.getCurrentPage() : ratings.getTotalElements() - ratings.getPage().size()) + 1 + ' - '}"></b>
                         <b th:text="${ratings.getCurrentPage() eq 0 ? ratings.getPage().size() : (ratings.isHasNext() ? ratings.getPage().size() * (ratings.getCurrentPage() + 1) : ratings.getTotalElements())}">*</b>
-                        out of
+                        [[#{greenCity.page.paging.out.of}]]
                         <b th:text="${ratings.getTotalElements()}"></b>
-                        entries
+                        [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item"
@@ -145,8 +145,8 @@
                         <li class="page-item"
                             th:classappend="${ratings.isHasPrevious()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasPrevious()}"
-                               th:href="@{/management/rating?page={id}(id=${ratings.getNumber()-1})}">Previous</a>
-                            <a th:if="${!ratings.isHasPrevious()}">Previous</a>
+                               th:href="@{/management/rating?page={id}(id=${ratings.getNumber()-1})}">[[#{greenCity.page.paging.previous}]]</a>
+                            <a th:if="${!ratings.isHasPrevious()}">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item"
                             th:if="${pageNumber > -1 && pageNumber < ratings.getTotalPages()}"
@@ -157,8 +157,8 @@
                         <li class="page-item"
                             th:classappend="${ratings.isHasNext()} ? '' : 'disabled'">
                             <a class="page-link" th:if="${ratings.isHasNext()}"
-                               th:href="@{/management/rating?page={id}(id=${ratings.getNumber()+1})}">Next</a>
-                            <a th:if="${!ratings.isHasNext()}">Next</a>
+                               th:href="@{/management/rating?page={id}(id=${ratings.getNumber()+1})}">[[#{greenCity.page.paging.next}]]</a>
+                            <a th:if="${!ratings.isHasNext()}">[[#{greenCity.page.paging.next}]]</a>
                         </li>
                         <li class="page-item"
                             th:classappend="${!ratings.isLast()} ? '' : 'disabled'">
