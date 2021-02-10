@@ -245,19 +245,38 @@ $(document).ready(function () {
         $('#deactivateOneSubmit').attr('href', href);
     });
     // Confirm deactivation button in deactivateUserModal
+
     $('#deactivateOneSubmit').on('click', function (event) {
         event.preventDefault();
+        let firstClick = document.getElementById("first-click");
+        let secondClick = document.getElementById("second-click");
+        let otherClick = document.getElementById("other");
+        let listReasons = [];
+        if (firstClick.checked === true) {
+            listReasons.push("inappropriate credo content in profile");
+        }
+        if (secondClick.checked === true) {
+            listReasons.push("inappropriate behavior in news publications");
+        }
+        if (otherClick.checked === true) {
+            listReasons.push($("input#othertext").val());
+        }
+        var date = {
+            list: listReasons,
+        }
         var href = $(this).attr('href');
         $.ajax({
             url: href,
             type: 'post',
+            data: JSON.stringify(date),
+            contentType: 'application/json',
             success: function (data) {
                 location.reload();
             },
         });
     });
 
-    // Deactivate user button (popup)
+    // Aactivate user button (popup)
     $('td .activate-user.eActBtn').on('click', function (event) {
         event.preventDefault();
         $('#activateUserModal').modal();
@@ -301,7 +320,7 @@ $(document).ready(function () {
         });
     });
 
-    $(".clickable-row").click(function () {
+    /*$(".clickable-row").click(function () {
         $('#userFriendsModal').modal();
         $('.modal-content').scrollTop(0);
         const href = $(this).attr("href");
@@ -318,5 +337,5 @@ $(document).ready(function () {
                     .append($('<td>').text(user.userStatus)));
             }
         })
-    });
+    });*/
 });

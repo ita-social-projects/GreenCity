@@ -15,7 +15,7 @@
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
                                         <input type="search" name="query" id="inputSearch" class="form-control"
-                                               placeholder="Search…">
+                                               th:placeholder="#{greenCity.pages.search}">
 
                                     </form>
                                 </span>
@@ -25,12 +25,12 @@
                     <img class="rounded-circle" th:src="@{/img/view-user.jpg}">
                 </div>
                 <div class="dropdown">
-                    <button class="dropbtn">En
+                    <button class="dropbtn">[[#{greenCity.current.language}]]
                         <i class="fas fa-caret-down"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="#">Ru</a>
-                        <a href="#">Ua</a>
+                        <a onclick="setLanguageUa()">Ua</a>
+                        <a onclick="setLanguageEn()">En</a>
                     </div>
                 </div>
             </div>
