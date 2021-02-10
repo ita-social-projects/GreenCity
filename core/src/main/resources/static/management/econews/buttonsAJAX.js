@@ -314,6 +314,7 @@ $(document).ready(function () {
         addFormInputValidate()
         if(formAddValid==true){
             //save request in addEcoNewsModal
+            document.getElementById("submitAddBtn").disabled=true;
             $.ajax({
                 url: '/management/eco-news/',
                 type: 'post',

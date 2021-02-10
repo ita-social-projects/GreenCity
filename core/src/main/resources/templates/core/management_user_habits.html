@@ -119,7 +119,9 @@
                                         class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
                                 <a th:href="@{/management/habits/delete/(id=${habit.id})}"
                                    class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
+                                                                   
                                                                                  data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
+                                <a th:href="@{/management/habit-shoping-list/?habitId={id}(id=${habit.id})}" > Goals </a>
                             </td>
                         </tr>
                         </tbody>
