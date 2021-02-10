@@ -11,11 +11,7 @@ import greencity.dto.goal.GoalRequestDto;
 import greencity.dto.goal.GoalResponseDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserGoalResponseDto;
-import greencity.entity.Goal;
-import greencity.entity.HabitAssign;
-import greencity.entity.Language;
-import greencity.entity.User;
-import greencity.entity.UserGoal;
+import greencity.entity.*;
 import greencity.entity.localization.GoalTranslation;
 import greencity.enums.EmailNotification;
 import greencity.enums.GoalStatus;
@@ -383,5 +379,46 @@ class GoalServiceImplTest {
         when(userGoalRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
 
         assertThrows(UserHasNoGoalsException.class, () -> goalService.getUserGoals(userId, 1L, "en"));
+    }
+
+    @Test
+    void getGoalByHabitIdTest() {
+        List<Long> listID = Collections.singletonList(1L);
+        Goal goal = ModelUtils.getUserGoal().getGoal();
+        List<Goal> goalList = Collections.singletonList(goal);
+        GoalManagementDto goalManagementDto = GoalManagementDto.builder()
+            .id(1L)
+            .build();
+        List<GoalManagementDto> goalManagementDtos = Collections.singletonList(goalManagementDto);
+
+        when(goalRepo.getAllGoalByHabitIdISContained(1L)).thenReturn(listID);
+        when(goalRepo.getGoalByListOfId(listID)).thenReturn(goalList);
+        when(modelMapper.map(goal, GoalManagementDto.class)).thenReturn(goalManagementDto);
+        assertEquals(goalManagementDtos, goalService.getGoalByHabitId(1L));
+
+    }
+
+    @Test
+    void findAllGoalForManagementPageNotContainedTest() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Goal goal = ModelUtils.getUserGoal().getGoal();
+        List<Goal> goalList = Collections.singletonList(goal);
+        List<Long> listID = Collections.singletonList(1L);
+        Page<Goal> goalPage = new PageImpl<>(goalList, pageable, goalList.size());
+        GoalManagementDto goalManagementDto = GoalManagementDto.builder()
+            .id(1L)
+            .build();
+        List<GoalManagementDto> dtoList = Collections.singletonList(goalManagementDto);
+        PageableAdvancedDto<GoalManagementDto> expected = new PageableAdvancedDto<>(dtoList, dtoList.size(),
+            0, 1, 0, false, false, true, true);
+
+        when(goalRepo.getAllGoalByHabitIdNotContained(1L)).thenReturn(listID);
+        when(goalRepo.getGoalByListOfIdPageable(listID, pageable)).thenReturn(goalPage);
+        when(modelMapper.map(goal, GoalManagementDto.class)).thenReturn(goalManagementDto);
+        PageableAdvancedDto<GoalManagementDto> actual =
+            goalService.findAllGoalForManagementPageNotContained(1L, pageable);
+        assertEquals(expected, actual);
     }
 }

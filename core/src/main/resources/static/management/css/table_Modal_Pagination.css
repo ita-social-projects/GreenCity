@@ -139,6 +139,9 @@ table.table td a.edit {
 table.table td a.delete {
     color: #E02116;
 }
+table.table td a.add {
+    color: #008000;
+}
 
 table.table td a.deactivate-user {
     color: #000000;
