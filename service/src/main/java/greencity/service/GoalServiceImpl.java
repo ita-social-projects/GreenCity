@@ -415,4 +415,24 @@ public class GoalServiceImpl implements GoalService {
         userGoalRepo.delete(userGoal);
         return id;
     }
+
+    @Override
+    public List<GoalManagementDto> getGoalByHabitId(Long habitId) {
+        List<Goal> goals = goalRepo.getGoalByListOfId(goalRepo.getAllGoalByHabitIdISContained(habitId));
+        return goals.stream()
+            .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageableAdvancedDto<GoalManagementDto> findAllGoalForManagementPageNotContained(Long habitId,
+        Pageable pageable) {
+        Page<Goal> goals =
+            goalRepo.getGoalByListOfIdPageable(goalRepo.getAllGoalByHabitIdNotContained(habitId), pageable);
+        List<GoalManagementDto> goalManagementDtos =
+            goals.getContent().stream()
+                .map(goal -> modelMapper.map(goal, GoalManagementDto.class))
+                .collect(Collectors.toList());
+        return getPagebleAdvancedDto(goalManagementDtos, goals);
+    }
 }

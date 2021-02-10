@@ -26,6 +26,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
     private final GoalTranslationRepo goalTranslationRepo;
+    private final GoalRepo goalRepo;
 
     /**
      * {@inheritDoc}
@@ -88,5 +89,27 @@ public class HabitServiceImpl implements HabitService {
             .stream()
             .map(g -> modelMapper.map(g, GoalDto.class))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public void addGoalToHabit(Long habitId, Long goalId) {
+        habitRepo.addShopingListItemToHabit(habitId, goalId);
+    }
+
+    @Override
+    public void deleteGoal(Long habitId, Long goalId) {
+        habitRepo.upadateShopingListItemInHabit(habitId, goalId);
+    }
+
+    @Override
+    public List<Long> deleteAllGoalByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> deleteGoal(habitId, id));
+        return listId;
+    }
+
+    @Override
+    public List<Long> addAllGoalByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> addGoalToHabit(habitId, id));
+        return listId;
     }
 }
