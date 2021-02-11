@@ -4,7 +4,6 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getHabitAssign;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
@@ -94,7 +93,7 @@ class HabitAssignServiceImplTest {
     void assignDefaultHabitForUserTest() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
@@ -103,7 +102,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findActiveHabitAssignsBetweenDatesTest() {
+    void findHabitAssignsBetweenDatesTest() {
         HabitAssign habit1 = ModelUtils.getHabitAssign();
         HabitAssign habit2 = ModelUtils.getHabitAssign();
         habit2.setId(2L);
@@ -132,11 +131,11 @@ class HabitAssignServiceImplTest {
                     new HabitEnrollDto(2L, "", "", false)))
                 .build());
 
-        when(habitAssignRepo.findAllActiveHabitAssignsBetweenDates(anyLong(),
+        when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
                 .thenReturn(habitAssignList);
 
-        assertEquals(dtos, habitAssignService.findActiveHabitAssignsBetweenDates(13L,
+        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }
@@ -145,7 +144,7 @@ class HabitAssignServiceImplTest {
     void assignCustomHabitForUserTest() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
@@ -155,17 +154,17 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findActiveHabitAssignByUserIdAndHabitIdTest() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+    void findHabitAssignByUserIdAndHabitIdTest() {
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
             HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.findActiveHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
+        assertEquals(habitAssignDto, habitAssignService.findHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
     }
 
     @Test
     void getAllHabitAssignsByUserIdAndAcquiredStatusTest() {
-        when(habitAssignRepo.findAllByUserIdAndActive(1L)).thenReturn(habitAssigns);
+        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, "en");
         assertEquals(habitAssignDtos, actual);
@@ -173,7 +172,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
@@ -184,7 +183,7 @@ class HabitAssignServiceImplTest {
     void enrollHabit() {
         HabitAssign habitAssign = getHabitAssign();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
         verify(habitAssignRepo).save(habitAssign);
@@ -193,7 +192,7 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabitThrowWrongIdException() {
         LocalDate localDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
             () -> habitAssignService.enrollHabit(1L, 1L, localDate));
     }
@@ -205,7 +204,7 @@ class HabitAssignServiceImplTest {
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         HabitStatusCalendarVO habitStatusCalendarVO = HabitStatusCalendarVO.builder()
             .enrollDate(enrollDate).build();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitAssignRepo.save(habitAssign)).thenReturn(habitAssign);
@@ -224,7 +223,7 @@ class HabitAssignServiceImplTest {
         LocalDate enrollDate = LocalDate.now();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
@@ -238,7 +237,7 @@ class HabitAssignServiceImplTest {
     @Test
     void unenrollHabitThrowWrongIdException() {
         LocalDate enrollDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {
             habitAssignService.unenrollHabit(1L, 1L, enrollDate);

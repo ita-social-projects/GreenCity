@@ -163,11 +163,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param user    {@link User} instance.
      */
     private void validateHabitForAssign(Long habitId, User user) {
-        if (habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, user.getId()).isPresent()) {
+        if (habitAssignRepo.findByHabitIdAndUserId(habitId, user.getId()).isPresent()) {
             throw new UserAlreadyHasHabitAssignedException(
                 ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
         }
-        if (habitAssignRepo.countHabitAssignsByUserIdAndSuspendedFalseAndAcquiredFalse(
+        if (habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(
             user.getId()) >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
             throw new UserAlreadyHasMaxNumberOfActiveHabitAssigns(
                 ErrorMessage.USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS
@@ -184,9 +184,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
+    public HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language) {
         HabitAssign habitAssign =
-            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+            habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
                 .orElseThrow(
                     () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                         + habitId));
@@ -198,7 +198,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language) {
-        return habitAssignRepo.findAllByUserIdAndActive(userId)
+        return habitAssignRepo.findAllByUserId(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -208,7 +208,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
         String language) {
-        return habitAssignRepo.findAllByHabitIdAndActive(habitId)
+        return habitAssignRepo.findAllByHabitId(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
@@ -219,7 +219,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
         HabitAssignStatDto dto) {
-        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
@@ -247,7 +247,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
@@ -336,7 +336,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto unenrollHabit(Long habitId, Long userId, LocalDate date) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                     + userId + ", " + habitId));
@@ -418,8 +418,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> findActiveHabitAssignsOnDate(Long userId, LocalDate date, String language) {
-        List<HabitAssign> list = habitAssignRepo.findAllActiveHabitAssignsOnDate(userId, date);
+    public List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language) {
+        List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
             habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -429,10 +429,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
 
-    public List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
-        String language) {
+    public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
+                                                                      String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
-            .findAllActiveHabitAssignsBetweenDates(userId, from, to);
+            .findAllHabitAssignsBetweenDates(userId, from, to);
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
             .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
             .collect(Collectors.toList());

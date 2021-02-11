@@ -36,18 +36,18 @@ public interface HabitAssignService {
         HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
-     * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id
-     * (not suspended).
+     * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
+     *
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
      * @return HabitAssignDto.
      */
-    HabitAssignDto findActiveHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
+    HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
 
     /**
-     * Method to find all active (not suspended) {@code HabitAssign}'s by
+     * Method to find all (not cancelled) {@code HabitAssign}'s by
      * {@code User} id and acquired status.
      *
      * @param userId   {@code User} id.
@@ -57,7 +57,7 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language);
 
     /**
-     * Method to find all active (not suspended) {@code HabitAssign}'s by
+     * Method to find all(not cancelled) {@code HabitAssign}'s by
      * {@code Habit} id and acquired status.
      *
      * @param habitId  {@code Habit} id.
@@ -74,12 +74,12 @@ public interface HabitAssignService {
     void deleteAllHabitAssignsByHabit(HabitVO habit);
 
     /**
-     * Method for updating {@code HabitAssign} in database by {@code Habit} and
+     * Method for updating inprogress {@code HabitAssign} in database by {@code Habit} and
      * {@code User} id's.
      *
      * @param habitId {@code Habit} id.
      * @param userId  {@code User} id.
-     * @param dto     {@link HabitAssignStatDto} dto with new suspended and acquired
+     * @param dto     {@link HabitAssignStatDto} dto with new cancelled and acquired
      *                status.
      * @return {@link HabitAssignManagementDto} instance.
      */
@@ -106,17 +106,17 @@ public interface HabitAssignService {
     HabitAssignDto unenrollHabit(Long habitId, Long userId, LocalDate dateTime);
 
     /**
-     * Method to find all active habit assigns on certain {@link LocalDate}.
+     * Method to find all inprogress habit assigns on certain {@link LocalDate}.
      *
      * @param userId   {@code User} id.
      * @param date     {@link LocalDate} instance.
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto} instances.
      */
-    List<HabitAssignDto> findActiveHabitAssignsOnDate(Long userId, LocalDate date, String language);
+    List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language);
 
     /**
-     * Method to find all active habit assigns between 2 {@link LocalDate}s.
+     * Method to find all inprogress, acquired habit assigns between 2 {@link LocalDate}s.
      *
      * @param userId   {@code User} id.
      * @param from     {@link LocalDate} instance.
@@ -124,8 +124,8 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto} instances.
      */
-    List<HabitsDateEnrollmentDto> findActiveHabitAssignsBetweenDates(Long userId,
-        LocalDate from, LocalDate to, String language);
+    List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId,
+                                                               LocalDate from, LocalDate to, String language);
 
     /**
      * Method add default habit.

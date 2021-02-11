@@ -91,12 +91,12 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void getActiveHabitAssignBetweenDatesTest() throws Exception {
+    void getHabitAssignBetweenDatesTest() throws Exception {
         Locale locale = new Locale("en", "US");
         mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", LocalDate.now(), LocalDate.now().plusDays(2L)))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findActiveHabitAssignsBetweenDates(null, LocalDate.now(),
+        verify(habitAssignService).findHabitAssignsBetweenDates(null, LocalDate.now(),
             LocalDate.now().plusDays(2L), "en");
     }
 }
