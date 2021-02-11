@@ -65,7 +65,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      */
     @Query("SELECT ha FROM HabitAssign ha "
         + "WHERE ha.habit.id = :habitId AND ha.user.id = :userId "
-        + "AND DATE(ha.createDate) = :dateTime")
+        + "AND DATE(ha.createDate) = :dateTime AND upper(ha.status) <> 'CANCELLED'")
     Optional<HabitAssign> findByHabitIdAndUserIdAndCreateDate(@Param("habitId") Long habitId,
         @Param("userId") Long userId,
         @Param("dateTime") ZonedDateTime dateTime);
@@ -81,6 +81,21 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + " JOIN FETCH ht.language l"
         + " WHERE ha.user.id = :userId AND (upper(ha.status) = 'INPROGRESS' OR upper(ha.status) = 'ACQUIRED')")
     List<HabitAssign> findAllByUserIdAndActive(@Param("userId") Long userId);
+
+    /**
+     * Method to find {@link HabitAssign}'s by {@link User} and {@link Habit} id's
+     * and INPROGRESS status.
+     *
+     * @param habitId {@link Habit} id.
+     * @param userId  {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    Optional<HabitAssign> findByHabitIdAndUserIdAndStatusIsInprogress(@Param("habitId") Long habitId,
+        @Param("userId") Long userId);
 
     /**
      * Method to find all {@link HabitAssign}'s by {@link Habit} id and acquired
@@ -106,7 +121,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT ha FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE h.id = :habitId AND ha.user.id = :userId")
+        + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) <> 'CANCELLED'")
     Optional<HabitAssign> findByHabitIdAndUserIdAndSuspendedFalse(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
