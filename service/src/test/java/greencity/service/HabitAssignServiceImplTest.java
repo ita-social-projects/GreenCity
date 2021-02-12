@@ -174,7 +174,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,

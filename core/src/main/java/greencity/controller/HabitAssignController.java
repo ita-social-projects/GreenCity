@@ -173,7 +173,7 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to update inprogress {@link HabitAssignVO} for it's {@link HabitVO} id and
+     * Method to update inprogress, acquired {@link HabitAssignVO} for it's {@link HabitVO} id and
      * current user.
      *
      * @param userVO             {@link UserVO} instance.
@@ -181,7 +181,7 @@ public class HabitAssignController {
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    @ApiOperation(value = "Update inprogress user habit assign acquired or cancelled status.")
+    @ApiOperation(value = "Update inprogress, acquired user habit assign acquired or cancelled status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

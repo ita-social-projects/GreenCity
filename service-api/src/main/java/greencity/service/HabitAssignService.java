@@ -74,7 +74,7 @@ public interface HabitAssignService {
     void deleteAllHabitAssignsByHabit(HabitVO habit);
 
     /**
-     * Method for updating inprogress {@code HabitAssign} in database by {@code Habit} and
+     * Method for updating inprogress, acquired {@code HabitAssign} in database by {@code Habit} and
      * {@code User} id's.
      *
      * @param habitId {@code Habit} id.
