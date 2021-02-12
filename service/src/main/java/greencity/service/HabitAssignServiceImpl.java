@@ -430,7 +430,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
 
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
-                                                                      String language) {
+        String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
             .findAllHabitAssignsBetweenDates(userId, from, to);
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))

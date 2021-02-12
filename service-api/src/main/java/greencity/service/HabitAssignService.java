@@ -47,8 +47,8 @@ public interface HabitAssignService {
     HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
 
     /**
-     * Method to find all (not cancelled) {@code HabitAssign}'s by
-     * {@code User} id and acquired status.
+     * Method to find all (not cancelled) {@code HabitAssign}'s by {@code User} id
+     * and acquired status.
      *
      * @param userId   {@code User} id.
      * @param language {@link String} of language code value.
@@ -57,8 +57,8 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language);
 
     /**
-     * Method to find all(not cancelled) {@code HabitAssign}'s by
-     * {@code Habit} id and acquired status.
+     * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
+     * and acquired status.
      *
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
@@ -74,8 +74,8 @@ public interface HabitAssignService {
     void deleteAllHabitAssignsByHabit(HabitVO habit);
 
     /**
-     * Method for updating inprogress, acquired {@code HabitAssign} in database by {@code Habit} and
-     * {@code User} id's.
+     * Method for updating inprogress, acquired {@code HabitAssign} in database by
+     * {@code Habit} and {@code User} id's.
      *
      * @param habitId {@code Habit} id.
      * @param userId  {@code User} id.
@@ -116,7 +116,8 @@ public interface HabitAssignService {
     List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2 {@link LocalDate}s.
+     * Method to find all inprogress, acquired habit assigns between 2
+     * {@link LocalDate}s.
      *
      * @param userId   {@code User} id.
      * @param from     {@link LocalDate} instance.
@@ -125,7 +126,7 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto} instances.
      */
     List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId,
-                                                               LocalDate from, LocalDate to, String language);
+        LocalDate from, LocalDate to, String language);
 
     /**
      * Method add default habit.

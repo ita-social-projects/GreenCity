@@ -41,7 +41,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + " WHERE ha.user.id = :userId AND upper(ha.status) <> 'CANCELLED'")
     List<HabitAssign> findAllByUserId(@Param("userId") Long userId);
 
-
     /**
      * Method to find all {@link HabitAssign} by {@link Habit} id (not cancelled).
      *
@@ -98,7 +97,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + " JOIN FETCH ht.language l"
         + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) <> 'CANCELLED'")
     Optional<HabitAssign> findByHabitIdAndUserId(@Param("habitId") Long habitId,
-                                                 @Param("userId") Long userId);
+        @Param("userId") Long userId);
 
     /**
      * Method for counting all {@link HabitAssign}'s by {@link User} id (with not
@@ -113,8 +112,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     int countHabitAssignsByUserIdAndCancelledFalse(Long userId);
 
     /**
-     * Method for counting all inprogress {@link HabitAssign}'s by {@link User} id (with
-     * not cancelled and not acquired status).
+     * Method for counting all inprogress {@link HabitAssign}'s by {@link User} id
+     * (with not cancelled and not acquired status).
      *
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
@@ -160,7 +159,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllInprogressHabitAssignsOnDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2 {@link LocalDate}s.
+     * Method to find all inprogress, acquired habit assigns between 2
+     * {@link LocalDate}s.
      *
      * @param userId {@link User} id.
      * @param from   {@link LocalDate} instance.
@@ -175,5 +175,5 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
         + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date)")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
-                                                      @Param("to") LocalDate to);
+        @Param("to") LocalDate to);
 }

@@ -98,7 +98,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for current user.
+     * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for
+     * current user.
      *
      * @param userVO {@link UserVO} instance.
      * @param locale needed language code.
@@ -123,8 +124,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return all inprogress, acquired {@link HabitAssignDto} by it's {@link HabitVO}
-     * id.
+     * Method to return all inprogress, acquired {@link HabitAssignDto} by it's
+     * {@link HabitVO} id.
      *
      * @param habitId {@link HabitVO} id.
      * @param locale  needed language code.
@@ -173,8 +174,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to update inprogress, acquired {@link HabitAssignVO} for it's {@link HabitVO} id and
-     * current user.
+     * Method to update inprogress, acquired {@link HabitAssignVO} for it's
+     * {@link HabitVO} id and current user.
      *
      * @param userVO             {@link UserVO} instance.
      * @param habitId            {@link HabitVO} id.
@@ -241,7 +242,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to find all inprogress {@link HabitAssignVO} on certain {@link LocalDate}.
+     * Method to find all inprogress {@link HabitAssignVO} on certain
+     * {@link LocalDate}.
      *
      * @param userVO {@link UserVO} user.
      * @param date   {@link LocalDate} date to check if has inprogress assigns.
@@ -272,8 +274,10 @@ public class HabitAssignController {
      * {@link LocalDate}s.
      *
      * @param userVO {@link UserVO} user.
-     * @param from   {@link LocalDate} date to check if has inprogress, acquired assigns.
-     * @param to     {@link LocalDate} date to check if has inprogress, acquired assigns.
+     * @param from   {@link LocalDate} date to check if has inprogress, acquired
+     *               assigns.
+     * @param to     {@link LocalDate} date to check if has inprogress, acquired
+     *               assigns.
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */
