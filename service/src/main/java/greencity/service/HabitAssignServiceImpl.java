@@ -526,7 +526,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method to set {@link HabitAssignVO} status from inprogress to cancelled.
+     * Method to set {@link HabitAssign} status from inprogress to cancelled.
      *
      * @param habitId - id of {@link HabitVO}.
      * @param userId  - id of {@link UserVO}.

@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static greencity.ModelUtils.getHabitAssignDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -242,5 +244,18 @@ class HabitAssignServiceImplTest {
         assertThrows(NotFoundException.class, () -> {
             habitAssignService.unenrollHabit(1L, 1L, enrollDate);
         });
+    }
+
+    @Test
+    void cancelHabitAssignTest() {
+        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+
+        assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
+
+        verify(habitAssignRepo).save(habitAssign);
     }
 }
