@@ -10,6 +10,7 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import javax.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @RequiredArgsConstructor
+@Setter
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;

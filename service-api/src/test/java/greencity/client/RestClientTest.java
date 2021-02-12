@@ -57,8 +57,10 @@ class RestClientTest {
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_FIND_BY_EMAIL
+        when(restTemplate.exchange("https://www.greencity.com.ua" + RestTemplateLinks.USER_FIND_BY_EMAIL
             + RestTemplateLinks.EMAIL + "taras@gmail.com", HttpMethod.GET,
             entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
 
@@ -104,8 +106,10 @@ class RestClientTest {
         List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
         PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        when(restTemplate.exchange("https://www.greencity.com.ua"
             + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
             + RestTemplateLinks.SIZE + pageable.getPageSize()
             + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
@@ -204,8 +208,10 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        when(restTemplate.exchange("https://www.greencity.com.ua"
             + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
             + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class))
                 .thenReturn(ResponseEntity.ok(1L));
