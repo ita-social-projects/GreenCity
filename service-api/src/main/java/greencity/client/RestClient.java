@@ -34,10 +34,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @RequiredArgsConstructor
-@Setter
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;
+    @Setter
     @Value("${greencityuser.server.address}")
     private String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
