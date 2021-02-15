@@ -107,7 +107,7 @@ class TipsAndTricksCommentControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(restClient).findByEmail(eq("test@gmail.com"));
+        verify(restClient).findByEmail("test@gmail.com");
         verify(tipsAndTricksCommentService).findAllComments(pageable, userVO, 1L);
     }
 
