@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import greencity.entity.localization.AdviceTranslation;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -11,8 +11,8 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"adviceTranslations", "goalTranslations", "habitTranslations"})
-@ToString(exclude = {"adviceTranslations", "goalTranslations", "habitTranslations"})
+@EqualsAndHashCode(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
+@ToString(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
 @Builder
 public class Language {
     @Id
@@ -29,7 +29,7 @@ public class Language {
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<GoalTranslation> goalTranslations;
+    private List<ShoppingListItemTranslation> shoppingListItemTranslations;
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;

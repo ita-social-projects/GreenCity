@@ -76,7 +76,7 @@ VALUES ('Choose eco-transport', 1, 'DONE', '2020-09-10 20:00:001'),
        ('Use paper cups', 3, 'ACTIVE', null),
        ('Buy only loose tea', 3, 'ACTIVE', null);
 
-INSERT INTO goals (id)
+INSERT INTO shoppingListItems (id)
 VALUES (1), (2), (3),
        (4), (5), (6),
        (7), (8), (9), (10);

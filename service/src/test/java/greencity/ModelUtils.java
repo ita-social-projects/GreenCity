@@ -79,29 +79,20 @@ import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.RecommendedFriendDto;
-import greencity.dto.user.UserGoalResponseDto;
-import greencity.dto.user.UserGoalVO;
+import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.UsersFriendDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.*;
+import greencity.entity.AchievementCategory;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.GoalStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.PlaceStatus;
-import greencity.enums.Role;
-import greencity.enums.TagType;
-import greencity.enums.UserStatus;
+import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -286,13 +277,14 @@ public class ModelUtils {
             "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()));
     }
 
-    public static GoalTranslation getGoalTranslation() {
-        return GoalTranslation.builder()
+    public static ShoppingListItemTranslation getShoppingListItemTranslation() {
+        return ShoppingListItemTranslation.builder()
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+            .shoppingListItem(
+                new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
@@ -338,7 +330,7 @@ public class ModelUtils {
                     .build()))
                 .build())
             .user(getUser())
-            .userGoals(new ArrayList<>())
+            .userShoppingListItems(new ArrayList<>())
             .workingDays(0)
             .duration(0)
             .habitStreak(0)
@@ -367,45 +359,48 @@ public class ModelUtils {
         return HabitVO.builder().id(1L).image("img.png").build();
     }
 
-    public static UserGoal getCustomUserGoal() {
-        return UserGoal.builder()
+    public static UserShoppingListItem getCustomUserShoppingListItem() {
+        return UserShoppingListItem.builder()
             .id(1L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(GoalStatus.DONE)
+            .status(ShoppingListItemStatus.DONE)
             .build();
     }
 
-    public static UserGoalResponseDto getCustomUserGoalDto() {
-        return UserGoalResponseDto.builder()
+    public static UserShoppingListItemResponseDto getCustomUserShoppingListItemDto() {
+        return UserShoppingListItemResponseDto.builder()
             .id(1L)
             .text("Buy electric car")
-            .status(GoalStatus.ACTIVE)
+            .status(ShoppingListItemStatus.ACTIVE)
             .build();
     }
 
-    public static UserGoal getPredefinedUserGoal() {
-        return UserGoal.builder()
+    public static UserShoppingListItem getPredefinedUserShoppingListItem() {
+        return UserShoppingListItem.builder()
             .id(2L)
             .habitAssign(HabitAssign.builder().id(1L).build())
-            .status(GoalStatus.ACTIVE)
-            .goal(Goal.builder().id(1L).userGoals(Collections.emptyList()).translations(getGoalTranslations()).build())
+            .status(ShoppingListItemStatus.ACTIVE)
+            .shoppingListItem(ShoppingListItem.builder().id(1L).userShoppingListItems(Collections.emptyList())
+                .translations(
+                    getShoppingListItemTranslations())
+                .build())
             .build();
     }
 
-    public static UserGoalVO getUserGoalVO() {
-        return UserGoalVO.builder()
+    public static UserShoppingListItemVO getUserShoppingListItemVO() {
+        return UserShoppingListItemVO.builder()
             .id(1L)
             .habitAssign(HabitAssignVO.builder()
                 .id(1L)
                 .build())
-            .status(GoalStatus.DONE)
+            .status(ShoppingListItemStatus.DONE)
             .build();
     }
 
-    public static UserGoal getUserGoal() {
-        return UserGoal.builder()
+    public static UserShoppingListItem getUserShoppingListItem() {
+        return UserShoppingListItem.builder()
             .id(1L)
-            .status(GoalStatus.DONE)
+            .status(ShoppingListItemStatus.DONE)
             .habitAssign(HabitAssign.builder()
                 .id(1L)
                 .status(HabitAssignStatus.ACQUIRED)
@@ -414,38 +409,40 @@ public class ModelUtils {
                 .lastEnrollmentDate(ZonedDateTime.now())
                 .workingDays(5)
                 .build())
-            .goal(Goal.builder()
+            .shoppingListItem(ShoppingListItem.builder()
                 .id(1L)
                 .build())
             .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
             .build();
     }
 
-    public static UserGoalResponseDto getPredefinedUserGoalDto() {
-        return UserGoalResponseDto.builder()
+    public static UserShoppingListItemResponseDto getPredefinedUserShoppingListItemDto() {
+        return UserShoppingListItemResponseDto.builder()
             .id(2L)
             .text("Buy a bamboo toothbrush")
-            .status(GoalStatus.ACTIVE)
+            .status(ShoppingListItemStatus.ACTIVE)
             .build();
     }
 
-    public static List<GoalTranslation> getGoalTranslations() {
+    public static List<ShoppingListItemTranslation> getShoppingListItemTranslations() {
         return Arrays.asList(
-            GoalTranslation.builder()
+            ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
-                .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .shoppingListItem(
+                    new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build(),
-            GoalTranslation.builder()
+            ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
-                .goal(new Goal(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .shoppingListItem(
+                    new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build());
     }
 
