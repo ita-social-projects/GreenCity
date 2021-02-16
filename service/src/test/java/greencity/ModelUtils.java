@@ -14,36 +14,16 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.factoftheday.FactOfTheDayDTO;
-import greencity.dto.factoftheday.FactOfTheDayPostDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
-import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
-import greencity.dto.factoftheday.FactOfTheDayVO;
+import greencity.dto.econews.*;
+import greencity.dto.econewscomment.*;
+import greencity.dto.factoftheday.*;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactDto;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactUpdateDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -52,27 +32,13 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
-import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.tag.TagDto;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagTranslationDto;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagViewDto;
-import greencity.dto.tipsandtricks.TextTranslationDTO;
-import greencity.dto.tipsandtricks.TextTranslationVO;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
-import greencity.dto.tipsandtricks.TitleTranslationEmbeddedPostDTO;
-import greencity.dto.tipsandtricks.TitleTranslationVO;
+import greencity.dto.tag.*;
+import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
@@ -80,42 +46,21 @@ import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.entity.AchievementCategory;
 import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.GoalStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.PlaceStatus;
-import greencity.enums.Role;
-import greencity.enums.TagType;
-import greencity.enums.UserStatus;
-import greencity.message.AddEcoNewsMessage;
-import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
-import greencity.message.SendReportEmailMessage;
+import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.time.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -1202,20 +1147,6 @@ public class ModelUtils {
             "endDate", "tag");
     }
 
-    public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
-        return NewsSubscriberResponseDto.builder()
-            .email("test@gmail.com")
-            .unsubscribeToken("someUnsubscribeToken")
-            .build();
-    }
-
-    public static AddEcoNewsMessage getAddEcoNewsMessage() {
-        return AddEcoNewsMessage.builder()
-            .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
-            .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
-            .build();
-    }
-
     public static HabitDto getHabitDto() {
         return HabitDto.builder()
             .id(1L)
@@ -1223,53 +1154,6 @@ public class ModelUtils {
             .habitTranslation(new HabitTranslationDto())
             .defaultDuration(1)
             .tags(new ArrayList<>())
-            .build();
-    }
-
-    public static CategoryDto getCategoryDto() {
-        return CategoryDto.builder()
-            .name("name")
-            .parentCategoryId(1L)
-            .build();
-    }
-
-    public static PlaceNotificationDto getPlaceNotificationDto() {
-        return PlaceNotificationDto.builder()
-            .category(getCategoryDto())
-            .name("name")
-            .build();
-    }
-
-    public static SendReportEmailMessage getSendReportEmailMessage() {
-        return SendReportEmailMessage.builder()
-            .emailNotification("notification")
-            .categoriesDtoWithPlacesDtoMap(Collections.singletonMap(
-                getCategoryDto(), Collections.singletonList(getPlaceNotificationDto())))
-            .subscribers(Collections.singletonList(getPlaceAuthorDto()))
-            .build();
-    }
-
-    private static PlaceAuthorDto getPlaceAuthorDto() {
-        return PlaceAuthorDto.builder()
-            .id(1L)
-            .email("test@gmail.com")
-            .name("taras")
-            .build();
-    }
-
-    public static SendChangePlaceStatusEmailMessage getSendChangePlaceStatusEmailMessage() {
-        return SendChangePlaceStatusEmailMessage.builder()
-            .placeStatus("status")
-            .authorEmail("test@gmail.com")
-            .placeName("placeName")
-            .authorFirstName("taras")
-            .build();
-    }
-
-    public static SendHabitNotification getSendHabitNotification() {
-        return SendHabitNotification.builder()
-            .email("test@gmail.com")
-            .name("taras")
             .build();
     }
 }
