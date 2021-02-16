@@ -443,13 +443,8 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     public PageableAdvancedDto<ShoppingListItemManagementDto> findAllShoppingListItemsForManagementPageNotContained(
         Long habitId,
         Pageable pageable) {
-        System.out.println("+++++++++++++++++++++");
         List<Long> items =
             shoppingListItemRepo.getAllShoppingListItemsByHabitIdNotContained(habitId);
-        System.out.println("===============================");
-        for (Long i : items) {
-            System.out.println(i);
-        }
         Page<ShoppingListItem> shoppingListItems =
             shoppingListItemRepo
                 .getShoppingListByListOfIdPageable(items, pageable);
