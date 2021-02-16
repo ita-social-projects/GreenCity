@@ -35,17 +35,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @RequiredArgsConstructor
 @Component
