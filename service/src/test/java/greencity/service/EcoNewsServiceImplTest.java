@@ -1,11 +1,13 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
+
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
-import static greencity.constant.AppConstant.AUTHORIZATION;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.*;
@@ -30,14 +32,12 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,9 +46,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
     @Mock
@@ -56,9 +53,6 @@ class EcoNewsServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
-
-    @Mock
-    RabbitTemplate rabbitTemplate;
 
     @Mock
     NewsSubscriberService newsSubscriberService;
@@ -112,8 +106,7 @@ class EcoNewsServiceImplTest {
 
         addEcoNewsDtoResponse.setTitle("Title");
 
-        verify(rabbitTemplate).convertAndSend(null, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
+        verify(restClient).addEcoNews(new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
     }
 
     @Test

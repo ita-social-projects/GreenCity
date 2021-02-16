@@ -20,7 +20,6 @@
         <module>core</module>
         <module>service-api</module>
         <module>dao</module>
-        <module>email</module>
         <module>service</module>
         <module>chat</module>
     </modules>
