@@ -1,14 +1,28 @@
 package greencity.client;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
+import greencity.dto.place.PlaceVO;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
+import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,17 +35,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @RequiredArgsConstructor
 @Component
@@ -276,6 +280,64 @@ public class RestClient {
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, setHeader());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send AddEcoNewsMessage to GreenCityUser.
+     *
+     * @param addEcoNewsMessage with information for sending email about adding new
+     *                          eco news.
+     * @author Taras Kavkalo
+     */
+    public void addEcoNews(AddEcoNewsMessage addEcoNewsMessage) {
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(addEcoNewsMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendReportEmailMessage to GreenCityUser.
+     *
+     * @param reportEmailMessage with information for sending email report about new
+     *                           places.
+     * @author Taras Kavkalo
+     */
+    public void sendReport(SendReportEmailMessage reportEmailMessage) {
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendChangePlaceStatusEmailMessage to GreenCityUser.
+     *
+     * @param changePlaceStatusEmailMessage with information for sending email
+     *                                      during status update for {@link PlaceVO}
+     *                                      when PlaceStatus.PROPOSED.
+     * @author Taras Kavkalo
+     */
+    public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
+        HttpEntity<SendChangePlaceStatusEmailMessage> entity =
+            new HttpEntity<>(changePlaceStatusEmailMessage, setHeader());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
+            .getBody();
+    }
+
+    /**
+     * send SendHabitNotification to GreenCityUser.
+     *
+     * @param sendHabitNotification with information for sending email to each user
+     *                              that hasn't marked any habit during some period.
+     * @author Taras Kavkalo
+     */
+    public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, new HttpHeaders());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
             .getBody();
     }
 

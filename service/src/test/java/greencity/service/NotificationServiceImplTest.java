@@ -1,6 +1,11 @@
 package greencity.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.place.PlaceNotificationDto;
@@ -24,11 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class NotificationServiceImplTest {
@@ -46,7 +47,7 @@ class NotificationServiceImplTest {
     private UserRepo userRepo;
 
     @Mock
-    private RabbitTemplate rabbitTemplate;
+    private RestClient restClient;
 
     @Test
     void sendImmediatelyReportTest() {
@@ -80,8 +81,8 @@ class NotificationServiceImplTest {
 
         notificationService.sendImmediatelyReport(place);
 
-        verify(rabbitTemplate, Mockito.times(1))
-            .convertAndSend(any(), anyString(), any(SendReportEmailMessage.class));
+        verify(restClient, Mockito.times(1))
+            .sendReport(any(SendReportEmailMessage.class));
     }
 
     @Test
@@ -118,8 +119,8 @@ class NotificationServiceImplTest {
 
         notificationService.sendDailyReport();
 
-        verify(rabbitTemplate, Mockito.times(1))
-            .convertAndSend(any(), anyString(), any(SendReportEmailMessage.class));
+        verify(restClient, Mockito.times(1))
+            .sendReport(any(SendReportEmailMessage.class));
 
     }
 
@@ -157,8 +158,8 @@ class NotificationServiceImplTest {
 
         notificationService.sendWeeklyReport();
 
-        verify(rabbitTemplate, Mockito.times(1))
-            .convertAndSend(any(), anyString(), any(SendReportEmailMessage.class));
+        verify(restClient, Mockito.times(1))
+            .sendReport(any(SendReportEmailMessage.class));
 
     }
 
@@ -196,7 +197,7 @@ class NotificationServiceImplTest {
 
         notificationService.sendMonthlyReport();
 
-        verify(rabbitTemplate, Mockito.times(1))
-            .convertAndSend(any(), anyString(), any(SendReportEmailMessage.class));
+        verify(restClient, Mockito.times(1))
+            .sendReport(any(SendReportEmailMessage.class));
     }
 }

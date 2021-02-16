@@ -1,14 +1,13 @@
 package greencity.service;
 
 import greencity.repository.UserRepo;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +21,7 @@ public class GraphServiceImpl implements GraphService {
     @Override
     public Map<String, Integer> getGeneralStatisticsForAllUsersByCities() {
         List<String> userCities = userRepo.findAllUsersCities();
+
         Map<String, Integer> map = new HashMap<>();
         map.put(OTHER_CITY, 0);
 

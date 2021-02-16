@@ -1,5 +1,10 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
@@ -15,9 +20,22 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
-import greencity.dto.place.*;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -29,7 +47,13 @@ import greencity.repository.options.PlaceFilter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,16 +63,10 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 @Slf4j
 class PlaceServiceImplTest {
@@ -145,8 +163,7 @@ class PlaceServiceImplTest {
     private DiscountService discountService;
     @Mock
     private NotificationService notificationService;
-    @Mock
-    private RabbitTemplate rabbitTemplate;
+
     @Mock
     private CategoryRepo categoryRepo;
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
@@ -157,7 +174,7 @@ class PlaceServiceImplTest {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, restClient, openingHoursService, discountService,
-            notificationService, zoneId, rabbitTemplate, proposePlaceMapper, categoryRepo);
+            notificationService, zoneId, proposePlaceMapper, categoryRepo);
     }
 
     @Test
@@ -180,7 +197,6 @@ class PlaceServiceImplTest {
     void updateStatusTest() {
         Place genericEntity = ModelUtils.getPlace();
         PlaceVO placeVO = ModelUtils.getPlaceVO();
-        doNothing().when(rabbitTemplate).convertAndSend((Object) any(), any(), any());
         when(modelMapper.map(genericEntity, PlaceVO.class)).thenReturn(placeVO);
         when(modelMapper.map(placeVO, Place.class)).thenReturn(genericEntity);
         when(placeRepo.findById(anyLong())).thenReturn(Optional.of(genericEntity));
