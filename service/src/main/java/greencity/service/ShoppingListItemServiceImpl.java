@@ -425,15 +425,8 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
 
     @Override
     public List<ShoppingListItemManagementDto> getShoppingListByHabitId(Long habitId) {
-        System.out.println("''''''''''''''''''''''");
         List<Long> idList =
             shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
-        System.out.println("======================");
-        for (Long i : idList) {
-            System.out.println(i);
-        }
-        System.out.println(idList.size());
-
         List<ShoppingListItem> shoppingListItems;
         if (!idList.isEmpty()) {
             shoppingListItems = shoppingListItemRepo.getShoppingListByListOfId(idList);
@@ -441,7 +434,6 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
             shoppingListItems = new ArrayList<>();
         }
 
-        System.out.println("---------------------------------");
         return shoppingListItems.stream()
             .map(listItem -> modelMapper.map(listItem, ShoppingListItemManagementDto.class))
             .collect(Collectors.toList());

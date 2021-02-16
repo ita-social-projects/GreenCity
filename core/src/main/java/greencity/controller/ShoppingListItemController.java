@@ -119,7 +119,8 @@ public class ShoppingListItemController {
     @ApiLocale
     public ResponseEntity<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(
         @ApiIgnore @CurrentUser UserVO user,
-        @ApiParam("Id of the UserShoppingListItems that belongs to current user. Cannot be empty.") @PathVariable Long userShoppingListItemId,
+        @ApiParam("Id of the UserShoppingListItems that belongs to current user. Cannot be empty.")
+        @PathVariable Long userShoppingListItemId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity
             .status(HttpStatus.CREATED)

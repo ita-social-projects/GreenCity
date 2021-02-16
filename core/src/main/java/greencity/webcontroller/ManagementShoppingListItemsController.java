@@ -62,8 +62,6 @@ public class ManagementShoppingListItemsController {
     public GenericResponseDto save(@Valid @RequestBody ShoppingListItemPostDto shoppingListItemPostDto,
         BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            System.out.println("=====================");
-            System.out.println(shoppingListItemPostDto.toString());
             shoppingListItemService.saveShoppingListItem(shoppingListItemPostDto);
         }
         return GenericResponseDto.buildGenericResponseDto(bindingResult);
