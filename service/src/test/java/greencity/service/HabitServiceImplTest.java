@@ -1,19 +1,20 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.goal.GoalDto;
 import greencity.dto.habit.HabitDto;
+import greencity.entity.Goal;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.GoalTranslation;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,6 +40,8 @@ class HabitServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private GoalTranslationRepo goalTranslationRepo;
+    @Mock
+    private GoalRepo goalRepo;
     @InjectMocks
     private HabitServiceImpl habitService;
 
@@ -110,5 +113,35 @@ class HabitServiceImplTest {
         when(goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode("en", 1l))
             .thenReturn(goalTranslations);
         assertEquals(goalDtos, habitService.getShoppingListForHabit(1L, "en"));
+    }
+
+    @Test
+    void addGoalToHabitTest() {
+        doNothing().when(habitRepo).addShopingListItemToHabit(1L, 1L);
+        habitService.addGoalToHabit(1L, 1L);
+        verify(habitRepo).addShopingListItemToHabit(1L, 1L);
+    }
+
+    @Test
+    void deleteGoalTest() {
+        doNothing().when(habitRepo).upadateShopingListItemInHabit(1L, 1L);
+        habitService.deleteGoal(1L, 1L);
+        verify(habitRepo).upadateShopingListItemInHabit(1L, 1L);
+    }
+
+    @Test
+    void addAllGoalToHabitTest() {
+        List<Long> listID = Collections.singletonList(1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        habitService.addAllGoalByListOfId(1L, listID);
+        verify(habitRepo, times(1)).addShopingListItemToHabit(listID.get(0), 1L);
+    }
+
+    @Test
+    void deleteAllGoalToHabitTest() {
+        List<Long> listID = Collections.singletonList(1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        habitService.deleteAllGoalByListOfId(1L, listID);
+        verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.get(0), 1L);
     }
 }

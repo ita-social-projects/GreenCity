@@ -55,12 +55,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.GoalTranslation;
-import greencity.enums.CommentStatus;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.Role;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -603,5 +598,24 @@ public class ModelUtils {
         return new AchievementVO(1L, getAchievementTranslationVOS(),
             Collections.singletonList(new UserAchievementVO()),
             new AchievementCategoryVO(1L, "name", null, null), 1);
+    }
+
+    public static UserGoal getUserGoal() {
+        return UserGoal.builder()
+            .id(1L)
+            .status(GoalStatus.DONE)
+            .habitAssign(HabitAssign.builder()
+                .id(1L)
+                .status(HabitAssignStatus.ACQUIRED)
+                .habitStreak(10)
+                .duration(300)
+                .lastEnrollmentDate(ZonedDateTime.now())
+                .workingDays(5)
+                .build())
+            .goal(Goal.builder()
+                .id(1L)
+                .build())
+            .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
+            .build();
     }
 }

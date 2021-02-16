@@ -42,12 +42,17 @@ body {
     border-bottom: 1px solid #b4b4b4;
     border-top: 1px solid #b4b4b4;
 }
-
+.text-describe{
+    height: 38px;
+    width: 323px;
+}
 .buttons {
-    margin-left: 740px;
+    padding-left: 600px;
 }
 
-
+.username{
+    width: 200px;
+}
 .table-title .btn-group {
     float: right;
 }
@@ -138,6 +143,9 @@ table.table td a.edit {
 
 table.table td a.delete {
     color: #E02116;
+}
+table.table td a.add {
+    color: #008000;
 }
 
 table.table td a.deactivate-user {
@@ -490,6 +498,11 @@ table.table .avatar {
     text-align: center;
     margin: auto;
     color: #d12a24;
+}
+.modal-title-act{
+    text-align: center;
+    margin: auto;
+    color: #13aa57;
 }
 
 .modal .modal-header, .modal .modal-body, .modal .modal-footer {

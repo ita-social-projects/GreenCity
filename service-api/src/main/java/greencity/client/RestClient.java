@@ -24,6 +24,7 @@ import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -35,10 +36,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 @RequiredArgsConstructor
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;
+    @Setter
     @Value("${greencityuser.server.address}")
     private String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
@@ -51,8 +64,9 @@ public class RestClient {
      */
     public UserVO findByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_EMAIL + RestTemplateLinks.EMAIL + email, HttpMethod.GET,
+        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_BY_EMAIL).queryParam("email", email);
+        return restTemplate.exchange(url.toUriString(), HttpMethod.GET,
             entity, UserVO.class).getBody();
     }
 
@@ -121,10 +135,12 @@ public class RestClient {
      */
     public PageableAdvancedDto<UserManagementDto> searchBy(Pageable pageable, String query) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize()
-            + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
+        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
+            + RestTemplateLinks.SEARCH_BY)
+            .queryParam("page", pageable.getPageNumber())
+            .queryParam("size", pageable.getPageSize())
+            .queryParam("query", query);
+        return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
     }
@@ -198,10 +214,9 @@ public class RestClient {
      */
     public Long findIdByEmail(String email) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
-            + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class)
-            .getBody();
+        UriComponentsBuilder url = UriComponentsBuilder.fromHttpUrl(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_ID_BY_EMAIL).queryParam("email", email);
+        return restTemplate.exchange(url.toUriString(), HttpMethod.GET, entity, Long.class).getBody();
     }
 
     /**

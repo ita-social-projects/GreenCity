@@ -13,9 +13,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations", "tags"})
+    exclude = {"habitAssigns", "habitTranslations", "tags", "goals"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations", "tags"})
+    exclude = {"habitAssigns", "habitTranslations", "tags", "goals"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

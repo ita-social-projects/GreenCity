@@ -131,4 +131,23 @@ public interface GoalService {
      * @author Bogdan Kuzenko
      */
     List<Long> deleteUserGoals(String ids);
+
+    /**
+     * Method returns list of goals for habit.
+     *
+     * @param habitId id of the {@link HabitVO}.
+     * @return List of {@link GoalManagementDto}.
+     * @author Marian Diakiv
+     */
+    List<GoalManagementDto> getGoalByHabitId(Long habitId);
+
+    /**
+     * Method returns list of goals that are not in the habit.
+     *
+     * @param habitId  id of the {@link HabitVO}.
+     * @param pageable - instance of {@link Pageable}.
+     * @return Pageable of {@link GoalManagementDto}.
+     * @author Marian Diakiv
+     */
+    PageableAdvancedDto<GoalManagementDto> findAllGoalForManagementPageNotContained(Long habitId, Pageable pageable);
 }
