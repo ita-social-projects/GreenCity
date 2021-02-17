@@ -1,17 +1,15 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.goal.GoalDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
-import greencity.entity.Goal;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.GoalRepo;
-import greencity.repository.GoalTranslationRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import java.util.*;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,9 +36,9 @@ class HabitServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private GoalTranslationRepo goalTranslationRepo;
+    private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @Mock
-    private GoalRepo goalRepo;
+    private ShoppingListItemRepo shoppingListItemRepo;
     @InjectMocks
     private HabitServiceImpl habitService;
 
@@ -105,43 +102,44 @@ class HabitServiceImplTest {
 
     @Test
     void getShoppingListForHabit() {
-        GoalTranslation goalTranslation = ModelUtils.getGoalTranslation();
-        List<GoalTranslation> goalTranslations = Collections.singletonList(goalTranslation);
-        GoalDto goalDto = new GoalDto(1L, "test");
-        List<GoalDto> goalDtos = Collections.singletonList(goalDto);
-        when(modelMapper.map(goalTranslation, GoalDto.class)).thenReturn(goalDto);
-        when(goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode("en", 1l))
-            .thenReturn(goalTranslations);
-        assertEquals(goalDtos, habitService.getShoppingListForHabit(1L, "en"));
+        ShoppingListItemTranslation shoppingListItemTranslation = ModelUtils.getShoppingListItemTranslation();
+        List<ShoppingListItemTranslation> shoppingListItemTranslations =
+            Collections.singletonList(shoppingListItemTranslation);
+        ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto(1L, "test");
+        List<ShoppingListItemDto> shoppingListItemDtos = Collections.singletonList(shoppingListItemDto);
+        when(modelMapper.map(shoppingListItemTranslation, ShoppingListItemDto.class)).thenReturn(shoppingListItemDto);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1l))
+            .thenReturn(shoppingListItemTranslations);
+        assertEquals(shoppingListItemDtos, habitService.getShoppingListForHabit(1L, "en"));
     }
 
     @Test
-    void addGoalToHabitTest() {
+    void addShoppingListItemToHabitTest() {
         doNothing().when(habitRepo).addShopingListItemToHabit(1L, 1L);
-        habitService.addGoalToHabit(1L, 1L);
+        habitService.addShoppingListItemToHabit(1L, 1L);
         verify(habitRepo).addShopingListItemToHabit(1L, 1L);
     }
 
     @Test
-    void deleteGoalTest() {
+    void deleteShoppingListItemTest() {
         doNothing().when(habitRepo).upadateShopingListItemInHabit(1L, 1L);
-        habitService.deleteGoal(1L, 1L);
+        habitService.deleteShoppingListItem(1L, 1L);
         verify(habitRepo).upadateShopingListItemInHabit(1L, 1L);
     }
 
     @Test
-    void addAllGoalToHabitTest() {
+    void addAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
         doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
-        habitService.addAllGoalByListOfId(1L, listID);
+        habitService.addAllShoppingListItemsByListOfId(1L, listID);
         verify(habitRepo, times(1)).addShopingListItemToHabit(listID.get(0), 1L);
     }
 
     @Test
-    void deleteAllGoalToHabitTest() {
+    void deleteAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
         doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
-        habitService.deleteAllGoalByListOfId(1L, listID);
+        habitService.deleteAllShoppingListItemsByListOfId(1L, listID);
         verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.get(0), 1L);
     }
 }

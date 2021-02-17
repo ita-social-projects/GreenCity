@@ -3,7 +3,7 @@ package greencity.controller;
 import greencity.annotations.*;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.goal.GoalDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
@@ -78,7 +78,7 @@ public class HabitController {
      *
      * @param locale {@link Locale} with needed language code.
      * @param id     {@link Long} with needed habit id.
-     * @return List of {@link GoalDto}.
+     * @return List of {@link ShoppingListItemDto}.
      */
     @ApiOperation(value = "Get shopping list.")
     @ApiResponses(value = {
@@ -87,7 +87,7 @@ public class HabitController {
     })
     @GetMapping("{id}/shopping-list")
     @ApiLocale
-    public ResponseEntity<List<GoalDto>> getGoals(
+    public ResponseEntity<List<ShoppingListItemDto>> getShoppingListItems(
         @PathVariable Long id,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -2,7 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.goal.GoalDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -25,8 +25,8 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
-    private final GoalTranslationRepo goalTranslationRepo;
-    private final GoalRepo goalRepo;
+    private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    private final ShoppingListItemRepo shoppingListItemRepo;
 
     /**
      * {@inheritDoc}
@@ -84,32 +84,32 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public List<GoalDto> getShoppingListForHabit(Long habitId, String lang) {
-        return goalTranslationRepo.findAllGoalByHabitIdAndByLanguageCode(lang, habitId)
+    public List<ShoppingListItemDto> getShoppingListForHabit(Long habitId, String lang) {
+        return shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(lang, habitId)
             .stream()
-            .map(g -> modelMapper.map(g, GoalDto.class))
+            .map(g -> modelMapper.map(g, ShoppingListItemDto.class))
             .collect(Collectors.toList());
     }
 
     @Override
-    public void addGoalToHabit(Long habitId, Long goalId) {
-        habitRepo.addShopingListItemToHabit(habitId, goalId);
+    public void addShoppingListItemToHabit(Long habitId, Long itemId) {
+        habitRepo.addShopingListItemToHabit(habitId, itemId);
     }
 
     @Override
-    public void deleteGoal(Long habitId, Long goalId) {
-        habitRepo.upadateShopingListItemInHabit(habitId, goalId);
+    public void deleteShoppingListItem(Long habitId, Long itemId) {
+        habitRepo.upadateShopingListItemInHabit(habitId, itemId);
     }
 
     @Override
-    public List<Long> deleteAllGoalByListOfId(Long habitId, List<Long> listId) {
-        listId.forEach(id -> deleteGoal(habitId, id));
+    public List<Long> deleteAllShoppingListItemsByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> deleteShoppingListItem(habitId, id));
         return listId;
     }
 
     @Override
-    public List<Long> addAllGoalByListOfId(Long habitId, List<Long> listId) {
-        listId.forEach(id -> addGoalToHabit(habitId, id));
+    public List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId) {
+        listId.forEach(id -> addShoppingListItemToHabit(habitId, id));
         return listId;
     }
 }

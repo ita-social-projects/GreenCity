@@ -42,7 +42,7 @@ public class HabitAssign {
     private ZonedDateTime lastEnrollmentDate;
 
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY)
-    private List<UserGoal> userGoals = new ArrayList<>();
+    private List<UserShoppingListItem> userShoppingListItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;

@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.goal.GoalDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -28,10 +28,10 @@ public interface HabitService {
     /**
      * Method returns shopping list in specific language by habit id.
      *
-     * @return list {@link GoalDto}.
+     * @return list {@link ShoppingListItemDto}.
      * @author Dmytro Khonko
      */
-    List<GoalDto> getShoppingListForHabit(Long habitId, String lang);
+    List<ShoppingListItemDto> getShoppingListForHabit(Long habitId, String lang);
 
     /**
      * Method that find all habit's translations by language code and tags.
@@ -46,39 +46,41 @@ public interface HabitService {
     PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
-     * Method that add Goal To Habit by habit id and goal id.
+     * Method that add shopping list item To Habit by habit id and shopping list
+     * item id.
      * 
      * @author Marian Diakiv
      */
-    void addGoalToHabit(Long habitId, Long goalId);
+    void addShoppingListItemToHabit(Long habitId, Long itemId);
 
     /**
-     * Method for deleting the {@link GoalDto} instance by its id.
+     * Method for deleting the {@link ShoppingListItemDto} instance by its id.
      *
-     * @param goalId  - {@link GoalDto} instance id which will be deleted.
+     * @param itemId  - {@link ShoppingListItemDto} instance id which will be
+     *                deleted.
      * @param habitId - {@link HabitDto} the id of the instance from which it will
      *                be deleted.
      * @author Marian Diakiv
      */
-    void deleteGoal(Long habitId, Long goalId);
+    void deleteShoppingListItem(Long habitId, Long itemId);
 
     /**
-     * Method deletes all {@link GoalDto} by list of ids.
+     * Method deletes all {@link ShoppingListItemDto} by list of ids.
      *
-     * @param listId  list of id {@link GoalDto}
+     * @param listId  list of id {@link ShoppingListItemDto}
      * @param habitId - {@link HabitDto} the id of the instance from which it will
-     *                be deleted. return list of id {@link GoalDto}
+     *                be deleted. return list of id {@link ShoppingListItemDto}
      * @author Marian Diakiv
      */
-    List<Long> deleteAllGoalByListOfId(Long habitId, List<Long> listId);
+    List<Long> deleteAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method add all {@link GoalDto} by list of ids.
+     * Method add all {@link ShoppingListItemDto} by list of ids.
      *
-     * @param listId  list of id {@link GoalDto}
+     * @param listId  list of id {@link ShoppingListItemDto}
      * @param habitId - {@link HabitDto} the id of the instance to which it will be
-     *                added return list of id {@link GoalDto}
+     *                added return list of id {@link ShoppingListItemDto}
      * @author Marian Diakiv
      */
-    List<Long> addAllGoalByListOfId(Long habitId, List<Long> listId);
+    List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 }

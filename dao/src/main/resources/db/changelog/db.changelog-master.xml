@@ -79,5 +79,6 @@
     <include file="db/changelog/logs/ch-add-coordinates-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-add-column-1-Bilonizhka.xml"/>
     <include file="db/changelog/logs/ch-add-new-ubs-columns-Bilonizhka.xml"/>
+    <include file="db/changelog/logs/ch-rename-goal-to-shoping-list-item-Diakiv.xml"/>
 </databaseChangeLog>
 
