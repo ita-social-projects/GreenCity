@@ -316,7 +316,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         exception.
      */
     @ExceptionHandler(NotCurrentUserException.class)
-    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(NotCurrentUserException ex,
+    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(NotCurrentUserException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
@@ -324,15 +324,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link UserGoalNotSavedException}.
+     * Method intercept exception {@link UserShoppingListItemNotSavedException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(GoalNotFoundException.class)
-    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(GoalNotFoundException ex,
+    @ExceptionHandler(ShoppingListItemNotFoundException.class)
+    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
+        ShoppingListItemNotFoundException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
@@ -340,15 +341,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link UserGoalNotSavedException}.
+     * Method intercept exception {@link UserShoppingListItemNotSavedException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserGoalNotSavedException.class)
-    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserGoalNotSavedException ex,
+    @ExceptionHandler(UserShoppingListItemNotSavedException.class)
+    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
+        UserShoppingListItemNotSavedException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
@@ -356,15 +358,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link UserHasNoGoalsException}.
+     * Method intercept exception {@link UserHasNoShoppingListItemsException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserHasNoGoalsException.class)
-    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserHasNoGoalsException ex,
+    @ExceptionHandler(UserHasNoShoppingListItemsException.class)
+    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
+        UserHasNoShoppingListItemsException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
@@ -372,15 +375,17 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link UserGoalStatusNotUpdatedException}.
+     * Method intercept exception
+     * {@link UserShoppingListItemStatusNotUpdatedException}.
      *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
      *         exception.
      */
-    @ExceptionHandler(UserGoalStatusNotUpdatedException.class)
-    public final ResponseEntity<Object> handleUserGoalsWhereNotSavedException(UserGoalStatusNotUpdatedException ex,
+    @ExceptionHandler(UserShoppingListItemStatusNotUpdatedException.class)
+    public final ResponseEntity<Object> handleUserShoppingListItemWhereNotSavedException(
+        UserShoppingListItemStatusNotUpdatedException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);

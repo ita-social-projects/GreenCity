@@ -42,10 +42,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"lastVisit", "verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
+        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "verifyEmail", "estimates", "restorePasswordEmail", "customGoals"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,7 +89,7 @@ public class User {
     private String refreshTokenKey;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<CustomGoal> customGoals = new ArrayList<>();
+    private List<CustomShoppingListItem> customShoppingListItems = new ArrayList<>();
 
     @Column(name = "profile_picture")
     private String profilePicturePath;

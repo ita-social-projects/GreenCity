@@ -43,8 +43,8 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
-    private static final String USER_CUSTOM_GOALS = "/user/{userId}/customGoals";
-    private static final String CUSTOM_GOALS = "/{userId}/customGoals";
+    private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
+    private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private final JwtTool jwtTool;
     private final RestClient restClient;
@@ -170,11 +170,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements",
                 "/advices/random/{habitId}",
                 "/advices",
-                CUSTOM_GOALS,
+                CUSTOM_SHOPPING_LIST_ITEMS,
                 "/econews/count",
                 "/econews/isLikedByUser",
                 "/favorite_place/",
-                "/goals",
+                "/shopping-list-items",
                 "/habit/assign",
                 HABIT_ASSIGN_ID + "/active",
                 HABIT_ASSIGN_ID,
@@ -188,9 +188,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/social-networks/image",
                 "/tipsandtricks/count",
                 "/user",
-                "/user/goals/habits/{habitId}/shopping-list",
-                USER_CUSTOM_GOALS,
-                "/user/{userId}/customGoals/available",
+                "/user/shopping-list-items/habits/{habitId}/shopping-list",
+                USER_CUSTOM_SHOPPING_LIST_ITEMS,
+                "/user/{userId}/custom-shopping-list-items/available",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",
                 "/user/isOnline/{userId}/",
@@ -208,7 +208,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/like",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
-                CUSTOM_GOALS,
+                CUSTOM_SHOPPING_LIST_ITEMS,
                 "/files/image",
                 "/files/convert",
                 HABIT_ASSIGN_ID,
@@ -223,8 +223,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/{tipsAndTricksId}",
                 "/tipsandtricks/comments/like",
                 "/tipsandtricks",
-                USER_CUSTOM_GOALS,
-                "/user/goals",
+                USER_CUSTOM_SHOPPING_LIST_ITEMS,
+                "/user/shopping-list-items",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}",
                 "/user/{userId}/declineFriend/{friendId}",
@@ -239,26 +239,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
-                CUSTOM_GOALS,
+                CUSTOM_SHOPPING_LIST_ITEMS,
                 HABIT_ASSIGN_ID,
-                "/goals/shoppingList/{userId}",
+                "/shopping-list-items/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
                 TIPS_AND_TRICKS_COMMENTS,
-                USER_CUSTOM_GOALS,
-                "/user/goals/{userGoalId}",
+                USER_CUSTOM_SHOPPING_LIST_ITEMS,
+                "/user/shopping-list-items/{userShoppingListItemId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
                 "/econews/{econewsId}",
-                CUSTOM_GOALS,
+                CUSTOM_SHOPPING_LIST_ITEMS,
                 "/favorite_place/{placeId}",
                 "/social-networks",
                 TIPS_AND_TRICKS_COMMENTS,
-                USER_CUSTOM_GOALS,
-                "/user/goals/user-goals",
-                "/user/goals",
+                USER_CUSTOM_SHOPPING_LIST_ITEMS,
+                "/user/shopping-list-items/user-shopping-list-items",
+                "/user/shopping-list-items",
                 "/user/{userId}/userFriend/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.GET,

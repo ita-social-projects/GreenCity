@@ -13,9 +13,9 @@ import lombok.*;
 @Builder
 @Table(name = "habits")
 @EqualsAndHashCode(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "goals"})
+    exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
 @ToString(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "goals"})
+    exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +36,10 @@ public class Habit {
 
     @ManyToMany
     @JoinTable(
-        name = "habit_goals",
+        name = "habit_shopping_list_items",
         joinColumns = @JoinColumn(name = "habit_id"),
-        inverseJoinColumns = @JoinColumn(name = "goal_id"))
-    private Set<Goal> goals;
+        inverseJoinColumns = @JoinColumn(name = "shopping_list_item_id"))
+    private Set<ShoppingListItem> shoppingListItems;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "habits_tags",

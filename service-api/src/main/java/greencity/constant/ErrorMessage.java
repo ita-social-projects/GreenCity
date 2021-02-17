@@ -1,11 +1,14 @@
 package greencity.constant;
 
 public final class ErrorMessage {
-    public static final String CUSTOM_GOAL_NOT_FOUND_BY_ID = "Custom goal with such id does not exist.";
-    public static final String GOAL_NOT_DELETED = "Advice not deleted ";
-    public static final String GOAL_NOT_FOUND_BY_ID = "Goal with such id does not exist ";
-    public static final String GOAL_NOT_ASSIGNED_FOR_THIS_HABIT = "Goal with such id does not assigned fot this habit ";
-    public static final String GOAL_ALREADY_SELECTED = "Goal with such id already selected by user ";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
+        "Custom shopping list item with such id does not exist.";
+    public static final String SHOPPING_LIST_ITEM_NOT_DELETED = "Advice not deleted ";
+    public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID = "Shopping list item with such id does not exist ";
+    public static final String SHOPPING_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =
+        "Shopping list item with such id does not assigned fot this habit ";
+    public static final String SHOPPING_LIST_ITEM_ALREADY_SELECTED =
+        "Shopping list item with such id already selected by user ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
     public static final String USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS =
@@ -67,8 +70,9 @@ public final class ErrorMessage {
     public static final String FILE_NOT_SAVED = "File hasn't been saved";
     public static final String USER_NOT_FOUND_BY_ID = "The user does not exist by this id: ";
     public static final String USER_NOT_FOUND_BY_EMAIL = "The user does not exist by this email: ";
-    public static final String USER_HAS_NO_GOALS = "This user hasn't selected any goals yet";
-    public static final String USER_GOAL_NOT_FOUND = "UserGoal(s) with this id not found: ";
+    public static final String USER_HAS_NO_SHOPPING_LIST_ITEMS =
+        "This user hasn't selected any shopping list items yet";
+    public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND = "UserShoppingListItem(s) with this id not found: ";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
@@ -78,8 +82,10 @@ public final class ErrorMessage {
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String NOT_FOUND_REQUEST = "Not found friend request from user with id: ";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
-    public static final String CUSTOM_GOAL_WHERE_NOT_SAVED = "This CustomGoal(s) already exist(s): ";
-    public static final String CUSTOM_GOAL_NOT_FOUND = "The user doesn't have any custom goal.";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
+        "This CustomShoppingListItem(s) already exist(s): ";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
+        "The user doesn't have any custom shopping list item.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
@@ -108,7 +114,8 @@ public final class ErrorMessage {
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
-    public static final String USER_GOAL_STATUS_IS_ALREADY_DONE = "The status of this goal is already done ";
+    public static final String USER_SHOPPING_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
+        "The status of this shopping list item is already done ";
     public static final String USER_DEACTIVATED = "User is deactivated";
     public static final String BAD_GOOGLE_TOKEN = "Bad google token";
     public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";

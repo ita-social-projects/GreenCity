@@ -3,7 +3,7 @@ package greencity.dto.user;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.goal.CustomGoalVO;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.useraction.UserActionVO;
@@ -45,9 +45,9 @@ public class UserVO {
 
     private LocalDateTime lastVisit;
 
-    private List<UserGoalVO> userGoals = new ArrayList<>();
+    private List<UserShoppingListItemVO> userShoppingListItemVOS = new ArrayList<>();
 
-    private List<CustomGoalVO> customGoals = new ArrayList<>();
+    private List<CustomShoppingListItemVO> customShoppingListItemVOS = new ArrayList<>();
 
     private VerifyEmailVO verifyEmail;
 

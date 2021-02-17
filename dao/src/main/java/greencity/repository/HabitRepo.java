@@ -18,26 +18,27 @@ public interface HabitRepo extends JpaRepository<Habit, Long> {
      * query.
      *
      * @param habitID Id of Habit
-     * @param goalID  Id of Goal
+     * @param itemID  Id of ShoppingListItem
      * @author Marian Diakiv
      */
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "insert into habit_goals(habit_id,goal_id)"
-        + "values (:habitID,:goalID);")
-    void addShopingListItemToHabit(@Param("habitID") Long habitID, @Param("goalID") Long goalID);
+    @Query(nativeQuery = true, value = "insert into habit_shopping_list_items(habit_id,shopping_list_item_id)"
+        + "values (:habitID,:itemID);")
+    void addShopingListItemToHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
 
     /**
      * Method to change status. This method use native SQL query.
      *
      * @param habitID Id of Habit
-     * @param goalID  Id of Goal
+     * @param itemID  Id of Shopping list item
      * @author Marian Diakiv
      */
     @Transactional
     @Modifying
-    @Query(nativeQuery = true, value = "update habit_goals set status = 'DELETED'"
-        + " where habit_goals.habit_id = :habitID and habit_goals.goal_id = :goalID"
-        + " and habit_goals.status like 'ACTUAL'")
-    void upadateShopingListItemInHabit(@Param("habitID") Long habitID, @Param("goalID") Long goalID);
+    @Query(nativeQuery = true, value = "update habit_shopping_list_items set status = 'DELETED'"
+        + " where habit_shopping_list_items.habit_id = :habitID and "
+        + "habit_shopping_list_items.shopping_list_item_id = :itemID"
+        + " and habit_shopping_list_items.status like 'ACTUAL'")
+    void upadateShopingListItemInHabit(@Param("habitID") Long habitID, @Param("itemID") Long itemID);
 }
