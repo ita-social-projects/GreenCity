@@ -170,13 +170,12 @@ public class RestClient {
      */
     public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
-        ResponseEntity<UserVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+        ResponseEntity<List<UserVO>> exchange = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
             + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
-            HttpMethod.GET, entity, UserVO[].class);
-        UserVO[] responseVos = exchange.getBody();
-        assert responseVos != null;
-        return Arrays.asList(responseVos);
+            HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+            });
+        return exchange.getBody();
     }
 
     /**
@@ -187,12 +186,11 @@ public class RestClient {
      */
     public List<String> findAllUsersCities() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
-        ResponseEntity<String[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+        ResponseEntity<List<String>> exchange = restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.FIND_ALL_USERS_CITIES,
-            HttpMethod.GET, entity, String[].class);
-        String[] response = exchange.getBody();
-        assert response != null;
-        return Arrays.asList(response);
+            HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+            });
+        return exchange.getBody();
     }
 
     /**

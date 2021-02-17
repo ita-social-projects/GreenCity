@@ -2,8 +2,7 @@ package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
@@ -14,6 +13,7 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.EmailNotification;
 import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -33,10 +33,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
@@ -436,5 +433,62 @@ class RestClientTest {
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             })).thenReturn(ResponseEntity.ok(userAdvancedDto));
         assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));
+    }
+
+    @Test
+    void scheduleDeleteDeactivatedUsers() {
+        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
+        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
+            HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.scheduleDeleteDeactivatedUsers();
+        verify(restTemplate, times(1)).exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
+            HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void findAllByEmailNotification() {
+        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
+        List<UserVO> userVOS = Collections.singletonList(ModelUtils.getUserVO());
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+            + RestTemplateLinks.EMAIL_NOTIFICATION + EmailNotification.IMMEDIATELY,
+            HttpMethod.GET, entity, new ParameterizedTypeReference<List<UserVO>>() {
+            }))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(userVOS));
+
+        assertEquals(userVOS, restClient.findAllByEmailNotification(EmailNotification.IMMEDIATELY));
+    }
+
+    @Test
+    void findAllRegistrationMonthsMap() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        Map<Integer, Long> expected = Collections.singletonMap(1, 1L);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+            HttpMethod.GET, entity, new ParameterizedTypeReference<Map<Integer, Long>>() {
+            })).thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
+
+        assertEquals(expected, restClient.findAllRegistrationMonthsMap());
+    }
+
+    @Test
+    void findAllUsersCities() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        List<String> expected = Collections.singletonList("text");
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+            HttpMethod.GET, entity, new ParameterizedTypeReference<List<String>>() {
+            }))
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
+        assertEquals(expected, restClient.findAllUsersCities());
     }
 }
