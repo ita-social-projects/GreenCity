@@ -309,11 +309,7 @@ class RestClientTest {
     @Test
     void addEcoNews() {
         AddEcoNewsMessage message = ModelUtils.getAddEcoNewsMessage();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, headers);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, new HttpHeaders());
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
@@ -326,11 +322,7 @@ class RestClientTest {
     @Test
     void sendReport() {
         SendReportEmailMessage message = ModelUtils.getSendReportEmailMessage();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, headers);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, new HttpHeaders());
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
@@ -343,11 +335,7 @@ class RestClientTest {
     @Test
     void changePlaceStatus() {
         SendChangePlaceStatusEmailMessage message = ModelUtils.getSendChangePlaceStatusEmailMessage();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, headers);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, new HttpHeaders());
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
