@@ -117,4 +117,22 @@ class HabitAssignControllerTest {
 
         verify(habitAssignService).cancelHabitAssign(1L, null);
     }
+
+    @Test
+    void getHabitAssignByHabitIdTest() throws Exception {
+        mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).findHabitAssignByUserIdAndHabitId(null, 1L, "en");
+    }
+
+    @Test
+    void getCurrentUserHabitAssignsByIdAndAcquired() throws Exception {
+        mockMvc.perform(get(habitLink)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
+    }
 }
