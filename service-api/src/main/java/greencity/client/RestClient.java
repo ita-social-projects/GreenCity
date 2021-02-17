@@ -82,7 +82,7 @@ public class RestClient {
     public UserVOAchievement findUserForAchievement(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
+            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
             HttpMethod.GET, entity, UserVOAchievement.class).getBody();
     }
 
@@ -103,11 +103,11 @@ public class RestClient {
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
+            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
                 .getPageNumber()
-                + RestTemplateLinks.SIZE + pageable
+            + RestTemplateLinks.SIZE + pageable
                 .getPageSize()
-                + RestTemplateLinks.SORT + orderUrl,
+            + RestTemplateLinks.SORT + orderUrl,
             HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
@@ -171,8 +171,8 @@ public class RestClient {
     public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         ResponseEntity<UserVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
-                + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
+            + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+            + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
             HttpMethod.GET, entity, UserVO[].class);
         UserVO[] responseVos = exchange.getBody();
         assert responseVos != null;
@@ -188,7 +188,7 @@ public class RestClient {
     public List<String> findAllUsersCities() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<String[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+            + RestTemplateLinks.FIND_ALL_USERS_CITIES,
             HttpMethod.GET, entity, String[].class);
         String[] response = exchange.getBody();
         assert response != null;
@@ -204,7 +204,7 @@ public class RestClient {
     public Map<Integer, Long> findAllRegistrationMonthsMap() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<Map<Integer, Long>> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+            + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -219,7 +219,7 @@ public class RestClient {
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<UserManagementDto[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
+            + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
             UserManagementDto[].class);
         UserManagementDto[] responseDtos = exchange.getBody();
         assert responseDtos != null;
