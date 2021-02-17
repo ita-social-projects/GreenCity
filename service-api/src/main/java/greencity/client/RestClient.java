@@ -11,16 +11,14 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.EmailNotification;
 import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +82,7 @@ public class RestClient {
     public UserVOAchievement findUserForAchievement(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
+                + RestTemplateLinks.USER_FIND_BY_ID_FOR_ACHIEVEMENT + RestTemplateLinks.ID + id,
             HttpMethod.GET, entity, UserVOAchievement.class).getBody();
     }
 
@@ -105,11 +103,11 @@ public class RestClient {
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         return restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
+                + RestTemplateLinks.USER_FIND_USER_FOR_MANAGEMENT + RestTemplateLinks.PAGE + pageable
                 .getPageNumber()
-            + RestTemplateLinks.SIZE + pageable
+                + RestTemplateLinks.SIZE + pageable
                 .getPageSize()
-            + RestTemplateLinks.SORT + orderUrl,
+                + RestTemplateLinks.SORT + orderUrl,
             HttpMethod.GET, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementDto>>() {
             }).getBody();
@@ -164,6 +162,55 @@ public class RestClient {
     }
 
     /**
+     * Method for getting all users by their {@link EmailNotification}.
+     *
+     * @param emailNotification enum with {@link EmailNotification} value.
+     * @return {@link List} of {@link UserVO}.
+     * @author Taras Kavkalo
+     */
+    public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
+        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
+        ResponseEntity<UserVO[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+                + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+                + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
+            HttpMethod.GET, entity, UserVO[].class);
+        UserVO[] responseVos = exchange.getBody();
+        assert responseVos != null;
+        return Arrays.asList(responseVos);
+    }
+
+    /**
+     * Method that find all users cities.
+     *
+     * @return {@link List} of cities.
+     * @author Taras Kavkalo
+     */
+    public List<String> findAllUsersCities() {
+        HttpEntity<String> entity = new HttpEntity<>(setHeader());
+        ResponseEntity<String[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+                + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+            HttpMethod.GET, entity, String[].class);
+        String[] response = exchange.getBody();
+        assert response != null;
+        return Arrays.asList(response);
+    }
+
+    /**
+     * Method that find all registration months.
+     *
+     * @return {@link Map} with months.
+     * @author Taras Kavkalo
+     */
+    public Map<Integer, Long> findAllRegistrationMonthsMap() {
+        HttpEntity<String> entity = new HttpEntity<>(setHeader());
+        ResponseEntity<Map<Integer, Long>> exchange = restTemplate.exchange(greenCityUserServerAddress
+                + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+            HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
+            });
+        return exchange.getBody();
+    }
+
+    /**
      * Method for getting all Users.
      *
      * @return {@link List} of {@link UserVO} instances.
@@ -172,7 +219,7 @@ public class RestClient {
     public List<UserManagementDto> findUserFriendsByUserId(Long id) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<UserManagementDto[]> exchange = restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
+                + RestTemplateLinks.USER + "/" + id + RestTemplateLinks.FRIENDS, HttpMethod.GET, entity,
             UserManagementDto[].class);
         UserManagementDto[] responseDtos = exchange.getBody();
         assert responseDtos != null;
@@ -291,7 +338,7 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void addEcoNews(AddEcoNewsMessage addEcoNewsMessage) {
-        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(addEcoNewsMessage, setHeader());
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(addEcoNewsMessage, new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class)
             .getBody();
@@ -305,10 +352,22 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendReport(SendReportEmailMessage reportEmailMessage) {
-        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, setHeader());
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
             .getBody();
+    }
+
+    /**
+     * Delete from the database users that have status 'DEACTIVATED' and last
+     * visited the site 2 years ago.
+     *
+     * @author Taras Kavkalo
+     */
+    public void scheduleDeleteDeactivatedUsers() {
+        HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
+        restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
+            HttpMethod.POST, entity, Object.class).getBody();
     }
 
     /**
@@ -321,7 +380,7 @@ public class RestClient {
      */
     public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
         HttpEntity<SendChangePlaceStatusEmailMessage> entity =
-            new HttpEntity<>(changePlaceStatusEmailMessage, setHeader());
+            new HttpEntity<>(changePlaceStatusEmailMessage, new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
             .getBody();

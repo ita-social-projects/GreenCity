@@ -13,7 +13,6 @@ import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
-import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationServiceImpl implements NotificationService {
     private static final ZoneId ZONE_ID = ZoneId.of(AppConstant.UKRAINE_TIMEZONE);
-    private final UserRepo userRepo;
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
@@ -41,9 +39,8 @@ public class NotificationServiceImpl implements NotificationService {
      * Constructor.
      */
     @Autowired
-    public NotificationServiceImpl(UserRepo userRepo, PlaceRepo placeRepo,
+    public NotificationServiceImpl(PlaceRepo placeRepo,
         ModelMapper modelMapper, RestClient restClient) {
-        this.userRepo = userRepo;
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.restClient = restClient;
@@ -61,11 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
             Collections.singletonList(modelMapper.map(newPlace, PlaceNotificationDto.class));
         categoriesDtoWithPlacesDtoMap.put(map, placeDtoList);
 
-        List<PlaceAuthorDto> placeAuthorDto = subscribers.stream()
-            .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
-            .collect(Collectors.toList());
-
-        restClient.sendReport(new SendReportEmailMessage(placeAuthorDto,
+        restClient.sendReport(new SendReportEmailMessage(subscribers,
             categoriesDtoWithPlacesDtoMap, emailNotification.toString()));
     }
 
@@ -126,7 +119,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private List<PlaceAuthorDto> getSubscribers(EmailNotification emailNotification) {
         log.info(LogMessage.IN_GET_SUBSCRIBERS, emailNotification);
-        return userRepo.findAllByEmailNotification(emailNotification).stream()
+        return restClient.findAllByEmailNotification(emailNotification).stream()
             .map(o -> modelMapper.map(o, PlaceAuthorDto.class))
             .collect(Collectors.toList());
     }

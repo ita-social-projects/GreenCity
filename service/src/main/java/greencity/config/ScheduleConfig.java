@@ -5,13 +5,13 @@ import static greencity.enums.FactOfDayStatus.*;
 
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
+import greencity.dto.user.UserVO;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import greencity.repository.UserRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -35,20 +35,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
 
     /**
-     * Invoke {@link sendHabitNotification} from EmailMessageReceiver to send email
+     * Invoke {@link SendHabitNotification} from EmailMessageReceiver to send email
      * letters to each user that hasn't marked any habit during last 3 days.
      *
      * @param users list of potential {@link User} to send notifications.
      */
-    private void sendHabitNotificationIfNeed(List<User> users) {
+    private void sendHabitNotificationIfNeed(List<UserVO> users) {
         ZonedDateTime end = ZonedDateTime.now();
         ZonedDateTime start = end.minusDays(3);
-        for (User user : users) {
+        for (UserVO user : users) {
             int count = habitAssignRepo.countMarkedHabitAssignsByUserIdAndPeriod(user.getId(), start, end);
             if (count == 0) {
                 restClient.sendHabitNotification(new SendHabitNotification(user.getName(), user.getEmail()));
@@ -63,8 +62,8 @@ public class ScheduleConfig {
      */
     @Scheduled(cron = "0 0 19 * * ?")
     void sendHabitNotificationEveryDay() {
-        List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
-        users.addAll(userRepo.findAllByEmailNotification(DAILY));
+        List<UserVO> users = restClient.findAllByEmailNotification(IMMEDIATELY);
+        users.addAll(restClient.findAllByEmailNotification(DAILY));
         sendHabitNotificationIfNeed(users);
     }
 
@@ -74,7 +73,7 @@ public class ScheduleConfig {
      */
     @Scheduled(cron = "0 0 19 * * FRI")
     void sendHabitNotificationEveryWeek() {
-        List<User> users = userRepo.findAllByEmailNotification(WEEKLY);
+        List<UserVO> users = restClient.findAllByEmailNotification(WEEKLY);
         sendHabitNotificationIfNeed(users);
     }
 
@@ -85,7 +84,7 @@ public class ScheduleConfig {
      */
     @Scheduled(cron = "0 0 19 25 * ?")
     void sendHabitNotificationEveryMonth() {
-        List<User> users = userRepo.findAllByEmailNotification(MONTHLY);
+        List<UserVO> users = restClient.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
     }
 
@@ -128,7 +127,7 @@ public class ScheduleConfig {
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void scheduleDeleteDeactivatedUsers() {
-        userRepo.scheduleDeleteDeactivatedUsers();
+        restClient.scheduleDeleteDeactivatedUsers();
     }
 
     /**

@@ -22,7 +22,6 @@ import greencity.repository.GoalRepo;
 import greencity.repository.GoalTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.UserGoalRepo;
-import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +59,6 @@ class GoalServiceImplTest {
     private GoalTranslationRepo goalTranslationRepo;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private UserRepo userRepo;
     @Mock
     UserGoalRepo userGoalRepo;
     @Mock
