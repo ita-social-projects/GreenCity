@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.user.UserVO;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -95,4 +97,10 @@ public interface AchievementService {
      * @return list {@link AchievementNotification}
      */
     List<AchievementNotification> findAchievementsWithStatusActive(Long userId);
+
+    /**
+     * Method for achievement Calculation.
+     */
+    void calculateAchievements(Long id, AchievementType achievementType,
+        AchievementCategoryType achievementCategory, Integer size);
 }
