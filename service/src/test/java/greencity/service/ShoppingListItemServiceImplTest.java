@@ -124,7 +124,7 @@ class ShoppingListItemServiceImplTest {
         ObjectMapper mapper = new ObjectMapper();
         UserShoppingListItem userShoppingListItem =
             mapper.convertValue(shoppingListItemRequestDtos.get(0), UserShoppingListItem.class);
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.getShoppingListItemsIdForHabit(habitAssign.getHabit().getId()))
             .thenReturn(Collections.singletonList(1L));
@@ -141,7 +141,7 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void saveUserShoppingListItemThorowsNotFoundException() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.getShoppingListItemsIdForHabit(habitAssign.getHabit().getId()))
             .thenReturn(Collections.singletonList(1L));
@@ -153,7 +153,7 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void saveUserShoppingListItemThorowsWrongIdException() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.getShoppingListItemsIdForHabit(habitAssign.getHabit().getId()))
             .thenReturn(Collections.singletonList(1L));
@@ -364,7 +364,7 @@ class ShoppingListItemServiceImplTest {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         UserShoppingListItem userShoppingListItem =
             UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
             userShoppingListItem));
@@ -377,7 +377,7 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void getUserShoppingListItemsTestTrows() {
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
         assertThrows(
@@ -387,7 +387,7 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void deleteUserShoppingListItemByItemIdAndUserIdAndHabitIdTest() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, userId))
             .thenReturn(Optional.of(habitAssign));
         shoppingListItemService.deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, userId, 1L);
         verify(userShoppingListItemRepo).deleteByShoppingListItemIdAndHabitAssignId(1L, 1L);
@@ -402,7 +402,7 @@ class ShoppingListItemServiceImplTest {
     @Test
     void getUserShoppingListtemsIfThereAreNoItems() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
 

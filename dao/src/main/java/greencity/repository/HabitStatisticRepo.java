@@ -144,7 +144,7 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     @Query(value = "SELECT ht.habitItem, SUM(hs.amountOfItems) "
         + "FROM HabitStatistic hs "
         + "     INNER JOIN HabitTranslation ht ON ht.habit.id = hs.habitAssign.habit.id "
-        + "     WHERE upper(hs.habitAssign.status) <> 'CANCELLED' "
+        + "     WHERE upper(hs.habitAssign.status) <> 'SUSPENDED' "
         + "     AND cast(hs.createDate as date) = cast(:statisticCreationDate as date)"
         + "     AND ht.language.code = :languageCode "
         + "GROUP BY ht.habitItem "
@@ -154,8 +154,8 @@ public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
         @Param("languageCode") String languageCode);
 
     /**
-     * Method for getting amount of {@link Habit} in progress by {@link User} id.
-     *
+     * Method for getting amount of {@link Habit} in progress by {@link User} id
+     * (not suspended).
      *
      * @param id {@link User} id.
      * @return amount of habits in progress by {@link User} id.

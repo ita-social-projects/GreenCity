@@ -56,7 +56,7 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
 
         if (isProceed(dto)) {
             HabitStatistic habitStatistic = modelMapper.map(dto, HabitStatistic.class);
-            HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+            HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId)
                 .orElseThrow(
                     () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                         + userId + ", " + habitId));

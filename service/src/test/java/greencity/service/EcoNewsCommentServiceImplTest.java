@@ -2,8 +2,6 @@ package greencity.service;
 
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
-
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -280,10 +278,10 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
 
-        UserHasNoPermissionToAccessException noPermissionToAccessException =
-            assertThrows(UserHasNoPermissionToAccessException.class,
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class,
                 () -> ecoNewsCommentService.deleteById(commentId, userToDeleteVO));
-        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, badRequestException.getMessage());
     }
 
     @Test

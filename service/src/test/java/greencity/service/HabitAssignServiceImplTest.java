@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getHabitAssign;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
@@ -18,8 +19,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static greencity.ModelUtils.getHabitAssignDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -95,7 +94,7 @@ class HabitAssignServiceImplTest {
     void assignDefaultHabitForUserTest() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
@@ -104,7 +103,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignsBetweenDatesTest() {
+    void findActiveHabitAssignsBetweenDatesTest() {
         HabitAssign habit1 = ModelUtils.getHabitAssign();
         HabitAssign habit2 = ModelUtils.getHabitAssign();
         habit2.setId(2L);
@@ -133,11 +132,11 @@ class HabitAssignServiceImplTest {
                     new HabitEnrollDto(2L, "", "", false)))
                 .build());
 
-        when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
+        when(habitAssignRepo.findAllActiveHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
                 .thenReturn(habitAssignList);
 
-        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
+        assertEquals(dtos, habitAssignService.findActiveHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }
@@ -146,7 +145,7 @@ class HabitAssignServiceImplTest {
     void assignCustomHabitForUserTest() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
@@ -156,17 +155,17 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignByUserIdAndHabitIdTest() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
+    void findActiveHabitAssignByUserIdAndHabitIdTest() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
             HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.findHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
+        assertEquals(habitAssignDto, habitAssignService.findActiveHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
     }
 
     @Test
     void getAllHabitAssignsByUserIdAndAcquiredStatusTest() {
-        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
+        when(habitAssignRepo.findAllByUserIdAndActive(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, "en");
         assertEquals(habitAssignDtos, actual);
@@ -174,7 +173,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
@@ -185,7 +184,7 @@ class HabitAssignServiceImplTest {
     void enrollHabit() {
         HabitAssign habitAssign = getHabitAssign();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
         verify(habitAssignRepo).save(habitAssign);
@@ -194,7 +193,7 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabitThrowWrongIdException() {
         LocalDate localDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
             () -> habitAssignService.enrollHabit(1L, 1L, localDate));
     }
@@ -206,7 +205,7 @@ class HabitAssignServiceImplTest {
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
         HabitStatusCalendarVO habitStatusCalendarVO = HabitStatusCalendarVO.builder()
             .enrollDate(enrollDate).build();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitAssignRepo.save(habitAssign)).thenReturn(habitAssign);
@@ -225,7 +224,7 @@ class HabitAssignServiceImplTest {
         LocalDate enrollDate = LocalDate.now();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
@@ -239,23 +238,10 @@ class HabitAssignServiceImplTest {
     @Test
     void unenrollHabitThrowWrongIdException() {
         LocalDate enrollDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {
             habitAssignService.unenrollHabit(1L, 1L, enrollDate);
         });
-    }
-
-    @Test
-    void cancelHabitAssignTest() {
-        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-
-        assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
-
-        verify(habitAssignRepo).save(habitAssign);
     }
 }

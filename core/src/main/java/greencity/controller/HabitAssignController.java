@@ -98,14 +98,13 @@ public class HabitAssignController {
     }
 
     /**
-     * Method for finding all inprogress, acquired {@link HabitAssignDto}'s for
-     * current user.
+     * Method for finding all active {@link HabitAssignDto}'s for current user.
      *
      * @param userVO {@link UserVO} instance.
      * @param locale needed language code.
      * @return list of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get (inprogress, acquired) assigned habits for current user")
+    @ApiOperation(value = "Get assigned habits for current user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
@@ -124,14 +123,14 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return all inprogress, acquired {@link HabitAssignDto} by it's
-     * {@link HabitVO} id.
+     * Method to return all active {@link HabitAssignDto} by it's {@link HabitVO}
+     * id.
      *
      * @param habitId {@link HabitVO} id.
      * @param locale  needed language code.
      * @return {@link List} of {@link HabitAssignDto}.
      */
-    @ApiOperation(value = "Get all inprogress, acquired assigns by certain habit.")
+    @ApiOperation(value = "Get all inprogress assigns by certain habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
@@ -155,7 +154,7 @@ public class HabitAssignController {
      * @param locale  needed language code.
      * @return {@link HabitAssignDto} instance.
      */
-    @ApiOperation(value = "Get inprogress or acquired assign by habit id for current user.")
+    @ApiOperation(value = "Get inprogress assign by habit id for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -170,19 +169,19 @@ public class HabitAssignController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitAssignByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
+                .findActiveHabitAssignByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
     }
 
     /**
-     * Method to update inprogress, acquired {@link HabitAssignVO} for it's
-     * {@link HabitVO} id and current user.
+     * Method to update active {@link HabitAssignVO} for it's {@link HabitVO} id and
+     * current user.
      *
      * @param userVO             {@link UserVO} instance.
      * @param habitId            {@link HabitVO} id.
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    @ApiOperation(value = "Update inprogress, acquired user habit assign acquired or cancelled status.")
+    @ApiOperation(value = "Update inprogress user habit assign acquired or suspended status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -242,11 +241,10 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to find all inprogress {@link HabitAssignVO} on certain
-     * {@link LocalDate}.
+     * Method to find all active {@link HabitAssignVO} on certain {@link LocalDate}.
      *
      * @param userVO {@link UserVO} user.
-     * @param date   {@link LocalDate} date to check if has inprogress assigns.
+     * @param date   {@link LocalDate} date to check if has active assigns.
      * @param locale needed language code.
      * @return {@link HabitAssignDto} instance.
      */
@@ -260,13 +258,13 @@ public class HabitAssignController {
     })
     @ApiLocale
     @GetMapping("/active/{date}")
-    public ResponseEntity<List<HabitAssignDto>> getInprogressHabitAssignOnDate(
+    public ResponseEntity<List<HabitAssignDto>> getActiveHabitAssignOnDate(
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findInprogressHabitAssignsOnDate(userVO.getId(), date, locale.getLanguage()));
+                .findActiveHabitAssignsOnDate(userVO.getId(), date, locale.getLanguage()));
     }
 
     /**
@@ -274,10 +272,8 @@ public class HabitAssignController {
      * {@link LocalDate}s.
      *
      * @param userVO {@link UserVO} user.
-     * @param from   {@link LocalDate} date to check if has inprogress, acquired
-     *               assigns.
-     * @param to     {@link LocalDate} date to check if has inprogress, acquired
-     *               assigns.
+     * @param from   {@link LocalDate} date to check if has active assigns.
+     * @param to     {@link LocalDate} date to check if has active assigns.
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */
@@ -291,34 +287,13 @@ public class HabitAssignController {
     })
     @ApiLocale
     @GetMapping("/activity/{from}/to/{to}")
-    public ResponseEntity<List<HabitsDateEnrollmentDto>> getHabitAssignBetweenDates(
+    public ResponseEntity<List<HabitsDateEnrollmentDto>> getActiveHabitAssignBetweenDates(
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @PathVariable(value = "to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitAssignsBetweenDates(userVO.getId(), from, to, locale.getLanguage()));
-    }
-
-    /**
-     * Method to cancel inprogress {@link HabitAssignVO} by it's {@link HabitVO} id
-     * and current user id.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  - {@link UserVO} user.
-     * @return {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Cancel inprogress user assigned habit.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @PatchMapping("/cancel/{habitId}")
-    public ResponseEntity<HabitAssignDto> cancelHabitAssign(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.cancelHabitAssign(habitId, userVO.getId()));
+                .findActiveHabitAssignsBetweenDates(userVO.getId(), from, to, locale.getLanguage()));
     }
 }
