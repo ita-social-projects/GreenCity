@@ -251,7 +251,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
      */
     private HabitAssign getHabitAssignIfExist(Long userId, Long habitId) {
         Optional<HabitAssign> habitAssignOptional =
-            habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+            habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
         if (habitAssignOptional.isPresent()) {
             return habitAssignOptional.get();
         } else {
@@ -345,7 +345,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     }
 
     private HabitAssign getHabitAssignByHabitIdAndUserIdAndSuspendedFalse(Long userId, Long habitId) {
-        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(habitId, userId);
+        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
         if (habitAssign.isPresent()) {
             return habitAssign.get();
         }

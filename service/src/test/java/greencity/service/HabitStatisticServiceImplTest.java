@@ -75,7 +75,7 @@ class HabitStatisticServiceImplTest {
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
 
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(habitStatisticRepo.save(habitStatistic)).thenReturn(habitStatistic);
         when(modelMapper.map(habitStatistic, HabitStatisticDto.class)).thenReturn(habitStatisticDto);
 
@@ -96,7 +96,7 @@ class HabitStatisticServiceImplTest {
             1L, 1L)).thenReturn(Optional.empty());
         when(dateService.convertToDatasourceTimezone(addhs.getCreateDate())).thenReturn(zonedDateTime);
         when(modelMapper.map(addhs, HabitStatistic.class)).thenReturn(habitStatistic);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndSuspendedFalse(1L, 1L))
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
             .thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> habitStatisticService.saveByHabitIdAndUserId(1L, 1L, addhs));
     }
