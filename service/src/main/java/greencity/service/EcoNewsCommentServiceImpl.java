@@ -20,6 +20,7 @@ import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EcoNewsCommentRepo;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -158,7 +159,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (userVO.getRole() != Role.ROLE_ADMIN && !userVO.getId().equals(comment.getUser().getId())) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
             comment.getComments().forEach(c -> c.setDeleted(true));
