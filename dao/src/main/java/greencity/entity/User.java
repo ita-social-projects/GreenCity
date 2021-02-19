@@ -139,4 +139,8 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAction> userActions = new ArrayList<>();
+//
+//    @ManyToOne
+//    @JoinColumn(name = "language_id")
+//    private Language language;
 }
