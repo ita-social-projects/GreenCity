@@ -45,6 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
+    private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
+        + "custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private final JwtTool jwtTool;
@@ -166,7 +168,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
                 "/place/filter",
-                CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items")
+                CUSTOM_SHOPPING_LIST_URL)
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
@@ -174,7 +176,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/advices",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 CUSTOM_SHOPPING_LIST,
-                CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items",
+                CUSTOM_SHOPPING_LIST_URL,
                 "/econews/count",
                 "/econews/isLikedByUser",
                 "/favorite_place/",
@@ -244,7 +246,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
                 CUSTOM_SHOPPING_LIST_ITEMS,
-                CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items",
+                CUSTOM_SHOPPING_LIST_URL,
                 HABIT_ASSIGN_ID,
                 "/shopping-list-items/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
@@ -258,7 +260,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ECONEWS_COMMENTS,
                 "/econews/{econewsId}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
-                CUSTOM_SHOPPING_LIST + "/custom-shopping-list-items",
+                CUSTOM_SHOPPING_LIST_URL,
                 "/favorite_place/{placeId}",
                 "/social-networks",
                 TIPS_AND_TRICKS_COMMENTS,
