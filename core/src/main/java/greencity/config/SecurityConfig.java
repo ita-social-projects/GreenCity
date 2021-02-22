@@ -243,6 +243,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 HABIT_ASSIGN_ID,
                 "/shopping-list-items/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
+                "/habit/assign/cancel/{habitId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 "/user/shopping-list-items/{userShoppingListItemId}",
