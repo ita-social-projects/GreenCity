@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.security.SecureRandom;
 
 @Service
 public class ChatImageServiceImpl implements ChatFileService {
@@ -42,6 +43,7 @@ public class ChatImageServiceImpl implements ChatFileService {
     @Override
     public String getUniqueName() {
         String ext = "png";
-        return String.format("%s.%s", RandomStringUtils.randomAlphanumeric(8), ext);
+        SecureRandom secureRandom = new SecureRandom();
+        return String.format("%s%s.%s", secureRandom.nextInt(), RandomStringUtils.randomAlphanumeric(8), ext);
     }
 }
