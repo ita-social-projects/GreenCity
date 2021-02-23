@@ -1,3 +1,5 @@
+insert into languages(id, code)
+values(1,'ua');
 INSERT INTO users (id,
                    date_of_registration,
                    email,
@@ -6,8 +8,9 @@ INSERT INTO users (id,
                    last_visit,
                    role,
                    user_status,
-                   refresh_token_key)
-VALUES (1, current_date, 'foo@bar.com', 1, 'foo', current_date, 1, 1, 'quux');
+                   refresh_token_key,
+                   language_id)
+VALUES (1, current_date, 'foo@bar.com', 1, 'foo', current_date, 1, 1, 'quux',1);
 INSERT INTO eco_news(id, creation_date, image_path, author_id, text, title)
 VALUES (1, '2020-04-11 18:33:51', 'шлях до картинки', 1,
         'No matter where you live , you can make a difference in the impact of big agriculture. Purchasing foods produced by small, local farms, opting for organic produce whenever possible',
