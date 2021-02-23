@@ -1,3 +1,6 @@
+INSERT INTO languages (id, code)
+VALUES (1, 'ua');
+
 INSERT INTO users (id,
                    date_of_registration,
                    email,
@@ -6,9 +9,10 @@ INSERT INTO users (id,
                    last_visit,
                    role,
                    user_status,
-                   refresh_token_key)
-VALUES (1, current_date, 'mail@.com', 1, 'Tom', current_date, 1, 1, 'quux'),
-       (2, current_date, 'test@.com', 0, 'John', current_date, 1, 1, 'quux');
+                   refresh_token_key,
+                   language_id)
+VALUES (1, current_date, 'mail@.com', 1, 'Tom', current_date, 1, 1, 'quux',1),
+       (2, current_date, 'test@.com', 0, 'John', current_date, 1, 1, 'quux',1);
 
 INSERT INTO tips_and_tricks (id, creation_date, author_id, image_path, source)
 VALUES (1, '2020-10-03T00:00', 2, 'image path', 'source'),

@@ -1,3 +1,6 @@
+INSERT INTO languages (id, code)
+VALUES (1, 'ua');
+
 INSERT INTO users (id,
                    date_of_registration,
                    email,
@@ -8,8 +11,9 @@ INSERT INTO users (id,
                    user_status,
                    refresh_token_key,
                    rating,
-                   city)
-VALUES (1, '2020-09-30T00:00', 'test@email.com', 0, 'SuperTest', '2020-09-30T00:00', 0, 2, 'secret', 10, 'New York');
+                   city,
+                   language_id)
+VALUES (1, '2020-09-30T00:00', 'test@email.com', 0, 'SuperTest', '2020-09-30T00:00', 0, 2, 'secret', 10, 'New York',1);
 
 INSERT INTO shopping_list_items(id) VALUES (1), (2);
 
