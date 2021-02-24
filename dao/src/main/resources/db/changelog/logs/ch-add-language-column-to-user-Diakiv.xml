@@ -12,4 +12,5 @@
                                  referencedTableName="languages"
                                  referencedColumnNames="id"/>
     </changeSet>
+
 </databaseChangeLog>
