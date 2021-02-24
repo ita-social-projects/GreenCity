@@ -4,18 +4,16 @@ import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
 import greencity.dto.ParticipantDto;
 import greencity.enums.ChatType;
+import greencity.repository.ChatRoomRepo;
 import greencity.service.ChatMessageService;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
-
-import java.io.*;
 import java.security.Principal;
 import java.util.List;
-
-import greencity.service.impl.ChatImageServiceImpl;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +24,7 @@ public class ChatController {
     private final ChatRoomService chatRoomService;
     private final ParticipantService participantService;
     private final ChatMessageService chatMessageService;
-    private final ChatImageServiceImpl chatImageService;
+    private final ChatRoomRepo chatRoomRepo;
 
     /**
      * {@inheritDoc}
@@ -170,28 +168,8 @@ public class ChatController {
     /**
      * {@inheritDoc}
      */
-    @GetMapping("/upload/image")
-    public ResponseEntity<String> uploadImage(String encodedString) throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(chatImageService.save(encodedString));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @GetMapping(value = "/image/{name}", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getImageWithMediaType(@PathVariable("name") String name) throws IOException {
-        return chatImageService.getByteArrayFromFile(name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @MessageMapping("/chat")
-    public void processMessage(ChatMessageDto chatMessageDto) throws IOException {
-        if (chatMessageDto.getImageName() != null) {
-            String imagePath = this.uploadImage(chatMessageDto.getImageName()).getBody();
-            chatMessageDto.setImageName(imagePath);
-        }
+    public void processMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);
     }
 

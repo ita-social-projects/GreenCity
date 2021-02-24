@@ -30,7 +30,6 @@ public class ChatRoomDtoMapper extends AbstractConverter<ChatRoom, ChatRoomDto> 
                 chatMessage -> ChatMessageDto.builder()
                     .id(chatMessage.getId())
                     .content(chatMessage.getContent())
-                    .imageName(chatMessage.getImageName())
                     .senderId(chatMessage.getSender().getId())
                     .roomId(chatRoom.getId()).build())
                 .collect(Collectors.toList()))

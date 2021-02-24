@@ -4,8 +4,6 @@ CREATE OR REPLACE FUNCTION public.fn_recommended_friends(
             (
                 id              bigint,
                 name            character varying,
-                city            character varying,
-                rating          double precision,
                 profile_picture character varying
             )
     LANGUAGE 'plpgsql'
@@ -51,18 +49,18 @@ BEGIN
                                         WHERE u.id = current_user_id)
              )
 
-        SELECT DISTINCT u.id, u.name,u.city,u.rating,u.profile_picture
+        SELECT DISTINCT u.id, u.name, u.profile_picture
         FROM users u
                  JOIN recomended_habits rh
                       ON rh.id = u.id AND rh.id <> current_user_id
         UNION
-        SELECT DISTINCT u.id, u.name,u.city,u.rating, u.profile_picture
+        SELECT DISTINCT u.id, u.name, u.profile_picture
         FROM users u
                  JOIN recomended_comments rc
                       ON rc.id = u.id AND rc.id <> current_user_id
         WHERE comment_rating >= 3
         UNION
-        SELECT DISTINCT u.id, u.name,u.city,u.rating, u.profile_picture
+        SELECT DISTINCT u.id, u.name, u.profile_picture
         FROM users u
                  JOIN common_friends cf
                       ON cf.id = u.id AND cf.id <> current_user_id;

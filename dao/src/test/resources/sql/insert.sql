@@ -1,29 +1,24 @@
-﻿INSERT INTO languages (code)
-VALUES ('ua'),
-       ('en'),
-       ('ru');
-
-INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key, rating, last_activity_time, first_name, city, user_credo, show_location, show_eco_place, show_shopping_list)
-VALUES ( '2020-09-10 20:00:00', 'majboroda.artur@mail.com', 0, 'artur', '2020-09-10 21:00:00', 0, 2, 'z4hbh12chxb6vg1urh117-btu1wf-9jltmjl', 10, '2020-09-10 21:00:00', 'Artur', 'Lviv', 'Те, що противно природі, до добра ніколи не веде.', true, true, true),
-       ( '2020-09-10 20:00:00', 'komarov.eduard@mail.com', 0, 'eduard', '2020-09-10 21:00:00', 0, 2, '4u-qx6uyo-k1-6bscsluy3phvhkhvxvul2-3', 20, '2020-09-10 21:00:00', 'Eduard', 'Kyiv', 'Людина і природа - приклад ідеальної гармонії.', true, true, true),
-       ( '2020-03-10 20:00:00', 'oleksiv.shamil@mail.com', 0, 'shamil', '2020-09-10 21:00:00', 0, 2, '5rrbeueh431wzhhpwso070ci813u678jopzn', 20, '2020-03-10 21:00:00', 'Shamil', 'Dnipro', 'У свою годину своя поезія в природі', true, true, true),
-       ( '2020-08-10 20:00:00', 'irshov.grugorij@mail.com', 0, 'grugorij', '2020-09-10 21:00:00', 0, 2, 'hluhf7-n-ppl18sws9i-cfnve8dh2w2yzvth', 20, '2020-08-10 21:00:00', 'Grugorij', 'Kyiv', 'Немає нічого більш винахідливого, ніж природа.', true, true, true),
-       ( '2020-09-10 20:00:00', 'liakh.roman@mail.com', 0, 'roman', '2020-09-10 21:00:00', 0, 2, 'urx64695muw9dv56xefu8tzh-h5lxuj3tt3s', 20, '2020-09-10 21:00:00', 'Roman', 'Lviv', 'Людина не стане паном природи, поки вона не стала паном самого себе', true, true, true),
-       ( '2020-09-10 20:00:00', 'miasnuk.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '71-9b3xllh-bhf6tyre9kfrwax1p7f1nrbai', 20, '2020-09-10 21:00:00', 'Ihor', 'Kyiv', 'Шукання цілей в природі має своїм джерелом невігластво.', true, true, true),
-       ( '2020-06-10 20:00:00', 'efimov.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'gfzymgr7smf11pc8ib2g-2xx3w04cc65reqb', 20, '2020-06-10 21:00:00', 'Ivan', 'Dnipro', 'Основним законом природи є збереження людства.', true, true, true),
-       ( '2020-09-10 20:00:00', 'pochynok.petro@mail.com', 0, 'petro', '2020-09-10 21:00:00', 0, 2, 'ge2k72jqhg4b2qm4wr3hyf9z5gfoes588qpd', 20, '2020-09-10 21:00:00', 'Petro', 'Lviv', 'Найближче до Божества в цьому світі перебуває природа.', true, true, true),
-       ( '2020-09-10 20:00:00', 'serdyuk.orest@mail.com', 0, 'orest', '2020-09-10 21:00:00', 0, 2, '2lkgps5vmu-kh8eu9tuyvlxyrnerjgics62y', 20, '2020-09-10 21:00:00', 'Orest', 'Kyiv', 'Творіння природи досконаліше творінь мистецтва.', true, true, true),
-       ( '2020-08-10 20:00:00', 'shevtsov.oleksiy@mail.com', 0, 'oleksiy', '2020-09-10 21:00:00', 0, 2, 's-9pk7wplpebeyorjs-x-ckmkkdfqymvhpje', 20, '2020-08-10 21:00:00', 'Oleksiy', 'Kyiv', 'Природа - будинок, в якому живе людина.', true, true, true),
-       ( '2020-09-10 20:00:00', 'shumilo.yan@mail.com', 0, 'yan', '2020-09-10 21:00:00', 0, 2, '1r34z0-sntpdsbfqgwgp5x95mcdmnkrmxm6q', 20, '2020-09-10 21:00:00', 'Yan', 'Lviv', 'Найпрекрасніше в природі - відсутність людини', true, true, true),
-       ( '2020-09-10 20:00:00', 'volianskiy.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '1ppxdc33xgp58jpsd3ot674c7m2dk7fxpvls', 20, '2020-09-10 21:00:00', 'Ihor', 'Kharkiv', 'Природа - це все, що створено не людиною.', true, true, true),
-       ( '2020-06-10 20:00:00', 'tsal.vitaliy@mail.com', 0, 'vitaliy', '2020-09-10 21:00:00', 0, 2, 'nv0uyb3wts40dn59hxjtn0y99ozdzqg7qv41', 20, '2020-06-10 21:00:00', 'Vitaliy', 'Kyiv', 'Природа щедра у своїх діях і бережлива в пропонованих нею причинах.', true, true, true),
-       ( '2020-09-10 20:00:00', 'tarasyuk.danylo@mail.com', 0, 'danylo', '2020-09-10 21:00:00', 0, 2, '9jx2qsdc68jreooqjdrvcm4om6w3gkrs15e5', 20, '2020-09-10 21:00:00', 'Danylo', 'Dnipro', 'Природа людини полягає в тому, щоб весь час йти вперед.', true, true, true),
-       ( '2020-02-10 20:00:00', 'spilberg.marian@mail.com', 0, 'marian', '2020-09-10 21:00:00', 0, 2, 'v9b7mrhgv2vgylk3mbqgap3vqxbkwc3jhk0w', 20, '2020-02-10 21:00:00', 'Marian', 'Kharkiv', 'Вітер є подихом природи.', true, true, true),
-       ( '2020-06-10 20:00:00', 'sirko.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'yqoc64aqppu29vwuv1xjvmzvkrjpfq-0gamn', 20, '2020-06-10 21:00:00', 'Ivan', 'Kyiv', ' У природі є і зерна, і труха.', true, true, true),
-       ( '2020-01-10 20:00:00', 'samsonov.rafael@mail.com', 0, 'Rafael', '2020-09-10 21:00:00', 0, 2, 'b9mq-zgsbz0sbe-48mgknakngryo1vrxiufp', 20, '2020-01-10 21:00:00', 'Rafael', 'Lviv', ' У природі ніщо не пропадає, крім самої природи.', true, true, true),
-       ( '2020-03-10 20:00:00', 'bytko.makar@mail.com', 0, 'makar', '2020-09-10 21:00:00', 0, 2, 'f781l5dghyz5gfksqdn2563hs1-ggol4l9u8', 20, '2020-03-10 21:00:00', 'Makar', 'Kyiv', ' Час знищує помилкові думки, а судження природи підтверджує.', true, true, true),
-       ( '2020-10-10 20:00:00', 'pavluk.lyka@mail.com', 0, 'lyka', '2020-09-10 21:00:00', 0, 2, 'udjysmn69eylpy30zxzigjwou5-2chze1uao', 20, '2020-10-10 21:00:00', 'Lyka', 'Kharkiv', 'Природа не храм, а майстерня, і людина в ній працівник.', true, true, true),
-       ( '2020-09-10 20:00:00', 'davudov.illia@mail.com', 0, 'Illia', '2020-09-10 21:00:00', 0, 2, 'ap8mkg6hosr9nr9zq-xgqskay2vyzdxvlmuy', 20, '2020-09-10 21:00:00', 'Illia', 'Kyiv', ' Природа не робить людей, люди роблять себе самі.', true, true, true);
+﻿INSERT INTO users (date_of_registration, email, email_notification, name, last_visit, role, user_status, refresh_token_key, rating, last_activity_time, first_name, city, user_credo, show_location, show_eco_place, show_shopping_list)
+VALUES ('2020-09-10 20:00:00', 'majboroda.artur@mail.com', 0, 'artur', '2020-09-10 21:00:00', 0, 2, 'z4hbh12chxb6vg1urh117-btu1wf-9jltmjl', 10, '2020-09-10 21:00:00', 'Artur', 'Lviv', 'Те, що противно природі, до добра ніколи не веде.', true, true, true),
+       ('2020-09-10 20:00:00', 'komarov.eduard@mail.com', 0, 'eduard', '2020-09-10 21:00:00', 0, 2, '4u-qx6uyo-k1-6bscsluy3phvhkhvxvul2-3', 20, '2020-09-10 21:00:00', 'Eduard', 'Kyiv', 'Людина і природа - приклад ідеальної гармонії.', true, true, true),
+       ('2020-03-10 20:00:00', 'oleksiv.shamil@mail.com', 0, 'shamil', '2020-09-10 21:00:00', 0, 2, '5rrbeueh431wzhhpwso070ci813u678jopzn', 20, '2020-03-10 21:00:00', 'Shamil', 'Dnipro', 'У свою годину своя поезія в природі', true, true, true),
+       ('2020-08-10 20:00:00', 'irshov.grugorij@mail.com', 0, 'grugorij', '2020-09-10 21:00:00', 0, 2, 'hluhf7-n-ppl18sws9i-cfnve8dh2w2yzvth', 20, '2020-08-10 21:00:00', 'Grugorij', 'Kyiv', 'Немає нічого більш винахідливого, ніж природа.', true, true, true),
+       ('2020-09-10 20:00:00', 'liakh.roman@mail.com', 0, 'roman', '2020-09-10 21:00:00', 0, 2, 'urx64695muw9dv56xefu8tzh-h5lxuj3tt3s', 20, '2020-09-10 21:00:00', 'Roman', 'Lviv', 'Людина не стане паном природи, поки вона не стала паном самого себе', true, true, true),
+       ('2020-09-10 20:00:00', 'miasnuk.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '71-9b3xllh-bhf6tyre9kfrwax1p7f1nrbai', 20, '2020-09-10 21:00:00', 'Ihor', 'Kyiv', 'Шукання цілей в природі має своїм джерелом невігластво.', true, true, true),
+       ('2020-06-10 20:00:00', 'efimov.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'gfzymgr7smf11pc8ib2g-2xx3w04cc65reqb', 20, '2020-06-10 21:00:00', 'Ivan', 'Dnipro', 'Основним законом природи є збереження людства.', true, true, true),
+       ('2020-09-10 20:00:00', 'pochynok.petro@mail.com', 0, 'petro', '2020-09-10 21:00:00', 0, 2, 'ge2k72jqhg4b2qm4wr3hyf9z5gfoes588qpd', 20, '2020-09-10 21:00:00', 'Petro', 'Lviv', 'Найближче до Божества в цьому світі перебуває природа.', true, true, true),
+       ('2020-09-10 20:00:00', 'serdyuk.orest@mail.com', 0, 'orest', '2020-09-10 21:00:00', 0, 2, '2lkgps5vmu-kh8eu9tuyvlxyrnerjgics62y', 20, '2020-09-10 21:00:00', 'Orest', 'Kyiv', 'Творіння природи досконаліше творінь мистецтва.', true, true, true),
+       ('2020-08-10 20:00:00', 'shevtsov.oleksiy@mail.com', 0, 'oleksiy', '2020-09-10 21:00:00', 0, 2, 's-9pk7wplpebeyorjs-x-ckmkkdfqymvhpje', 20, '2020-08-10 21:00:00', 'Oleksiy', 'Kyiv', 'Природа - будинок, в якому живе людина.', true, true, true),
+       ('2020-09-10 20:00:00', 'shumilo.yan@mail.com', 0, 'yan', '2020-09-10 21:00:00', 0, 2, '1r34z0-sntpdsbfqgwgp5x95mcdmnkrmxm6q', 20, '2020-09-10 21:00:00', 'Yan', 'Lviv', 'Найпрекрасніше в природі - відсутність людини', true, true, true),
+       ('2020-09-10 20:00:00', 'volianskiy.ihor@mail.com', 0, 'ihor', '2020-09-10 21:00:00', 0, 2, '1ppxdc33xgp58jpsd3ot674c7m2dk7fxpvls', 20, '2020-09-10 21:00:00', 'Ihor', 'Kharkiv', 'Природа - це все, що створено не людиною.', true, true, true),
+       ('2020-06-10 20:00:00', 'tsal.vitaliy@mail.com', 0, 'vitaliy', '2020-09-10 21:00:00', 0, 2, 'nv0uyb3wts40dn59hxjtn0y99ozdzqg7qv41', 20, '2020-06-10 21:00:00', 'Vitaliy', 'Kyiv', 'Природа щедра у своїх діях і бережлива в пропонованих нею причинах.', true, true, true),
+       ('2020-09-10 20:00:00', 'tarasyuk.danylo@mail.com', 0, 'danylo', '2020-09-10 21:00:00', 0, 2, '9jx2qsdc68jreooqjdrvcm4om6w3gkrs15e5', 20, '2020-09-10 21:00:00', 'Danylo', 'Dnipro', 'Природа людини полягає в тому, щоб весь час йти вперед.', true, true, true),
+       ('2020-02-10 20:00:00', 'spilberg.marian@mail.com', 0, 'marian', '2020-09-10 21:00:00', 0, 2, 'v9b7mrhgv2vgylk3mbqgap3vqxbkwc3jhk0w', 20, '2020-02-10 21:00:00', 'Marian', 'Kharkiv', 'Вітер є подихом природи.', true, true, true),
+       ('2020-06-10 20:00:00', 'sirko.ivan@mail.com', 0, 'ivan', '2020-09-10 21:00:00', 0, 2, 'yqoc64aqppu29vwuv1xjvmzvkrjpfq-0gamn', 20, '2020-06-10 21:00:00', 'Ivan', 'Kyiv', ' У природі є і зерна, і труха.', true, true, true),
+       ('2020-01-10 20:00:00', 'samsonov.rafael@mail.com', 0, 'Rafael', '2020-09-10 21:00:00', 0, 2, 'b9mq-zgsbz0sbe-48mgknakngryo1vrxiufp', 20, '2020-01-10 21:00:00', 'Rafael', 'Lviv', ' У природі ніщо не пропадає, крім самої природи.', true, true, true),
+       ('2020-03-10 20:00:00', 'bytko.makar@mail.com', 0, 'makar', '2020-09-10 21:00:00', 0, 2, 'f781l5dghyz5gfksqdn2563hs1-ggol4l9u8', 20, '2020-03-10 21:00:00', 'Makar', 'Kyiv', ' Час знищує помилкові думки, а судження природи підтверджує.', true, true, true),
+       ('2020-10-10 20:00:00', 'pavluk.lyka@mail.com', 0, 'lyka', '2020-09-10 21:00:00', 0, 2, 'udjysmn69eylpy30zxzigjwou5-2chze1uao', 20, '2020-10-10 21:00:00', 'Lyka', 'Kharkiv', 'Природа не храм, а майстерня, і людина в ній працівник.', true, true, true),
+       ('2020-09-10 20:00:00', 'davudov.illia@mail.com', 0, 'Illia', '2020-09-10 21:00:00', 0, 2, 'ap8mkg6hosr9nr9zq-xgqskay2vyzdxvlmuy', 20, '2020-09-10 21:00:00', 'Illia', 'Kyiv', ' Природа не робить людей, люди роблять себе самі.', true, true, true);
 
 INSERT INTO own_security (password, user_id)
 VALUES ('stUqzeknlmu20e7LSo$XgmMipqvyYXj/$mRRPfLzyPOSyIWeimtaZ00q$$dg', 1),
@@ -47,14 +42,15 @@ VALUES ('stUqzeknlmu20e7LSo$XgmMipqvyYXj/$mRRPfLzyPOSyIWeimtaZ00q$$dg', 1),
        ('KqA0tXuyR7qhFoGIA5mZdSBf0NB0ho/ocq7UM4SlKdCwDU40dG4Q96nlDIBH', 19),
        ('G2F42pURxPrpJZZOk8ikyZ4c2pVY0q7kDsQlNLUdpIBr9MuPALhaIB7fnRvD', 20);
 
-INSERT INTO users_friends (user_id, friend_id, status, created_date)
-VALUES (1, 2, 1, '2020-09-10 21:00:00'), (1, 3, 1, '2020-09-10 21:00:00'), (1, 4, 1, '2020-09-10 21:00:00'), (1, 5, 1, '2020-09-10 21:00:00'), (1, 6, 1, '2020-09-10 21:00:00'), (1, 7, 1, '2020-09-10 21:00:00'),
-       (2, 1, 1, '2020-09-10 21:00:00'), (2, 3, 1, '2020-09-10 21:00:00'), (2, 4, 1, '2020-09-10 21:00:00'), (2, 5, 1, '2020-09-10 21:00:00'), (2, 6, 1, '2020-09-10 21:00:00'), (2, 7, 1, '2020-09-10 21:00:00'),
-       (3, 1, 1, '2020-09-10 21:00:00'), (3, 2, 1, '2020-09-10 21:00:00'), (3, 4, 1, '2020-09-10 21:00:00'), (3, 5, 1, '2020-09-10 21:00:00'), (3, 6, 1, '2020-09-10 21:00:00'), (3, 7, 1, '2020-09-10 21:00:00'),
-       (4, 1, 1, '2020-09-10 21:00:00'), (4, 2, 1, '2020-09-10 21:00:00'), (4, 3, 1, '2020-09-10 21:00:00'), (4, 5, 1, '2020-09-10 21:00:00'), (4, 6, 1, '2020-09-10 21:00:00'), (4, 7, 1, '2020-09-10 21:00:00'),
-       (5, 1, 1, '2020-09-10 21:00:00'), (5, 2, 1, '2020-09-10 21:00:00'), (5, 3, 1, '2020-09-10 21:00:00'), (5, 4, 1, '2020-09-10 21:00:00'), (5, 6, 1, '2020-09-10 21:00:00'), (5, 7, 1, '2020-09-10 21:00:00'),
-       (6, 1, 1, '2020-09-10 21:00:00'), (6, 2, 1, '2020-09-10 21:00:00'), (6, 3, 1, '2020-09-10 21:00:00'), (6, 4, 1, '2020-09-10 21:00:00'), (6, 5, 1, '2020-09-10 21:00:00'), (6, 7, 1, '2020-09-10 21:00:00'),
-       (7, 1, 1, '2020-09-10 21:00:00'), (7, 2, 1, '2020-09-10 21:00:00'), (7, 3, 1, '2020-09-10 21:00:00'), (7, 4, 1, '2020-09-10 21:00:00'), (7, 5, 1, '2020-09-10 21:00:00'), (7, 6, 1, '2020-09-10 21:00:00');
+INSERT INTO users_friends (user_id, friend_id)
+VALUES (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7),
+       (2, 1), (2, 3), (2, 4), (2, 5), (2, 6), (2, 7),
+       (3, 1), (3, 2), (2, 4), (2, 5), (2, 6), (2, 7),
+       (4, 1), (4, 2), (4, 3), (4, 5), (4, 6), (4, 7),
+       (5, 1), (5, 2), (5, 3), (5, 4), (5, 6), (5, 7),
+       (6, 1), (6, 2), (6, 3), (6, 4), (6, 5), (6, 7),
+       (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6);
+
 
 INSERT INTO user_achievements (user_id, achievement_id, achievement_status)
 VALUES (1, 1, 'ACTIVE'),
@@ -68,6 +64,23 @@ VALUES (1, 1, 'ACTIVE'),
        (9, 9, 'INACTIVE'),
        (10, 10, 'ACTIVE');
 
+INSERT INTO custom_goals (text, user_id, status, date_completed)
+VALUES ('Choose eco-transport', 1, 'DONE', '2020-09-10 20:00:001'),
+       ('Buy a bamboo brush', 1, 'DONE', '2020-09-10 20:00:001'),
+       ('Buy composter', 1, 'ACTIVE', null),
+       ('Start sorting trash', 1, 'ACTIVE', null),
+       ('Start recycling batteries', 2, 'DONE', '2020-09-10 20:00:001'),
+       ('Finish book about vegans', 2, 'ACTIVE', null),
+       ('Give up plastic', 3, 'ACTIVE', null),
+       ('Carry a paper bag', 3, 'ACTIVE', null),
+       ('Use paper cups', 3, 'ACTIVE', null),
+       ('Buy only loose tea', 3, 'ACTIVE', null);
+
+INSERT INTO shoppingListItems (id)
+VALUES (1), (2), (3),
+       (4), (5), (6),
+       (7), (8), (9), (10);
+
 INSERT INTO achievement_categories(name)
 VALUES ('Econews'),
        ('Rating'),
@@ -76,6 +89,11 @@ VALUES ('Econews'),
 INSERT INTO achievements (achievement_category_id, condition)
 VALUES ('1', '10'),
        ('1', '20');
+
+INSERT INTO languages (code)
+VALUES ('ua'),
+       ('en'),
+       ('ru');
 
 INSERT INTO achievement_translations (title, description, message, language_id, achievement_id)
 VALUES ('Вітаємо', 'Реєстраці', 'Вітаємо на Green City', '1', '1'),
@@ -207,18 +225,18 @@ VALUES (3, 1, 1),
        (45, 8, 6),
        (45, 9, 6);
 
-INSERT INTO tags (type)
-VALUES ('ECO_NEWS'),
-       ('ECO_NEWS'),
-       ('ECO_NEWS'),
-       ('ECO_NEWS'),
-       ('HABIT'),
-       ('HABIT'),
-       ('HABIT'),
-       ('HABIT'),
-       ('TIPS_AND_TRICKS'),
-       ('TIPS_AND_TRICKS'),
-       ('TIPS_AND_TRICKS');
+INSERT INTO tags (id, type)
+VALUES (1, 'ECO_NEWS'),
+       (2, 'ECO_NEWS'),
+       (3, 'ECO_NEWS'),
+       (4, 'ECO_NEWS'),
+       (5, 'HABIT'),
+       (6, 'HABIT'),
+       (7, 'HABIT'),
+       (8, 'HABIT'),
+       (9, 'TIPS_AND_TRICKS'),
+       (10, 'TIPS_AND_TRICKS'),
+       (11, 'TIPS_AND_TRICKS');
 
 insert into tag_translations values(1, 'Новини', 1, 1);
 insert into tag_translations values(2, 'News', 1, 2);
@@ -377,6 +395,38 @@ VALUES ('Forum', 1, 1),
        ('Mountain High Castle', 9, 11),
        ('Ekotel', 10, 12);
 
+INSERT INTO goal_translations (content, goal_id, language_id)
+VALUES ('Вибирайте екотранспорт', 1, 1),
+       ('Choose eco-transport', 1, 2),
+       ('Выбирайте эко-транспорт', 1, 3),
+       ('Купіть бамбукову щітку', 2, 1),
+       ('Buy a bamboo brush', 2, 2),
+       ('Купитe бамбуковую щетку', 2, 3),
+       ('Придбайте компостер', 3, 1),
+       ('Buy composter', 3, 2),
+       ('Купите компостер', 3, 3),
+       ('Почніть сортувати сміття', 4, 1),
+       ('Start sorting trash', 4, 2),
+       ('Начните сортировать мусор', 4, 3),
+       ('Почніть переробляти акумулятори', 5, 1),
+       ('Start recycling batteries', 5, 2),
+       ('Начать переработку аккумуляторов', 5, 3),
+       ('Прочитати книгу про вегетаріанство', 6, 1),
+       ('Finish book about vegans', 6, 2),
+       ('Закончить книгу о вегетарианстве', 6, 3),
+       ('Відмовтеся від пластику', 7, 1),
+       ('Give up plastic', 7, 2),
+       ('Откажитесь от пластика', 7, 3),
+       ('Носіть паперовий пакет', 8, 1),
+       ('Carry a paper bag', 8, 2),
+       ('Носите бумажный пакет', 8, 3),
+       ('Використовуйте паперові склянки', 9, 1),
+       ('Use paper cups', 9, 2),
+       ('Используйте бумажные стаканчики', 9, 3),
+       ('Купуйте тільки розсипний чай', 10, 1),
+       ('Buy only loose tea', 10, 2),
+       ('Покупайте только рассыпной чай', 10, 3);
+
 INSERT INTO habit_facts (habit_id)
 VALUES (1),
        (2),
@@ -413,7 +463,17 @@ VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
 INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
 VALUES ('2020-09-10', 1);
+
+INSERT INTO habit_goals (id, habit_id, goal_id)
+VALUES (1,1,1),
+       (2,1,2),
+       (3,1,3),
+       (4,1,4);
 -- HABITS END --
+
+INSERT INTO user_goals (habit_assign_id, goal_id, status, date_completed)
+VALUES (1, 2, 'DONE', '2020-09-10 20:00:001'),
+       (1, 3, 'DONE', '2020-09-11 18:00:001');
 
 INSERT INTO news_subscribers (email_address, unsubscribe_token)
 VALUES ('majboroda.artur@mail.com', 'a06b0b4e-8696-419c-a776-611c36f79d39'),
