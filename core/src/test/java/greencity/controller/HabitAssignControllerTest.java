@@ -3,6 +3,8 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import static greencity.ModelUtils.getPrincipal;
+
+import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -15,12 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+
+import static greencity.ModelUtils.getUserVO;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,6 +34,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @ExtendWith(MockitoExtension.class)
 class HabitAssignControllerTest {
     private MockMvc mockMvc;
+
+    @Mock
+    private RestClient restClient;
 
     @Mock
     HabitAssignService habitAssignService;
@@ -91,12 +100,39 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void getActiveHabitAssignBetweenDatesTest() throws Exception {
+    void getHabitAssignBetweenDatesTest() throws Exception {
         Locale locale = new Locale("en", "US");
         mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", LocalDate.now(), LocalDate.now().plusDays(2L)))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findActiveHabitAssignsBetweenDates(null, LocalDate.now(),
+        verify(habitAssignService).findHabitAssignsBetweenDates(null, LocalDate.now(),
             LocalDate.now().plusDays(2L), "en");
+    }
+
+    @Test
+    void cancelHabitAssign() throws Exception {
+        mockMvc.perform(patch(habitLink + "/cancel/{habitId}", 1L)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).cancelHabitAssign(1L, null);
+    }
+
+    @Test
+    void getHabitAssignByHabitIdTest() throws Exception {
+        mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).findHabitAssignByUserIdAndHabitId(null, 1L, "en");
+    }
+
+    @Test
+    void getCurrentUserHabitAssignsByIdAndAcquired() throws Exception {
+        mockMvc.perform(get(habitLink)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
     }
 }
