@@ -1,5 +1,10 @@
 package greencity.client;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
@@ -9,14 +14,19 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
-import greencity.enums.Role;
-import greencity.enums.UserStatus;
+import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.SendReportEmailMessage;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,14 +38,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
@@ -57,8 +59,10 @@ class RestClientTest {
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_FIND_BY_EMAIL
+        when(restTemplate.exchange("https://www.greencity.com.ua" + RestTemplateLinks.USER_FIND_BY_EMAIL
             + RestTemplateLinks.EMAIL + "taras@gmail.com", HttpMethod.GET,
             entity, UserVO.class)).thenReturn(ResponseEntity.ok(userVO));
 
@@ -104,8 +108,10 @@ class RestClientTest {
         List<UserManagementDto> ecoNewsDtos = Collections.singletonList(new UserManagementDto());
         PageableAdvancedDto<UserManagementDto> pageableAdvancedDto =
             new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0, true, true, true, true);
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        when(restTemplate.exchange("https://www.greencity.com.ua"
             + RestTemplateLinks.SEARCH_BY + RestTemplateLinks.PAGE + pageable.getPageNumber()
             + RestTemplateLinks.SIZE + pageable.getPageSize()
             + RestTemplateLinks.QUERY + query, HttpMethod.GET, entity,
@@ -204,8 +210,10 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        RestClient restClient = new RestClient(restTemplate, httpServletRequest);
+        restClient.setGreenCityUserServerAddress("https://www.greencity.com.ua");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        when(restTemplate.exchange("https://www.greencity.com.ua"
             + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
             + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class))
                 .thenReturn(ResponseEntity.ok(1L));
@@ -296,6 +304,70 @@ class RestClientTest {
 
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void addEcoNews() {
+        AddEcoNewsMessage message = ModelUtils.getAddEcoNewsMessage();
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.addEcoNews(message);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendReport() {
+        SendReportEmailMessage message = ModelUtils.getSendReportEmailMessage();
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendReport(message);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void changePlaceStatus() {
+        SendChangePlaceStatusEmailMessage message = ModelUtils.getSendChangePlaceStatusEmailMessage();
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.changePlaceStatus(message);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendHabitNotification() {
+        SendHabitNotification notification = ModelUtils.getSendHabitNotification();
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendHabitNotification(notification);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 
     @Test

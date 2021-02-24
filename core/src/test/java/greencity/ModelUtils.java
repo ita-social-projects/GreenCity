@@ -23,8 +23,8 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-import greencity.dto.goal.GoalPostDto;
-import greencity.dto.goal.GoalRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -54,7 +54,7 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
-import greencity.entity.localization.GoalTranslation;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -226,34 +226,37 @@ public class ModelUtils {
             .build();
     }
 
-    public static GoalTranslation getGoalTranslation() {
-        return GoalTranslation.builder()
+    public static ShoppingListItemTranslation getShoppingListItemTranslation() {
+        return ShoppingListItemTranslation.builder()
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
-            .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+            .shoppingListItem(
+                new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
             .build();
     }
 
-    public static List<GoalTranslation> getGoalTranslations() {
+    public static List<ShoppingListItemTranslation> getShoppingListItemTranslations() {
         return Arrays.asList(
-            GoalTranslation.builder()
+            ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
-                .goal(new Goal(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .shoppingListItem(
+                    new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build(),
-            GoalTranslation.builder()
+            ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
                     Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
-                .goal(new Goal(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .shoppingListItem(
+                    new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
                 .build());
     }
 
@@ -575,8 +578,8 @@ public class ModelUtils {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
-    public static GoalPostDto getGoalPostDto() {
-        return new GoalPostDto(getLanguageTranslationsDTOs(), new GoalRequestDto(1L));
+    public static ShoppingListItemPostDto getShoppingListItemPostDto() {
+        return new ShoppingListItemPostDto(getLanguageTranslationsDTOs(), new ShoppingListItemRequestDto(1L));
     }
 
     public static List<AchievementTranslationVO> getAchievementTranslationVOS() {
@@ -600,10 +603,10 @@ public class ModelUtils {
             new AchievementCategoryVO(1L, "name", null, null), 1);
     }
 
-    public static UserGoal getUserGoal() {
-        return UserGoal.builder()
+    public static UserShoppingListItem getUserShoppingListItem() {
+        return UserShoppingListItem.builder()
             .id(1L)
-            .status(GoalStatus.DONE)
+            .status(ShoppingListItemStatus.DONE)
             .habitAssign(HabitAssign.builder()
                 .id(1L)
                 .status(HabitAssignStatus.ACQUIRED)
@@ -612,7 +615,7 @@ public class ModelUtils {
                 .lastEnrollmentDate(ZonedDateTime.now())
                 .workingDays(5)
                 .build())
-            .goal(Goal.builder()
+            .shoppingListItem(ShoppingListItem.builder()
                 .id(1L)
                 .build())
             .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))

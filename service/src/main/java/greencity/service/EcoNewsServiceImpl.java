@@ -1,31 +1,21 @@
 package greencity.service;
 
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
-import greencity.constant.RabbitConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.EcoNewsViewDto;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
-import greencity.entity.EcoNewsComment;
-import greencity.entity.EcoNews_;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
@@ -47,8 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -68,13 +56,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
-    private final RabbitTemplate rabbitTemplate;
     private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
-    @Value("${messaging.rabbit.email.topic}")
-    private String sendEmailTopic;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
 
@@ -118,9 +103,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-
-        rabbitTemplate.convertAndSend(sendEmailTopic, RabbitConstants.ADD_ECO_NEWS_ROUTING_KEY,
-            buildAddEcoNewsMessage(toSave));
+        restClient.addEcoNews(buildAddEcoNewsMessage(toSave));
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS, 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
