@@ -1,5 +1,5 @@
 ---
-name: User story 
+name: User story
 about: Describe story goal
 title: ''
 labels: User story
