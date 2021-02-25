@@ -82,5 +82,7 @@
     <include file="db/changelog/logs/ch-rename-goal-to-shoping-list-item-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-add-language-column-to-user-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-add-column-Diakiv.xml"/>
+    <include file="db/changelog/logs/ch-add-column-imageName-to-chatMessages-Bezrukavyy.xml"/>
+    <include file="db/changelog/logs/ch-add-column-participantId-to-chatMessages-Bezrukavyy.xml"/>
 </databaseChangeLog>
 
