@@ -72,10 +72,10 @@ public class AchievementController {
     })
     @PostMapping("/calculate-achievement")
     public ResponseEntity<HttpStatus> calculateAchievements(@RequestParam Long id,
-        @RequestParam AchievementType achievementType,
-        @RequestParam AchievementCategoryType achievementCategory,
-        @RequestParam Integer size) {
-        achievementService.calculateAchievements(id, achievementType, achievementCategory, size);
+        @RequestParam AchievementType setter,
+        @RequestParam AchievementCategoryType socialNetwork,
+        @RequestParam int size) {
+        achievementService.calculateAchievements(id, setter, socialNetwork, size);
         return ResponseEntity.ok().build();
     }
 }
