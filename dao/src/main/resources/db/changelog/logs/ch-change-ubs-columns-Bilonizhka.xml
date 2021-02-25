@@ -26,7 +26,9 @@
 
     <changeSet id="Bilonizhka20" author="Oleh Bilonizhka">
         <createTable tableName="order_additional-order">
-            <column name="order_id" type="bigint"/>
+            <column name="order_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
             <column name="additional-order" type="varchar(10)"/>
         </createTable>
         <addPrimaryKey tableName="order_additional-order" columnNames="order_id, additional-order"/>
