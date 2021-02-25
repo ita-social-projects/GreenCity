@@ -29,7 +29,9 @@
             <column name="order_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
-            <column name="additional-order" type="varchar(10)"/>
+            <column name="additional-order" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <addPrimaryKey tableName="order_additional-order" columnNames="order_id, additional-order"/>
 
