@@ -110,7 +110,8 @@ public class CustomShoppingListItemController {
     public ResponseEntity<CustomShoppingListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
         @RequestParam("itemId") Long itemId,
         @RequestParam("status") String itemStatus) {
-        return ResponseEntity.status(HttpStatus.OK).body(customShoppingListItemService.updateItemStatus(userId, itemId, itemStatus));
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customShoppingListItemService.updateItemStatus(userId, itemId, itemStatus));
     }
 
     /**
