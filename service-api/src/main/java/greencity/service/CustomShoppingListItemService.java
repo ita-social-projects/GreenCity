@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.dto.shoppinglistitem.BulkCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;

@@ -158,6 +158,15 @@ class CustomShoppingListItemServiceImplTest {
         when(customShoppingListItemRepo.save(customShoppingListItem)).thenReturn(customShoppingListItem);
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class)).thenReturn(test);
         assertEquals(test, customShoppingListItemService.updateItemStatus(64L, 1L, "DONE"));
+        CustomShoppingListItem customShoppingListItem1 =
+            new CustomShoppingListItem(2L, "test", null, ShoppingListItemStatus.ACTIVE, null);
+        CustomShoppingListItemResponseDto test1 =
+            new CustomShoppingListItemResponseDto(2L, "test", ShoppingListItemStatus.ACTIVE);
+        when(customShoppingListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customShoppingListItem1);
+        when(customShoppingListItemRepo.save(customShoppingListItem1)).thenReturn(customShoppingListItem1);
+        when(modelMapper.map(customShoppingListItem1, CustomShoppingListItemResponseDto.class)).thenReturn(test1);
+        assertEquals(test1, customShoppingListItemService.updateItemStatus(12L, 2L, "ACTIVE"));
+
     }
 
     @Test

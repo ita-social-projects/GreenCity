@@ -13,7 +13,6 @@ import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -188,10 +187,6 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      */
     @Override
     public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId) {
-        List<CustomShoppingListItem> list =
-            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId);
-        System.out.println(list);
-        System.out.println();
         return modelMapper.map(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId),
             new TypeToken<List<CustomShoppingListItemResponseDto>>() {
             }.getType());
@@ -223,25 +218,5 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private CustomShoppingListItem findOne(Long id) {
         return customShoppingListItemRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID + " " + id));
-    }
-
-    /**
-     * Method for update one object of user custom shopping list item.
-     *
-     * @param dto object for update.
-     * @return {@link CustomShoppingListItemResponseDto}
-     * @author Bogdan Kuzenko.
-     */
-    private CustomShoppingListItemResponseDto update(CustomShoppingListItemResponseDto dto) {
-        CustomShoppingListItem updatable = findOne(dto.getId());
-        List<CustomShoppingListItem> duplicate = updatable.getUser().getCustomShoppingListItems()
-            .stream().filter(o -> o.getText().equals(dto.getText())).collect(Collectors.toList());
-        if (duplicate.isEmpty()) {
-            updatable.setText(dto.getText());
-        } else {
-            throw new CustomShoppingListItemNotSavedException(
-                ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + dto.getText());
-        }
-        return modelMapper.map(updatable, CustomShoppingListItemResponseDto.class);
     }
 }
