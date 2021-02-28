@@ -3,6 +3,7 @@ package greencity.dto.shoppinglistitem;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
+import greencity.enums.ShoppingListItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,4 +22,6 @@ public class CustomShoppingListItemResponseDto {
     private Long id;
     @NotEmpty
     private String text;
+    @NotEmpty
+    private ShoppingListItemStatus status;
 }

@@ -2,12 +2,10 @@ package greencity.controller;
 
 import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
-import greencity.dto.shoppinglistitem.BulkCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.user.BulkSaveUserShoppingListItemDto;
-import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomShoppingListItemService;
 import io.swagger.annotations.ApiOperation;
@@ -91,26 +89,28 @@ public class CustomShoppingListItemController {
     }
 
     /**
-     * Method updated user custom shopping list items.
+     * Method updated user custom shopping list items to status DONE.
      *
-     * @param userId {@link UserVO} id
-     * @param dto    {@link BulkCustomShoppingListItemDto} with list objects for
-     *               update
+     * @param userId     {@link UserVO} id
+     * @param itemId     {@link Long} with needed item id.
+     * @param itemStatus {@link String} with needed item status.
+     *
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
-    @ApiOperation(value = "Update user custom hopping list items")
+    @ApiOperation(value = "Update custom shopping list items status")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserRoleDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping("/{userId}/custom-shopping-list-items")
-    public ResponseEntity<List<CustomShoppingListItemResponseDto>> updateBulk(@PathVariable @CurrentUserId Long userId,
-        @Valid @RequestBody BulkCustomShoppingListItemDto dto) {
+    public ResponseEntity<CustomShoppingListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
+        @RequestParam("itemId") Long itemId,
+        @RequestParam("status") String itemStatus) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.updateBulk(dto));
+            .body(customShoppingListItemService.updateItemStatus(userId, itemId, itemStatus));
     }
 
     /**
