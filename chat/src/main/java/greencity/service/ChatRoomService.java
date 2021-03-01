@@ -74,4 +74,9 @@ public interface ChatRoomService {
      * {@inheritDoc}
      */
     ChatRoomDto manageParticipantsAndNameChatRoom(ChatRoomDto chatRoomDto, String email);
+
+    /**
+     * {@inheritDoc}
+     */
+    Long addNewUserToSystemChat(Long userId);
 }

@@ -210,4 +210,12 @@ public class ChatController {
     public void updateMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.updateMessage(chatMessageDto);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @PostMapping("/user")
+    public ResponseEntity<Long> addUserToSystemChatRoom(@RequestBody Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.addNewUserToSystemChat(userId));
+    }
 }

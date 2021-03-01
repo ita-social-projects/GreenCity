@@ -1,5 +1,6 @@
 package greencity.dto;
 
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import lombok.*;
 
@@ -18,4 +19,5 @@ public class ParticipantDto {
     private String profilePicture;
     private UserStatus userStatus;
     private List<ChatRoomDto> rooms;
+    private Role role;
 }

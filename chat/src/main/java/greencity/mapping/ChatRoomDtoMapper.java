@@ -40,7 +40,9 @@ public class ChatRoomDtoMapper extends AbstractConverter<ChatRoom, ChatRoomDto> 
                     .name(participant.getName())
                     .profilePicture(participant.getProfilePicture())
                     .id(participant.getId())
-                    .email(participant.getEmail()).build())
+                    .email(participant.getEmail())
+                    .role(participant.getRole())
+                    .build())
                 .collect(Collectors.toSet()))
             .build();
     }

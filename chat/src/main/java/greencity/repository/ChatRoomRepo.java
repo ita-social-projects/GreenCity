@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
@@ -63,4 +65,19 @@ public interface ChatRoomRepo extends JpaRepository<ChatRoom, Long>,
         + "LIKE LOWER(concat(?1, '%')) "
         + "AND p IN ?2")
     List<ChatRoom> findAllChatRoomsByQuery(String query, Participant participant);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Query("select cr from ChatRoom  cr where cr.type = 'SYSTEM'")
+    List<ChatRoom> findSystemChatRooms();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "insert into chat_rooms_participants(room_id,participant_id)"
+        + "values ( :chatroomid, :prticipantid )")
+    void addUserToSystemChatRoom(@Param("chatroomid") Long chatroomid, @Param("prticipantid") Long prticipantid);
 }

@@ -49,7 +49,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             .map(
                 rooms.stream()
                     .filter(chatRoom -> !chatRoom.getMessages().isEmpty() && chatRoom.getType().equals(ChatType.PRIVATE)
-                        || chatRoom.getType().equals(ChatType.GROUP))
+                        || chatRoom.getType().equals(ChatType.GROUP) || chatRoom.getType().equals(ChatType.SYSTEM))
                     .collect(Collectors.toList()),
                 new TypeToken<List<ChatRoomDto>>() {
                 }.getType());
@@ -203,5 +203,13 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.setType(ChatType.GROUP);
         chatRoomRepo.save(chatRoom);
         return chatRoomDto;
+    }
+
+    @Override
+    public Long addNewUserToSystemChat(Long userId) {
+        chatRoomRepo.findSystemChatRooms().forEach(chatRoom -> {
+            chatRoomRepo.addUserToSystemChatRoom(chatRoom.getId(), userId);
+        });
+        return userId;
     }
 }

@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import javax.persistence.*;
 import lombok.*;
@@ -29,4 +30,8 @@ public class Participant {
 
     @Enumerated(value = EnumType.ORDINAL)
     private UserStatus userStatus;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(nullable = false, name = "role")
+    private Role role;
 }
