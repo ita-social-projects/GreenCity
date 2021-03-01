@@ -207,9 +207,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     public Long addNewUserToSystemChat(Long userId) {
-        chatRoomRepo.findSystemChatRooms().forEach(chatRoom -> {
-            chatRoomRepo.addUserToSystemChatRoom(chatRoom.getId(), userId);
-        });
+        chatRoomRepo.findSystemChatRooms().forEach(chatRoom ->
+            chatRoomRepo.addUserToSystemChatRoom(chatRoom.getId(), userId)
+        );
         return userId;
     }
 }
