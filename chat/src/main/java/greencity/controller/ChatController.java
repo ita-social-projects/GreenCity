@@ -213,7 +213,7 @@ public class ChatController {
      * {@inheritDoc}
      */
     @MessageMapping("/chat")
-    public void processMessage(ChatMessageDto chatMessageDto) throws IOException {
+    public void processMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.processMessage(chatMessageDto);
     }
 
