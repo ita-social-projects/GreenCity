@@ -2,7 +2,11 @@ package greencity.repository;
 
 import greencity.DaoApplication;
 import greencity.entity.CustomShoppingListItem;
+
+import java.time.LocalDateTime;
 import java.util.List;
+
+import greencity.enums.ShoppingListItemStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +29,7 @@ class CustomShoppingListItemRepoTest {
     void findAllAvailableCustomShoppingListItemTest() {
         List<CustomShoppingListItem> customShoppingListItems =
             customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(1L);
-        assertEquals(3, customShoppingListItems.size());
+        assertEquals(2, customShoppingListItems.size());
     }
 
     @Test

@@ -21,7 +21,7 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
      * @return list of {@link CustomShoppingListItem}
      */
     @Query("SELECT cg FROM CustomShoppingListItem cg WHERE "
-        + " cg.status<>'ACTIVE' AND cg.user.id=:userId")
+        + " cg.status='ACTIVE' AND cg.user.id=:userId")
     List<CustomShoppingListItem> findAllAvailableCustomShoppingListItemsForUserId(@Param("userId") Long userId);
 
     /**
@@ -41,4 +41,15 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
      * @return list of {@link CustomShoppingListItem}
      */
     List<CustomShoppingListItem> findAllByUserId(Long id);
+
+    /**
+     * Method returns particular selected custom shopping list items for user.
+     *
+     * @param userId id of the {@link User} current user
+     * @param itemId item id {@link Long}
+     * @return {@link CustomShoppingListItem}
+     */
+    @Query("SELECT cg FROM CustomShoppingListItem cg WHERE"
+        + " cg.user.id=:userId and cg.id=:itemId")
+    CustomShoppingListItem findByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
 }

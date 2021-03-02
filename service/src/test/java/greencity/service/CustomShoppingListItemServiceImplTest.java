@@ -11,24 +11,33 @@ import greencity.entity.CustomShoppingListItem;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import static org.mockito.ArgumentMatchers.anyLong;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -82,7 +91,7 @@ class CustomShoppingListItemServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomShoppingListItem.class)).thenReturn(customShoppingListItem);
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
-            .thenReturn(new CustomShoppingListItemResponseDto(1L, "bar"));
+            .thenReturn(new CustomShoppingListItemResponseDto(1L, "bar", ShoppingListItemStatus.DONE));
         List<CustomShoppingListItemResponseDto> saveResult = customShoppingListItemService.save(
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave)),
             1L);
@@ -108,11 +117,12 @@ class CustomShoppingListItemServiceImplTest {
 
     @Test
     void findAllTest() {
-        CustomShoppingListItem customShoppingListItem = new CustomShoppingListItem(1L, "foo", null, null, null);
+        CustomShoppingListItem customShoppingListItem =
+            new CustomShoppingListItem(1L, "foo", null, ShoppingListItemStatus.DONE, null);
         when(customShoppingListItemRepo.findAll()).thenReturn(Collections.singletonList(customShoppingListItem));
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
-                customShoppingListItem.getText()));
+                customShoppingListItem.getText(), customShoppingListItem.getStatus()));
         List<CustomShoppingListItemResponseDto> findAllResult = customShoppingListItemService.findAll();
         assertEquals("foo", findAllResult.get(0).getText());
         assertEquals(1L, (long) findAllResult.get(0).getId());
@@ -127,72 +137,36 @@ class CustomShoppingListItemServiceImplTest {
 
     @Test
     void findByIdTest() {
-        CustomShoppingListItem customShoppingListItem = new CustomShoppingListItem(1L, "foo", null, null, null);
+        CustomShoppingListItem customShoppingListItem =
+            new CustomShoppingListItem(1L, "foo", null, ShoppingListItemStatus.DONE, null);
         when(customShoppingListItemRepo.findById(anyLong())).thenReturn(java.util.Optional.of(customShoppingListItem));
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
-                customShoppingListItem.getText()));
+                customShoppingListItem.getText(), customShoppingListItem.getStatus()));
         CustomShoppingListItemResponseDto findByIdResult = customShoppingListItemService.findById(1L);
         assertEquals("foo", findByIdResult.getText());
         assertEquals(1L, (long) findByIdResult.getId());
     }
 
     @Test
-    void updateEmptyInputBulkTest() {
-        List<CustomShoppingListItemResponseDto> updateBulkResult =
-            customShoppingListItemService.updateBulk(new BulkCustomShoppingListItemDto(Collections.emptyList()));
-        assertTrue(updateBulkResult.isEmpty());
-    }
-
-    @Test
-    void updateNonDuplicatedBulkIdTest() {
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            new CustomShoppingListItemResponseDto(1L, "foo");
+    void updateItemStatus() {
         CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(customShoppingListItemResponseDto.getId(),
-                customShoppingListItemResponseDto.getText(), user, null, null);
-        when(customShoppingListItemRepo.findById(customShoppingListItemResponseDto.getId()))
-            .thenReturn(Optional.of(customShoppingListItem));
-        when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class)).thenReturn(
-            customShoppingListItemResponseDto);
-        List<CustomShoppingListItemResponseDto> updateBulkResult =
-            customShoppingListItemService.updateBulk(new BulkCustomShoppingListItemDto(Collections.singletonList(
-                customShoppingListItemResponseDto)));
-        assertEquals(updateBulkResult.get(0).getId(), customShoppingListItemResponseDto.getId());
-        assertEquals(updateBulkResult.get(0).getText(), customShoppingListItemResponseDto.getText());
-    }
+            new CustomShoppingListItem(1L, "test", null, ShoppingListItemStatus.DONE, null);
+        CustomShoppingListItemResponseDto test =
+            new CustomShoppingListItemResponseDto(1L, "test", ShoppingListItemStatus.DONE);
+        when(customShoppingListItemRepo.findByUserIdAndItemId(64L, 1L)).thenReturn(customShoppingListItem);
+        when(customShoppingListItemRepo.save(customShoppingListItem)).thenReturn(customShoppingListItem);
+        when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class)).thenReturn(test);
+        assertEquals(test, customShoppingListItemService.updateItemStatus(64L, 1L, "DONE"));
+        CustomShoppingListItem customShoppingListItem1 =
+            new CustomShoppingListItem(2L, "test", null, ShoppingListItemStatus.ACTIVE, null);
+        CustomShoppingListItemResponseDto test1 =
+            new CustomShoppingListItemResponseDto(2L, "test", ShoppingListItemStatus.ACTIVE);
+        when(customShoppingListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customShoppingListItem1);
+        when(customShoppingListItemRepo.save(customShoppingListItem1)).thenReturn(customShoppingListItem1);
+        when(modelMapper.map(customShoppingListItem1, CustomShoppingListItemResponseDto.class)).thenReturn(test1);
+        assertEquals(test1, customShoppingListItemService.updateItemStatus(12L, 2L, "ACTIVE"));
 
-    @Test
-    void updateDuplicateBulkIdTest() {
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            new CustomShoppingListItemResponseDto(1L, "foo");
-        CustomShoppingListItem customShoppingListItem =
-            new CustomShoppingListItem(customShoppingListItemResponseDto.getId(),
-                customShoppingListItemResponseDto.getText(), user, null, null);
-        user.setCustomShoppingListItems(Collections.singletonList(customShoppingListItem));
-        when(customShoppingListItemRepo.findById(customShoppingListItemResponseDto.getId()))
-            .thenReturn(Optional.of(customShoppingListItem));
-        BulkCustomShoppingListItemDto bulkCustomShoppingListItemDto =
-            new BulkCustomShoppingListItemDto(Collections.singletonList(
-                customShoppingListItemResponseDto));
-        Assertions
-            .assertThrows(CustomShoppingListItemNotSavedException.class, () -> customShoppingListItemService.updateBulk(
-                bulkCustomShoppingListItemDto));
-    }
-
-    @Test
-    void updateNonExistentCustomShoppingListItemTest() {
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            new CustomShoppingListItemResponseDto(1L, "foo");
-        when(customShoppingListItemRepo.findById(customShoppingListItemResponseDto.getId()))
-            .thenReturn(Optional.empty());
-        BulkCustomShoppingListItemDto bulkCustomShoppingListItemDto =
-            new BulkCustomShoppingListItemDto(Collections.singletonList(
-                customShoppingListItemResponseDto));
-        Assertions
-            .assertThrows(NotFoundException.class,
-                () -> customShoppingListItemService
-                    .updateBulk(bulkCustomShoppingListItemDto));
     }
 
     @Test
@@ -212,9 +186,11 @@ class CustomShoppingListItemServiceImplTest {
 
     @Test
     void findAllByUserWithExistentIdTest() {
-        CustomShoppingListItem customShoppingListItem = new CustomShoppingListItem(1L, "foo", user, null, null);
+        CustomShoppingListItem customShoppingListItem =
+            new CustomShoppingListItem(1L, "foo", user, ShoppingListItemStatus.DONE, null);
         CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            new CustomShoppingListItemResponseDto(customShoppingListItem.getId(), customShoppingListItem.getText());
+            new CustomShoppingListItemResponseDto(customShoppingListItem.getId(), customShoppingListItem.getText(),
+                customShoppingListItem.getStatus());
         when(customShoppingListItemRepo.findAllByUserId(user.getId()))
             .thenReturn(Collections.singletonList(customShoppingListItem));
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))

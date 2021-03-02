@@ -1,10 +1,10 @@
 package greencity.service;
 
-import greencity.dto.shoppinglistitem.BulkCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.user.UserVO;
+
 import java.util.List;
 
 /**
@@ -48,13 +48,14 @@ public interface CustomShoppingListItemService {
     CustomShoppingListItemResponseDto findById(Long id);
 
     /**
-     * Method for an update list of custom shopping list items object.
+     * Method update custom shopping items status.
      *
-     * @param bulkCustomShoppingListItemDto {@link BulkCustomShoppingListItemDto}
-     *                                      with objects list for updating.
-     * @return list of updated {@link CustomShoppingListItemResponseDto}
+     * @param userId     {@link Long} user id.
+     * @param itemId     {@link Long} custom shopping list item id.
+     * @param itemStatus {@link String} custom shopping list item status.
+     * @return {@link CustomShoppingListItemResponseDto}
      */
-    List<CustomShoppingListItemResponseDto> updateBulk(BulkCustomShoppingListItemDto bulkCustomShoppingListItemDto);
+    CustomShoppingListItemResponseDto updateItemStatus(Long userId, Long itemId, String itemStatus);
 
     /**
      * Method for deleted list of custom shopping list items.
