@@ -17,5 +17,6 @@ public class ChatMessageDto {
     private Long senderId;
     private String content;
     private ZonedDateTime createDate;
-    private String imageName;
+    private String fileName;
+    private String fileType;
 }
