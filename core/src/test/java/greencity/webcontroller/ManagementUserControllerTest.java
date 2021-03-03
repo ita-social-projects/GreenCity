@@ -103,7 +103,7 @@ class ManagementUserControllerTest {
     void getReasonsOfDeactivation() throws Exception {
         List<String> test = List.of("test", "test");
         when(restClient.getDeactivationReason(1L, "en")).thenReturn(test);
-        this.mockMvc.perform(get(managementUserLink + "/reasons" + "?id=1" + "&lang=en")
+        this.mockMvc.perform(get(managementUserLink + "/reasons" + "?id=1" + "&admin=en")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).getDeactivationReason(1L, "en");
