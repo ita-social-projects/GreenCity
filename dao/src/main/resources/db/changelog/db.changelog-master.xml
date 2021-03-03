@@ -85,6 +85,8 @@
     <include file="db/changelog/logs/ch-add-column-participantId-to-chatMessages-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-add-column-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-change-ubs-columns-Bilonizhka.xml"/>
-    <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-column-fileType-to-chatMessages-Bezrukavyy.xml"/>
+    <include file="db/changelog/logs/ch-rename-column-imageName-in-fileName-Bezrukavyy.xml"/>
+  <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
 </databaseChangeLog>
 

@@ -30,5 +30,8 @@ public class ChatMessage {
     private ZonedDateTime createDate;
 
     @Column
-    private String imageName;
+    private String fileName;
+
+    @Column
+    private String fileType;
 }
