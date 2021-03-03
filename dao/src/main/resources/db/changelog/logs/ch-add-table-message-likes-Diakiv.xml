@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+<changeSet id="createTableMessageLikesInChat1" author="MarianDiakiv">
+    <createTable tableName="message_like">
+        <column name ="message_id" type="BIGINT"/>
+        <column name="participant_id" type="BIGINT"/>
+    </createTable>
+</changeSet>
+    <changeSet id="createTableMessageLikesInChat2" author="MarianDiakiv">
+        <addForeignKeyConstraint baseTableName="message_like" baseColumnNames="message_id"
+                                 constraintName="fk_message_id" referencedTableName="chat_messages"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="message_like" baseColumnNames="participant_id" constraintName="fk_participant_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addNotNullConstraint tableName="message_like" columnName="message_id" constraintName="message_id_not_null_constraint"/>
+        <addNotNullConstraint tableName="message_like" columnName="participant_id" constraintName="participant_id_not_null_constraint"/>
+
+    </changeSet>
+</databaseChangeLog>
