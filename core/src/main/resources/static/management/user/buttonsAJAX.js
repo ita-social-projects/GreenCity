@@ -295,7 +295,7 @@ $(document).ready(function () {
             currentLang = "en";
         }
         var href = $(this).attr('href');
-        let updateHref = href + "&lang=" + currentLang;
+        let updateHref = href + "&admin=" + currentLang;
         $('#activateUserModal').modal();
         $('#activateOneSubmit').attr('href', href);
         $.get(updateHref, function (allReasons, status) {

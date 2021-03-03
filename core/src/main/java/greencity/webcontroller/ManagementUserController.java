@@ -165,8 +165,8 @@ public class ManagementUserController {
     /**
      * Method for getting list of {@link String}.
      *
-     * @param id   {@link Long} - user's id.
-     * @param lang {@link String} - current administrator language.
+     * @param id        {@link Long} - user's id.
+     * @param adminLang {@link String} - current administrator language.
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.
      * @author Vlad Pikhotskyi
@@ -174,8 +174,8 @@ public class ManagementUserController {
     @GetMapping("/reasons")
     public ResponseEntity<List<String>> getReasonsOfDeactivation(
         @RequestParam("id") Long id,
-        @RequestParam("lang") String lang) {
-        return ResponseEntity.status(HttpStatus.OK).body(restClient.getDeactivationReason(id, lang));
+        @RequestParam("admin") String adminLang) {
+        return ResponseEntity.status(HttpStatus.OK).body(restClient.getDeactivationReason(id, adminLang));
     }
 
     /**

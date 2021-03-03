@@ -272,17 +272,17 @@ public class RestClient {
      * Method for getting a {@link List} of {@link String} - reasons for
      * deactivation of the current user.
      *
-     * @param userId {@link Long} - user's id.
-     * @param lang   {@link String} - current administrator language.
+     * @param userId    {@link Long} - user's id.
+     * @param adminLang {@link String} - current administrator language.
      * @return {@link List} of {@link String} - reasons for deactivation of the
      *         current user.
      * @author Vlad Pikhotskyi
      */
-    public List<String> getDeactivationReason(Long userId, String lang) {
+    public List<String> getDeactivationReason(Long userId, String adminLang) {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         String[] reasonDtos = restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_REASONS
             + RestTemplateLinks.ID + userId
-            + RestTemplateLinks.LANG + lang, HttpMethod.GET, entity, String[].class).getBody();
+            + RestTemplateLinks.ADMIN_LANG + adminLang, HttpMethod.GET, entity, String[].class).getBody();
         assert reasonDtos != null;
         return Arrays.asList(reasonDtos);
     }

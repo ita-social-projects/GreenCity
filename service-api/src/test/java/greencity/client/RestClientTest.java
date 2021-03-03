@@ -256,7 +256,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_REASONS
             + RestTemplateLinks.ID + 1L
-            + RestTemplateLinks.LANG + "en", HttpMethod.GET, entity, String[].class))
+            + RestTemplateLinks.ADMIN_LANG + "en", HttpMethod.GET, entity, String[].class))
                 .thenReturn(ResponseEntity.ok(test));
         assertEquals(listString, restClient.getDeactivationReason(1L, "en"));
     }
