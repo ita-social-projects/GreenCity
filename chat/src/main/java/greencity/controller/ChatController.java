@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
+import greencity.dto.MessageLike;
 import greencity.dto.ParticipantDto;
 import greencity.enums.ChatType;
 import greencity.service.ChatMessageService;
@@ -231,5 +232,13 @@ public class ChatController {
     @MessageMapping("/chat/update")
     public void updateMessage(ChatMessageDto chatMessageDto) {
         chatMessageService.updateMessage(chatMessageDto);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @MessageMapping("/chat/like")
+    public void likeMessage(MessageLike messageLike) {
+        chatMessageService.likeMessage(messageLike);
     }
 }

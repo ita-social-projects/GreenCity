@@ -1,11 +1,13 @@
 package greencity.service.impl;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.ChatMessageDto;
 import greencity.dto.ChatRoomDto;
 import greencity.entity.ChatRoom;
 import greencity.entity.Participant;
 import greencity.enums.ChatType;
 import greencity.exception.exceptions.ChatRoomNotFoundException;
+import greencity.repository.ChatMessageRepo;
 import greencity.repository.ChatRoomRepo;
 import greencity.service.ChatRoomService;
 import greencity.service.ParticipantService;
@@ -27,6 +29,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatRoomRepo chatRoomRepo;
     private final ParticipantService participantService;
     private final ModelMapper modelMapper;
+    private final ChatMessageRepo chatMessageRepo;
 
     /**
      * {@inheritDoc}
@@ -44,15 +47,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
      */
     public List<ChatRoomDto> findAllVisibleRooms(String name) {
         Participant participant = participantService.findByEmail(name);
-        List<ChatRoom> rooms = chatRoomRepo.findAllByParticipant(participant);
-        return modelMapper
-            .map(
-                rooms.stream()
-                    .filter(chatRoom -> !chatRoom.getMessages().isEmpty() && chatRoom.getType().equals(ChatType.PRIVATE)
-                        || chatRoom.getType().equals(ChatType.GROUP))
-                    .collect(Collectors.toList()),
-                new TypeToken<List<ChatRoomDto>>() {
-                }.getType());
+        List<ChatRoom> rooms = chatRoomRepo.findAllByParticipant(participant).stream()
+            .filter(chatRoom -> !chatRoom.getMessages().isEmpty() && chatRoom.getType().equals(ChatType.PRIVATE)
+                || chatRoom.getType().equals(ChatType.GROUP) || chatRoom.getType().equals(ChatType.SYSTEM))
+            .collect(Collectors.toList());
+        return mapListChatMessageDto(rooms);
     }
 
     /**
@@ -167,7 +166,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 rooms.stream()
                     .filter(chatRoom -> !chatRoom.getMessages().isEmpty()
                         && chatRoom.getType().equals(ChatType.PRIVATE)
-                        || chatRoom.getType().equals(ChatType.GROUP))
+                        || chatRoom.getType().equals(ChatType.GROUP)
+                        || chatRoom.getType().equals(ChatType.SYSTEM))
                     .collect(Collectors.toList()),
                 new TypeToken<List<ChatRoomDto>>() {
                 }.getType());
@@ -203,5 +203,17 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         chatRoom.setType(ChatType.GROUP);
         chatRoomRepo.save(chatRoom);
         return chatRoomDto;
+    }
+
+    private List<ChatRoomDto> mapListChatMessageDto(List<ChatRoom> rooms) {
+        List<ChatRoomDto> chatRoomDtos = new ArrayList<>();
+        for (ChatRoom room : rooms) {
+            ChatRoomDto chatRoomDto = modelMapper.map(room, ChatRoomDto.class);
+            for (ChatMessageDto messageDto : chatRoomDto.getMessages()) {
+                messageDto.setLikedUserId(chatMessageRepo.getLikesByMessageId(messageDto.getId()));
+            }
+            chatRoomDtos.add(chatRoomDto);
+        }
+        return chatRoomDtos;
     }
 }

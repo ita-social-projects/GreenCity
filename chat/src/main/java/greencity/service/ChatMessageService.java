@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.ChatMessageDto;
+import greencity.dto.MessageLike;
 import greencity.entity.ChatMessage;
 import greencity.entity.ChatRoom;
 import java.util.List;
@@ -36,4 +37,11 @@ public interface ChatMessageService {
      * {@inheritDoc}
      */
     ChatMessageDto findTopByOrderByIdDesc();
+
+    /**
+     * Method to like message.
+     *
+     * @param messageLike {@link MessageLike}.
+     */
+    void likeMessage(MessageLike messageLike);
 }
