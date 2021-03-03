@@ -84,6 +84,5 @@
     <include file="db/changelog/logs/ch-add-column-imageName-to-chatMessages-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-add-column-participantId-to-chatMessages-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-add-column-Diakiv.xml"/>
-    <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
 </databaseChangeLog>
 
