@@ -5,6 +5,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
@@ -12,6 +13,7 @@ import greencity.dto.user.UserVO;
 
 import java.util.List;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -123,13 +125,28 @@ public class ManagementUserController {
      * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
      * not be able to log in into the system.
      *
-     * @param id of the searched {@link UserVO}.
+     * @param id          of the searched {@link UserVO}.
+     * @param userReasons {@link List} of {@link String}.
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(@RequestParam("id") Long id) {
-        restClient.deactivateUser(id);
+    public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(
+        @RequestParam("id") Long id,
+        @RequestBody List<String> userReasons) {
+        restClient.deactivateUser(id, userReasons);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting {@link String} user language.
+     *
+     * @param id of the searched {@link UserVO}.
+     * @return current user language {@link String}.
+     * @author Vlad Pikhotskyi
+     */
+    @GetMapping("/lang")
+    public ResponseEntity<String> getUserLang(@RequestParam("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(restClient.getUserLang(id));
     }
 
     /**
@@ -139,9 +156,26 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/activate")
-    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(@RequestParam("id") Long id) {
+    public ResponseEntity<ResponseEntity.BodyBuilder> setActivatedStatus(
+        @RequestParam("id") Long id) {
         restClient.setActivatedStatus(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting list of {@link String}.
+     *
+     * @param id   {@link Long} - user's id.
+     * @param lang {@link String} - current administrator language.
+     * @return {@link List} of {@link String} - reasons for deactivation of the
+     *         current user.
+     * @author Vlad Pikhotskyi
+     */
+    @GetMapping("/reasons")
+    public ResponseEntity<List<String>> getReasonsOfDeactivation(
+        @RequestParam("id") Long id,
+        @RequestParam("lang") String lang) {
+        return ResponseEntity.status(HttpStatus.OK).body(restClient.getDeactivationReason(id, lang));
     }
 
     /**

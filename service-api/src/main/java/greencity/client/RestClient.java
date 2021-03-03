@@ -15,6 +15,7 @@ import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -229,13 +231,29 @@ public class RestClient {
      * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
      * not be able to log in into the system.
      *
-     * @param userId - {@link UserVO}'s id
+     * @param userId      - {@link UserVO}'s id
+     * @param userReasons {@link List} of {@link String}.
      * @author Orest Mamchuk
      */
-    public void deactivateUser(Long userId) {
-        HttpEntity<String> entity = new HttpEntity<>(setHeader());
+    public void deactivateUser(Long userId, List<String> userReasons) {
+        HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, setHeader());
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
+    }
+
+    /**
+     * Method for getting {@link String} user language.
+     *
+     * @param userId of the searched {@link UserVO}.
+     * @return current user language {@link String}.
+     * @author Vlad Pikhotskyi
+     */
+    public String getUserLang(Long userId) {
+        HttpEntity<String> entity = new HttpEntity<>(setHeader());
+        String body = restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_LANG
+            + RestTemplateLinks.ID + userId, HttpMethod.GET, entity, String.class).getBody();
+        assert body != null;
+        return body;
     }
 
     /**
@@ -248,6 +266,25 @@ public class RestClient {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
+    }
+
+    /**
+     * Method for getting a {@link List} of {@link String} - reasons for
+     * deactivation of the current user.
+     *
+     * @param userId {@link Long} - user's id.
+     * @param lang   {@link String} - current administrator language.
+     * @return {@link List} of {@link String} - reasons for deactivation of the
+     *         current user.
+     * @author Vlad Pikhotskyi
+     */
+    public List<String> getDeactivationReason(Long userId, String lang) {
+        HttpEntity<String> entity = new HttpEntity<>(setHeader());
+        String[] reasonDtos = restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_REASONS
+            + RestTemplateLinks.ID + userId
+            + RestTemplateLinks.LANG + lang, HttpMethod.GET, entity, String[].class).getBody();
+        assert reasonDtos != null;
+        return Arrays.asList(reasonDtos);
     }
 
     /**

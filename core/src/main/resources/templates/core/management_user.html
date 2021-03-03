@@ -133,7 +133,6 @@
 
                         </form>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
-                            <div th:with="id=${user.id}"></div>
                             <tbody.table-striped>
                                 <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                                     <td>
@@ -166,10 +165,10 @@
                                             <button class="dropbtn status" th:text="${user.userStatus}">
                                             </button>
                                             <div class="dropdown-content status">
-                                                <a th:href="@{/management/users/activate/(id=${user.id})}"
+                                                <a th:href="@{/management/users/reasons/(id=${user.id})}"
                                                    class="activate-user eActBtn" disabled="true"
                                                    data-toggle="modal">ACTIVATED</a>
-                                                <a th:href="@{/management/users/deactivate/(id=${user.id})}"
+                                                <a th:href="@{/management/users/lang/(id=${user.id})}"
                                                    class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
                                                 </a>
                                                 <a href="#">WARNED</a>
@@ -177,7 +176,6 @@
                                         </div>
                                     </td>
                                 </tr>
-
                             </tbody.table-striped>
                         </th:block>
                     </table>
@@ -224,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <!-- Add Modal HTML -->
+        <!--&lt;!&ndash; Add Modal HTML &ndash;&gt;
         <div id="addUserModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -269,8 +267,8 @@
                     </form>
                 </div>
             </div>
-        </div>
-        <!-- Edit user Modal HTML -->
+        </div>-->
+        <!--&lt;!&ndash; Edit user Modal HTML &ndash;&gt;
         <div id="editUserModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -320,7 +318,7 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div>-->
         <!-- Deactivate user Modal HTML -->
         <div id="deactivateUserModal" class="modal fade">
             <div class="modal-dialog">
@@ -331,10 +329,15 @@
                         </div>
                         <div class="modal-body">
                             <p class="text-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
-                                <input type="checkbox"  id="first-click"> [[#{greenCity.user.page.popup.deactivated.fieldset.input}]]<br>
-                                <input type="checkbox" id="second-click"> [[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]<br>
-                            <input type="checkbox"  id="other" onclick="otherCheck()"> [[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]<br>
-                       <input type="text" id="othertext" disabled="disabled">
+                            <input type="checkbox" id="first-click">
+                            [[#{greenCity.user.page.popup.deactivated.fieldset.input}]]<br>
+                            <input type="checkbox" id="second-click">
+                            [[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]<br>
+                            <input type="checkbox" id="other" onclick="otherCheck()">
+                            [[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]<br>
+                            <input type="text" id="othertext" disabled="disabled">
+                            <div id="user-lang">
+                        </div>
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
@@ -351,22 +354,24 @@
         <div id="activateUserModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="activateUserForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>[[#{greenCity.user.page.popup.activated.p1}]]</p>
-                            <p class="text-warning"><small>[[#{greenCity.user.page.popup.activated.p2}]]</small></p>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
-                                <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
-                            </a>
-                        </div>
-                    </form>
+                    <!--<form id="activateUserForm">-->
+                    <div class="modal-header">
+                        <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="modal-body-act">[[#{greenCity.user.page.popup.activated.p1}]]</p>
+                        <p class="modal-body-act1">[[#{greenCity.user.page.popup.activated.p1.was}]]</p>
+                    </div>
+                    <div id="reasons">
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
+                            <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
+                        </a>
+                    </div>
+                    <!--</form>-->
                 </div>
             </div>
         </div>

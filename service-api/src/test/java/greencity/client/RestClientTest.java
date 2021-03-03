@@ -18,11 +18,13 @@ import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -242,16 +244,49 @@ class RestClientTest {
     }
 
     @Test
-    void deactivateUser() {
+    void getDeactivationReason() {
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        String[] test = new String[] {"test", "test"};
+        List<String> listString = Arrays.asList(test);
+        Gson gson = new Gson();
+        String json = gson.toJson(listString);
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_REASONS
+            + RestTemplateLinks.ID + 1L
+            + RestTemplateLinks.LANG + "en", HttpMethod.GET, entity, String[].class))
+                .thenReturn(ResponseEntity.ok(test));
+        assertEquals(listString, restClient.getDeactivationReason(1L, "en"));
+    }
+
+    @Test
+    void getUserLang() {
+        String test = "test";
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_LANG
+            + RestTemplateLinks.ID + 1L, HttpMethod.GET, entity, String.class))
+                .thenReturn(ResponseEntity.ok(test));
+        assertEquals(test, restClient.getUserLang(1L));
+    }
+
+    @Test
+    void deactivateUser() {
+        String accessToken = "accessToken";
+        List<String> test = List.of("test", "test");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        HttpEntity<List<String>> entity = new HttpEntity<>(test, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
-        restClient.deactivateUser(1L);
+        restClient.deactivateUser(1L, test);
         verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
     }
