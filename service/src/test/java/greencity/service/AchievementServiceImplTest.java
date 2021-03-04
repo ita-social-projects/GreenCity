@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -13,6 +14,8 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
@@ -49,6 +52,8 @@ class AchievementServiceImplTest {
     private UserActionService userActionService;
     @Mock
     private UserAchievementRepo userAchievementRepo;
+    @Mock
+    private AchievementCalculation achievementCalculation;
     @InjectMocks
     private AchievementServiceImpl achievementService;
 
@@ -225,5 +230,15 @@ class AchievementServiceImplTest {
         });
         when(userAchievementRepo.findAchievementsWithStatusActive(1L)).thenReturn(userAchievementList);
         assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
+    }
+
+    @Test
+    void calculateAchievement() {
+        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
+        verify(achievementCalculation).calculateAchievement(
+            anyLong(),
+            any(AchievementType.class),
+            any(AchievementCategoryType.class),
+            anyInt());
     }
 }

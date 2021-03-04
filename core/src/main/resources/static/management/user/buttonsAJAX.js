@@ -240,8 +240,16 @@ $(document).ready(function () {
     // Deactivate user button (popup)
     $('td .deactivate-user.eDeactBtn').on('click', function (event) {
         event.preventDefault();
-        $('#deactivateUserModal').modal();
         var href = $(this).attr('href');
+        $('#deactivateUserModal').modal();
+        $.get(href, function (lang, status) {
+            let userLang = document.createElement('div');
+            window.globalVariable=lang;
+            userLang.classList.add('user-lang');
+            userLang.innerHTML = `<div class="user-lang"> ${lang}</div>`;
+            document.querySelector('#user-lang').appendChild(userLang);
+
+        });
         $('#deactivateOneSubmit').attr('href', href);
     });
     // Confirm deactivation button in deactivateUserModal
@@ -253,22 +261,24 @@ $(document).ready(function () {
         let otherClick = document.getElementById("other");
         let listReasons = [];
         if (firstClick.checked === true) {
-            listReasons.push("inappropriate credo content in profile");
+            listReasons.push("inappropriate credo content in profile {en}");
+            listReasons.push("неприйнятний вміст кредо у профілі {ua}");
         }
         if (secondClick.checked === true) {
-            listReasons.push("inappropriate behavior in news publications");
+            listReasons.push("inappropriate behavior in news publications {en}");
+            listReasons.push("неадекватна поведінка в публікаціях новин {ua}");
         }
         if (otherClick.checked === true) {
-            listReasons.push($("input#othertext").val());
+            listReasons.push($("input#othertext").val() + "{" + globalVariable + "}");
         }
-        var date = {
-            list: listReasons,
-        }
+       let f= globalVariable;
+
         var href = $(this).attr('href');
+        let newUrl = href.toString().replace("lang", "deactivate")
         $.ajax({
-            url: href,
+            url: newUrl,
             type: 'post',
-            data: JSON.stringify(date),
+            data: JSON.stringify(listReasons),
             contentType: 'application/json',
             success: function (data) {
                 location.reload();
@@ -279,16 +289,33 @@ $(document).ready(function () {
     // Aactivate user button (popup)
     $('td .activate-user.eActBtn').on('click', function (event) {
         event.preventDefault();
-        $('#activateUserModal').modal();
+        let localStorage = window.localStorage;
+        let currentLang = localStorage.getItem("language");
+        if (currentLang === null) {
+            currentLang = "en";
+        }
         var href = $(this).attr('href');
+        let updateHref = href + "&admin=" + currentLang;
+        $('#activateUserModal').modal();
         $('#activateOneSubmit').attr('href', href);
+        $.get(updateHref, function (allReasons, status) {
+            allReasons.forEach(item => {
+                let reason = document.createElement('div');
+                reason.classList.add('reason');
+
+                reason.innerHTML = `<div class="reason"> ${item.toString()}</div>
+                `;
+                document.querySelector('#reasons').appendChild(reason);
+            });
+        });
     });
     // Confirm deactivation button in activateUserModal
     $('#activateOneSubmit').on('click', function (event) {
         event.preventDefault();
         var href = $(this).attr('href');
+        let newUrl = href.toString().replace("reasons", "activate")
         $.ajax({
-            url: href,
+            url: newUrl,
             type: 'post',
             success: function (data) {
                 location.reload();
