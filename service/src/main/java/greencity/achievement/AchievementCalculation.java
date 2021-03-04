@@ -7,7 +7,7 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.repository.UserAchievementRepo;
 import greencity.service.AchievementCategoryService;
@@ -59,11 +59,12 @@ public class AchievementCalculation {
      *
      * @param userId   of {@link User}
      * @param type     of action
-     * @param category {@link AchievementCategory}
+     * @param category {@link AchievementCategoryType}
      * @param count    number of specific actions
      * @author Orest Mamchuk
      */
-    public void calculateAchievement(Long userId, AchievementType type, AchievementCategory category, Integer count) {
+    public void calculateAchievement(Long userId, AchievementType type,
+        AchievementCategoryType category, Integer count) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.getCategory());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
@@ -75,7 +76,7 @@ public class AchievementCalculation {
     /**
      * Method for finding achievements.
      *
-     * @param achievementCategoryId of {@link AchievementCategory}
+     * @param achievementCategoryId of {@link AchievementCategoryType}
      * @param count                 number of specific actions
      * @param userId                of {@link User}
      * @author Orest Mamchuk
@@ -103,7 +104,7 @@ public class AchievementCalculation {
             UserAchievement achievement = userAchievement.get();
             achievement.setAchievementStatus(ACTIVE);
             userAchievementRepo.save(achievement);
-            calculateAchievement(user.getId(), INCREMENT, AchievementCategory.ACHIEVEMENTS, 0);
+            calculateAchievement(user.getId(), INCREMENT, AchievementCategoryType.ACHIEVEMENTS, 0);
         }
     }
 

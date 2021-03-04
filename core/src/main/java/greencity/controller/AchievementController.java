@@ -5,6 +5,8 @@ import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementNotification;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.user.UserVO;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,9 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/achievements")
@@ -59,5 +59,23 @@ public class AchievementController {
     public List<AchievementNotification> getNotification(Long userId) throws InterruptedException {
         Thread.sleep(60000);
         return achievementService.findAchievementsWithStatusActive(userId);
+    }
+
+    /**
+     * Method for achievement calculation.
+     */
+    @ApiOperation(value = "Calculate achievements.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping("/calculate-achievement")
+    public ResponseEntity<HttpStatus> calculateAchievements(@RequestParam Long id,
+        @RequestParam AchievementType setter,
+        @RequestParam AchievementCategoryType socialNetwork,
+        @RequestParam int size) {
+        achievementService.calculateAchievements(id, setter, socialNetwork, size);
+        return ResponseEntity.ok().build();
     }
 }
