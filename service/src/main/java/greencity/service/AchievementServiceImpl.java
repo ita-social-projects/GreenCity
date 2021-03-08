@@ -7,7 +7,6 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
@@ -15,10 +14,12 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
+import greencity.entity.localization.AchievementTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
+import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
+    private final AchievementTranslationRepo achievementTranslationRepo;
 
     /**
      * {@inheritDoc}
@@ -203,10 +205,15 @@ public class AchievementServiceImpl implements AchievementService {
         return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<AchievementNotification> findAchievementsWithStatusActive(Long userId) {
-        List<UserAchievement> userAchievementList = userAchievementRepo.findAchievementsWithStatusActive(userId);
-        return setAchievementNotifications(new ArrayList<>(), userAchievementList);
+        UserVO user = restClient.findById(userId);
+        List<AchievementTranslation> translationList = achievementTranslationRepo
+            .findAchievementsWithStatusActive(userId, user.getLanguageVO().getId());
+        return setAchievementNotifications(new ArrayList<>(), translationList, userId);
     }
 
     /**
@@ -220,29 +227,18 @@ public class AchievementServiceImpl implements AchievementService {
 
     private List<AchievementNotification> setAchievementNotifications(
         List<AchievementNotification> achievementNotifications,
-        List<UserAchievement> userAchievementList) {
-        userAchievementList.forEach(userAchievement -> {
-            Achievement achievement = userAchievement.getAchievement();
+        List<AchievementTranslation> translationList, Long userId) {
+        translationList.forEach(translation -> {
             achievementNotifications.add(AchievementNotification.builder()
-                .id(userAchievement.getId())
-                .achievementCategory(AchievementCategoryVO.builder()
-                    .id(achievement.getAchievementCategory().getId())
-                    .name(achievement.getAchievementCategory().getName())
-                    .build())
-                .translations(achievement.getTranslations().stream()
-                    .map(achievementTranslation -> AchievementTranslationVO.builder()
-                        .id(achievementTranslation.getId())
-                        .language(LanguageVO.builder()
-                            .id(achievementTranslation.getLanguage().getId())
-                            .code(achievementTranslation.getLanguage().getCode())
-                            .build())
-                        .message(achievementTranslation.getMessage())
-                        .description(achievementTranslation.getDescription())
-                        .title(achievementTranslation.getTitle())
-                        .build())
-                    .collect(Collectors.toList()))
+                .id(translation.getId())
+                .title(translation.getTitle())
+                .description(translation.getDescription())
+                .message(translation.getMessage())
                 .build());
+            UserAchievement userAchievement = userAchievementRepo
+                .getUserAchievementByIdAndAchievementId(userId, translation.getAchievement().getId());
             userAchievement.setNotified(true);
+            userAchievementRepo.save(userAchievement);
         });
         return achievementNotifications;
     }

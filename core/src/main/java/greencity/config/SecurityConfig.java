@@ -7,8 +7,10 @@ import greencity.client.RestClient;
 import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -206,7 +208,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/recommendedFriends/",
                 "/user/{userId}/friends/",
                 "/user/{userId}/friendRequests/",
-                "/chat")
+                "/chat",
+                "/achievements/notification/{userId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/category",

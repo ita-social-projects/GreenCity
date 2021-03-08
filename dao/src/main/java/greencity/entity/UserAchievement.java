@@ -6,12 +6,13 @@ import javax.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
 @Table(name = "user_achievements")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@Getter
+@Setter
 public class UserAchievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

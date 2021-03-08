@@ -11,13 +11,19 @@ import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/achievements")
@@ -54,11 +60,15 @@ public class AchievementController {
      * @param userId of {@link UserVO}
      * @return list {@link AchievementNotification}
      */
-    @MessageMapping("")
-    @SendTo("/topic/notification")
-    public List<AchievementNotification> getNotification(Long userId) throws InterruptedException {
-        Thread.sleep(60000);
-        return achievementService.findAchievementsWithStatusActive(userId);
+    @ApiOperation(value = "Get all the achievements that need to notify.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/notification/{userId}")
+    public ResponseEntity<List<AchievementNotification>> getNotification(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAchievementsWithStatusActive(userId));
     }
 
     /**
