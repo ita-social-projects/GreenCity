@@ -55,6 +55,7 @@ class AchievementControllerTest {
             + "/notification/{userId}", 1)).andExpect(status().isOk());
         verify(achievementService).findAchievementsWithStatusActive(1L);
 =======
+
     void calculateAchievements() throws Exception {
         mockMvc.perform(post(achievementLink + "/calculate-achievement"
             + "?id=" + 1L
