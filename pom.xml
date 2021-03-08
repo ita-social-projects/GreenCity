@@ -21,7 +21,6 @@
         <module>service-api</module>
         <module>dao</module>
         <module>service</module>
-        <module>chat</module>
     </modules>
 
     <properties>

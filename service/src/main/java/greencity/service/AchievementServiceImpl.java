@@ -1,15 +1,11 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.AchievementManagementDto;
-import greencity.dto.achievement.AchievementNotification;
-import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
@@ -17,12 +13,17 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,10 +33,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -48,6 +45,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private UserAchievementRepo userAchievementRepo;
     private final AchievementTranslationRepo achievementTranslationRepo;
+    private AchievementCalculation achievementCalculation;
 
     /**
      * {@inheritDoc}
@@ -216,6 +214,15 @@ public class AchievementServiceImpl implements AchievementService {
         List<AchievementTranslation> translationList = achievementTranslationRepo
             .findAchievementsWithStatusActive(userId, user.getLanguageVO().getId());
         return setAchievementNotifications(new ArrayList<>(), translationList, userId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void calculateAchievements(Long id, AchievementType achievementType,
+        AchievementCategoryType achievementCategory, Integer size) {
+        achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
     }
 
     private List<AchievementNotification> setAchievementNotifications(

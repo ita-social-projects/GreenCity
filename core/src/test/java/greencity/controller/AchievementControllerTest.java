@@ -1,5 +1,8 @@
 package greencity.controller;
 
+import greencity.constant.RestTemplateLinks;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,11 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,5 +53,15 @@ class AchievementControllerTest {
         mockMvc.perform(get(achievementLink
             + "/notification/{userId}", 1)).andExpect(status().isOk());
         verify(achievementService).findAchievementsWithStatusActive(1L);
+    }
+    @Test
+    void calculateAchievements() throws Exception {
+        mockMvc.perform(post(achievementLink + "/calculate-achievement"
+            + "?id=" + 1L
+            + "&setter=" + AchievementType.INCREMENT
+            + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
+            + "&size=" + 1)).andExpect(status().isOk());
+        verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
+            AchievementCategoryType.ECO_NEWS, 1);
     }
 }
