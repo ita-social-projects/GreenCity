@@ -41,4 +41,11 @@ class AchievementControllerTest {
         mockMvc.perform(get(achievementLink)).andExpect(status().isOk());
         verify(achievementService).findAll();
     }
+
+    @Test
+    void getNotificationTest() throws Exception {
+        mockMvc.perform(get(achievementLink
+            + "/notification/{userId}", 1)).andExpect(status().isOk());
+        verify(achievementService).findAchievementsWithStatusActive(1L);
+    }
 }

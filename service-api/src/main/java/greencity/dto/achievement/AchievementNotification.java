@@ -1,21 +1,16 @@
 package greencity.dto.achievement;
 
-import greencity.dto.achievementcategory.AchievementCategoryVO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
+@ToString
+@Getter
 public class AchievementNotification {
     private Long id;
-
-    private List<AchievementTranslationVO> translations;
-
-    private AchievementCategoryVO achievementCategory;
+    private String title;
+    private String description;
+    private String message;
 }
