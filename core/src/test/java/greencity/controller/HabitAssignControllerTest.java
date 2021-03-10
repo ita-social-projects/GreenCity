@@ -18,14 +18,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static greencity.ModelUtils.getUserVO;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -89,7 +86,7 @@ class HabitAssignControllerTest {
     void enrollHabit() throws Exception {
         mockMvc.perform(post(habitLink + "/{habitId}/enroll/{date}", 1, LocalDate.now()))
             .andExpect(status().isOk());
-        verify(habitAssignService).enrollHabit(1L, null, LocalDate.now());
+        verify(habitAssignService).enrollHabit(1L, null, LocalDate.now(), "en");
     }
 
     @Test
