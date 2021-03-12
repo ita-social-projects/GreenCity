@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryDtoResponse;
 import greencity.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -33,7 +34,7 @@ public class CategoryController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @PostMapping
-    public ResponseEntity<Object> saveCategory(@Valid @RequestBody CategoryDto dto) {
+    public ResponseEntity<CategoryDtoResponse> saveCategory(@Valid @RequestBody CategoryDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 

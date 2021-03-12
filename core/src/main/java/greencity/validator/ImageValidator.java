@@ -12,6 +12,7 @@ public class ImageValidator implements ConstraintValidator<ImageValidation, Mult
 
     @Override
     public void initialize(ImageValidation constraintAnnotation) {
+        // Initializes the validator in preparation for #isValid calls
     }
 
     @Override
