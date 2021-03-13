@@ -43,7 +43,8 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Get random fact of the day.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FactOfTheDayTranslationDTO.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/")
     @ApiLocale
@@ -61,7 +62,8 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Get all facts of the day.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/all")
     public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(@ApiIgnore Pageable pageable) {
@@ -78,7 +80,8 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Find fact of the day by given id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FactOfTheDayDTO.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/find")
     public ResponseEntity<FactOfTheDayDTO> findFactOfTheDay(@RequestParam("id") Long id) {
@@ -94,7 +97,8 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Get all distinguish languages that exists in DB")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/languages")
     public ResponseEntity<List<LanguageDTO>> getLanguages() {

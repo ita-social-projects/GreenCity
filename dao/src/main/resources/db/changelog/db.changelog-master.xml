@@ -88,5 +88,6 @@
     <include file="db/changelog/logs/ch-add-column-fileType-to-chatMessages-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-rename-column-imageName-in-fileName-Bezrukavyy.xml"/>
     <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
+    <include file="db/changelog/logs/ch-ubs-database-seperation.xml"/>
 </databaseChangeLog>
 
