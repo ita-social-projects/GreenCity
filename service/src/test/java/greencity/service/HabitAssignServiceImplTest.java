@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.ModelUtils.getHabitAssignDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
@@ -182,21 +181,11 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void enrollHabit() {
-        HabitAssign habitAssign = getHabitAssign();
-        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        habitAssignService.enrollHabit(1L, 1L, LocalDate.now());
-        verify(habitAssignRepo).save(habitAssign);
-    }
-
-    @Test
     void enrollHabitThrowWrongIdException() {
         LocalDate localDate = LocalDate.now();
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class,
-            () -> habitAssignService.enrollHabit(1L, 1L, localDate));
+            () -> habitAssignService.enrollHabit(1L, 1L, localDate, "en"));
     }
 
     @Test

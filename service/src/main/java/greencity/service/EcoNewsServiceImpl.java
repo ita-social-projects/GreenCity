@@ -16,10 +16,10 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
-import greencity.enums.AchievementCategory;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
+import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -105,7 +105,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         restClient.addEcoNews(buildAddEcoNewsMessage(toSave));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS, 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 0));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -301,7 +301,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.ECO_NEWS_LIKE, 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS_LIKE, 0));
     }
 
     /**

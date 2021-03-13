@@ -3,6 +3,7 @@ package greencity.dto.user;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -86,4 +87,6 @@ public class UserVO {
     private LocalDateTime lastActivityTime;
 
     private List<UserActionVO> userActions = new ArrayList<>();
+
+    private LanguageVO languageVO;
 }

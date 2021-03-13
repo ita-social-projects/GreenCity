@@ -8,7 +8,7 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
-import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.repository.UserAchievementRepo;
 import greencity.service.*;
@@ -56,7 +56,7 @@ class AchievementCalculationTest {
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
-        when(achievementCategoryService.findByName(AchievementCategory.ECO_NEWS.getCategory()))
+        when(achievementCategoryService.findByName(AchievementCategoryType.ECO_NEWS.getCategory()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
@@ -66,7 +66,7 @@ class AchievementCalculationTest {
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
         when(achievementCategoryService.findByName("Achievements")).thenReturn(achievementCategoryVO2);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 2L)).thenReturn(userActionVO2);
-        achievementCalculation.calculateAchievement(1L, type, AchievementCategory.ECO_NEWS, 1);
+        achievementCalculation.calculateAchievement(1L, type, AchievementCategoryType.ECO_NEWS, 1);
         verify(userAchievementRepo).save(userAchievement);
     }
 }
