@@ -96,10 +96,9 @@ class FactOfTheDayServiceImplTest {
         assertEquals(pageableDto, actual);
     }
 
-    //findAllFailed
     @Test
-    void getAllFactsOfTheDayFailed(){
-        Pageable pageable = PageRequest.of(5,5);
+    void getAllFactsOfTheDayFailed() {
+        Pageable pageable = PageRequest.of(5, 5);
         when(factOfTheDayRepo.findAll(any(Pageable.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> factOfTheDayService.getAllFactsOfTheDay(pageable));
@@ -139,8 +138,8 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void saveFactOfTheDayAndTranslationsTestFailed(){
-        FactOfTheDayPostDTO  factDTO = ModelUtils.getFactOfTheDayPostDto();
+    void saveFactOfTheDayAndTranslationsTestFailed() {
+        FactOfTheDayPostDTO factDTO = ModelUtils.getFactOfTheDayPostDto();
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         when(factOfTheDayRepo.save(fact)).thenThrow(RuntimeException.class);
 
@@ -203,16 +202,15 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void searchByFailed(){
+    void searchByFailed() {
 
         int invalidNUmber = 10;
         int invalidSize = 10;
-        Pageable pageable = PageRequest.of(invalidNUmber,invalidSize);
-        when(factOfTheDayRepo.searchBy(pageable,"invalidQuery")).thenThrow(NotFoundException.class);
+        Pageable pageable = PageRequest.of(invalidNUmber, invalidSize);
+        when(factOfTheDayRepo.searchBy(pageable, "invalidQuery")).thenThrow(NotFoundException.class);
 
-        assertThrows(NotFoundException.class, () -> factOfTheDayService.searchBy(pageable,"invalidQuery"));
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.searchBy(pageable, "invalidQuery"));
     }
-
 
     @Test
     void deleteAllFactOfTheDayAndTranslationsTest() {
@@ -308,7 +306,6 @@ class FactOfTheDayServiceImplTest {
         fact.setFactOfTheDayTranslations(Collections.singletonList(translation));
         when(modelMapper.map(service.getRandomFactOfTheDay(), FactOfTheDay.class)).thenReturn(fact);
 
-
-        assertThrows(NotFoundException.class,()->factOfTheDayService.getRandomFactOfTheDayByLanguage(languageCode));
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomFactOfTheDayByLanguage(languageCode));
     }
 }
