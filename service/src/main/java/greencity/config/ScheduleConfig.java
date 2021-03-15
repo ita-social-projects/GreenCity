@@ -61,7 +61,7 @@ public class ScheduleConfig {
      * field {@link greencity.enums.EmailNotification} equal to IMMEDIATELY or
      * DAILY.
      */
-    @Scheduled(cron = "0 0 19 * * ?")
+    @Scheduled(cron = "0 0 19 * * ?", zone = "Europe/Kiev")
     void sendHabitNotificationEveryDay() {
         List<User> users = userRepo.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(userRepo.findAllByEmailNotification(DAILY));
@@ -72,7 +72,7 @@ public class ScheduleConfig {
      * Every friday at 19:00 sends notifications about not marked habits to users
      * with field {@link greencity.enums.EmailNotification} equal to WEEKLY.
      */
-    @Scheduled(cron = "0 0 19 * * FRI")
+    @Scheduled(cron = "0 0 19 * * FRI", zone = "Europe/Kiev")
     void sendHabitNotificationEveryWeek() {
         List<User> users = userRepo.findAllByEmailNotification(WEEKLY);
         sendHabitNotificationIfNeed(users);
@@ -83,7 +83,7 @@ public class ScheduleConfig {
      * habits to users with field {@link greencity.enums.EmailNotification} equal to
      * MONTHLY.
      */
-    @Scheduled(cron = "0 0 19 25 * ?")
+    @Scheduled(cron = "0 0 19 25 * ?", zone = "Europe/Kiev")
     void sendHabitNotificationEveryMonth() {
         List<User> users = userRepo.findAllByEmailNotification(MONTHLY);
         sendHabitNotificationIfNeed(users);
@@ -96,7 +96,7 @@ public class ScheduleConfig {
      */
     @CacheEvict(value = CacheConstants.HABIT_FACT_OF_DAY_CACHE, allEntries = true)
     @Transactional
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     public void chooseNewHabitFactOfDay() {
         List<HabitFactTranslation> list = habitFactTranslationRepo.findRandomHabitFact();
         if (!list.isEmpty()) {
@@ -114,7 +114,7 @@ public class ScheduleConfig {
      */
     @CacheEvict(value = CacheConstants.FACT_OF_THE_DAY_CACHE_NAME, allEntries = true)
     @Transactional
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     public void chooseNewHabitFactOfTheDay() {
         // Do nothing to clean cache
     }
@@ -125,7 +125,7 @@ public class ScheduleConfig {
      *
      * @author Vasyl Zhovnir
      **/
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     @Transactional
     public void scheduleDeleteDeactivatedUsers() {
         userRepo.scheduleDeleteDeactivatedUsers();
@@ -137,7 +137,7 @@ public class ScheduleConfig {
      *
      * @author Dovganyuk Taras
      **/
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     @Transactional
     public void scheduledDeleteRatingStatisticsOlderThan() {
         ratingStatisticsRepo.scheduledDeleteOlderThan();
