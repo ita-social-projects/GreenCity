@@ -479,7 +479,7 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
             HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+                .thenReturn(ResponseEntity.ok(Object));
         restClient.scheduleDeleteDeactivatedUsers();
         verify(restTemplate, times(1)).exchange(greenCityUserServerAddress + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
             HttpMethod.POST, entity, Object.class);
@@ -490,11 +490,11 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         List<UserVO> userVOS = Collections.singletonList(ModelUtils.getUserVO());
         when(restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
-                + RestTemplateLinks.EMAIL_NOTIFICATION + EmailNotification.IMMEDIATELY,
+            + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+            + RestTemplateLinks.EMAIL_NOTIFICATION + EmailNotification.IMMEDIATELY,
             HttpMethod.GET, entity, new ParameterizedTypeReference<List<UserVO>>() {
             }))
-            .thenReturn(ResponseEntity.status(HttpStatus.OK).body(userVOS));
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(userVOS));
 
         assertEquals(userVOS, restClient.findAllByEmailNotification(EmailNotification.IMMEDIATELY));
     }
@@ -508,7 +508,7 @@ class RestClientTest {
         Map<Integer, Long> expected = Collections.singletonMap(1, 1L);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+            + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
             HttpMethod.GET, entity, new ParameterizedTypeReference<Map<Integer, Long>>() {
             })).thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
 
@@ -524,10 +524,10 @@ class RestClientTest {
         List<String> expected = Collections.singletonList("text");
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+            + RestTemplateLinks.FIND_ALL_USERS_CITIES,
             HttpMethod.GET, entity, new ParameterizedTypeReference<List<String>>() {
             }))
-            .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
         assertEquals(expected, restClient.findAllUsersCities());
     }
 }

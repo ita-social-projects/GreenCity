@@ -60,8 +60,8 @@ public class RestClient {
     public List<UserVO> findAllByEmailNotification(EmailNotification emailNotification) {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         ResponseEntity<List<UserVO>> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
-                + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
+            + RestTemplateLinks.USER_FIND_ALL_BY_EMAIL_NOTIFICATION
+            + RestTemplateLinks.EMAIL_NOTIFICATION + emailNotification,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -76,7 +76,7 @@ public class RestClient {
     public List<String> findAllUsersCities() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<List<String>> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_USERS_CITIES,
+            + RestTemplateLinks.FIND_ALL_USERS_CITIES,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -91,7 +91,7 @@ public class RestClient {
     public Map<Integer, Long> findAllRegistrationMonthsMap() {
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
         ResponseEntity<Map<Integer, Long>> exchange = restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
+            + RestTemplateLinks.FIND_ALL_REGISTRATION_MONTHS_MAP,
             HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
             });
         return exchange.getBody();
@@ -419,7 +419,7 @@ public class RestClient {
      */
     public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
         HttpEntity<SendChangePlaceStatusEmailMessage> entity =
-        new HttpEntity<>(changePlaceStatusEmailMessage, new HttpHeaders());
+            new HttpEntity<>(changePlaceStatusEmailMessage, new HttpHeaders());
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
             .getBody();

@@ -40,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Autowired
     public NotificationServiceImpl(PlaceRepo placeRepo,
-                                   ModelMapper modelMapper, RestClient restClient) {
+        ModelMapper modelMapper, RestClient restClient) {
         this.placeRepo = placeRepo;
         this.modelMapper = modelMapper;
         this.restClient = restClient;
