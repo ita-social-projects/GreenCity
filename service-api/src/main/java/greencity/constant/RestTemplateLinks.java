@@ -29,6 +29,11 @@ public class RestTemplateLinks {
     public static final String OWN_SECURITY_REGISTER = "ownSecurity/register";
     public static final String USER_SEARCH = "/user/search";
     public static final String SORT = "&sort=";
+    public static final String USER_FIND_ALL_BY_EMAIL_NOTIFICATION = "/user/findAllByEmailNotification";
+    public static final String EMAIL_NOTIFICATION = "?emailNotification=";
+    public static final String DELETE_DEACTIVATED_USERS = " /user/deleteDeactivatedUsers";
+    public static final String FIND_ALL_REGISTRATION_MONTHS_MAP = "/user/findAllRegistrationMonthsMap";
+    public static final String FIND_ALL_USERS_CITIES = "/user/findAllUsersCities";
 
     private RestTemplateLinks() {
     }
