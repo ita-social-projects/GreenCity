@@ -58,7 +58,7 @@ class FactOfTheDayServiceImplTest {
     private FactOfTheDayServiceImpl factOfTheDayService;
 
     @Test
-    void findByIdTest() {
+    void getFactOfTheDayByIdTest() {
         FactOfTheDayDTO factDto = ModelUtils.getFactOfTheDayDto();
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
 
@@ -70,13 +70,13 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void findByIdTestFailed() {
+    void getFactOfTheDayByIdTestFailed() {
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> factOfTheDayService.getFactOfTheDayById(1L));
     }
 
     @Test
-    void findAllTest() {
+    void getAllFactsOfTheDayTest() {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -84,10 +84,10 @@ class FactOfTheDayServiceImplTest {
         List<FactOfTheDay> factsOfTheDays = Collections.singletonList(ModelUtils.getFactOfTheDay());
 
         Page<FactOfTheDay> pageFacts = new PageImpl<>(factsOfTheDays,
-            pageable, factsOfTheDays.size());
+                pageable, factsOfTheDays.size());
 
         List<FactOfTheDayDTO> dtoList = Collections.singletonList(
-            ModelUtils.getFactOfTheDayDto());
+                ModelUtils.getFactOfTheDayDto());
 
         PageableDto<FactOfTheDayDTO> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
@@ -96,6 +96,14 @@ class FactOfTheDayServiceImplTest {
 
         PageableDto<FactOfTheDayDTO> actual = factOfTheDayService.getAllFactsOfTheDay(pageable);
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void getAllFactsOfTheDayFailed() {
+        Pageable pageable = PageRequest.of(5, 5);
+        when(factOfTheDayRepo.findAll(any(Pageable.class))).thenThrow(NotFoundException.class);
+
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getAllFactsOfTheDay(pageable));
     }
 
     @Test
@@ -121,7 +129,7 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void saveFactOfTheDayWithTranslationsTest() {
+    void saveFactOfTheDayAndTranslationsTest() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
 
         FactOfTheDayPostDTO res = factOfTheDayService.saveFactOfTheDayAndTranslations(factDtoPost);
@@ -132,13 +140,23 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void updateFactOfTheDayWithTranslationsTest() {
+    void saveFactOfTheDayAndTranslationsTestFailed() {
+        FactOfTheDayPostDTO factDTO = ModelUtils.getFactOfTheDayPostDto();
+        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
+        when(factOfTheDayRepo.save(fact)).thenThrow(RuntimeException.class);
+
+        assertThrows(RuntimeException.class, () -> factOfTheDayService.saveFactOfTheDayAndTranslations(factDTO));
+        verify(factOfTheDayTranslationService, times(0)).saveAll(anyList());
+    }
+
+    @Test
+    void updateFactOfTheDayAndTranslationsTest() {
         LanguageDTO languageDTO = ModelUtils.getLanguageDTO();
         FactOfTheDay dbFact = ModelUtils.getFactOfTheDay();
 
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(dbFact));
         when(modelMapper.map(dbFact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class)).thenReturn(
-            ModelUtils.getFactOfTheDayTranslationVO());
+                ModelUtils.getFactOfTheDayTranslationVO());
         when(languageService.findByCode("en")).thenReturn(languageDTO);
         when(modelMapper.map(languageDTO, Language.class)).thenReturn(ModelUtils.getLanguage());
         when(factOfTheDayTranslationService.saveAll(anyList())).thenReturn(null);
@@ -155,12 +173,12 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
-    void updateFactOfTheDayWithTranslationsTestFailed() {
+    void updateFactOfTheDayAndTranslationsTestFailed() {
         FactOfTheDayPostDTO factDtoPost = ModelUtils.getFactOfTheDayPostDto();
         when(factOfTheDayRepo.findById(anyLong())).thenThrow(NotUpdatedException.class);
 
         assertThrows(NotUpdatedException.class,
-            () -> factOfTheDayService.updateFactOfTheDayAndTranslations(factDtoPost));
+                () -> factOfTheDayService.updateFactOfTheDayAndTranslations(factDtoPost));
     }
 
     @Test
@@ -171,10 +189,10 @@ class FactOfTheDayServiceImplTest {
         List<FactOfTheDay> factsOfTheDays = Collections.singletonList(ModelUtils.getFactOfTheDay());
 
         Page<FactOfTheDay> pageFacts = new PageImpl<>(factsOfTheDays,
-            pageable, factsOfTheDays.size());
+                pageable, factsOfTheDays.size());
 
         List<FactOfTheDayDTO> dtoList = Collections.singletonList(
-            ModelUtils.getFactOfTheDayDto());
+                ModelUtils.getFactOfTheDayDto());
 
         PageableDto<FactOfTheDayDTO> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
@@ -186,13 +204,24 @@ class FactOfTheDayServiceImplTest {
     }
 
     @Test
+    void searchByFailed() {
+
+        int invalidNUmber = 10;
+        int invalidSize = 10;
+        Pageable pageable = PageRequest.of(invalidNUmber, invalidSize);
+        when(factOfTheDayRepo.searchBy(pageable, "invalidQuery")).thenThrow(NotFoundException.class);
+
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.searchBy(pageable, "invalidQuery"));
+    }
+
+    @Test
     void deleteAllFactOfTheDayAndTranslationsTest() {
         List<Long> idList = List.of(1L, 2L, 3L);
         FactOfTheDay fact = ModelUtils.getFactOfTheDay();
         FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
         when(modelMapper.map(fact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class))
-            .thenReturn(factOfTheDayTranslationVO);
+                .thenReturn(factOfTheDayTranslationVO);
 
         assertEquals(idList, factOfTheDayService.deleteAllFactOfTheDayAndTranslations(idList));
         verify(factOfTheDayRepo, times(3)).deleteById(anyLong());
@@ -206,7 +235,7 @@ class FactOfTheDayServiceImplTest {
         FactOfTheDayTranslationVO factOfTheDayTranslationVO = ModelUtils.getFactOfTheDayTranslationVO();
         when(factOfTheDayRepo.findById(anyLong())).thenReturn(Optional.of(fact));
         when(modelMapper.map(fact.getFactOfTheDayTranslations().get(0), FactOfTheDayTranslationVO.class))
-            .thenReturn(factOfTheDayTranslationVO);
+                .thenReturn(factOfTheDayTranslationVO);
 
         assertEquals(id, factOfTheDayService.deleteFactOfTheDayAndTranslations(id));
         verify(factOfTheDayRepo, times(1)).deleteById(anyLong());
@@ -259,12 +288,26 @@ class FactOfTheDayServiceImplTest {
         when(service.getRandomFactOfTheDay()).thenReturn(factOfTheDayVO);
         when(modelMapper.map(factOfTheDayVO, FactOfTheDay.class)).thenReturn(fact);
         when(modelMapper.map(factOfTheDayTranslation, FactOfTheDayTranslationDTO.class))
-            .thenReturn(factOfTheDayTranslationDTO);
+                .thenReturn(factOfTheDayTranslationDTO);
 
         FactOfTheDayTranslationDTO actual = factOfTheDayService.getRandomFactOfTheDayByLanguage("en");
 
         assertEquals(factOfTheDayTranslationDTO, actual);
 
         verify(service, times(1)).getRandomFactOfTheDay();
+    }
+
+    @Test
+    void getRandomFactOfTheDayByLanguageTestFailed() {
+        String languageCode = "ua";
+        Language english = ModelUtils.getLanguage();
+        english.setCode("en");
+        FactOfTheDayTranslation translation = ModelUtils.getFactOfTheDayTranslation();
+        translation.setLanguage(english);
+        FactOfTheDay fact = ModelUtils.getFactOfTheDay();
+        fact.setFactOfTheDayTranslations(Collections.singletonList(translation));
+        when(modelMapper.map(service.getRandomFactOfTheDay(), FactOfTheDay.class)).thenReturn(fact);
+
+        assertThrows(NotFoundException.class, () -> factOfTheDayService.getRandomFactOfTheDayByLanguage(languageCode));
     }
 }
