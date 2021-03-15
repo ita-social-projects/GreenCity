@@ -13,7 +13,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TipsAndTricksComment;
 import greencity.entity.User;
-import greencity.enums.AchievementCategory;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -87,8 +87,8 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategory.TIPS_AND_TRICKS_COMMENTS,
-                0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT,
+                AchievementCategoryType.TIPS_AND_TRICKS_COMMENTS, 0));
         return modelMapper
             .map(tipsAndTricksCommentRepo.save(tipsAndTricksComment), AddTipsAndTricksCommentDtoResponse.class);
     }

@@ -8,6 +8,7 @@ body {
     font-size: 14px;
     margin-top: 20px;
 }
+
 .table-secondary, .table-secondary > td, .table-secondary > th {
     background-color: #F5F6F6;
 }
@@ -35,6 +36,7 @@ body {
     font-size: 32px;
     color: #13AA57;
 }
+
 .manager-user {
     margin: auto;
     padding-top: 30px;
@@ -42,17 +44,20 @@ body {
     border-bottom: 1px solid #b4b4b4;
     border-top: 1px solid #b4b4b4;
 }
-.text-describe{
+
+.text-describe {
     height: 38px;
     width: 323px;
 }
+
 .buttons {
     padding-left: 600px;
 }
 
-.username{
+.username {
     width: 200px;
 }
+
 .table-title .btn-group {
     float: right;
 }
@@ -91,6 +96,7 @@ table.table tr th {
     background-color: #a4b4ab
 
 }
+
 table.table tr th:first-child {
     width: 60px;
 
@@ -100,6 +106,7 @@ table.table tr th:last-child {
     width: 100px;
 
 }
+
 table.table-striped tbody tr:nth-of-type(odd) {
     background-color: #f5f6f6;
 
@@ -144,6 +151,7 @@ table.table td a.edit {
 table.table td a.delete {
     color: #E02116;
 }
+
 table.table td a.add {
     color: #008000;
 }
@@ -330,6 +338,7 @@ table.table .avatar {
     border-color: #245740;
     background: #245740;
 }
+
 .dropbtn.role {
     width: 120px;
     height: 25px;
@@ -374,6 +383,7 @@ table.table .avatar {
     color: #ffffff;
     background-color: #13aa57;
 }
+
 .dropbtn.status {
     width: 130px;
     height: 25px;
@@ -478,6 +488,7 @@ table.table .avatar {
     margin-left: 20px;
     font-size: 16px;
 }
+
 .custom-checkbox input[type="checkbox"]:disabled + label:before {
     color: #b8b8b8;
     cursor: auto;
@@ -486,7 +497,7 @@ table.table .avatar {
 }
 
 .modal .modal-dialog {
-    max-width: 600px;
+    max-width: 650px;
 }
 
 .modal-title {
@@ -494,19 +505,40 @@ table.table .avatar {
     margin-top: 20px;
 
 }
-.modal-title-deac{
+
+.modal-title-deac {
     text-align: center;
-    margin: auto;
     color: #d12a24;
 }
-.modal-title-act{
-    text-align: center;
-    margin: auto;
+
+.modal-title-act {
+    text-align: center !important;
     color: #13aa57;
+}
+.modal-body-act1{
+    margin:0 !important;
+    padding-left: 7px;
+}
+
+.modal-body-act {
+    text-align: center;
+    margin:0 !important;
+}
+
+.reason {
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+}
+.user-lang {
+    text-align: center;
+    width: 100%;
+    display: inline-block;
 }
 
 .modal .modal-header, .modal .modal-body, .modal .modal-footer {
-    padding: 20px 30px;
+    padding: 15px 30px;
+    border: none !important;
 }
 
 .modal .modal-content {
@@ -723,6 +755,7 @@ td input[type=search] {
     width: 130px;
     height: 40px;
 }
+
 a#deactivateAllSubmit.btn.btn-danger {
     height: 59px;
 }
@@ -796,15 +829,18 @@ button#searchByForUser {
 .col.action {
     width: 90px;
 }
+
 /* sidepanel*/
-.eco-news-active-link{
+.eco-news-active-link {
     background-color: #a2b5af;
     font-weight: bold;
 }
+
 li {
     list-style-type: none;
 }
-.sidepanel  {
+
+.sidepanel {
     width: 0;
     position: fixed;
     z-index: 1;
@@ -817,10 +853,12 @@ li {
 .sidepanel a:hover {
     color: #f1f1f1;
 }
-.sidepanel a{
+
+.sidepanel a {
     font-size: 12px;
     padding-left: 15%;
 }
+
 .sidepanel .closebtn {
     position: absolute;
     color: black;
@@ -828,6 +866,7 @@ li {
     right: 25px;
     font-size: 30px;
 }
+
 .openbtn {
     position: fixed;
     font-size: 20px;
@@ -837,10 +876,12 @@ li {
     padding: 10px 15px;
     border: none;
 }
+
 .openbtn:hover {
-    background-color:#444;
+    background-color: #444;
 }
-.list-item{
+
+.list-item {
     margin-top: 5%;
     width: 100%;
 }

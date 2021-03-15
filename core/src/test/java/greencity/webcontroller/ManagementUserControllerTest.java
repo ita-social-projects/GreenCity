@@ -2,6 +2,7 @@ package greencity.webcontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.client.RestClient;
+import greencity.constant.RestTemplateLinks;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
@@ -20,7 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -96,5 +97,42 @@ class ManagementUserControllerTest {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void getReasonsOfDeactivation() throws Exception {
+        List<String> test = List.of("test", "test");
+        when(restClient.getDeactivationReason(1L, "en")).thenReturn(test);
+        this.mockMvc.perform(get(managementUserLink + "/reasons" + "?id=1" + "&admin=en")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).getDeactivationReason(1L, "en");
+    }
+
+    @Test
+    void setActivatedStatus() throws Exception {
+        mockMvc.perform(post(managementUserLink + "/activate" + "?id=1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).setActivatedStatus(1L);
+    }
+
+    @Test
+    void getUserLang() throws Exception {
+        this.mockMvc.perform(get(managementUserLink + "/lang" + "?id=1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).getUserLang(1L);
+    }
+
+    @Test
+    void deactivateUser() throws Exception {
+        List<String> test = List.of("test", "test");
+        String json = objectMapper.writeValueAsString(test);
+        mockMvc.perform(post(managementUserLink + "/deactivate" + "?id=1")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).deactivateUser(1L, test);
     }
 }

@@ -11,10 +11,12 @@ import greencity.service.HabitAssignService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -202,6 +204,8 @@ public class HabitAssignController {
      *
      * @param habitId - id of {@link HabitVO}.
      * @param userVO  {@link UserVO} user.
+     * @param date    - {@link LocalDate} we want to enroll.
+     * @param locale  - needed language code.
      * @return {@link HabitStatusCalendarDto}.
      */
     @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
@@ -211,11 +215,14 @@ public class HabitAssignController {
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
+    @ApiLocale
     @PostMapping("/{habitId}/enroll/{date}")
     public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.enrollHabit(habitId, userVO.getId(), date));
+        @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.enrollHabit(habitId, userVO.getId(), date, locale.getLanguage()));
     }
 
     /**
@@ -281,7 +288,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */
-    @ApiOperation(value = "Get user assigns between 2 days.")
+    @ApiOperation(value = "Get user assigns between 2 dates.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitsDateEnrollmentDto.class,
             responseContainer = "List"),

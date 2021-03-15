@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -11,22 +12,31 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.Language;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
+import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
 import org.junit.jupiter.api.Assertions;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -49,8 +59,12 @@ class AchievementServiceImplTest {
     private UserActionService userActionService;
     @Mock
     private UserAchievementRepo userAchievementRepo;
+    @Mock
+    private AchievementCalculation achievementCalculation;
     @InjectMocks
     private AchievementServiceImpl achievementService;
+    @Mock
+    private AchievementTranslationRepo achievementTranslationRepo;
 
     @Test
     void findAllWithEmptyListTest() {
@@ -198,32 +212,48 @@ class AchievementServiceImplTest {
 
     @Test
     void findAchievementsWithStatusActive() {
-        UserAchievement userAchievementt = ModelUtils.getUserAchievement();
-        List<AchievementNotification> achievementNotifications = new ArrayList<>();
-        List<UserAchievement> userAchievementList = Collections.singletonList(userAchievementt);
-        userAchievementList.forEach(userAchievement -> {
-            Achievement achievement = userAchievement.getAchievement();
-            achievementNotifications.add(AchievementNotification.builder()
-                .id(userAchievement.getId())
-                .achievementCategory(AchievementCategoryVO.builder()
-                    .id(achievement.getAchievementCategory().getId())
-                    .name(achievement.getAchievementCategory().getName())
-                    .build())
-                .translations(achievement.getTranslations().stream()
-                    .map(achievementTranslation -> AchievementTranslationVO.builder()
-                        .id(achievementTranslation.getId())
-                        .language(LanguageVO.builder()
-                            .id(achievementTranslation.getLanguage().getId())
-                            .code(achievementTranslation.getLanguage().getCode())
-                            .build())
-                        .message(achievementTranslation.getMessage())
-                        .description(achievementTranslation.getDescription())
-                        .title(achievementTranslation.getTitle())
-                        .build())
-                    .collect(Collectors.toList()))
+        List<AchievementNotification> achievementNotifications =
+            Collections.singletonList(AchievementNotification.builder()
+                .id(1L)
+                .message("test")
+                .description("test")
+                .title("test")
                 .build());
-        });
-        when(userAchievementRepo.findAchievementsWithStatusActive(1L)).thenReturn(userAchievementList);
+        UserVO userVO = ModelUtils.getUserVO();
+        userVO.setLanguageVO(LanguageVO.builder()
+            .id(1L)
+            .code("ua")
+            .build());
+        Achievement achievement = ModelUtils.getAchievement();
+        List<AchievementTranslation> achievementTranslations = Collections
+            .singletonList(AchievementTranslation.builder()
+                .id(1L)
+                .achievement(achievement)
+                .message("test")
+                .description("test")
+                .title("test")
+                .language(Language.builder()
+                    .id(1L)
+                    .code("ua")
+                    .build())
+                .build());
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        when(restClient.findById(1L)).thenReturn(userVO);
+        when(achievementTranslationRepo.findAchievementsWithStatusActive(1L, 1L))
+            .thenReturn(achievementTranslations);
+        when(userAchievementRepo.getUserAchievementByIdAndAchievementId(1L, 1L)).thenReturn(userAchievement);
+        userAchievement.setNotified(true);
+        when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
         assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
+    }
+
+    @Test
+    void calculateAchievement() {
+        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
+        verify(achievementCalculation).calculateAchievement(
+            anyLong(),
+            any(AchievementType.class),
+            any(AchievementCategoryType.class),
+            anyInt());
     }
 }
