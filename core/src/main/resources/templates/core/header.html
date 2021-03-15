@@ -6,41 +6,35 @@
             <div class="header">
                 <div class="logo">
                     <a href="/management/">
-                        <img th:src="@{/img/logo_M.png}" alt="logo">
+                        <img alt="logo" th:src="@{/img/logo_M.png}">
                     </a>
                 </div>
-                <div class="navigation-menu">
-                    <div class="navigation-menu-left">
-                        <ul>
-                            <li>
-                                <a href="#">
-                                    Eco news
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/tipsandtricks">
-                                    Tips & Tricks
-                                </a>
-                            </li>
-                            <li>
-                                <a th:href="@{/management/factoftheday}">
-                                    Fact of the day
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/users">
-                                    Users
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/management/habits/">
-                                    Habits
-                                </a>
-                            </li>
-                        </ul>
+                <div class="main-search">
+                                <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/users" method="get">
+                                        <img alt="search" id="btnSearchImage"
+                                             src="/img/search.png">
+                                        <input type="search" name="query" id="inputSearch" class="form-control"
+                                               th:placeholder="#{greenCity.pages.search}">
+
+                                    </form>
+                                </span>
+
+                </div>
+                <div class="logo-admin">
+                    <img class="rounded-circle" th:src="@{/img/view-user.jpg}">
+                </div>
+                <div class="dropdown">
+                    <button class="dropbtn">[[#{greenCity.current.language}]]
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a onclick="setLanguageUa()">Ua</a>
+                        <a onclick="setLanguageEn()">En</a>
                     </div>
                 </div>
             </div>
+            </ul>
         </div>
     </div>
 </header>

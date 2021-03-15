@@ -4,6 +4,15 @@
 
 
 
+**Copyright 2020 Softserve IT Academy**
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
 ## 1. About the project
 
 The main aim of “GreenCity” project is to teach people in a playful and challenging way to have an eco-friendly lifestyle. A user can view on the map places that have some eco-initiatives or suggest discounts for being environmentally aware (for instance, coffee shops that give a discount if a customer comes with their own cup). А user can start doing an environment-friendly habit and track their progress with a habit tracker.
@@ -28,7 +37,7 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 ### 4.1. Required to install
 
-* Java 11
+* Java 8
 * PostgreSQL 9.5 or higher
 
 ### 4.2. How to run
@@ -49,6 +58,14 @@ spring.mail.password=${EMAIL_PASSWORD}
 cloud.name=${CLOUD_NAME}
 api.key=${API_KEY}
 api.secret=${API_SECRET}
+google.clientId=${GOOGLE_CLIENT_ID}
+spring.rabbitmq.host=${RABBITMQ_HOST}
+spring.rabbitmq.password=${RABBITMQ_PASSWORD}
+spring.rabbitmq.username=${RABBITMQ_USERNAME}
+bucketName=${BUCKET_NAME}
+staticUrl=${STATIC_URL}
+spring.social.facebook.app-id=${FACEBOOK_APP_ID}
+spring.social.facebook.app-secret=${FACEBOOK_APP_SECRET}
 ```
 
 ![env-vars](./docs-photos/env-example.png)
@@ -83,4 +100,4 @@ There is no special configurations required. Just clone [GreenCityClient](https:
 
 Here you can read more about [how to set up checkstyle](https://github.com/ita-social-projects/GreenCity/wiki/Setup-CheckStyle-to-your-IDE);
 
-Here you can read more about [SonarQube Plugin for Intellij Idea](https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin/);
+Here you can read more about [SonarLint](https://plugins.jetbrains.com/plugin/7973-sonarlint);
