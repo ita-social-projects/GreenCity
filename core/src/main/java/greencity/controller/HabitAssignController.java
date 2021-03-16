@@ -328,4 +328,24 @@ public class HabitAssignController {
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.cancelHabitAssign(habitId, userVO.getId()));
     }
+
+    /**
+     * Method delete assigned habit {@link HabitAssignVO} for current {@link UserVO}.
+     *
+     * @param habitId - id of {@link HabitVO}.
+     * @param userVO  - {@link UserVO} user.
+     */
+    @ApiOperation(value = "Delete assigned habit for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/delete/{habitId}")
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        habitAssignService.deleteHabitAssign(habitId, userVO.getId());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

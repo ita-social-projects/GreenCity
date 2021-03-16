@@ -544,4 +544,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void deleteHabitAssign(Long habitId, Long userId) {
+        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
+        habitAssignRepo.delete(habitAssign);
+    }
 }

@@ -1,7 +1,9 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+
 import static greencity.ModelUtils.getHabitAssign;
+
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
@@ -11,6 +13,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -21,11 +24,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -246,5 +252,14 @@ class HabitAssignServiceImplTest {
         assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
 
         verify(habitAssignRepo).save(habitAssign);
+    }
+
+    @Test
+    void deleteHabitAssignTest() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
+        assert habitAssign != null;
+        habitAssignService.deleteHabitAssign(1L, 1L);
+        verify(habitAssignRepo).delete(habitAssign);
     }
 }

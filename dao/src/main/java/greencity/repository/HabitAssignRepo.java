@@ -176,4 +176,13 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date)")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
+
+    /**
+     * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id.
+     *
+     * @param habitId {@link Long} id.
+     * @param userId  {@link Long} id.
+     */
+    @Query(value = "FROM HabitAssign h WHERE h.habit.id = :habitId AND h.user.id = :userId")
+    Optional<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
 }

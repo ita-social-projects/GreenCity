@@ -144,4 +144,12 @@ public interface HabitAssignService {
      * @return {@link HabitAssignDto}.
      */
     HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
+
+    /**
+     * Method delete HabitAssign.
+     *
+     * @param habitId {@link Long} id.
+     * @param userId  {@link Long} id.
+     */
+    void deleteHabitAssign(Long habitId, Long userId);
 }
