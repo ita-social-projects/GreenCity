@@ -330,7 +330,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method delete assigned habit {@link HabitAssignVO} for current {@link UserVO}.
+     * Method delete assigned habit {@link HabitAssignVO} for current
+     * {@link UserVO}.
      *
      * @param habitId - id of {@link HabitVO}.
      * @param userVO  - {@link UserVO} user.
