@@ -20,12 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class TipsAndTricksControllerTest {
+class TipsAndTricksControllerTest {
     private static final String tipsAndTricksLink = "/tipsandtricks";
     private MockMvc mockMvc;
     @InjectMocks
@@ -46,97 +44,106 @@ public class TipsAndTricksControllerTest {
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(tipsAndTricksController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .standaloneSetup(tipsAndTricksController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
-    public void saveTest() throws Exception {
+    void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Jane.Smith@gmail.com");
         String json = "{\n" +
-                "\"title\": \"title\",\n" +
-                " \"tags\": [\"news\"],\n" +
-                " \"text\": \"content content content\", \n" +
-                "\"source\": \"\",\n" +
-                " \"image\": null\n" +
-                "}";
-        MockMultipartFile jsonFile = new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
+            "    \"titleTranslation\":{\n" +
+            "        \"content\":\"title\",\n" +
+            "        \"languageCode\":\"en\"\n" +
+            "    },\n" +
+            "    \"textTranslation\":{\n" +
+            "        \"content\":\"content content content\",\n" +
+            "        \"languageCode\":\"en\"\n" +
+            "    },\n" +
+            "    \"tags\":[\"news\"],\n" +
+            "    \"source\":\",\",\n" +
+            "    \"image\":null\n" +
+            "}";
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("tipsAndTricksDtoRequest", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(tipsAndTricksLink)
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest = mapper.readValue(json, TipsAndTricksDtoRequest.class);
 
         verify(tipsAndTricksService, times(1))
-                .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
+            .save(eq(tipsAndTricksDtoRequest), isNull(), eq("Jane.Smith@gmail.com"));
     }
 
     @Test
-    public void saveBadRequestTest() throws Exception {
+    void saveBadRequestTest() throws Exception {
         this.mockMvc.perform(post(tipsAndTricksLink)
-                .content("{}")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .content("{}")
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void getTipsAndTricksByIdTest() throws Exception {
+    void getTipsAndTricksByIdTest() throws Exception {
         this.mockMvc.perform(get(tipsAndTricksLink + "/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .findDtoById(eq(1L));
+            .findDtoById(1L);
     }
 
     @Test
-    public void findAllTest() throws Exception {
+    void findAllTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         this.mockMvc.perform(get(tipsAndTricksLink + "?page=1"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .findAll(eq(pageable));
+            .findAll(pageable);
     }
 
     @Test
-    public void deleteTest() throws Exception {
+    void deleteTest() throws Exception {
         this.mockMvc.perform(delete(tipsAndTricksLink + "/{id}", 1))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(tipsAndTricksService, times(1))
-                .delete(eq(1L));
+            .delete(1L);
     }
 
     @Test
-    public void getTipsAndTricksTest() throws Exception {
+    void getTipsAndTricksTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         List<String> tags = Collections.singletonList("education");
 
-        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?page=1&tags=education"))
-                .andExpect(status().isOk());
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags?lang=en&page=1&tags=education"))
+            .andExpect(status().isOk());
+        String language = "en";
 
         verify(tipsAndTricksService, times(1))
-                .find(eq(pageable), eq(tags));
+            .find(pageable, tags, language);
     }
 
     @Test
-    public void findAllTipsAndTricksTagsTest() throws Exception {
-        this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all"))
-                .andExpect(status().isOk());
+    void findAllTipsAndTricksTagsTest() throws Exception {
+        String language = "en";
+        this.mockMvc.perform(get(tipsAndTricksLink + "/tags/all?lang=" + language))
+            .andExpect(status().isOk());
 
-        verify(tagService).findAllTipsAndTricksTags();
+        verify(tagService).findAllTipsAndTricksTags(language);
     }
 }

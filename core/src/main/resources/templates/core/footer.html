@@ -3,26 +3,52 @@
 <footer th:fragment="footer">
     <div class="main-background-image">
         <div class="main">
-            <a href="/management/" class="small-screen-size">
-                <img th:src="@{/img/greencity-logo.png}" class="logo" alt="GreenCity Logo">
+            <a class="small-screen-size" href="/management/">
+                <img alt="GreenCity Logo" class="logo" th:src="@{/img/greencity-logo.png}">
             </a>
             <div class="links">
                 <div class="left-side">
                     <ul class="list-of-site-links">
                         <li>
-                            <a class="router-links" href="#">Eco news</a>
+                            <a class="router-links" href="/management/advices">[[#{greenCity.page.footer.advices}]]</a>
                         </li>
                         <li>
-                            <a href="/management/tipsandtricks" class="router-links">Tips & Tricks</a>
+                            <a class="router-links" href="/management/achievement">[[#{greenCity.page.footer.achievement}]]</a>
                         </li>
                         <li>
-                            <a class="router-links" href="#">Fact of the day</a>
+                            <a class="router-links" href="/management/eco-news">[[#{greenCity.page.footer.eco.news}]]</a>
                         </li>
                         <li>
-                            <a class="router-links" href="#">Users</a>
+                            <a class="router-links" href="/management/tipsandtricks">[[#{greenCity.page.footer.tips.tricks}]]</a>
                         </li>
                         <li>
-                            <a href="/management/habits/" class="router-links">Habits</a>
+                            <a class="router-links" href="#">[[#{greenCity.page.footer.fact.of.the.day}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/users">[[#{greenCity.page.footer.users}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/habits/">[[#{greenCity.page.footer.habits}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/facts">[[#{greenCity.page.footer.habit.facts}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/rating/">
+                                [[#{greenCity.page.footer.facts.rating}]]
+                            </a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/places/">[[#{greenCity.page.footer.places}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/tags/">[[#{greenCity.page.footer.tags}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links" href="/management/socialnetworkimages">[[#{greenCity.page.footer.social.network.images}]]</a>
+                        </li>
+                        <li>
+                            <a class="router-links-custom" href="/management/shopping-list-items">[[#{greenCity.page.footer.shoppingListItems}]]</a>
                         </li>
                     </ul>
                 </div>
