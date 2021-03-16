@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Markiyan Derevetskyi" id="Derevetskyi-4">
+        <createTable tableName="tag_translations">
+            <column name="id" type="bigint" autoIncrement="true"/>
+            <column name="name" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Derevetskyi-5" author="Markiyan Derevetskyi">
+        <addPrimaryKey
+                columnNames="id"
+                constraintName="PK_tag_translations"
+                tableName="tag_translations"/>
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="tag_translations"
+                                 constraintName="FK_tag_translations_tags" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="tag_translations"
+                                 constraintName="FK_tag_translations_languages" referencedColumnNames="id"
+                                 referencedTableName="languages"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,23 +1,14 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
-import greencity.entity.Place;
-import greencity.entity.User;
-import greencity.entity.enums.UserStatus;
-import greencity.exception.exceptions.UserBlockedException;
 import greencity.service.PlaceCommentService;
-import greencity.service.PlaceService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,6 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
@@ -34,9 +27,6 @@ public class PlaceCommentController {
      * Autowired CommentService instance.
      */
     private PlaceCommentService placeCommentService;
-    private UserService userService;
-    private PlaceService placeService;
-
 
     /**
      * Method witch save comment by Place Id.
@@ -53,15 +43,10 @@ public class PlaceCommentController {
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
-                                       @Valid @RequestBody AddCommentDto addCommentDto,
-                                       @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
-        Place place = placeService.findById(placeId);
+        @Valid @RequestBody AddCommentDto addCommentDto,
+        @ApiIgnore @AuthenticationPrincipal Principal principal) {
         return ResponseEntity
-            .status(HttpStatus.CREATED).body(placeCommentService.save(place.getId(), addCommentDto, user.getEmail()));
+            .status(HttpStatus.CREATED).body(placeCommentService.save(placeId, addCommentDto, principal.getName()));
     }
 
     /**
@@ -71,6 +56,10 @@ public class PlaceCommentController {
      * @return CommentDto
      * @author Marian Milian
      */
+    @ApiOperation(value = "Get comment by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CommentReturnDto.class)
+    })
     @GetMapping("comments/{id}")
     public ResponseEntity<Object> getCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -78,9 +67,9 @@ public class PlaceCommentController {
     }
 
     /**
-     * Method return comment by id.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * Method return comment by id. Parameter pageable ignored because swagger ui
+     * shows the wrong params, instead they are explained in the
+     * {@link ApiPageable}.
      *
      * @param pageable pageable configuration
      * @return PageableDto
