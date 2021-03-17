@@ -208,6 +208,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/recommendedFriends/",
                 "/user/{userId}/friends/",
                 "/user/{userId}/friendRequests/",
+                "/factoftheday/",
+                "/factoftheday/all",
                 "/chat",
                 "/achievements/notification/{userId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)

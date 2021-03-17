@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @EnableCaching
 @Service
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
     private final FactOfTheDayRepo factOfTheDayRepo;
     private final ModelMapper modelMapper;
