@@ -2,6 +2,7 @@ package greencity.controller;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
+
 import static greencity.ModelUtils.getPrincipal;
 
 import greencity.client.RestClient;
@@ -9,9 +10,11 @@ import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
+
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
@@ -131,5 +135,13 @@ class HabitAssignControllerTest {
             .andExpect(status().isOk());
 
         verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
+    }
+
+    @Test
+    void deleteHabitAssignTest() throws Exception {
+        Principal principal = () -> "xd87@ukr.net";
+        mockMvc.perform(delete(habitLink + "/delete/{habitId}", 1L)
+            .principal(principal)).andExpect(status().isOk());
+        verify(habitAssignService).deleteHabitAssign(1L, null);
     }
 }
