@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.repository.UserRepo;
+import greencity.client.RestClient;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class GraphServiceImpl implements GraphService {
     private static final String OTHER_CITY = "Other";
-    private final UserRepo userRepo;
+    private final RestClient restClient;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public Map<String, Integer> getGeneralStatisticsForAllUsersByCities() {
-        List<String> userCities = userRepo.findAllUsersCities();
+        List<String> userCities = restClient.findAllUsersCities();
 
         Map<String, Integer> map = new HashMap<>();
         map.put(OTHER_CITY, 0);
@@ -75,7 +75,7 @@ public class GraphServiceImpl implements GraphService {
      */
     @Override
     public Map<Integer, Long> getRegistrationStatistics() {
-        Map<Integer, Long> map = userRepo.findAllRegistrationMonthsMap();
+        Map<Integer, Long> map = restClient.findAllRegistrationMonthsMap();
         initializeMapWithAbsentMonths(map);
         return map;
     }
