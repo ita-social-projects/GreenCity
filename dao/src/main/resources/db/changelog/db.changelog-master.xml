@@ -90,6 +90,7 @@
     <include file="db/changelog/logs/ch-add-reasons-for-user-deactivatiom-table-Pikhotskyi.xml"/>
     <include file="db/changelog/logs/ch-ubs-database-seperation.xml"/>
     <include file="db/changelog/logs/ch-add-table-message-likes-Diakiv.xml"/>
+    <include file="db/changelog/logs/ch-add-constraints-to-habits-assign-table-Struk.xml"/>
 
 </databaseChangeLog>
 
