@@ -11,4 +11,14 @@
                              constraintName="one_unique_habit_one_unique_status_verification_token"
                              tableName="habit_assign"/>
     </changeSet>
+    <changeSet id="Struk1" author="Nazar Struk">
+        <dropUniqueConstraint tableName="habit_assign"
+                              constraintName="one_unique_habit_one_unique_status_verification_token"></dropUniqueConstraint>
+    </changeSet>
+
+    <changeSet id="Struk2" author="Nazar Struk">
+        <addUniqueConstraint columnNames="status, habit_id, user_id"
+                             constraintName="one_unique_habit_one_unique_status_one_unique_userID_verification_token"
+                             tableName="habit_assign"/>
+    </changeSet>
 </databaseChangeLog>
