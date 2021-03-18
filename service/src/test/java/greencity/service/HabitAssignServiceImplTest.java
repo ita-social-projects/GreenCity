@@ -17,10 +17,7 @@ import greencity.repository.HabitRepo;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,6 +42,8 @@ class HabitAssignServiceImplTest {
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
     ModelMapper modelMapper;
+    @Mock
+    HabitStatisticService habitStatisticService;
     @InjectMocks
     HabitAssignServiceImpl habitAssignService;
 
@@ -85,19 +84,19 @@ class HabitAssignServiceImplTest {
     private String language = "en";
 
     @Test
-    void getByIdTest() {
+    void getById() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         assertEquals(habitAssignDto, habitAssignService.getById(1L, language));
     }
 
     @Test
-    void getByIdFailTest() {
+    void getByIdFailed() {
         assertThrows(NotFoundException.class, () -> habitAssignService.getById(1L, language));
     }
 
     @Test
-    void assignDefaultHabitForUserTest() {
+    void assignDefaultHabitForUser() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
@@ -109,7 +108,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignsBetweenDatesTest() {
+    void findHabitAssignsBetweenDates() {
         HabitAssign habit1 = ModelUtils.getHabitAssign();
         HabitAssign habit2 = ModelUtils.getHabitAssign();
         habit2.setId(2L);
@@ -148,7 +147,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void assignCustomHabitForUserTest() {
+    void assignCustomHabitForUser() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
@@ -161,7 +160,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignByUserIdAndHabitIdTest() {
+    void findHabitAssignByUserIdAndHabitId() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
@@ -170,7 +169,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getAllHabitAssignsByUserIdAndAcquiredStatusTest() {
+    void getAllHabitAssignsByUserIdAndAcquiredStatus() {
         when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, "en");
@@ -242,7 +241,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void cancelHabitAssignTest() {
+    void cancelHabitAssign() {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
 
@@ -255,11 +254,119 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void deleteHabitAssignTest() {
+    void deleteHabitAssign() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
         assert habitAssign != null;
         habitAssignService.deleteHabitAssign(1L, 1L);
         verify(habitAssignRepo).delete(habitAssign);
     }
+
+    @Test
+    void getAllHabitAssignsByHabitIdAndAcquiredStatus() {
+        Long habitId = 1L;
+
+        Language language = ModelUtils.getLanguage();
+        language.setCode("en");
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setLanguage(language);
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto();
+
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        habitAssign.setHabit(habit);
+
+        habit.setHabitTranslations(Collections.singletonList(translation));
+
+        when(habitAssignRepo.findAllByHabitId(habitId)).thenReturn(Collections.singletonList(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
+        HabitAssignDto actual =
+            habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId, language.getCode()).get(0);
+
+        assertEquals(habitAssignDto, actual);
+
+    }
+
+    @Test
+    void deleteAllHabitAssignsByHabit() {
+        HabitVO habit = ModelUtils.getHabitVO();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        when(habitAssignRepo.findAllByHabitId(any())).thenReturn(Collections.singletonList(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        habitAssignService.deleteAllHabitAssignsByHabit(habit);
+
+        verify(habitStatisticService).deleteAllStatsByHabitAssign(habitAssignVO);
+        verify(habitAssignRepo).delete(habitAssign);
+        verify(habitAssignRepo, times(1)).delete(any());
+    }
+
+    @Test
+    void enrollHabit() {
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+        HabitStatusCalendarVO calendarVO = null;
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+
+        habitAssign.setHabit(habit);
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+
+        when(habitAssignRepo.findByHabitIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(any(LocalDate.class), any(HabitAssignVO.class)))
+                .thenReturn(calendarVO);
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
+        HabitAssignDto actualDto = habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en");
+
+        verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
+
+        assertEquals(habitAssignDto, actualDto);
+
+    }
+
+    @Test
+    void enrollHabitThrowException() {
+        when(habitAssignRepo.findByHabitIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en"));
+    }
+
+    @Test
+    void findInprogressHabitAssignsOnDate() {
+
+        Long id = 3L;
+        LocalDate date = LocalDate.now();
+        Language language = ModelUtils.getLanguage();
+        language.setCode("en");
+
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));
+
+        when(habitAssignRepo.findAllInprogressHabitAssignsOnDate(anyLong(), any(LocalDate.class)))
+            .thenReturn(Collections.singletonList(habitAssign));
+
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+
+        List<HabitAssignDto> dtoList =
+            habitAssignService.findInprogressHabitAssignsOnDate(id, date, language.getCode());
+        assertEquals(dtoList.get(0), habitAssignDto);
+
+    }
+
+    @Test
+    void addDefaultHabit() {
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+
+        assertEquals(habitAssignService.assignDefaultHabitForUser(1l, userVO), habitAssignManagementDto);
+
+    }
+
 }
