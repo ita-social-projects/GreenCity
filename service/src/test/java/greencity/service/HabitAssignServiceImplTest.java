@@ -295,13 +295,13 @@ class HabitAssignServiceImplTest {
     void deleteAllHabitAssignsByHabit() {
         HabitVO habit = ModelUtils.getHabitVO();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-//        HabitAssignVO assignVO= ModelUtils.getHabitAssignVO();
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
         when(habitAssignRepo.findAllByHabitId(any())).thenReturn(Collections.singletonList(habitAssign));
-//        when(modelMapper.map(habitAssign,HabitAssignVO.class)).thenReturn(assignVO);
+        when(modelMapper.map(habitAssign,HabitAssignVO.class)).thenReturn(habitAssignVO);
         habitAssignService.deleteAllHabitAssignsByHabit(habit);
 
-//        verify(habitStatisticService).deleteAllStatsByHabitAssign(assignVO);
+        verify(habitStatisticService).deleteAllStatsByHabitAssign(habitAssignVO);
         verify(habitAssignRepo).delete(habitAssign);
         verify(habitAssignRepo, times(1)).delete(any());
     }
