@@ -25,12 +25,12 @@ VALUES (1, 'image1'),
 
 INSERT INTO habit_assign (id, habit_id, user_id, status,  create_date)
 VALUES (1, 1, 1, 'active', '2020-09-09 20:00:00+00'),
-       (2, 1, 2, 'active', '2020-09-10 20:00:00+00'),
+       (2, 2, 2, 'active', '2020-09-10 20:00:00+00'),
        (3, 3, 3, 'active', '2020-09-11 20:00:00+00'),
        (4, 4, 4, 'active', '2020-09-12 20:00:00+00'),
        (5, 5, 5, 'active', '2020-09-13 20:00:00+00'),
        (6, 6, 6, 'active', '2020-09-14 20:00:00+00'),
-       (7, 2, 7, 'active', '2020-09-14 20:00:00+00');
+       (7, 2, 7, 'activeTEST', '2020-09-14 20:00:00+00');
 
 INSERT INTO habit_statistics (id, rate, create_date, amount_of_items, habit_assign_id)
 VALUES (1, 'GOOD', '2020-10-09 00:00:00+00', 5, 1),
