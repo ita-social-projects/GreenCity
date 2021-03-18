@@ -173,7 +173,9 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE upper(ha.status) <> 'CANCELLED' "
         + "AND ha.user.id = :userId "
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
-        + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date)")
+        + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
+        + "AND ha.user.id = :userId "
+        + "AND upper(ha.status) <> 'CANCELLED'")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
 
