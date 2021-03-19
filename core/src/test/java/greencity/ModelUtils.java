@@ -48,10 +48,7 @@ import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -619,6 +616,17 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .dateCompleted(LocalDateTime.of(2021, 2, 2, 14, 2))
+            .build();
+    }
+
+    public static UserManagementDto getUserManagementDto() {
+        return UserManagementDto.builder()
+            .id(1L)
+            .name("Username")
+            .email("user@gmail.com")
+            .userCredo("Credo")
+            .role(Role.ROLE_ADMIN)
+            .userStatus(UserStatus.ACTIVATED)
             .build();
     }
 }
