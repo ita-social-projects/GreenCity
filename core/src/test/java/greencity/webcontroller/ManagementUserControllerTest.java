@@ -1,6 +1,8 @@
 package greencity.webcontroller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.constant.RestTemplateLinks;
 import greencity.converters.UserArgumentResolver;
@@ -8,6 +10,9 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
+import greencity.enums.Role;
+import greencity.enums.UserStatus;
+import org.dom4j.rule.Mode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +33,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -135,4 +140,69 @@ class ManagementUserControllerTest {
             .andExpect(status().isOk());
         verify(restClient).deactivateUser(1L, test);
     }
+
+    @Test
+    void saveUserTest() throws Exception {
+
+        UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
+        String content = objectMapper.writeValueAsString(userManagementDto);
+
+        mockMvc.perform(post(managementUserLink + "/register")
+            .content(content)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(restClient).managementRegisterUser(userManagementDto);
+    }
+
+    @Test
+    void updateUserTest() throws Exception {
+        UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
+        String context = objectMapper.writeValueAsString(userManagementDto);
+
+        mockMvc.perform(put(managementUserLink)
+            .content(context)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(restClient).updateUser(userManagementDto);
+    }
+
+    @Test
+    void getUserById() throws Exception {
+        mockMvc.perform(get(managementUserLink + "/findById" + "?id=1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).findById(1L);
+    }
+
+    @Test
+    void findFriendsByIdTest() throws Exception {
+        Long id = 1L;
+        mockMvc.perform(get(managementUserLink + "/" + id + "/friends")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(restClient).findUserFriendsByUserId(1L);
+    }
+
+    @Test
+    void deactivateAllTest() throws Exception {
+        List<Long> list = List.of(1L, 2L);
+        String context = objectMapper.writeValueAsString(list);
+        mockMvc.perform(post(managementUserLink + "/deactivateAll")
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        context = objectMapper.writeValueAsString(null);
+
+        mockMvc.perform(post(managementUserLink + "/deactivateAll")
+            .content(context)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+
+        verify(restClient).deactivateAllUsers(list);
+    }
+
 }
