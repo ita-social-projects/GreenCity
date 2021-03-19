@@ -89,7 +89,7 @@ class SocialNetworkImageServiceImplTest {
         socialNetworkImageVO.setImagePath("http://example.com/");
         SocialNetworkImage socialNetworkImage = new SocialNetworkImage();
 
-        when(fileService.upload(any())).thenReturn(checkUrl);
+        when(fileService.upload(any())).thenReturn(checkUrl.toString());
         when(socialNetworkImageRepo.save(any())).thenReturn(socialNetworkImage);
         when(modelMapper.map(socialNetworkImage, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
         assertEquals(socialNetworkImageVO, socialNetworkImageService.saveSocialNetworkImage(checkUrl));
