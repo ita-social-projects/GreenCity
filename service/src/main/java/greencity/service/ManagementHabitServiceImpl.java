@@ -114,7 +114,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
         habit.setImage(habitManagementDto.getImage());
         if (image != null) {
-            habit.setImage(fileService.upload(image).toString());
+            habit.setImage(fileService.upload(image));
         }
     }
 

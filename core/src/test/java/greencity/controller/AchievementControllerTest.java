@@ -35,8 +35,8 @@ class AchievementControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(achievementController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
@@ -48,18 +48,18 @@ class AchievementControllerTest {
     @Test
     void calculateAchievements() throws Exception {
         mockMvc.perform(post(achievementLink + "/calculate-achievement"
-                + "?id=" + 1L
-                + "&setter=" + AchievementType.INCREMENT
-                + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
-                + "&size=" + 1)).andExpect(status().isOk());
+            + "?id=" + 1L
+            + "&setter=" + AchievementType.INCREMENT
+            + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
+            + "&size=" + 1)).andExpect(status().isOk());
         verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
-                AchievementCategoryType.ECO_NEWS, 1);
+            AchievementCategoryType.ECO_NEWS, 1);
     }
 
     @Test
     void getNotificationTest() throws Exception {
         mockMvc.perform(get(achievementLink
-                + "/notification/{userId}", 1)).andExpect(status().isOk());
+            + "/notification/{userId}", 1)).andExpect(status().isOk());
         verify(achievementService).findAchievementsWithStatusActive(1L);
     }
 }

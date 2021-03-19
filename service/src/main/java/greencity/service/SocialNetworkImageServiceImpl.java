@@ -129,7 +129,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         MultipartFile image) {
         SocialNetworkImage toSave = modelMapper.map(socialNetworkImageRequestDTO, SocialNetworkImage.class);
         if (image != null) {
-            toSave.setImagePath(fileService.upload(image).toString());
+            toSave.setImagePath(fileService.upload(image));
         }
 
         try {
@@ -176,7 +176,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         SocialNetworkImage toUpdate = findById(socialNetworkImageResponseDTO.getId());
         toUpdate.setHostPath(socialNetworkImageResponseDTO.getHostPath());
         if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
+            toUpdate.setImagePath(fileService.upload(image));
         }
         socialNetworkImageRepo.save(toUpdate);
     }
@@ -226,7 +226,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * uploadFileToCloud().
      *
      * @param url URL of give page
-     * @return URL.toString() image file location
+     * @return {@link String} url image file location
      */
     private String uploadImageToCloud(URL url) throws IOException {
         String preparedUrlHost = url.getHost();
@@ -243,7 +243,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      * Method uploads file to cloud.
      *
      * @param tempFile file to upload
-     * @return URL.toString() file location
+     * @return {@link String} url file location
      */
     private String uploadFileToCloud(File tempFile) throws IOException {
         FileItem fileItem = new DiskFileItem("mainFile", Files.probeContentType(tempFile.toPath()),
@@ -254,7 +254,6 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             outputStream.flush();
         }
         CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
-        URL uploadCloud = fileService.upload(multipartFile);
-        return uploadCloud.toString();
+        return fileService.upload(multipartFile);
     }
 }
