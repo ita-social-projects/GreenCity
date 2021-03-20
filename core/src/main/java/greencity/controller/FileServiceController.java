@@ -40,7 +40,7 @@ public class FileServiceController {
     })
     @PostMapping("/image")
     public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image).toString());
+        return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image));
     }
 
     /**

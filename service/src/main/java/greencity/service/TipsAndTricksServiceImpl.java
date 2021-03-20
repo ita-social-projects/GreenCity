@@ -73,7 +73,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
         }
         if (image != null) {
-            toSave.setImagePath(fileService.upload(image).toString());
+            toSave.setImagePath(fileService.upload(image));
         }
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
@@ -93,7 +93,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             image = fileService.convertToMultipartImage(tipsAndTricksDtoManagement.getImagePath());
         }
         if (image != null) {
-            tipsAndTricks.setImagePath(fileService.upload(image).toString());
+            tipsAndTricks.setImagePath(fileService.upload(image));
         }
         tipsAndTricks
             .setTags(modelMapper.map(tagService
@@ -188,7 +188,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
             new TypeToken<List<Tag>>() {
             }.getType()));
         if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
+            toUpdate.setImagePath(fileService.upload(image));
         }
         toUpdate.getTitleTranslations()
             .forEach(titleTranslation -> titleTranslation
