@@ -80,7 +80,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             image = fileService.convertToMultipartImage(addEcoNewsDtoRequest.getImage());
         }
         if (image != null) {
-            toSave.setImagePath(fileService.upload(image).toString());
+            toSave.setImagePath(fileService.upload(image));
         }
 
         Set<String> tagsSet = new HashSet<>(addEcoNewsDtoRequest.getTags());
@@ -333,7 +333,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 new TypeToken<List<Tag>>() {
                 }.getType()));
         if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
+            toUpdate.setImagePath(fileService.upload(image));
         }
     }
 
@@ -350,7 +350,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             image = fileService.convertToMultipartImage(updateEcoNewsDto.getImage());
         }
         if (image != null) {
-            toUpdate.setImagePath(fileService.upload(image).toString());
+            toUpdate.setImagePath(fileService.upload(image));
         }
     }
 
