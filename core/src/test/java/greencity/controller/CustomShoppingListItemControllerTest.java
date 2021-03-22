@@ -1,6 +1,10 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.entity.ShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.service.CategoryService;
@@ -12,16 +16,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import java.security.Principal;
+import java.util.Map;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +45,7 @@ class CustomShoppingListItemControllerTest {
 
     @InjectMocks
     CustomShoppingListItemController customController;
+    ObjectMapper objectMapper;
 
     private Principal principal = getPrincipal();
 
@@ -43,13 +56,52 @@ class CustomShoppingListItemControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(customController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
+        objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void getAllAvailableCustomShoppingListItems() throws Exception {
+        Long id = 1L;
+        this.mockMvc.perform(get(customLink + "/" + id)
+            .principal(principal)).andExpect(status().isOk());
+        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id);
+    }
+
+    @Test
+    void findAllByUserTest() throws Exception {
+        Long id = 1L;
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items")
+            .principal(principal)).andExpect(status().isOk());
+        verify(customShoppingListItemService).findAllByUser(id);
+    }
+
+    @Test
+    void save() throws Exception {
+        Long id = 1L;
+        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto =
+            new CustomShoppingListItemSaveRequestDto("Texttext");
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
+        String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
+        this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").content(content)
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id);
     }
 
     @Test
     void updateItemStatus() throws Exception {
-        mockMvc.perform(patch(customLink + "/{userId}/custom-shopping-list-items/?itemId=1&status=DONE", 1)
+        this.mockMvc.perform(patch(customLink + "/{userId}/custom-shopping-list-items/?itemId=1&status=DONE", 1)
             .principal(principal))
             .andExpect(status().isOk());
         verify(customShoppingListItemService).updateItemStatus(1L, 1L, "DONE");
+    }
+
+    @Test
+    void delete() throws Exception {
+        String ids = "1,2";
+        this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+            .delete(customLink + "/{userId}/custom-shopping-list-items", 1)
+            .param("ids", ids)).andExpect(status().isOk());
+        verify(customShoppingListItemService).bulkDelete(ids);
+
     }
 }
