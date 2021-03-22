@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 
 @Service
-public class CloudStorageService implements FileService {
+public class CloudStorageService {
     private final String staticUrl;
     private final String bucketName;
     private final Storage storage;

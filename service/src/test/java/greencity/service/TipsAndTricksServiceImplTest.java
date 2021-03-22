@@ -159,7 +159,7 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(tagVO);
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
@@ -204,7 +204,7 @@ class TipsAndTricksServiceImplTest {
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
             .thenReturn(tagVOList);
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
 
         TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
             tipsAndTricksDtoManagement, image, ModelUtils.getUser().getEmail());
@@ -372,7 +372,7 @@ class TipsAndTricksServiceImplTest {
             .thenReturn(tagVOList);
         when(restClient.findByEmail(tipsAndTricksDtoManagement.getAuthorName())).thenReturn(ModelUtils.getUserVO());
         when(languageService.getAllLanguages()).thenReturn(Collections.singletonList(new LanguageDTO(2L, "en")));
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
 
         tipsAndTricksService.update(tipsAndTricksDtoManagement, image);
         assertEquals("title content", tipsAndTricks.getTitleTranslations().get(0).getContent());
