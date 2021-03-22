@@ -67,13 +67,6 @@ class CustomShoppingListItemControllerTest {
         verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id);
     }
 
-//    @Test
-//    void saveUserCustomShoppingListItemsTest() throws Exception{
-//        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto = ModelUtils.
-//     //   BulkSaveCustomShoppingListItemDto dto = new BulkSaveCustomShoppingListItemDto()
-//
-//    }
-
     @Test
     void findAllByUserTest() throws Exception {
         Long id = 1L;
@@ -96,20 +89,19 @@ class CustomShoppingListItemControllerTest {
 
     @Test
     void updateItemStatus() throws Exception {
-       this.mockMvc.perform(patch(customLink + "/{userId}/custom-shopping-list-items/?itemId=1&status=DONE", 1)
+        this.mockMvc.perform(patch(customLink + "/{userId}/custom-shopping-list-items/?itemId=1&status=DONE", 1)
                 .principal(principal))
                 .andExpect(status().isOk());
         verify(customShoppingListItemService).updateItemStatus(1L, 1L, "DONE");
     }
 
 
-
     @Test
     void delete() throws Exception {
         String ids = "1,2";
         this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-                ( customLink+ "/{userId}/custom-shopping-list-items",1)
-                .param("ids" , ids)).andExpect(status().isOk());
+                (customLink + "/{userId}/custom-shopping-list-items", 1)
+                .param("ids", ids)).andExpect(status().isOk());
         verify(customShoppingListItemService).bulkDelete(ids);
 
     }
