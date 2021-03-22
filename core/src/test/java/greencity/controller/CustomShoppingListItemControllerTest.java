@@ -54,8 +54,8 @@ class CustomShoppingListItemControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(customController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -63,7 +63,7 @@ class CustomShoppingListItemControllerTest {
     void getAllAvailableCustomShoppingListItems() throws Exception {
         Long id = 1L;
         this.mockMvc.perform(get(customLink + "/" + id)
-                .principal(principal)).andExpect(status().isOk());
+            .principal(principal)).andExpect(status().isOk());
         verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id);
     }
 
@@ -71,37 +71,36 @@ class CustomShoppingListItemControllerTest {
     void findAllByUserTest() throws Exception {
         Long id = 1L;
         this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items")
-                .principal(principal)).andExpect(status().isOk());
+            .principal(principal)).andExpect(status().isOk());
         verify(customShoppingListItemService).findAllByUser(id);
     }
-
 
     @Test
     void save() throws Exception {
         Long id = 1L;
-        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto = new CustomShoppingListItemSaveRequestDto("Texttext");
+        CustomShoppingListItemSaveRequestDto customShoppingListItemSaveRequestDto =
+            new CustomShoppingListItemSaveRequestDto("Texttext");
         BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
-        this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").
-                content(content).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+        this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").content(content)
+            .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
         verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id);
     }
 
     @Test
     void updateItemStatus() throws Exception {
         this.mockMvc.perform(patch(customLink + "/{userId}/custom-shopping-list-items/?itemId=1&status=DONE", 1)
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
         verify(customShoppingListItemService).updateItemStatus(1L, 1L, "DONE");
     }
-
 
     @Test
     void delete() throws Exception {
         String ids = "1,2";
-        this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-                (customLink + "/{userId}/custom-shopping-list-items", 1)
-                .param("ids", ids)).andExpect(status().isOk());
+        this.mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+            .delete(customLink + "/{userId}/custom-shopping-list-items", 1)
+            .param("ids", ids)).andExpect(status().isOk());
         verify(customShoppingListItemService).bulkDelete(ids);
 
     }
