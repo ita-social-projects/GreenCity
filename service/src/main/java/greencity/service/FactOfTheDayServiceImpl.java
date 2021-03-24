@@ -3,26 +3,29 @@ package greencity.service;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.factoftheday.*;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.FactOfTheDayRepo;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link FactOfTheDayService}.
@@ -30,7 +33,6 @@ import java.util.stream.Collectors;
  * @author Mykola Lehkyi
  */
 @AllArgsConstructor
-@EnableCaching
 @Service
 @Scope(proxyMode = ScopedProxyMode.INTERFACES)
 public class FactOfTheDayServiceImpl implements FactOfTheDayService {
