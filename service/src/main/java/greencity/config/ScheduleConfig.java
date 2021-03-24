@@ -1,8 +1,5 @@
 package greencity.config;
 
-import static greencity.enums.EmailNotification.*;
-import static greencity.enums.FactOfDayStatus.*;
-
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
@@ -12,16 +9,17 @@ import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import greencity.repository.UserRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.enums.EmailNotification.*;
+import static greencity.enums.FactOfDayStatus.*;
 
 /**
  * Config for scheduling.
@@ -31,12 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Configuration
 @EnableScheduling
-@EnableCaching
 @AllArgsConstructor
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
 
