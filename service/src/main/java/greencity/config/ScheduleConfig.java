@@ -31,12 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Configuration
 @EnableScheduling
-@EnableCaching
 @AllArgsConstructor
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final UserRepo userRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
 
