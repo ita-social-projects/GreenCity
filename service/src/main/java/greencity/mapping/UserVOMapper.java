@@ -27,7 +27,6 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .firstName(user.getFirstName())
             .emailNotification(user.getEmailNotification())
             .userStatus(user.getUserStatus())
-            .lastVisit(user.getLastVisit())
             .rating(user.getRating())
             .verifyEmail(user.getVerifyEmail() != null ? VerifyEmailVO.builder()
                 .id(user.getVerifyEmail().getId())

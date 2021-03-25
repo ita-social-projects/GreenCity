@@ -84,7 +84,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
+            .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     private final UserVO userVO =
@@ -93,7 +93,7 @@ class PlaceServiceImplTest {
             .email("Nazar.stasyuk@gmail.com")
             .name("Nazar Stasyuk")
             .role(Role.ROLE_USER)
-            .lastVisit(LocalDateTime.now())
+            .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .build();
     private final Place genericEntity1 = Place.builder()

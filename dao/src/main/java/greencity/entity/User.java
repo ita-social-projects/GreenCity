@@ -9,14 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.*;
 
 @Entity
 @SqlResultSetMapping(
@@ -41,7 +34,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Builder
 @Table(name = "users")
 @EqualsAndHashCode(
-    exclude = {"lastVisit", "verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
+    exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
@@ -63,10 +56,6 @@ public class User {
 
     @Enumerated(value = EnumType.ORDINAL)
     private UserStatus userStatus;
-
-    @Column(nullable = false)
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalDateTime lastVisit;
 
     @Column(nullable = false)
     private LocalDateTime dateOfRegistration;

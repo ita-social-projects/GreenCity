@@ -44,8 +44,6 @@ public class UserVO {
 
     private UserStatus userStatus;
 
-    private LocalDateTime lastVisit;
-
     private List<UserShoppingListItemVO> userShoppingListItemVOS = new ArrayList<>();
 
     private List<CustomShoppingListItemVO> customShoppingListItemVOS = new ArrayList<>();
