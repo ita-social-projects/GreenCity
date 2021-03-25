@@ -91,6 +91,7 @@
     <include file="db/changelog/logs/ch-ubs-database-seperation.xml"/>
     <include file="db/changelog/logs/ch-add-table-message-likes-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-add-constraints-to-habits-assign-table-Struk.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-last_visit-in-users-table-Levko.xml"/>
 
 </databaseChangeLog>
 

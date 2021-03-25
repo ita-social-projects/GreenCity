@@ -36,7 +36,6 @@ class UserVOMapperTest {
             .firstName(expected.getFirstName())
             .emailNotification(expected.getEmailNotification())
             .userStatus(expected.getUserStatus())
-            .lastVisit(expected.getLastVisit())
             .rating(expected.getRating())
             .verifyEmail(expected.getVerifyEmail() != null ? VerifyEmail.builder()
                 .id(expected.getVerifyEmail().getId())

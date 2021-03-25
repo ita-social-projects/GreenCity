@@ -87,7 +87,7 @@ class ShoppingListItemServiceImplTest {
         .role(Role.ROLE_USER)
         .userStatus(ACTIVATED)
         .emailNotification(EmailNotification.DISABLED)
-        .lastVisit(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
+        .lastActivityTime(LocalDateTime.of(2020, 10, 10, 20, 10, 10))
         .dateOfRegistration(LocalDateTime.now())
         .socialNetworks(new ArrayList<>())
         .build();

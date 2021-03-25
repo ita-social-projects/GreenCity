@@ -64,7 +64,7 @@ class CustomShoppingListItemServiceImplTest {
             .role(Role.ROLE_USER)
             .userStatus(UserStatus.ACTIVATED)
             .emailNotification(EmailNotification.DISABLED)
-            .lastVisit(LocalDateTime.now())
+            .lastActivityTime(LocalDateTime.now())
             .dateOfRegistration(LocalDateTime.now())
             .customShoppingListItems(new ArrayList<>())
             .build();
