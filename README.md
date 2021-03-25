@@ -40,35 +40,37 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 ### 4.2. How to run
 
-1. You should create environmental variables that are defined in `application-dev.properties`.
+1. You should open in IntelliJ IDEA File -> `New Project` -> `Project From Version Control`
+   -> `Repository URL` -> `URL` (https://github.com/ita-social-projects/GreenCity.git) -> `Clone`.
 
-2. You should create database `greencity`.
+
+2. Open `Terminal` write `git checkout -b dev` (this will create new local branch "dev").
 
 
-All these variables you can set in Intellij Idea. For instance,
+3. After this `git pull origin dev` (for update last version from branch dev)
 
-```properties
-spring.datasource.url=${DATASOURCE_URL}
-spring.datasource.username=${DATASOURCE_USER}
-spring.datasource.password=${DATASOURCE_PASSWORD}
-spring.mail.username=${EMAIL_ADDRESS}
-spring.mail.password=${EMAIL_PASSWORD}
-cloud.name=${CLOUD_NAME}
-api.key=${API_KEY}
-api.secret=${API_SECRET}
-google.clientId=${GOOGLE_CLIENT_ID}
-spring.rabbitmq.host=${RABBITMQ_HOST}
-spring.rabbitmq.password=${RABBITMQ_PASSWORD}
-spring.rabbitmq.username=${RABBITMQ_USERNAME}
-bucketName=${BUCKET_NAME}
-staticUrl=${STATIC_URL}
-spring.social.facebook.app-id=${FACEBOOK_APP_ID}
-spring.social.facebook.app-secret=${FACEBOOK_APP_SECRET}
-```
+
+4. You should create database `greencity`.
+
+
+5. `Add Configuration` -> `+` -> `Application`.
+
+* `Name` : `GreenCityApplication`.
+* `Use classpath of modules`:`core`
+* `JRE` : `11`.
+
+6. `Enviroment variables`:
 
 ![env-vars](./docs-photos/env-example.png)
 
-3. If you did everything correctly, you should be able access swagger by this URL: http://localhost:8080/swagger-ui.html#/
+7. Go to `dao` -> `src` -> `test` -> `resources` -> `sql`, find file `insert.sql`,
+   open it, press `Ctrl + A` -> `RMB` -> `Execute`. (that will run script which fill your db)
+
+
+8. `Run Application`
+
+
+9. If you did everything correctly, you should be able to access swagger by this URL: http://localhost:8080/swagger-ui.html#/
 
 ### 4.3. How to work with swagger UI in our project
 
