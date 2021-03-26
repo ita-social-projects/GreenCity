@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -49,6 +48,7 @@ public class TipsAndTricksController {
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
         @ApiParam(value = SwaggerExampleModel.ADD_TIPS_AND_TRICKS_REQUEST,
@@ -66,13 +66,14 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Get tips & tricks by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/{id}")
     public ResponseEntity<TipsAndTricksDtoResponse> getTipsAndTricksById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findDtoById(id));
+        return ResponseEntity.status(HttpStatus.CREATED).body(tipsAndTricksService.findDtoById(id));
     }
 
     /**
@@ -82,14 +83,15 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Find all tips & tricks by page.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
-    @GetMapping("")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @GetMapping()
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> findAll(@ApiIgnore Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findAll(page));
+        return ResponseEntity.status(HttpStatus.CREATED).body(tipsAndTricksService.findAll(page));
     }
 
     /**
@@ -100,15 +102,16 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Delete tips & tricks.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
         tipsAndTricksService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     /**
@@ -118,17 +121,18 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Get tips & tricks by tags")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/tags")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> getTipsAndTricks(
         @ApiIgnore @ValidLanguage Locale locale,
         @RequestParam(required = false) List<String> tags,
         @ApiIgnore Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
             .body(tipsAndTricksService.find(pageable, tags, locale.getLanguage()));
     }
 
@@ -138,10 +142,15 @@ public class TipsAndTricksController {
      * @return list of {@link String} (tag's names).
      */
     @ApiOperation(value = "Find all tips & tricks tags")
+    @ApiResponses({
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED)
+    })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/tags/all")
     @ApiLocale
     public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK).body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(tagService.findAllTipsAndTricksTags(locale.getLanguage()));
     }
 
     /**
@@ -151,9 +160,13 @@ public class TipsAndTricksController {
      * @author Mamchuk Orest
      */
     @ApiOperation(value = "Find count of published tip&tricks")
+    @ApiResponses({
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED)
+    })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/count")
     public ResponseEntity<Long> findAmountOfWrittenTipsAndTrick(@RequestParam Long userId) {
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.CREATED)
             .body(tipsAndTricksService.getAmountOfWrittenTipsAndTrickByUserId((userId)));
     }
 }
