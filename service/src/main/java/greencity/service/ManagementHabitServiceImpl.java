@@ -188,8 +188,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Override
     @Transactional
     public void deleteAll(List<Long> listId) {
-        for (Long aLong : listId) {
-            delete(aLong);
-        }
+        listId.forEach(this::delete);
     }
 }
