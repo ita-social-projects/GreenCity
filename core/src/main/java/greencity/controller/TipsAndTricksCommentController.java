@@ -47,9 +47,8 @@ public class TipsAndTricksCommentController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping("{tipsAndTricksId}")
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
-                                                                   @Valid @RequestBody
-                                                                       AddTipsAndTricksCommentDtoRequest request,
-                                                                   @ApiIgnore @CurrentUser UserVO userVO) {
+        @Valid @RequestBody AddTipsAndTricksCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, userVO));
@@ -71,8 +70,8 @@ public class TipsAndTricksCommentController {
     @GetMapping()
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
-                                                                        Long tipsAndTricksId,
-                                                                        @ApiIgnore @CurrentUser UserVO userVO) {
+        Long tipsAndTricksId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.findAllComments(pageable, userVO, tipsAndTricksId));
