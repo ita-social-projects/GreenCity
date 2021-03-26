@@ -12,10 +12,12 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -55,7 +57,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     @Override
     public PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable) {
         Page<Habit> habits = habitRepo.findAll(pageable);
-        List<HabitManagementDto> habitDtos = habitRepo.findAll()
+        List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
             .collect(Collectors.toList());
