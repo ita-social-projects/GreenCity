@@ -26,4 +26,9 @@ public class SpecificationController {
     public ResponseEntity<List<SpecificationNameDto>> findAllSpecification() {
         return ResponseEntity.status(HttpStatus.OK).body(specificationService.findAllSpecificationDto());
     }
+
+    @GetMapping
+    public ResponseEntity<List<SpecificationNameDto>> findAlSpecification() {
+        return ResponseEntity.status(HttpStatus.OK).body(specificationService.findAllSpecificationDto());
+    }
 }
