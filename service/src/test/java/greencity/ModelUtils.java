@@ -19,10 +19,7 @@ import greencity.dto.econewscomment.*;
 import greencity.dto.factoftheday.*;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
@@ -63,6 +60,7 @@ import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.*;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -72,6 +70,7 @@ import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1057,6 +1056,14 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitManagementDto gethabitManagementDto() {
+        return HabitManagementDto.builder()
+            .id(1L)
+            .image("image")
+            .habitTranslations(null)
             .build();
     }
 
