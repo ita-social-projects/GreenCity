@@ -164,6 +164,7 @@ public class ManagementHabitServiceImplTest {
         list.add(2L);
         list.add(3L);
         list.add(4L);
+        list.add(5L);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         when(modelMapper.map(habit, HabitVO.class)).thenReturn(habitVO);
         doNothing().when(habitTranslationRepo).deleteAllByHabit(habit);
@@ -172,8 +173,8 @@ public class ManagementHabitServiceImplTest {
         doNothing().when(habitAssignService).deleteAllHabitAssignsByHabit(habitVO);
         doNothing().when(habitRepo).delete(habit);
         managementHabitService.deleteAll(list);
-        verify(habitRepo, times(4)).delete(any(Habit.class));
-        verify(habitTranslationRepo, times(4)).deleteAllByHabit(any(Habit.class));
+        verify(habitRepo, times(5)).delete(any(Habit.class));
+        verify(habitTranslationRepo, times(5)).deleteAllByHabit(any(Habit.class));
 
     }
 
