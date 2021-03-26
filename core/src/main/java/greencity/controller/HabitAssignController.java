@@ -43,7 +43,6 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -66,7 +65,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -112,11 +111,10 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @ApiLocale
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<HabitAssignDto>> getCurrentUserHabitAssignsByIdAndAcquired(
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale) {
@@ -138,7 +136,6 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
     @GetMapping("/{habitId}/all")
@@ -161,7 +158,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
@@ -188,7 +185,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/{habitId}")
@@ -212,7 +209,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
@@ -237,7 +234,7 @@ public class HabitAssignController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/{habitId}/unenroll/{date}")
@@ -262,8 +259,7 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiLocale
     @GetMapping("/active/{date}")
@@ -293,8 +289,7 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitsDateEnrollmentDto.class,
             responseContainer = "List"),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiLocale
     @GetMapping("/activity/{from}/to/{to}")
@@ -319,8 +314,7 @@ public class HabitAssignController {
     @ApiOperation(value = "Cancel inprogress user assigned habit.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/cancel/{habitId}")
@@ -339,8 +333,7 @@ public class HabitAssignController {
     @ApiOperation(value = "Delete assigned habit for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/delete/{habitId}")
