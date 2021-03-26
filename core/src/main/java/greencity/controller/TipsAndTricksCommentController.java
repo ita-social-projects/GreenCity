@@ -8,8 +8,8 @@ import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
-import greencity.dto.user.UserVO;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
+import greencity.dto.user.UserVO;
 import greencity.service.TipsAndTricksCommentService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,14 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -50,12 +43,13 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddTipsAndTricksCommentDtoResponse.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping("{tipsAndTricksId}")
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
-        @Valid @RequestBody AddTipsAndTricksCommentDtoRequest request,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+                                                                   @Valid @RequestBody
+                                                                       AddTipsAndTricksCommentDtoRequest request,
+                                                                   @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, userVO));
@@ -70,16 +64,17 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Get all comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
-    @GetMapping("")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @GetMapping()
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
-        Long tipsAndTricksId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+                                                                        Long tipsAndTricksId,
+                                                                        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
-            .status(HttpStatus.OK)
+            .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.findAllComments(pageable, userVO, tipsAndTricksId));
     }
 
@@ -91,9 +86,10 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/count/comments")
     public int getCountOfComments(Long id) {
         return tipsAndTricksCommentService.countComments(id);
@@ -108,12 +104,13 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Get all replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("replies/{parentCommentId}")
     public ResponseEntity<List<TipsAndTricksCommentDto>> findAllReplies(@PathVariable Long parentCommentId) {
         return ResponseEntity
-            .status(HttpStatus.OK)
+            .status(HttpStatus.CREATED)
             .body(tipsAndTricksCommentService.findAllReplies(parentCommentId));
     }
 
@@ -124,11 +121,12 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Mark comment as deleted.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
-    @DeleteMapping("")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @DeleteMapping()
     public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
         tipsAndTricksCommentService.deleteById(id, userVO);
         return ResponseEntity.ok().build();
@@ -142,11 +140,12 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
-    @PatchMapping("")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @PatchMapping()
     public void update(Long id, String text, @ApiIgnore @CurrentUser UserVO userVO) {
         tipsAndTricksCommentService.update(text, id, userVO);
     }
@@ -159,10 +158,11 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Like comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping("like")
     public void like(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
         tipsAndTricksCommentService.like(id, userVO);
@@ -176,9 +176,10 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Count comment likes.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("/count/likes")
     public int getCountOfLikes(Long id) {
         return tipsAndTricksCommentService.countLikes(id);
@@ -192,9 +193,10 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Get count of replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
+    @ResponseStatus(value = HttpStatus.CREATED)
     @GetMapping("count/replies")
     public int getCountOfReplies(Long parentCommentId) {
         return tipsAndTricksCommentService.countReplies(parentCommentId);
