@@ -42,7 +42,6 @@ public class HabitStatisticController {
     @GetMapping("/{habitId}")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
@@ -61,7 +60,6 @@ public class HabitStatisticController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class,
             responseContainer = "List"),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     public ResponseEntity<List<HabitStatisticDto>> findAllStatsByHabitAssignId(
@@ -85,9 +83,10 @@ public class HabitStatisticController {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitStatisticDto.class),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/{habitId}")
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public ResponseEntity<HabitStatisticDto> saveHabitStatistic(
         @Valid @RequestBody AddHabitStatisticDto addHabitStatisticDto,
         @ApiIgnore @CurrentUser UserVO userVO,
@@ -109,7 +108,7 @@ public class HabitStatisticController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitStatisticDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping("/{id}")
@@ -154,6 +153,10 @@ public class HabitStatisticController {
      * @author Mamchuk Orest
      */
     @ApiOperation(value = "Get amount of acquired habit")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
     @GetMapping("acquired/count")
     public ResponseEntity<Long> findAmountOfAcquiredHabits(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -169,6 +172,10 @@ public class HabitStatisticController {
      * @author Mamchuk Orest
      */
     @ApiOperation(value = "Get amount of in progress habit")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
     @GetMapping("in-progress/count")
     public ResponseEntity<Long> findAmountOfHabitsInProgress(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK)

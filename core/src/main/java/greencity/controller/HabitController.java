@@ -103,6 +103,10 @@ public class HabitController {
      * @return Pageable of {@link HabitDto}.
      */
     @ApiOperation(value = "Find all habits by tags and language code.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+    })
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
@@ -120,6 +124,10 @@ public class HabitController {
      * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Find all habits tags")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+    })
     @GetMapping("/tags")
     @ApiLocale
     public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
