@@ -35,11 +35,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
@@ -345,7 +341,9 @@ class RestClientTest {
     @Test
     void addEcoNews() {
         AddEcoNewsMessage message = ModelUtils.getAddEcoNewsMessage();
-        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, new HttpHeaders());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, httpHeaders);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
