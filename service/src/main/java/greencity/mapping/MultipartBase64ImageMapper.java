@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
+import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 
 /**
  * Class that is used by {@link ModelMapper} to map Base64 encoded image into
@@ -30,9 +30,8 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
      */
     @Override
     public MultipartFile convert(String image) {
-        String imageToConvert = image.substring(image.indexOf(',') + 1);
         File tempFile = new File("tempImage.jpg");
-        byte[] imageByte = decodeBase64(imageToConvert);
+        byte[] imageByte = decodeBase64(image);
         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
         try {
             BufferedImage bufferedImage = ImageIO.read(bis);
@@ -47,6 +46,8 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
             }
         } catch (IOException e) {
             throw new NotSavedException("Cannot convert to BASE64 image");
+        } finally {
+            tempFile.delete();
         }
     }
 }
