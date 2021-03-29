@@ -14,7 +14,7 @@ public final class SwaggerExampleModel {
         + "\t</ul>\n"
         + "\t<pre>\n";
 
-    private static final String EXAMPLE = "  \"image (base64)\": \"string\",\n"
+    private static final String EXAMPLE = "  \"image\": \"string\",\n"
         + "  \"source\": \"string\",\n"
         + "  \"tags\": [\n"
         + "    \"string\"\n"
