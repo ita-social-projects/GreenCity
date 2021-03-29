@@ -152,7 +152,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(
             user.getId()))
-            .thenReturn(10);
+                .thenReturn(10);
         assertThrows(UserAlreadyHasMaxNumberOfActiveHabitAssigns.class,
             () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
     }
@@ -212,7 +212,7 @@ class HabitAssignServiceImplTest {
 
         when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
-            .thenReturn(habitAssignList);
+                .thenReturn(habitAssignList);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
@@ -281,7 +281,7 @@ class HabitAssignServiceImplTest {
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(
                 enrollDate, modelMapper.map(habitAssign, HabitAssignVO.class)))
-            .thenReturn(habitStatusCalendarVO);
+                    .thenReturn(habitStatusCalendarVO);
 
         habitAssignService.unenrollHabit(1L, 1L, enrollDate);
         verify(habitStatusCalendarService).delete(habitStatusCalendarVO);
@@ -391,7 +391,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(any(LocalDate.class), any(HabitAssignVO.class)))
-            .thenReturn(calendarVO);
+                .thenReturn(calendarVO);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
         HabitAssignDto actualDto = habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en");
