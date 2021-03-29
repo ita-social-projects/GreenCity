@@ -166,7 +166,7 @@ class TipsAndTricksCommentControllerTest {
 
         mockMvc.perform(post(tipsAndTricksCommentLink + "/like?id=1")
             .principal(principal))
-            .andExpect(status().isOk());
+            .andExpect(status().isCreated());
 
         verify(restClient).findByEmail("test@gmail.com");
         verify(tipsAndTricksCommentService).like(1L, userVO);
