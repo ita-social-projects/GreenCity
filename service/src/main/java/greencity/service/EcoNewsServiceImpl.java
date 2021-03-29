@@ -117,7 +117,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Zakhar Veremchuk.
      */
     public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
-                             User user) {
+        User user) {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
         EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
