@@ -9,6 +9,7 @@ import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
+import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
@@ -340,10 +341,10 @@ class RestClientTest {
 
     @Test
     void addEcoNews() {
-        AddEcoNewsMessage message = ModelUtils.getAddEcoNewsMessage();
+        EcoNewsForSendEmailDto message = ModelUtils.getEcoNewsForSendEmailDto();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(message, httpHeaders);
+        HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));

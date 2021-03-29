@@ -14,6 +14,7 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.AchievementType;
@@ -103,10 +104,27 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-        restClient.addEcoNews(buildAddEcoNewsMessage(toSave));
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        sendEmailDto(addEcoNewsDtoResponse,user);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 0));
-        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        return addEcoNewsDtoResponse;
+    }
+
+    public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
+                             User user) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
+        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
+            .author(placeAuthorDto)
+            .creationDate(addEcoNewsDtoResponse.getCreationDate())
+            .unsubscribeToken(accessToken)
+            .text(addEcoNewsDtoResponse.getText())
+            .title(addEcoNewsDtoResponse.getTitle())
+            .source(addEcoNewsDtoResponse.getSource())
+            .imagePath(addEcoNewsDtoResponse.getImagePath())
+            .build();
+        restClient.addEcoNews(dto);
     }
 
     /**

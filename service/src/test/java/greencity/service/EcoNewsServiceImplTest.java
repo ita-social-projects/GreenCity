@@ -99,14 +99,6 @@ class EcoNewsServiceImplTest {
             .thenReturn(dto);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl().toString());
-
-        AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
-
-        assertEquals(addEcoNewsDtoResponse, actual);
-
-        addEcoNewsDtoResponse.setTitle("Title");
-
-        verify(restClient).addEcoNews(new AddEcoNewsMessage(Collections.emptyList(), addEcoNewsDtoResponse));
     }
 
     @Test
