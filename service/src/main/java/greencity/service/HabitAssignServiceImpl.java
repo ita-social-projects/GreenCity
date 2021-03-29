@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -71,7 +72,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
-    @Transactional
+    @Transactional(propagation = Propagation.NESTED)
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
