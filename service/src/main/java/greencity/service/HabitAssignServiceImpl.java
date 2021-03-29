@@ -3,17 +3,34 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.User;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
-import greencity.enums.AchievementCategoryType;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +40,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -55,6 +71,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
         User user = modelMapper.map(userVO, User.class);
@@ -62,8 +79,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
 
-        HabitAssign habitAssign = buildHabitAssign(habit, user);
+        if (habitAssign != null) {
+            habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+            habitAssign.setCreateDate(ZonedDateTime.now());
+        } else {
+            habitAssign = buildHabitAssign(habit, user);
+        }
+
         enhanceAssignWithDefaultProperties(habitAssign);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
@@ -90,8 +115,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
 
-        HabitAssign habitAssign = buildHabitAssign(habit, user);
+        if (habitAssign != null) {
+            habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+            habitAssign.setCreateDate(ZonedDateTime.now());
+        } else {
+            habitAssign = buildHabitAssign(habit, user);
+        }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
