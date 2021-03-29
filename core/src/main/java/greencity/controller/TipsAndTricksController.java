@@ -47,8 +47,9 @@ public class TipsAndTricksController {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED,
             response = TipsAndTricksDtoResponse.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<TipsAndTricksDtoResponse> save(
         @ApiParam(value = SwaggerExampleModel.ADD_TIPS_AND_TRICKS_REQUEST,
@@ -67,8 +68,7 @@ public class TipsAndTricksController {
     @ApiOperation(value = "Get tips & tricks by id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/{id}")
     public ResponseEntity<TipsAndTricksDtoResponse> getTipsAndTricksById(@PathVariable Long id) {
@@ -82,11 +82,9 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Find all tips & tricks by page.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
-    @GetMapping("")
+    @GetMapping()
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksDtoResponse>> findAll(@ApiIgnore Pageable page) {
         return ResponseEntity.status(HttpStatus.OK).body(tipsAndTricksService.findAll(page));
@@ -102,7 +100,8 @@ public class TipsAndTricksController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{id}")
@@ -119,8 +118,7 @@ public class TipsAndTricksController {
     @ApiOperation(value = "Get tips & tricks by tags")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/tags")
     @ApiPageableWithLocale
@@ -138,6 +136,10 @@ public class TipsAndTricksController {
      * @return list of {@link String} (tag's names).
      */
     @ApiOperation(value = "Find all tips & tricks tags")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
     @GetMapping("/tags/all")
     @ApiLocale
     public ResponseEntity<List<String>> findAllTipsAndTricksTags(@ApiIgnore @ValidLanguage Locale locale) {
@@ -151,6 +153,10 @@ public class TipsAndTricksController {
      * @author Mamchuk Orest
      */
     @ApiOperation(value = "Find count of published tip&tricks")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
     @GetMapping("/count")
     public ResponseEntity<Long> findAmountOfWrittenTipsAndTrick(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
