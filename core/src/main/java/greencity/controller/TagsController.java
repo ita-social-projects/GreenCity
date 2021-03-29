@@ -2,10 +2,13 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
+import greencity.constant.HttpStatuses;
 import greencity.dto.tag.TagDto;
 import greencity.enums.TagType;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,9 @@ public class TagsController {
      * @author Markiyan Derevetskyi
      */
     @ApiOperation(value = "Find all tags by type and language code")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
+    })
     @GetMapping("/search")
     @ApiLocale
     public ResponseEntity<List<TagDto>> findByTypeAndLanguageCode(@ApiIgnore @ValidLanguage Locale locale,
