@@ -368,8 +368,7 @@ public class RestClient {
     /**
      * send AddEcoNewsMessage to GreenCityUser.
      *
-     * @param  message with information for sending email about adding new
-     *                          eco news.
+     * @param message with information for sending email about adding new eco news.
      * @author Taras Kavkalo
      */
     public void addEcoNews(EcoNewsForSendEmailDto message) {

@@ -100,8 +100,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto(){
-        return  EcoNewsForSendEmailDto.builder()
+    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
+        return EcoNewsForSendEmailDto.builder()
             .unsubscribeToken("string")
             .creationDate(ZonedDateTime.now())
             .imagePath("string")

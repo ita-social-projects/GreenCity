@@ -105,14 +105,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-        sendEmailDto(addEcoNewsDtoResponse,user);
+        sendEmailDto(addEcoNewsDtoResponse, user);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 0));
         return addEcoNewsDtoResponse;
     }
 
     public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
-                             User user) {
+        User user) {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
         EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
