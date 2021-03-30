@@ -100,7 +100,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl().toString());
 
-        assertNotEquals(null,addEcoNewsDtoResponse);
+        assertNotEquals(null, addEcoNewsDtoResponse);
     }
 
     @Test
