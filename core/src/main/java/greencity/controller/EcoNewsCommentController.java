@@ -64,6 +64,7 @@ public class EcoNewsCommentController {
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/count/comments/{ecoNewsId}")
     public int getCountOfComments(@PathVariable Long ecoNewsId) {
@@ -79,7 +80,9 @@ public class EcoNewsCommentController {
      */
     @ApiOperation(value = "Get all replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("replies/{parentCommentId}")
     @ApiPageable
@@ -100,6 +103,7 @@ public class EcoNewsCommentController {
     @ApiOperation(value = "Get count of replies to comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("count/replies/{parentCommentId}")
     public int getCountOfReplies(@PathVariable Long parentCommentId) {
