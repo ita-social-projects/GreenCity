@@ -23,14 +23,13 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance.
      */
     @Query(value = "SELECT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ha.habit h LEFT JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
         + " WHERE ha.id = :id")
     Optional<HabitAssign> findById(@Param("id") Long id);
 
     /**
      * Method to find all {@link HabitAssign} by {@link User} id (not cancelled).
-     *
      *
      * @param userId {@link User} id.
      * @return list of {@link HabitAssign} instances.
@@ -78,10 +77,21 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance.
      */
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+        + " WHERE ha.habit.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
     Optional<HabitAssign> findByHabitIdAndUserIdAndStatusIsInprogress(@Param("habitId") Long habitId,
+        @Param("userId") Long userId);
+
+    /**
+     * Method to find {@link HabitAssign}'s by {@link User} and {@link Habit} id's
+     * and CANCELLED status.
+     *
+     * @param habitId {@link Habit} id.
+     * @param userId  {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+        + " WHERE ha.habit.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'CANCELLED'")
+    HabitAssign findByHabitIdAndUserIdAndStatusIsCancelled(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
     /**
