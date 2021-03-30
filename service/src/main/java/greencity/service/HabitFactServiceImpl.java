@@ -1,12 +1,15 @@
 package greencity.service;
 
-import static greencity.enums.FactOfDayStatus.CURRENT;
-
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.*;
+import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactDtoResponse;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.HabitFactViewDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
@@ -21,6 +24,9 @@ import greencity.filters.SearchCriteria;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,9 +35,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import static greencity.enums.FactOfDayStatus.CURRENT;
 
 /**
  * Implementation of {@link HabitFactService}.
@@ -108,6 +113,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      */
     @Override
     public HabitFactVO save(HabitFactPostDto fact) {
+        checkIfHabitExists(fact.getHabit().getId());
         HabitFact habitFact = modelMapper.map(fact, HabitFact.class);
         habitFact.getTranslations().forEach(habitFactTranslation -> {
             habitFactTranslation.setHabitFact(habitFact);
@@ -115,6 +121,12 @@ public class HabitFactServiceImpl implements HabitFactService {
         });
 
         return modelMapper.map(habitFactRepo.save(habitFact), HabitFactVO.class);
+    }
+
+    private void checkIfHabitExists(Long id) {
+        if (habitRepo.findById(id).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id);
+        }
     }
 
     /**
