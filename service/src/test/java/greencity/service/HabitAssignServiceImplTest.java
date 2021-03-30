@@ -1,36 +1,53 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-
-import static greencity.ModelUtils.getHabitAssign;
-
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import static greencity.ModelUtils.getHabitAssign;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -104,6 +121,62 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+    }
+
+    @Test
+    void assignDefaultHabitForUserThatWasCancelled() {
+        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
+            .thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+    }
+
+    @Test
+    void assignDefaultHabitForUserAlreadyHasTheHabit() {
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
+            .thenReturn(Optional.of(habitAssign));
+        assertThrows(UserAlreadyHasHabitAssignedException.class,
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+    }
+
+    @Test
+    void assignDefaultHabitForUserAlreadyHasMaxQTYHabits() {
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(
+            user.getId()))
+                .thenReturn(10);
+        assertThrows(UserAlreadyHasMaxNumberOfActiveHabitAssigns.class,
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+    }
+
+    @Test
+    void assignDefaultHabitForUserAlreadyHasAssignedForCurrentDay() {
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndCreateDate(any(), any(), any()))
+            .thenReturn(Optional.of(habitAssign));
+        assertThrows(UserAlreadyHasHabitAssignedException.class,
+            () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
+    }
+
+    @Test
+    void assignCustomHabitForUserThatWasCancelled() {
+        habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
+            .thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        HabitAssignManagementDto actual =
+            habitAssignService.assignCustomHabitForUser(habit.getId(), userVO, habitAssignPropertiesDto);
         assertEquals(habitAssignManagementDto, actual);
     }
 
@@ -332,7 +405,8 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabitThrowException() {
         when(habitAssignRepo.findByHabitIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en"));
+        LocalDate d = LocalDate.now();
+        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, d, "en"));
     }
 
     @Test
