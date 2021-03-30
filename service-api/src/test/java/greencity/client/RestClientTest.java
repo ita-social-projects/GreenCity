@@ -15,7 +15,6 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;

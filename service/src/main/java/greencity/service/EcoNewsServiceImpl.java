@@ -287,19 +287,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * Method for building message for sending email about adding new eco news.
-     *
-     * @param ecoNews {@link EcoNews} which was added.
-     * @return {@link AddEcoNewsMessage} which contains needed info about
-     *         {@link EcoNews} and subscribers.
-     */
-    private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
-
-        return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
-    }
-
-    /**
      * Method for getting amount of published news by user id.
      *
      * @param id {@link Long} user id.
