@@ -7,6 +7,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactDtoResponse;
 import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitfact.HabitFactViewDto;
@@ -26,6 +27,7 @@ import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -302,11 +304,12 @@ public class HabitFactServiceImpl implements HabitFactService {
     private void habitFactTranslationsSetter(HabitFact habitFact, HabitFactUpdateDto factDto) {
         habitFact.getTranslations()
             .forEach(habitFactTranslation -> {
-                habitFactTranslation.setContent(factDto.getTranslations().stream()
+                Optional<HabitFactTranslationUpdateDto> content = factDto.getTranslations().stream()
                     .filter(newTranslation -> newTranslation.getLanguage().getCode()
                         .equals(habitFactTranslation.getLanguage().getCode()))
-                    .findFirst().get()
-                    .getContent());
+                    .findFirst();
+                content.ifPresent(habitFactTranslationUpdateDto -> habitFactTranslation
+                    .setContent(habitFactTranslationUpdateDto.getContent()));
                 habitFactTranslation.setFactOfDayStatus(factDto.getTranslations().get(0).getFactOfDayStatus());
             });
     }

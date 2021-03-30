@@ -24,8 +24,12 @@ import greencity.repository.HabitRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,6 +63,11 @@ class HabitFactServiceImplTest {
 
     @InjectMocks
     HabitFactServiceImpl habitFactService;
+
+    private static Stream<Arguments> getFilters() {
+        return Stream.of(Arguments.of(""),
+            Arguments.of((Object) null));
+    }
 
     @Test
     void getAllHabitFactsTest_shouldReturnCorrectValue() {
@@ -284,8 +293,9 @@ class HabitFactServiceImplTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    void searchByTest_shouldReturnCorrectValue() {
+    @ParameterizedTest
+    @MethodSource(value = "getFilters")
+    void searchByTest_shouldReturnCorrectValue(String param) {
         int pageNumber = 0;
         int pageSize = 1;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -298,7 +308,7 @@ class HabitFactServiceImplTest {
         PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
         when(habitFactRepo.findAll(pageable)).thenReturn(habitFactPage);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
-        PageableDto<HabitFactVO> actual = habitFactService.getAllHabitFactVOsWithFilter(null, pageable);
+        PageableDto<HabitFactVO> actual = habitFactService.getAllHabitFactVOsWithFilter(param, pageable);
 
         assertEquals(expected, actual);
     }
@@ -313,6 +323,27 @@ class HabitFactServiceImplTest {
         List<HabitFact> habitFacts = Collections.singletonList(habitFact);
         List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
         HabitFactViewDto habitFactViewDto = new HabitFactViewDto("1", "1", "eng");
+        Page<HabitFact> habitFactPage = new PageImpl<>(habitFacts,
+            pageable, habitFacts.size());
+        when(habitFactRepo.findAll(any(HabitFactSpecification.class), eq(pageable))).thenReturn(habitFactPage);
+        when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        PageableDto<HabitFactVO> expected = new PageableDto<>(habitFactVOS, habitFacts.size(), pageNumber, pageSize);
+        PageableDto<HabitFactVO> actual = habitFactService
+            .getFilteredDataForManagementByPage(pageable, habitFactViewDto);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getFilteredDataForManagementByPage_wthEmptyValue() {
+        int pageNumber = 0;
+        int pageSize = 1;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        HabitFact habitFact = ModelUtils.getHabitFact();
+        HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        List<HabitFact> habitFacts = Collections.singletonList(habitFact);
+        List<HabitFactVO> habitFactVOS = Collections.singletonList(habitFactVO);
+        HabitFactViewDto habitFactViewDto = new HabitFactViewDto("", "", "");
         Page<HabitFact> habitFactPage = new PageImpl<>(habitFacts,
             pageable, habitFacts.size());
         when(habitFactRepo.findAll(any(HabitFactSpecification.class), eq(pageable))).thenReturn(habitFactPage);

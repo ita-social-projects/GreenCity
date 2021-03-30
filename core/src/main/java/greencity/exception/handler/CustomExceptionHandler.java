@@ -440,7 +440,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Method intercept exception {@link UserHasNoPermissionToAccessException}.
-     * 
+     *
      * @param ex      Exception witch should be intercepted.
      * @param request contain detail about occur exception
      * @return ResponseEntity witch contain http status and body with message of
@@ -452,6 +452,51 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
+    }
+
+    /**
+     * Customize the response for NotSavedException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(NotSavedException.class)
+    public final ResponseEntity<Object> handleNotSavedException(
+        NotSavedException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Customize the response for NotUpdatedException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(NotUpdatedException.class)
+    public final ResponseEntity<Object> handleNotUpdatedException(
+        NotUpdatedException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
+     * Customize the response for NotDeletedException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(NotDeletedException.class)
+    public final ResponseEntity<Object> handleNotDeletedException(
+        NotDeletedException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
     /**
