@@ -1,17 +1,14 @@
 package greencity.service;
 
-import static greencity.ModelUtils.getFactTranslation;
-import static greencity.ModelUtils.getLanguageTranslationDTO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.*;
+import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactDtoResponse;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.HabitFactViewDto;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Habit;
 import greencity.entity.HabitFact;
@@ -24,6 +21,9 @@ import greencity.filters.HabitFactSpecification;
 import greencity.repository.HabitFactRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.HabitRepo;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,9 +34,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+
+import static greencity.ModelUtils.getFactTranslation;
+import static greencity.ModelUtils.getLanguageTranslationDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitFactServiceImplTest {
@@ -169,15 +177,26 @@ class HabitFactServiceImplTest {
     @Test
     void saveTest_shouldReturnCorrectValue() {
         HabitFact habitFact = ModelUtils.getHabitFact();
+        habitFact.setHabit(ModelUtils.getHabit());
         HabitFactVO habitFactVO = ModelUtils.getHabitFactVO();
+        habitFactVO.setHabit(ModelUtils.getHabitVO());
         HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
         when(modelMapper.map(habitFactPostDto, HabitFact.class)).thenReturn(habitFact);
         when(habitFactRepo.save(habitFact)).thenReturn(habitFact);
         when(modelMapper.map(habitFact, HabitFactVO.class)).thenReturn(habitFactVO);
+        when(habitRepo.findById(habitFactVO.getHabit().getId())).thenReturn(Optional.of(habitFact.getHabit()));
 
         HabitFactVO actual = habitFactService.save(habitFactPostDto);
 
         assertEquals(habitFactVO, actual);
+    }
+
+    @Test
+    void saveTest_shouldThrowException() {
+        HabitFactPostDto habitFactPostDto = ModelUtils.getHabitFactPostDto();
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> habitFactService.save(habitFactPostDto));
     }
 
     @Test
