@@ -14,6 +14,7 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.AchievementType;
@@ -25,7 +26,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -103,10 +103,32 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
-        restClient.addEcoNews(buildAddEcoNewsMessage(toSave));
+        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        sendEmailDto(addEcoNewsDtoResponse, user);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 0));
-        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
+        return addEcoNewsDtoResponse;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Zakhar Veremchuk.
+     */
+    public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
+        User user) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
+        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
+            .author(placeAuthorDto)
+            .creationDate(addEcoNewsDtoResponse.getCreationDate())
+            .unsubscribeToken(accessToken)
+            .text(addEcoNewsDtoResponse.getText())
+            .title(addEcoNewsDtoResponse.getTitle())
+            .source(addEcoNewsDtoResponse.getSource())
+            .imagePath(addEcoNewsDtoResponse.getImagePath())
+            .build();
+        restClient.addEcoNews(dto);
     }
 
     /**
@@ -261,19 +283,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             page.getTotalElements(),
             page.getPageable().getPageNumber(),
             page.getTotalPages());
-    }
-
-    /**
-     * Method for building message for sending email about adding new eco news.
-     *
-     * @param ecoNews {@link EcoNews} which was added.
-     * @return {@link AddEcoNewsMessage} which contains needed info about
-     *         {@link EcoNews} and subscribers.
-     */
-    private AddEcoNewsMessage buildAddEcoNewsMessage(EcoNews ecoNews) {
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class);
-
-        return new AddEcoNewsMessage(newsSubscriberService.findAll(), addEcoNewsDtoResponse);
     }
 
     /**

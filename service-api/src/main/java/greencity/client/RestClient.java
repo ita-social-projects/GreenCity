@@ -6,10 +6,10 @@ import com.google.gson.Gson;
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
+import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.user.*;
 import greencity.enums.EmailNotification;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
@@ -366,14 +366,13 @@ public class RestClient {
     /**
      * send AddEcoNewsMessage to GreenCityUser.
      *
-     * @param addEcoNewsMessage with information for sending email about adding new
-     *                          eco news.
+     * @param message with information for sending email about adding new eco news.
      * @author Taras Kavkalo
      */
-    public void addEcoNews(AddEcoNewsMessage addEcoNewsMessage) {
+    public void addEcoNews(EcoNewsForSendEmailDto message) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AddEcoNewsMessage> entity = new HttpEntity<>(addEcoNewsMessage, headers);
+        HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class)
             .getBody();

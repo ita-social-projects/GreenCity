@@ -557,7 +557,7 @@ public class ModelUtils {
     }
 
     public static MultipartFile getFile() {
-        Path path = Paths.get("src/test/resources/test.jpg");
+        Path path = Paths.get("/GreenCity/service-api/src/test/resources/test.jpg");
         String name = TestConst.IMG_NAME;
         String contentType = "photo/plain";
         byte[] content = null;

@@ -2,6 +2,7 @@ package greencity;
 
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
 import greencity.dto.user.EcoNewsAuthorDto;
@@ -96,6 +97,18 @@ public class ModelUtils {
         return AddEcoNewsMessage.builder()
             .subscribers(Collections.singletonList(getNewsSubscriberResponseDto()))
             .addEcoNewsDtoResponse(getAddEcoNewsDtoResponse())
+            .build();
+    }
+
+    public static EcoNewsForSendEmailDto getEcoNewsForSendEmailDto() {
+        return EcoNewsForSendEmailDto.builder()
+            .unsubscribeToken("string")
+            .creationDate(ZonedDateTime.now())
+            .imagePath("string")
+            .author(ModelUtils.getPlaceAuthorDto())
+            .text("string")
+            .source("string")
+            .title("string")
             .build();
     }
 }
