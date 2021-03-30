@@ -30,8 +30,9 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
      */
     @Override
     public MultipartFile convert(String image) {
+        String imageToConvert = image.substring(image.indexOf(',') + 1);
         File tempFile = new File("tempImage.jpg");
-        byte[] imageByte = decodeBase64(image);
+        byte[] imageByte = decodeBase64(imageToConvert);
         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
         try {
             BufferedImage bufferedImage = ImageIO.read(bis);
