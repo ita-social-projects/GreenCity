@@ -36,7 +36,7 @@ public class CustomShoppingListItemController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/{userId}")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllAvailableCustomShoppingListItems(
@@ -56,7 +56,7 @@ public class CustomShoppingListItemController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> findAllByUser(
@@ -77,7 +77,7 @@ public class CustomShoppingListItemController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @PostMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> saveUserCustomShoppingListItems(
@@ -94,7 +94,6 @@ public class CustomShoppingListItemController {
      * @param userId     {@link UserVO} id
      * @param itemId     {@link Long} with needed item id.
      * @param itemStatus {@link String} with needed item status.
-     *
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
@@ -103,7 +102,7 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<CustomShoppingListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
@@ -125,7 +124,7 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @DeleteMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<Long>> bulkDeleteCustomShoppingListItems(
