@@ -130,7 +130,7 @@ class HabitAssignControllerTest {
 
     @Test
     void getCurrentUserHabitAssignsByIdAndAcquired() throws Exception {
-        mockMvc.perform(get(habitLink)
+        mockMvc.perform(get(habitLink + "/allForCurrentUser")
             .principal(principal))
             .andExpect(status().isOk());
 
