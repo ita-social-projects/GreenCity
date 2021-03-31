@@ -17,6 +17,7 @@ import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.Language;
 import greencity.enums.FactOfDayStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -60,6 +61,10 @@ public class HabitFactServiceImpl implements HabitFactService {
     public PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language) {
         Page<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo
             .findAllByLanguageCode(page, language);
+        if (habitFactTranslation.getTotalPages() < page.getPageNumber()) {
+            throw new BadRequestException(ErrorMessage.PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES
+                + habitFactTranslation.getTotalPages());
+        }
         return getPagesWithLanguageTranslationDTO(habitFactTranslation);
     }
 
