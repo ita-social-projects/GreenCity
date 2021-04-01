@@ -14,6 +14,7 @@ import greencity.entity.Habit;
 import greencity.entity.HabitFact;
 import greencity.entity.HabitFactTranslation;
 import greencity.enums.FactOfDayStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -88,6 +89,20 @@ class HabitFactServiceImplTest {
 
         PageableDto<LanguageTranslationDTO> actual = habitFactService.getAllHabitFacts(pageable, language);
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void getAllHabitFactsTest_shouldThrowException() {
+        String language = "en";
+        Pageable pageable = PageRequest.of(5, 5);
+        List<HabitFactTranslation> habitFactTranslation =
+            Collections.singletonList(ModelUtils.getHabitFactTranslation());
+        Page<HabitFactTranslation> pageFacts = new PageImpl<>(habitFactTranslation);
+        when(habitFactTranslationRepo.findAllByLanguageCode(pageable, language))
+            .thenReturn(pageFacts);
+
+        assertThrows(BadRequestException.class, () -> habitFactService.getAllHabitFacts(pageable, language));
+
     }
 
     @Test
