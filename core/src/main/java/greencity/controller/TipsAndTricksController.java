@@ -82,7 +82,8 @@ public class TipsAndTricksController {
      */
     @ApiOperation(value = "Find all tips & tricks by page.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping()
     @ApiPageable

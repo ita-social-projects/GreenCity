@@ -64,7 +64,8 @@ public class TipsAndTricksCommentController {
      */
     @ApiOperation(value = "Get all comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping()
     @ApiPageable

@@ -168,6 +168,29 @@ class TipsAndTricksCommentServiceImplTest {
     }
 
     @Test
+    void findAllCommentsTestException() {
+        TipsAndTricksComment tipsAndTricksComment = TipsAndTricksComment.builder()
+            .id(1L)
+            .text("text")
+            .user(ModelUtils.getUser())
+            .usersLiked(new HashSet<>())
+            .build();
+        List<TipsAndTricksComment> tipsAndTricksComments =
+            Collections.singletonList(tipsAndTricksComment);
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageRequest pageWrongRequest = PageRequest.of(3, 2);
+        Page<TipsAndTricksComment> page =
+            new PageImpl<>(tipsAndTricksComments, pageRequest, tipsAndTricksComments.size());
+        System.out.println(page.getTotalPages());
+        when(tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
+            pageWrongRequest,
+            tipsAndTricksComment.getId())).thenReturn(page);
+
+        assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService
+            .findAllComments(pageWrongRequest, ModelUtils.getUserVO(), tipsAndTricksComment.getId()));
+    }
+
+    @Test
     void findAllRepliesTest() {
         TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
         List<TipsAndTricksComment> tipsAndTricksComments =

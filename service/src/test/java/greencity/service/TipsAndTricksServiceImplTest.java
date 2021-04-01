@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.exception.exceptions.BadRequestException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -249,6 +250,20 @@ class TipsAndTricksServiceImplTest {
     }
 
     @Test
+    void findAllTestException() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageRequest pageWrongRequest = PageRequest.of(3, 2);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
+        List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
+        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
+        when(tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc("en", pageWrongRequest))
+            .thenReturn(page);
+
+        assertThrows(BadRequestException.class, () -> tipsAndTricksService.findAll(pageWrongRequest));
+    }
+
+    @Test
     void findWithoutTagsTest() {
         List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
         PageRequest pageRequest = PageRequest.of(0, 2);
@@ -265,6 +280,22 @@ class TipsAndTricksServiceImplTest {
             tipsAndTricksService.find(pageRequest, null, AppConstant.DEFAULT_LANGUAGE_CODE);
 
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findTestException() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        PageRequest pageWrongRequest = PageRequest.of(3, 2);
+        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
+        List<TipsAndTricksDtoResponse> dtoList = Collections.singletonList(ModelUtils.getTipsAndTricksDtoResponse());
+
+        when(tipsAndTricksRepo.findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
+            AppConstant.DEFAULT_LANGUAGE_CODE,
+            pageWrongRequest)).thenReturn(page);
+
+        assertThrows(BadRequestException.class, () -> tipsAndTricksService.find(pageWrongRequest,
+            null, AppConstant.DEFAULT_LANGUAGE_CODE));
     }
 
     @Test

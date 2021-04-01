@@ -108,6 +108,9 @@ public class TipsAndTricksCommentServiceImpl implements TipsAndTricksCommentServ
         Page<TipsAndTricksComment> pages =
             tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
                 pageable, tipsAndTricksId);
+        if (pages.getTotalPages() < pageable.getPageNumber()) {
+            throw new BadRequestException(ErrorMessage.PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES + pages.getTotalPages());
+        }
         List<TipsAndTricksCommentDto> tipsAndTricksCommentDtos = pages
             .stream()
             .map(comment -> {
