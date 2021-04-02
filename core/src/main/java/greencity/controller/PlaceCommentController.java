@@ -86,7 +86,6 @@ public class PlaceCommentController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR)
     })
     @GetMapping("comments")
     public ResponseEntity<Object> getAllComments(@ApiIgnore Pageable pageable) {

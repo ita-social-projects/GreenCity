@@ -58,8 +58,7 @@ public class NewsSubscriberController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = NewsSubscriberRequestDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("")
     public ResponseEntity<NewsSubscriberRequestDto> save(
@@ -78,8 +77,7 @@ public class NewsSubscriberController {
     @ApiOperation(value = "Deleting an email from subscribe table in database.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/unsubscribe")
     public ResponseEntity<Long> delete(@RequestParam @Valid String email,

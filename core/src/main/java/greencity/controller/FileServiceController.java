@@ -35,8 +35,7 @@ public class FileServiceController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping("/image")
     public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
@@ -53,8 +52,7 @@ public class FileServiceController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @PostMapping("/convert")
     public ResponseEntity<MultipartFile> convertToMultipartImage(@RequestParam @NotEmpty String image) {
