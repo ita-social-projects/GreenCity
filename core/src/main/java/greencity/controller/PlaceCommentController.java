@@ -38,8 +38,9 @@ public class PlaceCommentController {
     @ApiOperation(value = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CommentReturnDto.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @PostMapping("/place/{placeId}/comments")
     public ResponseEntity<Object> save(@PathVariable Long placeId,
@@ -58,7 +59,11 @@ public class PlaceCommentController {
      */
     @ApiOperation(value = "Get comment by id")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CommentReturnDto.class)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CommentReturnDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("comments/{id}")
     public ResponseEntity<Object> getCommentById(@PathVariable Long id) {
@@ -79,8 +84,8 @@ public class PlaceCommentController {
     @ApiOperation(value = "Get comments by page")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping("comments")
     public ResponseEntity<Object> getAllComments(@ApiIgnore Pageable pageable) {
@@ -99,6 +104,7 @@ public class PlaceCommentController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @DeleteMapping("comments")
