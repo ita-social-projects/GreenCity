@@ -39,7 +39,7 @@ public class NewsSubscriberController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403,message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("")
     public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {
@@ -56,7 +56,7 @@ public class NewsSubscriberController {
      */
     @ApiOperation(value = "Save email in database for receiving news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK,response = NewsSubscriberRequestDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = NewsSubscriberRequestDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR)
