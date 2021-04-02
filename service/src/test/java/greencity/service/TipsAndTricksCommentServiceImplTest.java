@@ -181,13 +181,14 @@ class TipsAndTricksCommentServiceImplTest {
         PageRequest pageWrongRequest = PageRequest.of(3, 2);
         Page<TipsAndTricksComment> page =
             new PageImpl<>(tipsAndTricksComments, pageRequest, tipsAndTricksComments.size());
+        UserVO userVO = ModelUtils.getUserVO();
         System.out.println(page.getTotalPages());
         when(tipsAndTricksCommentRepo.findAllByParentCommentIsNullAndTipsAndTricksIdOrderByCreatedDateDesc(
             pageWrongRequest,
             tipsAndTricksComment.getId())).thenReturn(page);
 
         assertThrows(BadRequestException.class, () -> tipsAndTricksCommentService
-            .findAllComments(pageWrongRequest, ModelUtils.getUserVO(), tipsAndTricksComment.getId()));
+            .findAllComments(pageWrongRequest, userVO, 1L));
     }
 
     @Test
