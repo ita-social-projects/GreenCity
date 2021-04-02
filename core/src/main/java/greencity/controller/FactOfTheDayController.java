@@ -62,8 +62,7 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Get all facts of the day.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/all")
     public ResponseEntity<PageableDto<FactOfTheDayDTO>> getAllFactOfTheDay(@ApiIgnore Pageable pageable) {
@@ -80,7 +79,7 @@ public class FactOfTheDayController {
     @ApiOperation(value = "Find fact of the day by given id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = FactOfTheDayDTO.class),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/find")
@@ -96,9 +95,7 @@ public class FactOfTheDayController {
      */
     @ApiOperation(value = "Get all distinguish languages that exists in DB")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("/languages")
     public ResponseEntity<List<LanguageDTO>> getLanguages() {

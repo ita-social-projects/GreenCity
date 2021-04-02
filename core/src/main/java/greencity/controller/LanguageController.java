@@ -27,9 +27,7 @@ public class LanguageController {
      */
     @ApiOperation(value = "Get all language code")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("")
     public ResponseEntity<List<String>> getAllLanguageCodes() {
