@@ -9,6 +9,7 @@ import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.entity.FavoritePlace;
 import greencity.entity.User;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.FavoritePlaceRepo;
 import lombok.AllArgsConstructor;
@@ -62,7 +63,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         FavoritePlace favoritePlace =
             favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail);
         if (favoritePlace == null) {
-            throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
+            throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND + favoritePlaceDto.getPlaceId());
         }
         favoritePlace.setName(favoritePlaceDto.getName());
         return modelMapper.map(favoritePlaceRepo.save(favoritePlace), FavoritePlaceDto.class);
@@ -92,7 +93,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         log.info(LogMessage.IN_DELETE_BY_PLACE_ID_AND_USER_EMAIL, userEmail, placeId);
         FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserEmail(placeId, userEmail);
         if (favoritePlace == null) {
-            throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
+            throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
         favoritePlaceRepo.delete(favoritePlace);
         return favoritePlace.getId();
@@ -143,7 +144,7 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
         log.info(LogMessage.IN_GET_FAVORITE_PLACE_WITH_LOCATION, placeId, email);
         FavoritePlace favoritePlace = favoritePlaceRepo.findByPlaceIdAndUserEmail(placeId, email);
         if (favoritePlace == null) {
-            throw new WrongIdException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
+            throw new NotFoundException(ErrorMessage.FAVORITE_PLACE_NOT_FOUND);
         }
         return modelMapper.map(favoritePlace, PlaceByBoundsDto.class);
     }
