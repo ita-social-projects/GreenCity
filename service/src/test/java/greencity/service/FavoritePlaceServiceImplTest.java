@@ -11,6 +11,7 @@ import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
 import greencity.dto.place.PlaceVO;
 import greencity.entity.FavoritePlace;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.FavoritePlaceRepo;
 import java.util.ArrayList;
@@ -133,7 +134,7 @@ class FavoritePlaceServiceImplTest {
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(anyLong(), anyString())).thenReturn(null);
 
         Exception exception = assertThrows(
-            WrongIdException.class,
+            NotFoundException.class,
             () -> favoritePlaceService.deleteByUserEmailAndPlaceId(favoritePlaceId, userEmail));
         String expectedMessage = ErrorMessage.FAVORITE_PLACE_NOT_FOUND;
         String actualMessage = exception.getMessage();
@@ -157,7 +158,7 @@ class FavoritePlaceServiceImplTest {
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(any(), any())).thenReturn(null);
 
         Exception exception = assertThrows(
-            WrongIdException.class,
+            NotFoundException.class,
             () -> favoritePlaceService.update(dto, userEmail));
 
         String expectedMessage = ErrorMessage.FAVORITE_PLACE_NOT_FOUND;
@@ -246,9 +247,9 @@ class FavoritePlaceServiceImplTest {
     }
 
     @Test
-    void getFavoritePlaceWithLocationWrongIdException() {
+    void getFavoritePlaceWithLocationNotFoundException() {
         when(favoritePlaceRepo.findByPlaceIdAndUserEmail(2L, "test@gmail.com")).thenReturn(null);
-        assertThrows(WrongIdException.class,
+        assertThrows(NotFoundException.class,
             () -> favoritePlaceService.getFavoritePlaceWithLocation(2L, "test@gmail.com"));
     }
 
