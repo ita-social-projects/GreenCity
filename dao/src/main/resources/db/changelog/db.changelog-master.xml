@@ -94,6 +94,6 @@
     <include file="db/changelog/logs/ch-drop-column-last_visit-in-users-table-Levko.xml"/>
     <include file="db/changelog/logs/ch-add-column-file-url-to-chat-message-Diakiv.xml"/>
     <include file="db/changelog/logs/ch-update-column-habit-id-at-habit-status-calendar-Veremchuk.xml"/>
-
+    <include file="db/changelog/logs/ch-add-table-Hutei.xml"/>
 </databaseChangeLog>
 
