@@ -5,6 +5,7 @@ import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.entity.NewsSubscriber;
 import greencity.exception.exceptions.InvalidUnsubscribeToken;
 import greencity.exception.exceptions.NewsSubscriberPresentException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NewsSubscriberRepo;
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +63,7 @@ class NewsSubscriberServiceImplTest {
         String token = "token";
         when(newsSubscriberRepo.findByEmail(email)).thenReturn(Optional.empty());
         Assertions
-            .assertThrows(NewsSubscriberPresentException.class,
+            .assertThrows(NotFoundException.class,
                 () -> newsSubscriberService.unsubscribe(email, token));
     }
 

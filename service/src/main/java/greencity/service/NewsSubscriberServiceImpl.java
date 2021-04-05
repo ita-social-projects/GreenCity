@@ -56,7 +56,7 @@ public class NewsSubscriberServiceImpl implements NewsSubscriberService {
     public Long unsubscribe(String email, String unsubscribeToken) {
         NewsSubscriber newsSubscriber = findByEmail(email)
             .orElseThrow(
-                () -> new NewsSubscriberPresentException(ErrorMessage.NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
+                () -> new NotFoundException(ErrorMessage.NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND + email));
         if (newsSubscriber.getUnsubscribeToken().equals(unsubscribeToken)) {
             newsSubscriberRepo.delete(newsSubscriber);
         } else {

@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class NewsSubscriberPresentException extends RuntimeException {
+public class NewsSubscriberPresentException extends BadRequestException {
     /**
      * Constructor.
      */
