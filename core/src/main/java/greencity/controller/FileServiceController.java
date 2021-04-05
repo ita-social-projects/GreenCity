@@ -33,9 +33,8 @@ public class FileServiceController {
      */
     @ApiOperation(value = "Upload an image.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = String.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/image")
     public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
@@ -50,9 +49,9 @@ public class FileServiceController {
      */
     @ApiOperation(value = "Convert image.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 200, message = HttpStatuses.CREATED, response = MultipartFile.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/convert")
     public ResponseEntity<MultipartFile> convertToMultipartImage(@RequestParam @NotEmpty String image) {
