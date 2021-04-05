@@ -48,7 +48,6 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.user.UsersFriendDto;
 import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -75,22 +74,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
-    public static UsersFriendDto usersFriendDto = new UsersFriendDto() {
-        @Override
-        public Long getId() {
-            return 1L;
-        }
-
-        @Override
-        public String getName() {
-            return TestConst.NAME;
-        }
-
-        @Override
-        public String getProfilePicture() {
-            return "profile";
-        }
-    };
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
