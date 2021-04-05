@@ -52,11 +52,17 @@ public class FactOfTheDayServiceImpl implements FactOfTheDayService {
      */
     @Override
     public PageableDto<FactOfTheDayDTO> getAllFactsOfTheDay(Pageable pageable) {
-        Page<FactOfTheDay> factsOfTheDay = factOfTheDayRepo.findAll(pageable);
-        List<FactOfTheDayDTO> factOfTheDayDTOs =
-            factsOfTheDay.getContent().stream()
-                .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
-                .collect(Collectors.toList());
+        Page<FactOfTheDay> factsOfTheDay;
+        List<FactOfTheDayDTO> factOfTheDayDTOs;
+        try {
+            factsOfTheDay = factOfTheDayRepo.findAll(pageable);
+            factOfTheDayDTOs =
+                factsOfTheDay.getContent().stream()
+                    .map(factOfTheDay -> modelMapper.map(factOfTheDay, FactOfTheDayDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new NotFoundException(ErrorMessage.FACT_OF_THE_DAY_PROPERTY_NOT_FOUND + pageable.getSort());
+        }
         return new PageableDto<>(
             factOfTheDayDTOs,
             factsOfTheDay.getTotalElements(),
