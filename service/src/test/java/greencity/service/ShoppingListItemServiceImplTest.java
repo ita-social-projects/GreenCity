@@ -22,7 +22,6 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.UserShoppingListItemRepo;
-import greencity.repository.UserRepo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +59,6 @@ class ShoppingListItemServiceImplTest {
     private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private UserRepo userRepo;
     @Mock
     UserShoppingListItemRepo userShoppingListItemRepo;
     @Mock
