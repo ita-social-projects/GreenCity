@@ -10,7 +10,6 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.user.UserVO;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
