@@ -114,11 +114,17 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
      */
     @Override
     public PageableDto<CommentAdminDto> getAllComments(Pageable pageable) {
-        Page<Comment> comments = placeCommentRepo.findAll(pageable);
-        List<CommentAdminDto> commentList =
-            comments.getContent()
-                .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
-                .collect(Collectors.toList());
+        Page<Comment> comments;
+        List<CommentAdminDto> commentList;
+        try {
+            comments = placeCommentRepo.findAll(pageable);
+            commentList =
+                comments.getContent()
+                    .stream().map(comment -> modelMapper.map(comment, CommentAdminDto.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new NotFoundException(ErrorMessage.COMMENT_PROPERTY_TYPE_NOT_FOUND + pageable.getSort());
+        }
         return new PageableDto<>(
             commentList,
             comments.getTotalElements(),

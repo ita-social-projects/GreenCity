@@ -42,6 +42,7 @@ public final class ErrorMessage {
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
     public static final String FACT_OF_THE_DAY_NOT_DELETED = "The fact of the day does not deleted by id: ";
     public static final String FACT_OF_THE_DAY_NOT_UPDATED = "The fact of the day does not updated by id: ";
+    public static final String FACT_OF_THE_DAY_PROPERTY_NOT_FOUND = "For type Fact of the day  not found this property :";
     public static final String NEWS_SUBSCRIBER_EXIST = "Subscriber with this email address exists in the database.";
     public static final String NEWS_SUBSCRIBER_BY_EMAIL_NOT_FOUND =
         "Subscriber with this email address not found in the database.";
@@ -105,6 +106,7 @@ public final class ErrorMessage {
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
     public static final String TIPS_AND_TRICKS_NOT_SAVED =
