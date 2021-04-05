@@ -62,6 +62,7 @@ public class ScheduleConfig {
     void sendHabitNotificationEveryDay() {
         List<UserVO> users = restClient.findAllByEmailNotification(IMMEDIATELY);
         users.addAll(restClient.findAllByEmailNotification(DAILY));
+        sendHabitNotificationIfNeed(users);
     }
 
     /**

@@ -3,12 +3,14 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ValidLanguage;
+import greencity.client.RestClient;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.user.UserVO;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -27,12 +29,15 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.List;
 import java.util.Locale;
 
+import static greencity.enums.EmailNotification.*;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/factoftheday")
 public class FactOfTheDayController {
     private FactOfTheDayService factOfTheDayService;
     private LanguageService languageService;
+    private RestClient restClient;
 
     /**
      * Method which return a random {@link FactOfTheDayVO}.
