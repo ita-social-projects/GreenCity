@@ -61,7 +61,7 @@ class AchievementCategoryServiceImplTest {
         when(modelMapper.map(list, new TypeToken<List<AchievementCategoryVO>>() {
         }.getType())).thenReturn(expected);
         List<AchievementCategoryVO> actual = achievementCategoryService.findAll();
-        assertEquals(true, false);
+        assertEquals(expected, actual);
     }
 
     @Test
