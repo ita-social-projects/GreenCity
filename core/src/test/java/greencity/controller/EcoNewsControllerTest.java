@@ -7,6 +7,7 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,7 @@ class EcoNewsControllerTest {
     @Mock
     private TagsService tagsService;
     @Mock
-    private RestClient restClient;
+    private UserService userService;
     @Mock
     private ModelMapper modelMapper;
 
@@ -57,7 +58,7 @@ class EcoNewsControllerTest {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(restClient, modelMapper))
+                new UserArgumentResolver(userService, modelMapper))
             .build();
     }
 
@@ -129,7 +130,7 @@ class EcoNewsControllerTest {
     @Test
     void deleteTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(delete(ecoNewsLink + "/{econewsId}", 1)
             .principal(principal))
@@ -183,7 +184,7 @@ class EcoNewsControllerTest {
     @Test
     void likeTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(ecoNewsLink + "/like?id=1")
             .principal(principal))
@@ -203,7 +204,7 @@ class EcoNewsControllerTest {
     @Test
     void checkNewsIsLikedByUserTest() throws Exception {
         UserVO userVO = getUserVO();
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(ecoNewsLink + "/isLikedByUser?econewsId=1")
             .principal(principal))

@@ -1,8 +1,8 @@
 package greencity.security.filters;
 
-import greencity.client.RestClient;
 import greencity.dto.user.UserVO;
 import greencity.security.jwt.JwtTool;
+import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,16 +29,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTool jwtTool;
     private final AuthenticationManager authenticationManager;
-    private final RestClient restClient;
+    private final UserService userService;
 
     /**
      * Constructor.
      */
     public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
-        RestClient restClient) {
+        UserService userService) {
         this.jwtTool = jwtTool;
         this.authenticationManager = authenticationManager;
-        this.restClient = restClient;
+        this.userService = userService;
     }
 
     private String getTokenFromCookies(Cookie[] cookies) {
@@ -77,8 +77,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             try {
                 Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(token, null));
-                Optional<UserVO> user =
-                    restClient.findNotDeactivatedByEmail((String) authentication.getPrincipal());
+                Optional<UserVO> user = userService.findNotDeactivatedByEmail((String) authentication.getPrincipal());
                 if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
                     SecurityContextHolder.getContext().setAuthentication(authentication);

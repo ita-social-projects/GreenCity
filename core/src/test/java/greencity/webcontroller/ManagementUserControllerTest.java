@@ -12,6 +12,7 @@ import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import greencity.service.UserService;
 import org.dom4j.rule.Mode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,12 +52,14 @@ class ManagementUserControllerTest {
     private ObjectMapper objectMapper;
     private MockMvc mockMvc;
     private static final String managementUserLink = "/management/users";
+    @Mock
+    private UserService userService;
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementUserController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(restClient, modelMapper))
+                new UserArgumentResolver(userService, modelMapper))
             .build();
         objectMapper = new ObjectMapper();
     }
