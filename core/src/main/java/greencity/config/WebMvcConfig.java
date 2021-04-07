@@ -78,11 +78,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return lci;
     }
 
-    // @Override
-    // public void addInterceptors(InterceptorRegistry registry) {
-    // registry.addInterceptor(new UserActivityInterceptor(userService));
-    // registry.addInterceptor(localeChangeInterceptor());
-    // }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // registry.addInterceptor(new UserActivityInterceptor(userService));
+        registry.addInterceptor(localeChangeInterceptor());
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
