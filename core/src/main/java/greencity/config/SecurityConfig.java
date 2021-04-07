@@ -8,6 +8,7 @@ import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 
+import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -52,16 +53,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private final JwtTool jwtTool;
-    private final RestClient restClient;
+    private final UserService userService;
 
     /**
      * Constructor.
      */
 
     @Autowired
-    public SecurityConfig(JwtTool jwtTool, RestClient restClient) {
+    public SecurityConfig(JwtTool jwtTool, UserService userService) {
         this.jwtTool = jwtTool;
-        this.restClient = restClient;
+        this.userService = userService;
     }
 
     /**
@@ -86,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .addFilterBefore(
-                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), restClient),
+                new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling()
             .authenticationEntryPoint((req, resp, exc) -> resp.sendError(SC_UNAUTHORIZED, "Authorize first."))

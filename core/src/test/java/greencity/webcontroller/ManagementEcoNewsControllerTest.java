@@ -12,6 +12,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -64,6 +65,8 @@ class ManagementEcoNewsControllerTest {
     private RestClient restClient;
     @Mock
     private TagsService tagsService;
+    @Mock
+    private UserService userService;
 
     private Principal principal = getPrincipal();
 
@@ -71,7 +74,7 @@ class ManagementEcoNewsControllerTest {
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                new UserArgumentResolver(restClient, modelMapper))
+                new UserArgumentResolver(userService, modelMapper))
             .build();
     }
 
@@ -103,7 +106,7 @@ class ManagementEcoNewsControllerTest {
     @Test
     void delete() throws Exception {
         UserVO userVO = getUserVO();
-        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         doNothing().when(ecoNewsService).delete(1L, userVO);
         this.mockMvc.perform(MockMvcRequestBuilders
             .delete(managementEcoNewsLink + "/delete?id=1")
