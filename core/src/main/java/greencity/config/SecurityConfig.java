@@ -373,16 +373,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    /**
-     * Bean {@link GoogleIdTokenVerifier} that uses in verify googleIdToken.
-     *
-     * @param clientId {@link String} - google client id.
-     */
-    @Bean
-    public GoogleIdTokenVerifier googleIdTokenVerifier(@Value("${google.clientId}") String clientId) {
-        return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-            .setAudience(Collections.singletonList(clientId))
-            .build();
-    }
 }
