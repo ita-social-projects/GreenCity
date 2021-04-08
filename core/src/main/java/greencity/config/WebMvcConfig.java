@@ -1,8 +1,6 @@
 package greencity.config;
 
-import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
-//import greencity.security.interceptor.UserActivityInterceptor;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Locale;
@@ -80,7 +78,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // registry.addInterceptor(new UserActivityInterceptor(userService));
         registry.addInterceptor(localeChangeInterceptor());
     }
 
