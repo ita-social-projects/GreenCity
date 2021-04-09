@@ -48,7 +48,9 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
         } catch (IOException e) {
             throw new NotSavedException("Cannot convert to BASE64 image");
         } finally {
-            tempFile.delete();
+            if (!tempFile.delete()) {
+                throw new NotSavedException("Invalid image");
+            }
         }
     }
 }
