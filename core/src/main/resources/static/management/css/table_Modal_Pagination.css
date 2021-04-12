@@ -841,11 +841,11 @@ li {
 }
 
 .sidepanel {
-    width: 0;
+    width: 264px;
     position: fixed;
     z-index: 1;
     height: 100%;
-    background-color: #839d94;
+    background-color:  #444E55;
     overflow-x: hidden;
     transition: 0.5s;
 }
@@ -854,8 +854,17 @@ li {
     color: #f1f1f1;
 }
 
+.sidepanel a:active {
+    color: #f1f1f1;
+    background-color: #64727d;
+}
+
 .sidepanel a {
-    font-size: 12px;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
     padding-left: 15%;
 }
 
@@ -882,6 +891,7 @@ li {
 }
 
 .list-item {
-    margin-top: 5%;
+    /*margin-top: 5%;*/
     width: 100%;
+    height: 56px;
 }

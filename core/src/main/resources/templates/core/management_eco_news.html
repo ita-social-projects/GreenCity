@@ -32,13 +32,10 @@
 
 <body onload="markCurentPageOnNav(), markOrder()">
 <div id="header" th:insert="core/header"></div>
+<div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
     <div class="container-xl">
         <div class="row" id ="eco-news-content" style="margin:auto">
-            <!--            SIDEBAR-->
-            <div>
-                <div id="sidebar" th:insert="core/sidebar"></div>
-            </div>
             <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
                 <div id="eco-news" class="row " style="margin-top: 3%; ">
                     <div class="col-sm-8">
