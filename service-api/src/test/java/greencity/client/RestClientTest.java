@@ -221,26 +221,6 @@ class RestClientTest {
     }
 
     @Test
-    void updateUserLastActivityTime() {
-        Date date = new Date();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-ddHH:mm:ss.SSSSSS");
-        String strDate = dateFormat.format(date);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER + "/" + 1L
-            + RestTemplateLinks.UPDATE_USER_LAST_ACTIVITY_TIME
-            + strDate, HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-
-        restClient.updateUserLastActivityTime(1L, date);
-        verify(restTemplate).exchange(greenCityUserServerAddress + RestTemplateLinks.USER + "/" + 1L
-            + RestTemplateLinks.UPDATE_USER_LAST_ACTIVITY_TIME
-            + strDate, HttpMethod.PUT, entity, Object.class);
-    }
-
-    @Test
     void getDeactivationReason() {
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
