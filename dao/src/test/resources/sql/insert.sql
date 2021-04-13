@@ -1451,3 +1451,9 @@ VALUES (1, 1),
        (31, 142),
        (31, 143),
        (31, 144);
+
+insert into chat_rooms(name,type,participant_id)
+values('GreenCity Chat','SYSTEM',1)
+
+insert into chat_rooms_participants (room_id, participant_id)
+select 1, users.id  from users
