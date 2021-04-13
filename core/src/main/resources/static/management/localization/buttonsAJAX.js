@@ -21,29 +21,6 @@ function setLanguageEn() {
         })
     }
 }
-function setLanguageRu() {
-    let localStorage = window.localStorage;
-    localStorage.setItem("language", "ru")
-    var currentUrl = window.location.href;
-    let check = currentUrl.toString();
-    if (check.includes("?")){
-        let url = "&lang=ru";
-        $.ajax({
-            url: currentUrl + url,
-            success: function (res) {
-                window.location.href = currentUrl;
-            }
-        })
-    }else {
-        let url = "?lang=ru";
-        $.ajax({
-            url: currentUrl + url,
-            success: function (res) {
-                window.location.href = currentUrl;
-            }
-        })
-    }
-}
 
 function setLanguageUa() {
     let localStorage = window.localStorage;
