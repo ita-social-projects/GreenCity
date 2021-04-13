@@ -4,9 +4,9 @@ VALUES (1, 'ECO_NEWS'),(2, 'HABIT'),(3, 'TIPS_AND_TRICKS');
 INSERT INTO languages(id, code)
 VALUES(1, 'ua'),(2, 'en'), (3, 'ru');
 
-INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Новини', 1, 1),
-(2, 'News', 1, 2),(3, 'Новины', 1, 3),(4, 'Освіта', 2, 1),(5, 'Education', 2, 2),
-(6, 'Образование', 2, 3),(7, 'Реклами', 3, 1),(8, 'Ads', 3, 2),(9, 'Рекламы', 3, 3);
+INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Novinu', 1, 1),
+                                                                  (2, 'News', 1, 2),(3, 'Novosti', 1, 3),(4, 'Osvita', 2, 1),(5, 'Education', 2, 2),
+                                                                  (6, 'Obrazovanie', 2, 3),(7, 'Reklama', 3, 1),(8, 'Ads', 3, 2),(9, 'Reklama', 3, 3);
 
 INSERT INTO users (id,
                    date_of_registration,

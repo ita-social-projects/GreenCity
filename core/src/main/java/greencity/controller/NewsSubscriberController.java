@@ -38,8 +38,7 @@ public class NewsSubscriberController {
     @ApiOperation(value = "Get all emails for sending news.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
     public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {
@@ -77,7 +76,9 @@ public class NewsSubscriberController {
     @ApiOperation(value = "Deleting an email from subscribe table in database.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/unsubscribe")
     public ResponseEntity<Long> delete(@RequestParam @Valid String email,

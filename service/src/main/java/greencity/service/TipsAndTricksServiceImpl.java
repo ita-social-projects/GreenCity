@@ -15,6 +15,7 @@ import greencity.entity.*;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.TagType;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
@@ -225,7 +226,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         Page<TipsAndTricks> pages = tipsAndTricksRepo
             .findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
                 languageService.extractLanguageCodeFromRequest(), page);
-
+        if (pages.getTotalPages() < page.getPageNumber()) {
+            throw new BadRequestException(ErrorMessage.PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES + pages.getTotalPages());
+        }
         return getPagesWithTipsAndTricksDtoResponse(pages);
     }
 
@@ -252,6 +255,9 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
                 .findByTitleTranslationsLanguageCodeOrderByCreationDateDesc(
                     languageCode,
                     page);
+            if (pages.getTotalPages() < page.getPageNumber()) {
+                throw new BadRequestException(ErrorMessage.PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES + pages.getTotalPages());
+            }
         } else {
             List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
             pages = tipsAndTricksRepo.find(page, lowerCaseTags);

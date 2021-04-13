@@ -128,7 +128,7 @@ class TagsRepoTest {
     @Test
     void findAllTipsAndTricksTagsWithUkrainianTest() {
         List<String> actual = tagsRepo.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE);
-        List<String> expected = Collections.singletonList("Реклами");
+        List<String> expected = Collections.singletonList("Reklama");
         assertEquals(1, actual.size());
         assertEquals(expected, actual);
     }
@@ -144,7 +144,7 @@ class TagsRepoTest {
     @Test
     void findAllHabitsTagsWithUkrainianTest() {
         List<String> actual = tagsRepo.findAllHabitsTags(UKRAINIAN_LANGUAGE);
-        List<String> expected = Arrays.asList("Новини", "Освіта", "Реклами");
+        List<String> expected = Arrays.asList("Novinu", "Osvita", "Reklama");
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
     }

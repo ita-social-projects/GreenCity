@@ -42,9 +42,9 @@ VALUES (1,'2020-04-11 18:33:51', 'шлях до картинки', 1,
 INSERT INTO tags(id, type)
 VALUES (1, 'ECO_NEWS'),(2, 'ECO_NEWS'),(3, 'ECO_NEWS');
 
-INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Новини', 1, 1),
-(2, 'News', 1, 2),(3, 'Новины', 1, 3),(4, 'Освіта', 2, 1),(5, 'Education', 2, 2),
-(6, 'Образование', 2, 3),(7, 'Реклами', 3, 1),(8, 'Ads', 3, 2),(9, 'Рекламы', 3, 3);
+INSERT INTO tag_translations(id, name, tag_id, language_id) VALUES(1, 'Novinu', 1, 1),
+(2, 'News', 1, 2),(3, 'Novosti', 1, 3),(4, 'Osvita', 2, 1),(5, 'Education', 2, 2),
+(6, 'Obrazovanie', 2, 3),(7, 'Reklama', 3, 1),(8, 'Ads', 3, 2),(9, 'Reklama', 3, 3);
 
 
 INSERT INTO eco_news_tags(eco_news_id, tags_id)

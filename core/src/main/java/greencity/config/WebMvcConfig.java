@@ -1,8 +1,7 @@
 package greencity.config;
 
-import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
-import greencity.security.interceptor.UserActivityInterceptor;
+import greencity.service.UserService;
 import java.util.List;
 import java.util.Locale;
 import org.modelmapper.ModelMapper;
@@ -22,9 +21,9 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
-    private ModelMapper modelMapper;
+    private UserService userService;
     @Autowired
-    private RestClient restClient;
+    private ModelMapper modelMapper;
 
     /**
      * Method for configuring message source.
@@ -79,12 +78,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new UserActivityInterceptor(restClient));
         registry.addInterceptor(localeChangeInterceptor());
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new UserArgumentResolver(restClient, modelMapper));
+        resolvers.add(new UserArgumentResolver(userService, modelMapper));
     }
 }

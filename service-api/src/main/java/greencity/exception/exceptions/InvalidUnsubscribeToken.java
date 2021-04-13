@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-public class InvalidUnsubscribeToken extends RuntimeException {
+public class InvalidUnsubscribeToken extends BadRequestException {
     /**
      * constructor.
      */
