@@ -44,8 +44,46 @@ function Order() {
     }
 }
 
+let filter=document.querySelectorAll('.filter');
+// console.log()
+for (i=0;i<filter.length;i++){
+    let subMenu=filter[i].nextElementSibling;
+    let thisFilter=filter[i];
+    filter[i].addEventListener('click', function () {
+        subMenu.classList.toggle('open');
+        thisFilter.classList.toggle('active');
+    });
+}
 
-function byNameField(nameField) {
+function byNameFieldAsc(nameField) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+
+    if (sort == null) {
+        urlSearch.set("sort", nameField + ",ASC");
+    } else if (sort.includes(nameField)) {
+        sort = sort.toUpperCase();
+        if (!sort.includes("ASC")) {
+            urlSearch.set("sort", nameField + ",ASC");
+        }
+    }
+
+    let url = "/management/users?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
+function byNameFieldDesc(nameField) {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
@@ -54,16 +92,12 @@ function byNameField(nameField) {
         urlSearch.set("page", "0");
     }
     if (sort == null) {
-        urlSearch.set("sort", nameField + ",ASC");
+        urlSearch.set("sort", nameField + ",DESC");
     } else if (sort.includes(nameField)) {
         sort = sort.toUpperCase();
-        if (sort.includes("ASC")) {
+        if (!sort.includes("DESC")) {
             urlSearch.set("sort", nameField + ",DESC");
-        } else if (sort.includes("DESC")) {
-            urlSearch.set("sort", nameField + ',ASC');
         }
-    } else {
-        urlSearch.set("sort", nameField + ",ASC");
     }
 
     let url = "/management/users?";
@@ -83,7 +117,7 @@ function otherCheck() {
     } else {
         document.getElementById("othertext").disabled = true;
     }
-};
+}
 
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
@@ -366,3 +400,18 @@ $(document).ready(function () {
         })
     });*/
 });
+
+//sidebar
+function openNav() {
+    document.getElementById("mySidepanel").style.width = "250px";
+    document.getElementById("openbtnId").hidden = true;
+    document.getElementById("tab-content").style.marginLeft="15%";
+    // document.getElementById("eco-news-content").style.marginRight="15%";
+}
+
+function closeNav() {
+    document.getElementById("mySidepanel").style.width = "0";
+    document.getElementById("openbtnId").hidden = false;
+    document.getElementById("tab-content").style.marginLeft="0";
+    // document.getElementById("eco-news-content").style.marginRight="0";
+}
