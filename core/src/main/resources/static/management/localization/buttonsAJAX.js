@@ -1,6 +1,5 @@
 function setLanguageEn() {
     let localStorage = window.localStorage;
-    localStorage.clear();
     localStorage.setItem("language", "en")
     let currentUrl = window.location.href;
     let check = currentUrl.toString();
@@ -22,9 +21,9 @@ function setLanguageEn() {
         })
     }
 }
+
 function setLanguageUa() {
     let localStorage = window.localStorage;
-    localStorage.clear();
     localStorage.setItem("language", "uk")
     var currentUrl = window.location.href;
     let check = currentUrl.toString();
