@@ -28,7 +28,7 @@ class CustomShoppingListItemRepoTest {
     @Test
     void findAllAvailableCustomShoppingListItemTest() {
         List<CustomShoppingListItem> customShoppingListItems =
-            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(1L);
+            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(1L,1L);
         assertEquals(2, customShoppingListItems.size());
     }
 
@@ -40,7 +40,7 @@ class CustomShoppingListItemRepoTest {
 
     @Test
     void findAllTest() {
-        List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo.findAllByUserId(1L);
+        List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo.findAllByUserIdAndHabitId(1L,1L);
         assertEquals(5, customShoppingListItems.size());
     }
 }

@@ -64,15 +64,15 @@ class CustomShoppingListItemControllerTest {
         Long id = 1L;
         this.mockMvc.perform(get(customLink + "/" + id)
             .principal(principal)).andExpect(status().isOk());
-        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id);
+        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id, id);
     }
 
     @Test
     void findAllByUserTest() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items")
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
             .principal(principal)).andExpect(status().isOk());
-        verify(customShoppingListItemService).findAllByUser(id);
+        verify(customShoppingListItemService).findAllByUserAndHabit(id, id);
     }
 
     @Test
@@ -84,7 +84,7 @@ class CustomShoppingListItemControllerTest {
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
         this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").content(content)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id);
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id, id);
     }
 
     @Test
