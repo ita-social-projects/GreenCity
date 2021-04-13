@@ -1,0 +1,199 @@
+
+@font-face {
+    font-family: 'Lato Regular';
+    src: url('Lato-Regular.eot');
+    src: url('Lato-Regular.eot?#iefix') format('embedded-opentype'),
+    url('Lato-Regular.woff') format('woff'),
+    url('Lato-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.menuVertical{
+    margin: 0;
+    height: 941px;
+    width: 264px;
+    position: absolute;
+    top: 52px;
+    background: #444E55;
+    overflow:auto;
+    scrollbar-width: none;
+    font-size: 16px;
+
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+.menuVertical ul{
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+    transition: 0.4s;
+
+}
+
+.menuVertical ul li {
+    display: block;
+    width: 100%;
+    position: relative;
+    transition: 0.4s;
+    height: 56px;
+    justify-content: center;
+
+}
+
+.menuVertical ul li a, dropdown {
+    position: relative;
+    display: block;
+    width: content-box;
+    box-sizing: border-box;
+    color: #F7F9FA;
+    line-height: 2em;
+    padding: 16px 0 16px 16px;
+    text-decoration: none;
+
+
+}
+
+.menuVertical ul li:hover a, dropdown:hover{
+    background: #9CA7B0;
+    color: #F7F9FA;
+}
+
+.menuVertical ul li:active a, .active{
+    background: #64727D;
+    color: #F7F9FA;
+}
+
+.accordion {
+    width: 264px;
+    transition: 0.4s;
+    cursor:pointer;
+    font-size: 16px;
+}
+
+.accordion .active {
+    background: #444E55;
+}
+
+.panel{
+    display: none;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    list-style: none;
+    position: relative;
+    transition: 0.4s;
+    overflow: visible;
+    padding: 0;
+
+}
+
+.panel li{
+    width: 100%;
+    position: relative;
+    transition: 0.4s;
+    height: 56px;
+}
+
+.panel li a{
+    position: relative;
+    width: content-box;
+    box-sizing: border-box;
+    font-weight: normal;
+    color: #F7F9FA;
+    line-height: 2em;
+    text-decoration: none;
+}
+
+.panel span {
+    margin-left: 33px;
+}
+
+.panel li:hover a{
+    background: #9CA7B0;
+    color: #F7F9FA;
+}
+
+.panel li:active a{
+    background: #64727D;
+    color: #F7F9FA;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+
+span {
+    padding-left: 8px;
+}
+
+.img_n{
+    width: 24px;
+    height: 24px;
+    transition: .3s;
+    display: inline-block;
+
+}
+.img_n:hover{
+    margin-left: 5px;
+    transition: .3s;
+}
+block {
+    display: block;
+    width: 100%;
+    position: relative;
+    background: #444E55;
+    cursor: pointer;
+    justify-content: end;
+}
+.img_blc{
+    padding-left: 235px;
+    z-index: 4;
+}
+.on .img_blc{
+    padding-left:16px;
+    padding-bottom: 8px;
+    background: #444E55;
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+block:hover img{
+    transition: .3s;
+    background: #444E55;
+}
+
+
+.narrow{
+    width:56px;
+}
+
+.narrow ul li {
+    width: 56px;
+}
+
+.narrow ul li a, .close ul li dropdown{
+    width: auto;
+    transition: .3s;
+    height: 56px;
+}
+
+.narrow span {
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
