@@ -26,6 +26,9 @@
 </head>
 <body onload="Order()">
 <div id="header" th:insert="core/header"></div>
+<div>
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+</div>
 <div class="main-content">
     <div class="container-xl">
         <div class="table-responsive">
@@ -44,12 +47,16 @@
                         </div>
                     </div>
                     <div class="row-box-and-sort">
-                        <span class="custom-checkbox-select-all">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
-                                </span>
+                        <div class="main-search">
+                                <form class="form-inline searching" action="#" method="get">
+                                    <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
+                                </form>
+                            <button class="filter-button">
+                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]</button>
+                        </div>
                         <div class="filter-list-grid">
                             <div class="dropdown size">
+                                <img src="/img/arrow-down.svg" alt="arrow-icon">
                                 <button class="dropbtn size" th:text="${paging.pageSize}">
                                 </button>
                                 <div class="dropdown-content size">
@@ -58,82 +65,58 @@
                                     <a href="/management/users?size=100">100</a>
                                 </div>
                             </div>
-                            <i class="fas fa-filter"></i>
-                            <i class="fas fa-th-large"></i>
-                            <i class="fas fa-bars"></i>
                         </div>
                     </div>
-                    <table class="table table-striped">
+                    <table class="table table-bordered">
                         <thead>
                         <tr class="table-primary ">
-                            <th></th>
-                            <th><span onclick="byNameField('id')">[[#{greenCity.pages.table.id}]]
-                                        <i id="id-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
-                            <th class="username"><span class="userNameAuto" onclick="byNameField('name')">[[#{greenCity.pages.table.userName}]]
-                                        <i id="user-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
-                            <th><span onclick="byNameField('email')">[[#{greenCity.pages.table.email}]]
-                                        <i id="email-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
-                            <th><span onclick="byNameField('userCredo')">[[#{greenCity.pages.table.credo}]]
-                                        <i id="credo-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
-                            <th><span onclick="byNameField('role')">[[#{greenCity.pages.table.role}]]
-                                        <i id="role-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
-                            <th><span onclick="byNameField('userStatus')">[[#{greenCity.pages.table.status}]]
-                                        <i id="status-icon" style="color: #8ea59f;" class="fas fa-chevron-down"></i>
-                                </span></th>
+                            <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                            </th>
+                            <th>
+                                <span>[[#{greenCity.pages.table.id}]]</span>
+                            </th>
+                            <th class="username">
+                                [[#{greenCity.pages.table.userName}]]
+                                <span class="table-filter-icon filter"></span>
+                                <form action="#" class="name-filter-form">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons" onclick="byNameFieldAsc('name')" style="margin-right: 9px;">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending</button>
+                                    </div>
+                                    <input type="text" class="form-search filter" th:placeholder="#{greenCity.pages.search}">
+                                    <div class="filter-checkbox">
+                                        <input type="checkbox" class="filter-checkbox-input">
+                                        <p class="filter-checkbox-text">save filtering</p>
+                                    </div>
+                                    <div class="filter-buttons">
+                                        <button class="filter-cancel">Cancel</button>
+                                        <button type="submit" class="filter-apply">Save changes</button>
+                                    </div>
+                                </form>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.email}]]
+                                <span class="table-filter-icon filter"></span>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.credo}]]
+                                <span class="table-filter-icon filter"></span>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.role}]]
+                                <span class="table-filter-icon filter"></span>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.status}]]
+                                <span class="table-filter-icon filter"></span>
+                            </th>
                         </tr>
                         </thead>
-                        <form action="/management/users/search" id="searchForm" method="POST">
-                            <tr>
-                                <td>
-                                    <button type="submit" id="searchByForUser"><i class="fas fa-search"></i>
-                                    </button>
-                                </td>
-                                <td>
-                                    <input placeholder="Search" th:name="id"
-                                           th:value="${fields eq null ? '' : fields.id }"
-                                           type="search"/>
-                                </td>
-                                <td>
-                                    <input placeholder="Search" th:name="name"
-                                           th:value="${fields eq null ? '' : fields.name}"
-                                           type="search"/>
-                                </td>
-                                <td>
-                                    <input placeholder="Search" style="width: 100%" th:name="email"
-                                           th:value="${fields eq null ? '' : fields.email }"
-                                           type="search"/>
-                                </td>
-                                <td>
-                                    <input placeholder="Search" style="width: 100%" th:name="userCredo"
-                                           th:value="${fields eq null ? '' : fields.userCredo }"
-                                           type="search"/>
-                                </td>
-                                <td>
-                                    <select class="role-pop" name="role">
-                                        <option style="display: none"></option>
-                                        <option value="1">ROLE_ADMIN</option>
-                                        <option value="0">ROLE_USER</option>
-                                        <option value="2">ROLE_MODERATOR</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="status-pop" name="userStatus">
-                                        <option style="display: none"></option>
-                                        <option value="1">DEACTIVATED</option>
-                                        <option value="2">ACTIVATED</option>
-                                    </select>
-                                </td>
-
-                            </tr>
-
-                        </form>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
-                            <tbody.table-striped>
                                 <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                                     <td>
                                     <span class="custom-checkbox">
@@ -149,25 +132,23 @@
                                     <td th:text="${user.userCredo}"></td>
                                     <td>
                                         <div class="dropdown role">
-                                            <button class="dropbtn role" th:text="${user.role}">
-                                                <span><i class="fas fa-caret-down"></i></span>
+                                            <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
                                             </button>
+                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
                                             <div class="dropdown-content role">
-                                                <a href="#">ADMIN</a>
-                                                <a href="#">USER
+                                                <a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">ADMIN</a>
+                                                <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">USER
                                                 </a>
-                                                <a href="#">MODERATOR</a>
+                                                <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">MODERATOR</a>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="dropdown status">
-                                            <button class="dropbtn status" th:text="${user.userStatus}">
+                                    <td th:if="${user.userStatus.name().equals('PENDING')}" style="background-color: #E5F2FF;">
+                                        <div class="dropdown status" >
+                                            <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
                                             </button>
+                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
                                             <div class="dropdown-content status">
-                                                <a th:href="@{/management/users/reasons/(id=${user.id})}"
-                                                   class="activate-user eActBtn" disabled="true"
-                                                   data-toggle="modal">ACTIVATED</a>
                                                 <a th:href="@{/management/users/lang/(id=${user.id})}"
                                                    class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
                                                 </a>
@@ -175,22 +156,53 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td th:if="${user.userStatus.name().equals('ACTIVATED')}" style="background-color: #E7F7EE;">
+                                        <div class="dropdown status" >
+                                            <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                            </button>
+                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                            <div class="dropdown-content status">
+                                                <a th:href="@{/management/users/reasons/(id=${user.id})}"
+                                                   class="activate-user eActBtn" disabled="true"
+                                                   data-toggle="modal">ACTIVATED</a>
+                                                <a href="#">WARNED</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:if="${user.userStatus.name().equals('WARNED')}" style="background-color: #fff7cf;">
+                                        <div class="dropdown status" >
+                                            <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                            </button>
+                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                            <div class="dropdown-content status">
+                                                <a th:href="@{/management/users/reasons/(id=${user.id})}"
+                                                   class="activate-user eActBtn" disabled="true"
+                                                   data-toggle="modal">ACTIVATED</a>
+                                                <a th:href="@{/management/users/lang/(id=${user.id})}"
+                                                   class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:if="${user.userStatus.name().equals('DEACTIVATED')}" style="background-color: #FCE0DE;">
+                                        <div class="dropdown status" >
+                                            <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                            </button>
+                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                            <div class="dropdown-content status">
+                                                <a th:href="@{/management/users/reasons/(id=${user.id})}"
+                                                   class="activate-user eActBtn" disabled="true"
+                                                   data-toggle="modal">ACTIVATED</a>
+                                                <a href="#">WARNED</a>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
-                            </tbody.table-striped>
                         </th:block>
                     </table>
                     <!-- Start of Paging -->
                     <div class="clearfix" th:if="${users.getPage().size() ne 0}">
-                        <div class="hint-text">
-                            [[#{greenCity.page.paging.show}]]
-                            <b th:text="${users.getCurrentPage() eq 0 ? '1 -' : (users.isHasNext() ? users.getPage().size() * users.getCurrentPage() : users.getTotalElements() - users.getPage().size()) + 1 + ' - '}"></b>
-                            <b th:text="${users.getCurrentPage() eq 0 ? users.getPage().size() : (users.isHasNext() ? users.getPage().size() * (users.getCurrentPage() + 1) : users.getTotalElements())}">*</b>
-                            [[#{greenCity.page.paging.out.of}]]
-                            <b th:text="${users.getTotalElements()}"></b>
-                            [[#{greenCity.page.paging.entries}]]
-                        </div>
                         <ul class="pagination">
-
                             <li class="page-item"
                                 th:classappend="${!users.isFirst()} ? '' : 'disabled'">
                                 <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"
