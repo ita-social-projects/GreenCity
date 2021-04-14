@@ -76,8 +76,8 @@ class CustomShoppingListItemServiceImplTest {
             .build();
 
     private Habit habit = Habit.builder()
-            .id(1L)
-            .build();
+        .id(1L)
+        .build();
 
     @Test
     void saveEmptyBulkSaveCustomShoppingListItemDtoTest() {
@@ -191,10 +191,10 @@ class CustomShoppingListItemServiceImplTest {
 
     @Test
     void findAllByUserWithNonExistentIdTest() {
-        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L,1L)).thenReturn(Collections.emptyList());
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(Collections.emptyList());
         Assertions
             .assertThrows(NotFoundException.class,
-                () -> customShoppingListItemService.findAllByUserAndHabit(1L,1L));
+                () -> customShoppingListItemService.findAllByUserAndHabit(1L, 1L));
     }
 
     @Test

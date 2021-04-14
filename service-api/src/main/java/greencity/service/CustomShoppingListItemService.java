@@ -24,6 +24,7 @@ public interface CustomShoppingListItemService {
     List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto,
                                                  Long userId, Long habitId);
 
+    
     /**
      * Method for finding all custom shopping list items.
      *
