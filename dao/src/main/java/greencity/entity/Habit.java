@@ -29,6 +29,9 @@ public class Habit {
     private Integer defaultDuration;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CustomShoppingListItem> customShoppingListItems;
+
+    @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<HabitTranslation> habitTranslations;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL)

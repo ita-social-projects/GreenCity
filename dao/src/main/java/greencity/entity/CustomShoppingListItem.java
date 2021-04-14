@@ -26,6 +26,9 @@ public class CustomShoppingListItem {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Habit habit;
+
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
