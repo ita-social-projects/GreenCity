@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
@@ -18,7 +16,6 @@ import greencity.repository.CustomShoppingListItemRepo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +82,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      *             finding duplicates.
      * @param user {@link User} for whom shopping list item are will saving.
      * @return list with the text of {@link CustomShoppingListItem} which is
-     * duplicated.
+     *      duplicated.
      * @author Bogdan Kuzenko.
      */
     private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto, User user, Habit habit) {
