@@ -62,7 +62,7 @@ class CustomShoppingListItemControllerTest {
     @Test
     void getAllAvailableCustomShoppingListItems() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id)
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + id)
             .principal(principal)).andExpect(status().isOk());
         verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id, id);
     }
@@ -82,7 +82,8 @@ class CustomShoppingListItemControllerTest {
             new CustomShoppingListItemSaveRequestDto("Texttext");
         BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
-        this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").content(content)
+        this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
+            .content(content)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
         verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id, id);
     }
