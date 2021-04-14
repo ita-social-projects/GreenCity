@@ -144,6 +144,8 @@ public final class ErrorMessage {
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
     public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
+    public static final String MultiPartFile_Bad_Request = "Bad inputed image string : ";
+
 
     private ErrorMessage() {
     }

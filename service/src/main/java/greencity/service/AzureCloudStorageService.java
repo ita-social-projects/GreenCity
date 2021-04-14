@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotSavedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,10 @@ public class AzureCloudStorageService implements FileService {
      * {@inheritDoc}
      */
     public MultipartFile convertToMultipartImage(String image) {
-        return modelMapper.map(image, MultipartFile.class);
+        try {
+            return modelMapper.map(image, MultipartFile.class);
+        } catch (Exception e) {
+            throw new BadRequestException(ErrorMessage.MultiPartFile_Bad_Request + image);
+        }
     }
 }
