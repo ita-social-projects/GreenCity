@@ -19,6 +19,7 @@ import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,12 +29,11 @@ import java.util.Optional;
 import greencity.repository.HabitRepo;
 import org.junit.jupiter.api.Assertions;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.ArgumentMatchers;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 import org.mockito.InjectMocks;
@@ -43,6 +43,7 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,12 +80,69 @@ class CustomShoppingListItemServiceImplTest {
         .id(1L)
         .build();
 
+    private CustomShoppingListItem item =
+        CustomShoppingListItem.builder()
+            .id(1L)
+            .habit(habit)
+            .user(user)
+            .text("item")
+            .status(ShoppingListItemStatus.ACTIVE)
+            .build();
+
+    @Test
+    void findAll() {
+        CustomShoppingListItemResponseDto dtoExpected = new CustomShoppingListItemResponseDto(3L, "text",
+            ShoppingListItemStatus.ACTIVE);
+        when(customShoppingListItemRepo.findAll()).thenReturn(Collections.singletonList(item));
+        when(modelMapper.map(any(), any())).thenReturn(dtoExpected);
+
+        assertEquals(dtoExpected.getText(), customShoppingListItemService.findAll().get(0).getText());
+    }
+
+    @Test
+    void findById() {
+        CustomShoppingListItemResponseDto expected = new CustomShoppingListItemResponseDto(3L,
+            "text", ShoppingListItemStatus.ACTIVE);
+        when(customShoppingListItemRepo.findById(1L)).thenReturn(Optional.of(item));
+        when(modelMapper.map(any(), eq(CustomShoppingListItemResponseDto.class)))
+            .thenReturn(expected);
+
+        assertEquals(expected.getText(), customShoppingListItemService.findById(1L).getText());
+    }
+
+    @Test
+    void FindAllByUserAndHabit() {
+        CustomShoppingListItemResponseDto dtoExpected = new CustomShoppingListItemResponseDto(3L, "text",
+            ShoppingListItemStatus.ACTIVE);
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L))
+            .thenReturn(Collections.singletonList(item));
+        when(modelMapper.map(any(CustomShoppingListItem.class), eq(CustomShoppingListItemResponseDto.class)))
+            .thenReturn(dtoExpected);
+        assertEquals(dtoExpected.getText(), customShoppingListItemService
+            .findAllByUserAndHabit(1L, 1L).get(0).getText());
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItems() {
+        List<CustomShoppingListItem> items = new ArrayList<>();
+        items.add(item);
+        when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(anyLong(), anyLong()))
+            .thenReturn(items);
+        when(modelMapper.map(items, new TypeToken<List<CustomShoppingListItemResponseDto>>() {
+        }.getType())).thenReturn(items);
+
+        assertEquals(items, customShoppingListItemService.findAllAvailableCustomShoppingListItems(1L, 1L));
+    }
+
     @Test
     void saveEmptyBulkSaveCustomShoppingListItemDtoTest() {
         UserVO userVO = ModelUtils.getUserVO();
+        Habit habit = ModelUtils.getHabit();
         when(restClient.findById(1L)).thenReturn(userVO);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        List<CustomShoppingListItem> items = user.getCustomShoppingListItems();
+        when(customShoppingListItemRepo.saveAll(any())).thenReturn(items);
         List<CustomShoppingListItemResponseDto> saveResult = customShoppingListItemService.save(
             new BulkSaveCustomShoppingListItemDto(Collections.emptyList()),
             1L, 1L);
@@ -98,6 +156,7 @@ class CustomShoppingListItemServiceImplTest {
         CustomShoppingListItem customShoppingListItem =
             new CustomShoppingListItem(1L, dtoToSave.getText(), null, null, null, null);
         UserVO userVO = ModelUtils.getUserVO();
+        Habit habit = ModelUtils.getHabit();
         when(restClient.findById(1L)).thenReturn(userVO);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -118,6 +177,7 @@ class CustomShoppingListItemServiceImplTest {
             new CustomShoppingListItem(1L, dtoToSave.getText(), user, habit, null, null);
         user.setCustomShoppingListItems(Collections.singletonList(customShoppingListItem));
         UserVO userVO = ModelUtils.getUserVO();
+        Habit habit = ModelUtils.getHabit();
         when(restClient.findById(1L)).thenReturn(userVO);
         when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -126,6 +186,15 @@ class CustomShoppingListItemServiceImplTest {
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave));
         Assertions.assertThrows(CustomShoppingListItemNotSavedException.class,
             () -> customShoppingListItemService.save(bulkSave, 1L, 1L));
+    }
+
+    @Test
+    void saveFailedOnHabitFindBy() {
+        when(habitRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        CustomShoppingListItemSaveRequestDto dtoToSave = new CustomShoppingListItemSaveRequestDto("foo");
+        BulkSaveCustomShoppingListItemDto bulkSave =
+            new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave));
+        assertThrows(NotFoundException.class, () -> customShoppingListItemService.save(bulkSave, 1L, 1L));
     }
 
     @Test
