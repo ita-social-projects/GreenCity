@@ -55,7 +55,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Transactional
     @Override
     public List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSave, Long userId,
-        Long habitId) {
+                                                        Long habitId) {
         UserVO userVO = restClient.findById(userId);
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
@@ -85,7 +85,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      *             finding duplicates.
      * @param user {@link User} for whom shopping list item are will saving.
      * @return list with the text of {@link CustomShoppingListItem} which is
-     *         duplicated.
+     * duplicated.
      * @author Bogdan Kuzenko.
      */
     private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto, User user, Habit habit) {
