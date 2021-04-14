@@ -9,6 +9,7 @@ import greencity.entity.ShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.service.CategoryService;
 import greencity.service.CustomShoppingListItemService;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,12 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import java.security.Principal;
-import java.util.Map;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,28 +47,40 @@ class CustomShoppingListItemControllerTest {
 
     private static final String customLink = "/custom/shopping-list-items";
 
+    private CustomShoppingListItemResponseDto dto;
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(customController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
         objectMapper = new ObjectMapper();
+
+        dto = new CustomShoppingListItemResponseDto(3L, "text",
+            ShoppingListItemStatus.ACTIVE);
     }
 
     @Test
     void getAllAvailableCustomShoppingListItems() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id)
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + id)
             .principal(principal)).andExpect(status().isOk());
-        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id);
+        when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(1L, 1L))
+            .thenReturn(Collections.singletonList(dto));
+        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id, id);
+        assertEquals(dto,
+            customController.getAllAvailableCustomShoppingListItems(id, id).getBody().get(0));
     }
 
     @Test
     void findAllByUserTest() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items")
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
             .principal(principal)).andExpect(status().isOk());
-        verify(customShoppingListItemService).findAllByUser(id);
+        when(customShoppingListItemService.findAllByUserAndHabit(id, id))
+            .thenReturn(Collections.singletonList(dto));
+        verify(customShoppingListItemService).findAllByUserAndHabit(id, id);
+        assertEquals(dto, customController.findAllByUser(id, id).getBody().get(0));
     }
 
     @Test
@@ -82,9 +90,14 @@ class CustomShoppingListItemControllerTest {
             new CustomShoppingListItemSaveRequestDto("Texttext");
         BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto = new BulkSaveCustomShoppingListItemDto();
         String content = objectMapper.writeValueAsString(bulkSaveCustomShoppingListItemDto);
-        this.mockMvc.perform(post(customLink + "/" + id + "/" + "custom-shopping-list-items").content(content)
+        this.mockMvc.perform(post(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
+            .content(content)
             .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id);
+        when(customShoppingListItemService.save(bulkSaveCustomShoppingListItemDto, id, id))
+            .thenReturn(Collections.singletonList(dto));
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, id, id);
+        assertEquals(dto, customController
+            .saveUserCustomShoppingListItems(bulkSaveCustomShoppingListItemDto, id, id).getBody().get(0));
     }
 
     @Test

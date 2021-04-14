@@ -22,7 +22,7 @@ public interface CustomShoppingListItemService {
      * @return list of saved {@link CustomShoppingListItemResponseDto}
      */
     List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto,
-        Long userId);
+        Long userId, Long habitId);
 
     /**
      * Method for finding all custom shopping list items.
@@ -37,7 +37,7 @@ public interface CustomShoppingListItemService {
      * @param userId user id.
      * @return list of {@link CustomShoppingListItemResponseDto}
      */
-    List<CustomShoppingListItemResponseDto> findAllByUser(Long userId);
+    List<CustomShoppingListItemResponseDto> findAllByUserAndHabit(Long userId, Long habitId);
 
     /**
      * Method for finding one custom shopping list item by id.
@@ -71,5 +71,5 @@ public interface CustomShoppingListItemService {
      * @param userId user id.
      * @return list of {@link CustomShoppingListItemVO}
      */
-    List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId);
+    List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId);
 }

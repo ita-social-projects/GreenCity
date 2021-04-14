@@ -38,11 +38,11 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}/{habitId}")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllAvailableCustomShoppingListItems(
-        @PathVariable Long userId) {
+        @PathVariable Long userId, @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId));
+            .body(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId));
     }
 
     /**
@@ -58,10 +58,11 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/{userId}/custom-shopping-list-items")
+    @GetMapping("/{userId}/{habitId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> findAllByUser(
-        @PathVariable @CurrentUserId Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(customShoppingListItemService.findAllByUser(userId));
+        @PathVariable @CurrentUserId Long userId, @PathVariable Long habitId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customShoppingListItemService.findAllByUserAndHabit(userId, habitId));
     }
 
     /**
@@ -79,13 +80,14 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @PostMapping("/{userId}/custom-shopping-list-items")
+    @PostMapping("/{userId}/{habitId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> saveUserCustomShoppingListItems(
         @Valid @RequestBody BulkSaveCustomShoppingListItemDto dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId) {
+        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @PathVariable Long habitId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customShoppingListItemService.save(dto, userId));
+            .body(customShoppingListItemService.save(dto, userId, habitId));
     }
 
     /**

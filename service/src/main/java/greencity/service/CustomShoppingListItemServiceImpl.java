@@ -2,30 +2,29 @@ package greencity.service;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
+import static greencity.constant.ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
-
+import greencity.repository.HabitRepo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static greencity.constant.ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID;
 
 /**
  * The class provides implementation of the
@@ -40,6 +39,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private CustomShoppingListItemRepo customShoppingListItemRepo;
     private ModelMapper modelMapper;
     private RestClient restClient;
+    private HabitRepo habitRepo;
 
     /**
      * {@inheritDoc}
@@ -48,16 +48,23 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      */
     @Transactional
     @Override
-    public List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSave, Long userId) {
+    public List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSave, Long userId,
+        Long habitId) {
         UserVO userVO = restClient.findById(userId);
+        Habit habit = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         User user = modelMapper.map(userVO, User.class);
         List<CustomShoppingListItemSaveRequestDto> dto = bulkSave.getCustomShoppingListItemSaveRequestDtoList();
-        List<String> errorMessages = findDuplicates(dto, user);
+        List<String> errorMessages = findDuplicates(dto, user, habit);
         if (!errorMessages.isEmpty()) {
             throw new CustomShoppingListItemNotSavedException(
                 ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + errorMessages.toString());
         }
-        customShoppingListItemRepo.saveAll(user.getCustomShoppingListItems());
+        List<CustomShoppingListItem> items = user.getCustomShoppingListItems();
+        for (CustomShoppingListItem item : items) {
+            item.setHabit(habit);
+        }
+        customShoppingListItemRepo.saveAll(items);
         return user.getCustomShoppingListItems().stream()
             .map(customShoppingListItem -> modelMapper.map(customShoppingListItem,
                 CustomShoppingListItemResponseDto.class))
@@ -75,7 +82,8 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      *         duplicated.
      * @author Bogdan Kuzenko.
      */
-    private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto, User user) {
+    private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto,
+        User user, Habit habit) {
         List<String> errorMessages = new ArrayList<>();
         for (CustomShoppingListItemSaveRequestDto el : dto) {
             CustomShoppingListItem customShoppingListItem = modelMapper.map(el, CustomShoppingListItem.class);
@@ -83,7 +91,9 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
                 .filter(o -> o.getText().equals(customShoppingListItem.getText())).collect(Collectors.toList());
             if (duplicate.isEmpty()) {
                 customShoppingListItem.setUser(user);
+                customShoppingListItem.setHabit(habit);
                 user.getCustomShoppingListItems().add(customShoppingListItem);
+                habit.setCustomShoppingListItems(user.getCustomShoppingListItems());
             } else {
                 errorMessages.add(customShoppingListItem.getText());
             }
@@ -149,9 +159,9 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      */
     @Transactional
     @Override
-    public List<CustomShoppingListItemResponseDto> findAllByUser(Long userId) {
+    public List<CustomShoppingListItemResponseDto> findAllByUserAndHabit(Long userId, Long habitId) {
         List<CustomShoppingListItemResponseDto> customShoppingListItems =
-            customShoppingListItemRepo.findAllByUserId(userId).stream()
+            customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId).stream()
                 .map(customShoppingListItem -> modelMapper.map(customShoppingListItem,
                     CustomShoppingListItemResponseDto.class))
                 .collect(Collectors.toList());
@@ -186,8 +196,9 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      * {@inheritDoc}
      */
     @Override
-    public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId) {
-        return modelMapper.map(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId),
+    public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId) {
+        return modelMapper.map(
+            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId),
             new TypeToken<List<CustomShoppingListItemResponseDto>>() {
             }.getType());
     }
