@@ -60,7 +60,7 @@ public class AzureCloudStorageService implements FileService {
         try {
             return modelMapper.map(image, MultipartFile.class);
         } catch (Exception e) {
-            throw new BadRequestException(ErrorMessage.MultiPartFile_Bad_Request + image);
+            throw new BadRequestException(ErrorMessage.Multipart_File_Bad_Request + image);
         }
     }
 }
