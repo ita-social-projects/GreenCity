@@ -85,7 +85,8 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      * duplicated.
      * @author Bogdan Kuzenko.
      */
-    private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto, User user, Habit habit) {
+    private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto,
+                                        User user, Habit habit) {
         List<String> errorMessages = new ArrayList<>();
         for (CustomShoppingListItemSaveRequestDto el : dto) {
             CustomShoppingListItem customShoppingListItem = modelMapper.map(el, CustomShoppingListItem.class);
