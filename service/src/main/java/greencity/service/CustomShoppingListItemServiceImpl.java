@@ -82,7 +82,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      *             finding duplicates.
      * @param user {@link User} for whom shopping list item are will saving.
      * @return list with the text of {@link CustomShoppingListItem} which is
-     *         duplicated.
+     * duplicated.
      * @author Bogdan Kuzenko.
      */
     private List<String> findDuplicates(List<CustomShoppingListItemSaveRequestDto> dto,
