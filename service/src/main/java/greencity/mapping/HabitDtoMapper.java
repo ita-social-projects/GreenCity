@@ -2,9 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
 import greencity.entity.localization.TagTranslation;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -24,8 +22,8 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
      */
     @Override
     protected HabitDto convert(HabitTranslation habitTranslation) {
-        Language language = habitTranslation.getLanguage();
-        Habit habit = habitTranslation.getHabit();
+        var language = habitTranslation.getLanguage();
+        var habit = habitTranslation.getHabit();
         return HabitDto.builder()
             .id(habit.getId())
             .image(habitTranslation.getHabit().getImage())

@@ -8,11 +8,12 @@ import greencity.entity.HabitTranslation;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 class HabitManagementDtoMapperTest {
@@ -29,6 +30,7 @@ class HabitManagementDtoMapperTest {
         HabitManagementDto habitManagementDto = HabitManagementDto.builder()
             .id(habit.getId())
             .image(habit.getImage())
+            .complexity(1)
             .habitTranslations(habit.getHabitTranslations().stream().map(ht -> HabitTranslationManagementDto.builder()
                 .id(ht.getId())
                 .description(ht.getDescription())
