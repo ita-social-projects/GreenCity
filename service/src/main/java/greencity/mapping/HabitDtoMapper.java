@@ -6,11 +6,10 @@ import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.localization.TagTranslation;
+import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.util.stream.Collectors;
 
 /**
  * Class that used by {@link ModelMapper} to map {@link HabitTranslation} into
@@ -31,6 +30,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
             .id(habit.getId())
             .image(habitTranslation.getHabit().getImage())
             .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
+            .complexity(habit.getComplexity())
             .habitTranslation(HabitTranslationDto.builder()
                 .description(habitTranslation.getDescription())
                 .habitItem(habitTranslation.getHabitItem())
