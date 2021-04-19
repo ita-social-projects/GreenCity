@@ -7,14 +7,13 @@ import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.localization.TagTranslation;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 class HabitDtoMapperTest {
@@ -32,6 +31,7 @@ class HabitDtoMapperTest {
             .id(habit.getId())
             .image(habitTranslation.getHabit().getImage())
             .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
+            .complexity(1)
             .habitTranslation(HabitTranslationDto.builder()
                 .description(habitTranslation.getDescription())
                 .habitItem(habitTranslation.getHabitItem())

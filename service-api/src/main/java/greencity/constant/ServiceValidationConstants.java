@@ -46,6 +46,7 @@ public final class ServiceValidationConstants {
     public static final String LNG_MAX_VALIDATION = "{greenCity.validation.max.lng}";
     public static final String RATE_MIN_VALUE = "{greenCity.validation.min.rate}";
     public static final String RATE_MAX_VALUE = "{greenCity.validation.max.rate}";
+    public static final String HABIT_COMPLEXITY = "{greenCity.validation.habit.complexity}";
 
     private ServiceValidationConstants() {
     }
