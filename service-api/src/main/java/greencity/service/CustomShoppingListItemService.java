@@ -72,4 +72,12 @@ public interface CustomShoppingListItemService {
      * @return list of {@link CustomShoppingListItemVO}
      */
     List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId);
+
+    /**
+     * Method for finding list of custom shopping list items from one user.
+     *
+     * @param userId user id.
+     * @return {@link CustomShoppingListItemResponseDto}
+     */
+    List<CustomShoppingListItemResponseDto> findAllByUserId(Long userId);
 }

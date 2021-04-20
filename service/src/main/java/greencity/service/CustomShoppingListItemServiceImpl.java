@@ -118,6 +118,20 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     /**
      * {@inheritDoc}
      *
+     * @author Volodymyr Lesko.
+     */
+    @Transactional
+    @Override
+    public List<CustomShoppingListItemResponseDto> findAllByUserId(Long userId) {
+        return customShoppingListItemRepo.findByUserId(userId).stream()
+            .map(customcustomShoppingListItem -> modelMapper.map(customcustomShoppingListItem,
+                CustomShoppingListItemResponseDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Bogdan Kuzenko.
      */
     @Transactional

@@ -35,7 +35,7 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
      */
     @Query("SELECT cg FROM CustomShoppingListItem cg WHERE"
         + " cg.user.id=:userId")
-    CustomShoppingListItem findByUserId(@Param("userId") Long userId);
+    List<CustomShoppingListItem> findByUserId(@Param("userId") Long userId);
 
     /**
      * Method find all custom shopping list items by user.

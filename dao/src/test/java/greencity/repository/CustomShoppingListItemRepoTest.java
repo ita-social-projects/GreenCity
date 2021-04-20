@@ -34,8 +34,8 @@ class CustomShoppingListItemRepoTest {
 
     @Test
     void findByUserIdTest() {
-        CustomShoppingListItem customShoppingListItem = customShoppingListItemRepo.findByUserId(2L);
-        assertEquals(6L, customShoppingListItem.getId());
+        List<CustomShoppingListItem> customShoppingListItem = customShoppingListItemRepo.findByUserId(2L);
+        assertEquals(6L, customShoppingListItem.get(0).getId());
     }
 
     @Test

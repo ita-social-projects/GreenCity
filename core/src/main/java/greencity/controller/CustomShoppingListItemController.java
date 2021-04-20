@@ -58,11 +58,11 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/{userId}/{habitId}/custom-shopping-list-items")
+    @GetMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> findAllByUser(
-        @PathVariable @CurrentUserId Long userId, @PathVariable Long habitId) {
+        @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.findAllByUserAndHabit(userId, habitId));
+            .body(customShoppingListItemService.findAllByUserId(userId));
     }
 
     /**

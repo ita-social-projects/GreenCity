@@ -75,12 +75,12 @@ class CustomShoppingListItemControllerTest {
     @Test
     void findAllByUserTest() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + id + "/" + "custom-shopping-list-items")
+        this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items")
             .principal(principal)).andExpect(status().isOk());
-        when(customShoppingListItemService.findAllByUserAndHabit(id, id))
+        when(customShoppingListItemService.findAllByUserId(id))
             .thenReturn(Collections.singletonList(dto));
-        verify(customShoppingListItemService).findAllByUserAndHabit(id, id);
-        assertEquals(dto, customController.findAllByUser(id, id).getBody().get(0));
+        verify(customShoppingListItemService).findAllByUserId(id);
+        assertEquals(dto, customController.findAllByUser(id).getBody().get(0));
     }
 
     @Test
