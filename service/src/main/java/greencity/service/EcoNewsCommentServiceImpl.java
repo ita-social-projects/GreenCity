@@ -224,6 +224,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public void countLikes(AmountCommentLikesDto amountCommentLikesDto) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        boolean isLiked = comment.getUsersLiked().stream().map(u -> u.getId())
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+
+        amountCommentLikesDto.setLiked(isLiked);
         int size = comment.getUsersLiked().size();
         amountCommentLikesDto.setAmountLikes(size);
         messagingTemplate
