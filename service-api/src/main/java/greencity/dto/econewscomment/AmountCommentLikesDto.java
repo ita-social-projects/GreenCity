@@ -14,4 +14,8 @@ public class AmountCommentLikesDto {
     private Long id;
 
     private Integer amountLikes;
+
+    private Long userId;
+
+    private boolean isLiked;
 }
