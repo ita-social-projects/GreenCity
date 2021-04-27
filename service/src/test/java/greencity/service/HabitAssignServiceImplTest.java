@@ -12,12 +12,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -25,13 +20,12 @@ import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,6 +49,10 @@ class HabitAssignServiceImplTest {
     HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
+    @Mock
+    ShoppingListItemRepo shoppingListItemRepo;
+    @Mock
+    UserShoppingListItemRepo userShoppingListItemRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
@@ -119,6 +117,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId())).thenReturn(new ArrayList<>());
+        when(userShoppingListItemRepo.saveAll(new ArrayList<>())).thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);

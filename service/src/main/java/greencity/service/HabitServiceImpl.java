@@ -6,8 +6,11 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -30,6 +33,7 @@ public class HabitServiceImpl implements HabitService {
 
     /**
      * {@inheritDoc}
+     * tune this
      */
     @Override
     public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
@@ -37,7 +41,13 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + id));
         HabitTranslation habitTranslation = habitTranslationRepo.findByHabitAndLanguageCode(habit, languageCode)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_TRANSLATION_NOT_FOUND + id));
-        return modelMapper.map(habitTranslation, HabitDto.class);
+        HabitDto habitDto = modelMapper.map(habitTranslation, HabitDto.class);
+        List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
+        shoppingListItemTranslationRepo
+            .findShoppingListByHabitIdAndByLanguageCode(languageCode, id)
+            .forEach(x -> shoppingListItems.add(modelMapper.map(x,ShoppingListItemDto.class)));
+        habitDto.setShoppingListItems(shoppingListItems);
+        return habitDto;
     }
 
     /**

@@ -2,6 +2,7 @@ package greencity.mapping;
 
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.ShoppingListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,6 @@ public class ShoppingListItemDtoMapper extends AbstractConverter<ShoppingListIte
     @Override
     protected ShoppingListItemDto convert(ShoppingListItemTranslation shoppingListItemTranslation) {
         return new ShoppingListItemDto(shoppingListItemTranslation.getShoppingListItem().getId(),
-            shoppingListItemTranslation.getContent());
+            shoppingListItemTranslation.getContent(), ShoppingListItemStatus.ACTIVE.toString());
     }
 }

@@ -2,6 +2,7 @@ package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.Max;
@@ -24,4 +25,6 @@ public class HabitDto implements Serializable {
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private List<String> tags;
+    //Add habit list
+    List<ShoppingListItemDto> shoppingListItems;
 }
