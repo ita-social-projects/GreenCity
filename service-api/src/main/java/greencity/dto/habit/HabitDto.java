@@ -7,15 +7,14 @@ import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
+@Getter
+@Setter
 public class HabitDto implements Serializable {
     private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
