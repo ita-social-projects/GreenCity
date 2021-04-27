@@ -14,9 +14,11 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -27,10 +29,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.EcoNewsRepo;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -227,6 +226,23 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
 
         return modelMapper.map(ecoNews, EcoNewsDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Veremchuk Zakhar.
+     */
+    @Override
+    public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+
+        List<String> tags = ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+            .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
+            .map(TagTranslation::getName)
+            .collect(Collectors.toList());
+        return getEcoNewsDto(ecoNews, tags);
     }
 
     /**
@@ -493,5 +509,23 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
+    }
+
+    private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
+        User author = ecoNews.getAuthor();
+        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
+            author.getName());
+
+        return EcoNewsDto.builder()
+            .id(ecoNews.getId())
+            .imagePath(ecoNews.getImagePath())
+            .author(ecoNewsAuthorDto)
+            .source(ecoNews.getSource())
+            .likes(ecoNews.getUsersLikedNews().size())
+            .tags(list)
+            .text(ecoNews.getText())
+            .title(ecoNews.getTitle())
+            .creationDate(ecoNews.getCreationDate())
+            .build();
     }
 }

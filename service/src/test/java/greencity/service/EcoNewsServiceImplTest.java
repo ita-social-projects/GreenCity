@@ -24,7 +24,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.message.AddEcoNewsMessage;
 import greencity.repository.EcoNewsRepo;
 import java.io.IOException;
 import java.net.MalformedURLException;
