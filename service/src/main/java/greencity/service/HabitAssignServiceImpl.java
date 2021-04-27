@@ -94,7 +94,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         List<Long> shoppingList = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
         List<UserShoppingListItem> userShoppingList = new ArrayList<>();
-        for (Long shoppingItem: shoppingList) {
+        for (Long shoppingItem : shoppingList) {
             userShoppingList.add(UserShoppingListItem.builder()
                 .habitAssign(habitAssign)
                 .shoppingListItem(shoppingListItemRepo.getOne(shoppingItem))

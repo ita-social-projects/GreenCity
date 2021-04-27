@@ -32,8 +32,7 @@ public class HabitServiceImpl implements HabitService {
     private final ShoppingListItemRepo shoppingListItemRepo;
 
     /**
-     * {@inheritDoc}
-     * tune this
+     * {@inheritDoc} tune this
      */
     @Override
     public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
@@ -45,7 +44,7 @@ public class HabitServiceImpl implements HabitService {
         List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
         shoppingListItemTranslationRepo
             .findShoppingListByHabitIdAndByLanguageCode(languageCode, id)
-            .forEach(x -> shoppingListItems.add(modelMapper.map(x,ShoppingListItemDto.class)));
+            .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         habitDto.setShoppingListItems(shoppingListItems);
         return habitDto;
     }
