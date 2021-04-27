@@ -235,7 +235,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
-        EcoNews ecoNews = ecoNewsRepo.findById(id)
+        var ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
 
         List<String> tags = ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
@@ -513,7 +513,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsDto getEcoNewsDto(EcoNews ecoNews, List<String> list) {
         User author = ecoNews.getAuthor();
-        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
+        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
             author.getName());
 
         return EcoNewsDto.builder()
