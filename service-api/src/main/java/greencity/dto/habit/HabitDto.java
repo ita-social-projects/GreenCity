@@ -25,6 +25,5 @@ public class HabitDto implements Serializable {
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private List<String> tags;
-    // Add habit list
-    List<ShoppingListItemDto> shoppingListItems;
+    private List<ShoppingListItemDto> shoppingListItems;
 }

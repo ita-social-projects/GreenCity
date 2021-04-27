@@ -1,6 +1,5 @@
 package greencity.dto.shoppinglistitem;
 
-import greencity.enums.ShoppingListItemStatus;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
