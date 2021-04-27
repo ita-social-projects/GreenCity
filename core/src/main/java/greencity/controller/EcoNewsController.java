@@ -131,9 +131,12 @@ public class EcoNewsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ApiLocale
     @GetMapping("/{id}")
-    public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findDtoById(id));
+    public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()));
     }
 
     /**
