@@ -112,7 +112,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "/{id}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findDtoById(1L);
+        verify(ecoNewsService).findDtoByIdAndLanguage(1L, "en");
     }
 
     @Test

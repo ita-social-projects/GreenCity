@@ -70,6 +70,16 @@ public interface EcoNewsService {
     EcoNewsDto findDtoById(Long id);
 
     /**
+     * Method for getting the{@link EcoNewsDto} instance by its id and language of
+     * tags.
+     *
+     * @param id       {@link Long} econews id.
+     * @param language {@link String} language for searching tags.
+     * @return {@link EcoNewsDto} instance
+     */
+    EcoNewsDto findDtoByIdAndLanguage(Long id, String language);
+
+    /**
      * Method for deleting the {@link EcoNewsVO} instance by its id.
      *
      * @param id   - {@link EcoNewsVO} instance id which will be deleted.
