@@ -13,6 +13,7 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode
 public class HabitDto {
     private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
