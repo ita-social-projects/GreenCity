@@ -2,12 +2,15 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.*;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitTranslationRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +35,7 @@ public class HabitServiceImpl implements HabitService {
     /**
      * Method returns Habit by its id.
      *
-     * @param id - id of the {@link Long} habit
+     * @param id           - id of the {@link Long} habit
      * @param languageCode - language code {@link String}
      * @return {@link HabitDto}
      */
