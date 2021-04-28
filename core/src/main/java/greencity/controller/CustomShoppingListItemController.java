@@ -5,6 +5,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.BulkSaveUserShoppingListItemDto;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomShoppingListItemService;
@@ -58,11 +59,11 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/{userId}/{habitId}/custom-shopping-list-items")
-    public ResponseEntity<List<CustomShoppingListItemResponseDto>> findAllByUser(
-        @PathVariable @CurrentUserId Long userId, @PathVariable Long habitId) {
+    @GetMapping("/{userId}/custom-shopping-list-items")
+    public ResponseEntity<List<ShoppingListItemDto>> findAllByUser(
+        @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.findAllByUserAndHabit(userId, habitId));
+            .body(customShoppingListItemService.findByActiveByUserIdAndLanguageCode(userId, code));
     }
 
     /**

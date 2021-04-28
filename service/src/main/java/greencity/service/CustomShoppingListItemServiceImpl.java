@@ -3,9 +3,7 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import static greencity.constant.ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID;
-import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
+import greencity.dto.shoppinglistitem.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
@@ -201,6 +199,15 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
             customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId),
             new TypeToken<List<CustomShoppingListItemResponseDto>>() {
             }.getType());
+    }
+
+    @Override
+    public List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code) {
+        List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
+        customShoppingListItemRepo.findByActiveByUserIdAndLanguageCode(userId, code)
+            .forEach(x -> shoppingListItems.add(modelMapper.map(
+                x, ShoppingListItemDto.class)));
+        return shoppingListItems;
     }
 
     /**

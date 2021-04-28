@@ -30,7 +30,11 @@ public class HabitServiceImpl implements HabitService {
     private final ShoppingListItemRepo shoppingListItemRepo;
 
     /**
-     * {@inheritDoc} tune this
+     * Method returns Habit by its id.
+     *
+     * @param id - id of the {@link Long} habit
+     * @param languageCode - language code {@link String}
+     * @return {@link HabitDto}
      */
     @Override
     public HabitDto getByIdAndLanguageCode(Long id, String languageCode) {
