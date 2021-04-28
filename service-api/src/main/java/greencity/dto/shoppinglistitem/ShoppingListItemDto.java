@@ -18,4 +18,6 @@ public class ShoppingListItemDto {
 
     @NotEmpty
     private String text;
+
+    private String status;
 }

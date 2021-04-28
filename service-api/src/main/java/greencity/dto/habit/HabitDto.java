@@ -2,19 +2,19 @@ package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
+@Getter
+@Setter
 public class HabitDto implements Serializable {
     private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
@@ -24,4 +24,5 @@ public class HabitDto implements Serializable {
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     private Integer complexity;
     private List<String> tags;
+    private List<ShoppingListItemDto> shoppingListItems;
 }

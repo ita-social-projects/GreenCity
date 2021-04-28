@@ -14,15 +14,11 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Habit;
-import greencity.entity.HabitAssign;
-import greencity.entity.HabitStatusCalendar;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
@@ -31,7 +27,10 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -53,6 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitAssignRepo habitAssignRepo;
     private final HabitRepo habitRepo;
+    private final ShoppingListItemRepo shoppingListItemRepo;
+    private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
@@ -90,6 +91,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
+
+        List<Long> shoppingList = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+        List<UserShoppingListItem> userShoppingList = new ArrayList<>();
+        for (Long shoppingItem : shoppingList) {
+            userShoppingList.add(UserShoppingListItem.builder()
+                .habitAssign(habitAssign)
+                .shoppingListItem(shoppingListItemRepo.getOne(shoppingItem))
+                .dateCompleted(LocalDateTime.now())
+                .status(ShoppingListItemStatus.ACTIVE)
+                .build());
+        }
+        userShoppingListItemRepo.saveAll(userShoppingList);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
