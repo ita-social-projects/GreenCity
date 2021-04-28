@@ -20,7 +20,8 @@ class ShoppingListItemDtoMapperTest {
 
         ShoppingListItemDto expected = new ShoppingListItemDto(
             shoppingListItemTranslation.getShoppingListItem().getId(), shoppingListItemTranslation
-                .getContent());
+                .getContent(),
+            "ACTIVE");
 
         assertEquals(expected, shoppingListItemDtoMapper.convert(shoppingListItemTranslation));
     }

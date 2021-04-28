@@ -105,7 +105,7 @@ class HabitServiceImplTest {
         ShoppingListItemTranslation shoppingListItemTranslation = ModelUtils.getShoppingListItemTranslation();
         List<ShoppingListItemTranslation> shoppingListItemTranslations =
             Collections.singletonList(shoppingListItemTranslation);
-        ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto(1L, "test");
+        ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto(1L, "test", "ACTIVE");
         List<ShoppingListItemDto> shoppingListItemDtos = Collections.singletonList(shoppingListItemDto);
         when(modelMapper.map(shoppingListItemTranslation, ShoppingListItemDto.class)).thenReturn(shoppingListItemDto);
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1l))

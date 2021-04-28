@@ -168,7 +168,7 @@ class ShoppingListItemServiceImplTest {
         List<ShoppingListItemDto> shoppingListItemDto = shoppingListItemTranslations
             .stream()
             .map(translation -> new ShoppingListItemDto(translation.getShoppingListItem().getId(),
-                translation.getContent()))
+                translation.getContent(), ShoppingListItemStatus.ACTIVE.toString()))
             .collect(Collectors.toList());
 
         when(modelMapper.map(shoppingListItemTranslations.get(0), ShoppingListItemDto.class))
