@@ -2,8 +2,6 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.shoppinglistitem.BulkCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
@@ -18,8 +16,6 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
-
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.mockito.ArgumentMatchers;
 import static org.mockito.ArgumentMatchers.anyLong;
 
 import org.mockito.InjectMocks;
@@ -249,6 +244,13 @@ class CustomShoppingListItemServiceImplTest {
         when(modelMapper.map(customShoppingListItem1, CustomShoppingListItemResponseDto.class)).thenReturn(test1);
         assertEquals(test1, customShoppingListItemService.updateItemStatus(12L, 2L, "ACTIVE"));
 
+    }
+
+    @Test
+    void findByActiveByUserIdAndLanguageCodeTest() {
+        when(customShoppingListItemService.findByActiveByUserIdAndLanguageCode(1L, "ua"))
+            .thenReturn(new ArrayList<>());
+        assertEquals(0, customShoppingListItemService.findByActiveByUserIdAndLanguageCode(1L, "ua").size());
     }
 
     @Test
