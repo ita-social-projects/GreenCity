@@ -1,8 +1,6 @@
 package greencity.service;
 
-import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
+import greencity.dto.shoppinglistitem.*;
 import greencity.dto.user.UserVO;
 
 import java.util.List;
@@ -72,4 +70,13 @@ public interface CustomShoppingListItemService {
      * @return list of {@link CustomShoppingListItemVO}
      */
     List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId);
+
+    /**
+     * Method returns user's shopping list for active items and habits in progress.
+     *
+     * @param userId id of the {@link Long} current user
+     * @param code   language code {@link String}
+     * @return {@link ShoppingListItemDto}
+     */
+    List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code);
 }

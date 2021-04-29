@@ -3,7 +3,6 @@ package greencity.dto.habit;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
-import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -12,10 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 @Getter
 @Setter
-public class HabitDto implements Serializable {
+@EqualsAndHashCode
+public class HabitDto {
     private Integer defaultDuration;
     private HabitTranslationDto habitTranslation;
     private Long id;
