@@ -134,7 +134,7 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             ht -> enhanceTranslationWithDto(translationDtoMap.get(ht.getLanguage().getCode()), ht));
 
         uploadImageForHabit(habitManagementDto, image, habit);
-
+        habit.setComplexity(habitManagementDto.getComplexity());
         habitRepo.save(habit);
     }
 

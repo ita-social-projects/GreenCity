@@ -137,6 +137,6 @@ var links = el.getElementsByTagName("a")
 
 for (var l = 0; l < links.length; l++) {
     if (url.endsWith(links[l].getAttribute("href"))) {
-        links[l].classList.toggle("active");
+        links[l].classList.toggle("active_li");
     }
 }

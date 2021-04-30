@@ -6,7 +6,6 @@
     <title>User Habits</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
-    <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -24,326 +23,360 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
-    <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
+
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 
 </head>
 
 <body>
-<div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
-<div class="main-content">
-    <div class="container-xl">
-        <div class="table-responsive">
-            <div class="table-wrapper">
-                <div class="table-title">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <h2>[[#{greenCity.habit.page.h}]]</h2>
+<div id="page">
+    <div id="header" th:insert="core/header"></div>
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div class="main-content">
+        <div class="container-xl">
+            <div class="table-responsive">
+                <div class="table-wrapper">
+                    <div class="table-title">
+                        <div class="row manager-user">
+                            <h2 class="text-describe">[[#{greenCity.habit.page.h}]]</h2>
+                            <div class="buttons">
+                                <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
+                                   data-toggle="modal">
+                                    <div>[[#{greenCity.user.page.deactivated}]]</div>
+                                </a>
+                                <a href="#addHabitModal" id="addHabitModalBtn" class="btn btn-secondary"
+                                   data-toggle="modal">
+                                    <div>[[#{greenCity.habit.page.add.habit}]]</div>
+                                </a>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                                <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/habits"
-                                          method="get">
-                                        <!--<i class="material-icons"></i>-->
-                                        <img alt="search" id="btnSearchImage"
-                                             src="/img/search.png">
-                                        <input type="text" name="query" id="inputSearch" class="form-control"
-                                               placeholder="Search…">
-                                    </form>
-                                </span>
-                            <a href="#addHabitModal" id="addHabitModalBtn" class="btn btn-secondary"
-                               data-toggle="modal">
-                                <!--<i class="material-icons">&#xE147;</i>-->
-                                <div>[[#{greenCity.habit.page.add.habit}]]</div></a>
-                            <a href="#deleteAllSelectedModal" class="btn btn-remove disabled" id="btnDelete" data-toggle="modal">
-                                <!--<i class="material-icons">&#xE15C;</i>-->
-                                <div>[[#{greenCity.pages.delete}]]</div></a>
+                        <div class="row-box-and-sort">
+                            <div class="main-search">
+                                <form class="form-inline searching" action="#" method="get">
+                                    <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
+                                </form>
+                                <button class="filter-button">
+                                    <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+                                </button>
+                            </div>
+                            <div class="filter-list-grid">
+                                <div class="dropdown size">
+                                    <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                    <input id="habits_page_size" class="dropbtn size" type=button
+                                    />
+
+                                    <div class="dropdown-content size">
+                                        <a href="/management/habits?size=20">20</a>
+                                        <a href="/management/habits?size=40">40</a>
+                                        <a href="/management/habits?size=100">100</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                    <tr class="table-primary">
-                        <th>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr class="table-primary">
+                                <th>
                                 <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll">
                                     <label for="selectAll"></label>
                                 </span>
-                        </th>
-                        <th>[[#{greenCity.pages.table.habit.id}]]</th>
-                        <th>[[#{greenCity.pages.table.name}]]</th>
-                        <th>[[#{greenCity.pages.table.translations}]]</th>
-                        <th>[[#{greenCity.pages.table.actions}]]</th>
-                    </tr>
-                    </thead>
-                    <th:block th:each="habit, iterStatus :${pageable.getPage()}">
-                        <tbody>
-                        <tr>
-                            <td>
+                                </th>
+                                <th>
+                                    [[#{greenCity.pages.table.id}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+                                <th>
+                                    [[#{greenCity.pages.table.icon}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+                                <th>[[#{greenCity.pages.table.category}]]
+                                    <span class="table-filter-icon filter"></span></th>
+                                <th>[[#{greenCity.pages.table.complexity}]]
+                                    <span class="table-filter-icon filter"></span></th>
+                                <th>[[#{greenCity.pages.table.duration}]]
+                                    <span class="table-filter-icon filter"></span></th>
+                                <th>[[#{greenCity.pages.table.description}]]
+                                    <span class="table-filter-icon filter"></span></th>
+                                <th></th>
+                                <th>
+                                    [[#{greenCity.pages.table.connection}]]
+                                </th>
+                            </tr>
+                            </thead>
+                            <th:block th:each="habit, iterStatus :${pageable.getPage()}">
+                                <tr
+                                        th:each="translation: ${habit.habitTranslations.?[languageCode == ('uk'==#locale.getLanguage() ? 'ua' : #locale.getLanguage())]}">
+                                    <td>
                                 <span class="custom-checkbox">
                                     <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                            name="options[]" th:value="${habit.id}"
                                            th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                 </span>
-                            </td>
-                            <td th:text="${habit.id}"></td>
-                            <td>
-                                <img th:src="${habit.image}" th:width="47" th:height="34">
-                            </td>
-                            <td>
-                                <table class="table table-borderless m-0">
-                                    <thead>
-                                    <tr class="table-secondary">
-                                        <th class="py-1">[[#{greenCity.pages.table.habit.id}]]</th>
-                                        <th class="py-1" style="width:50%">[[#{greenCity.pages.table.name}]]</th>
-                                        <th class="py-1">[[#{greenCity.pages.table.habit.item}]]</th>
-                                        <th class="py-1">[[#{greenCity.pages.table.description}]]</th>
-                                        <th class="py-1">[[#{greenCity.pages.table.language.code}]]</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <th:block
-                                            th:each="translation : ${pageable.getPage().get(iterStatus.index).habitTranslations}">
-                                        <tr>
-                                            <td class="py-1 text-right" th:text="${translation.id}">1</td>
-                                            <td class="py-1" th:text="${translation.name}"></td>
-                                            <td class="py-1" th:text="${translation.habitItem}"></td>
-                                            <td class="py-1" th:text="${translation.description}"></td>
-                                            <td class="py-1" th:text="${translation.languageCode}"></td>
-                                        </tr>
-                                    </th:block>
-                                    </tbody>
-                                </table>
-                            </td>
-                            <td>
-                                <a th:href="@{/management/habits/find/(id=${habit.id})}" class="edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
-                                <a th:href="@{/management/habits/delete/(id=${habit.id})}"
-                                   class="delete eDelBtn" data-toggle="modal"><i class="material-icons"
-                                                                   
-                                                                                 data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
-                                <a th:href="@{/management/habit-shopping-list/?habitId={id}(id=${habit.id})}" > Goals </a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </th:block>
-                </table>
-                <div class="clearfix">
-                    <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
-                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
+                                    </td>
+                                    <td th:text="${habit.id}"></td>
+
+                                    <td style="min-width: 98px">
+                                        <div class="habit_img">
+                                            <img th:src="${habit.image}" style="height:inherit; max-width: 51px">
+                                            <i id = "change_img" class="table-download-icon"
+                                            th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        [[${translation.habitItem}]]
+                                        <i class="table-edit-icon"></i>
+
+
+                                    </td>
+                                    <td class="habit_complexity" th:data-complexity="${habit.complexity}">
+                                        <i class="table-edit-icon"
+                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
+                                    </td>
+                                    <td>
+
+                                        [[${habit.defaultDuration}]]
+                                        <i class="table-edit-icon"></i>
+                                    </td>
+                                    <td>
+                                        [[${translation.name}]]
+                                        <i id="habit_translation" class="table-edit-translation-icon"
+                                           th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
+
+                                    </td>
+                                    <td style="white-space: nowrap">
+                                        <a href="#"> <img th:src="@{/img/lock.png}"></a>
+                                    </td>
+                                    <td style="white-space: nowrap">
+                                        <a href="#">
+                                            <img th:src="@{/img/habit_fact_dark.png}">
+                                        </a>
+                                        <a href="#">
+                                            <img th:src="@{/img/habit_advices_dark.png}">
+                                        </a>
+                                        <a href="#">
+                                            <img th:src="@{/img/shopping_list_dark.png}">
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </th:block>
+                        </table>
+                        <div class="clearfix">
+                            <ul class="pagination">
+                                <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
+                                        th:href="@{habits(page=${pageable.getCurrentPage()-1})}" class="page-link">
+                                    <i class="arrow fas fa-chevron-left"></i>
+                                </a>
+                                </li>
+                                <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
+                                    th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
+                                        th:href="@{habits(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                                <li class="page-item"
+                                    th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}">
+                                    <a
+                                            th:href="@{habits(page=${pageable.getCurrentPage()+1})}"
+                                            class="page-link">
+                                        <i class="arrow fas fa-chevron-right"></i>
+                                    </a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <ul class="pagination">
-                        <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{habit(page=${pageable.getCurrentPage()-1})}" class="page-link">[[#{greenCity.page.paging.previous}]]</a>
-                        </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
-                            th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{habit(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
-                        <li class="page-item"
-                            th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
-                                th:href="@{habit(page=${pageable.getCurrentPage()+1})}"
-                                class="page-link">[[#{greenCity.page.paging.next}]]</a></li>
-                    </ul>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Add Modal HTML -->
-    <div id="addHabitModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{management/habits/save}" method="post" id="addHabitForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.habit.page.add.habit}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="0" readonly required>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.image.path}]]</label>
-                            <input type="text" class="form-control" name="image" required>
-                            <span th:id="errorModalAddHabitImage" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="file">[[#{greenCity.pages.table.image.upload}]]</label>
-                            <input type="file" class="form-control" id="fileCreate" name="file">
-                            <span th:id="errorModalAddfile" class="errorSpan"></span>
-                        </div>
-                        <th:block th:each="language, iterInfo : ${languages}">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.lang}]]</label>
-                                        <input type="text" class="form-control" th:name="${language.getCode()}"
-                                               th:value="${language.getCode()}" readonly required>
-                                    </div>
-                                </div>
-                                <div class="col-9">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.name}]]</label>
-                                        <input type="text" class="form-control eEdit"
-                                               th:name="contentName+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'"
-                                              class="errorSpan"></span>
-                                    </div>
-                                </div>
+            <!-- Add Modal HTML -->
+            <div id="addHabitModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{management/habits/save}" method="post" id="addHabitForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.habit.page.add.habit}]]</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
+                                </button>
                             </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.habit.item}]]</label>
-                                        <input type="text" class="form-control eEdit"
-                                               th:name="contentHabItem+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'"
-                                              class="errorSpan"></span>
-                                    </div>
+                            <div class="modal-body">
+                                <input type="hidden" class="form-control" name="id" value="0" readonly required>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.image.path}]]</label>
+                                    <input type="text" class="form-control" name="image" required>
+                                    <span th:id="errorModalAddHabitImage" class="errorSpan"></span>
                                 </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.description}]]</label>
-                                        <input type="text" class="form-control eEdit"
-                                               th:name="contentDescr+${language.getCode()}">
-                                        <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'"
-                                              class="errorSpan"></span>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="fileCreate">[[#{greenCity.pages.table.image.upload}]]</label>
+                                    <input type="file" class="form-control" id="fileCreate" name="file">
+                                    <span th:id="errorModalAddfile" class="errorSpan"></span>
                                 </div>
+                                <th:block th:each="language, iterInfo : ${languages}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>[[#{greenCity.pages.table.lang}]]</label>
+                                                <input type="text" class="form-control" th:name="${language.getCode()}"
+                                                       th:value="${language.getCode()}" readonly required>
+                                            </div>
+                                        </div>
+                                        <div class="col-9">
+                                            <div class="form-group">
+                                                <label>[[#{greenCity.pages.table.name}]]</label>
+                                                <input type="text" class="form-control eEdit"
+                                                       th:name="contentName+${language.getCode()}">
+                                                <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].name'"
+                                                      class="errorSpan"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label>[[#{greenCity.pages.table.habit.item}]]</label>
+                                                <input type="text" class="form-control eEdit"
+                                                       th:name="contentHabItem+${language.getCode()}">
+                                                <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].habitItem'"
+                                                      class="errorSpan"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label>[[#{greenCity.pages.table.description}]]</label>
+                                                <input type="text" class="form-control eEdit"
+                                                       th:name="contentDescr+${language.getCode()}">
+                                                <span th:id="'errorModalSavehabitTranslations['+${iterInfo.index}+'].description'"
+                                                      class="errorSpan"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </th:block>
                             </div>
-                        </th:block>
+                            <div class="modal-footer">
+                                <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <input type="submit" class="btn btn-success btn-primary"
+                                       th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Edit Modal HTML -->
-    <div id="editHabitModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editHabitForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.habit.page.edit.habit}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.id}]]</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.image.path}]]</label>
-                            <input type="text" class="form-control" id="image" name="image" required>
-                            <span th:id="errorModalUpdateHabitImage" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="file">[[#{greenCity.pages.table.image.upload}]]</label>
-                            <input type="file" class="form-control" id="file" name="file">
-                            <span th:id="errorModalUpdatefile" class="errorSpan"></span>
-                        </div>
-                        <th:block th:each="language, iterInfo : ${languages}">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.lang}]]</label>
-                                        <input type="text" class="form-control" th:id="${language.getCode()}"
-                                               th:name="${language.getCode()}" th:value="${language.getCode()}" readonly
-                                               required>
-                                    </div>
-                                </div>
-                                <div class="col-9">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.name}]]</label>
-                                        <input type="text" class="form-control eEdit"
+            <!-- Edit Modal HTML -->
+            <div id="editHabitModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="editHabitForm">
+                            <div class="modal-header" style="height: 50px">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <th:block th:each="language, iterInfo : ${languages}">
+
+                                    <div>
+                                        <label>[[#{greenCity.pages.table.users.language}]]
+                                            [[${language.getCode()}]]</label>
+                                        <input type="text" class="input_translation"
                                                th:id="contentName+${language.getCode()}"
                                                th:name="contentName+${language.getCode()}">
                                         <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].name'"
                                               class="errorSpan"></span>
                                     </div>
-                                </div>
+                                </th:block>
                             </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.habit.item}]]</label>
-                                        <input type="text" class="form-control eEdit"
-                                               th:id="contentHabItem+${language.getCode()}"
-                                               th:name="contentHabItem+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].habitItem'"
-                                              class="errorSpan"></span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>[[#{greenCity.pages.table.description}]]</label>
-                                        <input type="text" class="form-control eEdit"
-                                               th:id="contentDescr+${language.getCode()}"
-                                               th:name="contentDescr+${language.getCode()}">
-                                        <span th:id="'errorModalUpdatehabitTranslations['+${iterInfo.index}+'].description'"
-                                              class="errorSpan"></span>
-                                    </div>
-                                </div>
+                            <div class="modal-footer">
+                                <input type="button" class="btn_modal cancel_btn" data-dismiss="modal"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <input type="submit" class="btn_modal save_changes_btn"
+                                       th:value="#{greenCity.pages.popup.save.changes}" id="submitEditBtn">
                             </div>
-                        </th:block>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Delete Modal HTML -->
-    <div id="deleteHabitModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="deleteHabitForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.habit.page.delete.habit}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <!--Edit Image Modal-->
+            <div id="editHabitImgModal" class="modal fade" type="modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="editHabitImgForm">
+                            <div class="modal-header" style="height: 50px">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+
+                                <div class="form-group" style="justify-content: center">
+                                    <img id = "upload_image">
+                                    <label for="fileUpdate">[[#{greenCity.pages.table.image.upload}]]</label>
+                                    <input type="file" class="form-control" id="fileUpdate" name="file"
+                                           enctype="multipart/form-data" accept="image/png, image/jpg, image/jpeg, .png, .jpg, .jpeg"
+                                          onchange="loadFile()" hidden>
+                                    <span th:id="errorModalAddfile" class="errorSpan"></span>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <input type="button" class="btn_modal cancel_btn" data-dismiss="modal"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <input type="submit" class="btn_modal save_changes_btn"
+                                       th:value="#{greenCity.pages.popup.save.changes}" id="submitEditImgBtn">
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}">
-                        <a class="btn btn-remove" href="" id="deleteOneSubmit">
-                            <div>[[#{greenCity.pages.delete}]]</div></a>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Delete all selected Modal HTML -->
-    <div id="deleteAllSelectedModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+            <!-- Delete Modal HTML -->
+            <div id="deleteHabitModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="deleteHabitForm">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.habit.page.delete.habit}]]</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                                <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-remove" href="" id="deleteOneSubmit">
+                                    <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                </div>
+            </div>
+            <!-- Delete all selected Modal HTML -->
+            <div id="deleteAllSelectedModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                                <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a class="btn btn-danger" href="" id="deleteAllSubmit">
+                                    <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <input class="btn btn-default btn-tertiary" data-dismiss="modal" type="button" th:value="#{greenCity.pages.popup.cancel.}">
-                        <a class="btn btn-danger" href="" id="deleteAllSubmit">
-                            <div>[[#{greenCity.pages.delete}]]</div></a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<div id="footer" th:insert="core/footer"></div>
+<script th:src="@{/management/habits/buttonsAJAX.js}"></script>
 </body>
+
 </html>
