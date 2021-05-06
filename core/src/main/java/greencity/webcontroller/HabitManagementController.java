@@ -83,7 +83,7 @@ public class HabitManagementController {
      * @param bindingResult      {@link BindingResult}.
      * @param file               of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with result of operation and errors
-     * fields.
+     *         fields.
      */
     @ApiOperation(value = "Save habit with translations.")
     @ApiResponses(value = {
@@ -94,8 +94,8 @@ public class HabitManagementController {
     @ResponseBody
     @PostMapping("/save")
     public GenericResponseDto save(@Valid @RequestPart HabitManagementDto habitManagementDto,
-                                   BindingResult bindingResult,
-                                   @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             managementHabitService.saveHabitAndTranslations(habitManagementDto, file);
         }
@@ -109,7 +109,7 @@ public class HabitManagementController {
      * @param bindingResult      {@link BindingResult}.
      * @param file               of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with result of operation and errors
-     * fields.
+     *         fields.
      */
     @ApiOperation(value = "Update habit with translations.")
     @ApiResponses(value = {
@@ -120,9 +120,8 @@ public class HabitManagementController {
     @ResponseBody
     @PutMapping("/update")
     public GenericResponseDto update(@Valid @RequestPart HabitManagementDto habitManagementDto,
-                                     BindingResult bindingResult,
-                                     @ImageValidation @RequestParam(required = false, name = "file")
-                                         MultipartFile file) {
+        BindingResult bindingResult,
+        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file) {
         if (!bindingResult.hasErrors()) {
             managementHabitService.update(habitManagementDto, file);
         }
