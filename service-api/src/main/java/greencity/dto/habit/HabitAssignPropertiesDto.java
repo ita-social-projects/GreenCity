@@ -1,7 +1,6 @@
 package greencity.dto.habit;
 
 import greencity.constant.AppConstant;
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
