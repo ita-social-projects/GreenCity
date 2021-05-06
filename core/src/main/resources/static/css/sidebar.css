@@ -65,7 +65,7 @@
     color: #F7F9FA;
 }
 
-.menuVertical ul li:active a, .active{
+.menuVertical ul li:active a, .active_li{
     background: #64727D;
     color: #F7F9FA;
 }
@@ -127,7 +127,7 @@
 
 /* Style the accordion panel. Note: hidden by default */
 
-span {
+.menuVertical span {
     padding-left: 8px;
 }
 

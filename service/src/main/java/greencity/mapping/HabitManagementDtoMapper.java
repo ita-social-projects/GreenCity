@@ -25,6 +25,7 @@ public class HabitManagementDtoMapper extends AbstractConverter<Habit, HabitMana
             .id(habit.getId())
             .image(habit.getImage())
             .complexity(habit.getComplexity())
+            .defaultDuration(habit.getDefaultDuration())
             .habitTranslations(habit.getHabitTranslations()
                 .stream().map(habitTranslation -> HabitTranslationManagementDto.builder()
                     .id(habitTranslation.getId())
