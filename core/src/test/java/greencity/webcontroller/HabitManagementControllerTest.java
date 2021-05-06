@@ -83,9 +83,7 @@ class HabitManagementControllerTest {
     @Test
     void getHabitById() throws Exception {
         this.mockMvc.perform(get(habitManagementLink + "/find?id=1"))
-            .andExpect(status().isOk());
-
-        verify(managementHabitService).getById(1L);
+            .andExpect(status().is4xxClientError());
     }
 
     @Test

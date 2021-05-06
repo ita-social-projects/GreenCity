@@ -24,4 +24,5 @@ public class HabitManagementDto implements Serializable {
     private Integer complexity;
     @Valid
     private List<HabitTranslationManagementDto> habitTranslations;
+    private Integer defaultDuration;
 }

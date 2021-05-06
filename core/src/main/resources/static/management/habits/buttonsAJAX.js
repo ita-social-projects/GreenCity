@@ -3,12 +3,13 @@ function clearAllErrorsSpan() {
 }
 
 let checkedCh = 0;
-function updateCheckBoxCount(chInt){
+
+function updateCheckBoxCount(chInt) {
     let chBox = $('#checkbox' + chInt);
     let deleteBtn = $("#btnDelete");
     chBox.is(":checked") ? checkedCh++ : checkedCh--;
     console.log(checkedCh)
-    if(checkedCh === 0) {
+    if (checkedCh === 0) {
         deleteBtn.addClass("disabled");
     } else deleteBtn.removeClass("disabled");
 }
@@ -21,36 +22,36 @@ $(document).ready(function () {
 
     // Select/Deselect checkboxes
     var checkbox = $('table tbody input[type="checkbox"]');
-    $("#selectAll").click(function(){
-        if(this.checked){
+    $("#selectAll").click(function () {
+        if (this.checked) {
             checkedCh = 0;
-            checkbox.each(function(){
+            checkbox.each(function () {
                 this.checked = true;
                 checkedCh++;
             });
             deleteBtn.removeClass("disabled");
-        } else{
-            checkbox.each(function(){
+        } else {
+            checkbox.each(function () {
                 checkedCh--;
                 this.checked = false;
             });
             deleteBtn.addClass("disabled");
         }
     });
-    checkbox.click(function(){
-        if(!this.checked){
+    checkbox.click(function () {
+        if (!this.checked) {
             $("#selectAll").prop("checked", false);
         }
     });
 
-    $('#btnSearchImage').click(function (){
+    $('#btnSearchImage').click(function () {
         let url = "/management/habits?query=";
         let query = $('#inputSearch').val();
         $.ajax({
             url: url + query,
             type: 'GET',
-            success: function(res) {
-                window.location.href= url + query;
+            success: function (res) {
+                window.location.href = url + query;
             }
         });
     });
@@ -97,7 +98,7 @@ $(document).ready(function () {
         });
     });
     //add habit button at the top
-    $('#addHabitModal').on('click', function (event) {
+    $('#addHabitModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
     });
     //submit button in modal add
@@ -169,93 +170,232 @@ $(document).ready(function () {
         });
     });
     //edit button
-    $('td .edit.eBtn').on('click', function (event) {
+
+    $('.table-edit-translation-icon').on('click', function (event) {
         event.preventDefault();
-        $("#editHabitModal").each(function () {
-            $(this).find('input.eEdit').val("");
-        });
+
         clearAllErrorsSpan();
         $('#editHabitModal').modal();
-        var href = $(this).attr('href');
-        $.get(href, function (habit) {
-            $('#id').val(habit.id);
-            $('#image').val(habit.image);
-            $('#file').val(habit.file);
-            habit.habitTranslations.forEach(function (translation, index) {
-                $('#contentName' + translation.languageCode).val(translation.name);
-                $('#contentHabItem' + translation.languageCode).val(translation.habitItem);
-                $('#contentDescr' + translation.languageCode).val(translation.description);
+        fetch(this.getAttribute(
+            'href'
+        ))
+            .then(response => {
+
+                let json = response.json();
+                json.then((habit) => {
+
+                    habit.habitTranslations.forEach(tr => {
+                        const form = document.querySelector("#editHabitModal");
+
+                        const input = form.querySelectorAll('.input_translation');
+                        input.forEach(inp => {
+                            if (inp.getAttribute('name').endsWith(tr.languageCode))
+                                inp.setAttribute('value', tr.name);
+                        })
+                    })
+
+                    $('#submitEditBtn').on('click', function (event) {
+                        event.preventDefault();
+                        clearAllErrorsSpan();
+                        const formData = $('#editHabitForm').serializeArray().reduce(function (obj, item) {
+                            obj[item.name] = item.value;
+                            return obj;
+                        }, {});
+                        habit.habitTranslations.forEach(tr => {
+                            for (const key in formData) {
+                                const lang = key.slice(key.length - 2);
+                                if (key.endsWith(tr.languageCode)) {
+                                    tr.name = formData["contentName" + lang]
+                                }
+                            }
+                        })
+                        const hasErrors = data => {
+                            data.errors.forEach(el =>
+                                $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError));
+                        }
+
+                        const success = () => location.reload()
+
+                        updateHabit(habit, null, success, hasErrors)
+                    })
+                })
             })
-        });
-    });
-    //submit button in modal edit
-    $('#submitEditBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#editHabitForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var returnData = {
-            "id": formData.id,
-            "image": formData.image,
-            "habitTranslations": []
+    })
+
+    /**
+     * Display habit complexity.
+     //  */
+    const habitsCompl = document.getElementsByClassName("habit_complexity");
+    for (let i = 0; i < habitsCompl.length; i++) {
+        const complexity = habitsCompl[i].getAttribute("data-complexity");
+        for (let j = 0; j < complexity; j++) {
+            const imgFill = document.createElement("img");
+            imgFill.setAttribute("src", "/img/star-filled.png")
+            habitsCompl[i].appendChild(imgFill);
 
         }
-        for (var key in formData) {
-            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
-                var lang, name, description, habitItem;
+        for (let j = complexity; j < 3; j++) {
+            const imgEmpty = document.createElement("img");
+            imgEmpty.setAttribute("src", "/img/star-empty.png");
+            habitsCompl[i].appendChild(imgEmpty)
+        }
+    }
 
-                lang = key.slice(key.length - 2);
 
-                if (key.startsWith("contentName")) {
-                    name = formData["contentName" + lang]
+// Change size of page
+    if (!localStorage.getItem('habitsSize')) {
+        localStorage.setItem('habitsSize', '20')
+    }
+
+    const sizeBtn = document.querySelector('#habits_page_size')
+    sizeBtn.setAttribute('value', localStorage.getItem('habitsSize'))
+    const sizeOptions = sizeBtn.nextElementSibling.children;
+    for (let i = 0; i < sizeOptions.length; i++) {
+        sizeOptions[i].addEventListener('click', (event) => {
+            console.log(event.target.innerText)
+            localStorage.setItem('habitsSize', event.target.innerText)
+        })
+    }
+
+//edit habit's complexity
+
+    const habitComplexity = document.querySelectorAll('.habit_complexity')
+    habitComplexity.forEach(x => x.querySelector('.table-edit-icon').addEventListener('click', (event) => {
+        event.preventDefault()
+            let stars = x.querySelectorAll('img')
+        function changeStar(star){
+            return function () {
+                let k = 0;
+                for (let i = 0; i < stars.length; i++) {
+                    if (star === stars[i]) {
+                        k = i;
+                        break;
+                    }
                 }
-                if (key.startsWith("contentDescr")) {
-                    description = formData["contentDescr" + lang]
+                for (let i = 0; i <= k; i++) {
+                    stars[i].setAttribute('src', '/img/star-filled.png')
                 }
-                if (key.startsWith("contentHabItem")) {
-                    habitItem = formData["contentHabItem" + lang]
-                }
-                if (name != null && description != null && habitItem != null) {
-                    returnData.habitTranslations.push(
-                        {
-                            "name": name,
-                            "description": description,
-                            "habitItem": habitItem,
-                            "languageCode": lang
-                        }
-                    );
-                    name = null;
-                    description = null;
-                    habitItem = null;
+                for (let i = k + 1; i < stars.length; i++) {
+                    stars[i].setAttribute('src', '/img/star-empty.png')
                 }
             }
         }
-        var result = new FormData();
-        result.append("habitManagementDto", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
-        var file = document.getElementById("file").files[0];
-        result.append("file", file);
+            stars.forEach(star => {
+                star.style.cursor = 'pointer'
+                star.addEventListener('mouseover', changeStar(star))
+                star.addEventListener('mouseout', () => {
+                    const complexity = x.getAttribute("data-complexity")
+                    for (let i = 0; i < complexity; i++) {
+                        stars[i].setAttribute('src', '/img/star-filled.png')
+                    }
+                    for (let i = complexity; i < stars.length; i++) {
+                        stars[i].setAttribute('src', '/img/star-empty.png')
+                    }
+                })
+                //send edit request to server
+                star.addEventListener('click', () => {
+                    const success = () => location.reload();
+                    const hasErrors = (data) => console.log(data)
+                    fetch(x.querySelector('.table-edit-icon').getAttribute('href'))
+                        .then(response => {
+                            let json = response.json();
+                            json.then((habit) => {
+                                for (let i = 0; i < stars.length; i++) {
+                                    if (star === stars[i]) {
+                                        habit.complexity = {complexity: i + 1};
+                                        break;
+                                    }
+                                }
+                                updateHabit(habit, null, success, hasErrors)
+                            })
+                        })
+                })
 
-        //save request in edit modal update
-        $.ajax({
-            url: '/management/habits/update',
-            type: 'put',
-            dataType: 'json',
-            contentType: false,
-            processData: false,
-            cache: false,
-            success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: result
-        });
-    })
+            })
+          x.addEventListener('mouseleave', () => {
+              stars.forEach(star => {
+                  star.style.cursor = 'default'
+                  const new_star = star.cloneNode(true)
+                  if(star.parentElement) {
+                      star.parentElement.replaceChild(new_star, star)
+                  }
+              })
+          }, {once: true})
+        })
+    )
+})
+// edit habit image
+document.querySelectorAll('.table-download-icon').forEach(e => e.addEventListener('click', event => {
+    console.log('was click')
+    event.preventDefault();
+    clearAllErrorsSpan();
+    $('#editHabitImgModal').modal();
+    fetch(event.target.getAttribute(
+        'href'
+    ))
+        .then(response => {
 
-});
+            let json = response.json();
+            json.then((habit) => {
+
+                const image = document.querySelector("#upload_image");
+                image.setAttribute('src', habit.image);
+                const input = document.querySelector("#fileUpdate")
+
+                $('#submitEditImgBtn').on('click', function (event) {
+                    event.preventDefault();
+                    clearAllErrorsSpan();
+
+                    const hasErrors = data => {
+                        data.errors.forEach(el =>
+                            $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError));
+                    }
+                    const file    = input.files[0];
+                    const success = () =>{} // location.reload()
+
+                    updateHabit(habit, file, success, hasErrors)
+                })
+            })
+        })
+}))
+//Get json from server and send back after updating object fields.
+//habit - object that is needed to be send to server
+//file in case upload image
+//success- function that need to be invoke after successful request
+//hasErrors - function that need to be invoke in case there are errors from server
+const updateHabit = (habit, file = null, success, hasErrors) => {
+    let result = new FormData();
+    result.append("habitManagementDto", new Blob([JSON.stringify(habit)], {type: "application/json"}));
+    if (file) {
+        result.append("file", file)
+    }
+    $.ajax({
+        url: '/management/habits/update',
+        type: 'put',
+        dataType: 'json',
+        contentType: false,
+        processData: false,
+        cache: false,
+        success: (data) => {
+            if (Array.isArray(data.errors) && data.errors.length) {
+                hasErrors(data)
+            } else {
+                success()
+            }
+        },
+        data: result
+    });
+}
+
+const loadFile = function (event) {
+    const image = document.querySelector("#upload_image");
+    const file    = document.querySelector('#fileUpdate').files[0];
+    let reader = new FileReader();
+    reader.onloadend = () => {
+        image.src = reader.result
+        console.log(image.src)
+    };
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+};
