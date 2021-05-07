@@ -302,7 +302,7 @@ $(document).ready(function () {
                             json.then((habit) => {
                                 for (let i = 0; i < stars.length; i++) {
                                     if (star === stars[i]) {
-                                        habit.complexity = {complexity: i + 1};
+                                        habit.complexity = i + 1;
                                         break;
                                     }
                                 }
