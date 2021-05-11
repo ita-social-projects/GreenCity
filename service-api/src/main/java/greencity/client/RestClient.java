@@ -262,7 +262,6 @@ public class RestClient {
     public void deactivateUser(Long userId, List<String> userReasons) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        System.out.println(userReasons);
         HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, headers);
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
