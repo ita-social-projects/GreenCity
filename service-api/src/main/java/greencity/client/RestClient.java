@@ -14,10 +14,7 @@ import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -263,7 +260,9 @@ public class RestClient {
      * @author Orest Mamchuk
      */
     public void deactivateUser(Long userId, List<String> userReasons) {
-        HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, setHeader());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<List<String>> entity = new HttpEntity<>(userReasons, headers);
         restTemplate.exchange(greenCityUserServerAddress + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + userId, HttpMethod.PUT, entity, Object.class);
     }
@@ -455,7 +454,9 @@ public class RestClient {
      * @return a dto of {@link PageableAdvancedDto}.
      */
     public PageableAdvancedDto<UserManagementVO> search(Pageable pageable, UserManagementViewDto userViewDto) {
-        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, setHeader());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
         return restTemplate.exchange(
             greenCityUserServerAddress + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE
                 + pageable.getPageNumber()
