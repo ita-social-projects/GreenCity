@@ -9,13 +9,12 @@
  */
  
 jQuery.fn.liTextLength = function(options){
-	// настройки по умолчанию
 	var o = jQuery.extend({
-		length: 150,									//Видимое кол-во символов
-		afterLength: '...',								//Текст после видимого содержания		
-		fullText:true,									//Добавить ссылку для отображения скрытого текста
-		moreText: '<br>полный&nbsp;текст',				//Текст ссылки до показа скрытого содержания
-		lessText: '<br>скрыть&nbsp;полный&nbsp;текст'	//Текст ссылки после показа скрытого содержания
+		length: 150,
+		afterLength: '...',
+		fullText:true,
+		// moreText: '<br>полный&nbsp;текст',
+		// lessText: '<br>скрыть&nbsp;полный&nbsp;текст'
 	},options);
 	return this.each(function(){
 		var 

@@ -66,9 +66,30 @@
                                 <form class="form-inline searching" action="#" method="get">
                                     <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
                                 </form>
-                                <button class="filter-button">
-                                    <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
-                                </button>
+                                <div>
+                                    <button id="habits-filter-button" class="filter-button" onclick="openForm()">
+                                        <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+
+                                    </button>
+                                    <div class="form-popup" id="filter">
+                                        <form action="/action_page.php" class="form-container" th:object="____________">
+                                            <span><input type="checkbox"><p>save filtering</p></span>
+                                            <span>
+                                                <button type="submit" class="filter-btn">Ascending</button>
+                                                <button type="submit" class="filter-btn">Descending</button>]
+                                            </span>
+                                            <input type="text" >
+                                            <input type="text" placeholder="Enter Email" name="email" required>
+
+                                            <input type="password" placeholder="Enter Password" name="psw" required>
+
+                                            <button type="submit" class="btn">Login</button>
+                                            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                                        </form>
+                                    </div>
+                                </div>
+
+
                             </div>
                             <div class="filter-list-grid">
                                 <div class="dropdown size">
@@ -388,6 +409,17 @@
     </div>
 </div>
 <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
+<script>
+    function openForm() {
+        if (document.getElementById("filter").style.display === "block") {
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("habits-filter-button").style.width="113px";
+        }else {
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("habits-filter-button").style.width="300px";
+        }
+    }
+</script>
 </body>
 
 </html>
