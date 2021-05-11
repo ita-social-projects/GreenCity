@@ -439,24 +439,26 @@ table.table .avatar {
 }
 
 .name-filter-form {
-    background-color: #444E55;
+    background-color: #FFFFFF;
     position: absolute;
-    width: 300px;
-    height: 232px;
+    width: 313px;
+    height: 260px;
     margin-top: 17px;
+    border-radius: 4px;
     display: none;
+    z-index: 1;
 }
 
 .filter-sorting-buttons {
     display: flex;
     justify-content: center;
-    margin-bottom: 7px;
-    margin-top: 18px;
+    margin-bottom: 10px;
+    margin-top: 25px;
 }
 
 .form-search.filter {
     width: 264px;
-    margin-left: 18px;
+    margin-left: 24px;
 }
 
 .filter-buttons {
@@ -464,12 +466,17 @@ table.table .avatar {
     justify-content: flex-end;
 }
 
+.sort-buttons.asc {
+    margin-right: 7px;
+    width: 124px;
+}
+
 .sort-buttons {
     border: 1px solid #13AA57;
-    background-color: #444E55;
+    background-color: #FFFFFF;
     color: #13AA57;
     border-radius: 5px;
-    width: 123px;
+    width: 133px;
     height: 40px;
     font-weight: bold;
     font-size: 16px;
@@ -477,18 +484,23 @@ table.table .avatar {
 
 .filter-checkbox {
     display: flex;
-    margin-top: 23px;
+    margin-top: 20px;
 }
 
 .filter-checkbox-input {
     height: 16px;
     width: 16px;
-    margin-left: 18px;
+    margin-left: 25px;
 }
 
 .filter-checkbox-text {
-    margin-left: 8px;
-    margin-bottom: 32px;
+    margin-left: 12px;
+    margin-bottom: 33px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #1D2830;
 }
 
 .filter-buttons {
@@ -497,10 +509,10 @@ table.table .avatar {
 
 .filter-cancel {
     border: 1px solid #13AA57;
-    background-color: #444E55;
+    background-color: #FFFFFF;
     color: #13AA57;
     border-radius: 5px;
-    width: 97px;
+    width: 98px;
     height: 40px;
     margin-right: 16px;
     font-weight: bold;
@@ -512,7 +524,7 @@ table.table .avatar {
     background-color: #13AA57;
     color: #FFFFFF;
     border-radius: 5px;
-    width: 145px;
+    width: 144px;
     height: 40px;
     font-weight: bold;
     font-size: 16px;
@@ -631,12 +643,28 @@ table.table .avatar {
 .modal-title {
     text-align: center;
     margin-top: 20px;
-
 }
 
 .modal-title-deac {
-    text-align: center;
-    color: #d12a24;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0.002em;
+    color: #313131;
+    padding-top: 40px;
+    margin-bottom: 0;
+    margin-bottom: 0;
+}
+
+.deactivation-reasons {
+    margin-bottom: 0;
+    margin-left: 12px;
+}
+
+.modal-reasons {
+    display: flex;
+    align-items: center;
 }
 
 .modal-title-act {
@@ -660,12 +688,24 @@ table.table .avatar {
     display: inline-block;
 }
 .user-lang {
-    text-align: center;
     width: 100%;
     display: inline-block;
+    margin-top: 4px;
+}
+
+.custom-reason {
+    width: 100%;
+    padding: 8px;
+    height: 94px;
+    background: #FFFFFF;
+    border: 1px solid #9CA7B0;
+    border-radius: 4px;
+    order: 1;
+    margin-bottom: 24px;
 }
 
 .modal .modal-header, .modal .modal-body, .modal .modal-footer {
+    padding: 0 40px;
     border: none !important;
 }
 
@@ -724,7 +764,6 @@ table.table .avatar {
 }
 
 .modal .btn {
-    border-radius: 2px;
     min-width: 100px;
 }
 
@@ -899,7 +938,14 @@ td input[type=search] {
 }
 
 .btn-tertiary {
-    color: #056B33;
+    color: #13AA57;
+    border: 1px solid #13AA57;
+    box-sizing: border-box;
+    border-radius: 4px;
+    width: 98px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
 }
 
 .btn-tertiary:hover {
@@ -911,11 +957,14 @@ td input[type=search] {
 }
 
 .btn-remove {
-    border-radius: 5px !important;
     color: #ffffff;
-    background-color: #E02116;
     width: 130px;
     height: 40px;
+    align-items: baseline;
+    display: flex;
+    justify-content: center;
+    background: #13AA57;
+    border-radius: 4px;
 
 }
 
@@ -977,8 +1026,20 @@ a#deactivateOneSubmit.btn.btn-danger {
     margin-right: 5px;
 }
 
-.text-warning {
-    color: #FF9310 !important;
+.deactivate-warning {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #64727D;
+    padding-top: 25px;
+    margin-bottom: 0;
+}
+
+.deactivate-checkbox {
+    height: 16px;
+    width: 16px;
+    margin: 10px 0;
 }
 
 .table-hover thead tr:hover th {
@@ -1097,3 +1158,4 @@ button#searchByForUser {
     box-sizing: border-box;
     border-radius: 4px;
 }
+
