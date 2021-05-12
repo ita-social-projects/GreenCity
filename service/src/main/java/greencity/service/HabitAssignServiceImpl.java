@@ -3,32 +3,17 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignManagementDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitEnrollDto;
-import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.UserShoppingListItemRepo;
+import greencity.exception.exceptions.*;
+import greencity.repository.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -54,6 +39,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
+    private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
@@ -247,6 +233,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                         + habitId));
         return buildHabitAssignDto(habitAssign, language);
+    }
+
+    @Override
+    public HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language) {
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+                .orElseThrow(
+                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+                        + habitId));
+        var habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        HabitDto habit = habitAssignDto.getHabit();
+        habit.setDefaultDuration(habitAssignDto.getDuration());
+        List<ShoppingListItemDto> shoppingListItemDto = new ArrayList<>();
+        userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())
+            .forEach(x -> shoppingListItemDto.add(
+                modelMapper.map(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(
+                    language, x.getId()), ShoppingListItemDto.class)));
+        habit.setShoppingListItems(shoppingListItemDto);
+        return habit;
     }
 
     /**

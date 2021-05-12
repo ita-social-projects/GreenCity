@@ -47,6 +47,17 @@ public interface HabitAssignService {
     HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
 
     /**
+     * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
+     *
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param language {@link String} of language code value.
+     * @return HabitAssignDto.
+     */
+    HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language);
+
+    /**
      * Method to find all (not cancelled) {@code HabitAssign}'s by {@code User} id
      * and acquired status.
      *
