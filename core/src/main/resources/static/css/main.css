@@ -32,10 +32,11 @@ table th, table td {
 /* Add styles to the form container */
 .form-container {
     max-width: 280px;
+    height: 428px;
     border-top: none;
     border-left: 1px solid #9CA7B0;
     border-right: 1px solid #9CA7B0;
-    border-bottom: 1px solid #9CA7B0;    padding: 13px;
+    border-bottom: 1px solid #9CA7B0;    padding: 18px;
     background-color: white;
 }
 
@@ -43,7 +44,7 @@ table th, table td {
 .form-container input[type=text], .form-container input[type=password] {
     width: 100%;
     padding: 15px;
-    margin: 5px 0 22px 0;
+    margin: 5px 0 15px 0;
     border: none;
     background: #f1f1f1;
 }
@@ -85,36 +86,25 @@ table th, table td {
     border-radius: 4px;
     color: #13AA57;
 }
-
-.search-main-filter{
-    margin-top : 30px;
-    /* Auto Layout */
-
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    padding: 8px;
-
-    /*position: static;*/
-    width: 244px;
-    height: 36px;
-    left: calc(50% - 244px/2);
-    top: calc(50% - 36px/2);
-
-    /* Greyscale/00.White */
-
-    background: #FFFFFF;
-    /* Greyscale/05 */
-
-    border: 1px solid #9CA7B0;
-    /*box-sizing: border-box;*/
+.apply-btn{
+    height: 40px;
+    width: 91px;
+    border: 1px solid #13AA57;
     border-radius: 4px;
+    background-color: #13AA57;
+    color: white;
+    margin-left: 18px;
+}
+.star1{
+    background-image: url("/img/star-empty.png");
 
-    /* Inside Auto Layout */
-
-    flex: none;
-    order: 1;
-    align-self: stretch;
-    flex-grow: 0;
+}
+.star2{
+    background-image: url("/img/star-empty.png");
+}
+.star3{
+    background-image: url("/img/star-empty.png");
+}
+input[type=checkbox]{
+    color: #13AA57;
 }

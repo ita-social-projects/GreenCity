@@ -28,14 +28,36 @@
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/habits/jquery.liTextLength.js}"></script>
     <script>
-        $(function(){
+        $(function () {
             $('.pr').liTextLength({
                 length: 25,
                 afterLength: '...',
-                fullText:false
+                fullText: false
             });
         });
     </script>
+
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            background-color: #13AA57;
+            height: 2.5px;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            background-color: #13AA57;
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            overflow: visible;
+            cursor: pointer;
+
+
+        }
+
+    </style>
 
 </head>
 
@@ -72,20 +94,46 @@
 
                                     </button>
                                     <div class="form-popup" id="filter">
-                                        <form action="/action_page.php" class="form-container" >
+                                        <form action="/action_page.php" class="form-container">
                                             <div style="margin-bottom: 10px">
-                                                <input type="checkbox" style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <input type="checkbox"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px">
                                                 <div style="margin-top: 0px; margin-left: 7px;">save filtering</div>
                                             </div>
-                                                <button type="submit" class="filter-btn">Ascending</button>
-                                                <button type="submit" class="filter-btn" style="float: right">Descending</button>
-                                            <input class="search-main-filter" type="text">
-                                            <input type="text" placeholder="Enter Email" name="email" required>
+                                            <button type="submit" class="filter-btn"><b>Ascending</b></button>
+                                            <button type="submit" class="filter-btn" style="float: right">
+                                                <b>Descending</b>
+                                            </button>
+                                            <input type="text" placeholder="Search..." style="border: 1px solid #9CA7B0;
+                                                                      border-radius: 4px;
+                                                                      height: 36px;
+                                                                      margin-top: 15px; ">
+                                            <input type="range" min="7" max="21" onchange="updateTextInput(this.value);"
+                                                   style="width :239px;">
+                                            <input type="text" id="textInput" value="14 days"
+                                                   style="padding: 0; color:#13AA57 ">
+                                            <img class="star1" src="/img/star-empty.png">
+                                            <img class="star2" src="/img/star-empty.png">
+                                            <img class="star3" src="/img/star-empty.png">
+                                            <div style="margin-top: 21px">
+                                                <input type="checkbox"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <div style="margin-top: 0px; margin-left: 7px;">image</div>
+                                                <input type="checkbox"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <div style="margin-top: 0px; margin-left: 7px;">locked</div>
+                                            </div>
 
-                                            <input type="password" placeholder="Enter Password" name="psw" required>
+                                            <div style="float: right;margin-top: 70px; margin-bottom: 18px; ">
+                                                <button type="submit" class="filter-btn" style="width: 91px;
+                                            height: 40px"><b>Cancel</b></button>
+                                                <button type="submit" class="apply-btn" style="float: right">
+                                                    <b>Apply</b>
+                                                </button>
+                                            </div>
 
-                                            <button type="submit" class="btn">Login</button>
-                                            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+
+
                                         </form>
                                     </div>
                                 </div>
@@ -153,8 +201,8 @@
                                     <td style="min-width: 98px">
                                         <div class="habit_img">
                                             <img th:src="${habit.image}" style="height:inherit; max-width: 51px">
-                                            <i id = "change_img" class="table-download-icon"
-                                            th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
+                                            <i id="change_img" class="table-download-icon"
+                                               th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
                                         </div>
 
                                     </td>
@@ -175,7 +223,7 @@
                                         <i class="table-edit-icon"></i>
                                     </td>
                                     <td>
-                                            <div class="pr" style="width: 27em">[[${translation.name}]]</div>
+                                        <div class="pr" style="width: 27em">[[${translation.name}]]</div>
                                         <i id="habit_translation" class="table-edit-translation-icon"
                                            th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
 
@@ -336,11 +384,12 @@
                             <div class="modal-body">
 
                                 <div class="form-group" style="justify-content: center">
-                                    <img id = "upload_image">
+                                    <img id="upload_image">
                                     <label for="fileUpdate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileUpdate" name="file"
-                                           enctype="multipart/form-data" accept="image/png, image/jpg, image/jpeg, .png, .jpg, .jpeg"
-                                          onchange="loadFile()" hidden>
+                                           enctype="multipart/form-data"
+                                           accept="image/png, image/jpg, image/jpeg, .png, .jpg, .jpeg"
+                                           onchange="loadFile()" hidden>
                                     <span th:id="errorModalAddfile" class="errorSpan"></span>
                                 </div>
 
@@ -414,11 +463,22 @@
     function openForm() {
         if (document.getElementById("filter").style.display === "block") {
             document.getElementById("filter").style.display = "none";
-            document.getElementById("habits-filter-button").style.width="113px";
-        }else {
+            document.getElementById("habits-filter-button").style.width = "113px";
+        } else {
             document.getElementById("filter").style.display = "block";
-            document.getElementById("habits-filter-button").style.width="280px";
+            document.getElementById("habits-filter-button").style.width = "280px";
         }
+    }
+
+    $(document).ready(function () {
+        $($).click(function () {
+            // Change src attribute of image
+            $(this).attr("src", "images/card-front.jpg");
+        });
+    });
+
+    function updateTextInput(val) {
+        document.getElementById('textInput').value = val + " days";
     }
 </script>
 </body>
