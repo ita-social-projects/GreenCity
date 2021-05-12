@@ -31,11 +31,11 @@ table th, table td {
 
 /* Add styles to the form container */
 .form-container {
-    max-width: 300px;
+    max-width: 280px;
     border-top: none;
     border-left: 1px solid #9CA7B0;
     border-right: 1px solid #9CA7B0;
-    border-bottom: 1px solid #9CA7B0;    padding: 10px;
+    border-bottom: 1px solid #9CA7B0;    padding: 13px;
     background-color: white;
 }
 
@@ -79,40 +79,42 @@ table th, table td {
 }
 
 .filter-btn{
-    height: 40px;
+    height: 35px;
     width: 120px;
-    border-left: 3px solid #13AA57;
+    border: 1px solid #13AA57;
+    border-radius: 4px;
+    color: #13AA57;
 }
 
-/*.search-main-filter{*/
-/*    !* Auto Layout *!*/
+.search-main-filter{
+    margin-top : 30px;
+    /* Auto Layout */
 
-/*    display: flex;*/
-/*    flex-direction: row;*/
-/*    justify-content: center;*/
-/*    align-items: center;*/
-/*    padding: 8px;*/
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
 
-/*    position: static;*/
-/*    width: 244px;*/
-/*    height: 36px;*/
-/*    left: calc(50% - 244px/2);*/
-/*    top: calc(50% - 36px/2);*/
+    /*position: static;*/
+    width: 244px;
+    height: 36px;
+    left: calc(50% - 244px/2);
+    top: calc(50% - 36px/2);
 
-/*    !* Greyscale/00.White *!*/
+    /* Greyscale/00.White */
 
-/*    background: #FFFFFF;*/
-/*    !* Greyscale/05 *!*/
+    background: #FFFFFF;
+    /* Greyscale/05 */
 
-/*    border: 1px solid #9CA7B0;*/
-/*    box-sizing: border-box;*/
-/*    border-radius: 4px;*/
+    border: 1px solid #9CA7B0;
+    /*box-sizing: border-box;*/
+    border-radius: 4px;
 
-/*    !* Inside Auto Layout *!*/
+    /* Inside Auto Layout */
 
-/*    flex: none;*/
-/*    order: 1;*/
-/*    align-self: stretch;*/
-/*    flex-grow: 0;*/
-/*    margin: 0px 0px;*/
-/*}*/
+    flex: none;
+    order: 1;
+    align-self: stretch;
+    flex-grow: 0;
+}

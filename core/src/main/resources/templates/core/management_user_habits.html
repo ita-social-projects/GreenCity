@@ -72,13 +72,14 @@
 
                                     </button>
                                     <div class="form-popup" id="filter">
-                                        <form action="/action_page.php" class="form-container" th:object="____________">
-                                            <span><input type="checkbox"><p>save filtering</p></span>
-                                            <span>
+                                        <form action="/action_page.php" class="form-container" >
+                                            <div style="margin-bottom: 10px">
+                                                <input type="checkbox" style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <div style="margin-top: 0px; margin-left: 7px;">save filtering</div>
+                                            </div>
                                                 <button type="submit" class="filter-btn">Ascending</button>
-                                                <button type="submit" class="filter-btn">Descending</button>]
-                                            </span>
-                                            <input type="text" >
+                                                <button type="submit" class="filter-btn" style="float: right">Descending</button>
+                                            <input class="search-main-filter" type="text">
                                             <input type="text" placeholder="Enter Email" name="email" required>
 
                                             <input type="password" placeholder="Enter Password" name="psw" required>
@@ -416,7 +417,7 @@
             document.getElementById("habits-filter-button").style.width="113px";
         }else {
             document.getElementById("filter").style.display = "block";
-            document.getElementById("habits-filter-button").style.width="300px";
+            document.getElementById("habits-filter-button").style.width="280px";
         }
     }
 </script>
