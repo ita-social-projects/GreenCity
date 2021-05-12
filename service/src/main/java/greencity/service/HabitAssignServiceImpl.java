@@ -237,7 +237,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     @Override
     public HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language) {
-        HabitAssign habitAssign =
+        var habitAssign =
             habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
                 .orElseThrow(
                     () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
