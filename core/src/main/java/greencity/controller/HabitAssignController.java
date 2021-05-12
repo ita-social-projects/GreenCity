@@ -4,13 +4,7 @@ import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignManagementDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
@@ -185,6 +179,32 @@ public class HabitAssignController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
                 .findHabitAssignByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
+    }
+
+    /**
+     * Method to return {@link HabitDto} with more it's information by it's id.
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userVO  {@link UserVO} user.
+     * @param locale  needed language code.
+     * @return {@link HabitDto} instance.
+     */
+    @ApiOperation(value = "Get inprogress or acquired assign by habit id for current user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/{habitId}/more")
+    public ResponseEntity<HabitDto> getUsersHabitByHabitId(
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @PathVariable Long habitId,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService
+                .findHabitByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
     }
 
     /**
