@@ -17,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.mockito.Mockito.verify;
 
-
 @ExtendWith(MockitoExtension.class)
 class SocialNetworkControllerTest {
 
@@ -34,17 +33,16 @@ class SocialNetworkControllerTest {
     @Mock
     private SocialNetworkService socialNetworkService;
 
-
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(socialNetworkController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
     void getSocialNetworkImageByUrl() throws Exception {
-        mockMvc.perform(get(socialNetworksLink + "/image?url=test-image") ).andExpect(status().isOk());
+        mockMvc.perform(get(socialNetworksLink + "/image?url=test-image")).andExpect(status().isOk());
         verify(socialNetworkImageService).getSocialNetworkImageByUrl("test-image");
     }
 
