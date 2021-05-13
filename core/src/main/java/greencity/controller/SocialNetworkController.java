@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/social-networks")
 public class SocialNetworkController {
+
     private final SocialNetworkImageService socialNetworkImageService;
     private final SocialNetworkService socialNetworkService;
 
