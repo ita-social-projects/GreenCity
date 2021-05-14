@@ -50,6 +50,9 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>default-report</id>
@@ -57,6 +60,9 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
