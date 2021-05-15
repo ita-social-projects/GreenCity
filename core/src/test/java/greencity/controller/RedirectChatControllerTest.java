@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class RedirectChatControllerTest {
 
-    private static final String socialNetworksLink = "/chat";
+    private static final String chatLink = "/chat";
 
     private MockMvc mockMvc;
 
@@ -34,6 +34,6 @@ class RedirectChatControllerTest {
 
     @Test
     void redirectToChatService() throws Exception {
-        mockMvc.perform(get(socialNetworksLink)).andExpect(redirectedUrl(System.getenv("REDIRECT_CHAT") + "/2"));
+        mockMvc.perform(get(chatLink)).andExpect(redirectedUrl(System.getenv("REDIRECT_CHAT") + "/2"));
     }
 }
