@@ -28,12 +28,12 @@ class RedirectChatControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(redirectChatController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
+
     @Test
     void redirectToChatService() throws Exception {
-        mockMvc.perform(get(socialNetworksLink)).
-                andExpect(redirectedUrl(System.getenv("REDIRECT_CHAT") + "/2"));
+        mockMvc.perform(get(socialNetworksLink)).andExpect(redirectedUrl(System.getenv("REDIRECT_CHAT") + "/2"));
     }
 }
