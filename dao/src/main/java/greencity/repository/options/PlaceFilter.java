@@ -45,6 +45,7 @@ public class PlaceFilter implements Specification<Place> {
         query.groupBy(root.get(RepoConstants.ID));
         List<Predicate> predicates = new ArrayList<>();
         if (null != filterPlaceDto) {
+            predicates.add(hasCategoryLike(root,cb,filterPlaceDto.getCategory().getName()));
             predicates.add(hasStatus(root, cb, filterPlaceDto.getStatus()));
             predicates.add(hasPositionInBounds(root, cb, filterPlaceDto.getMapBoundsDto()));
             predicates.add(hasDiscount(root, cb, filterPlaceDto.getDiscountDto()));
@@ -153,11 +154,26 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(cb.or(
-            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg),
-            cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), reg),
+            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg)
             cb.like(r.get(RepoConstants.NAME), reg),
             cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), reg),
             cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), reg)),
             cb.equal(r.get(RepoConstants.STATUS), status));
+    }
+
+    /**
+     * Returns predicate where {@link Place} has same category as in {@link FilterPlaceDto}.
+     *
+     * @param r must not be {@literal null}.
+     * @param cb must not be {@literal null}.
+     * @param category {@link greencity.dto.category.FilterCategoryDto} get name value.
+     * @return a {@link Predicate}, may be {@literal null}.
+     * @author Zakhar Veremchuk
+     */
+    public Predicate hasCategoryLike(Root<Place> r, CriteriaBuilder cb, String category) {
+        if (category == null) {
+            return null;
+        }
+        return cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME),category);
     }
 }

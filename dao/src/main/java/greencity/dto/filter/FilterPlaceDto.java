@@ -1,5 +1,6 @@
 package greencity.dto.filter;
 
+import greencity.dto.category.FilterCategoryDto;
 import greencity.dto.location.MapBoundsDto;
 import greencity.enums.PlaceStatus;
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ public class FilterPlaceDto {
     @Valid
     private MapBoundsDto mapBoundsDto;
     private FilterDiscountDto discountDto;
+    private FilterCategoryDto category;
     private PlaceStatus status;
     private String time;
     @Valid
