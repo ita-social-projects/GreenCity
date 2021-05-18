@@ -70,10 +70,10 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
         + "join ShoppingListItemTranslation as translations on\n"
         + "translations.shoppingListItem.id = usli.shoppingListItem.id\n"
         + "join Language as lang on translations.language.id = lang.id\n"
-        + "where usli.status = 'ACTIVE'\n"
+        + "where usli.status = 'INPROGRESS'\n"
         + "and ha.status = 'INPROGRESS'\n"
         + "and ha.user.id = :userId\n"
         + "and lang.code = :code")
-    List<ShoppingListItemTranslation> findByActiveByUserIdAndLanguageCode(@Param("userId") Long userId,
+    List<ShoppingListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
         @Param("code") String code);
 }

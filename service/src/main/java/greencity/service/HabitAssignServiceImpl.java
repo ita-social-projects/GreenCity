@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -78,10 +79,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         enhanceAssignWithDefaultProperties(habitAssign);
 
-        List<Long> shoppingList = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
-        List<ShoppingListItem> userShoppingList = shoppingListItemRepo.getShoppingListByListOfId(shoppingList);
-        saveUserShoppingListItems(userShoppingList, habitAssign);
-
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
@@ -127,11 +124,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {
         List<UserShoppingListItem> userShoppingList = new ArrayList<>();
         for (ShoppingListItem shoppingItem : shoppingList) {
+            Arrays.stream(ShoppingListItemStatus.values()).forEach(System.out::println);
             userShoppingList.add(UserShoppingListItem.builder()
                 .habitAssign(habitAssign)
                 .shoppingListItem(shoppingItem)
                 .dateCompleted(LocalDateTime.now())
-                .status(ShoppingListItemStatus.ACTIVE)
+                .status(ShoppingListItemStatus.INPROGRESS)
                 .build());
         }
         userShoppingListItemRepo.saveAll(userShoppingList);

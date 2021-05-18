@@ -206,8 +206,8 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     }
 
     @Override
-    public List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code) {
-        return customShoppingListItemRepo.findByActiveByUserIdAndLanguageCode(userId, code)
+    public List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
+        return customShoppingListItemRepo.findInProgressByUserIdAndLanguageCode(userId, code)
             .stream().map(x -> modelMapper.map(x, ShoppingListItemDto.class))
             .collect(Collectors.toList());
     }

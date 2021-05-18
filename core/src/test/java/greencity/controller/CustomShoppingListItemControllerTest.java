@@ -77,9 +77,9 @@ class CustomShoppingListItemControllerTest {
         Long id = 1L;
         this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items?lang=ua")
             .principal(principal)).andExpect(status().isOk());
-        when(customShoppingListItemService.findByActiveByUserIdAndLanguageCode(id, "ua"))
+        when(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
             .thenReturn(new ArrayList<>());
-        verify(customShoppingListItemService).findByActiveByUserIdAndLanguageCode(id, "ua");
+        verify(customShoppingListItemService).findInProgressByUserIdAndLanguageCode(id, "ua");
         assertTrue(customController.findAllByUser(id, "ua").getBody().isEmpty());
     }
 

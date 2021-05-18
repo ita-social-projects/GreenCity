@@ -247,10 +247,10 @@ class CustomShoppingListItemServiceImplTest {
     }
 
     @Test
-    void findByActiveByUserIdAndLanguageCodeTest() {
-        when(customShoppingListItemService.findByActiveByUserIdAndLanguageCode(1L, "ua"))
+    void findInProgressByUserIdAndLanguageCodeTest() {
+        when(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua"))
             .thenReturn(new ArrayList<>());
-        assertEquals(0, customShoppingListItemService.findByActiveByUserIdAndLanguageCode(1L, "ua").size());
+        assertEquals(0, customShoppingListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
     }
 
     @Test
