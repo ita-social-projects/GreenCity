@@ -124,7 +124,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {
         List<UserShoppingListItem> userShoppingList = new ArrayList<>();
         for (ShoppingListItem shoppingItem : shoppingList) {
-            Arrays.stream(ShoppingListItemStatus.values()).forEach(System.out::println);
             userShoppingList.add(UserShoppingListItem.builder()
                 .habitAssign(habitAssign)
                 .shoppingListItem(shoppingItem)
@@ -271,7 +270,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 for (ShoppingListItemDto slid : shoppingListItems) {
                     if (slid.getId().equals(otherStatusItemId)) {
                         slid.setStatus(status);
-                        continue;
                     }
                 }
             }
