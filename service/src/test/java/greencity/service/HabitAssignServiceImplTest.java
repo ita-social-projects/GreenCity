@@ -117,9 +117,6 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
             .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId()))
-            .thenReturn(new ArrayList<>());
-        when(userShoppingListItemRepo.saveAll(new ArrayList<>())).thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
@@ -299,9 +296,8 @@ class HabitAssignServiceImplTest {
         when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
             .thenReturn(null);
 
-        assertThrows(BadRequestException.class, () -> {
-            habitAssignService.unenrollHabit(1L, 1L, enrollDate);
-        });
+        assertThrows(BadRequestException.class, () -> habitAssignService
+            .unenrollHabit(1L, 1L, enrollDate));
     }
 
     @Test
@@ -309,9 +305,8 @@ class HabitAssignServiceImplTest {
         LocalDate enrollDate = LocalDate.now();
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> {
-            habitAssignService.unenrollHabit(1L, 1L, enrollDate);
-        });
+        assertThrows(NotFoundException.class, () -> habitAssignService
+            .unenrollHabit(1L, 1L, enrollDate));
     }
 
     @Test
@@ -440,7 +435,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
 
-        assertEquals(habitAssignService.assignDefaultHabitForUser(1l, userVO), habitAssignManagementDto);
+        assertEquals(habitAssignService.assignDefaultHabitForUser(1L, userVO), habitAssignManagementDto);
 
     }
 
