@@ -78,5 +78,5 @@ public interface CustomShoppingListItemService {
      * @param code   language code {@link String}
      * @return {@link ShoppingListItemDto}
      */
-    List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code);
+    List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
 }

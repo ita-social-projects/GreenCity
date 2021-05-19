@@ -63,7 +63,7 @@ public class CustomShoppingListItemController {
     public ResponseEntity<List<ShoppingListItemDto>> findAllByUser(
         @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.findByActiveByUserIdAndLanguageCode(userId, code));
+            .body(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(userId, code));
     }
 
     /**

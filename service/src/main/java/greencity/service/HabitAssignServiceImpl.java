@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -78,10 +79,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         enhanceAssignWithDefaultProperties(habitAssign);
 
-        List<Long> shoppingList = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
-        List<ShoppingListItem> userShoppingList = shoppingListItemRepo.getShoppingListByListOfId(shoppingList);
-        saveUserShoppingListItems(userShoppingList, habitAssign);
-
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
@@ -131,7 +128,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .habitAssign(habitAssign)
                 .shoppingListItem(shoppingItem)
                 .dateCompleted(LocalDateTime.now())
-                .status(ShoppingListItemStatus.ACTIVE)
+                .status(ShoppingListItemStatus.INPROGRESS)
                 .build());
         }
         userShoppingListItemRepo.saveAll(userShoppingList);
@@ -245,13 +242,38 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
-        List<ShoppingListItemDto> shoppingListItemDto = new ArrayList<>();
-        userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())
-            .forEach(x -> shoppingListItemDto.add(
-                modelMapper.map(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(
-                    language, x.getId()), ShoppingListItemDto.class)));
-        habit.setShoppingListItems(shoppingListItemDto);
+        List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
+        shoppingListItemTranslationRepo
+            .findShoppingListByHabitIdAndByLanguageCode(language, habitId)
+            .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
+        changeStatuses(ShoppingListItemStatus.INPROGRESS.toString(),
+            habitAssign.getId(), shoppingListItems);
+        changeStatuses(ShoppingListItemStatus.DONE.toString(),
+            habitAssign.getId(), shoppingListItems);
+        habit.setShoppingListItems(shoppingListItems);
         return habit;
+    }
+
+    /**
+     * Method changes statuses in shoppingListItems.
+     *
+     * @param status            String status to set.
+     * @param habitAssignId     Long id.
+     * @param shoppingListItems list with habit's items.
+     */
+    private void changeStatuses(String status, Long habitAssignId,
+        List<ShoppingListItemDto> shoppingListItems) {
+        List<Long> otherStatusItems = userShoppingListItemRepo
+            .getShoppingListItemsByHabitAssignIdAndStatus(habitAssignId, status);
+        if (!otherStatusItems.isEmpty()) {
+            for (Long otherStatusItemId : otherStatusItems) {
+                for (ShoppingListItemDto slid : shoppingListItems) {
+                    if (slid.getId().equals(otherStatusItemId)) {
+                        slid.setStatus(status);
+                    }
+                }
+            }
+        }
     }
 
     /**
