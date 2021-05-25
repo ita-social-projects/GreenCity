@@ -2,12 +2,15 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.category.CategoryDto;
+import greencity.dto.category.CategoryDtoResponse;
 import greencity.service.CategoryService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
 import java.util.List;
 import javax.validation.Valid;
+
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +33,10 @@ public class CategoryController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @PostMapping
-    public ResponseEntity<Object> saveCategory(@Valid @RequestBody CategoryDto dto) {
+    public ResponseEntity<CategoryDtoResponse> saveCategory(@Valid @RequestBody CategoryDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.save(dto));
     }
 
@@ -46,6 +49,7 @@ public class CategoryController {
     @ApiOperation(value = "View a list of available categories")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully retrieved list"),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
     @GetMapping
     public ResponseEntity<List<CategoryDto>> findAllCategory() {

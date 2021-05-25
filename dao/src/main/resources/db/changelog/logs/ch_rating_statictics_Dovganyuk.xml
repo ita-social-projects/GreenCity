@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Dovganyuk Taras" id="Dovganyuk-1">
+        <createTable tableName="rating_statistics">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="event" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamptz">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points_changed" type="real">
+                <constraints nullable="false"/>
+            </column>
+            <column name="current_rating" type="real">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+    <changeSet author="Dovganyuk Taras" id="Dovganyuk-2">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="rating_statistics"
+                                 constraintName="rating_statistics_users_id_fk" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-8_Dovganyuk-1" author="Mykola Lehkyi">
+        <modifyDataType tableName="rating_statistics" columnName="points_changed" newDataType="double"/>
+        <modifyDataType tableName="rating_statistics" columnName="current_rating" newDataType="double"/>
+    </changeSet>
+</databaseChangeLog>

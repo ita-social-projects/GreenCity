@@ -21,8 +21,13 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/tipsandtricks/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
 </head>
 
 <body>
@@ -34,14 +39,24 @@
                 <div class="table-title">
                     <div class="row">
                         <div class="col-sm-6">
-                            <h2>Manage <b>Tips&tricks</b></h2>
+                            <h2>[[#{greenCity.tips.tricks.page.h}]]</b></h2>
                         </div>
                         <div class="col-sm-6">
-                            <a href="#addTipsAndTricksModal" id="addTipsAndTricksModalBtn" class="btn btn-success"
-                               data-toggle="modal"><i class="material-icons">&#xE147;</i>
-                                <span>Add New Tips&Tricks</span></a>
-                            <a href="#deleteAllSelectedModal" class="btn btn-danger" data-toggle="modal"><i
-                                    class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                            <span class="search-box-right">
+                                    <form class="form-inline searching" action="/management/tipsandtricks" method="get">
+                                        <img alt="search" id="btnSearchImage"
+                                             src="/img/search.png">
+                                        <input type="text" name="query" id="inputSearch" class="form-control"
+                                               placeholder="Search…">
+                                    </form>
+                                </span>
+                            <a href="#addTipsAndTricksModal" id="addTipsAndTricksModalBtn" class="btn btn-secondary"
+                               data-toggle="modal">
+                                <div>[[#{greenCity.tips.tricks.page.add.tips.tricks}]]</div>
+                            </a>
+                            <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled" data-toggle="modal">
+                                <div>[[#{greenCity.pages.delete}]]</div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -54,49 +69,112 @@
                                     <label for="selectAll"></label>
                                 </span>
                         </th>
-                        <th>id</th>
-                        <th>title</th>
-                        <th>author</th>
-                        <th>imagePath</th>
-                        <th>creationDate</th>
-                        <th>Actions</th>
+                        <th>[[#{greenCity.pages.table.id}]]</th>
+                        <th>[[#{greenCity.pages.table.title.translations}]]</th>
+                        <th>[[#{greenCity.pages.table.author}]]</th>
+                        <th>[[#{greenCity.pages.table.image.path}]]</th>
+                        <th>[[#{greenCity.pages.table.creation.date}]]</th>
+                        <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     </thead>
+                    <form method="POST" action="/management/tipsandtricks" id="searchForm" onsubmit="applyFilters()">
+
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="id" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.id }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="titleTranslations" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.titleTranslations }"/>
+
+                            </td>
+                            <td>
+
+                                <input type="search" th:name="author" placeholder="Search"
+                                       th:value="${fields eq null ? '' : fields.author }"/>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="input-group input-daterange">
+                                    <input type="search" name="startDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.startDate }"/>
+                                    <div class="input-group-addon">to</div>
+                                    <input type="search" name="endDate" class="form-control"
+                                           th:value="${fields eq null ? '' : fields.endDate }"/>
+                                    <button type="submit" id="searchByDates"><i class="fa fa-search"></i></button>
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </form>
                     <th:block th:each="tipsAndTricks, iterStatus :${pageable.getPage()}">
                         <tbody>
                         <tr>
                             <td>
                                     <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${tipsAndTricks.getId()}">
+                                               name="options[]" th:value="${tipsAndTricks.getId()}"
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
                             <td th:text="${tipsAndTricks.getId()}"></td>
-                            <td th:text="${tipsAndTricks.getTitle()}"></td>
-                            <td th:text="${tipsAndTricks.getAuthor().getName()}"></td>
-                            <td th:text="${tipsAndTricks.getImagePath()}"></td>
+                            <td>
+                                <table class="table table-borderless m-0">
+                                    <thead>
+                                    <tr class="table-secondary">
+                                        <th class="py-1">[[#{greenCity.pages.table.content}]]</th>
+                                        <th class="py-1">[[#{greenCity.pages.table.language.code}]]</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block
+                                            th:each="translation : ${tipsAndTricks.getTitleTranslations()}">
+                                        <tr>
+                                            <td class="py-1" th:text="${translation.getContent()}"></td>
+                                            <td class="py-1" th:text="${translation.getLanguageCode()}"></td>
+                                        </tr>
+                                    </th:block>
+                                    </tbody>
+                                </table>
+                            </td>
+
+                            <td th:text="${tipsAndTricks.getAuthorName()}"></td>
+                            <td><img th:src="${tipsAndTricks.getImagePath()}" th:width="150" th:height="100"></td>
                             <td th:text="${#temporals.format(tipsAndTricks.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <a th:href="@{/management/tipsandtricks/find/(id=${tipsAndTricks.getId()})}"
                                    class="edit eBtn"><i
-                                        class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                                        class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
                                 <a th:href="@{/management/tipsandtricks/(id=${tipsAndTricks.getId()})}"
                                    class="delete eDelBtn"
-                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                                                          th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
                     </th:block>
                 </table>
                 <div class="clearfix">
-                    <div class="hint-text">Showing <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> out of <b
-                            th:text="${pageable.getTotalElements()}">25</b> entries
+                    <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
+                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{tipsandtricks(page=${pageable.getCurrentPage()-1})}" class="page-link">Previous</a>
+                                th:href="@{tipsandtricks(page=${pageable.getCurrentPage()-1})}" class="page-link">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                             th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
@@ -104,7 +182,7 @@
                         <li class="page-item"
                             th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
                                 th:href="@{tipsandtricks(page=${pageable.getCurrentPage()+1})}"
-                                class="page-link">Next</a></li>
+                                class="page-link">[[#{greenCity.page.paging.next}]]</a></li>
                     </ul>
                 </div>
             </div>
@@ -116,44 +194,60 @@
             <div class="modal-content">
                 <form th:action="@{management/tipsandtricks/save}" method="post" id="addTipsAndTricksForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Add Tips&Tricks</h4>
+                        <h4 class="modal-title">[[#{greenCity.tips.tricks.page.add.tips.tricks}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                         <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" class="form-control" name="title" required>
-                            <span th:id="errorModalSavetitle" class="errorSpan"></span>
+                            <th:block th:each="language, iterInfo : ${languages}">
+                                <th:block th:switch="${language.getCode()}">
+                                    <label th:case="'ua'">Заголовок</label>
+                                    <label th:case="'en'">Title</label>
+                                    <label th:case="'ru'">Заглавие</label>
+                                </th:block>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           id="titleContent+${language.getCode()}"
+                                           th:name="titleContent+${language.getCode()}">
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <th:block th:switch="${language.getCode()}">
+                                        <label th:case="'ua'">Teкст</label>
+                                        <label th:case="'en'">Text</label>
+                                        <label th:case="'ru'">Teкст</label>
+                                    </th:block>
+                                    <textarea type="text" class="form-control"
+                                              th:name="textContent+${language.getCode()}"></textarea>
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                            </th:block>
                         </div>
                         <div class="form-group">
-                            <label>Text</label>
-                            <input type="text" class="form-control" name="text" required>
-                            <span th:id="errorModalSavetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Tags</label>
+                            <label>[[#{greenCity.pages.table.tags}]]</label>
                             <input type="text" class="form-control" name="tags" required>
                             <span th:id="errorModalSavetags" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label>Image</label>
-                            <input type="text" class="form-control" name="image">
-                        </div>
-                        <div class="form-group">
-                            <label>Source</label>
+                            <label>[[#{greenCity.pages.table.source}]]</label>
                             <input type="text" class="form-control" name="source">
                         </div>
                         <div class="form-group">
-                            <label>Image</label>
+                            <label>[[#{greenCity.pages.table.image}]]</label>
                             <input type="file" class="form-control" name="file" id="creationFile">
                             <span th:id="errorModalSavefile" class="errorSpan"></span>
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success" value="Add" id="submitAddBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -165,54 +259,74 @@
             <div class="modal-content">
                 <form id="editTipsAndTricksForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Edit Tips&Tricks</h4>
+                        <h4 class="modal-title">[[#{greenCity.tips.tricks.page.edit.tips.tricks}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="id">ID</label>
+                            <label for="id">[[#{greenCity.pages.table.id}]]</label>
                             <input type="text" class="form-control" id="id" name="id" readonly required>
                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                         </div>
+
                         <div class="form-group">
-                            <label for="title">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                            <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
+                            <th:block th:each="language, iterInfo : ${languages}">
+                                <th:block th:switch="${language.getCode()}">
+                                    <label th:case="'ua'">Заголовок</label>
+                                    <label th:case="'en'">Title</label>
+                                    <label th:case="'ru'">Заглавие</label>
+                                </th:block>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                    </div>
+                                    <input type="text" class="form-control"
+                                           th:name="titleContent+${language.getCode()}">
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <th:block th:switch="${language.getCode()}">
+                                        <label th:case="'ua'">Teкст</label>
+                                        <label th:case="'en'">Text</label>
+                                        <label th:case="'ru'">Teкст</label>
+                                    </th:block>
+                                    <textarea type="text" class="form-control"
+                                              th:name="textContent+${language.getCode()}"></textarea>
+                                    <span th:id="'errorModalSaveTopsAndTricksTranslations['+${iterInfo.index}+'].content'"
+                                          class="errorSpan"></span>
+                                </div>
+                            </th:block>
                         </div>
                         <div class="form-group">
-                            <label for="text">Text</label>
-                            <input type="text" class="form-control" id="text" name="text" required>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="tags">Tags</label>
+                            <label for="tags">[[#{greenCity.pages.table.tags}]]</label>
                             <input type="text" class="form-control" id="tags" name="tags" required>
                             <span th:id="errorModalUpdatetags" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="emailAuthor">Author</label>
-                            <input type="email" class="form-control" id="emailAuthor" name="emailAuthor" readonly
+                            <label for="authorName">[[#{greenCity.pages.table.author}]]</label>
+                            <input type="email" class="form-control" id="authorName" name="authorName" readonly
                                    required>
-                            <span th:id="errorModalUpdateemailAuthor" class="errorSpan"></span>
+                            <span th:id="errorModalUpdateauthorName" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
-                            <label for="imagePath">Image</label>
+                            <label for="imagePath">[[#{greenCity.pages.table.image.path}]]</label>
                             <input type="text" class="form-control" id="imagePath" name="imagePath">
                         </div>
                         <div class="form-group">
-                            <label for="source">Source</label>
+                            <label for="source">[[#{greenCity.pages.table.source}]]</label>
                             <input type="text" class="form-control" id="source" name="source">
                         </div>
                         <div class="form-group">
-                            <label for="file">Image</label>
+                            <label for="file">[[#{greenCity.pages.table.image}]]</label>
                             <input type="file" class="form-control" id="file" name="file">
                             <span th:id="errorModalUpdatefile" class="errorSpan"></span>
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-info" value="Save" id="submitEditBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-info" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                     </div>
                 </form>
             </div>
@@ -224,16 +338,16 @@
             <div class="modal-content">
                 <form id="deleteTipsAndTricksForm">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete Tips&Tricks</h4>
+                        <h4 class="modal-title">[[#{greenCity.tips.tricks.page.delete.tips.tricks}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete that Record?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteOneSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteOneSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>
@@ -245,16 +359,16 @@
             <div class="modal-content">
                 <form id="">
                     <div class="modal-header">
-                        <h4 class="modal-title">Delete all selected</h4>
+                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <p>Are you sure you want to delete these Records?</p>
-                        <p class="text-warning"><small>This action cannot be undone.</small></p>
+                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">Delete</a>
+                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteAllSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
             </div>
@@ -262,5 +376,27 @@
     </div>
 </div>
 <div id="footer" th:insert="core/footer"></div>
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+<script>
+    $('.input-daterange input').each(function () {
+        $(this).datepicker({
+            format: 'yyyy-mm-dd',
+            todayHighlight: true,
+            autoclose: true,
+            orientation: 'top'
+        });
+    });
+
+    function applyFilters() {
+        document.getElementById("searchForm").action = "/management/tipsandtricks";
+        document.getElementById("searchForm").submit();
+    }
+
+</script>
 </body>
 </html>

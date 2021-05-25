@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="1571227598316-100" author="Vitalii S.">
+        <createTable tableName="goals">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="text" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1571227598316-101" author="Vitalii S.">
+        <createTable tableName="user_goals">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="goal_id" type="BIGINT">
+            </column>
+            <column name="status" type="varchar(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_completed" type="datetime(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1571227598316-103" author="Vitalii S.">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_goals"
+                                 constraintName="FK_user_user_goals" deferrable="false" initiallyDeferred="false"
+                                 onDelete="CASCADE" onUpdate="CASCADE" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

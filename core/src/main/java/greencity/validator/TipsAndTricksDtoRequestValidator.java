@@ -3,6 +3,7 @@ package greencity.validator;
 import greencity.annotations.ValidTipsAndTricksDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.TagNotFoundDuringValidation;
 import greencity.service.TagsService;
 import javax.validation.ConstraintValidator;
@@ -18,6 +19,7 @@ public class TipsAndTricksDtoRequestValidator
 
     @Override
     public void initialize(ValidTipsAndTricksDtoRequest constraintAnnotation) {
+        // Initializes the validator in preparation for #isValid calls
     }
 
     @Override
@@ -25,10 +27,8 @@ public class TipsAndTricksDtoRequestValidator
         if (dto.getSource() != null && !dto.getSource().isEmpty()) {
             isUrlValid(dto.getSource());
         }
-        if (tagService.isValidNumOfUniqueTags(dto.getTags())) {
-            if (tagService.isAllTipsAndTricksValid(dto.getTags())) {
-                return true;
-            }
+        if ((tagService.isValidNumOfUniqueTags(dto.getTags())
+            && (!tagService.isAllTipsAndTricksValid(dto.getTags(), TagType.TIPS_AND_TRICKS)))) {
             throw new TagNotFoundDuringValidation(ErrorMessage.TAGS_NOT_FOUND);
         }
         return true;

@@ -1,6 +1,7 @@
 package greencity.validator;
 
 import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.InvalidURLException;
 import greencity.exception.exceptions.TagNotFoundDuringValidation;
 import greencity.service.TagsService;
@@ -30,7 +31,8 @@ class TipsAndTricksDtoRequestValidatorTest {
         tipsAndTricksDtoRequest.setSource(getUrl().toString());
         when(tagService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTags()))
             .thenReturn(true);
-        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags())).thenReturn(true);
+        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS))
+            .thenReturn(true);
         assertTrue(validator.isValid(tipsAndTricksDtoRequest, null));
     }
 
@@ -40,7 +42,8 @@ class TipsAndTricksDtoRequestValidatorTest {
         tipsAndTricksDtoRequest.setSource(getUrl().toString());
         when(tagService.isValidNumOfUniqueTags(tipsAndTricksDtoRequest.getTags()))
             .thenReturn(true);
-        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags())).thenReturn(false);
+        when(tagService.isAllTipsAndTricksValid(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS))
+            .thenReturn(false);
         assertThrows(TagNotFoundDuringValidation.class, () -> validator.isValid(tipsAndTricksDtoRequest, null));
     }
 

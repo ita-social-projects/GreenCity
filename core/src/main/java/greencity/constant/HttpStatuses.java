@@ -8,7 +8,7 @@ public final class HttpStatuses {
     public static final String UNAUTHORIZED = "Unauthorized";
     public static final String FORBIDDEN = "Forbidden";
     public static final String NOT_FOUND = "Not Found";
-    public static final String SEE_OTHER = "SEE_OTHER";
+    public static final String SEE_OTHER = "See Other";
     public static final String INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
 
     HttpStatuses() {

@@ -38,8 +38,7 @@ public class NewsSubscriberController {
     @ApiOperation(value = "Get all emails for sending news.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
     public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {
@@ -49,15 +48,16 @@ public class NewsSubscriberController {
     /**
      * Method saves email for receiving news.
      *
-     * @param dto {@link NewsSubscriberResponseDto} object with email address for receiving news.
+     * @param dto {@link NewsSubscriberResponseDto} object with email address for
+     *            receiving news.
      * @return {@link NewsSubscriberResponseDto} object with saving email.
      * @author Bogdan Kuzenko
      */
     @ApiOperation(value = "Save email in database for receiving news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = NewsSubscriberRequestDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("")
     public ResponseEntity<NewsSubscriberRequestDto> save(
@@ -69,18 +69,20 @@ public class NewsSubscriberController {
     /**
      * Method for delete subscriber email from database.
      *
-     * @param email {@link NewsSubscriberResponseDto} object with email address for deleting.
+     * @param email {@link NewsSubscriberResponseDto} object with email address for
+     *              deleting.
      * @return id of deleted object.
      */
     @ApiOperation(value = "Deleting an email from subscribe table in database.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/unsubscribe")
     public ResponseEntity<Long> delete(@RequestParam @Valid String email,
-                                       @RequestParam String unsubscribeToken) {
+        @RequestParam String unsubscribeToken) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(newsSubscriberService.unsubscribe(email, unsubscribeToken));
     }

@@ -1,30 +1,27 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.place.*;
-import greencity.entity.Place;
-import greencity.entity.User;
-import greencity.entity.enums.PlaceStatus;
-import greencity.entity.enums.UserStatus;
-import greencity.exception.exceptions.UserBlockedException;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceUpdateDto;
+import greencity.dto.place.PlaceVO;
+import greencity.dto.place.PlaceWithUserDto;
+import greencity.dto.place.UpdatePlaceStatusDto;
+import greencity.dto.user.UserVO;
+import greencity.enums.PlaceStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -33,12 +30,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/place")
 @AllArgsConstructor
 public class PlaceController {
     private final FavoritePlaceService favoritePlaceService;
-    private UserService userService;
     /**
      * Autowired PlaceService instance.
      */
@@ -61,10 +64,6 @@ public class PlaceController {
     @PostMapping("/propose")
     public ResponseEntity<PlaceWithUserDto> proposePlace(
         @Valid @RequestBody PlaceAddDto dto, Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
-            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
-        }
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(modelMapper.map(placeService.save(dto, principal.getName()), PlaceWithUserDto.class));
     }
@@ -99,7 +98,7 @@ public class PlaceController {
      */
     @ApiOperation(value = "Get info about place")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PlaceInfoDto.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
@@ -110,8 +109,9 @@ public class PlaceController {
     }
 
     /**
-     * The method to get {@code FavoritePlace}. as {@code Place} info.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method to get {@code FavoritePlace}. as {@code Place} info. Parameter
+     * principal are ignored because Spring automatically provide the Principal
+     * object.
      *
      * @param placeId - {@code Place} id
      * @return info about {@code Place} with name as in {@code FavoritePlace}
@@ -130,8 +130,9 @@ public class PlaceController {
     }
 
     /**
-     * The method to save {@link Place} to {@link User}'s favorite list.
-     * Parameter principal are ignored because Spring automatically provide the Principal object.
+     * The method to save {@link PlaceVO} to {@link UserVO}'s favorite list.
+     * Parameter principal are ignored because Spring automatically provide the
+     * Principal object.
      *
      * @param favoritePlaceDto -{@link FavoritePlaceDto}
      * @return principal - user e,ail
@@ -152,8 +153,8 @@ public class PlaceController {
     }
 
     /**
-     * The method which return a list {@code PlaceByBoundsDto} with information about place,
-     * location depends on the map bounds.
+     * The method which return a list {@code PlaceByBoundsDto} with information
+     * about place, location depends on the map bounds.
      *
      * @param filterPlaceDto Contains South-West and North-East bounds of map .
      * @return a list of {@code PlaceByBoundsDto}
@@ -175,13 +176,14 @@ public class PlaceController {
     }
 
     /**
-     * The method parse the string param to PlaceStatus value.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * The method parse the string param to PlaceStatus value. Parameter pageable
+     * ignored because swagger ui shows the wrong params, instead they are explained
+     * in the {@link ApiPageable}.
      *
      * @param status   a string represents {@link PlaceStatus} enum value.
      * @param pageable pageable configuration.
-     * @return response {@link PageableDto} object. Contains a list of {@link AdminPlaceDto}.
+     * @return response {@link PageableDto} object. Contains a list of
+     *         {@link AdminPlaceDto}.
      * @author Roman Zahorui
      */
     @ApiOperation(value = "Get places by status(APPROVED, PROPOSED, DECLINED, DELETED).")
@@ -193,7 +195,7 @@ public class PlaceController {
     })
     @GetMapping("/{status}")
     @ApiPageable
-    public ResponseEntity<PageableDto> getPlacesByStatus(
+    public ResponseEntity<PageableDto<AdminPlaceDto>> getPlacesByStatus(
         @PathVariable PlaceStatus status,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -224,10 +226,12 @@ public class PlaceController {
     }
 
     /**
-     * The method which update {@link Place} status.
+     * The method which update {@link PlaceVO} status.
      *
-     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated {@link PlaceStatus}.
-     * @return response object with {@link UpdatePlaceStatusDto} and OK status if everything is ok.
+     * @param dto - {@link UpdatePlaceStatusDto} with place id and updated
+     *            {@link PlaceStatus}.
+     * @return response object with {@link UpdatePlaceStatusDto} and OK status if
+     *         everything is ok.
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Update status of place")
@@ -245,9 +249,9 @@ public class PlaceController {
 
     /**
      * The method which return a list {@link PageableDto} filtered by values
-     * contained in the incoming {@link FilterPlaceDto} object.
-     * Parameter pageable ignored because swagger ui shows the wrong params,
-     * instead they are explained in the {@link ApiPageable}.
+     * contained in the incoming {@link FilterPlaceDto} object. Parameter pageable
+     * ignored because swagger ui shows the wrong params, instead they are explained
+     * in the {@link ApiPageable}.
      *
      * @param filterDto contains all information about the filtering of the list.
      * @param pageable  pageable configuration.
@@ -264,7 +268,7 @@ public class PlaceController {
     })
     @PostMapping("/filter/predicate")
     @ApiPageable
-    public ResponseEntity<PageableDto> filterPlaceBySearchPredicate(
+    public ResponseEntity<PageableDto<AdminPlaceDto>> filterPlaceBySearchPredicate(
         @Valid @RequestBody FilterPlaceDto filterDto,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -292,10 +296,12 @@ public class PlaceController {
     }
 
     /**
-     * The method which update array of {@link Place}'s from DB.
+     * The method which update array of {@link PlaceVO}'s from DB.
      *
-     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link Place}'s id's and updated {@link PlaceStatus}
-     * @return list of {@link UpdatePlaceStatusDto} with updated {@link Place}'s and {@link PlaceStatus}'s
+     * @param dto - {@link BulkUpdatePlaceStatusDto} with {@link PlaceVO}'s id's and
+     *            updated {@link PlaceStatus}
+     * @return list of {@link UpdatePlaceStatusDto} with updated {@link PlaceVO}'s
+     *         and {@link PlaceStatus}'s
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Bulk update place statuses")
@@ -331,9 +337,10 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete {@link Place} from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete {@link PlaceVO} from DB(change {@link PlaceStatus} to
+     * DELETED).
      *
-     * @param id - {@link Place} id
+     * @param id - {@link PlaceVO} id
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Delete place")
@@ -350,10 +357,12 @@ public class PlaceController {
     }
 
     /**
-     * The method which delete array of {@link Place}'s from DB(change {@link PlaceStatus} to DELETED).
+     * The method which delete array of {@link PlaceVO}'s from DB(change
+     * {@link PlaceStatus} to DELETED).
      *
-     * @param ids - list of id's of {@link Place}'s, splited by "," which need to be deleted
-     * @return count of deleted {@link Place}'s
+     * @param ids - list of id's of {@link PlaceVO}'s, splited by "," which need to
+     *            be deleted
+     * @return count of deleted {@link PlaceVO}'s
      * @author Nazar Vladyka
      */
     @ApiOperation(value = "Bulk delete places")
@@ -365,8 +374,7 @@ public class PlaceController {
     })
     @DeleteMapping
     public ResponseEntity<Long> bulkDelete(
-        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true)
-        @RequestParam String ids) {
+        @ApiParam(value = "Ids of places separated by a comma \n e.g. 1,2", required = true) @RequestParam String ids) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
             .map(Long::valueOf)
             .collect(Collectors.toList())));

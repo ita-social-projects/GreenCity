@@ -74,14 +74,13 @@ $(document).ready(function(){
     //Кнопка delete в deleteAllSelectedModal
     $('#deleteAllSubmit').on('click',function(event){
         event.preventDefault();
-        var checkbox = $('table tbody input[type="checkbox"]');
         var payload=[];
         checkbox.each(function (){
             if(this.checked){
                 payload.push(this.value);
             }
         })
-        var href = '/factoftheday/deleteAll';
+        var href = '/management/factoftheday/deleteAll';
         $.ajax({
             url: href,
             type: 'delete',
@@ -121,7 +120,7 @@ $(document).ready(function(){
         }
         //запит save у модальній формі add
         $.ajax({
-            url: '/factoftheday/',
+            url: '/management/factoftheday/',
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
@@ -168,7 +167,7 @@ $(document).ready(function(){
         }
         //запит save у модальній формі update
         $.ajax({
-            url: '/factoftheday/',
+            url: '/management/factoftheday/',
             type: 'put',
             dataType: 'json',
             contentType: 'application/json',

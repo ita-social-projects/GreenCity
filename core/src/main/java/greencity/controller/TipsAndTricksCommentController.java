@@ -1,25 +1,25 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentDto;
-import greencity.entity.User;
+import greencity.dto.user.UserVO;
+import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.service.TipsAndTricksCommentService;
-import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -29,40 +29,37 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/tipsandtricks/comments")
 public class TipsAndTricksCommentController {
-    private UserService userService;
     private TipsAndTricksCommentService tipsAndTricksCommentService;
 
     /**
-     * Method for creating {@link greencity.entity.TipsAndTricksComment}.
+     * Method for creating {@link TipsAndTricksCommentVO}.
      *
-     * @param tipsAndTricksId id of {@link greencity.entity.TipsAndTricks} to add comment to.
-     * @param request         - dto for {@link greencity.entity.TipsAndTricksComment} entity.
-     * @return dto {@link greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse}
+     * @param tipsAndTricksId id of {@link TipsAndTricksVO} to add comment to.
+     * @param request         - dto for {@link TipsAndTricksCommentVO} entity.
+     * @return dto {@link AddTipsAndTricksCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddTipsAndTricksCommentDtoResponse.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("{tipsAndTricksId}")
     public ResponseEntity<AddTipsAndTricksCommentDtoResponse> save(@PathVariable Long tipsAndTricksId,
-                                                                   @Valid @RequestBody
-                                                                       AddTipsAndTricksCommentDtoRequest request,
-                                                                   @ApiIgnore @AuthenticationPrincipal
-                                                                       Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-
+        @Valid @RequestBody AddTipsAndTricksCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, user));
+            .body(tipsAndTricksCommentService.save(tipsAndTricksId, request, userVO));
     }
 
     /**
-     * Method to get all comments to {@link greencity.entity.TipsAndTricks} specified by tipsAndTricksId.
+     * Method to get all comments to {@link TipsAndTricksVO} specified by
+     * tipsAndTricksId.
      *
-     * @param tipsAndTricksId id of {@link greencity.entity.TipsAndTricks}
+     * @param tipsAndTricksId id of {@link TipsAndTricksVO}
      * @return Pageable of {@link TipsAndTricksCommentDto}
      */
     @ApiOperation(value = "Get all comments.")
@@ -70,31 +67,25 @@ public class TipsAndTricksCommentController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
-    @GetMapping("")
+    @GetMapping()
     @ApiPageable
     public ResponseEntity<PageableDto<TipsAndTricksCommentDto>> findAll(@ApiIgnore Pageable pageable,
-                                                                        Long tipsAndTricksId,
-                                                                        @ApiIgnore @AuthenticationPrincipal
-                                                                            Principal principal) {
-        User user = null;
-        if (principal != null) {
-            user = userService.findByEmail(principal.getName());
-        }
+        Long tipsAndTricksId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(tipsAndTricksCommentService.findAllComments(pageable, user, tipsAndTricksId));
+            .body(tipsAndTricksCommentService.findAllComments(pageable, userVO, tipsAndTricksId));
     }
 
     /**
-     * Method to count comments to certain {@link greencity.entity.TipsAndTricks}.
+     * Method to count comments to certain {@link TipsAndTricksVO}.
      *
-     * @param id to specify {@link greencity.entity.TipsAndTricks}
+     * @param id to specify {@link TipsAndTricksVO}
      * @return amount of comments
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("/count/comments")
     public int getCountOfComments(Long id) {
@@ -102,7 +93,8 @@ public class TipsAndTricksCommentController {
     }
 
     /**
-     * Method to get all replies to {@link greencity.entity.TipsAndTricksComment} specified by parentCommentId.
+     * Method to get all replies to {@link TipsAndTricksCommentVO} specified by
+     * parentCommentId.
      *
      * @param parentCommentId specifies parent comment to all replies
      * @return list of {@link TipsAndTricksCommentDto} replies
@@ -126,61 +118,60 @@ public class TipsAndTricksCommentController {
     @ApiOperation(value = "Mark comment as deleted.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
-    @DeleteMapping("")
-    public ResponseEntity<Object> delete(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        tipsAndTricksCommentService.deleteById(id, user);
+    @DeleteMapping()
+    public ResponseEntity<Object> delete(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.deleteById(id, userVO);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * Method to update certain {@link greencity.entity.TipsAndTricksComment} specified by id.
+     * Method to update certain {@link TipsAndTricksCommentVO} specified by id.
      *
-     * @param id   of {@link greencity.entity.TipsAndTricksComment} to update
-     * @param text new text of {@link greencity.entity.TipsAndTricksComment}
+     * @param id   of {@link TipsAndTricksCommentVO} to update
+     * @param text new text of {@link TipsAndTricksCommentVO}
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
-    @PatchMapping("")
-    public void update(Long id, String text, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        tipsAndTricksCommentService.update(text, id, user);
+    @PatchMapping()
+    public void update(Long id, String text, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.update(text, id, userVO);
     }
 
     /**
-     * Method to like/dislike certain {@link greencity.entity.TipsAndTricksComment} specified by id.
+     * Method to like/dislike certain {@link TipsAndTricksCommentVO} specified by
+     * id.
      *
-     * @param id of {@link greencity.entity.TipsAndTricksComment} to like/dislike
+     * @param id of {@link TipsAndTricksCommentVO} to like/dislike
      */
     @ApiOperation(value = "Like comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping("like")
-    public void like(Long id, @ApiIgnore @AuthenticationPrincipal Principal principal) {
-        User user = userService.findByEmail(principal.getName());
-        tipsAndTricksCommentService.like(id, user);
+    public void like(Long id, @ApiIgnore @CurrentUser UserVO userVO) {
+        tipsAndTricksCommentService.like(id, userVO);
     }
 
     /**
-     * Method to count likes to certain {@link greencity.entity.TipsAndTricksComment}.
+     * Method to count likes to certain {@link TipsAndTricksCommentVO}.
      *
      * @param id specifies comment
      * @return amount of likes
      */
     @ApiOperation(value = "Count comment likes.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("/count/likes")
     public int getCountOfLikes(Long id) {
@@ -188,15 +179,14 @@ public class TipsAndTricksCommentController {
     }
 
     /**
-     * Method to count replies to certain {@link greencity.entity.TipsAndTricksComment}.
+     * Method to count replies to certain {@link TipsAndTricksCommentVO}.
      *
      * @param parentCommentId specifies parent comment to all replies
      * @return amount of replies
      */
     @ApiOperation(value = "Get count of replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("count/replies")
     public int getCountOfReplies(Long parentCommentId) {

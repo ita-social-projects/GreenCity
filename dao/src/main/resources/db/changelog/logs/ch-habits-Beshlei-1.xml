@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Beshlei-9" author="Taras Beshlei">
+        <addColumn tableName="habits">
+            <column name="habit_status_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Beshlei-10" author="Taras Beshei">
+        <addForeignKeyConstraint baseTableName="habits" baseColumnNames="habit_status_id" constraintName="fk_habit_status_id"
+                                 referencedTableName="habit_status"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Beshlei-11" author="Taras Beshlei">
+        <dropColumn tableName="habits" columnName="user_id"/>
+    </changeSet>
+    <changeSet id="Beshlei-12" author="Taras Beshlei">
+        <createTable tableName="habits_users_assign">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="users_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Beshlei-13" author="Taras Beshlei">
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habit_id"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_users_id"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="23.09.20.Lehkyi-5_Beshlei-13" author="Mykola Lehkyi">
+        <dropForeignKeyConstraint baseTableName="habits_users_assign"
+                                  constraintName="fk_habit_id" />
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="habit_id"
+                                 constraintName="fk_habits_users_assign_habits"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+
+        <dropForeignKeyConstraint baseTableName="habits_users_assign"
+                                  constraintName="fk_users_id" />
+        <addForeignKeyConstraint baseTableName="habits_users_assign"
+                                 baseColumnNames="users_id"
+                                 constraintName="fk_habits_users_assign_users"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="Beshlei-14" author="Taras Beshlei">
+        <dropColumn tableName="habits" columnName="habit_status_id"/>
+    </changeSet>
+</databaseChangeLog>

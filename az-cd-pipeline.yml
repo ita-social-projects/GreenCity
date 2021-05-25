@@ -7,6 +7,7 @@ trigger:
     exclude:
     - README.md
 
+
 variables:
   agentOS: ubuntu-latest
   
@@ -17,13 +18,11 @@ variables:
   
   artifactName: drop
   coreRepoName: core
-  mailRepoName: email
   onbootJarName: app.jar
   
   azureSub: GreenCity
   resourceGroup: GreenCity
   coreServiceName: greencity
-  mailServiceName: greencity-mail
 
 stages:
 - stage: Build
@@ -78,15 +77,12 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.8'
+        jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         options: '-Dmaven.test.skip=true'
         
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
-
-    - script: mv $(mailRepoName)/target/*.jar $(mailRepoName)/target/$(onbootJarName) 
-      displayName: Rename email jar to app
 
     - task: CopyFiles@2
       displayName: Copy Files
@@ -129,30 +125,3 @@ stages:
                 deployToSlotOrASE: true
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
-
-    - deployment: DeployMail
-      displayName: Deploy mail app service
-      pool:
-        vmImage: $(agentOS)
-      environment: 'prod'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - download: none
-            
-            - task: DownloadBuildArtifacts@0
-              inputs:
-                buildType: 'current'
-                downloadType: 'single'
-                artifactName: '$(artifactName)'
-                downloadPath: '$(System.ArtifactsDirectory)'
-                
-            - task: AzureRmWebAppDeployment@4
-              inputs:
-                azureSubscription: '$(azureSub)'
-                appType: 'webAppLinux'
-                WebAppName: '$(mailServiceName)'
-                deployToSlotOrASE: true
-                ResourceGroupName: '$(resourceGroup)'
-                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(mailRepoName)/target/$(onbootJarName)'

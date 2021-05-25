@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Markiyan Derevetskyi" id="Derevetskyi-1">
+        <createTable tableName="habits_tags">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Derevetskyi-2" author="Markiyan Derevetskyi">
+        <addPrimaryKey
+                columnNames="habit_id, tag_id"
+                constraintName="PK_habits_tags"
+                tableName="habits_tags"/>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habits_tags"
+                                 constraintName="FK_habit_tags_habits" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="habits_tags"
+                                 constraintName="FK_habits_tags_tags" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+    </changeSet>
+</databaseChangeLog>

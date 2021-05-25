@@ -2,6 +2,19 @@ header {
     flex: 0 0 auto;
 }
 
+.logo-admin {
+    width: 40px;
+    height: 40px;
+    margin-top: 2px;
+    margin-left: 40px;
+}
+
+.logo-admin img {
+    display: block;
+    width: 40px;
+    height: 40px;
+}
+
 .main-header {
     width: 100%;
     box-shadow: 0 0 8px rgba(73, 74, 73, 0.2);
@@ -38,7 +51,7 @@ header {
     width: 136px;
     height: 36px;
     margin-right: 4%;
-    margin-left: 150px;
+    margin-left: 15px;
     cursor: pointer;
 }
 
@@ -53,7 +66,7 @@ header {
 
 .navigation-menu-left {
     width: 100%;
-    max-width: 430px;
+    max-width: 930px;
 }
 
 .navigation-menu-left ul {
@@ -458,32 +471,55 @@ header {
     height: 176px;
 }
 
+.dropbtn {
+    width: 62px;
+    height: 25px;
+    background-color: #ffffff;
+    text-align: center;
+    border-radius: 5px;
+    border: solid 1px #ffffff;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #13aa57;
+    color: #ffffff;
+    border: solid 1px #ffffff;
+}
+
 .dropdown {
-    background-color: #fff;
-    list-style-type: none;
-    padding: 0;
-    position: absolute;
-    top: 41px;
-    width: 150px;
-    display: flex;
-    flex-direction: column;
-    right: -15px;
-    align-items: flex-start;
-}
-
-.dropdown li {
     position: relative;
-    color: black;
+    display: inline-block;
+    margin-left:20px;
+
 }
 
-.dropdown li a {
+.dropdown-content {
+    display: none;
+    width: 62px ;
+    height: 50px;
+    text-align: center;
+    border-radius: 5px;
+    position: absolute;
+}
+
+.dropdown-content a {
+    color: #000000 !important;
+    padding: 2px 24px;
+    border-radius: 5px;
     display: block;
-    padding: 10px;
-    width: 100%;
+    cursor: pointer;
 }
 
-.dropdown li a:hover {
-    color: white;
+.dropdown-content a:hover {
+    text-decoration: none;
+    color: #ffffff !important;
+    background-color: #13aa57;
+    cursor: pointer;
+}
+
+.dropdown:hover .dropdown-content {
+    display:block;
+    background-color: #ffffff;
 }
 
 .active-link {

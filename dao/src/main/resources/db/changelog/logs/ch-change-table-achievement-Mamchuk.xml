@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Orest Mamchuk" id="Mamchuk-1">
+        <createTable tableName="achievement_categories">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Orest Mamchuk" id="Mamchuk-2">
+        <addColumn tableName="achievements">
+            <column name="achievement_category_id" type="BIGINT">
+            </column>
+            <column name="condition" type="INTEGER">
+            </column>
+        </addColumn>
+        <dropColumn tableName="achievements">
+            <column name="title"/>
+            <column name="description"/>
+            <column name="message"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet author="Orest Mamchuk" id="Mamchuk-4">
+        <addForeignKeyConstraint baseColumnNames="achievement_category_id" baseTableName="achievements"
+                                 constraintName="achievements_category_id_fk" referencedColumnNames="id"
+                                 referencedTableName="achievement_categories"/>
+    </changeSet>
+
+</databaseChangeLog>

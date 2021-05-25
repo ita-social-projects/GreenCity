@@ -1,17 +1,16 @@
 package greencity.validator;
 
+import static greencity.ModelUtils.getUrl;
 import greencity.exception.exceptions.InvalidURLException;
 import java.net.MalformedURLException;
 import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static greencity.ModelUtils.getUrl;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @ExtendWith(SpringExtension.class)
-public class UrlValidatorTest {
+class UrlValidatorTest {
 
     @Test
     void UrlValidatorTrueTest() throws MalformedURLException {

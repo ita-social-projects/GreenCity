@@ -2,77 +2,96 @@ package greencity.controller;
 
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
 
-import greencity.constant.AppConstant;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.advice.AdviceDTO;
-import greencity.dto.advice.AdvicePostDTO;
+import greencity.dto.PageableDto;
+import greencity.dto.advice.AdviceDto;
+import greencity.dto.advice.AdvicePostDto;
+import greencity.dto.advice.AdviceVO;
 import greencity.dto.language.LanguageTranslationDTO;
-import greencity.entity.Advice;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.service.AdviceService;
-import greencity.service.AdviceTranslationService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/advices")
 @AllArgsConstructor
+@Validated
 public class AdviceController {
-    private AdviceService adviceService;
-    private AdviceTranslationService adviceTranslationService;
-    private ModelMapper mapper;
+    private final AdviceService adviceService;
 
     /**
-     * The controller which returns random {@link Advice} by HabitDictionary adviceId.
+     * The controller which returns random {@link AdviceVO} by HabitDictionary
+     * adviceId.
      *
      * @param habitId HabitDictionary
-     * @return {@link AdviceDTO}
+     * @return {@link AdviceDto}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get random content by habit adviceId")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = INVALID_HABIT_ID),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/random/{habitId}")
+    @ApiLocale
     public LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(
         @PathVariable Long habitId,
-        @ApiParam(value = "Code of the needed language.", defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE)
-        @RequestParam(required = false, defaultValue = AppConstant.DEFAULT_LANGUAGE_CODE) String language) {
-        return adviceService.getRandomAdviceByHabitIdAndLanguage(habitId, language);
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return adviceService.getRandomAdviceByHabitIdAndLanguage(habitId, locale.getLanguage());
     }
 
     /**
-     * The controller which returns all {@link Advice}.
+     * The controller which returns all {@link AdviceVO}.
      *
-     * @return List of {@link AdviceDTO}
+     * @return List of {@link AdviceDto}
      * @author Vitaliy Dzen
      */
     @ApiOperation("Get all advices")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = PageableDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping
-    public List<LanguageTranslationDTO> getAll() {
-        return adviceService.getAllAdvices();
+    public PageableDto<AdviceVO> getAll(@ApiIgnore Pageable pageable) {
+        return adviceService.getAllAdvices(pageable);
     }
 
     /**
-     * The controller which saveAdviceAndAdviceTranslation {@link Advice}.
+     * The controller which returns advice by id {@link AdviceVO}.
      *
-     * @param advice {@link AdviceDTO}
+     * @return instance of {@link AdviceVO}
+     * @author Markiyan Derevetskyi
+     */
+    @ApiOperation("Get advice by id")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/{id}")
+    public AdviceVO getById(@PathVariable Long id) {
+        return adviceService.getAdviceById(id);
+    }
+
+    /**
+     * The controller which saveAdviceAndAdviceTranslation {@link AdviceVO}.
+     *
+     * @param advice {@link AdviceDto}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -80,18 +99,18 @@ public class AdviceController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping
-    public ResponseEntity<List<AdviceTranslation>> save(@Valid @RequestBody AdvicePostDTO advice) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(adviceTranslationService.saveAdviceAndAdviceTranslation(advice));
+    public ResponseEntity<AdviceVO> save(@Valid @RequestBody AdvicePostDto advice) {
+        AdviceVO response = adviceService.save(advice);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**
-     * The controller which update {@link Advice}.
+     * The controller which update {@link AdviceVO}.
      *
-     * @param dto {@link AdviceDTO}
+     * @param dto {@link AdviceDto}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -99,19 +118,19 @@ public class AdviceController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PutMapping("/{adviceId}")
-    public ResponseEntity<AdvicePostDTO> update(
-        @Valid @RequestBody AdvicePostDTO dto, @PathVariable Long adviceId) {
+    public ResponseEntity<AdvicePostDto> update(
+        @Valid @RequestBody AdvicePostDto dto, @PathVariable Long adviceId) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(mapper.map(adviceService.update(dto, adviceId), AdvicePostDTO.class));
+            .body(adviceService.update(dto, adviceId));
     }
 
     /**
-     * The controller which delete {@link Advice}.
+     * The controller which delete {@link AdviceVO}.
      *
-     * @param adviceId of {@link Advice}
+     * @param adviceId of {@link AdviceVO}
      * @return {@link ResponseEntity}
      * @author Vitaliy Dzen
      */
@@ -119,7 +138,7 @@ public class AdviceController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @DeleteMapping("/{adviceId}")
     public ResponseEntity<Object> delete(@PathVariable Long adviceId) {

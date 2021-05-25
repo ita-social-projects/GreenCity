@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="1571227598335-1" author="Hutei Volodymyr">
+        <createTable tableName="unread_messages">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="status" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="message_id"
+                                 baseTableName="unread_messages"
+                                 constraintName="fk5s2hfa0bsgdsipw5kdyd5bhfx"
+                                 deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="chat_messages"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="unread_messages"
+                                 constraintName="fkh84h4eq2rt6ams9mbbb0keadp"
+                                 deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

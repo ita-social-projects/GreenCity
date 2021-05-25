@@ -1,6 +1,6 @@
 ---
 name: User story
-about: Describe story goal
+about: Describe story shoppingListItem
 title: ''
 labels: User story
 assignees: ''
