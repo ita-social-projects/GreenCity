@@ -9,10 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -36,13 +33,28 @@ public class FileServiceController {
      */
     @ApiOperation(value = "Upload an image.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = String.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-        @ApiResponse(code = 500, message = HttpStatuses.INTERNAL_SERVER_ERROR),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = String.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam @NotEmpty MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image).toString());
+    public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image));
+    }
+
+    /**
+     * Method for convert image to multipart image.
+     *
+     * @param image image to convert.
+     * @return multipart image.
+     */
+    @ApiOperation(value = "Convert image.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.CREATED, response = MultipartFile.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/convert")
+    public ResponseEntity<MultipartFile> convertToMultipartImage(@RequestParam @NotEmpty String image) {
+        return ResponseEntity.status(HttpStatus.OK).body(fileService.convertToMultipartImage(image));
     }
 }

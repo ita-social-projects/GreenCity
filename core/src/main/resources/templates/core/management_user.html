@@ -1,0 +1,523 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset=UTF-8/>
+    <title>User management</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://kit.fontawesome.com/c847fb58e4.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+
+</head>
+<body onload="Order()">
+<div id="header" th:insert="core/header"></div>
+<div>
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+</div>
+<div class="main-content">
+    <div class="container-xl">
+        <div class="table-responsive">
+            <div class="table-wrapper">
+                <div class="table-title">
+                    <div class="row manager-user">
+                        <h2 class="text-describe">[[#{greenCity.user.page.h}]]</h2>
+                        <div class="buttons">
+                            <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
+                               data-toggle="modal">
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
+                            </a>
+                            <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                <div>[[#{greenCity.user.page.add.user}]]</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row-box-and-sort">
+                        <div class="main-search">
+                            <form class="form-inline searching" action="#" method="get">
+                                <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
+                            </form>
+                            <button class="filter-button">
+                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]</button>
+                        </div>
+                        <div class="filter-list-grid">
+                            <div class="dropdown size">
+                                <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                <button class="dropbtn size" th:text="${paging.pageSize}">
+                                </button>
+                                <div class="dropdown-content size">
+                                    <a href="/management/users?size=20">20</a>
+                                    <a href="/management/users?size=40">40</a>
+                                    <a href="/management/users?size=100">100</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr class="table-primary ">
+                            <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                            </th>
+                            <th>
+                                <span>[[#{greenCity.pages.table.id}]]</span>
+                            </th>
+                            <th class="username">
+                                [[#{greenCity.pages.table.userName}]]
+                                <span class="table-filter-icon"></span>
+                                <div class="name-filter-form" style="display: block;">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending</button>
+                                    </div>
+                                    <form action="/management/users/search" id="nameFilterForm"
+                                          method="POST" >
+                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                               th:name="name"
+                                               th:value="${fields eq null ? '' : fields.name}">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" class="filter-checkbox-input">
+                                            <p class="filter-checkbox-text">save filtering</p>
+                                        </div>
+                                        <div class="filter-buttons">
+                                            <button class="filter-cancel">Cancel</button>
+                                            <button type="submit" class="filter-apply">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.email}]]
+                                <span class="table-filter-icon"></span>
+                                <div class="name-filter-form" style="display: none;">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('email')">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('email')">Descending</button>
+                                    </div>
+                                    <form action="/management/users/search" id="emailFilterForm"
+                                          method="POST" >
+                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                               th:name="email"
+                                               th:value="${fields eq null ? '' : fields.email}">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" class="filter-checkbox-input">
+                                            <p class="filter-checkbox-text">save filtering</p>
+                                        </div>
+                                        <div class="filter-buttons">
+                                            <button class="filter-cancel">Cancel</button>
+                                            <button type="submit" class="filter-apply">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.credo}]]
+                                <span class="table-filter-icon"></span>
+                                <div class="name-filter-form">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('userCredo')">Descending</button>
+                                    </div>
+                                    <form action="/management/users/search" id="credoFilterForm"
+                                          method="POST" >
+                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                               th:name="userCredo"
+                                               th:value="${fields eq null ? '' : fields.userCredo}">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" class="filter-checkbox-input">
+                                            <p class="filter-checkbox-text">save filtering</p>
+                                        </div>
+                                        <div class="filter-buttons">
+                                            <button class="filter-cancel">Cancel</button>
+                                            <button type="submit" class="filter-apply">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.role}]]
+                                <span class="table-filter-icon"></span>
+                                <div class="name-filter-form">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('role')">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('role')">Descending</button>
+                                    </div>
+                                    <form action="/management/users/search" id="roleFilterForm"
+                                          method="POST" >
+                                        <div class="filter-checkbox">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox">
+                                            <p class="filter-checkbox-text">User</p>
+                                        </div>
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox">
+                                            <p class="filter-checkbox-text">Moderator</p>
+                                        </div>
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox">
+                                            <p class="filter-checkbox-text">Admin</p>
+                                        </div>
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" class="filter-checkbox-input">
+                                            <p class="filter-checkbox-text">save filtering</p>
+                                        </div>
+                                        <div class="filter-buttons">
+                                            <button class="filter-cancel">Cancel</button>
+                                            <button type="submit" class="filter-apply">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </th>
+                            <th>
+                                [[#{greenCity.pages.table.status}]]
+                                <span class="table-filter-icon"></span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
+                            <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
+                                <td>
+                                    <span class="custom-checkbox">
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                               name="options[]" th:value="${user.id}"
+                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                    </span>
+                                </td>
+                                <td th:text="${user.id}"></td>
+                                <td th:text="${user.name}"></td>
+                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.userCredo}"></td>
+                                <td>
+                                    <div class="dropdown role">
+                                        <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
+                                        </button>
+                                        <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content role">
+                                            <a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">ADMIN</a>
+                                            <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">USER
+                                            </a>
+                                            <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">MODERATOR</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:if="${user.userStatus.name().equals('PENDING')}" style="background-color: #E5F2FF;">
+                                    <div class="dropdown status" >
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        </button>
+                                        <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content status">
+                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
+                                               class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
+                                            </a>
+                                            <a href="#">WARNED</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:if="${user.userStatus.name().equals('ACTIVATED')}" style="background-color: #E7F7EE;">
+                                    <div class="dropdown status" >
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        </button>
+                                        <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content status">
+                                            <a href="#">WARNED</a>
+                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
+                                               class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:if="${user.userStatus.name().equals('WARNED')}" style="background-color: #fff7cf;">
+                                    <div class="dropdown status" >
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        </button>
+                                        <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content status">
+                                            <a th:href="@{/management/users/reasons/(id=${user.id})}"
+                                               class="activate-user eActBtn" disabled="true"
+                                               data-toggle="modal">ACTIVATED</a>
+                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
+                                               class="deactivate-user eDeactBtn" data-toggle="modal">DEACTIVATED
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:if="${user.userStatus.name().equals('DEACTIVATED')}" style="background-color: #FCE0DE;">
+                                    <div class="dropdown status" >
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        </button>
+                                        <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content status">
+                                            <a th:href="@{/management/users/reasons/(id=${user.id})}"
+                                               class="activate-user eActBtn" disabled="true"
+                                               data-toggle="modal">ACTIVATED</a>
+                                            <a href="#">WARNED</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </table>
+                    <!-- Start of Paging -->
+                    <div class="clearfix" th:if="${users.getPage().size() ne 0}">
+                        <ul class="pagination">
+                            <li class="page-item"
+                                th:classappend="${!users.isFirst()} ? '' : 'disabled'">
+                                <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"
+                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i
+                                        class="arrow fas fa-chevron-left"></i></a>
+                                <a class="page-link" rel="tooltip" th:if="${users.isFirst()}"><i
+                                        class="arrow fas fa-chevron-left"></i></a>
+                            </li>
+
+                            <li class="page-item"
+                                th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"
+                                th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"
+                                th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">
+                                <a class="page-link"
+                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>
+                            </li>
+
+                            <li class="page-item"
+                                th:classappend="${!users.isLast()} ? '' : 'disabled'">
+                                <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"
+                                   th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i
+                                        class="arrow fas fa-chevron-right"></i></a>
+                                <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i
+                                        class="arrow fas fa-chevron-right"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End of Paging -->
+                </div>
+            </div>
+        </div>
+        <!--&lt;!&ndash; Add Modal HTML &ndash;&gt;
+        <div id="addUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{#}" method="post" id="addUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+                            <div class="form-group">
+                                <label>[[#{greenCity.pages.table.userName}]]</label>
+                                <input type="text" class="form-control" name="name" required>
+                                <span th:id="errorModalSavename" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>[[#{greenCity.pages.table.email}]]</label>
+                                <input type="text" class="form-control" name="email" required>
+                                <span th:id="errorModalSaveemail" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>[[#{greenCity.pages.table.credo}]]</label>
+                                <select class="form-control" name="role">
+                                    <option selected="selected">ROLE_USER</option>
+                                    <option>ROLE_ADMIN</option>
+                                    <option>ROLE_MODERATOR</option>
+                                </select>
+                                <span th:id="errorModalSaverole" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>[[#{greenCity.pages.table.role}]]</label>
+                                <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
+                                       required>
+                                <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   th:value="#{greenCity.pages.popup.cancel.}">
+                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>-->
+        <!--&lt;!&ndash; Edit user Modal HTML &ndash;&gt;
+        <div id="editUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="editUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Edit User</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>ID</label>
+                                <input type="text" class="form-control" id="id" name="id" readonly required>
+                                <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>User name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <span th:id="errorModalUpdatename" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" id="email" name="email" required>
+                                <span th:id="errorModalUpdateemail" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Credo</label>
+                                <input type="text" class="form-control" id="userCredo" name="userCredo" required>
+                                <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <input type="text" class="form-control" id="role" name="role" required>
+                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="userStatus">Status</label>
+                                <input type="text" class="form-control" id="userStatus" name="userStatus" required
+                                       readonly>
+                                <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   value="Cancel">
+                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>-->
+        <!-- Deactivate user Modal HTML -->
+        <div id="deactivateUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="deactivateUserForm">
+                        <div class="modal-header">
+                            <h4 class="modal-title-deac">[[#{greenCity.user.page.popup.deactivated.h}]]</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p class="deactivate-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
+                            <div class="modal-reasons">
+                                <input type="checkbox" id="first-click" class="deactivate-checkbox">
+                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input}]]</p><br>
+                            </div>
+                            <div class="modal-reasons">
+                                <input type="checkbox" id="second-click" class="deactivate-checkbox">
+                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]</p><br>
+                            </div>
+                            <div class="modal-reasons">
+                                <input type="checkbox" id="other" onclick="otherCheck()" class="deactivate-checkbox">
+                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
+                            </div>
+                            <div id="user-lang">
+                            </div>
+                            <input type="text" id="othertext" disabled="disabled" class="custom-reason">
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                   th:value="#{greenCity.pages.popup.cancel.}">
+                            <a href="" id="deactivateOneSubmit" class="btn btn-remove" disabled="true">
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Activate user Modal HTML -->
+        <div id="activateUserModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!--<form id="activateUserForm">-->
+                    <div class="modal-header">
+                        <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="modal-body-act">[[#{greenCity.user.page.popup.activated.p1}]]</p>
+                        <p class="modal-body-act1">[[#{greenCity.user.page.popup.activated.p1.was}]]</p>
+                    </div>
+                    <div id="reasons">
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
+                            <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
+                        </a>
+                    </div>
+                    <!--</form>-->
+                </div>
+            </div>
+        </div>
+        <!-- Deactivate all selected users Modal HTML -->
+        <div id="deactivateAllSelectedModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="">
+                        <div class="modal-header">
+                            <h4 class="modal-title-deac">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
+                                   th:value="#{greenCity.pages.popup.cancel.}">
+                            <a href="" id="deactivateAllSubmit" class="btn btn-remove">
+                                <div>[[#{greenCity.user.page.deactivated}]]</div>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- User's friends Modal HTML -->
+        <div id="userFriendsModal" class="modal fade">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <h4 class="modal-title">User's Friends</h4>
+                    <div class="modal-body">
+                        <table class="table table-hover" id="friendsTable">
+                            <thead>
+                            <tr class="table-primary">
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Credo</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer" th:insert="core/footer"></div>
+</div>
+</body>
+</html>
