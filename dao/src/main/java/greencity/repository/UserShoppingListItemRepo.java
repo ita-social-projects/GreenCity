@@ -83,4 +83,15 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
         value = "SELECT shopping_list_item_id FROM user_shopping_list WHERE habit_assign_id = :habitAssignId"
             + " AND status = :status")
     List<Long> getShoppingListItemsByHabitAssignIdAndStatus(Long habitAssignId, String status);
+
+    /**
+     * Method returns shopping list with statuses DONE.
+     *
+     * @param userId {@link Long} user id.
+     * @param itemId {@link Long} custom shopping list item id.
+     */
+    @Query(nativeQuery = true, value = "select usl.id from user_shopping_list as usl\n"
+        + "join habit_assign as ha on ha.id = habit_assign_id\n"
+        + "where ha.user_id = :userId and shopping_list_item_id = :itemId")
+    Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 }

@@ -116,6 +116,26 @@ public class CustomShoppingListItemController {
     }
 
     /**
+     * Method updates user's shopping list items to status DONE.
+     *
+     * @param userId {@link UserVO} id
+     * @param itemId {@link Long} with needed item id.
+     * @author Volodia Lesko
+     */
+    @ApiOperation(value = "Update shopping list item status")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PatchMapping("/{userId}/done")
+    public void updateItemStatusToDone(@PathVariable @CurrentUserId Long userId,
+        @RequestParam("itemId") Long itemId) {
+        customShoppingListItemService.updateItemStatusToDone(userId, itemId);
+    }
+
+    /**
      * Method for delete user custom shopping list items.
      *
      * @param ids    string with objects id for deleting.
