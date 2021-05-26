@@ -1,7 +1,6 @@
 package greencity.converters;
 
 import greencity.annotations.CurrentUser;
-import greencity.client.RestClient;
 import greencity.dto.user.UserVO;
 import greencity.service.UserService;
 import java.security.Principal;
