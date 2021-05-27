@@ -5,13 +5,17 @@ import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
+import greencity.enums.HabitAssignStatus;
 import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import greencity.service.HabitAssignService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * Config for scheduling.
@@ -35,6 +40,8 @@ public class ScheduleConfig {
     private final HabitAssignRepo habitAssignRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
+    private final HabitAssignService habitAssignService;
+    private final ModelMapper modelMapper;
 
     /**
      * Invoke {@link SendHabitNotification} from EmailMessageReceiver to send email
@@ -138,5 +145,21 @@ public class ScheduleConfig {
     @Transactional
     public void scheduledDeleteRatingStatisticsOlderThan() {
         ratingStatisticsRepo.scheduledDeleteOlderThan();
+    }
+
+    /**
+     * Every day at 00:00 checks all Assigned Habits whether they are not expired.
+     * 
+     * @author Ostap Mykhaylivskii
+     **/
+    @Transactional
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
+    public void checkExpired() {
+        habitAssignRepo.findAll().stream().forEach(h -> {
+            if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
+                h.setStatus(HabitAssignStatus.EXPIRED);
+                habitAssignRepo.save(h);
+            }
+        });
     }
 }
