@@ -197,4 +197,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      */
     @Query(value = "FROM HabitAssign h WHERE h.habit.id = :habitId AND h.user.id = :userId")
     Optional<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
+
+    @Query(value = "SELECT * FROM HabitAssign ", nativeQuery = true)
+    Optional<List<HabitAssign>> getExpiredHabitAssign();
 }
