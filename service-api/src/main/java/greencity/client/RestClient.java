@@ -454,13 +454,21 @@ public class RestClient {
      * @return a dto of {@link PageableAdvancedDto}.
      */
     public PageableAdvancedDto<UserManagementVO> search(Pageable pageable, UserManagementViewDto userViewDto) {
+        Sort sort = pageable.getSort();
+        StringBuilder orderUrl = new StringBuilder("");
+        if (!sort.isEmpty()) {
+            for (Sort.Order order : sort) {
+                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+            }
+        }
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementViewDto> entity = new HttpEntity<>(userViewDto, headers);
         return restTemplate.exchange(
             greenCityUserServerAddress + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE
                 + pageable.getPageNumber()
-                + RestTemplateLinks.SIZE + pageable.getPageSize(),
+                + RestTemplateLinks.SIZE + pageable.getPageSize()
+                + RestTemplateLinks.SORT + orderUrl,
             HttpMethod.POST, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             }).getBody();
