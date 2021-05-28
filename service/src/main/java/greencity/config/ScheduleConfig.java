@@ -141,6 +141,7 @@ public class ScheduleConfig {
     public void scheduledDeleteRatingStatisticsOlderThan() {
         ratingStatisticsRepo.scheduledDeleteOlderThan();
     }
+
     /**
      * Every day at 00:00 checks all Assigned Habits whether they are not expired.
      *
