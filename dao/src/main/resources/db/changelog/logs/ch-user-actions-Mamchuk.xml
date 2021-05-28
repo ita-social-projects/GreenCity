@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Mamchuk Orest" id="Mamchuk-1">
+        <createTable tableName="user_actions">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eco_news_likes" type="int">
+            </column>
+            <column name="tips_and_tricks_likes" type="int">
+            </column>
+            <column name="published_eco_news" type="int">
+            </column>
+            <column name="eco_news_comment" type="int">
+            </column>
+            <column name="tips_and_tricks_comment" type="int">
+            </column>
+            <column name="acquired_habit" type="int">
+            </column>
+            <column name="habit_streak" type="int">
+            </column>
+            <column name="social_networks" type="int">
+            </column>
+            <column name="rating" type="double">
+            </column>
+            <column name="achievements" type="int">
+            </column>
+
+
+        </createTable>
+    </changeSet>
+    <changeSet author="Mamchuk Orest" id="Mamchuk-2">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_actions"
+                                 constraintName="user_actions_users_id_fk" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>
