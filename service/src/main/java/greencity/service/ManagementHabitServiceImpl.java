@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -114,9 +115,10 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        habit.setImage(habitManagementDto.getImage());
         if (image != null) {
             habit.setImage(fileService.upload(image));
+        } else {
+            habit.setImage(AppConstant.DEFAULT_HABIT_IMAGE);
         }
     }
 
