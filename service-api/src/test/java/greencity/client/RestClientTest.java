@@ -19,8 +19,6 @@ import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -257,6 +255,7 @@ class RestClientTest {
         String accessToken = "accessToken";
         List<String> test = List.of("test", "test");
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<List<String>> entity = new HttpEntity<>(test, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
@@ -428,6 +427,7 @@ class RestClientTest {
         Pageable pageable = PageRequest.of(0, 20, Sort.unsorted());
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         UserManagementViewDto userViewDto =
             UserManagementViewDto.builder()
@@ -446,7 +446,8 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.POST, entity,
+            + RestTemplateLinks.SIZE + pageable.getPageSize()
+            + RestTemplateLinks.SORT + "", HttpMethod.POST, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             })).thenReturn(ResponseEntity.ok(userAdvancedDto));
         assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));

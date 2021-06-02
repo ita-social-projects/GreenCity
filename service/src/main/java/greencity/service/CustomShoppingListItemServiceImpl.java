@@ -10,11 +10,13 @@ import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +41,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
      * Autowired repository.
      */
     private CustomShoppingListItemRepo customShoppingListItemRepo;
+    private UserShoppingListItemRepo userShoppingListItemRepo;
     private ModelMapper modelMapper;
     private RestClient restClient;
     private HabitRepo habitRepo;
@@ -157,6 +160,20 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     /**
      * {@inheritDoc}
      *
+     * @author Volodia Lesko.
+     */
+    @Override
+    public void updateItemStatusToDone(Long userId, Long itemId) {
+        Long userShoppingListItemId = userShoppingListItemRepo.getByUserAndItemId(userId, itemId)
+            .orElseThrow(() -> new NotFoundException(CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID + " " + itemId));
+        UserShoppingListItem userShoppingListItem = userShoppingListItemRepo.getOne(userShoppingListItemId);
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItemRepo.save(userShoppingListItem);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Bogdan Kuzenko.
      */
     @Transactional
@@ -206,10 +223,13 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     }
 
     @Override
-    public List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code) {
-        return customShoppingListItemRepo.findByActiveByUserIdAndLanguageCode(userId, code)
+    public List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
+        List<ShoppingListItemDto> shoppingListItemDtos = customShoppingListItemRepo
+            .findInProgressByUserIdAndLanguageCode(userId, code)
             .stream().map(x -> modelMapper.map(x, ShoppingListItemDto.class))
             .collect(Collectors.toList());
+        shoppingListItemDtos.forEach(x -> x.setStatus(ShoppingListItemStatus.INPROGRESS.toString()));
+        return shoppingListItemDtos;
     }
 
     /**

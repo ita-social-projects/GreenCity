@@ -56,6 +56,14 @@ public interface CustomShoppingListItemService {
     CustomShoppingListItemResponseDto updateItemStatus(Long userId, Long itemId, String itemStatus);
 
     /**
+     * Method updates user's shopping item status to DONE.
+     *
+     * @param userId {@link Long} user id.
+     * @param itemId {@link Long} custom shopping list item id.
+     */
+    void updateItemStatusToDone(Long userId, Long itemId);
+
+    /**
      * Method for deleted list of custom shopping list items.
      *
      * @param ids string with objects id for deleting.
@@ -78,5 +86,5 @@ public interface CustomShoppingListItemService {
      * @param code   language code {@link String}
      * @return {@link ShoppingListItemDto}
      */
-    List<ShoppingListItemDto> findByActiveByUserIdAndLanguageCode(Long userId, String code);
+    List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
 }
