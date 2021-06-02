@@ -100,10 +100,6 @@
                                                        style="float: left; margin-top: 6px;margin-right: 5px">
                                                 <div style="margin-top: 0px; margin-left: 7px;">save filtering</div>
                                             </div>
-                                            <button type="submit" class="filter-btn"><b>Ascending</b></button>
-                                            <button type="submit" class="filter-btn" style="float: right">
-                                                <b>Descending</b>
-                                            </button>
                                             <input type="text" placeholder="Search..." style="border: 1px solid #9CA7B0;
                                                                       border-radius: 4px;
                                                                       height: 36px;
@@ -112,9 +108,11 @@
                                                    style="width :239px;">
                                             <input type="text" id="textInput" value="14 days"
                                                    style="padding: 0; color:#13AA57 ">
-                                            <img class="star1" src="/img/star-empty.png">
-                                            <img class="star2" src="/img/star-empty.png">
-                                            <img class="star3" src="/img/star-empty.png">
+                                            <div class="habit_complexity_filter" id="habit_complexity_filter">
+                                                <img src="/img/star-empty.png" class="complexity_1">
+                                                <img src="/img/star-empty.png" class="complexity_2">
+                                                <img src="/img/star-empty.png" class="complexity_3">
+                                                </div>
                                             <div style="margin-top: 21px">
                                                 <input type="checkbox"
                                                        style="float: left; margin-top: 6px;margin-right: 5px">
@@ -174,7 +172,8 @@
                                 <th>[[#{greenCity.pages.table.category}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.complexity}]]
-                                    <span class="table-filter-icon filter"></span></th>
+                                        <span class="table-filter-icon filter"></span>
+                                    </th>
                                 <th>[[#{greenCity.pages.table.duration}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.description}]]
@@ -460,6 +459,7 @@
 </div>
 <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
 <script>
+    document.getElementById("habit_complexity_filter").style.cursor = 'pointer';
     function openForm() {
         if (document.getElementById("filter").style.display === "block") {
             document.getElementById("filter").style.display = "none";

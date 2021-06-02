@@ -323,7 +323,123 @@ $(document).ready(function () {
           }, {once: true})
         })
     )
+
+    // /**
+    //  * Display habit complexity in filter form.
+    //  */
+    // const filterHabitsCompl = document.getElementsByClassName("habit_complexity_filter");
+    // for (let i = 0; i < filterHabitsCompl.length; i++) {
+    //     // const complexity1 = filterHabitsCompl[i].getAttribute("data-complexity");
+    //     // for (let j = 0; j < complexity1; j++) {
+    //     //     const imgFill = document.createElement("img-filter");
+    //     //     imgFill.setAttribute("src", "/img/star-filled.png")
+    //     //     filterHabitsCompl[i].appendChild(imgFill);
+    //     //
+    //     // }
+    //     for (let j = 0; j < 3; j++) {
+    //         const imgEmpty = document.createElement("img",);
+    //         imgEmpty.setAttribute("src", "/img/star-empty.png");
+    //         filterHabitsCompl[i].appendChild(imgEmpty)
+    //     }
+    // }
+
+    const firstStar = document.querySelector('.complexity_1');
+    const secondStar = document.querySelector('.complexity_2');
+    const thirdStar = document.querySelector('.complexity_3');
+
+    firstStar.addEventListener('click',(event) => {
+        firstStar.setAttribute("src", "/img/star-filled.png");
+        secondStar.setAttribute("src", "/img/star-empty.png");
+        thirdStar.setAttribute("src", "/img/star-empty.png");
+    })
+
+    secondStar.addEventListener('click',(event) => {
+        firstStar.setAttribute("src", "/img/star-filled.png");
+        secondStar.setAttribute("src", "/img/star-filled.png");
+        thirdStar.setAttribute("src", "/img/star-empty.png");
+    })
+
+    thirdStar.addEventListener('click',(event) => {
+        firstStar.setAttribute("src", "/img/star-filled.png");
+        secondStar.setAttribute("src", "/img/star-filled.png");
+        thirdStar.setAttribute("src", "/img/star-filled.png");
+    })
+
+
+
+
+//set habit's complexity for filter
+
+    const habitComplexityfilter = document.querySelectorAll('.habit_complexity_filter')
+    habitComplexityfilter.forEach(x => x.querySelector('.habit_complexity_filter').addEventListener('click', (event) => {
+// habitComplexityfilter.addEventListener('click', event => {
+            event.preventDefault()
+            let stars = habitComplexityfilter.querySelectorAll('img')
+            function changeStar(star){
+                return function () {
+                    let k = 0;
+                    for (let i = 0; i < stars.length; i++) {
+                        if (star === stars[i]) {
+                            k = i;
+                            break;
+                        }
+                    }
+                    for (let i = 0; i <= k; i++) {
+                        stars[i].setAttribute('src', '/img/star-filled.png')
+                    }
+                    for (let i = k + 1; i < stars.length; i++) {
+                        stars[i].setAttribute('src', '/img/star-empty.png')
+                    }
+                }
+            }
+            stars.forEach(star => {
+                star.style.cursor = 'pointer'
+                star.addEventListener('mouseover', changeStar(star))
+                star.addEventListener('mouseout', () => {
+                    const complexity = x.getAttribute("data-complexity")
+                    for (let i = 0; i < complexity; i++) {
+                        stars[i].setAttribute('src', '/img/star-filled.png')
+                    }
+                    for (let i = complexity; i < stars.length; i++) {
+                        stars[i].setAttribute('src', '/img/star-empty.png')
+                    }
+                })
+                //send edit request to server
+                star.addEventListener('click', () => {
+                    const success = () => location.reload();
+                    const hasErrors = (data) => console.log(data)
+                    fetch(x.querySelector('.table-edit-icon').getAttribute('href'))
+                        .then(response => {
+                            let json = response.json();
+                            json.then((habit) => {
+                                for (let i = 0; i < stars.length; i++) {
+                                    if (star === stars[i]) {
+                                        habit.complexity = i + 1;
+                                        break;
+                                    }
+                                }
+                                updateHabit(habit, null, success, hasErrors)
+                            })
+                        })
+                })
+
+            })
+            x.addEventListener('mouseleave', () => {
+                stars.forEach(star => {
+                    star.style.cursor = 'default'
+                    const new_star = star.cloneNode(true)
+                    if(star.parentElement) {
+                        star.parentElement.replaceChild(new_star, star)
+                    }
+                })
+            }, {once: true})
+        })
+    )
+
 })
+
+
+
 // edit habit image
 document.querySelectorAll('.table-download-icon').forEach(e => e.addEventListener('click', event => {
     console.log('was click')

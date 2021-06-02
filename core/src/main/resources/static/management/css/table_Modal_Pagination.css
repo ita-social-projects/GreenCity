@@ -402,11 +402,17 @@ table.table .avatar {
     position: absolute;
     margin-top: 25px;
 }
+.arrow{
+    background-image: url("/img/arrow-down.svg");
+    cursor: pointer;
+    width: 12px;
+    height: 6px;
+}
 
 .table-filter-icon {
-    background-image: url("/img/filter-icon.svg");
+    background-image: url("/img/filter-icon.svg") ;
     width: 16px;
-    height: 16px;
+    height: 12px;
     float: right;
 }
 
