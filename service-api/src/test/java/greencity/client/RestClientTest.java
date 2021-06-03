@@ -446,7 +446,8 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE + pageable.getPageNumber()
-            + RestTemplateLinks.SIZE + pageable.getPageSize(), HttpMethod.POST, entity,
+            + RestTemplateLinks.SIZE + pageable.getPageSize()
+            + RestTemplateLinks.SORT + "", HttpMethod.POST, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             })).thenReturn(ResponseEntity.ok(userAdvancedDto));
         assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));

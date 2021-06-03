@@ -66,21 +66,17 @@ class ManagementUserControllerTest {
 
     @Test
     void getAllUsers() throws Exception {
-        String test = "test";
         Pageable pageable = PageRequest.of(0, 20, Sort.by("id").descending());
-        List<UserManagementDto> userManagementDto = Collections.singletonList(new UserManagementDto());
-        PageableAdvancedDto<UserManagementDto> userAdvancedDto =
-            new PageableAdvancedDto<>(userManagementDto, 20, 0, 0, 0,
+        List<UserManagementVO> userManagementVO = Collections.singletonList(new UserManagementVO());
+        PageableAdvancedDto<UserManagementVO> userAdvancedDto =
+            new PageableAdvancedDto<>(userManagementVO, 20, 0, 0, 0,
                 true, true, true, true);
-        when(restClient.findUserForManagementByPage(pageable)).thenReturn(userAdvancedDto);
-        when(restClient.searchBy(pageable, test)).thenReturn(userAdvancedDto);
-        mockMvc.perform(get(managementUserLink + "?query=" +
-            "&page=" + 0 + "&size=" + 20 + "&sort=" + "id,DESC"))
-            .andExpect(model().attribute("users", userAdvancedDto));
-        mockMvc.perform(get(managementUserLink + "?query=" + test +
-            "&page=" + 0 + "&size=" + 20 + "&sort=" + "id,DESC"));
-        verify(restClient).findUserForManagementByPage(pageable);
-        verify(restClient).searchBy(pageable, test);
+        UserManagementViewDto userManagementViewDto = new UserManagementViewDto();
+        when(restClient.search(pageable, userManagementViewDto)).thenReturn(userAdvancedDto);
+        mockMvc.perform(get(managementUserLink +
+            "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")).andExpect(model()
+                .attribute("users", userAdvancedDto));
+        verify(restClient).search(pageable, userManagementViewDto);
     }
 
     @Test
@@ -183,8 +179,7 @@ class ManagementUserControllerTest {
 
     @Test
     void findFriendsByIdTest() throws Exception {
-        Long id = 1L;
-        mockMvc.perform(get(managementUserLink + "/" + id + "/friends")
+        mockMvc.perform(get(managementUserLink + "/" + 1L + "/friends")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(restClient).findUserFriendsByUserId(1L);

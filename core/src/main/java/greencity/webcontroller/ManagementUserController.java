@@ -44,11 +44,10 @@ public class ManagementUserController {
      */
     @GetMapping
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Model model,
+        UserManagementViewDto userViewDto,
         @ApiIgnore Pageable pageable) {
-        PageableAdvancedDto<UserManagementDto> pageableDto = query == null || query.isEmpty()
-            ? restClient.findUserForManagementByPage(pageable)
-            : restClient.searchBy(pageable, query);
-        model.addAttribute("users", pageableDto);
+        PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
+        model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
         Sort sort = pageable.getSort();
         StringBuilder orderUrl = new StringBuilder("");
