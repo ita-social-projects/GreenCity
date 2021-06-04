@@ -112,12 +112,14 @@ $(document).ready(function () {
         var returnData = {
             "id": formData.id,
             "image": formData.image,
+            "defaultDuration": formData.defaultDuration,
+            "complexity": formData.complexity,
             "habitTranslations": []
 
         }
         for (var key in formData) {
-            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem")) {
-                var lang, name, description, habitItem;
+            if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem") | key.startsWith("complexity")| key.startsWith("defaultDuration")) {
+                var lang, name, description, habitItem, complexity, defaultDuration;
 
                 lang = key.slice(key.length - 2);
                 if (key.startsWith("contentName")) {
@@ -129,18 +131,30 @@ $(document).ready(function () {
                 if (key.startsWith("contentHabItem")) {
                     habitItem = formData["contentHabItem" + lang]
                 }
-                if (name != null && description != null && habitItem != null) {
+                if (key.startsWith("complexity")) {
+                    complexity = formData["complexity"]
+                }
+                if (key.startsWith("defaultDuration")) {
+                    defaultDuration = formData["defaultDuration"]
+                }
+                if (name != null && description != null && habitItem != null && complexity != null && defaultDuration != null) {
                     returnData.habitTranslations.push(
                         {
                             "name": name,
                             "description": description,
                             "habitItem": habitItem,
-                            "languageCode": lang
+                            "languageCode": lang,
+                            "defaultDuration": defaultDuration,
+                            "complexity": complexity,
+
                         }
                     );
                     name = null;
                     description = null;
                     habitItem = null;
+                    defaultDuration = null;
+                    complexity =null;
+
                 }
             }
         }
