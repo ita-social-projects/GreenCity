@@ -10,6 +10,7 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -55,8 +57,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable) {
-        Page<Habit> habits = habitRepo.findAll(pageable);
+    public PageableDto<HabitManagementDto> getAllHabitsDto(FilterHabitDto filterHabitDto, Pageable pageable) {
+        Page<Habit> habits = habitRepo.findAll(new HabitFilter(filterHabitDto), pageable);
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))

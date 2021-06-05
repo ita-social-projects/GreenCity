@@ -1,9 +1,11 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +25,7 @@ public interface ManagementHabitService {
      * @return list of {@link HabitManagementDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable);
+    PageableDto<HabitManagementDto> getAllHabitsDto(FilterHabitDto filterHabitDto, Pageable pageable);
 
     /**
      * Method saves {@code Habit} with it's {@code HabitTranslation}'s.
