@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -15,6 +16,7 @@ import greencity.repository.HabitTranslationRepo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -76,7 +78,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = buildHabitWithTranslations(habitManagementDto);
         uploadImageForHabit(habitManagementDto, image, habit);
-
         habitRepo.save(habit);
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
@@ -114,9 +115,14 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        habit.setImage(habitManagementDto.getImage());
-        if (image != null) {
-            habit.setImage(fileService.upload(image));
+        if (image == null) {
+            if (habitManagementDto.getImage() == null) {
+                habit.setImage(AppConstant.DEFAULT_HABIT_IMAGE);
+            } else {
+                habit.setImage(habitManagementDto.getImage());
+            }
+        } else {
+            fileService.upload(image);
         }
     }
 

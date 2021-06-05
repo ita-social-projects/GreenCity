@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.CommentAdminDto;
@@ -25,6 +26,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
@@ -87,11 +89,14 @@ public class ManagementHabitServiceImplTest {
         when(languageService.findByCode("en")).thenReturn(LanguageDTO.builder().id(1L).code("en").build());
         when(modelMapper.map(languageService.findByCode("en"),
             Language.class)).thenReturn(Language.builder().id(1l).code("en").build());
-        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L).habitTranslations(Arrays.asList(
-            HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
-                .name("Name").build()))
+        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L)
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
+            .habitTranslations(Arrays.asList(
+                HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
+                    .name("Name").build()))
             .build();
         Habit habit = Habit.builder()
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()
