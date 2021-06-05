@@ -9,21 +9,19 @@
                         <img alt="logo" th:src="@{/img/logo_M.png}">
                     </a>
                 </div>
-                <div class="main-search">
-                                <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/users" method="get">
-                                        <img alt="search" id="btnSearchImage"
-                                             src="/img/search.png">
-                                        <input type="search" name="query" id="inputSearch" class="form-control"
-                                               th:placeholder="#{greenCity.pages.search}">
+<!--                <div class="main-search">-->
+<!--                                <span class="search-box-right">-->
+<!--                                    <form class="form-inline searching" action="/management/users" method="get">-->
+<!--                                        <img alt="search" id="btnSearchImage"-->
+<!--                                             src="/img/search.png">-->
+<!--                                        <input type="search" name="query" id="inputSearch" class="form-control"-->
+<!--                                               th:placeholder="#{greenCity.pages.search}">-->
 
-                                    </form>
-                                </span>
+<!--                                    </form>-->
+<!--                                </span>-->
 
-                </div>
-                <div class="logo-admin">
-                    <img class="rounded-circle" th:src="@{/img/view-user.jpg}">
-                </div>
+<!--                </div>-->
+
                 <div class="dropdown">
                     <button class="dropbtn">[[#{greenCity.current.language}]]
                         <i class="fas fa-caret-down"></i>
@@ -32,6 +30,9 @@
                         <a onclick="setLanguageUa()">Ua</a>
                         <a onclick="setLanguageEn()">En</a>
                     </div>
+                </div>
+                <div class="logo-admin">
+                    <img class="rounded-circle" th:src="@{/img/view-user.jpg}">
                 </div>
             </div>
             </ul>
