@@ -107,6 +107,7 @@ $(document).ready(function () {
         clearAllErrorsSpan();
         var formData = $('#addHabitForm').serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
+            console.log(obj);
             return obj;
         }, {});
         var returnData = {
@@ -117,6 +118,7 @@ $(document).ready(function () {
             "habitTranslations": []
 
         }
+        console.log(returnData);
         for (var key in formData) {
             if (key.startsWith("contentName") | key.startsWith("contentDescr") | key.startsWith("contentHabItem") | key.startsWith("complexity")| key.startsWith("defaultDuration")) {
                 var lang, name, description, habitItem, complexity, defaultDuration;
@@ -143,19 +145,16 @@ $(document).ready(function () {
                             "name": name,
                             "description": description,
                             "habitItem": habitItem,
-                            "languageCode": lang,
-                            "defaultDuration": defaultDuration,
-                            "complexity": complexity,
+                            "languageCode": lang
 
                         }
                     );
                     name = null;
                     description = null;
                     habitItem = null;
-                    defaultDuration = null;
-                    complexity =null;
 
                 }
+                console.log(returnData);
             }
         }
         var result = new FormData();
