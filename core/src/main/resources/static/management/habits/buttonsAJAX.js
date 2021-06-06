@@ -14,6 +14,47 @@ function updateCheckBoxCount(chInt) {
     } else deleteBtn.removeClass("disabled");
 }
 
+    /**
+     * Trigering main search when 'Enter' button is pressed
+     */
+var searchInp = document.getElementById('habitSearch');
+searchInp.addEventListener('keyup', function (event){
+   if(event.keyCode === 13){
+       getSearchedHabits();
+   }
+});
+
+    /**
+    * Main search logic
+    */
+function getSearchedHabits() {
+    let url = "/management/habits";
+
+    let searchParam = $('#habitSearch').val();
+    console.log("searchParam:" + searchParam)
+
+        var filterDto = {
+        searchReg: searchParam
+        }
+        let result = new FormData();
+        result.append("filterHabitDto", new Blob([JSON.stringify(filterDto)], {type: "application/json"}));
+
+    $.ajax({
+        dataType: "json",
+        data: result,
+        contentType: false,
+        processData: false,
+        cache: false,
+        // contentType: 'application/json; charset=utf-8',
+        type: 'GET',
+        success: function (res) {
+            // $('#habitSearch').setValue(searchParam);
+            // window.location.href = url;
+            window.location = res;
+        }
+    });
+}
+
 $(document).ready(function () {
     let deleteBtn = $("#btnDelete");
 

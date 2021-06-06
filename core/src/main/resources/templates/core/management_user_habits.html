@@ -85,9 +85,10 @@
                         </div>
                         <div class="row-box-and-sort">
                             <div class="main-search">
-                                <form class="form-inline searching" action="#" method="get">
-                                    <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
-                                </form>
+                                <div class="form-inline searching" >
+                                    <input id="habitSearch" type="search" class="form-search" oninput="getSearchedHabits()"
+                                           th:placeholder="#{greenCity.pages.search}">
+                                </div>
                                 <div>
                                     <button id="habits-filter-button" class="filter-button" onclick="openForm()">
                                         <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]

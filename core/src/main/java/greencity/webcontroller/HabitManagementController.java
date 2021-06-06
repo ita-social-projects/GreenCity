@@ -64,6 +64,10 @@ public class HabitManagementController {
     public String findAllHabits(Model model, @ApiIgnore Pageable pageable,
                                 @RequestBody(required = false) FilterHabitDto filterHabitDto) {
         PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(filterHabitDto, pageable);
+        if (filterHabitDto != null) {
+            System.err.println(filterHabitDto.getSearchReg());
+        }
+        System.err.println("Controller was called");
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";
