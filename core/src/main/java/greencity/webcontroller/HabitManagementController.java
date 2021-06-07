@@ -54,8 +54,13 @@ public class HabitManagementController {
     @GetMapping
     @ApiPageable
     public String findAllHabits(Model model, @ApiIgnore Pageable pageable,
-        @RequestParam(value = "searchReg", required = false) String searchReg) {
-        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg, pageable);
+        @RequestParam(value = "searchReg", required = false) String searchReg,
+                                @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
+                                @RequestParam(value = "durationTo", required = false) Integer durationTo,
+                                @RequestParam(value = "complexity", required = false) Integer complexity,
+                                @RequestParam(value = "hasImage", required = false) Boolean hasImage) {
+        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
+                durationFrom, durationTo, complexity, hasImage, pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";

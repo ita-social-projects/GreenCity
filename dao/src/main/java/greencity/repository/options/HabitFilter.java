@@ -40,6 +40,14 @@ public class HabitFilter implements Specification<Habit> {
         if (filterHabitDto != null) {
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterHabitDto.getSearchReg()));
         }
+        if (filterHabitDto != null && filterHabitDto.getDurationFrom() != null
+                && filterHabitDto.getDurationTo() != null) {
+            predicates.add(hasDurationBetween(root, criteriaBuilder,
+                    filterHabitDto.getDurationFrom(), filterHabitDto.getDurationTo()));
+        }
+        if (filterHabitDto != null && filterHabitDto.getComplexity() != null) {
+            predicates.add(hasComplexityEquals(root, criteriaBuilder, filterHabitDto.getComplexity()));
+        }
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
 
@@ -62,6 +70,14 @@ public class HabitFilter implements Specification<Habit> {
             cb.like(habitTranslations.get("description"), reg),
             cb.like(habitTranslations.get("habitItem"), reg),
             cb.like(habitTranslations.get("name"), reg));
+    }
+
+    private Predicate hasDurationBetween(Root<Habit> r, CriteriaBuilder cb, Integer durationFrom, Integer durationTo) {
+        return  cb.between(r.get("defaultDuration"), durationFrom, durationTo);
+    }
+
+    private Predicate hasComplexityEquals(Root<Habit> r, CriteriaBuilder cb, Integer complexity) {
+        return cb.equal(r.get("complexity"), complexity);
     }
 
     /**

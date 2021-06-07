@@ -12,4 +12,8 @@ import javax.validation.Valid;
 public class FilterHabitDto {
     @Valid
     private String searchReg;
+    private Integer durationFrom;
+    private Integer durationTo;
+    private Integer complexity;
+    boolean hasImage;
 }

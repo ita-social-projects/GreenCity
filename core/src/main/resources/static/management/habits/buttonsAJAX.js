@@ -335,25 +335,6 @@ $(document).ready(function () {
         })
     )
 
-    // /**
-    //  * Display habit complexity in filter form.
-    //  */
-    // const filterHabitsCompl = document.getElementsByClassName("habit_complexity_filter");
-    // for (let i = 0; i < filterHabitsCompl.length; i++) {
-    //     // const complexity1 = filterHabitsCompl[i].getAttribute("data-complexity");
-    //     // for (let j = 0; j < complexity1; j++) {
-    //     //     const imgFill = document.createElement("img-filter");
-    //     //     imgFill.setAttribute("src", "/img/star-filled.png")
-    //     //     filterHabitsCompl[i].appendChild(imgFill);
-    //     //
-    //     // }
-    //     for (let j = 0; j < 3; j++) {
-    //         const imgEmpty = document.createElement("img",);
-    //         imgEmpty.setAttribute("src", "/img/star-empty.png");
-    //         filterHabitsCompl[i].appendChild(imgEmpty)
-    //     }
-    // }
-
     const firstStar = document.querySelector('.complexity_1');
     const secondStar = document.querySelector('.complexity_2');
     const thirdStar = document.querySelector('.complexity_3');
@@ -362,18 +343,21 @@ $(document).ready(function () {
         firstStar.setAttribute("src", "/img/star-filled.png");
         secondStar.setAttribute("src", "/img/star-empty.png");
         thirdStar.setAttribute("src", "/img/star-empty.png");
+        document.getElementById('complexityInput').value = 1;
     })
 
     secondStar.addEventListener('click',(event) => {
         firstStar.setAttribute("src", "/img/star-filled.png");
         secondStar.setAttribute("src", "/img/star-filled.png");
         thirdStar.setAttribute("src", "/img/star-empty.png");
+        document.getElementById('complexityInput').value = 2;
     })
 
     thirdStar.addEventListener('click',(event) => {
         firstStar.setAttribute("src", "/img/star-filled.png");
         secondStar.setAttribute("src", "/img/star-filled.png");
         thirdStar.setAttribute("src", "/img/star-filled.png");
+        document.getElementById('complexityInput').value = 3;
     })
 
 

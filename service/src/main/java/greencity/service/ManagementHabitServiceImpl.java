@@ -57,8 +57,15 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Pageable pageable) {
-        FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg);
+    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+                                                           Integer durationTo, Integer complexity, Boolean hasImage,
+                                                           Pageable pageable) {
+        hasImage = false;
+        FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg,
+                durationFrom,
+                durationTo,
+                complexity,
+                hasImage);
         Page<Habit> habits = habitRepo.findAll(new HabitFilter(filterHabitDto), pageable);
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
