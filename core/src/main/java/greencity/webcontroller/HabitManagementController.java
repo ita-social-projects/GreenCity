@@ -50,24 +50,12 @@ public class HabitManagementController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
-//    @GetMapping
-//    @ApiPageable
-//    public String findAllHabits(Model model, @ApiIgnore Pageable pageable) {
-//        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(pageable);
-//        model.addAttribute("pageable", allHabits);
-//        model.addAttribute("languages", languageService.getAllLanguages());
-//        return "core/management_user_habits";
-//    }
 
     @GetMapping
     @ApiPageable
     public String findAllHabits(Model model, @ApiIgnore Pageable pageable,
-                                @RequestBody(required = false) FilterHabitDto filterHabitDto) {
-        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(filterHabitDto, pageable);
-        if (filterHabitDto != null) {
-            System.err.println(filterHabitDto.getSearchReg());
-        }
-        System.err.println("Controller was called");
+        @RequestParam(value = "searchReg", required = false) String searchReg) {
+        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg, pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";

@@ -791,6 +791,9 @@ table.table .avatar {
     margin-top: 5px;
     vertical-align: middle;
 }
+.search-submit-btn{
+    visibility: hidden;
+}
 
 .search-box {
     position: relative;

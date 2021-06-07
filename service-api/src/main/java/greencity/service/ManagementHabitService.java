@@ -25,7 +25,7 @@ public interface ManagementHabitService {
      * @return list of {@link HabitManagementDto}.
      * @author Dovganyuk Taras
      */
-    PageableDto<HabitManagementDto> getAllHabitsDto(FilterHabitDto filterHabitDto, Pageable pageable);
+    PageableDto<HabitManagementDto> getAllHabitsDto(String seacrhReg, Pageable pageable);
 
     /**
      * Method saves {@code Habit} with it's {@code HabitTranslation}'s.
