@@ -15,5 +15,6 @@ public class FilterHabitDto {
     private Integer durationFrom;
     private Integer durationTo;
     private Integer complexity;
-    boolean hasImage;
+    boolean withoutImage;
+    boolean withImage;
 }

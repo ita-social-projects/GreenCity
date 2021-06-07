@@ -58,9 +58,10 @@ public class HabitManagementController {
                                 @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
                                 @RequestParam(value = "durationTo", required = false) Integer durationTo,
                                 @RequestParam(value = "complexity", required = false) Integer complexity,
-                                @RequestParam(value = "hasImage", required = false) Boolean hasImage) {
+                                @RequestParam(value = "withoutImage", required = false) Boolean withoutImage,
+                                @RequestParam(value = "withImage", required = false) Boolean withImage) {
         PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
-                durationFrom, durationTo, complexity, hasImage, pageable);
+                durationFrom, durationTo, complexity, withoutImage,withImage, pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";

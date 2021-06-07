@@ -58,14 +58,14 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     @Override
     public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-                                                           Integer durationTo, Integer complexity, Boolean hasImage,
+                                                           Integer durationTo, Integer complexity, Boolean withoutImage,
+                                                           Boolean withImage,
                                                            Pageable pageable) {
-        hasImage = false;
         FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg,
                 durationFrom,
                 durationTo,
                 complexity,
-                hasImage);
+                withoutImage,withImage);
         Page<Habit> habits = habitRepo.findAll(new HabitFilter(filterHabitDto), pageable);
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
