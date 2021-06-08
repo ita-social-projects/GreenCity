@@ -18,6 +18,8 @@ import java.util.Optional;
  */
 public class HabitFilter implements Specification<Habit> {
     private final transient FilterHabitDto filterHabitDto;
+    private String defaultHabitImage = "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
+        + "2021-06-01_15-39-56.jpg";
 
     /**
      * The constructor takes {@link FilterHabitDto} object.
@@ -41,17 +43,17 @@ public class HabitFilter implements Specification<Habit> {
             predicates.add(hasFieldsLike(root, criteriaBuilder, filterHabitDto.getSearchReg()));
         }
         if (filterHabitDto != null && filterHabitDto.getDurationFrom() != null
-                && filterHabitDto.getDurationTo() != null) {
+            && filterHabitDto.getDurationTo() != null) {
             predicates.add(hasDurationBetween(root, criteriaBuilder,
-                    filterHabitDto.getDurationFrom(), filterHabitDto.getDurationTo()));
+                filterHabitDto.getDurationFrom(), filterHabitDto.getDurationTo()));
         }
         if (filterHabitDto != null && filterHabitDto.getComplexity() != null) {
             predicates.add(hasComplexityEquals(root, criteriaBuilder, filterHabitDto.getComplexity()));
         }
-        if (filterHabitDto != null &&
-                (filterHabitDto.isWithImage() != false ^ filterHabitDto.isWithoutImage() != false)) {
+        if (filterHabitDto != null
+            && (filterHabitDto.isWithImage() != false ^ filterHabitDto.isWithoutImage() != false)) {
             predicates.add(hasImage(root, criteriaBuilder, filterHabitDto.isWithoutImage(),
-                    filterHabitDto.isWithImage()));
+                filterHabitDto.isWithImage()));
         }
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
@@ -77,14 +79,18 @@ public class HabitFilter implements Specification<Habit> {
             cb.like(habitTranslations.get("name"), reg));
     }
 
-    private Predicate hasImage(Root<Habit> r, CriteriaBuilder cb, Boolean withoutImage, Boolean withImage){
-        if(withoutImage){
-            return  null;
+    private Predicate hasImage(Root<Habit> r, CriteriaBuilder cb, Boolean withoutImage, Boolean withImage) {
+        if (withoutImage) {
+            return cb.like(r.get("image"), defaultHabitImage);
         }
+        if (withImage) {
+            return cb.notLike(r.get("image"), defaultHabitImage);
+        }
+        return null;
     }
 
     private Predicate hasDurationBetween(Root<Habit> r, CriteriaBuilder cb, Integer durationFrom, Integer durationTo) {
-        return  cb.between(r.get("defaultDuration"), durationFrom, durationTo);
+        return cb.between(r.get("defaultDuration"), durationFrom, durationTo);
     }
 
     private Predicate hasComplexityEquals(Root<Habit> r, CriteriaBuilder cb, Integer complexity) {

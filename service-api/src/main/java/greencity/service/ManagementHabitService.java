@@ -26,9 +26,9 @@ public interface ManagementHabitService {
      * @author Dovganyuk Taras
      */
     PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-                                                    Integer durationTo, Integer complexity, Boolean withoutImage,
-                                                    Boolean withImage,
-                                                    Pageable pageable);
+        Integer durationTo, Integer complexity, Boolean withoutImage,
+        Boolean withImage,
+        Pageable pageable);
 
     /**
      * Method saves {@code Habit} with it's {@code HabitTranslation}'s.

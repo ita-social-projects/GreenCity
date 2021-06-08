@@ -58,9 +58,9 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     @Override
     public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
-                                                           Integer durationTo, Integer complexity, Boolean withoutImage,
-                                                           Boolean withImage,
-                                                           Pageable pageable) {
+        Integer durationTo, Integer complexity, Boolean withoutImage,
+        Boolean withImage,
+        Pageable pageable) {
         if (withImage == null) {
             withImage = false;
         }
@@ -68,10 +68,10 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
             withoutImage = false;
         }
         FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg,
-                durationFrom,
-                durationTo,
-                complexity,
-                withoutImage,withImage);
+            durationFrom,
+            durationTo,
+            complexity,
+            withoutImage, withImage);
         Page<Habit> habits = habitRepo.findAll(new HabitFilter(filterHabitDto), pageable);
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
