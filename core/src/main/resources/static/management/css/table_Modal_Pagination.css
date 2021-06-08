@@ -403,11 +403,17 @@ table.table .avatar {
     position: absolute;
     margin-top: 25px;
 }
+.arrow{
+    background-image: url("/img/arrow-down.svg");
+    cursor: pointer;
+    width: 12px;
+    height: 6px;
+}
 
 .table-filter-icon {
-    background-image: url("/img/filter-icon.svg");
+    background-image: url("/img/filter-icon.svg") ;
     width: 16px;
-    height: 16px;
+    height: 12px;
     float: right;
 }
 
@@ -787,6 +793,9 @@ table.table .avatar {
     margin-top: 5px;
     vertical-align: middle;
 }
+.search-submit-btn{
+    visibility: hidden;
+}
 
 .search-box {
     position: relative;
@@ -842,12 +851,13 @@ table.table .avatar {
 }
 
 .filter-button {
+    border: 1px solid #9CA7B0;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding: 8px 24px;
-
+    z-index: 9;
     position: static;
     left: 0%;
     right: 0%;
@@ -855,10 +865,8 @@ table.table .avatar {
     bottom: 0%;
 
     /* Greyscale/05 */
-
-    border: 1px solid #9CA7B0;
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: 2px;
 
     /* Inside Auto Layout */
 

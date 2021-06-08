@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -49,10 +50,18 @@ public class HabitManagementController {
      * @param pageable {@link Pageable}.
      * @return View template path {@link String}.
      */
+
     @GetMapping
     @ApiPageable
-    public String findAllHabits(Model model, @ApiIgnore Pageable pageable) {
-        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(pageable);
+    public String findAllHabits(Model model, @ApiIgnore Pageable pageable,
+        @RequestParam(value = "searchReg", required = false) String searchReg,
+                                @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
+                                @RequestParam(value = "durationTo", required = false) Integer durationTo,
+                                @RequestParam(value = "complexity", required = false) Integer complexity,
+                                @RequestParam(value = "withoutImage", required = false) Boolean withoutImage,
+                                @RequestParam(value = "withImage", required = false) Boolean withImage) {
+        PageableDto<HabitManagementDto> allHabits = managementHabitService.getAllHabitsDto(searchReg,
+                durationFrom, durationTo, complexity, withoutImage,withImage, pageable);
         model.addAttribute("pageable", allHabits);
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_user_habits";
