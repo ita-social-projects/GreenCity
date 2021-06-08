@@ -61,6 +61,12 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
                                                            Integer durationTo, Integer complexity, Boolean withoutImage,
                                                            Boolean withImage,
                                                            Pageable pageable) {
+        if (withImage == null) {
+            withImage = false;
+        }
+        if (withoutImage == null) {
+            withoutImage = false;
+        }
         FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg,
                 durationFrom,
                 durationTo,

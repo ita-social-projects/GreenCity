@@ -48,8 +48,10 @@ public class HabitFilter implements Specification<Habit> {
         if (filterHabitDto != null && filterHabitDto.getComplexity() != null) {
             predicates.add(hasComplexityEquals(root, criteriaBuilder, filterHabitDto.getComplexity()));
         }
-        if (filterHabitDto != null && (filterHabitDto.isWithImage() != false ^ filterHabitDto.isWithoutImage() != false)) {
-            predicates.add(hasImage(root, criteriaBuilder, filterHabitDto.isWithoutImage(), filterHabitDto.isWithImage()));
+        if (filterHabitDto != null &&
+                (filterHabitDto.isWithImage() != false ^ filterHabitDto.isWithoutImage() != false)) {
+            predicates.add(hasImage(root, criteriaBuilder, filterHabitDto.isWithoutImage(),
+                    filterHabitDto.isWithImage()));
         }
         return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
@@ -76,8 +78,8 @@ public class HabitFilter implements Specification<Habit> {
     }
 
     private Predicate hasImage(Root<Habit> r, CriteriaBuilder cb, Boolean withoutImage, Boolean withImage){
-        if(withImage == true){
-            return cb.notLike(r.get("image", )
+        if(withoutImage){
+            return  null;
         }
     }
 
