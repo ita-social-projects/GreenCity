@@ -153,7 +153,7 @@ public class ScheduleConfig {
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
-    @Scheduled(cron = "0 0q 0 * * ?", zone = "Europe/Kiev")
+    @Scheduled(cron = "0 07 21 * * ?", zone = "Europe/Kiev")
     public void checkExpired() {
         habitAssignRepo.findAll().stream().forEach(h -> {
             if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
