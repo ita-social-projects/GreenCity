@@ -91,9 +91,9 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     private Habit buildHabitWithTranslations(HabitManagementDto habitManagementDto) {
         Habit habit = Habit.builder()
-                .complexity(habitManagementDto.getComplexity())
-                .defaultDuration(habitManagementDto.getDefaultDuration())
-                .habitTranslations(
+            .complexity(habitManagementDto.getComplexity())
+            .defaultDuration(habitManagementDto.getDefaultDuration())
+            .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()
                         .description(habitTranslationDto.getDescription())
