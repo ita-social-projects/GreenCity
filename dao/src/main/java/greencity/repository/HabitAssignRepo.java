@@ -208,6 +208,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + "WHERE upper(ha.status) = 'INPROGRESS'")
     List<HabitAssign> findAllInProgressHabitAssigns();
 }
