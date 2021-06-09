@@ -6,6 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
@@ -18,6 +19,7 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.options.HabitFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,8 +82,9 @@ public class ManagementHabitServiceImplTest {
         PageableDto<HabitManagementDto> result =
             new PageableDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1);
         when(modelMapper.map(habits.get(0), HabitManagementDto.class)).thenReturn(habitManagementDtos.get(0));
-        when(habitRepo.findAll(pageRequest)).thenReturn(listHabits);
-        assertEquals(result, managementHabitService.getAllHabitsDto(pageRequest));
+        when(habitRepo.findAll(any(HabitFilter.class), eq(pageRequest))).thenReturn(listHabits);
+        assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
+            null, false, false, pageRequest));
     }
 
     @Test
