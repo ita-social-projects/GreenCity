@@ -209,5 +209,5 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
-    List<HabitAssign> findAllHabitAssigns();
+    List<HabitAssign> findAllInProgressHabitAssigns();
 }
