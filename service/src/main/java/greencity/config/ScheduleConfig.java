@@ -12,7 +12,10 @@ import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import greencity.service.HabitAssignService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -37,6 +40,8 @@ public class ScheduleConfig {
     private final HabitAssignRepo habitAssignRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
+    private final HabitAssignService habitAssignService;
+    private final ModelMapper modelMapper;
 
     /**
      * Invoke {@link SendHabitNotification} from EmailMessageReceiver to send email
@@ -144,7 +149,7 @@ public class ScheduleConfig {
 
     /**
      * Every day at 00:00 checks all Assigned Habits whether they are not expired.
-     *
+     * 
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
