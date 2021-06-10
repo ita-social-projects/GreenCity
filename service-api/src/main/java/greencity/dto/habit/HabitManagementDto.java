@@ -7,6 +7,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +22,10 @@ public class HabitManagementDto implements Serializable {
     private String image;
     @Min(value = 1, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
+    @NotNull
     private Integer complexity;
     @Valid
     private List<HabitTranslationManagementDto> habitTranslations;
+    @NotNull
     private Integer defaultDuration;
 }
