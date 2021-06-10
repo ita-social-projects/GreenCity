@@ -201,9 +201,13 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Optional<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
 
     /**
-     * Method to find all {@link HabitAssign} .
+     * Method to find all inprogress, habit assigns.
      *
+     * @return list of {@link HabitAssign} instances.
      */
-    @Query(value = "SELECT * FROM HabitAssign ", nativeQuery = true)
-    Optional<List<HabitAssign>> getExpiredHabitAssign();
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+        + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
+        + "JOIN FETCH ht.language l "
+        + "WHERE upper(ha.status) = 'INPROGRESS'")
+    List<HabitAssign> findAllInProgressHabitAssigns();
 }
