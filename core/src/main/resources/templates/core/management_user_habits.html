@@ -316,6 +316,16 @@
                                     <input type="file" class="form-control" id="fileCreate" name="file">
                                     <span th:id="errorModalAddfile" class="errorSpan"></span>
                                 </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.complexity}]]</label>
+                                    <input type="text" class="form-control" name="complexity" required>
+                                    <span th:id="'errorModalSavecomplexity'" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.default.duration}]]</label>
+                                    <input type="text" class="form-control" name="defaultDuration" required>
+                                    <span th:id="'errorModalSavedefaultDuration'" class="errorSpan"></span>
+                                </div>
                                 <th:block th:each="language, iterInfo : ${languages}">
                                     <div class="row">
                                         <div class="col">
