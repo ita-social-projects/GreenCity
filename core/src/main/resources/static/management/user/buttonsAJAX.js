@@ -414,4 +414,5 @@ function closeNav() {
     document.getElementById("openbtnId").hidden = false;
     document.getElementById("tab-content").style.marginLeft="0";
     // document.getElementById("eco-news-content").style.marginRight="0";
-}
+};
+
