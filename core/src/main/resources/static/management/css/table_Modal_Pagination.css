@@ -90,7 +90,7 @@ body {
 
 table.table tr th, table.table tr td {
     border-color: #e9e9e9;
-    padding: 12px 10px;
+    padding: 7px 10px;
     vertical-align: middle;
 
 }
@@ -616,7 +616,7 @@ table.table .avatar {
 }
 
 .filter-list-grid {
-    position: absolute;
+    position: relative;
     right: 50px;
     display: flex;
     /*padding-top: 5px;*/
@@ -1145,6 +1145,15 @@ button#searchByForUser {
     width:auto;
 }
 
+/*.column-credo-text{*/
+
+/*    -webkit-line-clamp: 2;*/
+/*    -webkit-box-orient: vertical;*/
+/*    overflow: hidden;*/
+/*    text-overflow: ellipsis;*/
+/*    padding-bottom: 5px;*/
+/*}*/
+
 #upload_image{
     height: 212px;
     width: auto;
@@ -1161,4 +1170,5 @@ button#searchByForUser {
     box-sizing: border-box;
     border-radius: 4px;
 }
+
 
