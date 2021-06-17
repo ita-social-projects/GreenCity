@@ -139,7 +139,6 @@
                                 </div>
                             </th>
                             <th>
-                                <div style = "overflow: hidden; height: 39px">
                                 [[#{greenCity.pages.table.credo}]]
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form">
@@ -161,7 +160,6 @@
                                             <button type="submit" class="filter-apply">Save changes</button>
                                         </div>
                                     </form>
-                                </div>
                                 </div>
                             </th>
                             <th style="width: 136px;">
@@ -235,7 +233,7 @@
                                 <td th:text="${user.id}" style="width:50px;"></td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
-                                <td th:text="${user.userCredo}" class="pr"></td>
+                                <td class="column-credo-text" th:text="${user.userCredo}"></td>
                                 <td>
                                     <div class="dropdown role">
                                         <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
