@@ -23,9 +23,19 @@
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
 
 </head>
 <body onload="Order()">
+<script>
+    $(function () {
+        $('.pr').liTextLength({
+            length: 25,
+            afterLength: '...',
+            fullText: false
+        });
+    });
+</script>
 <div id="header" th:insert="core/header"></div>
 <div>
     <div id="sidebar" th:insert="core/sidepanel"></div>
@@ -71,16 +81,16 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr class="table-primary ">
-                            <th>
+                            <th style="width: 48px;">
                                 <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll">
                                     <label for="selectAll"></label>
                                 </span>
                             </th>
-                            <th>
+                            <th style="width: 120px;">
                                 <span>[[#{greenCity.pages.table.id}]]</span>
                             </th>
-                            <th class="username">
+                            <th class="username" style="width: 180px;">
                                 [[#{greenCity.pages.table.userName}]]
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form" style="display: block;">
@@ -88,8 +98,8 @@
                                         <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending</button>
                                         <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending</button>
                                     </div>
-                                    <form action="/management/users/search" id="nameFilterForm"
-                                          method="POST" >
+                                    <form action="/management/users" id="nameFilterForm"
+                                          method="GET">
                                         <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
                                                th:name="name"
                                                th:value="${fields eq null ? '' : fields.name}">
@@ -104,7 +114,7 @@
                                     </form>
                                 </div>
                             </th>
-                            <th>
+                            <th style="width: 241px;">
                                 [[#{greenCity.pages.table.email}]]
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form" style="display: none;">
@@ -112,8 +122,8 @@
                                         <button class="sort-buttons asc" onclick="byNameFieldAsc('email')">Ascending</button>
                                         <button class="sort-buttons" onclick="byNameFieldDesc('email')">Descending</button>
                                     </div>
-                                    <form action="/management/users/search" id="emailFilterForm"
-                                          method="POST" >
+                                    <form action="/management/users" id="emailFilterForm"
+                                          method="GET">
                                         <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
                                                th:name="email"
                                                th:value="${fields eq null ? '' : fields.email}">
@@ -136,8 +146,8 @@
                                         <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">Ascending</button>
                                         <button class="sort-buttons" onclick="byNameFieldDesc('userCredo')">Descending</button>
                                     </div>
-                                    <form action="/management/users/search" id="credoFilterForm"
-                                          method="POST" >
+                                    <form action="/management/users" id="credoFilterForm"
+                                          method="GET" >
                                         <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
                                                th:name="userCredo"
                                                th:value="${fields eq null ? '' : fields.userCredo}">
@@ -152,29 +162,23 @@
                                     </form>
                                 </div>
                             </th>
-                            <th>
+                            <th style="width: 136px;">
                                 [[#{greenCity.pages.table.role}]]
                                 <span class="table-filter-icon"></span>
-                                <div class="name-filter-form">
+                                <div class="name-filter-form"    style="display: block;">
                                     <div class="filter-sorting-buttons">
                                         <button class="sort-buttons asc" onclick="byNameFieldAsc('role')">Ascending</button>
                                         <button class="sort-buttons" onclick="byNameFieldDesc('role')">Descending</button>
                                     </div>
-                                    <form action="/management/users/search" id="roleFilterForm"
-                                          method="POST" >
-                                        <div class="filter-checkbox">
-                                        <div class="filter-checkbox">
-                                            <input type="checkbox">
-                                            <p class="filter-checkbox-text">User</p>
-                                        </div>
-                                        <div class="filter-checkbox">
-                                            <input type="checkbox">
-                                            <p class="filter-checkbox-text">Moderator</p>
-                                        </div>
-                                        <div class="filter-checkbox">
-                                            <input type="checkbox">
-                                            <p class="filter-checkbox-text">Admin</p>
-                                        </div>
+                                    <form action="/management/users" id="roleFilterForm"
+                                          method="GET" >
+                                        <select class="form-search filter"
+                                                th:name="role"
+                                                th:value="${fields eq null ? '' : fields.role}">
+                                            <option th:text="USER" th:value="0"/>
+                                            <option th:text="MODERATOR" th:value="2"/>
+                                            <option th:text="ADMIN" th:value="1"/>
+                                        </select>
                                         <div class="filter-checkbox">
                                             <input type="checkbox" class="filter-checkbox-input">
                                             <p class="filter-checkbox-text">save filtering</p>
@@ -186,15 +190,39 @@
                                     </form>
                                 </div>
                             </th>
-                            <th>
+                            <th style="width: 131px;">
                                 [[#{greenCity.pages.table.status}]]
                                 <span class="table-filter-icon"></span>
+                                <div class="name-filter-form">
+                                    <div class="filter-sorting-buttons">
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userStatus')">Ascending</button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('userStatus')">Descending</button>
+                                    </div>
+                                    <form action="/management/users" id="userStatusFilterForm"
+                                          method="GET" >
+                                        <select class="form-search filter"
+                                                th:name="userStatus"
+                                                th:value="${fields eq null ? '' : fields.userStatus}">
+                                            <option th:text="ACTIVATED" th:value="2"/>
+                                            <option th:text="WARNED" th:value="0"/>
+                                            <option th:text="DEACTIVATED" th:value="1"/>
+                                        </select>
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" class="filter-checkbox-input">
+                                            <p class="filter-checkbox-text">save filtering</p>
+                                        </div>
+                                        <div class="filter-buttons">
+                                            <button class="filter-cancel">Cancel</button>
+                                            <button type="submit" class="filter-apply">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </th>
                         </tr>
                         </thead>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
-                                <td>
+                            </tr><td>
                                     <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${user.id}"
@@ -202,10 +230,10 @@
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                                 </td>
-                                <td th:text="${user.id}"></td>
+                                <td th:text="${user.id}" style="width:50px;"></td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
-                                <td th:text="${user.userCredo}"></td>
+                                <td class="column-credo-text" th:text="${user.userCredo}"></td>
                                 <td>
                                     <div class="dropdown role">
                                         <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">

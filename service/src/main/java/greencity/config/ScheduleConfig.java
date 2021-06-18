@@ -148,9 +148,9 @@ public class ScheduleConfig {
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
-    @Scheduled(cron = "0 0q 0 * * ?", zone = "Europe/Kiev")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     public void checkExpired() {
-        habitAssignRepo.findAll().stream().forEach(h -> {
+        habitAssignRepo.findAllInProgressHabitAssigns().stream().forEach(h -> {
             if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
                 h.setStatus(HabitAssignStatus.EXPIRED);
                 habitAssignRepo.save(h);

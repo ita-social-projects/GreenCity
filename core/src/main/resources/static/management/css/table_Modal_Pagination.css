@@ -71,7 +71,7 @@ body {
     font-size: 14px;
     border: none;
     min-width: 50px;
-    border-radius: 2px;
+    border-radius: 5px;
     border: none;
     outline: none !important;
     margin-left: 20px;
@@ -90,7 +90,7 @@ body {
 
 table.table tr th, table.table tr td {
     border-color: #e9e9e9;
-    padding: 12px 10px;
+    padding: 7px 10px;
     vertical-align: middle;
 
 }
@@ -291,7 +291,9 @@ table.table .avatar {
 }
 
 .custom-checkbox {
-    position: relative;
+    position: absolute;
+    margin-left: 8px;
+    margin-top: -9px;
 }
 
 .custom-checkbox input[type="checkbox"] {
@@ -307,7 +309,6 @@ table.table .avatar {
 
 .custom-checkbox label:before {
     content: '';
-    margin-right: 10px;
     display: inline-block;
     vertical-align: text-top;
     background: #FFFFFF;
@@ -335,8 +336,8 @@ table.table .avatar {
 }
 
 .custom-checkbox input[type="checkbox"]:checked + label:before {
-    border-color: #245740;
-    background: #245740;
+    border-color: #13AA57;
+    background: #13AA57;
 }
 
 .dropbtn.role {
@@ -402,11 +403,17 @@ table.table .avatar {
     position: absolute;
     margin-top: 25px;
 }
+.arrow{
+    background-image: url("/img/arrow-down.svg");
+    cursor: pointer;
+    width: 12px;
+    height: 6px;
+}
 
 .table-filter-icon {
-    background-image: url("/img/filter-icon.svg");
+    background-image: url("/img/filter-icon.svg") ;
     width: 16px;
-    height: 16px;
+    height: 12px;
     float: right;
 }
 
@@ -614,10 +621,10 @@ table.table .avatar {
 }
 
 .filter-list-grid {
-    position: absolute;
+    position: relative;
     right: 50px;
     display: flex;
-    padding-top: 5px;
+    /*padding-top: 5px;*/
 
 }
 
@@ -786,6 +793,9 @@ table.table .avatar {
     margin-top: 5px;
     vertical-align: middle;
 }
+.search-submit-btn{
+    visibility: hidden;
+}
 
 .search-box {
     position: relative;
@@ -841,12 +851,13 @@ table.table .avatar {
 }
 
 .filter-button {
+    border: 1px solid #9CA7B0;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding: 8px 24px;
-
+    z-index: 9;
     position: static;
     left: 0%;
     right: 0%;
@@ -854,10 +865,8 @@ table.table .avatar {
     bottom: 0%;
 
     /* Greyscale/05 */
-
-    border: 1px solid #9CA7B0;
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: 2px;
 
     /* Inside Auto Layout */
 
@@ -866,7 +875,7 @@ table.table .avatar {
     flex-grow: 0;
 
     margin-left: 20px;
-    height: 35px;
+    height: 36px;
     color: #9CA7B0;
     background-color: white;
     margin-top: 5px;
@@ -920,7 +929,7 @@ td input[type=search] {
     background-color: #ffffff;
     color: #13AA57;
     border-radius: 5px;
-    width: 147px;
+    width: 175px;
     height: 40px;
 }
 
@@ -1000,6 +1009,7 @@ a#deactivateOneSubmit.btn.btn-danger {
 
 .table-primary > th {
     background-color: #F5F6F6;
+    height: 39px;
 }
 
 .graph {
@@ -1142,6 +1152,14 @@ button#searchByForUser {
     width:auto;
 }
 
+.column-credo-text{
+white-space:nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+height: 39px;
+max-width: 195px;
+}
+
 #upload_image{
     height: 212px;
     width: auto;
@@ -1158,4 +1176,5 @@ button#searchByForUser {
     box-sizing: border-box;
     border-radius: 4px;
 }
+
 

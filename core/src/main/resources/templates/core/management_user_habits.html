@@ -22,9 +22,42 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
     <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
 
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/habits/jquery.liTextLength.js}"></script>
+    <script>
+        $(function () {
+            $('.pr').liTextLength({
+                length: 25,
+                afterLength: '...',
+                fullText: false
+            });
+        });
+    </script>
+
+    <style>
+        input[type=range] {
+            -webkit-appearance: none;
+            background-color: #13AA57;
+            height: 2.5px;
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            background-color: #13AA57;
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 10px;
+            overflow: visible;
+            cursor: pointer;
+
+
+        }
+
+    </style>
 
 </head>
 
@@ -52,12 +85,85 @@
                         </div>
                         <div class="row-box-and-sort">
                             <div class="main-search">
-                                <form class="form-inline searching" action="#" method="get">
-                                    <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
+                                <form class="form-inline searching" method="get" th:action="@{/management/habits}">
+                                     <input id="habitSearch" type="search" class="form-search" name="searchReg"
+                                           th:placeholder="#{greenCity.pages.search}">
+
+                                    <input type="submit" class="search-submit-btn">
                                 </form>
-                                <button class="filter-button">
-                                    <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
-                                </button>
+                                <div>
+                                    <button id="habits-filter-button" class="filter-button" onclick="openForm()">
+                                        <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+
+                                    </button>
+                                    <div class="form-popup" id="filter">
+                                        <form th:action="@{/management/habits}" class="form-container" style="width: 280px">
+                                            <div style="margin-bottom: 10px">
+                                                <input type="checkbox"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <div style="margin-top: 0px; margin-left: 7px;">save filtering</div>
+                                            </div>
+                                            <input type="text" placeholder="Search..." style="border: 1px solid #9CA7B0;
+                                                                      border-radius: 4px;
+                                                                      height: 36px;
+                                                                      margin-top: 15px;" name="searchReg">
+<!--                                            <input type="range" min="7" max="21" onchange="updateTextInput(this.value);"-->
+<!--                                                   style="width :239px;">-->
+<!--                                            <input  id="textInput" value="14 days"-->
+<!--                                                   style="padding: 0; color:#13AA57 ">-->
+
+                                            <div class="middle">
+                                                <div class="multi-range-slider">
+                                                    <input type="range" id="input-left" min="7" max="56" value="7"
+                                                           name="durationFrom">
+                                                    <input type="range" id="input-right" min="7" max="56" value="56"
+                                                           name="durationTo">
+
+                                                    <div class="slider">
+                                                        <div class="track"></div>
+                                                        <div class="range"></div>
+                                                        <div class="thumb left"></div>
+                                                        <div class="thumb right"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top: 5px">
+                                                <p id="leftText" style="color: #13aa57">7 - 56 days</p>
+                                            </div>
+
+                                            <div class="habit_complexity_filter" id="habit_complexity_filter" style="margin-top: 20px">
+                                                <img src="/img/star-empty.png" class="complexity_1">
+                                                <img src="/img/star-empty.png" class="complexity_2">
+                                                <img src="/img/star-empty.png" class="complexity_3">
+                                                <input id="complexityInput" type="text" name="complexity" style="visibility: hidden; height: 0px;width: 0px">
+                                                </div>
+                                            <div style="margin-top: 21px">
+                                                <input type="checkbox" name="withoutImage"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px;color: #13aa57">
+                                                <div style="margin-top: 0px; margin-left: 7px;">without image</div>
+                                                <input type="checkbox" name="withImage"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px;color: #13aa57">
+                                                <div style="margin-top: 0px; margin-left: 7px;">with image</div>
+                                                <input type="checkbox"
+                                                       style="float: left; margin-top: 6px;margin-right: 5px">
+                                                <div style="margin-top: 0px; margin-left: 7px;">locked</div>
+                                            </div>
+
+                                            <div style="float: right;margin-top: 70px; margin-bottom: 18px; ">
+                                                <button th:action="@{/management/habits}" type="submit" class="filter-btn" style="width: 91px;
+                                            height: 40px"><b>Cancel</b></button>
+                                                <button type="submit" class="apply-btn" style="float: right">
+                                                    <b>Apply</b>
+                                                </button>
+                                            </div>
+
+
+
+                                        </form>
+                                    </div>
+                                </div>
+
+
                             </div>
                             <div class="filter-list-grid">
                                 <div class="dropdown size">
@@ -93,7 +199,8 @@
                                 <th>[[#{greenCity.pages.table.category}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.complexity}]]
-                                    <span class="table-filter-icon filter"></span></th>
+                                        <span class="table-filter-icon filter"></span>
+                                    </th>
                                 <th>[[#{greenCity.pages.table.duration}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.description}]]
@@ -120,8 +227,8 @@
                                     <td style="min-width: 98px">
                                         <div class="habit_img">
                                             <img th:src="${habit.image}" style="height:inherit; max-width: 51px">
-                                            <i id = "change_img" class="table-download-icon"
-                                            th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
+                                            <i id="change_img" class="table-download-icon"
+                                               th:href="@{|/management/habits/${habit.getId()}/find|}"> </i>
                                         </div>
 
                                     </td>
@@ -142,7 +249,7 @@
                                         <i class="table-edit-icon"></i>
                                     </td>
                                     <td>
-                                        [[${translation.name}]]
+                                        <div class="pr" style="width: 27em">[[${translation.name}]]</div>
                                         <i id="habit_translation" class="table-edit-translation-icon"
                                            th:href="@{|/management/habits/${habit.getId()}/find|}"></i>
 
@@ -208,6 +315,16 @@
                                     <label for="fileCreate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileCreate" name="file">
                                     <span th:id="errorModalAddfile" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.complexity}]]</label>
+                                    <input type="text" class="form-control" name="complexity" required>
+                                    <span th:id="'errorModalSavecomplexity'" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.default.duration}]]</label>
+                                    <input type="text" class="form-control" name="defaultDuration" required>
+                                    <span th:id="'errorModalSavedefaultDuration'" class="errorSpan"></span>
                                 </div>
                                 <th:block th:each="language, iterInfo : ${languages}">
                                     <div class="row">
@@ -303,11 +420,12 @@
                             <div class="modal-body">
 
                                 <div class="form-group" style="justify-content: center">
-                                    <img id = "upload_image">
+                                    <img id="upload_image">
                                     <label for="fileUpdate">[[#{greenCity.pages.table.image.upload}]]</label>
                                     <input type="file" class="form-control" id="fileUpdate" name="file"
-                                           enctype="multipart/form-data" accept="image/png, image/jpg, image/jpeg, .png, .jpg, .jpeg"
-                                          onchange="loadFile()" hidden>
+                                           enctype="multipart/form-data"
+                                           accept="image/png, image/jpg, image/jpeg, .png, .jpg, .jpeg"
+                                           onchange="loadFile()" hidden>
                                     <span th:id="errorModalAddfile" class="errorSpan"></span>
                                 </div>
 
@@ -377,6 +495,97 @@
     </div>
 </div>
 <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
+<script>
+    document.getElementById("habit_complexity_filter").style.cursor = 'pointer';
+    function openForm() {
+        if (document.getElementById("filter").style.display === "block") {
+            document.getElementById("filter").style.display = "none";
+            document.getElementById("habits-filter-button").style.width = "113px";
+        } else {
+            document.getElementById("filter").style.display = "block";
+            document.getElementById("habits-filter-button").style.width = "280px";
+        }
+    }
+
+    $(document).ready(function () {
+        $($).click(function () {
+            // Change src attribute of image
+            $(this).attr("src", "images/card-front.jpg");
+        });
+    });
+
+    function showLeftVal(val) {
+        document.getElementById("leftText").value = val + "-"
+    }
+    function showRightVal(val) {
+        document.getElementById('rightText').value = val + "days";
+    }
+
+    var inputLeft = document.getElementById("input-left");
+    var inputRight = document.getElementById("input-right");
+
+    var thumbLeft = document.querySelector(".slider > .thumb.left");
+    var thumbRight = document.querySelector(".slider > .thumb.right");
+    var range = document.querySelector(".slider > .range");
+
+    function setLeftValue() {
+        var _this = inputLeft,
+            min = parseInt(_this.min),
+            max = parseInt(_this.max);
+
+        _this.value = Math.min(parseInt(_this.value), parseInt(inputRight.value) - 1);
+
+        var percent = ((_this.value - min) / (max - min)) * 100;
+
+        thumbLeft.style.left = percent + "%";
+        range.style.left = percent + "%";
+    }
+    setLeftValue();
+
+    function setRightValue() {
+        var _this = inputRight,
+            min = parseInt(_this.min),
+            max = parseInt(_this.max);
+
+        _this.value = Math.max(parseInt(_this.value), parseInt(inputLeft.value) + 1);
+
+        var percent = ((_this.value - min) / (max - min)) * 100;
+
+        thumbRight.style.right = (100 - percent) + "%";
+        range.style.right = (100 - percent) + "%";
+    }
+    setRightValue();
+
+    inputLeft.addEventListener("input", setLeftValue);
+    inputRight.addEventListener("input", setRightValue);
+
+    inputLeft.addEventListener("mouseover", function() {
+        thumbLeft.classList.add("hover");
+    });
+    inputLeft.addEventListener("mouseout", function() {
+        thumbLeft.classList.remove("hover");
+    });
+    inputLeft.addEventListener("mousedown", function() {
+        thumbLeft.classList.add("active");
+    });
+    inputLeft.addEventListener("mouseup", function() {
+        thumbLeft.classList.remove("active");
+    });
+
+    inputRight.addEventListener("mouseover", function() {
+        thumbRight.classList.add("hover");
+    });
+    inputRight.addEventListener("mouseout", function() {
+        thumbRight.classList.remove("hover");
+    });
+    inputRight.addEventListener("mousedown", function() {
+        thumbRight.classList.add("active");
+    });
+    inputRight.addEventListener("mouseup", function() {
+        thumbRight.classList.remove("active");
+    });
+
+</script>
 </body>
 
 </html>
