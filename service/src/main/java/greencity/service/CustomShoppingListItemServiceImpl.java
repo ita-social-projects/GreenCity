@@ -12,6 +12,7 @@ import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
@@ -139,22 +140,22 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Transactional
     @Override
     public CustomShoppingListItemResponseDto updateItemStatus(Long userId, Long itemId, String itemStatus) {
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto = null;
         CustomShoppingListItem customShoppingListItem =
-            customShoppingListItemRepo.findByUserIdAndItemId(userId, itemId);
-        if (itemStatus.equals(ShoppingListItemStatus.DONE.toString())) {
+                customShoppingListItemRepo.findByUserIdAndItemId(userId, itemId);
+        if (customShoppingListItem == null) {
+            throw new NotFoundException(CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
+        }
+        if (itemStatus.equalsIgnoreCase(ShoppingListItemStatus.DONE.name())) {
             customShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
-            customShoppingListItemRepo.save(customShoppingListItem);
-            customShoppingListItemResponseDto =
-                modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class);
+            return modelMapper.map(customShoppingListItemRepo.save(customShoppingListItem),
+                    CustomShoppingListItemResponseDto.class);
         }
-        if (itemStatus.equals(ShoppingListItemStatus.ACTIVE.toString())) {
+        if (itemStatus.equalsIgnoreCase(ShoppingListItemStatus.ACTIVE.name())) {
             customShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
-            customShoppingListItemRepo.save(customShoppingListItem);
-            customShoppingListItemResponseDto =
-                modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class);
+            return modelMapper.map(customShoppingListItemRepo.save(customShoppingListItem),
+                    CustomShoppingListItemResponseDto.class);
         }
-        return customShoppingListItemResponseDto;
+        throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
     }
 
     /**
