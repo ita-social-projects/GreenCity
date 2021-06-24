@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
@@ -13,6 +14,7 @@ import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.UserStatus;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
@@ -243,7 +245,14 @@ class CustomShoppingListItemServiceImplTest {
         when(customShoppingListItemRepo.save(customShoppingListItem1)).thenReturn(customShoppingListItem1);
         when(modelMapper.map(customShoppingListItem1, CustomShoppingListItemResponseDto.class)).thenReturn(test1);
         assertEquals(test1, customShoppingListItemService.updateItemStatus(12L, 2L, "ACTIVE"));
-
+        when(customShoppingListItemRepo.findByUserIdAndItemId(any(), anyLong())).thenReturn(null);
+        Exception thrown1 = assertThrows(NotFoundException.class,
+            () -> customShoppingListItemService.updateItemStatus(64L, 1L, "DONE"));
+        assertEquals(thrown1.getMessage(), ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
+        when(customShoppingListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customShoppingListItem1);
+        Exception thrown2 = assertThrows(BadRequestException.class,
+            () -> customShoppingListItemService.updateItemStatus(12L, 2L, "NOTDONE"));
+        assertEquals(thrown2.getMessage(), ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
     }
 
     @Test
