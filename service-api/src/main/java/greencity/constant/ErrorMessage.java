@@ -145,6 +145,7 @@ public final class ErrorMessage {
     public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST = "Bad inputed image string : ";
+    public static final String INCORRECT_INPUT_ITEM_STATUS = "Incorrect input status to update item.";
 
     private ErrorMessage() {
     }
