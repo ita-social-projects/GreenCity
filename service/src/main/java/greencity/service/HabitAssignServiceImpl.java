@@ -128,8 +128,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
         HabitAssignPropertiesDto habitAssignPropertiesDto) {
-        habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        if (!habitRepo.existsById(habitId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+        }
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
             .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
