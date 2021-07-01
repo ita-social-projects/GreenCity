@@ -93,7 +93,7 @@ class HabitAssignControllerTest {
         HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
         Gson gson = new Gson();
         String json = gson.toJson(propertiesDto);
-        mockMvc.perform(put(habitLink + "/{habitId}/update-shopping-item-list", 1L)
+        mockMvc.perform(put(habitLink + "/{habitId}/update-user-shopping-item-list", 1L)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
