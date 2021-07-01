@@ -39,12 +39,12 @@ public interface HabitAssignService {
      * Method updates {@code HabitAssign} shopping list with custom properties.
      *
      * @param habitId                  {@code AssignHabit} id.
-     * @param user                     @link UserVO} id.
+     * @param userId                   {@link Long} id.
      * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
-     * @return {@link HabitAssignManagementDto}.
+     * @return {@link HabitAssignUserShoppingListItemDto}.
      */
-    HabitAssignManagementDto updateHabitAssignShoppingItemList(Long habitId, UserVO user,
-                                                                      HabitAssignPropertiesDto habitAssignPropertiesDto);
+    HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
+        HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.

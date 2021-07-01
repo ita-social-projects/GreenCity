@@ -1,23 +1,13 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habit.HabitAssignManagementDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitEnrollDto;
-import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.constant.ErrorMessage;
+import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.HabitAssignStatus;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.*;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.ShoppingListItemRepo;
@@ -33,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
@@ -439,4 +429,43 @@ class HabitAssignServiceImplTest {
 
     }
 
+    @Test
+    void updateUserShoppingList() {
+        HabitAssign habitAssign = getHabitAssign();
+        habitAssign.setDuration(20);
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+            .thenReturn(Optional.of(habitAssign));
+        when(shoppingListItemRepo.getShoppingListByListOfId(any())).thenReturn(List.of(getShoppingListItem()));
+        when(userShoppingListItemRepo
+            .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(anyLong(), anyLong()))
+                .thenReturn(Optional.of(getUserShoppingListItem()));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+
+        HabitAssignUserShoppingListItemDto result =
+            habitAssignService.updateUserShoppingItemList(1L, 21L, getHabitAssignPropertiesDto());
+        assertEquals(20, result.getDuration());
+        assertEquals(1, result.getUserShoppingListItemsDto().size());
+    }
+
+    @Test
+    void updateUserShoppingListShouldThrowNotFoundException() {
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception thrown1 = assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+                getHabitAssignPropertiesDto()));
+        assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
+    }
+
+    @Test
+    void updateUserShoppingListShouldThrowInvalidStatusException() {
+        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+            .thenReturn(Optional.empty());
+        Exception thrown1 = assertThrows(InvalidStatusException.class,
+            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+                getHabitAssignPropertiesDto()));
+        assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS);
+    }
 }

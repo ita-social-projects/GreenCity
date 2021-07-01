@@ -6,6 +6,8 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.AchievementCategoryType;
@@ -119,46 +121,68 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
+
     /**
      * {@inheritDoc}
      */
     @Transactional
     @Override
-    public HabitAssignManagementDto updateHabitAssignShoppingItemList(Long habitId, UserVO userVO,
-                                                                  HabitAssignPropertiesDto habitAssignPropertiesDto) {
-        User user = modelMapper.map(userVO, User.class);
+    public HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
+        HabitAssignPropertiesDto habitAssignPropertiesDto) {
         habitRepo.findById(habitId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, user.getId())
-                .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
+            .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
-        List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+        List<ShoppingListItem> shoppingListItems =
+            shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
                 .getDefaultShoppingListItems());
         if (shoppingListItems.isEmpty()) {
             throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
         }
+        List<UserShoppingListItem> userShoppingListItems = new ArrayList<>();
         for (ShoppingListItem shoppingListItem : shoppingListItems) {
             UserShoppingListItem userShoppingListItem = userShoppingListItemRepo
-                    .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(habitAssign.getId(),
-                            shoppingListItem.getId())
-                    .orElse(buildUserShoppingListItems(shoppingListItem, habitAssign));
+                .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(habitAssign.getId(),
+                    shoppingListItem.getId())
+                .orElse(buildUserShoppingListItems(shoppingListItem, habitAssign));
             if (userShoppingListItem.getId() != null) {
                 userShoppingListItem.setDateCompleted(null);
                 userShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
             }
+            userShoppingListItems.add(userShoppingListItem);
             userShoppingListItemRepo.save(userShoppingListItem);
         }
         habitAssign = habitAssignRepo.save(habitAssign);
-        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        return buildHabitAssignUserShoppingListItemDto(habitAssign, userShoppingListItems);
+    }
+
+    private HabitAssignUserShoppingListItemDto buildHabitAssignUserShoppingListItemDto(HabitAssign habitAssign,
+        List<UserShoppingListItem> userShoppingListItems) {
+        return HabitAssignUserShoppingListItemDto.builder()
+            .habitAssignId(habitAssign.getId())
+            .userId(habitAssign.getUser().getId())
+            .habitId(habitAssign.getHabit().getId())
+            .status(habitAssign.getStatus())
+            .workingDays(habitAssign.getWorkingDays())
+            .duration(habitAssign.getDuration())
+            .userShoppingListItemsDto(userShoppingListItems.stream()
+                .map(u -> UserShoppingListItemAdvanceDto.builder().id(u.getId())
+                    .shoppingListItemId(u.getShoppingListItem().getId())
+                    .status(u.getStatus())
+                    .dateCompleted(u.getDateCompleted())
+                    .build())
+                .collect(Collectors.toList()))
+            .build();
     }
 
     private UserShoppingListItem buildUserShoppingListItems(ShoppingListItem shoppingListItem,
-                                                             HabitAssign habitAssign) {
+        HabitAssign habitAssign) {
         return UserShoppingListItem.builder()
-                .habitAssign(habitAssign)
-                .shoppingListItem(shoppingListItem)
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .build();
+            .habitAssign(habitAssign)
+            .shoppingListItem(shoppingListItem)
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
     }
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {

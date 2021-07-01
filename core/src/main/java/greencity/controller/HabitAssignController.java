@@ -84,19 +84,19 @@ public class HabitAssignController {
      * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Update shopping item list and habit assign duration.")
+    @ApiOperation(value = "Update user shopping item list and habit assign duration.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignUserShoppingListItemDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PutMapping("/{habitId}/update-shopping-item-list")
-    public ResponseEntity<HabitAssignManagementDto> updateShoppingItemList(@PathVariable Long habitId,
-                                                                           @ApiIgnore @CurrentUser UserVO userVO,
-                                                                 @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+    @PutMapping("/{habitId}/update-user-shopping-item-list")
+    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemList(@PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(habitAssignService.updateHabitAssignShoppingItemList(habitId, userVO, habitAssignPropertiesDto));
+            .body(habitAssignService.updateUserShoppingItemList(habitId, userVO.getId(), habitAssignPropertiesDto));
     }
 
     /**

@@ -96,12 +96,13 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 
     /**
-     * Method returns {@link UserShoppingListItem} by habit assign id and shopping list item id.
+     * Method returns {@link UserShoppingListItem} by habit assign id and shopping
+     * list item id.
      *
-     * @param habitAssignId {@link Long}
+     * @param habitAssignId      {@link Long}
      * @param shoppingListItemId {@link Long}
      * @return {@link ShoppingListItem}
      */
     Optional<UserShoppingListItem> getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(
-            Long habitAssignId, Long shoppingListItemId);
+        Long habitAssignId, Long shoppingListItemId);
 }

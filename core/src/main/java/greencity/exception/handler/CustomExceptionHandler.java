@@ -525,7 +525,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(InvalidStatusException.class)
     public final ResponseEntity<Object> handleInvalidStatusException(
-            InvalidStatusException ex, WebRequest request) {
+        InvalidStatusException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
