@@ -438,7 +438,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(shoppingListItemRepo.getShoppingListByListOfId(any())).thenReturn(List.of(getShoppingListItem()));
         when(userShoppingListItemRepo
-            .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(anyLong(), anyLong()))
+            .getUserShoppingListItemByHabitAssignIdAndShoppingListItemId(anyLong(), anyLong()))
                 .thenReturn(Optional.of(getUserShoppingListItem()));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
 

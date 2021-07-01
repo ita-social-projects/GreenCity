@@ -7,7 +7,6 @@ import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.enums.AchievementCategoryType;
@@ -134,24 +133,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
             .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
-        List<ShoppingListItem> shoppingListItems =
-            shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-                .getDefaultShoppingListItems());
-        if (shoppingListItems.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
-        }
         List<UserShoppingListItem> userShoppingListItems = new ArrayList<>();
-        for (ShoppingListItem shoppingListItem : shoppingListItems) {
-            UserShoppingListItem userShoppingListItem = userShoppingListItemRepo
-                .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(habitAssign.getId(),
-                    shoppingListItem.getId())
-                .orElse(buildUserShoppingListItems(shoppingListItem, habitAssign));
-            if (userShoppingListItem.getId() != null) {
-                userShoppingListItem.setDateCompleted(null);
-                userShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
+        if (habitAssignPropertiesDto.getDefaultShoppingListItems() != null
+            && !habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
+            List<ShoppingListItem> shoppingListItems =
+                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+                    .getDefaultShoppingListItems());
+            for (ShoppingListItem shoppingListItem : shoppingListItems) {
+                UserShoppingListItem userShoppingListItem = userShoppingListItemRepo
+                    .getUserShoppingListItemByHabitAssignIdAndShoppingListItemId(habitAssign.getId(),
+                        shoppingListItem.getId())
+                    .orElse(buildUserShoppingListItems(shoppingListItem, habitAssign));
+                if (userShoppingListItem.getId() != null) {
+                    userShoppingListItem.setDateCompleted(null);
+                    userShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
+                }
+                userShoppingListItems.add(userShoppingListItem);
+                userShoppingListItemRepo.save(userShoppingListItem);
             }
-            userShoppingListItems.add(userShoppingListItem);
-            userShoppingListItemRepo.save(userShoppingListItem);
         }
         habitAssign = habitAssignRepo.save(habitAssign);
         return buildHabitAssignUserShoppingListItemDto(habitAssign, userShoppingListItems);
