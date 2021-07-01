@@ -150,8 +150,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     userShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
                 }
                 userShoppingListItems.add(userShoppingListItem);
-                userShoppingListItemRepo.save(userShoppingListItem);
             }
+            userShoppingListItemRepo.saveAll(userShoppingListItems);
         }
         habitAssign = habitAssignRepo.save(habitAssign);
         return buildHabitAssignUserShoppingListItemDto(habitAssign, userShoppingListItems);
