@@ -433,7 +433,7 @@ class HabitAssignServiceImplTest {
     void updateUserShoppingList() {
         HabitAssign habitAssign = getHabitAssign();
         habitAssign.setDuration(20);
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitRepo.existsById(anyLong())).thenReturn(true);
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
             .thenReturn(Optional.of(habitAssign));
         when(shoppingListItemRepo.getShoppingListByListOfId(any())).thenReturn(List.of(getShoppingListItem()));
@@ -450,7 +450,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateUserShoppingListShouldThrowNotFoundException() {
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.empty());
+        when(habitRepo.existsById(anyLong())).thenReturn(false);
 
         Exception thrown1 = assertThrows(NotFoundException.class,
             () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
@@ -460,7 +460,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void updateUserShoppingListShouldThrowInvalidStatusException() {
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitRepo.existsById(anyLong())).thenReturn(true);
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         Exception thrown1 = assertThrows(InvalidStatusException.class,
