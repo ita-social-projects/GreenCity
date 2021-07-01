@@ -94,4 +94,14 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
         + "join habit_assign as ha on ha.id = habit_assign_id\n"
         + "where ha.user_id = :userId and shopping_list_item_id = :itemId")
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
+
+    /**
+     * Method returns {@link UserShoppingListItem} by habit assign id and shopping list item id.
+     *
+     * @param habitAssignId {@link Long}
+     * @param shoppingListItemId {@link Long}
+     * @return {@link ShoppingListItem}
+     */
+    Optional<UserShoppingListItem> getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(
+            Long habitAssignId, Long shoppingListItemId);
 }

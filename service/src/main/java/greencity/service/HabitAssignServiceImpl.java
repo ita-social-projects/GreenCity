@@ -119,6 +119,47 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitAssignManagementDto updateHabitAssignShoppingItemList(Long habitId, UserVO userVO,
+                                                                  HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        User user = modelMapper.map(userVO, User.class);
+        habitRepo.findById(habitId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, user.getId())
+                .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
+        enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
+        List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+                .getDefaultShoppingListItems());
+        if (shoppingListItems.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
+        }
+        for (ShoppingListItem shoppingListItem : shoppingListItems) {
+            UserShoppingListItem userShoppingListItem = userShoppingListItemRepo
+                    .getUserShoppingListItemByHabitAssign_IdAndShoppingListItem_Id(habitAssign.getId(),
+                            shoppingListItem.getId())
+                    .orElse(buildUserShoppingListItems(shoppingListItem, habitAssign));
+            if (userShoppingListItem.getId() != null) {
+                userShoppingListItem.setDateCompleted(null);
+                userShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
+            }
+            userShoppingListItemRepo.save(userShoppingListItem);
+        }
+        habitAssign = habitAssignRepo.save(habitAssign);
+        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+    }
+
+    private UserShoppingListItem buildUserShoppingListItems(ShoppingListItem shoppingListItem,
+                                                             HabitAssign habitAssign) {
+        return UserShoppingListItem.builder()
+                .habitAssign(habitAssign)
+                .shoppingListItem(shoppingListItem)
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build();
+    }
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {
         List<UserShoppingListItem> userShoppingList = new ArrayList<>();
