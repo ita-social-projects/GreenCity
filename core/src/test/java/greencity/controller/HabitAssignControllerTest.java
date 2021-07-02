@@ -6,6 +6,7 @@ import greencity.ModelUtils;
 import static greencity.ModelUtils.getPrincipal;
 
 import greencity.client.RestClient;
+import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -15,6 +16,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
 
+import liquibase.pro.packaged.G;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,6 +86,18 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, null, habitAssignStatDto);
+    }
+
+    @Test
+    void updateShoppingItemList() throws Exception {
+        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
+        Gson gson = new Gson();
+        String json = gson.toJson(propertiesDto);
+        mockMvc.perform(put(habitLink + "/{habitId}/update-user-shopping-item-list", 1L)
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).updateUserShoppingItemList(1L, null, propertiesDto);
     }
 
     @Test

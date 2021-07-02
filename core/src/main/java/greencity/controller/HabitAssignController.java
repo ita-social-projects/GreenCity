@@ -20,15 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
@@ -82,6 +74,29 @@ public class HabitAssignController {
         @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignPropertiesDto));
+    }
+
+    /**
+     * Method which updates shopping item list and habit assign duration.
+     *
+     * @param habitId                  {@link HabitVO} id.
+     * @param userVO                   {@link UserVO} instance.
+     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @return {@link ResponseEntity}.
+     */
+    @ApiOperation(value = "Update user shopping item list and habit assign duration.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignUserShoppingListItemDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PutMapping("/{habitId}/update-user-shopping-item-list")
+    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemList(@PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.updateUserShoppingItemList(habitId, userVO.getId(), habitAssignPropertiesDto));
     }
 
     /**

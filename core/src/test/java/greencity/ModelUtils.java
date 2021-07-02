@@ -23,6 +23,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
@@ -627,6 +628,13 @@ public class ModelUtils {
             .userCredo("Credo")
             .role(Role.ROLE_ADMIN)
             .userStatus(UserStatus.ACTIVATED)
+            .build();
+    }
+
+    public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
+        return HabitAssignPropertiesDto.builder()
+            .defaultShoppingListItems(List.of(1L, 2L))
+            .duration(20)
             .build();
     }
 }
