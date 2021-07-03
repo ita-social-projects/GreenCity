@@ -1162,4 +1162,49 @@ public class ModelUtils {
             .tags(new ArrayList<>())
             .build();
     }
+
+    public static ShoppingListItem getShoppingListItem() {
+        return ShoppingListItem.builder()
+            .id(1L)
+            .build();
+    }
+
+    public static HabitAssignPropertiesDto getHabitAssignPropertiesDto() {
+        return HabitAssignPropertiesDto.builder()
+            .defaultShoppingListItems(List.of(1L))
+            .duration(20)
+            .build();
+    }
+
+    public static HabitAssign getHabitAssignWithUserShoppingListItem() {
+        return HabitAssign.builder()
+            .id(1L)
+            .user(User.builder().id(21L).build())
+            .habit(Habit.builder().id(1L).build())
+            .status(HabitAssignStatus.INPROGRESS)
+            .workingDays(0)
+            .duration(20)
+            .userShoppingListItems(List.of(UserShoppingListItem.builder()
+                .id(1L)
+                .shoppingListItem(ShoppingListItem.builder().id(1L).build())
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .build();
+    }
+
+    public static HabitAssignUserShoppingListItemDto getHabitAssignUserShoppingListItemDto() {
+        return HabitAssignUserShoppingListItemDto.builder()
+            .habitAssignId(1L)
+            .userId(21L)
+            .habitId(1L)
+            .status(HabitAssignStatus.INPROGRESS)
+            .workingDays(0)
+            .duration(20)
+            .userShoppingListItemsDto(List.of(UserShoppingListItemAdvanceDto.builder()
+                .id(1L)
+                .shoppingListItemId(1L)
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .build();
+    }
 }
