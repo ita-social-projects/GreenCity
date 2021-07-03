@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.entity.HabitAssign;
