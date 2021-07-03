@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,6 +166,42 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public Integer getReadinessPercent(HabitAssignDto habitAssign) {
         return habitAssign.getWorkingDays() * 100 / habitAssign.getDuration();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
+        HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        if (!habitRepo.existsById(habitId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+        }
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
+            .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
+        enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
+        if (habitAssignPropertiesDto.getDefaultShoppingListItems() != null
+            && !habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
+            List<ShoppingListItem> shoppingListItems =
+                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+                    .getDefaultShoppingListItems());
+            List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
+                .map(s -> buildUserShoppingListItems(s, habitAssign))
+                .collect(Collectors.toList());
+            habitAssign.getUserShoppingListItems().clear();
+            habitAssign.getUserShoppingListItems().addAll(userShoppingListItems);
+        }
+        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserShoppingListItemDto.class);
+    }
+
+    private UserShoppingListItem buildUserShoppingListItems(ShoppingListItem shoppingListItem,
+        HabitAssign habitAssign) {
+        return UserShoppingListItem.builder()
+            .habitAssign(habitAssign)
+            .shoppingListItem(shoppingListItem)
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
     }
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {

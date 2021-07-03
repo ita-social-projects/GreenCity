@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -10,14 +11,17 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -55,8 +59,22 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitManagementDto> getAllHabitsDto(Pageable pageable) {
-        Page<Habit> habits = habitRepo.findAll(pageable);
+    public PageableDto<HabitManagementDto> getAllHabitsDto(String searchReg, Integer durationFrom,
+        Integer durationTo, Integer complexity, Boolean withoutImage,
+        Boolean withImage,
+        Pageable pageable) {
+        if (withImage == null) {
+            withImage = false;
+        }
+        if (withoutImage == null) {
+            withoutImage = false;
+        }
+        FilterHabitDto filterHabitDto = new FilterHabitDto(searchReg,
+            durationFrom,
+            durationTo,
+            complexity,
+            withoutImage, withImage);
+        Page<Habit> habits = habitRepo.findAll(new HabitFilter(filterHabitDto), pageable);
         List<HabitManagementDto> habitDtos = habits.getContent()
             .stream()
             .map(habit -> modelMapper.map(habit, HabitManagementDto.class))
@@ -76,7 +94,6 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
     public HabitManagementDto saveHabitAndTranslations(HabitManagementDto habitManagementDto, MultipartFile image) {
         Habit habit = buildHabitWithTranslations(habitManagementDto);
         uploadImageForHabit(habitManagementDto, image, habit);
-
         habitRepo.save(habit);
         habitTranslationRepo.saveAll(habit.getHabitTranslations());
         return modelMapper.map(habit, HabitManagementDto.class);
@@ -90,6 +107,8 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      */
     private Habit buildHabitWithTranslations(HabitManagementDto habitManagementDto) {
         Habit habit = Habit.builder()
+            .complexity(habitManagementDto.getComplexity())
+            .defaultDuration(habitManagementDto.getDefaultDuration())
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()
@@ -114,9 +133,14 @@ public class ManagementHabitServiceImpl implements ManagementHabitService {
      * @param habit              {@link Habit} instance.
      */
     private void uploadImageForHabit(HabitManagementDto habitManagementDto, MultipartFile image, Habit habit) {
-        habit.setImage(habitManagementDto.getImage());
-        if (image != null) {
-            habit.setImage(fileService.upload(image));
+        if (image == null) {
+            if (habitManagementDto.getImage() == null) {
+                habit.setImage(AppConstant.DEFAULT_HABIT_IMAGE);
+            } else {
+                habit.setImage(habitManagementDto.getImage());
+            }
+        } else {
+            fileService.upload(image);
         }
     }
 

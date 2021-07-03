@@ -1,10 +1,12 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.CommentAdminDto;
 import greencity.dto.comment.CommentReturnDto;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
@@ -17,6 +19,7 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
+import greencity.repository.options.HabitFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +28,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
@@ -78,8 +82,9 @@ public class ManagementHabitServiceImplTest {
         PageableDto<HabitManagementDto> result =
             new PageableDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1);
         when(modelMapper.map(habits.get(0), HabitManagementDto.class)).thenReturn(habitManagementDtos.get(0));
-        when(habitRepo.findAll(pageRequest)).thenReturn(listHabits);
-        assertEquals(result, managementHabitService.getAllHabitsDto(pageRequest));
+        when(habitRepo.findAll(any(HabitFilter.class), eq(pageRequest))).thenReturn(listHabits);
+        assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
+            null, false, false, pageRequest));
     }
 
     @Test
@@ -87,11 +92,14 @@ public class ManagementHabitServiceImplTest {
         when(languageService.findByCode("en")).thenReturn(LanguageDTO.builder().id(1L).code("en").build());
         when(modelMapper.map(languageService.findByCode("en"),
             Language.class)).thenReturn(Language.builder().id(1l).code("en").build());
-        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L).habitTranslations(Arrays.asList(
-            HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
-                .name("Name").build()))
+        HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L)
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
+            .habitTranslations(Arrays.asList(
+                HabitTranslationManagementDto.builder().habitItem("Item").description("Description").languageCode("en")
+                    .name("Name").build()))
             .build();
         Habit habit = Habit.builder()
+            .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .habitTranslations(
                 habitManagementDto.getHabitTranslations().stream()
                     .map(habitTranslationDto -> HabitTranslation.builder()

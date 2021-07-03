@@ -63,7 +63,8 @@ class HabitManagementControllerTest {
         List<HabitManagementDto> habitManagementDtos = Collections.singletonList(new HabitManagementDto());
         PageableDto<HabitManagementDto> habitManagementDtoPageableDto = new PageableDto<>(habitManagementDtos, 4, 0, 3);
 
-        when(managementHabitService.getAllHabitsDto(pageable)).thenReturn(habitManagementDtoPageableDto);
+        when(managementHabitService.getAllHabitsDto(null, null, null, null,
+            null, null, pageable)).thenReturn(habitManagementDtoPageableDto);
 
         List<LanguageDTO> languageDtos = Collections.singletonList(new LanguageDTO());
 
@@ -77,7 +78,7 @@ class HabitManagementControllerTest {
             .andExpect(model().attribute("languages", languageDtos))
             .andExpect(status().isOk());
 
-        verify(managementHabitService).getAllHabitsDto(pageable);
+        verify(managementHabitService).getAllHabitsDto(null, null, null, null, null, null, pageable);
     }
 
     @Test
