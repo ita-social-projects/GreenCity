@@ -1,7 +1,10 @@
 package greencity.repository;
 
 import greencity.entity.User;
+
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -51,4 +54,23 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    /**
+     * Find the last activity time by {@link User}'s id.
+     *
+     * @param userId - {@link User}'s id
+     * @return {@link Date}
+     */
+    @Query(nativeQuery = true,
+            value = "SELECT last_activity_time FROM users WHERE id=:userId")
+    Optional<Timestamp> findLastActivityTimeById(Long userId);
+
+    /**
+     * Get six friends with the highest rating {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE users.id IN ( "
+            + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 1) "
+            + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 1)) "
+            + "ORDER BY users.rating DESC LIMIT 6;")
+    List<User> getSixFriendsWithTheHighestRating(Long userId);
 }

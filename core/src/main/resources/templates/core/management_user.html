@@ -230,7 +230,9 @@
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                                 </td>
-                                <td th:text="${user.id}"></td>
+                                <td>
+                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
+                                </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
                                 <td th:text="${user.userCredo}" class="pr"></td>

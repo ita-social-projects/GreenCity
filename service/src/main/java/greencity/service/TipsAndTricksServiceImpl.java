@@ -385,6 +385,17 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return getPagesWithTipsAndTricksDtoResponse(page);
     }
 
+    //todo
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<TipsAndTricksDtoResponse> getAllTipsAndTricksByUserId(Long userId) {
+        return tipsAndTricksRepo.findAllByUserId(userId).stream()
+                .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class))
+                .collect(Collectors.toList());
+    }
+
     /**
      * Method for getting amount of written tips and trick by user id.
      *

@@ -129,6 +129,14 @@ public interface TipsAndTricksService {
     PageableDto<TipsAndTricksDtoResponse> searchBy(Pageable pageable, String searchQuery);
 
     /**
+     * Method for getting all written tips and trick by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return list of {@link TipsAndTricksDtoManagement} instances.
+     */
+    List<TipsAndTricksDtoResponse> getAllTipsAndTricksByUserId(Long userId);
+
+    /**
      * Method for getting amount of written tips and trick by user id.
      *
      * @param id {@link Long} user id.

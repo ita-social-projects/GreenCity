@@ -69,6 +69,14 @@ public interface PlaceService {
     PlaceVO save(PlaceAddDto dto, String email);
 
     /**
+     * Method to find all created {@link PlaceVO}'s by user id.
+     *
+     * @param userId - {@code User}'s id.
+     * @return list of {@link PlaceVO}'s
+     */
+    List<PlaceVO> getAllCreatedPlacesByUserId(Long userId);
+
+    /**
      * Method for updating {@link PlaceVO}.
      *
      * @param dto - dto for Place entity

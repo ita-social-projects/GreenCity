@@ -155,6 +155,18 @@ public class PlaceServiceImpl implements PlaceService {
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
 
+    //todo
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public List<PlaceVO> getAllCreatedPlacesByUserId (Long userId) {
+        return placeRepo.findAllByUserId(userId).stream()
+                .map(place -> modelMapper.map(place, PlaceVO.class))
+                .collect(Collectors.toList());
+    }
+
     /**
      * Method for getting {@link User} and set this {@link User} to place.
      *

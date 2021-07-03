@@ -83,6 +83,29 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Optional<HabitAssign> findByHabitIdAndUserIdAndStatusIsInprogress(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
+    //todo
+    /**
+     * Method to find {@link HabitAssign}'s by {@link User} id
+     * and ACQUIRED status.
+     *
+     * @param userId  {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+            + " WHERE ha.user.id = :userId AND upper(ha.status) = 'ACQUIRED'")
+    List<HabitAssign> findAllByUserIdAndStatusAcquired(@Param("userId") Long userId);
+
+    /**
+     * Method to find {@link HabitAssign}'s by {@link User} id
+     * and CANCELLED status.
+     *
+     * @param userId  {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+            + " WHERE ha.user.id = :userId AND upper(ha.status) = 'CANCELLED'")
+    List<HabitAssign> findAllByUserIdAndStatusIsCancelled(@Param("userId") Long userId);
+
     /**
      * Method to find {@link HabitAssign}'s by {@link User} and {@link Habit} id's
      * and CANCELLED status.
