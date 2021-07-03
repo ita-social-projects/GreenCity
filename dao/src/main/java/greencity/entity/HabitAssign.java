@@ -41,7 +41,7 @@ public class HabitAssign {
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
 
-    @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserShoppingListItem> userShoppingListItems = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

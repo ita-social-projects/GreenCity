@@ -437,10 +437,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
             .thenReturn(Optional.of(habitAssign));
         when(shoppingListItemRepo.getShoppingListByListOfId(any())).thenReturn(List.of(getShoppingListItem()));
-        when(userShoppingListItemRepo
-            .getUserShoppingListItemByHabitAssignIdAndShoppingListItemId(anyLong(), anyLong()))
-                .thenReturn(Optional.of(getUserShoppingListItem()));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
 
         HabitAssignUserShoppingListItemDto result =
             habitAssignService.updateUserShoppingItemList(1L, 21L, getHabitAssignPropertiesDto());

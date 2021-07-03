@@ -1176,6 +1176,22 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitAssign getHabitAssignWithUserShoppingListItem() {
+        return HabitAssign.builder()
+            .id(1L)
+            .user(User.builder().id(21L).build())
+            .habit(Habit.builder().id(1L).build())
+            .status(HabitAssignStatus.INPROGRESS)
+            .workingDays(0)
+            .duration(20)
+            .userShoppingListItems(List.of(UserShoppingListItem.builder()
+                .id(1L)
+                .shoppingListItem(ShoppingListItem.builder().id(1L).build())
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .build();
+    }
+
     public static HabitAssignUserShoppingListItemDto getHabitAssignUserShoppingListItemDto() {
         return HabitAssignUserShoppingListItemDto.builder()
             .habitAssignId(1L)
