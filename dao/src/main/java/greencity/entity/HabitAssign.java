@@ -2,7 +2,6 @@ package greencity.entity;
 
 import greencity.enums.HabitAssignStatus;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
@@ -41,8 +40,8 @@ public class HabitAssign {
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
 
-    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserShoppingListItem> userShoppingListItems = new ArrayList<>();
+    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    private List<UserShoppingListItem> userShoppingListItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Habit habit;

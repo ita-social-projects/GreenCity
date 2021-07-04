@@ -26,12 +26,7 @@ import org.modelmapper.ModelMapper;
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -441,9 +436,11 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
 
         HabitAssignUserShoppingListItemDto result =
-            habitAssignService.updateUserShoppingItemList(1L, 21L, getHabitAssignPropertiesDto());
+            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, getHabitAssignPropertiesDto());
         assertEquals(20, result.getDuration());
         assertEquals(1, result.getUserShoppingListItemsDto().size());
+
+        verify(userShoppingListItemRepo, atLeastOnce()).deleteAll(any());
     }
 
     @Test
@@ -451,7 +448,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.existsById(anyLong())).thenReturn(false);
 
         Exception thrown1 = assertThrows(NotFoundException.class,
-            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
         assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
     }
@@ -462,7 +459,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         Exception thrown1 = assertThrows(InvalidStatusException.class,
-            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
         assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS);
     }
