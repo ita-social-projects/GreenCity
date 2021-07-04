@@ -92,7 +92,8 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping("/{habitId}/update-user-shopping-item-list")
-    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemListAndDuration(@PathVariable Long habitId,
+    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemListAndDuration(
+        @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.OK)
