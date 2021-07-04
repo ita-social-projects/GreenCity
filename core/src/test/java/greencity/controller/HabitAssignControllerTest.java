@@ -16,7 +16,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
 
-import liquibase.pro.packaged.G;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -97,7 +96,7 @@ class HabitAssignControllerTest {
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingItemList(1L, null, propertiesDto);
+        verify(habitAssignService).updateUserShoppingItemListAndDuration(1L, null, propertiesDto);
     }
 
     @Test

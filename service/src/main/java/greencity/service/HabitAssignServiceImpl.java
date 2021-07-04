@@ -125,7 +125,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
+    public HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
         HabitAssignPropertiesDto habitAssignPropertiesDto) {
         if (!habitRepo.existsById(habitId)) {
             throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
@@ -141,8 +141,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
                 .map(s -> buildUserShoppingListItems(s, habitAssign))
                 .collect(Collectors.toList());
-            habitAssign.getUserShoppingListItems().clear();
-            habitAssign.getUserShoppingListItems().addAll(userShoppingListItems);
+            userShoppingListItemRepo.deleteAll(habitAssign.getUserShoppingListItems());
+            habitAssign.setUserShoppingListItems(userShoppingListItems);
         }
         return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserShoppingListItemDto.class);
     }
