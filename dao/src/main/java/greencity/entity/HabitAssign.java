@@ -2,7 +2,6 @@ package greencity.entity;
 
 import greencity.enums.HabitAssignStatus;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 import lombok.*;
