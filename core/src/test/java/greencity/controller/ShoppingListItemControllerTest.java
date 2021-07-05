@@ -61,6 +61,17 @@ class ShoppingListItemControllerTest {
     }
 
     @Test
+    void updateUserShoppingListItemStatus() throws Exception {
+        mockMvc.perform(patch(shoppingListItemLink
+            + "/{shoppingListItemId}/status/{status}", 1, "DONE")
+                .locale(new Locale("en")))
+            .andExpect(status().isOk());
+
+        verify(shoppingListItemService)
+            .updateUserShoppingListItemStatus(null, 1L, "en", "DONE");
+    }
+
+    @Test
     void updateUserShoppingListItemStatusWithoutLanguageParamTest() throws Exception {
         mockMvc.perform(patch(shoppingListItemLink + "/{userShoppingListItemId}", 1, 1))
             .andExpect(status().isCreated());

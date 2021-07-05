@@ -117,7 +117,7 @@ public interface ShoppingListItemService {
     void deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(Long itemId, Long userId, Long habitId);
 
     /**
-     * Method update status of user shopping list item.
+     * Method update status of user shopping list item to done.
      *
      * @param userId   id of the {@link UserVO} current user.
      * @param itemId   - {@link UserShoppingListItemVO}'s id that should be updated.
@@ -125,6 +125,18 @@ public interface ShoppingListItemService {
      * @return {@link UserShoppingListItemDto} with specific language.
      */
     UserShoppingListItemResponseDto updateUserShopingListItemStatus(Long userId, Long itemId, String language);
+
+    /**
+     * Method update status of user shopping list item to done.
+     *
+     * @param userId   id of the {@link UserVO} current user.
+     * @param itemId   - {@link UserShoppingListItemVO}'s id that should be updated.
+     * @param language needed language code.
+     * @param status   needed language code.
+     * @return {@link UserShoppingListItemDto} with specific language.
+     */
+    List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId, String language,
+        String status);
 
     /**
      * Method for deleted list of user shopping list items.
