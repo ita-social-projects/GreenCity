@@ -3,6 +3,7 @@ package greencity.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
@@ -243,6 +244,48 @@ class ShoppingListItemServiceImplTest {
         assertThrows(UserShoppingListItemStatusNotUpdatedException.class,
             () -> shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItemId, "en"));
         assertNotEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
+    }
+
+    @Test
+    void updateUserShoppingListItemStatus() {
+        String status = "DONE";
+        UserShoppingListItem userShoppingListItem = ModelUtils.getPredefinedUserShoppingListItem();
+        when(userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(1L, 2L))
+            .thenReturn(List.of(userShoppingListItem));
+        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
+            .thenReturn(UserShoppingListItemResponseDto.builder()
+                .id(1L)
+                .status(ShoppingListItemStatus.DONE)
+                .build());
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId("en", 1L))
+            .thenReturn(ModelUtils.getShoppingListItemTranslation());
+
+        List<UserShoppingListItemResponseDto> result = shoppingListItemService
+            .updateUserShoppingListItemStatus(2L, 1L, "en", "DONE");
+
+        assertEquals(ShoppingListItemStatus.DONE, result.get(0).getStatus());
+    }
+
+    @Test
+    void updateUserShoppingListItemStatusShouldThrowNotFound() {
+        when(userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(1L, 2L))
+            .thenReturn(null);
+
+        Exception thrown = assertThrows(NotFoundException.class, () -> shoppingListItemService
+            .updateUserShoppingListItemStatus(2L, 1L, "en", "DONE"));
+
+        assertEquals(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID, thrown.getMessage());
+    }
+
+    @Test
+    void updateUserShoppingListItemStatusShouldThrowBadRequest() {
+        when(userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(1L, 2L))
+            .thenReturn(List.of(ModelUtils.getPredefinedUserShoppingListItem()));
+
+        Exception thrown = assertThrows(BadRequestException.class, () -> shoppingListItemService
+            .updateUserShoppingListItemStatus(2L, 1L, "en", "Wrong Status"));
+
+        assertEquals(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS, thrown.getMessage());
     }
 
     @Test
