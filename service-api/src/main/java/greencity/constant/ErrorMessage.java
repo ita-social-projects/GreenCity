@@ -77,6 +77,8 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_SHOPPING_LIST_ITEMS =
         "This user hasn't selected any shopping list items yet";
     public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND = "UserShoppingListItem(s) with this id not found: ";
+    public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID =
+            "UserShoppingListItem(s) for this user not found";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";

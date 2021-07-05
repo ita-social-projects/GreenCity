@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingListItem, Long> {
@@ -96,13 +97,16 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 
     /**
-     * Method returns {@link UserShoppingListItem} by habit assign id and shopping
-     * list item id.
+     * Method returns {@link UserShoppingListItem} by shopping list item id and user id.
      *
-     * @param habitAssignId      {@link Long}
-     * @param shoppingListItemId {@link Long}
-     * @return {@link ShoppingListItem}
+     * @param itemId {@link Long}
+     * @param userId {@link Long}
+     * @return {@link UserShoppingListItem}
      */
-    Optional<UserShoppingListItem> getUserShoppingListItemByHabitAssignIdAndShoppingListItemId(
-        Long habitAssignId, Long shoppingListItemId);
+    @Query(nativeQuery = true, value = "SELECT * FROM user_shopping_list u "
+            + "JOIN habit_assign ha ON ha.id = u.habit_assign_id "
+            + "JOIN habit_shopping_list_items hs ON hs.shopping_list_item_id = :itemId "
+            + "WHERE ha.user_id = :userId AND (ha.habit_id = hs.habit_id AND u.shopping_list_item_id = :itemId);"
+    )
+    List<UserShoppingListItem> getAllByShoppingListItemIdANdUserId(@Param(value = "itemId") Long itemId, @Param(value = "userId") Long userId);
 }
