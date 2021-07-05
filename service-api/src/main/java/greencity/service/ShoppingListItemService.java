@@ -132,11 +132,11 @@ public interface ShoppingListItemService {
      * @param userId   id of the {@link UserVO} current user.
      * @param itemId   - {@link UserShoppingListItemVO}'s id that should be updated.
      * @param language needed language code.
-     * @param status needed language code.
+     * @param status   needed language code.
      * @return {@link UserShoppingListItemDto} with specific language.
      */
     List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId, String language,
-                                                                     String status);
+        String status);
 
     /**
      * Method for deleted list of user shopping list items.

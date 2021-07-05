@@ -396,23 +396,24 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
      */
     @Transactional
     @Override
-    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId, String language,
-                                                                            String status) {
+    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId,
+        String language,
+        String status) {
         String statusUpperCase = status.toUpperCase();
         List<UserShoppingListItem> userShoppingListItems =
-                userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(itemId, userId);
+            userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(itemId, userId);
         if (userShoppingListItems == null || userShoppingListItems.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID);
         }
-        if (Arrays.stream(ShoppingListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))){
+        if (Arrays.stream(ShoppingListItemStatus.values()).noneMatch(s -> s.name().equalsIgnoreCase(statusUpperCase))) {
             throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
         }
         userShoppingListItems.forEach(u -> u.setStatus(ShoppingListItemStatus.valueOf(statusUpperCase)));
         userShoppingListItemRepo.saveAll(userShoppingListItems);
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtoList =
-                userShoppingListItems.stream()
-                        .map(u -> modelMapper.map(u, UserShoppingListItemResponseDto.class))
-                        .collect(Collectors.toList());
+            userShoppingListItems.stream()
+                .map(u -> modelMapper.map(u, UserShoppingListItemResponseDto.class))
+                .collect(Collectors.toList());
         userShoppingListItemResponseDtoList.forEach(u -> setTextForUserShoppingListItem(u, language));
         return userShoppingListItemResponseDtoList;
     }

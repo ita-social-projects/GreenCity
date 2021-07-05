@@ -97,16 +97,17 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 
     /**
-     * Method returns {@link UserShoppingListItem} by shopping list item id and user id.
+     * Method returns {@link UserShoppingListItem} by shopping list item id and user
+     * id.
      *
      * @param itemId {@link Long}
      * @param userId {@link Long}
      * @return {@link UserShoppingListItem}
      */
     @Query(nativeQuery = true, value = "SELECT * FROM user_shopping_list u "
-            + "JOIN habit_assign ha ON ha.id = u.habit_assign_id "
-            + "JOIN habit_shopping_list_items hs ON hs.shopping_list_item_id = :itemId "
-            + "WHERE ha.user_id = :userId AND (ha.habit_id = hs.habit_id AND u.shopping_list_item_id = :itemId);"
-    )
-    List<UserShoppingListItem> getAllByShoppingListItemIdANdUserId(@Param(value = "itemId") Long itemId, @Param(value = "userId") Long userId);
+        + "JOIN habit_assign ha ON ha.id = u.habit_assign_id "
+        + "JOIN habit_shopping_list_items hs ON hs.shopping_list_item_id = :itemId "
+        + "WHERE ha.user_id = :userId AND (ha.habit_id = hs.habit_id AND u.shopping_list_item_id = :itemId);")
+    List<UserShoppingListItem> getAllByShoppingListItemIdANdUserId(@Param(value = "itemId") Long itemId,
+        @Param(value = "userId") Long userId);
 }
