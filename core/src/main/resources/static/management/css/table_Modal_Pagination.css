@@ -548,6 +548,11 @@ table.table .avatar {
     margin-top: -9px;
 }
 
+.custom-checkbox.userpage {
+    position: relative;
+    margin: 0px;
+}
+
 .custom-checkbox input[type="checkbox"] {
     opacity: 0;
     position: absolute;

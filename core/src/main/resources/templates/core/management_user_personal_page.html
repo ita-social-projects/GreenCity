@@ -225,11 +225,9 @@
                 </div>
             </div>
 
-            <div class="user-tables">
-
-                <div class="tooltip-container">
-                    <div style="display: inline-block">
-                        <table>
+            <!--<div class="tooltip-container" style="display: none">
+                <div style="display: inline-block">
+                    <table>
                         <colgroup>
                             <col span="1" style="width: 145px">
                             <col span="1" style="width: 20px">
@@ -253,24 +251,26 @@
                         </tr>
                         </tbody>
                     </table>
-                    </div>
-
-                    <div style="display: inline-block">
-                        <h2 style="margin-bottom: 8px">Shopping list</h2>
-                        <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}">
-                            <div class="custom-checkbox">
-                                <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                       name="options[]" th:value="${item.id}"
-                                       th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
-                                th:text="${item.text}"></label>
-                            </div>
-                        </th:block>
-                    </div>
-
                 </div>
 
-                <div style="display: none">
+                <div style="display: inline-block">
+                    <h2 style="margin-bottom: 8px">Shopping list</h2>
+                    <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}">
+                        <div class="custom-checkbox userpage">
+                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                   name="options[]" th:value="${item.id}"
+                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
+                                   th:text="${item.text}"></label>
+                        </div>
+                    </th:block>
+                </div>
+
+            </div>-->
+
+            <div class="user-tables">
+
+                <div>
 
                     <!--Acquired Habits table-->
                     <div>

@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import greencity.enums.UserStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -54,6 +56,40 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
+
+    //todo
+    /**
+     * Updates user status for a given user.
+     *
+     * @param userId - {@link User}'s id
+     * @param userStatus {@link String} - string value of user status to set
+     */
+    @Modifying
+    @Transactional
+    @Query("UPDATE User SET userStatus = CASE " +
+            "WHEN (:userStatus = 'DEACTIVATED') THEN 1 " +
+            "WHEN (:userStatus = 'ACTIVATED') THEN 2 " +
+            "WHEN (:userStatus = 'CREATED') THEN 3 " +
+            "WHEN (:userStatus = 'BLOCKED') THEN 4 " +
+            "ELSE 0 END " +
+            "WHERE id = :userId")
+    void updateUserStatus(Long userId, String userStatus);
+
+    /**
+     * Updates user role for a given user.
+     *
+     * @param userId - {@link User}'s id
+     * @param userRole {@link String} - string value of user role to set
+     */
+    @Modifying
+    @Transactional
+    @Query("UPDATE User SET role = CASE " +
+            "WHEN (:userRole = 'ROLE_USER') THEN 0 " +
+            "WHEN (:userRole = 'ROLE_ADMIN') THEN 1 " +
+            "WHEN (:userRole = 'ROLE_MODERATOR') THEN 2 " +
+            "ELSE 3 END " +
+            "WHERE id = :userId")
+    void updateUserRole(Long userId, String userRole);
 
     /**
      * Find the last activity time by {@link User}'s id.

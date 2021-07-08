@@ -27,7 +27,6 @@ import java.util.Locale;
 @AllArgsConstructor
 @RequestMapping("/management/users/{id}")
 public class ManagementUserPersonalPageController {
-    private final RestClient restClient;
     private final HabitAssignService habitAssignService;
     private final EcoNewsService ecoNewsService;
     private final TipsAndTricksService tipsAndTricksService;
@@ -53,9 +52,6 @@ public class ManagementUserPersonalPageController {
                 .getAllTipsAndTricksByUserId(user.getId());
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
 
-        HabitAssignDto habit1 = inProgressHabits.get(0);
-        model.addAttribute("habit1", habit1.getHabit());
-
         model.addAttribute("user", user);
         model.addAttribute("acquiredHabits", acquiredHabits);
         model.addAttribute("inProgressHabits", inProgressHabits);
@@ -73,7 +69,7 @@ public class ManagementUserPersonalPageController {
                                    @CurrentUser UserVO currentUser) {
         UserStatus status = UserStatus.valueOf(userStatus.toUpperCase());
         userService.updateStatus(id, status, currentUser.getEmail());
-        return "redirect:core/management_user_personal_page";
+        return "redirect:/management/users/{id}";
     }
 
     @PostMapping(value = "/updateUserRole")
@@ -81,13 +77,13 @@ public class ManagementUserPersonalPageController {
                                  @CurrentUser UserVO currentUser) {
         Role role = Role.valueOf("ROLE_" + userRole.toUpperCase());
         userService.updateRole(id, role, currentUser.getEmail());
-        return "redirect:core/management_user_personal_page";
+        return "redirect:/management/users/{id}";
     }
 
     @PostMapping(value = "/updateHabit/{habitAssignId}")
     public String updateHabit(@PathVariable Long id, @RequestParam(name = "userRole") String userRole,
                               @PathVariable Long habitAssignId, @CurrentUser UserVO currentUser) {
 
-        return "redirect:core/management_user_personal_page";
+        return "redirect:/management/users/{id}";
     }
 }

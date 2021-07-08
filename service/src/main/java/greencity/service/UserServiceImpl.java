@@ -100,8 +100,12 @@ public class UserServiceImpl implements UserService {
         accessForUpdateUserStatus(id, email);
         UserVO userVO = findById(id);
         userVO.setUserStatus(userStatus);
-        User user = modelMapper.map(userVO, User.class);
-        return modelMapper.map(userRepo.save(user), UserStatusDto.class);
+
+        userRepo.updateUserStatus(id, String.valueOf(userStatus));
+        return modelMapper.map(userVO, UserStatusDto.class);
+        /*User user = modelMapper.map(userVO, User.class);
+        user.setUserStatus(userStatus);
+        return modelMapper.map(userRepo.save(user), UserStatusDto.class);*/
     }
 
     /**
@@ -112,8 +116,11 @@ public class UserServiceImpl implements UserService {
         checkUpdatableUser(id, email);
         UserVO userVO = findById(id);
         userVO.setRole(role);
-        User user = modelMapper.map(userVO, User.class);
-        return modelMapper.map(userRepo.save(user), UserRoleDto.class);
+
+        userRepo.updateUserRole(id, String.valueOf(role));
+        return modelMapper.map(userVO, UserRoleDto.class);
+        /*User user = modelMapper.map(userVO, User.class);
+        return modelMapper.map(userRepo.save(user), UserRoleDto.class);*/
     }
 
     /**

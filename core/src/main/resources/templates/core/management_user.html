@@ -138,7 +138,7 @@
                                     </form>
                                 </div>
                             </th>
-                            <th style="width: 288px;">
+                            <th>  <!--style="width: 288px;"-->
                                 [[#{greenCity.pages.table.credo}]]
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form">
@@ -235,7 +235,7 @@
                                 </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
-                                <td th:text="${user.userCredo}" class="pr"></td>
+                                <td class="column-credo-text" th:text="${user.userCredo}"></td>
                                 <td>
                                     <div class="dropdown role">
                                         <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
