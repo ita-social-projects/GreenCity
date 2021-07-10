@@ -301,7 +301,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             page.getTotalPages());
     }
 
-    //todo
     /**
      * Method for getting all published news by user id.
      *
@@ -311,8 +310,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId) {
         return ecoNewsRepo.findAllByUserId(userId).stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**

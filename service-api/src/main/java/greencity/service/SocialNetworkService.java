@@ -15,8 +15,9 @@ public interface SocialNetworkService {
     /**
      * Method for getting user's social network url by social network name.
      *
-     * @param socialNetworks - {@link List} of user's {@link SocialNetworkVO} instances.
+     * @param socialNetworks    - {@link List} of user's {@link SocialNetworkVO}
+     *                          instances.
      * @param socialNetworkName - name of {@link SocialNetworkVO}.
      */
-    String getSocialNetworkUrlByName (List<SocialNetworkVO> socialNetworks, String socialNetworkName);
+    String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName);
 }

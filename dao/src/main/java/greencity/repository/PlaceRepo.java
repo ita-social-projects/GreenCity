@@ -27,7 +27,6 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      */
     Page<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status, Pageable pageable);
 
-    //todo
     /**
      * Method to find all created {@link Place}'s by user id.
      *

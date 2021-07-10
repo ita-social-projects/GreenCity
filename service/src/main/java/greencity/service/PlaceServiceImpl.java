@@ -155,16 +155,15 @@ public class PlaceServiceImpl implements PlaceService {
         return modelMapper.map(placeRepo.save(place), PlaceVO.class);
     }
 
-    //todo
     /**
      * {@inheritDoc}
      *
      */
     @Override
-    public List<PlaceVO> getAllCreatedPlacesByUserId (Long userId) {
+    public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
         return placeRepo.findAllByUserId(userId).stream()
-                .map(place -> modelMapper.map(place, PlaceVO.class))
-                .collect(Collectors.toList());
+            .map(place -> modelMapper.map(place, PlaceVO.class))
+            .collect(Collectors.toList());
     }
 
     /**

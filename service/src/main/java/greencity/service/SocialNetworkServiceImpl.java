@@ -21,17 +21,15 @@ public class SocialNetworkServiceImpl implements SocialNetworkService {
         return userId;
     }
 
-    //todo
     /**
      * {@inheritDoc}
      */
     @Override
     public String getSocialNetworkUrlByName(List<SocialNetworkVO> socialNetworks, String socialNetworkName) {
         return socialNetworks.stream()
-                .map(SocialNetworkVO::getUrl)
-                .filter(url -> url.contains(socialNetworkName))
-                .findFirst()
-                .orElse(null);
+            .map(SocialNetworkVO::getUrl)
+            .filter(url -> url.contains(socialNetworkName))
+            .findFirst()
+            .orElse(null);
     }
-
 }

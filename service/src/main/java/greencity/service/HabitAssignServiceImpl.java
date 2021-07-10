@@ -121,16 +121,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
-    //todo
     /**
      * {@inheritDoc}
      */
     @Override
     public List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
-                .stream()
-                .filter(this::isHabitCustom)
-                .map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream()
+            .filter(this::isHabitCustom)
+            .map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**
@@ -143,9 +142,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Integer duration = habitAssign.getDuration();
         Integer defaultDuration = habitAssign.getHabit().getDefaultDuration();
         HashSet<ShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems().stream()
-                .map(userShoppingListItem -> modelMapper.map(userShoppingListItem, ShoppingListItem.class))
-                .collect(Collectors.toCollection(HashSet::new));
-        HashSet<ShoppingListItem> defaultShoppingListItems = new HashSet<>(habitAssign.getHabit().getShoppingListItems());
+            .map(userShoppingListItem -> modelMapper.map(userShoppingListItem, ShoppingListItem.class))
+            .collect(Collectors.toCollection(HashSet::new));
+        HashSet<ShoppingListItem> defaultShoppingListItems =
+            new HashSet<>(habitAssign.getHabit().getShoppingListItems());
         if (duration.equals(defaultDuration) || shoppingListItems.equals(defaultShoppingListItems)) {
             return false;
         }
@@ -363,7 +363,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language) {
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -372,20 +372,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
         String language) {
         return habitAssignRepo.findAllByHabitId(habitId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
-    //todo
     /**
      * {@inheritDoc}
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
-                .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**
@@ -393,9 +392,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
-                                                                             String language) {
+        String language) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
-                .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**

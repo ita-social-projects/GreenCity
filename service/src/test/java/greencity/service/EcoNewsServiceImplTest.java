@@ -307,6 +307,19 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void getAllPublishedNewsByUserId() {
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(ecoNewsRepo.findAllByUserId(1L)).thenReturn(ecoNews);
+
+        List<EcoNewsDto> actual = ecoNewsService.getAllPublishedNewsByUserId(1L);
+
+        assertEquals(dtoList, actual);
+    }
+
+    @Test
     void getAmountOfPublishedNewsByUserIdTest() {
         when(ecoNewsRepo.getAmountOfPublishedNewsByUserId(1L)).thenReturn(10L);
         Long actual = ecoNewsService.getAmountOfPublishedNewsByUserId(1L);

@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findById(Long id) {
         User user = userRepo.findById(id)
-                .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
         return modelMapper.map(user, UserVO.class);
     }
 
@@ -100,12 +100,8 @@ public class UserServiceImpl implements UserService {
         accessForUpdateUserStatus(id, email);
         UserVO userVO = findById(id);
         userVO.setUserStatus(userStatus);
-
         userRepo.updateUserStatus(id, String.valueOf(userStatus));
         return modelMapper.map(userVO, UserStatusDto.class);
-        /*User user = modelMapper.map(userVO, User.class);
-        user.setUserStatus(userStatus);
-        return modelMapper.map(userRepo.save(user), UserStatusDto.class);*/
     }
 
     /**
@@ -116,11 +112,8 @@ public class UserServiceImpl implements UserService {
         checkUpdatableUser(id, email);
         UserVO userVO = findById(id);
         userVO.setRole(role);
-
         userRepo.updateUserRole(id, String.valueOf(role));
         return modelMapper.map(userVO, UserRoleDto.class);
-        /*User user = modelMapper.map(userVO, User.class);
-        return modelMapper.map(userRepo.save(user), UserRoleDto.class);*/
     }
 
     /**
@@ -154,7 +147,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    //todo
     /**
      * {@inheritDoc}
      */
@@ -186,8 +178,8 @@ public class UserServiceImpl implements UserService {
         UserVO userVO = modelMapper.map(optionalUser.get(), UserVO.class);
         String name = userVO.getName();
         String initials = name.contains(" ") ? String.valueOf(name.charAt(0))
-                .concat(String.valueOf(name.charAt(name.indexOf(" ") + 1)))
-                : String.valueOf(name.charAt(0));
+            .concat(String.valueOf(name.charAt(name.indexOf(" ") + 1)))
+            : String.valueOf(name.charAt(0));
         return initials.toUpperCase();
     }
 
@@ -195,9 +187,9 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserVO> getSixFriendsWithTheHighestRating (Long userId) {
+    public List<UserVO> getSixFriendsWithTheHighestRating(Long userId) {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
-                .map(user -> modelMapper.map(user, UserVO.class))
-                .collect(Collectors.toList());
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
     }
 }

@@ -73,7 +73,6 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
         value = " SELECT distinct * FROM public.fn_textsearchtipsandtricksforadmin ( :searchQuery, :languageCode) ")
     Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery, String languageCode);
 
-    //todo
     /**
      * Method for getting all written tips and tricks by user id.
      *
@@ -81,7 +80,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
      * @return list of {@link TipsAndTricks}.
      */
     @Query(nativeQuery = true,
-            value = "SELECT * FROM tips_and_tricks WHERE author_id = :userId")
+        value = "SELECT * FROM tips_and_tricks WHERE author_id = :userId")
     List<TipsAndTricks> findAllByUserId(@Param("userId") Long userId);
 
     /**

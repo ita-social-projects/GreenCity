@@ -143,7 +143,7 @@ public class HabitAssignController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getAllHabitAssignsByUserIdAndAcquiredStatus(userVO.getId(), locale.getLanguage()));
+                .getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), locale.getLanguage()));
     }
 
     /**
@@ -166,7 +166,7 @@ public class HabitAssignController {
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long habitId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId,
+            .body(habitAssignService.getAllHabitAssignsByHabitIdAndStatusNotCancelled(habitId,
                 locale.getLanguage()));
     }
 

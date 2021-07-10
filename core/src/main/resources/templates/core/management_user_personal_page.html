@@ -482,15 +482,12 @@
                                                     <form><!-- th:action="@{/management/users/{id}/updateHabit/{habitAssignId}
                                                     (id=${user.id}, habitAssignId=${habitAssign.id})}" method="post"-->
                                                         <input th:if="${!habitAssign.equals('Private')}"
-                                                               type="submit" name="userRole"
+                                                               type="submit" name="habitAction"
                                                                th:value="Private">
                                                         <input th:if="${!habitAssign.equals('Personal')}"
-                                                               type="submit" name="userRole"
+                                                               type="submit" name="habitAction"
                                                                th:value="Personal">
                                                     </form>
-
-                                                    <!--<a href="#" th:if="${!habitAssign.equals('Private')}">Private</a>
-                                                    <a href="#" th:if="${!habitAssign.equals('Personal')}">Personal</a>-->
                                                 </div>
                                             </div>
                                         </td>

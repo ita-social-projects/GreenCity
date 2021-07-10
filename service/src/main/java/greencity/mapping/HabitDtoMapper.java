@@ -48,10 +48,10 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                     .id(shoppingListItem.getId())
                     .status(ShoppingListItemStatus.ACTIVE.toString())
                     .text(shoppingListItem.getTranslations().stream()
-                            .filter(shoppingListItemTranslation -> shoppingListItemTranslation
-                                            .getLanguage().equals(language))
-                            .map(ShoppingListItemTranslation::getContent)
-                    .findFirst().orElse(null))
+                        .filter(shoppingListItemTranslation -> shoppingListItemTranslation
+                            .getLanguage().equals(language))
+                        .map(ShoppingListItemTranslation::getContent)
+                        .findFirst().orElse(null))
                     .build())
                 .collect(Collectors.toList()))
             .build();

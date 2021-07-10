@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.EcoNews;
 import greencity.entity.Place;
 import greencity.enums.PlaceStatus;
 import java.util.List;
@@ -22,6 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PlaceRepoTest {
     @Autowired
     PlaceRepo placeRepo;
+
+    @Test
+    void findAllByUserId() {
+        List<Place> placeList = placeRepo.findAllByUserId(2L);
+        assertEquals(3L, placeList.size());
+        assertEquals(3L, placeList.get(0).getId());
+    }
 
     @Test
     void findAllByStatusOrderByModifiedDateDescTest() {

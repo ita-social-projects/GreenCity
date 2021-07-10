@@ -16,7 +16,6 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Locale;
 
-import liquibase.pro.packaged.G;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -148,7 +147,7 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndStatusNotCancelled(null, "en");
     }
 
     @Test

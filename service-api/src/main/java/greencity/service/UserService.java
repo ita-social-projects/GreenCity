@@ -38,6 +38,12 @@ public interface UserService {
      */
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
+    /**
+     * Method that allow you to find {@link UserVO} by id.
+     *
+     * @param id a value of {@link Long}
+     * @return {@link UserVO} with this id.
+     */
     UserVO findById(Long id);
 
     /**
@@ -75,7 +81,8 @@ public interface UserService {
     boolean checkIfTheUserIsOnline(Long userId);
 
     /**
-     * Method that returns {@link String} initials (first one or two letters of name) of user.
+     * Method that returns {@link String} initials (first one or two letters of
+     * name) of user.
      *
      * @param userId - {@link UserVO}'s id
      * @return {@link String} user's initials

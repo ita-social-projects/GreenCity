@@ -230,10 +230,26 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getAllHabitAssignsByUserIdAndAcquiredStatus() {
+    void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
         when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndAcquiredStatus(1L, "en");
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
+        assertEquals(habitAssignDtos, actual);
+    }
+
+    @Test
+    void getAllHabitAssignsByUserIdAndStatusAcquired() {
+        when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(habitAssigns);
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
+        assertEquals(habitAssignDtos, actual);
+    }
+
+    @Test
+    void getAllHabitAssignsByUserIdAndCancelledStatus() {
+        when(habitAssignRepo.findAllByUserIdAndStatusIsCancelled(1L)).thenReturn(habitAssigns);
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndCancelledStatus(1L, "en");
         assertEquals(habitAssignDtos, actual);
     }
 
@@ -322,7 +338,7 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getAllHabitAssignsByHabitIdAndAcquiredStatus() {
+    void getAllHabitAssignsByHabitIdAndStatusNotCancelled() {
         Long habitId = 1L;
 
         Language language = ModelUtils.getLanguage();
@@ -343,7 +359,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
         HabitAssignDto actual =
-            habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId, language.getCode()).get(0);
+            habitAssignService.getAllHabitAssignsByHabitIdAndStatusNotCancelled(habitId, language.getCode()).get(0);
 
         assertEquals(habitAssignDto, actual);
 
