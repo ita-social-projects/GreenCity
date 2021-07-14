@@ -1,5 +1,7 @@
 package greencity.service;
 
+import greencity.dto.place.PlaceVO;
+import greencity.entity.*;
 import greencity.exception.exceptions.BadRequestException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,11 +27,6 @@ import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
 import greencity.dto.tipsandtricks.TitleTranslationVO;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Language;
-import greencity.entity.Tag;
-import greencity.entity.TipsAndTricks;
-import greencity.entity.TipsAndTricksComment;
-import greencity.entity.User;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -328,6 +325,20 @@ class TipsAndTricksServiceImplTest {
         TipsAndTricksDtoResponse actual = tipsAndTricksService.findDtoById(1L);
 
         assertEquals(tipsAndTricksDtoResponse, actual);
+    }
+
+    @Test
+    void getAllTipsAndTricksByUserId() {
+        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
+        List<TipsAndTricksDtoResponse> dtoList =
+            Collections.singletonList(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class));
+
+        when(modelMapper.map(tipsAndTricks.get(0), TipsAndTricksDtoResponse.class)).thenReturn(dtoList.get(0));
+        when(tipsAndTricksRepo.findAllByUserId(1L)).thenReturn(tipsAndTricks);
+
+        List<TipsAndTricksDtoResponse> actual = tipsAndTricksService.getAllTipsAndTricksByUserId(1L);
+
+        assertEquals(dtoList, actual);
     }
 
     @Test

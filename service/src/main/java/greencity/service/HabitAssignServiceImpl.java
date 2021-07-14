@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -123,9 +124,56 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+    @Override
+    public List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language) {
+        return habitAssignRepo.findAllByUserId(userId)
+            .stream()
+            .filter(this::isHabitCustom)
+            .map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+    }
+
+    /**
+     * Method checks if {@link HabitAssign} is custom.
+     *
+     * @param habitAssign {@link HabitAssign} instance.
+     * @return boolean.
+     */
+    private boolean isHabitCustom(HabitAssign habitAssign) {
+        Integer duration = habitAssign.getDuration();
+        Integer defaultDuration = habitAssign.getHabit().getDefaultDuration();
+        HashSet<ShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems().stream()
+            .map(userShoppingListItem -> modelMapper.map(userShoppingListItem, ShoppingListItem.class))
+            .collect(Collectors.toCollection(HashSet::new));
+        HashSet<ShoppingListItem> defaultShoppingListItems =
+            new HashSet<>(habitAssign.getHabit().getShoppingListItems());
+        if (duration.equals(defaultDuration) || shoppingListItems.equals(defaultShoppingListItems)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ZonedDateTime getEndDate(HabitAssignDto habitAssign) {
+        return habitAssign.getCreateDateTime().plusDays(habitAssign.getDuration());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer getReadinessPercent(HabitAssignDto habitAssign) {
+        return habitAssign.getWorkingDays() * 100 / habitAssign.getDuration();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
-    public HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
+    public HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
         HabitAssignPropertiesDto habitAssignPropertiesDto) {
         if (!habitRepo.existsById(habitId)) {
             throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
@@ -141,8 +189,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
                 .map(s -> buildUserShoppingListItems(s, habitAssign))
                 .collect(Collectors.toList());
-            userShoppingListItemRepo.deleteAll(habitAssign.getUserShoppingListItems());
-            habitAssign.setUserShoppingListItems(userShoppingListItems);
+            habitAssign.getUserShoppingListItems().clear();
+            habitAssign.getUserShoppingListItems().addAll(userShoppingListItems);
         }
         return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserShoppingListItemDto.class);
     }
@@ -315,7 +363,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language) {
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language) {
         return habitAssignRepo.findAllByUserId(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
@@ -324,9 +372,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId,
+    public List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId,
         String language) {
         return habitAssignRepo.findAllByHabitId(habitId)
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
+        return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
+            .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
+        String language) {
+        return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
             .stream().map(habitAssign -> buildHabitAssignDto(habitAssign, language)).collect(Collectors.toList());
     }
 

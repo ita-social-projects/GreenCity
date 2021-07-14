@@ -1,51 +1,37 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
-import greencity.entity.Habit;
-import greencity.entity.HabitTranslation;
-import greencity.entity.Language;
-import greencity.entity.localization.TagTranslation;
-import java.util.stream.Collectors;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.entity.HabitAssign;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@ExtendWith(SpringExtension.class)
-class HabitDtoMapperTest {
-
+@ExtendWith(MockitoExtension.class)
+class HabitAssignDtoMapperTest {
     @InjectMocks
-    HabitDtoMapper habitDtoMapper;
+    private HabitAssignDtoMapper habitAssignDtoMapper;
 
     @Test
-    void convert() {
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
-        Habit habit = habitTranslation.getHabit();
-        Language language = habitTranslation.getLanguage();
+    void convertTest() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        HabitAssignDto actual = habitAssignDtoMapper.convert(habitAssign);
 
-        HabitDto habitDto = HabitDto.builder()
-            .id(habit.getId())
-            .image(habitTranslation.getHabit().getImage())
-            .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
-            .complexity(1)
-            .habitTranslation(HabitTranslationDto.builder()
-                .description(habitTranslation.getDescription())
-                .habitItem(habitTranslation.getHabitItem())
-                .name(habitTranslation.getName())
-                .languageCode(language.getCode())
-                .build())
-            .tags(habit.getTags().stream()
-                .flatMap(tag -> tag.getTagTranslations().stream())
-                .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
-                .map(TagTranslation::getName).collect(Collectors.toList()))
+        HabitAssignDto expected = HabitAssignDto.builder()
+            .id(habitAssign.getId())
+            .status(habitAssign.getStatus())
+            .createDateTime(habitAssign.getCreateDate())
+            .userId(habitAssign.getUser().getId())
+            .habitStreak(habitAssign.getHabitStreak())
+            .workingDays(habitAssign.getWorkingDays())
+            .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
+            .duration(habitAssign.getDuration())
+            .habitStatusCalendarDtoList(actual.getHabitStatusCalendarDtoList())
+            .userShoppingListItems(actual.getUserShoppingListItems())
             .build();
 
-        HabitDto expected = habitDtoMapper.convert(habitTranslation);
-
-        assertEquals(habitDto, expected);
+        assertEquals(expected, actual);
     }
 }

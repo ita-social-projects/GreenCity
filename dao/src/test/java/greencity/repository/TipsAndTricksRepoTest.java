@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.EcoNews;
 import greencity.entity.TipsAndTricks;
 import greencity.entity.TitleTranslation;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,13 @@ class TipsAndTricksRepoTest {
         List<TipsAndTricks> tipsAndTricks = page.get().collect(Collectors.toList());
         assertEquals(4, tipsAndTricks.size());
         assertEquals(2, tipsAndTricks.get(1).getId());
+    }
+
+    @Test
+    void findAllByUserIdTest() {
+        List<TipsAndTricks> tipsAndTricksList = tipsAndTricksRepo.findAllByUserId(1L);
+        assertEquals(4L, tipsAndTricksList.size());
+        assertEquals(2L, tipsAndTricksList.get(0).getId());
     }
 
     @Test

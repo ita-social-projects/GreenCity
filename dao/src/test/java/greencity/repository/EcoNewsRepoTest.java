@@ -51,6 +51,13 @@ class EcoNewsRepoTest {
     }
 
     @Test
+    void findAllByUserIdTest() {
+        List<EcoNews> ecoNewsList = ecoNewsRepo.findAllByUserId(1L);
+        assertEquals(11L, ecoNewsList.size());
+        assertEquals(1L, ecoNewsList.get(0).getId());
+    }
+
+    @Test
     void getAmountOfPublishedNewsByUserIdTest() {
         Long actual = ecoNewsRepo.getAmountOfPublishedNewsByUserId(1L);
         assertEquals(11L, actual);

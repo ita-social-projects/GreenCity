@@ -114,6 +114,14 @@ public interface EcoNewsService {
     PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
+     * Method for getting all published news by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId);
+
+    /**
      * Method for getting amount of published news by user id.
      *
      * @param id {@link Long} user id.

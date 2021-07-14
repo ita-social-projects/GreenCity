@@ -1,0 +1,620 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset=UTF-8/>
+    <title>User's personal page</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://kit.fontawesome.com/c847fb58e4.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
+</head>
+
+<body>
+<script>
+    $(function () {
+        $('.pr').liTextLength({
+            length: 80,
+            afterLength: '...',
+            fullText: false
+        });
+    });
+
+
+</script>
+
+<div id="header" th:insert="core/header"></div>
+<div>
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+</div>
+
+<div class="main-content">
+    <div class="container-xl">
+
+        <div class="page-title">
+            <div class="row manager-user">
+                <h1>[[#{greenCity.personal.page.h}]]</h1>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="user-info">
+                <div class="user-info-text" style="text-align: center; margin-top: 0px"
+                     th:text="'Registered: ' + ${#temporals.format(user.dateOfRegistration,'yyyy.MM.dd')}">
+                </div>
+
+                <div style="width: 80px; margin: auto">
+                    <div th:if="${@userServiceImpl.checkIfTheUserIsOnline(user.id)} == true" style="position: absolute">
+                        <div class="online-status"></div>
+                    </div>
+
+                    <div th:if="${user.profilePicturePath}">
+                        <img class="profile-picture" th:src="${user.profilePicturePath}" alt="profilePicture">
+                    </div>
+                    <div th:if="${user.profilePicturePath} == null">
+                        <div class="profile-picture default"
+                             th:text="${@userServiceImpl.getInitialsById(user.id)}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="username-text"
+                     th:text="${user.firstName}">
+                </div>
+
+                <div class="user-info-text" style="text-align: center"
+                     th:text="${user.city} + ', Ukraine'">
+                </div>
+
+                <div class="block-green"
+                     th:text="'Rate: ' + ${T(Math).round(user.rating)}">
+                </div>
+
+                <div class="social-networks"
+                     th:with="facebookUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.facebook')},
+                    instagramUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.instagram')},
+                    linkedinUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.linkedin')},
+                    twitterUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.twitter')},
+                    greencityUrl=${@socialNetworkServiceImpl.getSocialNetworkUrlByName(user.socialNetworks, 'https://www.greencity')}">
+                    <div th:if="${facebookUrl}">
+                        <a th:href="${facebookUrl}">
+                            <img src="/img/facebook-icon.svg" alt="facebook-icon">
+                        </a>
+                    </div>
+                    <div th:if="${instagramUrl}">
+                        <a th:href="${instagramUrl}">
+                            <img src="/img/instagram-logo.svg" alt="instagram-icon">
+                        </a>
+                    </div>
+                    <div th:if="${linkedinUrl}">
+                        <a th:href="${linkedinUrl}">
+                            <img src="/img/linkedin-icon.svg" alt="linkedin-icon">
+                        </a>
+                    </div>
+                    <div th:if="${twitterUrl}">
+                        <a th:href="${twitterUrl}">
+                            <img src="/img/twitter-icon.svg" alt="twitter-icon">
+                        </a>
+                    </div>
+                    <div th:if="${greencityUrl}">
+                        <a th:href="${greencityUrl}">
+                            <img src="/img/greencity-icon.svg" alt="greencity-icon">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="user-info-text"
+                     th:text="${user.userCredo}">
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="margin: auto">
+                    <div class="dropdown userpage"> <!--style="margin-top: 12px; display: inline-block"-->
+                        <button class="dropbtn userpage green">
+                            <div class="button-container">
+                                <div class="button-text"
+                                     th:with="userStatus=${user.userStatus.name()}"
+                                     th:text="${userStatus.substring(0, 1).concat(userStatus.substring(1).toLowerCase())}"></div>
+                                <div class="button-arrow">
+                                    <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                </div>
+                            </div>
+                        </button>
+                        <div class="dropdown-content userpage" style="height: 70px">
+                            <form th:action="@{/management/users/{id}/updateUserStatus (id=${user.id})}" method="post">
+                                <input th:if="${!user.userStatus.name().equals('ACTIVATED')}"
+                                       type="submit" name="userStatus"
+                                       th:value="Activated">
+                                <input th:if="${!user.userStatus.name().equals('DEACTIVATED')}"
+                                       type="submit" name="userStatus"
+                                       th:value="Deactivated">
+                                <input th:if="${!user.userStatus.name().equals('BLOCKED')}"
+                                       type="submit" name="userStatus"
+                                       th:value="Blocked">
+                                <input th:if="${!user.userStatus.name().equals('CREATED')}"
+                                       type="submit" name="userStatus"
+                                       th:value="Created">
+
+                                <!--<a href="#" th:if="${!user.userStatus.name().equals('ACTIVATED')}">Activated</a>
+                                <a href="#" th:if="${!user.userStatus.name().equals('DEACTIVATED')}">Deactivated</a>
+                                <a href="#" th:if="${!user.userStatus.name().equals('BLOCKED')}">Blocked</a>
+                                <a href="#" th:if="${!user.userStatus.name().equals('CREATED')}">Created</a>-->
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="dropdown userpage">
+                        <button class="dropbtn userpage">
+                            <div class="button-container">
+                                <div class="button-text"
+                                     th:with="userRole=${user.role.name().replaceFirst('ROLE_', '')}"
+                                     th:text="${userRole.substring(0, 1).concat(userRole.substring(1).toLowerCase())}"></div>
+                                <div class="button-arrow">
+                                    <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                </div>
+                            </div>
+                        </button>
+                        <div class="dropdown-content userpage">
+                            <form th:action="@{/management/users/{id}/updateUserRole (id=${user.id})}" method="post">
+                                <input th:if="${!user.role.name().equals('ROLE_ADMIN')}"
+                                       type="submit" name="userRole"
+                                       th:value="Admin">
+                                <input th:if="${!user.role.name().equals('ROLE_USER')}"
+                                       type="submit" name="userRole"
+                                       th:value="User">
+                                <input th:if="${!user.role.name().equals('ROLE_MODERATOR')}"
+                                       type="submit" name="userRole"
+                                       th:value="Moderator">
+                            </form>
+
+                            <!--<a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">Admin</a>
+                            <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">User</a>
+                            <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">Moderator</a>-->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="info-title-text" style="margin-top: 15px">
+                    <span>[[#{greenCity.personal.page.myAchievements}]]</span>
+                    <a href="#">[[#{greenCity.pages.seeAll}]]</a>
+                    <h4 th:text="${user.userAchievements.size()} + ' achieved'"></h4>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="info-title-text" style="margin-top: 15px">
+                    <span>[[#{greenCity.personal.page.myFriends}]]</span>
+                    <a href="#">[[#{greenCity.pages.seeAll}]]</a>
+                    <h4 th:text="${user.userFriends.size()} + ' connections'"></h4>
+                    <div class="friends-list">
+                        <th:block class="list-of"
+                                  th:each="friend, iterStatus :${@userServiceImpl.getSixFriendsWithTheHighestRating(user.id)}">
+                            <div th:if="${friend.profilePicturePath} != null">
+                                <div>
+                                    <img class="profile-picture friend" th:src="${friend.profilePicturePath}"
+                                         alt="friendProfilePicture">
+                                </div>
+                            </div>
+                            <div th:if="${friend.profilePicturePath} == null">
+                                <div class="profile-picture friend default"
+                                     th:text="${@userServiceImpl.getInitialsById(friend.id)}">
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div class="tooltip-container" style="display: none">
+                <div style="display: inline-block">
+                    <table>
+                        <colgroup>
+                            <col span="1" style="width: 145px">
+                            <col span="1" style="width: 20px">
+                            <col span="1" style="width: 37px">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td><h2>Target time</h2></td>
+                            <td>10</td>
+                            <td>days</td>
+                        </tr>
+                        <tr>
+                            <td><h2>Time in progress</h2></td>
+                            <td>8</td>
+                            <td>days</td>
+                        </tr>
+                        <tr>
+                            <td><h2>Percent of done</h2></td>
+                            <td>80</td>
+                            <td>%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display: inline-block">
+                    <h2 style="margin-bottom: 8px">Shopping list</h2>
+                    <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}">
+                        <div class="custom-checkbox userpage">
+                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                   name="options[]" th:value="${item.id}"
+                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
+                                   th:text="${item.text}"></label>
+                        </div>
+                    </th:block>
+                </div>
+            </div>-->
+
+            <div class="user-tables">
+
+                <div>
+
+                    <!--Acquired Habits table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.acquiredHabitsH}]]
+                                <td th:text="${acquiredHabits.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button1" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered userpage">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 75px;">
+                                        [[#{greenCity.pages.table.id}]]
+                                    </th>
+                                    <th style="width: 553px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.startDate}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.endDate}]]
+                                    </th>
+                                    <th style="width: 92px;">
+                                        [[#{greenCity.pages.table.ready}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table1">
+                                <th:block class="list-of" th:each="habitAssign, iterStatus :${acquiredHabits}">
+                                    <tr>
+                                        <td th:text="${habitAssign.id}"></td>
+                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
+                                        <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
+                                        <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Habits In Progress table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.inProgressHabitsH}]]
+                                <td th:text="${inProgressHabits.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button2" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 75px;">
+                                        [[#{greenCity.pages.table.id}]]
+                                    </th>
+                                    <th style="width: 553px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.startDate}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.endDate}]]
+                                    </th>
+                                    <th style="width: 92px;">
+                                        [[#{greenCity.pages.table.ready}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table2">
+                                <th:block class="list-of" th:each="habitAssign, iterStatus :${inProgressHabits}">
+                                    <tr>
+                                        <td th:text="${habitAssign.id}"></td>
+                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
+                                        <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
+                                        <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Cancelled Habits table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.cancelledHabitsH}]]
+                                <td th:text="${cancelledHabits.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button3" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 75px;">
+                                        [[#{greenCity.pages.table.id}]]
+                                    </th>
+                                    <th style="width: 553px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.startDate}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.endDate}]]
+                                    </th>
+                                    <th style="width: 92px;">
+                                        [[#{greenCity.pages.table.ready}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table3">
+                                <th:block class="list-of" th:each="habitAssign, iterStatus :${cancelledHabits}">
+                                    <tr>
+                                        <td th:text="${habitAssign.id}"></td>
+                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
+                                        <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
+                                        <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Custom Habits table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.customHabitsH}]]
+                                <td th:text="${customHabits.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button4" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 75px;">
+                                        [[#{greenCity.pages.table.id}]]
+                                    </th>
+                                    <th style="width: 553px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.startDate}]]
+                                    </th>
+                                    <th style="width: 113px;">
+                                        [[#{greenCity.pages.table.actions}]]
+                                    </th>
+                                    <th style="width: 92px;">
+                                        [[#{greenCity.pages.table.ready}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table4">
+                                <th:block class="list-of" th:each="habitAssign, iterStatus :${customHabits}">
+                                    <tr>
+                                        <td th:text="${habitAssign.id}"></td>
+                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
+                                        <td>
+                                            <div class="dropdown userpage table-button">
+                                                <button class="dropbtn userpage table-button">
+                                                    <div class="button-container">
+                                                        <div class="button-text"
+                                                             th:text="Private"></div>
+                                                        <div class="button-arrow">
+                                                            <img src="/img/arrow-down.svg" alt="arrow-icon">
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                                <div class="dropdown-content userpage table-button">
+                                                    <form><!-- th:action="@{/management/users/{id}/updateHabit/{habitAssignId}
+                                                    (id=${user.id}, habitAssignId=${habitAssign.id})}" method="post"-->
+                                                        <input th:if="${!habitAssign.equals('Private')}"
+                                                               type="submit" name="habitAction"
+                                                               th:value="Private">
+                                                        <input th:if="${!habitAssign.equals('Personal')}"
+                                                               type="submit" name="habitAction"
+                                                               th:value="Personal">
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Published Eco News table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.publishedEcoNewsH}]]
+                                <td th:text="${publishedEcoNews.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button5" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 950px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table5">
+                                <th:block class="list-of" th:each="ecoNews, iterStatus :${publishedEcoNews}">
+                                    <tr>
+                                        <td th:text="${ecoNews.title}"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Published Tips And Tricks table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.publishedTipsAndTricksH}]]
+                                <td th:text="${publishedTipsAndTricks.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button6" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 950px;">
+                                        [[#{greenCity.pages.table.name}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table6">
+                                <th:block class="list-of" th:each="tip, iterStatus :${publishedTipsAndTricks}">
+                                    <tr>
+                                        <td th:text="${tip.title}"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!--Created EcoPlaces table-->
+                    <div>
+                        <div class="table-header">
+                            <h3>[[#{greenCity.personal.page.createdEcoPlacesH}]]
+                                <td th:text="${createdEcoPlaces.size()}"/>
+                            </h3>
+                            <div class="hide-button">
+                                <button id="button7" value="hide" onclick="hideTable(this.id)">
+                                    <span>hide</span>
+                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive userpage">
+                            <table class="table table-bordered ">
+                                <thead>
+                                <tr class="table-primary">
+                                    <th style="width: 55px;">
+                                        <img class="center" src="/img/location_icon.svg" alt="location-icon">
+                                    </th>
+                                    <th style="width: 895px;">
+                                        [[#{greenCity.pages.table.location}]]
+                                    </th>
+                                </tr>
+                                </thead>
+
+                                <tbody id="table7">
+                                <th:block class="list-of" th:each="ecoPlace, iterStatus :${createdEcoPlaces}">
+                                    <tr>
+                                        <td>
+                                            <img class="center" src="/img/location_icon_dark.svg" alt="location-icon">
+                                        </td>
+                                        <td th:text="${ecoPlace.name + ', ' + ecoPlace.location.address}"></td>
+                                    </tr>
+                                </th:block>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div id="footer" th:insert="core/footer"></div>
+</div>
+</body>
+</html>

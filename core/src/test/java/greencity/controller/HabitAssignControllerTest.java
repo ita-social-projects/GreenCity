@@ -96,7 +96,7 @@ class HabitAssignControllerTest {
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingItemListAndDuration(1L, null, propertiesDto);
+        verify(habitAssignService).updateUserShoppingItemList(1L, null, propertiesDto);
     }
 
     @Test
@@ -147,7 +147,7 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndStatusNotCancelled(null, "en");
     }
 
     @Test

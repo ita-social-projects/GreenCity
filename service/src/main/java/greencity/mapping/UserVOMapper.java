@@ -4,6 +4,8 @@ import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -58,6 +60,21 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .showShoppingList(user.getShowShoppingList())
             .showEcoPlace(user.getShowEcoPlace())
             .showLocation(user.getShowLocation())
+            .socialNetworks(user.getSocialNetworks() != null ? user.getSocialNetworks()
+                .stream().map(socialNetwork -> SocialNetworkVO.builder()
+                    .id(socialNetwork.getId())
+                    .url(socialNetwork.getUrl())
+                    .user(UserVO.builder()
+                        .id(socialNetwork.getUser().getId())
+                        .email(socialNetwork.getUser().getEmail())
+                        .build())
+                    .socialNetworkImage(SocialNetworkImageVO.builder()
+                        .id(socialNetwork.getId())
+                        .imagePath(socialNetwork.getSocialNetworkImage().getImagePath())
+                        .hostPath(socialNetwork.getSocialNetworkImage().getHostPath())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : new ArrayList<>())
             .lastActivityTime(user.getLastActivityTime())
             .userAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
                 .stream().map(userAchievement -> UserAchievementVO.builder()

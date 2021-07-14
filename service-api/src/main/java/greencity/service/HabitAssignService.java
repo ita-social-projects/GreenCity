@@ -4,6 +4,7 @@ import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 public interface HabitAssignService {
@@ -36,16 +37,40 @@ public interface HabitAssignService {
         HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
-     * Method updates {@code HabitAssign} shopping item list and habit assign
-     * duration.
+     * Method updates {@code HabitAssign} shopping list with custom properties.
      *
      * @param habitId                  {@code AssignHabit} id.
      * @param userId                   {@link Long} id.
      * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
      * @return {@link HabitAssignUserShoppingListItemDto}.
      */
-    HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
+    HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
         HabitAssignPropertiesDto habitAssignPropertiesDto);
+
+    /**
+     * Method to find all custom habit assigns by {@code User} id.
+     *
+     * @param userId   {@code User} id.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto} instances.
+     */
+    List<HabitAssignDto> getAllCustomHabitAssignsByUserId(Long userId, String language);
+
+    /**
+     * Method to get end date of assigned habit.
+     *
+     * @param habitAssign {@link HabitAssignDto} instance.
+     * @return {@link ZonedDateTime} end date.
+     */
+    ZonedDateTime getEndDate(HabitAssignDto habitAssign);
+
+    /**
+     * Method to get readiness percent of assigned habit.
+     *
+     * @param habitAssign {@link HabitAssignDto} instance.
+     * @return {@link Integer} readiness percent.
+     */
+    Integer getReadinessPercent(HabitAssignDto habitAssign);
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
@@ -77,7 +102,7 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByUserIdAndAcquiredStatus(Long userId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -87,7 +112,26 @@ public interface HabitAssignService {
      * @param language {@link String} of language code value.
      * @return list of {@link HabitAssignDto}.
      */
-    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndAcquiredStatus(Long habitId, String language);
+    List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId, String language);
+
+    /**
+     * Method to find all {@code HabitAssign}'s by {@code User} id and acquired
+     * status.
+     *
+     * @param userId   {@code User} id.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto}.
+     */
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language);
+
+    /**
+     * Method to find all cancelled {@code HabitAssign}'s by {@code User} id.
+     *
+     * @param userId   {@code User} id.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto}.
+     */
+    List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId, String language);
 
     /**
      * Method to delete all {@code HabitAssign}'s by {@code Habit} instance.

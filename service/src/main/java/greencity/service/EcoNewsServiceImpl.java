@@ -302,6 +302,19 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method for getting all published news by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return list of {@link EcoNewsDto} instances.
+     */
+    @Override
+    public List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId) {
+        return ecoNewsRepo.findAllByUserId(userId).stream()
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Method for getting amount of published news by user id.
      *
      * @param id {@link Long} user id.
