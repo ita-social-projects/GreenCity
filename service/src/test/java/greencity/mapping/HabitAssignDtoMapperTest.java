@@ -20,16 +20,17 @@ class HabitAssignDtoMapperTest {
         HabitAssignDto actual = habitAssignDtoMapper.convert(habitAssign);
 
         HabitAssignDto expected = HabitAssignDto.builder()
-            .id(habitAssign.getId())
-            .status(habitAssign.getStatus())
-            .createDateTime(habitAssign.getCreateDate())
-            .userId(habitAssign.getUser().getId())
-            .habitStreak(habitAssign.getHabitStreak())
-            .workingDays(habitAssign.getWorkingDays())
-            .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
-            .duration(habitAssign.getDuration())
-            .habitStatusCalendarDtoList(actual.getHabitStatusCalendarDtoList())
-            .build();
+                .id(habitAssign.getId())
+                .status(habitAssign.getStatus())
+                .createDateTime(habitAssign.getCreateDate())
+                .userId(habitAssign.getUser().getId())
+                .habitStreak(habitAssign.getHabitStreak())
+                .workingDays(habitAssign.getWorkingDays())
+                .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
+                .duration(habitAssign.getDuration())
+                .habitStatusCalendarDtoList(actual.getHabitStatusCalendarDtoList())
+                .userShoppingListItems(actual.getUserShoppingListItems())
+                .build();
 
         assertEquals(expected, actual);
     }
