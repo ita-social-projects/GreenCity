@@ -141,12 +141,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private boolean isHabitCustom(HabitAssign habitAssign) {
         Integer duration = habitAssign.getDuration();
         Integer defaultDuration = habitAssign.getHabit().getDefaultDuration();
-        HashSet<ShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems().stream()
-            .map(userShoppingListItem -> modelMapper.map(userShoppingListItem, ShoppingListItem.class))
-            .collect(Collectors.toCollection(HashSet::new));
-        HashSet<ShoppingListItem> defaultShoppingListItems =
-            new HashSet<>(habitAssign.getHabit().getShoppingListItems());
-        if (duration.equals(defaultDuration) || shoppingListItems.equals(defaultShoppingListItems)) {
+        List<UserShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems();
+        if (duration.equals(defaultDuration) || shoppingListItems.isEmpty()) {
             return false;
         }
         return true;
