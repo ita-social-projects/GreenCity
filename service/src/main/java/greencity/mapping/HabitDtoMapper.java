@@ -6,6 +6,8 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
+
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import greencity.enums.ShoppingListItemStatus;
@@ -43,7 +45,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
-            .shoppingListItems(habit.getShoppingListItems().stream()
+            .shoppingListItems(habit.getShoppingListItems() != null ? habit.getShoppingListItems().stream()
                 .map(shoppingListItem -> ShoppingListItemDto.builder()
                     .id(shoppingListItem.getId())
                     .status(ShoppingListItemStatus.ACTIVE.toString())
@@ -53,7 +55,7 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                         .map(ShoppingListItemTranslation::getContent)
                         .findFirst().orElse(null))
                     .build())
-                .collect(Collectors.toList()))
+                .collect(Collectors.toList()) : new ArrayList<>())
             .build();
     }
 }
