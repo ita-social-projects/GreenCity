@@ -28,21 +28,21 @@ class HabitDtoMapperTest {
         Language language = habitTranslation.getLanguage();
 
         HabitDto habitDto = HabitDto.builder()
-                .id(habit.getId())
-                .image(habitTranslation.getHabit().getImage())
-                .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
-                .complexity(1)
-                .habitTranslation(HabitTranslationDto.builder()
-                        .description(habitTranslation.getDescription())
-                        .habitItem(habitTranslation.getHabitItem())
-                        .name(habitTranslation.getName())
-                        .languageCode(language.getCode())
-                        .build())
-                .tags(habit.getTags().stream()
-                        .flatMap(tag -> tag.getTagTranslations().stream())
-                        .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
-                        .map(TagTranslation::getName).collect(Collectors.toList()))
-                .build();
+            .id(habit.getId())
+            .image(habitTranslation.getHabit().getImage())
+            .defaultDuration(habitTranslation.getHabit().getDefaultDuration())
+            .complexity(1)
+            .habitTranslation(HabitTranslationDto.builder()
+                .description(habitTranslation.getDescription())
+                .habitItem(habitTranslation.getHabitItem())
+                .name(habitTranslation.getName())
+                .languageCode(language.getCode())
+                .build())
+            .tags(habit.getTags().stream()
+                .flatMap(tag -> tag.getTagTranslations().stream())
+                .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
+                .map(TagTranslation::getName).collect(Collectors.toList()))
+            .build();
 
         HabitDto expected = habitDtoMapper.convert(habitTranslation);
 
