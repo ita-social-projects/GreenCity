@@ -34,6 +34,8 @@ import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -163,6 +165,20 @@ public class ModelUtils {
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
+            .socialNetworks(Collections.singletonList(
+                SocialNetworkVO.builder()
+                    .id(10L)
+                    .user(UserVO.builder()
+                        .id(13L)
+                        .email("namesurname1995@gmail.com")
+                        .build())
+                    .url("www.network.com")
+                    .socialNetworkImage(SocialNetworkImageVO.builder()
+                        .id(25L)
+                        .hostPath("path///")
+                        .imagePath("imagepath///")
+                        .build())
+                    .build()))
             .ownSecurity(OwnSecurityVO.builder()
                 .id(1L)
                 .password("password")

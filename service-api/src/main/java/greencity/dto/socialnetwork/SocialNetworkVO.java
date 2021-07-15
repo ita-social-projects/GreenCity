@@ -10,6 +10,8 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
+@Data
 public class SocialNetworkVO {
     private Long id;
 

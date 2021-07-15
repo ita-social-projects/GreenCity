@@ -69,7 +69,7 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
                         .email(socialNetwork.getUser().getEmail())
                         .build())
                     .socialNetworkImage(SocialNetworkImageVO.builder()
-                        .id(socialNetwork.getId())
+                        .id(socialNetwork.getSocialNetworkImage().getId())
                         .imagePath(socialNetwork.getSocialNetworkImage().getImagePath())
                         .hostPath(socialNetwork.getSocialNetworkImage().getHostPath())
                         .build())

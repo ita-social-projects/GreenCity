@@ -1,14 +1,10 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
+import greencity.dto.socialnetwork.SocialNetworkImageVO;
+import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.OwnSecurity;
-import greencity.entity.User;
-import greencity.entity.UserAchievement;
-import greencity.entity.UserAction;
-import greencity.entity.VerifyEmail;
+import greencity.entity.*;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -59,6 +55,21 @@ class UserVOMapperTest {
             .showShoppingList(expected.getShowShoppingList())
             .showEcoPlace(expected.getShowEcoPlace())
             .showLocation(expected.getShowLocation())
+            .socialNetworks(expected.getSocialNetworks() != null ? expected.getSocialNetworks()
+                .stream().map(socialNetwork -> SocialNetwork.builder()
+                    .id(socialNetwork.getId())
+                    .url(socialNetwork.getUrl())
+                    .user(User.builder()
+                        .id(socialNetwork.getUser().getId())
+                        .email(socialNetwork.getUser().getEmail())
+                        .build())
+                    .socialNetworkImage(SocialNetworkImage.builder()
+                        .id(socialNetwork.getSocialNetworkImage().getId())
+                        .imagePath(socialNetwork.getSocialNetworkImage().getImagePath())
+                        .hostPath(socialNetwork.getSocialNetworkImage().getHostPath())
+                        .build())
+                    .build())
+                .collect(Collectors.toList()) : new ArrayList<>())
             .ownSecurity(expected.getOwnSecurity() != null ? OwnSecurity.builder()
                 .id(expected.getOwnSecurity().getId())
                 .password(expected.getOwnSecurity().getPassword())
