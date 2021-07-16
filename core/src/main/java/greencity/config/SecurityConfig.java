@@ -45,6 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         + "custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
+    private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
     private final JwtTool jwtTool;
     private final UserService userService;
 
@@ -240,7 +241,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/update",
                 "/favorite_place/",
                 "/ownSecurity",
-                "/user/profile")
+                "/user/profile",
+                HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
@@ -252,7 +254,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/assign/cancel/{habitId}",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
-                "/user/shopping-list-items/{userShoppingListItemId}",
+                USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
+                USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
             .hasAnyRole(USER, ADMIN, MODERATOR)
@@ -265,8 +268,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/social-networks",
                 TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
-                "/user/shopping-list-items/user-shopping-list-items",
-                "/user/shopping-list-items",
+                USER_SHOPPING_LIST + "/user-shopping-list-items",
+                USER_SHOPPING_LIST,
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
