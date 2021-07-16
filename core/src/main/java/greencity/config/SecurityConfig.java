@@ -229,7 +229,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/comments/like",
                 "/tipsandtricks",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
-                "/user/shopping-list-items",
+                USER_SHOPPING_LIST,
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}",
                 "/user/{userId}/declineFriend/{friendId}",
