@@ -114,6 +114,42 @@ public class ModelUtils {
         return new RecommendedFriendDto(1L, TestConst.NAME, "profile");
     }
 
+    public static List<User> getFriendsList() {
+        User friend1 = User.builder()
+            .id(10L)
+            .rating(10.0)
+            .build();
+        User friend2 = User.builder()
+            .id(2L)
+            .rating(20.0)
+            .build();
+        User friend3 = User.builder()
+            .id(3L)
+            .rating(30.0)
+            .build();
+        User friend4 = User.builder()
+            .id(4L)
+            .rating(40.0)
+            .build();
+        User friend5 = User.builder()
+            .id(5L)
+            .rating(50.0)
+            .build();
+        User friend6 = User.builder()
+            .id(6L)
+            .rating(60.0)
+            .build();
+        User friend7 = User.builder()
+            .id(7L)
+            .rating(70.0)
+            .build();
+        User friend8 = User.builder()
+            .id(8L)
+            .rating(80.0)
+            .build();
+        return List.of(friend1, friend2, friend3, friend4, friend5, friend6, friend7, friend8);
+    }
+
     public static UserVO getUserVO() {
         return UserVO.builder()
             .id(1L)
