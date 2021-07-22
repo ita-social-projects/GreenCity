@@ -305,7 +305,7 @@ $(document).ready(function () {
         if (otherClick.checked === true) {
             listReasons.push($("input#othertext").val() + "{" + globalVariable + "}");
         }
-       let f= globalVariable;
+        let f= globalVariable;
 
         var href = $(this).attr('href');
         let newUrl = href.toString().replace("lang", "deactivate")
@@ -414,5 +414,46 @@ function closeNav() {
     document.getElementById("openbtnId").hidden = false;
     document.getElementById("tab-content").style.marginLeft="0";
     // document.getElementById("eco-news-content").style.marginRight="0";
-};
+}
 
+function hideTable(clickedId) {
+    var clickedButton = document.getElementById(clickedId);
+    var hideTable = document.getElementById('table' + clickedId.match(/\d+/));
+    var state = clickedButton.value;
+    if (state == 'hide') {
+        hideTable.style.display = "none";
+        clickedButton.value = 'show';
+        clickedButton.getElementsByTagName('span')[0].innerHTML = 'show';
+        clickedButton.getElementsByTagName('img')[0].src = "/img/arrow-down.svg";
+    }
+    else if (state == 'show') {
+        hideTable.style.display = "table-row-group";
+        clickedButton.value = 'hide';
+        clickedButton.getElementsByTagName('span')[0].innerHTML = 'hide';
+        clickedButton.getElementsByTagName('img')[0].src = "/img/arrow-up.svg";
+    }
+}
+
+function showTooltip(e) {
+    var tooltip = e.target.classList.contains("tooltip")
+        ? e.target
+        : e.target.querySelector(":scope .tooltip");
+    tooltip.style.left =
+        (e.pageX + tooltip.clientWidth + 10 < document.body.clientWidth)
+            ? (e.pageX + 10 + "px")
+            : (document.body.clientWidth + 5 - tooltip.clientWidth + "px");
+    tooltip.style.top =
+        (e.pageY + tooltip.clientHeight + 10 < document.body.clientHeight)
+            ? (e.pageY + 10 + "px")
+            : (document.body.clientHeight + 5 - tooltip.clientHeight + "px");
+}
+
+var tooltips = document.querySelectorAll('.hoverable');
+for(var i = 0; i < tooltips.length; i++) {
+    tooltips[i].addEventListener('mousemove', showTooltip);
+    console.log("some");
+}
+
+$('.popover-dismiss').popover({
+    trigger: 'focus'
+})

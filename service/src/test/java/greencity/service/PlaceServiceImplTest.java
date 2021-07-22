@@ -12,6 +12,7 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
+import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -29,13 +30,7 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Category;
-import greencity.entity.DiscountValue;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Photo;
-import greencity.entity.Place;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -228,6 +223,19 @@ class PlaceServiceImplTest {
 
         assertEquals(pageableDto, placeService.getPlacesByStatus(any(), any()));
         verify(placeRepo, times(1)).findAllByStatusOrderByModifiedDateDesc(any(), any());
+    }
+
+    @Test
+    void getAllCreatedPlacesByUserId() {
+        List<Place> places = Collections.singletonList(ModelUtils.getPlace());
+        List<PlaceVO> voList = Collections.singletonList(modelMapper.map(places, PlaceVO.class));
+
+        when(modelMapper.map(places.get(0), PlaceVO.class)).thenReturn(voList.get(0));
+        when(placeRepo.findAllByUserId(1L)).thenReturn(places);
+
+        List<PlaceVO> actual = placeService.getAllCreatedPlacesByUserId(1L);
+
+        assertEquals(voList, actual);
     }
 
     @Test

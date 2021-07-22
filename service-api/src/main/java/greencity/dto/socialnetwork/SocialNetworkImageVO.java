@@ -6,6 +6,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+@EqualsAndHashCode
 @Builder
 public class SocialNetworkImageVO {
     private Long id;

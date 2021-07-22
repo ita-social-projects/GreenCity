@@ -74,6 +74,16 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
     Page<TipsAndTricks> searchBy(Pageable pageable, String searchQuery, String languageCode);
 
     /**
+     * Method for getting all written tips and tricks by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return list of {@link TipsAndTricks}.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM tips_and_tricks WHERE author_id = :userId")
+    List<TipsAndTricks> findAllByUserId(@Param("userId") Long userId);
+
+    /**
      * Method for getting amount of written tips and trick by user id.
      *
      * @param id {@link Long} user id.
@@ -87,7 +97,7 @@ public interface TipsAndTricksRepo extends JpaRepository<TipsAndTricks, Long>,
 
     /**
      * Method for finding {@link TipsAndTricks} by query.
-     * 
+     *
      * @param pageable {@link Pageable}.
      * @param query    query to search,
      * @return list of {@link TipsAndTricks}.

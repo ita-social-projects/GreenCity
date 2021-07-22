@@ -29,6 +29,7 @@ class HabitAssignDtoMapperTest {
             .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
             .duration(habitAssign.getDuration())
             .habitStatusCalendarDtoList(actual.getHabitStatusCalendarDtoList())
+            .userShoppingListItems(actual.getUserShoppingListItems())
             .build();
 
         assertEquals(expected, actual);

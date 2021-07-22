@@ -147,7 +147,7 @@ class HabitAssignControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).getAllHabitAssignsByUserIdAndAcquiredStatus(null, "en");
+        verify(habitAssignService).getAllHabitAssignsByUserIdAndStatusNotCancelled(null, "en");
     }
 
     @Test

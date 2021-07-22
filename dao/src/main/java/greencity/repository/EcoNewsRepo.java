@@ -85,6 +85,16 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     Page<EcoNews> searchEcoNews(Pageable pageable, String searchQuery, String languageCode);
 
     /**
+     * Method for getting all published news by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return list of {@link EcoNews} instances.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM eco_news WHERE author_id = :userId")
+    List<EcoNews> findAllByUserId(@Param("userId") Long userId);
+
+    /**
      * Method for getting amount of published news by user id.
      *
      * @param id {@link Long} user id.
