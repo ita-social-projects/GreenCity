@@ -96,7 +96,8 @@ public class HabitAssignController {
         @ApiIgnore @CurrentUser UserVO userVO,
         @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.updateUserShoppingItemList(habitId, userVO.getId(), habitAssignPropertiesDto));
+            .body(habitAssignService.updateUserShoppingItemListAndDuration(habitId, userVO.getId(),
+                habitAssignPropertiesDto));
     }
 
     /**

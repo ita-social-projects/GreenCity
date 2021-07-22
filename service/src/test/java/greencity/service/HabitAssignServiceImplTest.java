@@ -457,7 +457,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
 
         HabitAssignUserShoppingListItemDto result =
-            habitAssignService.updateUserShoppingItemList(1L, 21L, getHabitAssignPropertiesDto());
+            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, getHabitAssignPropertiesDto());
         assertEquals(20, result.getDuration());
         assertEquals(1, result.getUserShoppingListItemsDto().size());
     }
@@ -467,7 +467,7 @@ class HabitAssignServiceImplTest {
         when(habitRepo.existsById(anyLong())).thenReturn(false);
 
         Exception thrown1 = assertThrows(NotFoundException.class,
-            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
         assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
     }
@@ -478,7 +478,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
         Exception thrown1 = assertThrows(InvalidStatusException.class,
-            () -> habitAssignService.updateUserShoppingItemList(1L, 21L,
+            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
         assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS);
     }

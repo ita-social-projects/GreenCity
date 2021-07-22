@@ -96,7 +96,7 @@ class HabitAssignControllerTest {
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingItemList(1L, null, propertiesDto);
+        verify(habitAssignService).updateUserShoppingItemListAndDuration(1L, null, propertiesDto);
     }
 
     @Test

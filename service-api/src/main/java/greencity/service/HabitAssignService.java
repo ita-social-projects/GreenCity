@@ -44,7 +44,7 @@ public interface HabitAssignService {
      * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
      * @return {@link HabitAssignUserShoppingListItemDto}.
      */
-    HabitAssignUserShoppingListItemDto updateUserShoppingItemList(Long habitId, Long userId,
+    HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
         HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
