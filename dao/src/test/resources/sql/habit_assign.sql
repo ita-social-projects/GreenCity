@@ -19,12 +19,14 @@ VALUES (1, '2020-09-10 11:00:00+00', 'majboroda.artur@mail.com', 0, 'artur', 0, 
 INSERT INTO habits (id, image)
 VALUES (1, 'image1'),
        (2, 'image2'),
-       (3, 'image3');
+       (3, 'image3'),
+       (4, 'image4');
 
 INSERT INTO habit_assign (id, habit_id, user_id, status, create_date)
 VALUES (1, 1, 1, 'INPROGRESS', '2020-09-09 11:00:00+00'),
        (2, 2, 2, 'CANCELLED', '2020-09-10 11:00:00+00'),
-       (3, 3, 3, 'INPROGRESS', '2020-09-11 11:00:00+00');
+       (3, 3, 3, 'INPROGRESS', '2020-09-11 11:00:00+00'),
+       (4, 4, 3, 'ACQUIRED', '2021-07-09 11:00:00+00');
 
 
 INSERT INTO habit_translation (id, name, description, habit_item, language_id, habit_id)
@@ -34,4 +36,3 @@ VALUES (1, 'Економити пакети', 'Опис пакетів', 'Пак
        (4, 'Відмовитись від одноразових стаканчиків', 'Опис стаканчиків', 'Стаканчики', 1, 2),
        (5, 'Discard disposable cups', 'cap description', 'caps', 2, 2),
        (6, 'Отказаться от одноразовых стаканчиков', 'описание стаканчиков', 'Стаканчики', 3, 2);
-

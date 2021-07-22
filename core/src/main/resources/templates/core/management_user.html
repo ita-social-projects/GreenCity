@@ -138,7 +138,7 @@
                                     </form>
                                 </div>
                             </th>
-                            <th>
+                            <th>  <!--style="width: 288px;"-->
                                 [[#{greenCity.pages.table.credo}]]
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form">
@@ -222,7 +222,7 @@
                         </thead>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
-                            </tr><td>
+                                <td>
                                     <span class="custom-checkbox">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
                                                name="options[]" th:value="${user.id}"
@@ -230,7 +230,9 @@
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                                 </td>
-                                <td th:text="${user.id}" style="width:50px;"></td>
+                                <td style="width: 50px;">
+                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
+                                </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
                                 <td class="column-credo-text" th:text="${user.userCredo}"></td>

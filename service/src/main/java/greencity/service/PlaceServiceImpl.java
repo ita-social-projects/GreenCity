@@ -156,6 +156,17 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
+        return placeRepo.findAllByUserId(userId).stream()
+            .map(place -> modelMapper.map(place, PlaceVO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
      * Method for getting {@link User} and set this {@link User} to place.
      *
      * @param email   - String, user's email.

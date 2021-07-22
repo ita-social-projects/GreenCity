@@ -2,9 +2,15 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.HabitTranslation;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
+
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import greencity.enums.ShoppingListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -39,6 +45,17 @@ public class HabitDtoMapper extends AbstractConverter<HabitTranslation, HabitDto
                 .flatMap(tag -> tag.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().equals(language))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
+            .shoppingListItems(habit.getShoppingListItems() != null ? habit.getShoppingListItems().stream()
+                .map(shoppingListItem -> ShoppingListItemDto.builder()
+                    .id(shoppingListItem.getId())
+                    .status(ShoppingListItemStatus.ACTIVE.toString())
+                    .text(shoppingListItem.getTranslations().stream()
+                        .filter(shoppingListItemTranslation -> shoppingListItemTranslation
+                            .getLanguage().equals(language))
+                        .map(ShoppingListItemTranslation::getContent)
+                        .findFirst().orElse(null))
+                    .build())
+                .collect(Collectors.toList()) : new ArrayList<>())
             .build();
     }
 }

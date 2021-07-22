@@ -92,8 +92,7 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping("/{habitId}/update-user-shopping-item-list")
-    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemListAndDuration(
-        @PathVariable Long habitId,
+    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemList(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
         return ResponseEntity.status(HttpStatus.OK)
@@ -145,7 +144,7 @@ public class HabitAssignController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getAllHabitAssignsByUserIdAndAcquiredStatus(userVO.getId(), locale.getLanguage()));
+                .getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), locale.getLanguage()));
     }
 
     /**
@@ -168,7 +167,7 @@ public class HabitAssignController {
     public ResponseEntity<List<HabitAssignDto>> getAllHabitAssignsByHabitIdAndAcquired(@PathVariable Long habitId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getAllHabitAssignsByHabitIdAndAcquiredStatus(habitId,
+            .body(habitAssignService.getAllHabitAssignsByHabitIdAndStatusNotCancelled(habitId,
                 locale.getLanguage()));
     }
 

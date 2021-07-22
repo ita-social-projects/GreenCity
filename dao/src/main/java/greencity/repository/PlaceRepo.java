@@ -28,6 +28,15 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
     Page<Place> findAllByStatusOrderByModifiedDateDesc(PlaceStatus status, Pageable pageable);
 
     /**
+     * Method to find all created {@link Place}'s by user id.
+     *
+     * @param userId - {@code User}'s id.
+     * @return list of {@link Place}'s
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM places p WHERE p.author_id = :userId")
+    List<Place> findAllByUserId(@Param("userId") Long userId);
+
+    /**
      * Method to find average rate.
      *
      * @param id place
