@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,6 +186,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
                 .map(s -> buildUserShoppingListItems(s, habitAssign))
                 .collect(Collectors.toList());
+            Hibernate.initialize(habitAssign.getUserShoppingListItems());
             userShoppingListItemRepo.deleteAll(habitAssign.getUserShoppingListItems());
             habitAssign.setUserShoppingListItems(userShoppingListItems);
         }
