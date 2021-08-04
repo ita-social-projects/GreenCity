@@ -2,10 +2,13 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.service.HabitAssignService;
 import io.swagger.annotations.ApiOperation;
@@ -392,5 +395,23 @@ public class HabitAssignController {
         @ApiIgnore @CurrentUser UserVO userVO) {
         habitAssignService.deleteHabitAssign(habitId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method save assigned habit {@link HabitAssignDto}.
+     *
+     * @param habitAssignDto - id of {@link HabitAssignDto}.
+     * @param locale  - {@link Locale}.
+     */
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PutMapping("/saveHabitAssign")
+    public ResponseEntity<HabitAssignDto> updateShoppingListStatus(@RequestBody HabitAssignDto habitAssignDto,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.saveHabitAssign(habitAssignDto, locale.getLanguage()));
     }
 }

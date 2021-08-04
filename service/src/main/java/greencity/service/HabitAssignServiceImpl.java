@@ -6,8 +6,10 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
@@ -255,10 +257,49 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
-
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        habitAssignDto.setUserShoppingListItems(buildUserShoppingListItemAdvanceDto(habitAssign, language));
         return habitAssignDto;
+    }
+
+    private List<UserShoppingListItemAdvanceDto> buildUserShoppingListItemAdvanceDto(HabitAssign habitAssign,
+        String language) {
+        List<UserShoppingListItemAdvanceDto> userItemsDTO = new ArrayList<>();
+        boolean isContains;
+        List<ShoppingListItemTranslation> listItemTranslations = shoppingListItemTranslationRepo
+            .findShoppingListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
+        for (ShoppingListItemTranslation translationItem : listItemTranslations) {
+            isContains = false;
+            for (UserShoppingListItem userItem : habitAssign.getUserShoppingListItems()) {
+                if (translationItem.getShoppingListItem().getId().equals(userItem.getShoppingListItem().getId())) {
+                    userItemsDTO.add(UserShoppingListItemAdvanceDto.builder()
+                        .id(userItem.getId())
+                        .shoppingListItemId(translationItem.getId())
+                        .status(userItem.getStatus())
+                        .dateCompleted(userItem.getDateCompleted())
+                        .content(translationItem.getContent())
+                        .build());
+                    isContains = true;
+                    break;
+                }
+            }
+            if (!isContains) {
+                userItemsDTO.add(UserShoppingListItemAdvanceDto.builder()
+                    .shoppingListItemId(translationItem.getId())
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .content(translationItem.getContent())
+                    .build());
+            }
+        }
+        return userItemsDTO;
+    }
+
+    @Override
+    public HabitAssignDto saveHabitAssign(HabitAssignDto habitAssignDto, String language) {
+        HabitAssign habitAssign = modelMapper.map(habitAssignDto, HabitAssign.class);
+        habitAssign = habitAssignRepo.save(habitAssign);
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**

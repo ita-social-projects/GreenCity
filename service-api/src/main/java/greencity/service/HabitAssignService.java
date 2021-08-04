@@ -219,4 +219,12 @@ public interface HabitAssignService {
      * @param userId  {@link Long} id.
      */
     void deleteHabitAssign(Long habitId, Long userId);
+
+    /**
+     * Method save HabitAssign.
+     *
+     * @param habitAssignDto {@link HabitAssignDto} habitAssignDto.
+     * @param language       {@link String} language.
+     */
+    HabitAssignDto saveHabitAssign(HabitAssignDto habitAssignDto, String language);
 }

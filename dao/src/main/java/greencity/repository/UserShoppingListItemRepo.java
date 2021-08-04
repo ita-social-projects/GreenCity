@@ -110,4 +110,11 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
         + "WHERE ha.user_id = :userId AND (ha.habit_id = hs.habit_id AND u.shopping_list_item_id = :itemId);")
     List<UserShoppingListItem> getAllByShoppingListItemIdANdUserId(@Param(value = "itemId") Long itemId,
         @Param(value = "userId") Long userId);
+
+    /*
+     * @Query(nativeQuery = true, value =
+     * "SELECT usl.duration, usl.working_days, usl.status FROM user_shopping_list usl "
+     * + "JOIN habit_assign ha ON ha.id = usl.habit_assign_id " +
+     * "JOIN shopping_list_item sli ON sli.id = usl.shopping_list_item " + "JOIN  "
+     */
 }
