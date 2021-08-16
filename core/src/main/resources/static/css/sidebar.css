@@ -138,6 +138,13 @@
     display: inline-block;
 
 }
+.img_nested_list{
+    padding-left: 40px;
+    width: 0px;
+    height: 24px;
+    transition: .3s;
+    display: inline-block;
+}
 .img_n:hover{
     margin-left: 5px;
     transition: .3s;
