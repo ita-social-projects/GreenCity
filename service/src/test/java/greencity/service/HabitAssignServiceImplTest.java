@@ -6,16 +6,17 @@ import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.exception.exceptions.*;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.*;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,6 +50,8 @@ class HabitAssignServiceImplTest {
     ModelMapper modelMapper;
     @Mock
     HabitStatisticService habitStatisticService;
+    @Mock
+    ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @InjectMocks
     HabitAssignServiceImpl habitAssignService;
 
@@ -74,6 +77,8 @@ class HabitAssignServiceImplTest {
 
     private HabitAssign habitAssign = getHabitAssign();
 
+    private HabitAssign fullHabitAssign = getFullHabitAssign();
+
     private HabitAssign habitAssignNew = HabitAssign.builder()
         .user(user).habit(habit).build();
 
@@ -83,6 +88,8 @@ class HabitAssignServiceImplTest {
     private List<HabitAssignDto> habitAssignDtos = Collections.singletonList(habitAssignDto);
 
     private List<HabitAssign> habitAssigns = Collections.singletonList(habitAssign);
+
+    private List<HabitAssign> fullHabitAssigns = Collections.singletonList(fullHabitAssign);
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto = HabitAssignPropertiesDto.builder().duration(14).build();
 
@@ -239,8 +246,22 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getAllHabitAssignsByUserIdAndStatusAcquired() {
+        List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
+        when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
+        when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en",1L))
+                .thenReturn(list);
+        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
+        assertEquals(habitAssignDtos, actual);
+    }
+
+    @Test
+    void getAllHabitAssignsByUserIdAndStatusAcquiredEmptyHabitAssign() {
+        List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en",1L))
+                .thenReturn(list);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
         assertEquals(habitAssignDtos, actual);
     }

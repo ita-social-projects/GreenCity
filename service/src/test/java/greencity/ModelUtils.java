@@ -284,6 +284,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static ShoppingListItemTranslation getShoppingListItemTranslations1() {
+        return ShoppingListItemTranslation.builder()
+                .id(1L)
+                .language(
+                        new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+                                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                .shoppingListItem(
+                        new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
+                .content("Buy a bamboo toothbrush")
+                .build();
+    }
+
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
         return HabitStatusCalendarDto.builder()
             .enrollDate(LocalDate.now()).id(1L).build();
@@ -335,6 +347,33 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitAssign getFullHabitAssign() {
+        return HabitAssign.builder()
+                .id(1L)
+                .status(HabitAssignStatus.ACQUIRED)
+                .createDate(ZonedDateTime.now())
+                .habit(Habit.builder()
+                        .id(1L)
+                        .image("")
+                        .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                                .id(1L)
+                                .name("")
+                                .description("")
+                                .habitItem("")
+                                .language(getLanguage())
+                                .build()))
+                        .build())
+                .user(getUser())
+                .userShoppingListItems(getUserShoppingListItemList())
+                .workingDays(0)
+                .duration(0)
+                .habitStreak(0)
+                .habitStatistic(Collections.singletonList(getHabitStatistic()))
+                .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
+                .lastEnrollmentDate(ZonedDateTime.now())
+                .build();
+    }
+
     public static HabitAssignVO getHabitAssignVO() {
         return HabitAssignVO.builder()
             .id(1L)
@@ -360,6 +399,35 @@ public class ModelUtils {
             .habitAssign(HabitAssign.builder().id(1L).build())
             .status(ShoppingListItemStatus.DONE)
             .build();
+    }
+
+    public static UserShoppingListItem getFullUserShoppingListItem() {
+        return UserShoppingListItem.builder()
+                .id(1L)
+                .shoppingListItem(getShoppingListItem())
+                .habitAssign(HabitAssign.builder().id(1L).build())
+                .status(ShoppingListItemStatus.DONE)
+                .build();
+    }
+
+    public static List<UserShoppingListItem> getUserShoppingListItemList(){
+        List<UserShoppingListItem> getUserShoppingListItemList = new ArrayList();
+        getUserShoppingListItemList.add(getFullUserShoppingListItem());
+        getUserShoppingListItemList.add(getFullUserShoppingListItem());
+        getUserShoppingListItemList.add(getFullUserShoppingListItem());
+
+        return getUserShoppingListItemList;
+    }
+
+    public static List<ShoppingListItemTranslation> getShoppingListItemTranslationList(){
+        ShoppingListItemTranslation translation = getShoppingListItemTranslations1();
+        ShoppingListItemTranslation translation2 = getShoppingListItemTranslations1();
+        ShoppingListItemTranslation translation3 = getShoppingListItemTranslations1();
+        List<ShoppingListItemTranslation> list = new ArrayList();
+        list.add(translation);
+        list.add(translation2);
+        list.add(translation3);
+        return list;
     }
 
     public static UserShoppingListItemResponseDto getCustomUserShoppingListItemDto() {

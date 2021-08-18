@@ -398,20 +398,19 @@ public class HabitAssignController {
     }
 
     /**
-     * Method save assigned habit {@link HabitAssignDto}.
+     * Method updates user shopping list item {@link UpdateUserShoppingListDto}.
      *
-     * @param habitAssignDto - id of {@link HabitAssignDto}.
-     * @param locale  - {@link Locale}.
+     * @param updateUserShoppingListDto - id of {@link UpdateUserShoppingListDto}.
      */
+    @ApiOperation(value = "Update shopping list status for current habit.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PutMapping("/saveHabitAssign")
-    public ResponseEntity<HabitAssignDto> updateShoppingListStatus(@RequestBody HabitAssignDto habitAssignDto,
-        @ApiIgnore @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.saveHabitAssign(habitAssignDto, locale.getLanguage()));
+    @PutMapping("/saveShoppingListForHabitAssign")
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateShoppingListStatus(@RequestBody UpdateUserShoppingListDto updateUserShoppingListDto) {
+        habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

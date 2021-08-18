@@ -37,13 +37,6 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
                     .enrollDate(habitStatusCalendar.getEnrollDate())
                     .build())
                 .collect(Collectors.toList()))
-            .userShoppingListItems(habitAssign.getUserShoppingListItems().stream()
-                .map(u -> UserShoppingListItemAdvanceDto.builder().id(u.getId())
-                    .shoppingListItemId(u.getShoppingListItem().getId())
-                    .status(u.getStatus())
-                    .dateCompleted(u.getDateCompleted())
-                    .build())
-                .collect(Collectors.toList()))
             .build();
     }
 }
