@@ -261,44 +261,43 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignDto;
     }
 
-    private HabitAssignDto buildHabitAssignDtoContent (HabitAssign habitAssign, String language){
+    private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
         HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
         habitAssignDto.setUserShoppingListItems(buildUserShoppingListItemAdvanceDto(habitAssign, language));
         return habitAssignDto;
     }
 
     private List<UserShoppingListItemAdvanceDto> buildUserShoppingListItemAdvanceDto(HabitAssign habitAssign,
-                                                                                     String language) {
+        String language) {
         List<UserShoppingListItemAdvanceDto> userItemsDTO = new ArrayList<>();
         boolean isContains;
         List<ShoppingListItemTranslation> listItemTranslations = shoppingListItemTranslationRepo
-                .findShoppingListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
+            .findShoppingListByHabitIdAndByLanguageCode(language, habitAssign.getHabit().getId());
         for (ShoppingListItemTranslation translationItem : listItemTranslations) {
             isContains = false;
             for (UserShoppingListItem userItem : habitAssign.getUserShoppingListItems()) {
                 if (translationItem.getShoppingListItem().getId().equals(userItem.getShoppingListItem().getId())) {
                     userItemsDTO.add(UserShoppingListItemAdvanceDto.builder()
-                            .id(userItem.getId())
-                            .shoppingListItemId(translationItem.getId())
-                            .status(userItem.getStatus())
-                            .dateCompleted(userItem.getDateCompleted())
-                            .content(translationItem.getContent())
-                            .build());
+                        .id(userItem.getId())
+                        .shoppingListItemId(translationItem.getId())
+                        .status(userItem.getStatus())
+                        .dateCompleted(userItem.getDateCompleted())
+                        .content(translationItem.getContent())
+                        .build());
                     isContains = true;
                     break;
                 }
             }
             if (!isContains) {
                 userItemsDTO.add(UserShoppingListItemAdvanceDto.builder()
-                        .shoppingListItemId(translationItem.getId())
-                        .status(ShoppingListItemStatus.ACTIVE)
-                        .content(translationItem.getContent())
-                        .build());
+                    .shoppingListItemId(translationItem.getId())
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .content(translationItem.getContent())
+                    .build());
             }
         }
         return userItemsDTO;
     }
-
 
     @Override
     @Transactional
@@ -306,22 +305,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.saveAll(buildUserShoppingListItem(updateUserShoppingListDto));
     }
 
-    private List<UserShoppingListItem> buildUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto ){
+    private List<UserShoppingListItem> buildUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto) {
         HabitAssign habitAssign = habitAssignRepo.findById(updateUserShoppingListDto.getHabitAssignId())
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
         List<UserShoppingListItem> userShoppingListItemList = new ArrayList<>();
-        for(UserShoppingListItemAdvanceDto item : updateUserShoppingListDto.getUserShoppingListAdvanceDto()){
+        for (UserShoppingListItemAdvanceDto item : updateUserShoppingListDto.getUserShoppingListAdvanceDto()) {
             ShoppingListItem shoppingListItem = shoppingListItemRepo.findById(item.getShoppingListItemId())
-                    .orElseThrow(() -> new ShoppingListItemNotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID));
+                .orElseThrow(
+                    () -> new ShoppingListItemNotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID));
             userShoppingListItemList.add(UserShoppingListItem.builder()
-                    .habitAssign(habitAssign)
-                    .shoppingListItem(shoppingListItem)
-                    .status(item.getStatus())
-                    .id(updateUserShoppingListDto.getUserShoppingListItemId())
-                    .build());
+                .habitAssign(habitAssign)
+                .shoppingListItem(shoppingListItem)
+                .status(item.getStatus())
+                .id(updateUserShoppingListDto.getUserShoppingListItemId())
+                .build());
         }
         return userShoppingListItemList;
     }
+
     /**
      * Method to get {@link HabitTranslation} for current habit assign and language.
      *
@@ -441,7 +442,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
-            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -451,7 +453,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId,
         String language) {
         return habitAssignRepo.findAllByUserIdAndStatusIsCancelled(userId)
-            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -673,7 +676,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language) {
         List<HabitAssign> list = habitAssignRepo.findAllInprogressHabitAssignsOnDate(userId, date);
         return list.stream().map(
-                habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
+            habitAssign -> buildHabitAssignDtoContent(habitAssign, language)).collect(Collectors.toList());
     }
 
     /**

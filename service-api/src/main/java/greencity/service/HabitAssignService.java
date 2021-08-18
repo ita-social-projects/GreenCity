@@ -133,9 +133,6 @@ public interface HabitAssignService {
      */
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndCancelledStatus(Long userId, String language);
 
-
-
-
     /**
      * Method to delete all {@code HabitAssign}'s by {@code Habit} instance.
      *
@@ -187,7 +184,8 @@ public interface HabitAssignService {
     List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language);
 
     /**
-     * Method to find all inprogress habit assigns on certain including content {@link LocalDate}.
+     * Method to find all inprogress habit assigns on certain including content
+     * {@link LocalDate}.
      *
      * @param userId   {@code User} id.
      * @param date     {@link LocalDate} instance.
@@ -195,7 +193,6 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto} instances.
      */
     List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language);
-
 
     /**
      * Method to find all inprogress, acquired habit assigns between 2
@@ -237,7 +234,8 @@ public interface HabitAssignService {
     /**
      * Method save HabitAssign.
      *
-     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto} habitAssignDto.
+     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto}
+     *                                  habitAssignDto.
      */
     void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
 }

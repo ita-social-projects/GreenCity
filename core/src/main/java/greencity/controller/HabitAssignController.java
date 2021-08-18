@@ -409,7 +409,8 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping("/saveShoppingListForHabitAssign")
-    public ResponseEntity<ResponseEntity.BodyBuilder> updateShoppingListStatus(@RequestBody UpdateUserShoppingListDto updateUserShoppingListDto) {
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateShoppingListStatus(
+        @RequestBody UpdateUserShoppingListDto updateUserShoppingListDto) {
         habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

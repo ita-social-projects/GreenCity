@@ -249,8 +249,8 @@ class HabitAssignServiceImplTest {
         List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
         when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en",1L))
-                .thenReturn(list);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1L))
+            .thenReturn(list);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
         assertEquals(habitAssignDtos, actual);
     }
@@ -260,8 +260,8 @@ class HabitAssignServiceImplTest {
         List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en",1L))
-                .thenReturn(list);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1L))
+            .thenReturn(list);
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
         assertEquals(habitAssignDtos, actual);
     }

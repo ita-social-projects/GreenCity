@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @Builder
 public class UpdateUserShoppingListDto {
-
     private Long habitAssignId;
     private Long userShoppingListItemId;
     private List<UserShoppingListItemAdvanceDto> userShoppingListAdvanceDto;

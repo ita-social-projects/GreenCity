@@ -17,29 +17,29 @@ public class HabitAssignMapper extends AbstractConverter<HabitAssignDto, HabitAs
         for (UserShoppingListItemAdvanceDto item : dto.getUserShoppingListItems()) {
             if (item.getStatus().equals(ShoppingListItemStatus.INPROGRESS)) {
                 listOfShoppingListItem.add(UserShoppingListItem.builder()
-                        .id(item.getId())
-                        .dateCompleted(item.getDateCompleted())
-                        .status(item.getStatus())
-                        .shoppingListItem(ShoppingListItem.builder()
-                                .id(item.getShoppingListItemId())
-                                .build())
-                        .build());
+                    .id(item.getId())
+                    .dateCompleted(item.getDateCompleted())
+                    .status(item.getStatus())
+                    .shoppingListItem(ShoppingListItem.builder()
+                        .id(item.getShoppingListItemId())
+                        .build())
+                    .build());
             }
         }
         return HabitAssign.builder()
-                .id(dto.getId())
-                .duration(dto.getDuration())
-                .habitStreak(dto.getHabitStreak())
-                .createDate(dto.getCreateDateTime())
-                .status(dto.getStatus())
-                .workingDays(dto.getWorkingDays())
-                .lastEnrollmentDate(dto.getLastEnrollmentDate())
-                .habit(Habit.builder()
-                        .id(dto.getHabit().getId())
-                        .complexity(dto.getHabit().getComplexity())
-                        .defaultDuration(dto.getDuration())
-                        .build())
-                .userShoppingListItems(listOfShoppingListItem)
-                .build();
+            .id(dto.getId())
+            .duration(dto.getDuration())
+            .habitStreak(dto.getHabitStreak())
+            .createDate(dto.getCreateDateTime())
+            .status(dto.getStatus())
+            .workingDays(dto.getWorkingDays())
+            .lastEnrollmentDate(dto.getLastEnrollmentDate())
+            .habit(Habit.builder()
+                .id(dto.getHabit().getId())
+                .complexity(dto.getHabit().getComplexity())
+                .defaultDuration(dto.getDuration())
+                .build())
+            .userShoppingListItems(listOfShoppingListItem)
+            .build();
     }
 }
