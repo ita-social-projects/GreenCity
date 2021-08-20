@@ -121,8 +121,8 @@ class EcoNewsControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(get(ecoNewsLink + "/byUser")
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).getAllPublishedNewsByUser(userVO);
     }
