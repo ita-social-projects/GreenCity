@@ -319,6 +319,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      *
      * @param user {@link UserVO}.
      * @return list of {@link EcoNewsDto} instances.
+     * @author Vira Maksymets
      */
     @Override
     public List<EcoNewsDto> getAllPublishedNewsByUser(UserVO user) {

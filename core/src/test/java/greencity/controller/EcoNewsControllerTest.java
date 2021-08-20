@@ -116,6 +116,18 @@ class EcoNewsControllerTest {
     }
 
     @Test
+    void getEcoNewsByUserTest() throws Exception {
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(get(ecoNewsLink + "/byUser")
+                .principal(principal))
+                .andExpect(status().isOk());
+
+        verify(ecoNewsService).getAllPublishedNewsByUser(userVO);
+    }
+
+    @Test
     void findAllTest() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;

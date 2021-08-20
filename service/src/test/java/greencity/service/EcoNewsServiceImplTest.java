@@ -327,6 +327,18 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void getAllPublishedNewsByUserTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
+
+        when(ecoNewsRepo.findAllByUserId(userVO.getId())).thenReturn(ecoNews);
+
+        List<EcoNewsDto> actual = ecoNewsService.getAllPublishedNewsByUser(userVO);
+        assertEquals(dtoList, actual);
+    }
+
+    @Test
     void likeCommentTest() {
         UserVO userVO = ModelUtils.getUserVO();
         EcoNewsCommentVO ecoNewsCommentVO = ModelUtils.getEcoNewsCommentVO();

@@ -145,10 +145,9 @@ public class EcoNewsController {
      * @return list of {@link EcoNewsDto} instances.
      * @author Vira Maksymets
      */
-    @ApiOperation(value = "Get eco news by user_id.")
+    @ApiOperation(value = "Get eco news by authorised user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/byUser")
