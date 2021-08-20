@@ -147,15 +147,14 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Get eco news by user_id.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/byUser")
     public ResponseEntity<List<EcoNewsDto>> getEcoNewsByUser(@ApiIgnore @CurrentUser UserVO user) {
-       return ResponseEntity.status(HttpStatus.OK)
-               .body(ecoNewsService.getAllPublishedNewsByUser(user));
-
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.getAllPublishedNewsByUser(user));
     }
 
     /**

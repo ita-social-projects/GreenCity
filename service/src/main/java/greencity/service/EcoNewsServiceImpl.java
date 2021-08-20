@@ -317,7 +317,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * Method for getting all published news by authorised user.
      *
-     * @param user    {@link UserVO}.
+     * @param user {@link UserVO}.
      * @return list of {@link EcoNewsDto} instances.
      */
     @Override
@@ -325,8 +325,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         return ecoNewsRepo.findAllByUserId(user.getId()).stream()
-                .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
-                .collect(Collectors.toList());
+            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+            .collect(Collectors.toList());
     }
 
     /**

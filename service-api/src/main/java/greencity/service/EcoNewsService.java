@@ -124,7 +124,7 @@ public interface EcoNewsService {
     /**
      * Method for getting all published news by authorised user.
      *
-     * @param user    {@link UserVO}.
+     * @param user {@link UserVO}.
      * @return list of {@link EcoNewsDto} instances.
      */
     List<EcoNewsDto> getAllPublishedNewsByUser(UserVO user);
