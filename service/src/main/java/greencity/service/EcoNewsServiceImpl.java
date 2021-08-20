@@ -322,8 +322,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getAllPublishedNewsByUser(UserVO user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-
         return ecoNewsRepo.findAllByUserId(user.getId()).stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
             .collect(Collectors.toList());
