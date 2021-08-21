@@ -70,8 +70,6 @@ public class ManagementUserPersonalPageController {
         model.addAttribute("publishedEcoNews", publishedEcoNews);
         model.addAttribute("publishedTipsAndTricks", publishedTipsAndTricks);
         model.addAttribute("createdEcoPlaces", createdEcoPlaces);
-        // model.addAttribute("habit1", acquiredHabits.get(0).getHabit());
-
         return "core/management_user_personal_page";
     }
 

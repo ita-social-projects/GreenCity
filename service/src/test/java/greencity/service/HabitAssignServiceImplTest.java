@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -450,7 +449,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
 
         List<HabitAssignDto> dtoList =
-            habitAssignService.findInprogressHabitAssignsOnDate(id, date, language.getCode());
+            habitAssignService.findInprogressHabitAssignsOnDateContent(id, date, language.getCode());
         assertEquals(dtoList.get(0), habitAssignDto);
 
     }
