@@ -35,7 +35,7 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.coverage.jacoco.xmlReportPaths>../app-it/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.sources>src/main/resources</sonar.sources>
+        <sonar.sources>core/src/main/resources</sonar.sources>
         <sonar.language>java</sonar.language>
     </properties>
 
