@@ -1327,4 +1327,65 @@ public class ModelUtils {
                 .build()))
             .build();
     }
+
+    public static UpdateUserShoppingListDto getUpdateUserShoppingListDto() {
+        return UpdateUserShoppingListDto.builder()
+            .userShoppingListItemId(1L)
+            .habitAssignId(1L)
+            .userShoppingListAdvanceDto(List.of(UserShoppingListItemAdvanceDto.builder()
+                .id(1L)
+                .shoppingListItemId(1L)
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .build();
+    }
+
+    public static HabitAssignDto getFullHabitAssignDto() {
+        return HabitAssignDto.builder()
+            .id(1L)
+            .status(HabitAssignStatus.ACQUIRED)
+            .createDateTime(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .habit(HabitDto.builder().id(1L).build())
+            .userId(1L)
+            .duration(null)
+            .userShoppingListItems(List.of(UserShoppingListItemAdvanceDto.builder()
+                .id(1L)
+                .shoppingListItemId(1L)
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .habitStatusCalendarDtoList(List.of(getHabitStatusCalendarDto()))
+            .habitStreak(1)
+            .lastEnrollmentDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .workingDays(1)
+            .build();
+    }
+
+    public static HabitAssign getHabitAssignForMapper() {
+        return HabitAssign.builder()
+            .id(1L)
+            .status(HabitAssignStatus.ACQUIRED)
+            .createDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .habit(Habit.builder()
+                .id(1L)
+                .image(null)
+                .habitTranslations(null)
+                .build())
+            .user(null)
+            .userShoppingListItems(List.of(UserShoppingListItem.builder()
+                .id(1L)
+                .habitAssign(null)
+                .shoppingListItem(ShoppingListItem.builder()
+                    .id(1L)
+                    .habits(null)
+                    .translations(null)
+                    .build())
+                .build()))
+            .workingDays(1)
+            .duration(null)
+            .habitStreak(1)
+            .habitStatistic(null)
+            .habitStatusCalendars(null)
+            .lastEnrollmentDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .build();
+    }
 }

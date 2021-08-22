@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -501,5 +502,22 @@ class HabitAssignServiceImplTest {
             () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
         assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS);
+    }
+
+    @Test
+    void updateUserShoppingListItem() {
+        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
+        when(userShoppingListItemRepo.saveAll(any())).thenReturn(List.of(userShoppingListItem));
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
+        when(shoppingListItemRepo.findById(1L)).thenReturn(Optional.of(getShoppingListItem()));
+        habitAssignService.updateUserShoppingListItem(getUpdateUserShoppingListDto());
+        verify(userShoppingListItemRepo, times(1)).saveAll(any());
+    }
+
+    @Test
+    void updateUserShoppingListItemThrowException() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
+        assertThrows(ShoppingListItemNotFoundException.class,
+            () -> habitAssignService.updateUserShoppingListItem(getUpdateUserShoppingListDto()));
     }
 }

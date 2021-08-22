@@ -38,15 +38,13 @@ public class UserShoppingListItem {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserShoppingListItem)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserShoppingListItem userShoppingListItem = (UserShoppingListItem) o;
-        return id.equals(userShoppingListItem.id)
-            && habitAssign.equals(userShoppingListItem.habitAssign)
-            && Objects.equals(shoppingListItem, userShoppingListItem.shoppingListItem)
-            && status == userShoppingListItem.status
-            && Objects.equals(dateCompleted, userShoppingListItem.dateCompleted);
+        UserShoppingListItem that = (UserShoppingListItem) o;
+        return Objects.equals(id, that.id) && Objects.equals(habitAssign, that.habitAssign)
+            && Objects.equals(shoppingListItem, that.shoppingListItem) && status == that.status
+            && Objects.equals(dateCompleted, that.dateCompleted);
     }
 
     @Override
