@@ -29,7 +29,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources=src/main/resources -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Deploy 🚀
         if: ${{ github.event_name == 'push' }}
