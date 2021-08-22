@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-public class HabitAssignMapperTest {
+class HabitAssignMapperTest {
 
     @InjectMocks
     private HabitAssignMapper habitAssignMapper;

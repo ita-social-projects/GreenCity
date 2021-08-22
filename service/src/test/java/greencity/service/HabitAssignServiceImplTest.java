@@ -4,7 +4,6 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
