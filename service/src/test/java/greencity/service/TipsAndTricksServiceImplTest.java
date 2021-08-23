@@ -1,12 +1,5 @@
 package greencity.service;
 
-import greencity.dto.place.PlaceVO;
-import greencity.entity.*;
-import greencity.exception.exceptions.BadRequestException;
-import javax.servlet.http.HttpServletRequest;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.client.RestClient;
@@ -18,31 +11,16 @@ import greencity.dto.language.LanguageVO;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
-import greencity.dto.tipsandtricks.TextTranslationVO;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoManagement;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
-import greencity.dto.tipsandtricks.TipsAndTricksViewDto;
-import greencity.dto.tipsandtricks.TitleTranslationVO;
+import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
+import greencity.entity.*;
 import greencity.enums.TagType;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.TipsAndTricksSpecification;
 import greencity.repository.TipsAndTricksRepo;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,6 +37,16 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class TipsAndTricksServiceImplTest {
@@ -84,26 +72,28 @@ class TipsAndTricksServiceImplTest {
     private TipsAndTricksServiceImpl tipsAndTricksService;
     @Mock
     TipsAndTricksTranslationService tipsAndTricksTranslationService;
-    private TipsAndTricksDtoManagement tipsAndTricksDtoManagement = ModelUtils.getTipsAndTricksDtoManagement();
-    private TipsAndTricksDtoRequest tipsAndTricksDtoRequest = ModelUtils.getTipsAndTricksDtoRequest();
-    private TipsAndTricks tipsAndTricks = ModelUtils.getTipsAndTricks();
-    private TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
-    private Tag tipsAndTricksTag = ModelUtils.getTag();
-    private TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
-    private TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
-    private User user = ModelUtils.getUser();
-    private UserVO userVO = ModelUtils.getUserVO();
-    private List<TagTranslationVO> tagTranslationVOList = Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
-        .languageVO(LanguageVO.builder().id(1L).code("ua").build())
-        .build(),
-        TagTranslationVO.builder().id(2L).name("News")
+
+    private final TipsAndTricksDtoManagement tipsAndTricksDtoManagement = ModelUtils.getTipsAndTricksDtoManagement();
+    private final TipsAndTricksDtoRequest tipsAndTricksDtoRequest = ModelUtils.getTipsAndTricksDtoRequest();
+    private final TipsAndTricks tipsAndTricks = ModelUtils.getTipsAndTricks();
+    private final TipsAndTricksDtoResponse tipsAndTricksDtoResponse = ModelUtils.getTipsAndTricksDtoResponse();
+    private final Tag tipsAndTricksTag = ModelUtils.getTipsTag();
+    private final TipsAndTricksComment tipsAndTricksComment = ModelUtils.getTipsAndTricksComment();
+    private final TipsAndTricksCommentVO tipsAndTricksCommentVO = ModelUtils.getTipsAndTricksCommentVO();
+    private final User user = ModelUtils.getUser();
+    private final UserVO userVO = ModelUtils.getUserVO();
+    private final List<TagTranslationVO> tagTranslationVOList = Arrays.asList(
+        TagTranslationVO.builder().id(1L).name("Еко-місто")
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build())
+            .build(),
+        TagTranslationVO.builder().id(2L).name("Eco-city")
             .languageVO(LanguageVO.builder().id(2L).code("en").build())
             .build(),
-        TagTranslationVO.builder().id(3L).name("Новины")
+        TagTranslationVO.builder().id(3L).name("Эко-город")
             .languageVO(LanguageVO.builder().id(1L).code("ru").build())
             .build());
-    private TagVO tagVO = new TagVO(1L, TagType.TIPS_AND_TRICKS, tagTranslationVOList, null, null, null);
-    private String accessToken = "Token";
+    private final TagVO tagVO = new TagVO(1L, TagType.TIPS_AND_TRICKS, tagTranslationVOList, null, null, null);
+    private final String accessToken = "Token";
 
     @Test
     void saveTest() {
@@ -116,20 +106,20 @@ class TipsAndTricksServiceImplTest {
         when(modelMapper.map(tagVOList, new TypeToken<List<TagVO>>() {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
+        when(modelMapper.map(languageService.findByCode(any()), Language.class)).thenReturn(ModelUtils.getLanguage());
 
-        TipsAndTricksDtoResponse actual =
-            tipsAndTricksService.save(tipsAndTricksDtoRequest, null, ModelUtils.getUser().getEmail());
+        TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
+            tipsAndTricksDtoManagement, null, ModelUtils.getUser().getEmail());
 
-        assertEquals(tipsAndTricksDtoResponse, actual);
+        tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
+            new TypeToken<List<TitleTranslationVO>>() {
+            }.getType()));
+        tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
+            new TypeToken<List<TextTranslationVO>>() {
+            }.getType()));
 
-        verify(tipsAndTricksTranslationService)
-            .saveTitleTranslations(modelMapper.map(tipsAndTricks.getTitleTranslations(),
-                new TypeToken<List<TitleTranslationVO>>() {
-                }.getType()));
-        verify(tipsAndTricksTranslationService)
-            .saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
-                new TypeToken<List<TextTranslationVO>>() {
-                }.getType()));
+        verify(tipsAndTricksRepo).save(any(TipsAndTricks.class));
+        assertEquals(tipsAndTricksDtoManagement, actual);
     }
 
     @Test
@@ -146,27 +136,6 @@ class TipsAndTricksServiceImplTest {
         when(tipsAndTricksRepo.save(tipsAndTricks)).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(NotSavedException.class, () -> tipsAndTricksService.save(tipsAndTricksDtoRequest, null, email));
-    }
-
-    @Test
-    void saveUploadImageTest() throws IOException {
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        tipsAndTricksDtoRequest.setImage(imageToEncode);
-
-        when(modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class)).thenReturn(tipsAndTricks);
-        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        when(modelMapper.map(tipsAndTricksDtoRequest.getImage(), MultipartFile.class)).thenReturn(image);
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
-        List<TagVO> tagVOList = Collections.singletonList(tagVO);
-        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.TIPS_AND_TRICKS)))
-            .thenReturn(tagVOList);
-        when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
-
-        TipsAndTricksDtoResponse actual =
-            tipsAndTricksService.save(tipsAndTricksDtoRequest, image, ModelUtils.getUser().getEmail());
-
-        assertEquals(tipsAndTricksDtoResponse, actual);
     }
 
     @Test
@@ -500,13 +469,11 @@ class TipsAndTricksServiceImplTest {
 
     @Test
     void unlikeComment() {
-        TipsAndTricksComment initial = tipsAndTricksComment;
         Set<User> userSet = new HashSet<>();
         userSet.add(user);
         tipsAndTricksComment.setUsersLiked(userSet);
         tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
-        assertEquals(initial, tipsAndTricksComment);
-
+        assertEquals(tipsAndTricksComment, tipsAndTricksComment);
     }
 
     @Test
