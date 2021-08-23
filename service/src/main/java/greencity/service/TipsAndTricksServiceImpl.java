@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -21,12 +20,6 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
 import greencity.filters.TipsAndTricksSpecification;
 import greencity.repository.TipsAndTricksRepo;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,6 +35,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Service
 @EnableCaching
@@ -96,11 +98,10 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (image != null) {
             tipsAndTricks.setImagePath(fileService.upload(image));
         }
-        tipsAndTricks
-            .setTags(modelMapper.map(tagService
-                .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
-                new TypeToken<List<Tag>>() {
-                }.getType()));
+        tipsAndTricks.setTags(modelMapper.map(tagService
+            .findTagsByNamesAndType(tipsAndTricksDtoManagement.getTags(), TagType.TIPS_AND_TRICKS),
+            new TypeToken<List<Tag>>() {
+            }.getType()));
     }
 
     /**
