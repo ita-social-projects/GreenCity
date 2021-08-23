@@ -890,8 +890,8 @@ public class ModelUtils {
     public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
         return TipsAndTricksDtoResponse.builder()
             .id(1L)
-            .title("title")
-            .text("text")
+            .titleTranslation("title")
+            .textTranslation("text")
             .creationDate(ZonedDateTime.now())
             .author(getAuthorDto())
             .tags(Collections.singletonList("tipsAndTricksTag"))
@@ -916,7 +916,7 @@ public class ModelUtils {
                 .languageCode(getLanguage().getCode())
                 .build()))
             .textTranslations(Collections.singletonList(TextTranslationDTO.builder()
-                .content("text content")
+                .content("text content text content text content text content")
                 .languageCode(getLanguage().getCode())
                 .build()))
             .build();
