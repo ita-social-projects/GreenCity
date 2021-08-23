@@ -474,7 +474,7 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksComment.setUsersLiked(userSet);
         tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
         Set<User> users = tipsAndTricksComment.getUsersLiked();
-        assertTrue(users.contains(user));   //problem!
+        assertTrue(users.contains(user)); // problem!
     }
 
     @Test
