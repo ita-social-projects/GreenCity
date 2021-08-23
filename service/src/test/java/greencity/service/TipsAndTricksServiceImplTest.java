@@ -473,7 +473,8 @@ class TipsAndTricksServiceImplTest {
         userSet.add(user);
         tipsAndTricksComment.setUsersLiked(userSet);
         tipsAndTricksService.unlikeComment(ModelUtils.getUserVO(), ModelUtils.getTipsAndTricksCommentVO());
-        assertEquals(tipsAndTricksComment, tipsAndTricksComment);
+        Set<User> users = tipsAndTricksComment.getUsersLiked();
+        assertTrue(users.contains(user));   //problem!
     }
 
     @Test
