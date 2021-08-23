@@ -26,6 +26,7 @@
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
+<div id="sidebar" th:insert="core/sidepanel"></div>
 <div class="main-content">
     <div class="container-xl">
         <div class="table-responsive">
@@ -49,6 +50,12 @@
                 <table id="datatable" class="table table-striped table-hover">
                     <thead>
                     <tr class="table-primary">
+                        <th>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
+                                </span>
+                        </th>
                         <th>[[#{greenCity.pages.table.id}]]</th>
                         <th>[[#{greenCity.pages.table.event.name}]]</th>
                         <th>[[#{greenCity.pages.table.user.id}]]</th>
