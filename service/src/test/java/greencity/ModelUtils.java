@@ -82,12 +82,26 @@ public class ModelUtils {
             Collections.emptySet());
     }
 
+    public static Tag getTipsTag() {
+        return new Tag(1L, TagType.TIPS_AND_TRICKS, getTipsTagTranslations(), Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptySet());
+    }
+
     public static List<TagTranslation> getTagTranslations() {
         Language language = getLanguage();
         return Arrays.asList(
             TagTranslation.builder().id(1L).name("Новини").language(language).build(),
             TagTranslation.builder().id(2L).name("News").language(language).build(),
             TagTranslation.builder().id(3L).name("Новины").language(language).build());
+    }
+
+    public static List<TagTranslation> getTipsTagTranslations() {
+        Language language = getLanguage();
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Еко-місто").language(language).build(),
+            TagTranslation.builder().id(2L).name("Eco-city").language(language).build(),
+            TagTranslation.builder().id(3L).name("Эко-город").language(language).build());
     }
 
     public static TagDto getTagDto() {
@@ -936,7 +950,15 @@ public class ModelUtils {
     }
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
-        return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
+        return new TipsAndTricksDtoRequest(TitleTranslationEmbeddedPostDTO.builder()
+            .content("title content")
+            .languageCode("en")
+            .build(),
+            TextTranslationDTO.builder()
+                .content("text content for tips and tricks")
+                .languageCode("en")
+                .build(),
+            Collections.singletonList("Testing"), null, null);
     }
 
     public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
@@ -949,6 +971,7 @@ public class ModelUtils {
                 .content("text content for tips and tricks")
                 .languageCode("en")
                 .build())
+            .tags(Collections.singletonList("Testing"))
             .source("wiki")
             .build();
 
