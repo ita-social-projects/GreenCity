@@ -41,7 +41,6 @@ public class TipsAndTricksController {
      * @param tipsAndTricksDtoRequest - dto for {@link TipsAndTricksVO} entity.
      * @return dto {@link TipsAndTricksDtoResponse} instance.
      */
-
     @ApiOperation(value = "Add new tips & tricks.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED,

@@ -7,6 +7,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
@@ -70,18 +71,20 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         MultipartFile image, String email) {
         toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
-        if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
-        }
-        if (image != null) {
-            toSave.setImagePath(fileService.upload(image));
-        }
+        /*
+         * TODO: Update Azure credentials and test image uploading;
+         *
+         * if (image != null) { try { toSave.setImagePath(fileService.upload(image)); }
+         * catch (IllegalArgumentException ex){ throw new
+         * NotSavedException(ErrorMessage.AZURE_NOT_CONNECTED); } } else
+         */
+        toSave.setImagePath(null);
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
-        toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+        toSave.getTitleTranslations().forEach(translation -> translation.setTipsAndTricks(toSave));
+        toSave.getTextTranslations().forEach(translation -> translation.setTipsAndTricks(toSave));
     }
 
     private void enhanceWithNewManagementData(TipsAndTricks tipsAndTricks,
@@ -122,13 +125,18 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
+        toSave.getTags().forEach(tag -> tag.getTagTranslations().forEach(
+            tagTranslation -> {
+                LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
+                Language language = modelMapper.map(l, Language.class);
+                tagTranslation.setLanguage(language);
+            }));
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(toSave.getTitleTranslations(),
             new TypeToken<List<TitleTranslationVO>>() {
             }.getType()));
-        tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(toSave.getTextTranslations(),
-            new TypeToken<List<TextTranslationVO>>() {
+        tipsAndTricksTranslationService.saveTextTranslations(
+            modelMapper.map(toSave.getTextTranslations(), new TypeToken<List<TextTranslationVO>>() {
             }.getType()));
-
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
     }
 

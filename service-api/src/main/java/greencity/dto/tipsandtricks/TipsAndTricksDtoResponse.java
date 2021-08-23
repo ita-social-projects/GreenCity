@@ -23,10 +23,10 @@ public class TipsAndTricksDtoResponse implements Serializable {
     private Long id;
 
     @NotEmpty
-    private String title;
+    private String titleTranslation;
 
     @NotEmpty
-    private String text;
+    private String textTranslation;
 
     @NotEmpty
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

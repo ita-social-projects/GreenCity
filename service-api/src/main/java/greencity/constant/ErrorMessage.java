@@ -36,6 +36,7 @@ public final class ErrorMessage {
     public static final String TAG_NOT_DELETED = "Tag not deleted by id : ";
     public static final String TAG_NOT_FOUND = "Tag not found by id : ";
     public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
+    public static final String TAG_TYPE_INCORRECT = "You are trying to add the tag, which type is incorrect here";
     public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ServiceValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
@@ -146,8 +147,10 @@ public final class ErrorMessage {
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
     public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
-    public static final String MULTIPART_FILE_BAD_REQUEST = "Bad inputed image string : ";
+    public static final String MULTIPART_FILE_BAD_REQUEST =
+        "Can`t convert To Multipart Image. Bad inputed image string : ";
     public static final String INCORRECT_INPUT_ITEM_STATUS = "Incorrect input status to update item.";
+    public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS = "Habit assign status is not INPROGRESS.";
 
     private ErrorMessage() {

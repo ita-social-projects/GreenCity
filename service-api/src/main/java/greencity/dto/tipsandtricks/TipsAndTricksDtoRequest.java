@@ -18,6 +18,7 @@ public class TipsAndTricksDtoRequest {
 
     @Valid
     private TextTranslationDTO textTranslation;
+
     @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
 

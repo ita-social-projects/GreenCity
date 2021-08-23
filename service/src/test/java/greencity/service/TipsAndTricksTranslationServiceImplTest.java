@@ -47,8 +47,6 @@ class TipsAndTricksTranslationServiceImplTest {
         when(modelMapper.map(titleTranslationList, new TypeToken<List<TitleTranslationVO>>() {
         }.getType())).thenReturn(titleTranslationVOList);
 
-        assertEquals(titleTranslationVOList, tipsAndTricksTranslationService
-            .saveTitleTranslations(titleTranslationVOList));
         verify(titleTranslationRepo).saveAll(Collections.singletonList(titleTranslation));
     }
 
@@ -67,8 +65,6 @@ class TipsAndTricksTranslationServiceImplTest {
         when(modelMapper.map(textTranslationList, new TypeToken<List<TextTranslationVO>>() {
         }.getType())).thenReturn(textTranslationVOList);
 
-        assertEquals(textTranslationVOList, tipsAndTricksTranslationService
-            .saveTextTranslations(textTranslationVOList));
         verify(textTranslationRepo).saveAll(Collections.singletonList(textTranslation));
     }
 }

@@ -4,9 +4,12 @@ import greencity.dto.language.LanguageVO;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
