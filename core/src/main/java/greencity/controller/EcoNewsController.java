@@ -140,6 +140,23 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for getting eco news by authorised user.
+     *
+     * @return list of {@link EcoNewsDto} instances.
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Get eco news by authorised user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/byUser")
+    public ResponseEntity<List<EcoNewsDto>> getEcoNewsByUser(@ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.getAllPublishedNewsByUser(user));
+    }
+
+    /**
      * Method for getting all eco news by page.
      *
      * @return PageableDto of {@link EcoNewsDto} instances.
@@ -216,7 +233,7 @@ public class EcoNewsController {
     })
     @GetMapping("/recommended")
     public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
-        @RequestParam(required = true) Long openedEcoNewsId
+        @RequestParam() Long openedEcoNewsId
 
     ) {
         List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
