@@ -17,4 +17,5 @@ public class UserShoppingListItemAdvanceDto {
     private Long shoppingListItemId;
     private ShoppingListItemStatus status;
     private LocalDateTime dateCompleted;
+    private String content;
 }

@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.entity.HabitAssign;
 import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
@@ -35,13 +34,6 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
                 habitStatusCalendar -> HabitStatusCalendarDto.builder()
                     .id(habitStatusCalendar.getId())
                     .enrollDate(habitStatusCalendar.getEnrollDate())
-                    .build())
-                .collect(Collectors.toList()))
-            .userShoppingListItems(habitAssign.getUserShoppingListItems().stream()
-                .map(u -> UserShoppingListItemAdvanceDto.builder().id(u.getId())
-                    .shoppingListItemId(u.getShoppingListItem().getId())
-                    .status(u.getStatus())
-                    .dateCompleted(u.getDateCompleted())
                     .build())
                 .collect(Collectors.toList()))
             .build();

@@ -184,6 +184,17 @@ public interface HabitAssignService {
     List<HabitAssignDto> findInprogressHabitAssignsOnDate(Long userId, LocalDate date, String language);
 
     /**
+     * Method to find all inprogress habit assigns on certain including content
+     * {@link LocalDate}.
+     *
+     * @param userId   {@code User} id.
+     * @param date     {@link LocalDate} instance.
+     * @param language {@link String} of language code value.
+     * @return list of {@link HabitAssignDto} instances.
+     */
+    List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language);
+
+    /**
      * Method to find all inprogress, acquired habit assigns between 2
      * {@link LocalDate}s.
      *
@@ -219,4 +230,12 @@ public interface HabitAssignService {
      * @param userId  {@link Long} id.
      */
     void deleteHabitAssign(Long habitId, Long userId);
+
+    /**
+     * Method save HabitAssign.
+     *
+     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto}
+     *                                  habitAssignDto.
+     */
+    void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
 }
