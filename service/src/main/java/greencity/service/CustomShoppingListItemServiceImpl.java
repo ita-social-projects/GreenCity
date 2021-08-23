@@ -155,6 +155,16 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
             return modelMapper.map(customShoppingListItemRepo.save(customShoppingListItem),
                 CustomShoppingListItemResponseDto.class);
         }
+        if (itemStatus.equalsIgnoreCase(ShoppingListItemStatus.DISABLED.name())) {
+            customShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+            return modelMapper.map(customShoppingListItemRepo.save(customShoppingListItem),
+                CustomShoppingListItemResponseDto.class);
+        }
+        if (itemStatus.equalsIgnoreCase(ShoppingListItemStatus.INPROGRESS.name())) {
+            customShoppingListItem.setStatus(ShoppingListItemStatus.INPROGRESS);
+            return modelMapper.map(customShoppingListItemRepo.save(customShoppingListItem),
+                CustomShoppingListItemResponseDto.class);
+        }
         throw new BadRequestException(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
     }
 
