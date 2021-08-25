@@ -116,6 +116,9 @@ class TipsAndTricksServiceImplTest {
             new TypeToken<List<TextTranslationVO>>() {
             }.getType()));
 
+        assert (tipsAndTricks.getTitleTranslations() != null);
+        assert (tipsAndTricks.getTextTranslations() != null);
+
         verify(tipsAndTricksRepo).save(any(TipsAndTricks.class));
         assertEquals(tipsAndTricksDtoManagement, actual);
     }

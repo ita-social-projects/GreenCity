@@ -73,14 +73,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         String email) {
         toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
-        /*
-         * TODO: Update Azure credentials and test image uploading;
-         *
-         * if (image != null) { try { toSave.setImagePath(fileService.upload(image)); }
-         * catch (IllegalArgumentException ex) { throw new
-         * NotSavedException(ErrorMessage.AZURE_NOT_CONNECTED); } } else {
-         * toSave.setImagePath(null);
-         */
         toSave.setImagePath(null);
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
