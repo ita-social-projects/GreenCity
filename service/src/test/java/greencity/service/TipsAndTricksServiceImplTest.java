@@ -39,7 +39,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -107,7 +106,6 @@ class TipsAndTricksServiceImplTest {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
         when(modelMapper.map(languageService.findByCode(any()), Language.class)).thenReturn(ModelUtils.getLanguage());
-
         TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
             tipsAndTricksDtoManagement, null, ModelUtils.getUser().getEmail());
 

@@ -71,9 +71,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final HttpServletRequest httpServletRequest;
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
-        MultipartFile image, String email) {
+        String email) {
         toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
         /*
+         * TODO: Update Azure credentials and test image uploading;
+         *
          * if (image != null) { try { toSave.setImagePath(fileService.upload(image)); }
          * catch (IllegalArgumentException ex) { throw new
          * NotSavedException(ErrorMessage.AZURE_NOT_CONNECTED); } } else {
@@ -115,7 +117,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
         String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
-        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, image, email);
+        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, email);
         try {
             tipsAndTricksRepo.save(toSave);
             UserVO userVO = restClient.findByEmail(email);
