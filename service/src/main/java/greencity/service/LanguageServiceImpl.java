@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class LanguageServiceImpl implements LanguageService {
     private final LanguageRepo languageRepo;
     private final ModelMapper modelMapper;
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
 
     /**
      * Constructor with parameters.
@@ -84,5 +84,19 @@ public class LanguageServiceImpl implements LanguageService {
     @Override
     public List<String> findAllLanguageCodes() {
         return languageRepo.findAllLanguageCodes();
+    }
+
+    /**
+     * Method for getting {@link LanguageDTO} by tagTranslationId.
+     *
+     * @param tagTranslationId id of tag translation object.
+     * @return {@link LanguageDTO}.
+     *
+     * @author Vira Maksymets
+     */
+    @Override
+    public LanguageDTO findByTagTranslationId(Long tagTranslationId) {
+        Language language = languageRepo.findByTagTranslationId(tagTranslationId).orElseThrow();
+        return modelMapper.map(language, LanguageDTO.class);
     }
 }

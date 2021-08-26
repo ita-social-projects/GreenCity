@@ -15,6 +15,7 @@ import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
+import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,7 +41,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -107,7 +108,6 @@ class TipsAndTricksServiceImplTest {
         }.getType())).thenReturn(Collections.singletonList(tipsAndTricksTag));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoResponse.class)).thenReturn(tipsAndTricksDtoResponse);
         when(modelMapper.map(languageService.findByCode(any()), Language.class)).thenReturn(ModelUtils.getLanguage());
-
         TipsAndTricksDtoManagement actual = tipsAndTricksService.saveTipsAndTricksWithTranslations(
             tipsAndTricksDtoManagement, null, ModelUtils.getUser().getEmail());
 
@@ -117,6 +117,12 @@ class TipsAndTricksServiceImplTest {
         tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(tipsAndTricks.getTextTranslations(),
             new TypeToken<List<TextTranslationVO>>() {
             }.getType()));
+
+        assertNull(tipsAndTricks.getImagePath());
+        assertEquals(TestConst.EMAIL, ModelUtils.getUser().getEmail());
+        when(tipsAndTricksService.setLanguageForTags(tipsAndTricks)).thenReturn(tipsAndTricks.getTags());
+        assert (tipsAndTricks.getTitleTranslations() != null);
+        assert (tipsAndTricks.getTextTranslations() != null);
 
         verify(tipsAndTricksRepo).save(any(TipsAndTricks.class));
         assertEquals(tipsAndTricksDtoManagement, actual);
