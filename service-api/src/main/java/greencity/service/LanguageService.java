@@ -38,4 +38,14 @@ public interface LanguageService {
      * @return {@link List} of language code strings.
      */
     List<String> findAllLanguageCodes();
+
+    /**
+     * Method for getting {@link LanguageDTO} by tagTranslationId.
+     *
+     * @param tagTranslationId id of tag translation object.
+     * @return {@link LanguageDTO}.
+     *
+     * @author Vira Maksymets
+     */
+    LanguageDTO findByTagTranslationId(Long tagTranslationId);
 }

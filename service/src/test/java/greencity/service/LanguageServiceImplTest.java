@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.dto.language.LanguageDTO;
 import greencity.entity.Language;
+import greencity.entity.localization.TagTranslation;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
 import java.util.Collections;
@@ -36,7 +37,7 @@ class LanguageServiceImplTest {
     @InjectMocks
     private LanguageServiceImpl languageService;
 
-    private Language language = ModelUtils.getLanguage();
+    private final Language language = ModelUtils.getLanguage();
 
     @Test
     void getAllAdvices() {
@@ -80,5 +81,14 @@ class LanguageServiceImplTest {
         List<String> code = Collections.singletonList(language.getCode());
         when(languageRepo.findAllLanguageCodes()).thenReturn(code);
         assertEquals(code, languageService.findAllLanguageCodes());
+    }
+
+    @Test
+    void findByTagTranslationId() {
+        TagTranslation tagTranslation = new TagTranslation(1L, "Tag name", null, null);
+        LanguageDTO dto = new LanguageDTO(1L, "en");
+        when(languageRepo.findByTagTranslationId(tagTranslation.getId())).thenReturn(Optional.of(language));
+        when(modelMapper.map(language, LanguageDTO.class)).thenReturn(dto);
+        assertEquals(dto, languageService.findByTagTranslationId(tagTranslation.getId()));
     }
 }
