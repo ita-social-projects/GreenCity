@@ -13,6 +13,7 @@ import org.springframework.core.env.PropertyResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -35,12 +36,13 @@ public class AzureCloudStorageService implements FileService {
     /**
      * {@inheritDoc}
      */
+
     public String upload(MultipartFile multipartFile) {
         final String blob = UUID.randomUUID().toString();
         BlobClient client = containerClient()
             .getBlobClient(blob + multipartFile.getOriginalFilename());
         try {
-            client.upload(multipartFile.getInputStream(), multipartFile.getSize());
+            client.upload(new BufferedInputStream(multipartFile.getInputStream()), multipartFile.getSize());
         } catch (IOException e) {
             throw new NotSavedException(ErrorMessage.FILE_NOT_SAVED);
         }
