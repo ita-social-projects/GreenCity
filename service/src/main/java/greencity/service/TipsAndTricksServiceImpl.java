@@ -136,13 +136,11 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
      * @return List of {@link Tag}
      */
     public List<Tag> setLanguageForTags(TipsAndTricks tipsAndTricks) {
-        tipsAndTricks.getTags().forEach(tag -> {
-            tag.getTagTranslations().forEach(
-                tagTranslation -> {
-                    LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
-                    tagTranslation.setLanguage(modelMapper.map(l, Language.class));
-                });
-        });
+        tipsAndTricks.getTags().forEach(tag -> tag.getTagTranslations().forEach(
+            tagTranslation -> {
+                LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
+                tagTranslation.setLanguage(modelMapper.map(l, Language.class));
+            }));
         return tipsAndTricks.getTags();
     }
 
