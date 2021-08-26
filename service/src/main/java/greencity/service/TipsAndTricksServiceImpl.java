@@ -119,12 +119,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
-        toSave.getTags().forEach(tag -> tag.getTagTranslations().forEach(
-            tagTranslation -> {
-                LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
-                Language language = modelMapper.map(l, Language.class);
-                tagTranslation.setLanguage(language);
-            }));
+        setLanguageForTags(toSave);
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(toSave.getTitleTranslations(),
             new TypeToken<List<TitleTranslationVO>>() {
             }.getType()));
@@ -135,14 +130,29 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     }
 
     /**
+     * Method for setting Language.
+     *
+     * @param tipsAndTricks - instance of {@link TipsAndTricks}.
+     * @return List of {@link Tag}
+     */
+    public List<Tag> setLanguageForTags(TipsAndTricks tipsAndTricks) {
+        tipsAndTricks.getTags().forEach(tag -> {
+            tag.getTagTranslations().forEach(
+                tagTranslation -> {
+                    LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
+                    tagTranslation.setLanguage(modelMapper.map(l, Language.class));
+                });
+        });
+        return tipsAndTricks.getTags();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     @Transactional
     public TipsAndTricksDtoManagement saveTipsAndTricksWithTranslations(
-        TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-        MultipartFile image,
-        String email) {
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement, MultipartFile image, String email) {
         TipsAndTricks tipsAndTricks = TipsAndTricks.builder()
             .source(tipsAndTricksDtoManagement.getSource())
             .creationDate(ZonedDateTime.now())
