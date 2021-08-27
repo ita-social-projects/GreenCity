@@ -70,10 +70,14 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
 
     private final HttpServletRequest httpServletRequest;
 
-    private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
+    private void enhanceWithNewData(MultipartFile image, TipsAndTricks toSave,
+        TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
         String email) {
         toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
-        toSave.setImagePath(null);
+        if (image != null) {
+            toSave.setImagePath(fileService.upload(image));
+        }
+
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
@@ -109,7 +113,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
         String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
-        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, email);
+        enhanceWithNewData(image, toSave, tipsAndTricksDtoRequest, email);
         try {
             tipsAndTricksRepo.save(toSave);
             UserVO userVO = restClient.findByEmail(email);
