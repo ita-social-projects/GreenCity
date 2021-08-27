@@ -10,14 +10,15 @@ import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import java.time.ZonedDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.ZonedDateTime;
+import java.util.List;
 
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
@@ -119,18 +120,6 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 deletes from the database users that have status
-     * 'DEACTIVATED' and last visited the site 2 years ago.
-     *
-     * @author Vasyl Zhovnir
-     **/
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
-    @Transactional
-    public void scheduleDeleteDeactivatedUsers() {
-        restClient.scheduleDeleteDeactivatedUsers();
-    }
-
-    /**
      * Every day at 00:00 deletes from the table rating_statistics records witch are
      * older than period in application properties.
      *
@@ -150,7 +139,7 @@ public class ScheduleConfig {
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
     public void checkExpired() {
-        habitAssignRepo.findAllInProgressHabitAssigns().stream().forEach(h -> {
+        habitAssignRepo.findAllInProgressHabitAssigns().forEach(h -> {
             if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
                 h.setStatus(HabitAssignStatus.EXPIRED);
                 habitAssignRepo.save(h);

@@ -76,6 +76,13 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
+    public static User TEST_USER = createUser();
+    public static User TEST_USER_ROLE_USER = createUserRoleUser();
+    public static UserVO TEST_USER_VO = createUserVO();
+    public static UserVO TEST_USER_VO_ROLE_USER = createUserVORoleUser();
+    public static UserStatusDto TEST_USER_STATUS_DTO = createUserStatusDto();
+    public static String TEST_EMAIL = "test@mail.com";
+    public static String TEST_EMAIL_2 = "test2@mail.com";
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
@@ -1409,6 +1416,45 @@ public class ModelUtils {
             .habitStatistic(null)
             .habitStatusCalendars(null)
             .lastEnrollmentDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
+            .build();
+    }
+
+    private static UserStatusDto createUserStatusDto() {
+        return UserStatusDto.builder()
+            .id(2L)
+            .userStatus(UserStatus.CREATED)
+            .build();
+    }
+
+    private static User createUserRoleUser() {
+        return User.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("test2@mail.com")
+            .build();
+    }
+
+    private static UserVO createUserVORoleUser() {
+        return UserVO.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("test2@mail.com")
+            .build();
+    }
+
+    private static User createUser() {
+        return User.builder()
+            .id(1L)
+            .role(Role.ROLE_MODERATOR)
+            .email("test@mail.com")
+            .build();
+    }
+
+    private static UserVO createUserVO() {
+        return UserVO.builder()
+            .id(1L)
+            .role(Role.ROLE_MODERATOR)
+            .email("test@mail.com")
             .build();
     }
 }

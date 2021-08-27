@@ -6,6 +6,7 @@ import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
@@ -70,20 +71,15 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final HttpServletRequest httpServletRequest;
 
     private void enhanceWithNewData(TipsAndTricks toSave, TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
-        MultipartFile image, String email) {
+        String email) {
         toSave.setAuthor(modelMapper.map(restClient.findByEmail(email), User.class));
-        if (tipsAndTricksDtoRequest.getImage() != null) {
-            image = fileService.convertToMultipartImage(tipsAndTricksDtoRequest.getImage());
-        }
-        if (image != null) {
-            toSave.setImagePath(fileService.upload(image));
-        }
+        toSave.setImagePath(null);
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {
             }.getType()));
-        toSave.getTitleTranslations().forEach(el -> el.setTipsAndTricks(toSave));
-        toSave.getTextTranslations().forEach(el -> el.setTipsAndTricks(toSave));
+        toSave.getTitleTranslations().forEach(translation -> translation.setTipsAndTricks(toSave));
+        toSave.getTextTranslations().forEach(translation -> translation.setTipsAndTricks(toSave));
     }
 
     private void enhanceWithNewManagementData(TipsAndTricks tipsAndTricks,
@@ -113,7 +109,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoResponse save(TipsAndTricksDtoRequest tipsAndTricksDtoRequest, MultipartFile image,
         String email) {
         TipsAndTricks toSave = modelMapper.map(tipsAndTricksDtoRequest, TipsAndTricks.class);
-        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, image, email);
+        enhanceWithNewData(toSave, tipsAndTricksDtoRequest, email);
         try {
             tipsAndTricksRepo.save(toSave);
             UserVO userVO = restClient.findByEmail(email);
@@ -123,14 +119,29 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.TIPS_AND_TRICKS_NOT_SAVED);
         }
+        setLanguageForTags(toSave);
         tipsAndTricksTranslationService.saveTitleTranslations(modelMapper.map(toSave.getTitleTranslations(),
             new TypeToken<List<TitleTranslationVO>>() {
             }.getType()));
-        tipsAndTricksTranslationService.saveTextTranslations(modelMapper.map(toSave.getTextTranslations(),
-            new TypeToken<List<TextTranslationVO>>() {
+        tipsAndTricksTranslationService.saveTextTranslations(
+            modelMapper.map(toSave.getTextTranslations(), new TypeToken<List<TextTranslationVO>>() {
             }.getType()));
-
         return modelMapper.map(toSave, TipsAndTricksDtoResponse.class);
+    }
+
+    /**
+     * Method for setting Language.
+     *
+     * @param tipsAndTricks - instance of {@link TipsAndTricks}.
+     * @return List of {@link Tag}
+     */
+    public List<Tag> setLanguageForTags(TipsAndTricks tipsAndTricks) {
+        tipsAndTricks.getTags().forEach(tag -> tag.getTagTranslations().forEach(
+            tagTranslation -> {
+                LanguageDTO l = languageService.findByTagTranslationId(tagTranslation.getId());
+                tagTranslation.setLanguage(modelMapper.map(l, Language.class));
+            }));
+        return tipsAndTricks.getTags();
     }
 
     /**
@@ -139,9 +150,7 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     @Override
     @Transactional
     public TipsAndTricksDtoManagement saveTipsAndTricksWithTranslations(
-        TipsAndTricksDtoManagement tipsAndTricksDtoManagement,
-        MultipartFile image,
-        String email) {
+        TipsAndTricksDtoManagement tipsAndTricksDtoManagement, MultipartFile image, String email) {
         TipsAndTricks tipsAndTricks = TipsAndTricks.builder()
             .source(tipsAndTricksDtoManagement.getSource())
             .creationDate(ZonedDateTime.now())
