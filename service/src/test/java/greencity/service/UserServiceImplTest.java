@@ -126,7 +126,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void updateRoleTest() {
+    void updateRoleTest() {
         UserRoleDto userRoleDto = new UserRoleDto();
         userRoleDto.setRole(Role.ROLE_ADMIN);
         userRoleDto.setId(12L);
@@ -158,11 +158,11 @@ public class UserServiceImplTest {
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
             userService.checkUpdatableUser(1L, "email");
         });
-        assertEquals(exception.getMessage(), ErrorMessage.USER_CANT_UPDATE_HIMSELF);
+        assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
     }
 
     @Test
-    public void getInitialsByIdTest() {
+    void getInitialsByIdTest() {
         when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         assertEquals("TT", userService.getInitialsById(12L));
