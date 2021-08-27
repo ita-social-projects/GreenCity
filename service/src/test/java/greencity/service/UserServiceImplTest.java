@@ -152,7 +152,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void checkUpdatableUserTest() {
+    void checkUpdatableUserTest() {
         when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
         when(modelMapper.map(any(), any())).thenReturn(userVO);
         Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
