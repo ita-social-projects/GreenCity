@@ -1,11 +1,15 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
@@ -13,6 +17,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -117,6 +123,51 @@ public class UserServiceImplTest {
 
         assertEquals(userVO.getUserFriends().subList(2, 8),
             userService.getSixFriendsWithTheHighestRating(user.getId()));
+    }
+
+    @Test
+    void updateRoleTest() {
+        UserRoleDto userRoleDto = new UserRoleDto();
+        userRoleDto.setRole(Role.ROLE_ADMIN);
+        userRoleDto.setId(12L);
+        doNothing().when(userRepo).updateUserRole(anyLong(), anyString());
+        when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(modelMapper.map(any(), any())).thenAnswer(new Answer() {
+            private int count = 0;
+
+            public Object answer(InvocationOnMock invocation) {
+                if (count == 0) {
+                    count++;
+                    return ModelUtils.getUserVO();
+                }
+                if (count == 1) {
+                    count++;
+                    return ModelUtils.getUserVO();
+                }
+                return userRoleDto;
+            }
+        });
+        assertEquals(userService.updateRole(12L, Role.ROLE_ADMIN, "email"), userRoleDto);
+    }
+
+    @Test
+    void checkUpdatableUserTest() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(modelMapper.map(any(), any())).thenReturn(userVO);
+        Exception exception = assertThrows(BadUpdateRequestException.class, () -> {
+            userService.checkUpdatableUser(1L, "email");
+        });
+        assertEquals(ErrorMessage.USER_CANT_UPDATE_HIMSELF, exception.getMessage());
+    }
+
+    @Test
+    void getInitialsByIdTest() {
+        when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(modelMapper.map(any(), any())).thenReturn(userVO);
+        assertEquals("TT", userService.getInitialsById(12L));
+        userVO.setName("Taras");
+        assertEquals("T", userService.getInitialsById(12L));
     }
 
     @Test
