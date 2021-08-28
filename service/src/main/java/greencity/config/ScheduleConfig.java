@@ -3,6 +3,7 @@ package greencity.config;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
@@ -11,10 +12,11 @@ import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
@@ -29,14 +31,14 @@ import static greencity.enums.FactOfDayStatus.*;
  * @author Nazar Stasyuk
  * @version 1.0
  */
-@Configuration
-@EnableScheduling
+@Component
 @AllArgsConstructor
 public class ScheduleConfig {
     private final HabitFactTranslationRepo habitFactTranslationRepo;
     private final HabitAssignRepo habitAssignRepo;
     private final RatingStatisticsRepo ratingStatisticsRepo;
     private final RestClient restClient;
+    private final Logger logger = LoggerFactory.getLogger(ScheduleConfig.class);
 
     /**
      * Invoke {@link SendHabitNotification} from EmailMessageReceiver to send email
@@ -135,13 +137,18 @@ public class ScheduleConfig {
      *
      * @author Ostap Mykhaylivskii
      **/
-    @Transactional
-    @Scheduled(cron = "0 45 12 * * *", zone = "UTC")
+    @Scheduled(cron = "0 0/10 * * * *", zone = "Europe/Kiev")
     public void checkExpired() {
+        logger.info("Inside checkExpired");
         ZonedDateTime now = ZonedDateTime.now();
-        habitAssignRepo.findAllInProgressHabitAssigns().forEach(h -> {
+        List<HabitAssign> habits = habitAssignRepo.findAllInProgressHabitAssigns();
+        String size = String.valueOf(habits.size());
+        logger.info(size);
+        habits.forEach(h -> {
+            logger.info(h.getCreateDate().toString());
             if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
                 h.setStatus(HabitAssignStatus.EXPIRED);
+                logger.info("Set habit status expired");
                 habitAssignRepo.save(h);
             }
         });
