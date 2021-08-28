@@ -22,7 +22,6 @@ import java.util.List;
 
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * Config for scheduling.
@@ -137,10 +136,11 @@ public class ScheduleConfig {
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
+    @Scheduled(cron = "0 45 12 * * *", zone = "UTC")
     public void checkExpired() {
+        ZonedDateTime now = ZonedDateTime.now();
         habitAssignRepo.findAllInProgressHabitAssigns().forEach(h -> {
-            if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
+            if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
                 h.setStatus(HabitAssignStatus.EXPIRED);
                 habitAssignRepo.save(h);
             }
