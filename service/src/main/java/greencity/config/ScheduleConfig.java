@@ -3,6 +3,7 @@ package greencity.config;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
@@ -138,15 +139,16 @@ public class ScheduleConfig {
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
-    @Scheduled(cron = "0 45 12 * * ?", zone = "Europe/Kiev")
+    @Scheduled(cron = "0 0/10 * * * ?", zone = "Europe/Kiev")
     public void checkExpired() {
         ZonedDateTime now = ZonedDateTime.now();
-        habitAssignRepo.findAllInProgressHabitAssigns().forEach(h -> {
+        List<HabitAssign> habits = habitAssignRepo.findAllInProgressHabitAssigns();
+        for (HabitAssign h : habits) {
             if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
                 h.setStatus(HabitAssignStatus.EXPIRED);
-                log.info("set status expired");
                 habitAssignRepo.save(h);
+                log.info("Set status expired");
             }
-        });
+        }
     }
 }
