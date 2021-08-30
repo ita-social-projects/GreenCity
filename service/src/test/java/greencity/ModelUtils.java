@@ -36,6 +36,8 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.specification.SpecificationNameDto;
+import greencity.dto.specification.SpecificationVO;
 import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -849,6 +851,18 @@ public class ModelUtils {
             .id(1L)
             .name("specification")
             .build();
+    }
+
+    public static List<SpecificationVO> getListSpecificationVO() {
+        List<SpecificationVO> listOfSpecificationVO = new ArrayList<>();
+        listOfSpecificationVO.add(SpecificationVO.builder().id(1L).name("Animal").build());
+        return listOfSpecificationVO;
+    }
+
+    public static List<SocialNetworkVO> getListSocialNetworkVO() {
+        List<SocialNetworkVO> socialNetworkVO = new ArrayList<>();
+        socialNetworkVO.add(SocialNetworkVO.builder().id(1L).url("url").build());
+        return socialNetworkVO;
     }
 
     public static HabitFactTranslation getHabitFactTranslation() {
