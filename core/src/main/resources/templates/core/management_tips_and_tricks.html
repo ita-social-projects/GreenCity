@@ -55,7 +55,8 @@
                                data-toggle="modal">
                                 <div>[[#{greenCity.tips.tricks.page.add.tips.tricks}]]</div>
                             </a>
-                            <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled" data-toggle="modal">
+                            <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled"
+                               data-toggle="modal">
                                 <div>[[#{greenCity.pages.delete}]]</div>
                             </a>
                         </div>
@@ -170,8 +171,9 @@
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
-                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b>
+                        [[#{greenCity.page.paging.out.of}]] <b
+                                th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
@@ -209,7 +211,8 @@
                                 </th:block>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                        <span class="input-group-text" th:text="${language.getCode()}"
+                                              th:name="${language.getCode()}"></span>
                                     </div>
                                     <input type="text" class="form-control"
                                            id="titleContent+${language.getCode()}"
@@ -247,8 +250,10 @@
 
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}"
+                               id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -279,7 +284,8 @@
                                 </th:block>
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" th:text="${language.getCode()}" th:name="${language.getCode()}"></span>
+                                        <span class="input-group-text" th:text="${language.getCode()}"
+                                              th:name="${language.getCode()}"></span>
                                     </div>
                                     <input type="text" class="form-control"
                                            th:name="titleContent+${language.getCode()}">
@@ -326,8 +332,10 @@
 
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-info" th:value="#{greenCity.pages.popup.save.}"
+                               id="submitEditBtn">
                     </div>
                 </form>
             </div>
@@ -347,7 +355,8 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
                         <a href="" id="deleteOneSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
@@ -368,7 +377,8 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
                         <a href="" id="deleteAllSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>

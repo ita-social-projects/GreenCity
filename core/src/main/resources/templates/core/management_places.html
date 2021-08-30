@@ -27,6 +27,7 @@
         .displayNone {
             display: none;
         }
+
         table {
             table-layout: auto;
         }
@@ -118,10 +119,13 @@
                             </td>
                             <td>
 
-                                <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places/find(id=${place.getId()})}" class="edit eBtn"><i
+                                <a th:if="${!place.getStatus().toString().equals('DELETED')}"
+                                   th:href="@{/management/places/find(id=${place.getId()})}" class="edit eBtn"><i
                                         class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i></a>
-                                <a th:if="${!place.getStatus().toString().equals('DELETED')}" th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
-                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
+                                <a th:if="${!place.getStatus().toString().equals('DELETED')}"
+                                   th:href="@{/management/places(id=${place.getId()})}" class="delete eDelBtn"
+                                   data-toggle="modal"><i class="material-icons" data-toggle="tooltip"
+                                                          th:title="#{greenCity.pages.delete}">&#xE872;</i></a>
                             </td>
                         </tr>
                         </tbody>
@@ -129,8 +133,9 @@
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
-                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b>
+                        [[#{greenCity.page.paging.out.of}]] <b
+                                th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
@@ -169,7 +174,7 @@
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.place.name}]]</label>
-                            <input type="text" class="form-control" id ="placeName" name="name">
+                            <input type="text" class="form-control" id="placeName" name="name">
                             <span th:id="errorModalSavename" class="errorSpan"></span>
                         </div>
                         <div class="form-group">
@@ -214,7 +219,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group col-md-5 break-time">
-                                        <button class="btn btn-success btn-sm add-break">[[#{greenCity.pages.table.add.break.hourse}]]
+                                        <button class="btn btn-success btn-sm add-break">
+                                            [[#{greenCity.pages.table.add.break.hourse}]]
                                         </button>
                                         <div class="form-row break-hours displayNone">
                                             <div class="form-group">
@@ -229,7 +235,7 @@
                                                     </div>
                                                     <div class="=col-2">
                                                         <i class="material-icons removeBreak" data-toggle="tooltip"
-                                                          th:title="#{greenCity.pages.table.delete.break.title}">&#xE872;</i>
+                                                           th:title="#{greenCity.pages.table.delete.break.title}">&#xE872;</i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -242,7 +248,9 @@
                         </div>
                         <div class="form-group">
                             <div id="discounts"></div>
-                            <button class="btn btn-info" id="addDiscount">[[#{greenCity.pages.table.delete.add.discount}]]</button>
+                            <button class="btn btn-info" id="addDiscount">
+                                [[#{greenCity.pages.table.delete.add.discount}]]
+                            </button>
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.photo}]]</label>
@@ -251,8 +259,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success" th:value="#{greenCity.pages.popup.add.}"
+                               id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -272,7 +282,8 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
                         <a href="" id="deleteOneSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
@@ -293,7 +304,8 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="button" class="btn btn-default" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
                         <a href="" id="deleteAllSubmit" class="btn btn-danger">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>

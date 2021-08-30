@@ -63,7 +63,8 @@
                                 <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
                             </form>
                             <button class="filter-button">
-                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]</button>
+                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+                            </button>
                         </div>
                         <div class="filter-list-grid">
                             <div class="dropdown size">
@@ -95,12 +96,15 @@
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form" style="display: block;">
                                     <div class="filter-sorting-buttons">
-                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending</button>
-                                        <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending</button>
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending
+                                        </button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('name')">Descending
+                                        </button>
                                     </div>
                                     <form action="/management/users" id="nameFilterForm"
                                           method="GET">
-                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                        <input type="search" class="form-search filter"
+                                               th:placeholder="#{greenCity.pages.search}"
                                                th:name="name"
                                                th:value="${fields eq null ? '' : fields.name}">
                                         <div class="filter-checkbox">
@@ -119,12 +123,15 @@
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form" style="display: none;">
                                     <div class="filter-sorting-buttons">
-                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('email')">Ascending</button>
-                                        <button class="sort-buttons" onclick="byNameFieldDesc('email')">Descending</button>
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('email')">Ascending
+                                        </button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('email')">Descending
+                                        </button>
                                     </div>
                                     <form action="/management/users" id="emailFilterForm"
                                           method="GET">
-                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                        <input type="search" class="form-search filter"
+                                               th:placeholder="#{greenCity.pages.search}"
                                                th:name="email"
                                                th:value="${fields eq null ? '' : fields.email}">
                                         <div class="filter-checkbox">
@@ -143,12 +150,16 @@
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form">
                                     <div class="filter-sorting-buttons">
-                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">Ascending</button>
-                                        <button class="sort-buttons" onclick="byNameFieldDesc('userCredo')">Descending</button>
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">
+                                            Ascending
+                                        </button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('userCredo')">Descending
+                                        </button>
                                     </div>
                                     <form action="/management/users" id="credoFilterForm"
-                                          method="GET" >
-                                        <input type="search" class="form-search filter" th:placeholder="#{greenCity.pages.search}"
+                                          method="GET">
+                                        <input type="search" class="form-search filter"
+                                               th:placeholder="#{greenCity.pages.search}"
                                                th:name="userCredo"
                                                th:value="${fields eq null ? '' : fields.userCredo}">
                                         <div class="filter-checkbox">
@@ -165,13 +176,15 @@
                             <th style="width: 136px;">
                                 [[#{greenCity.pages.table.role}]]
                                 <span class="table-filter-icon"></span>
-                                <div class="name-filter-form"    style="display: block;">
+                                <div class="name-filter-form" style="display: block;">
                                     <div class="filter-sorting-buttons">
-                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('role')">Ascending</button>
-                                        <button class="sort-buttons" onclick="byNameFieldDesc('role')">Descending</button>
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('role')">Ascending
+                                        </button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('role')">Descending
+                                        </button>
                                     </div>
                                     <form action="/management/users" id="roleFilterForm"
-                                          method="GET" >
+                                          method="GET">
                                         <select class="form-search filter"
                                                 th:name="role"
                                                 th:value="${fields eq null ? '' : fields.role}">
@@ -195,11 +208,15 @@
                                 <span class="table-filter-icon"></span>
                                 <div class="name-filter-form">
                                     <div class="filter-sorting-buttons">
-                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userStatus')">Ascending</button>
-                                        <button class="sort-buttons" onclick="byNameFieldDesc('userStatus')">Descending</button>
+                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userStatus')">
+                                            Ascending
+                                        </button>
+                                        <button class="sort-buttons" onclick="byNameFieldDesc('userStatus')">
+                                            Descending
+                                        </button>
                                     </div>
                                     <form action="/management/users" id="userStatusFilterForm"
-                                          method="GET" >
+                                          method="GET">
                                         <select class="form-search filter"
                                                 th:name="userStatus"
                                                 th:value="${fields eq null ? '' : fields.userStatus}">
@@ -231,27 +248,32 @@
                                     </span>
                                 </td>
                                 <td style="width: 50px;">
-                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
+                                    <a class="id-link" th:text="${user.id}"
+                                       th:href="@{/management/users/{id} (id=${user.id})}"/>
                                 </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
                                 <td class="column-credo-text" th:text="${user.userCredo}"></td>
                                 <td>
                                     <div class="dropdown role">
-                                        <button class="dropbtn role" th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
+                                        <button class="dropbtn role"
+                                                th:text="${user.role.name().replaceFirst('ROLE_', '').toLowerCase()}">
                                         </button>
                                         <img src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content role">
                                             <a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">ADMIN</a>
                                             <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">USER
                                             </a>
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">MODERATOR</a>
+                                            <a href="#"
+                                               th:if="${!user.role.name().equals('ROLE_MODERATOR')}">MODERATOR</a>
                                         </div>
                                     </div>
                                 </td>
-                                <td th:if="${user.userStatus.name().equals('PENDING')}" style="background-color: #E5F2FF;">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                <td th:if="${user.userStatus.name().equals('PENDING')}"
+                                    style="background-color: #E5F2FF;">
+                                    <div class="dropdown status">
+                                        <button class="dropbtn status"
+                                                th:text="${user.userStatus.name().toLowerCase()}">
                                         </button>
                                         <img src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -262,9 +284,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:if="${user.userStatus.name().equals('ACTIVATED')}" style="background-color: #E7F7EE;">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                <td th:if="${user.userStatus.name().equals('ACTIVATED')}"
+                                    style="background-color: #E7F7EE;">
+                                    <div class="dropdown status">
+                                        <button class="dropbtn status"
+                                                th:text="${user.userStatus.name().toLowerCase()}">
                                         </button>
                                         <img src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -275,9 +299,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:if="${user.userStatus.name().equals('WARNED')}" style="background-color: #fff7cf;">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                <td th:if="${user.userStatus.name().equals('WARNED')}"
+                                    style="background-color: #fff7cf;">
+                                    <div class="dropdown status">
+                                        <button class="dropbtn status"
+                                                th:text="${user.userStatus.name().toLowerCase()}">
                                         </button>
                                         <img src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -290,9 +316,11 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td th:if="${user.userStatus.name().equals('DEACTIVATED')}" style="background-color: #FCE0DE;">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                <td th:if="${user.userStatus.name().equals('DEACTIVATED')}"
+                                    style="background-color: #FCE0DE;">
+                                    <div class="dropdown status">
+                                        <button class="dropbtn status"
+                                                th:text="${user.userStatus.name().toLowerCase()}">
                                         </button>
                                         <img src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -449,15 +477,18 @@
                             <p class="deactivate-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
                             <div class="modal-reasons">
                                 <input type="checkbox" id="first-click" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input}]]</p><br>
+                                <p class="deactivation-reasons">
+                                    [[#{greenCity.user.page.popup.deactivated.fieldset.input}]]</p><br>
                             </div>
                             <div class="modal-reasons">
                                 <input type="checkbox" id="second-click" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]</p><br>
+                                <p class="deactivation-reasons">
+                                    [[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]</p><br>
                             </div>
                             <div class="modal-reasons">
                                 <input type="checkbox" id="other" onclick="otherCheck()" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
+                                <p class="deactivation-reasons">
+                                    [[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
                             </div>
                             <div id="user-lang">
                             </div>

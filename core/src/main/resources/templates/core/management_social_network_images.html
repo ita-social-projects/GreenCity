@@ -38,19 +38,26 @@
                         </div>
                         <div class="col-sm-6">
                                 <span class="search-box-right">
-                                    <form class="form-inline searching" action="/management/socialnetworkimages" method="get">
+                                    <form class="form-inline searching" action="/management/socialnetworkimages"
+                                          method="get">
                                         <!--<i class="material-icons"></i>-->
                                         <img alt="search" id="btnSearchImage"
                                              src="/img/search.png">
-                                        <input type="text" name="query" id="inputSearch" class="form-control" placeholder="Search…">
+                                        <input type="text" name="query" id="inputSearch" class="form-control"
+                                               placeholder="Search…">
                                     </form>
                                 </span>
-                                <a href="#addSocialNetworkImagesModal" id="addSocialNetworkImagesBtn" class="btn btn-secondary"
-                                   data-toggle="modal">
-                                    <!--<i class="material-icons">&#xE147;</i>-->
-                                    <div>[[#{greenCity.social.page.add.social}]]</div></a>
-                                <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled" data-toggle="modal">
-                                    <!--<i class="material-icons">&#xE15C;</i>--> <div>[[#{greenCity.pages.delete}]]</div></a>
+                            <a href="#addSocialNetworkImagesModal" id="addSocialNetworkImagesBtn"
+                               class="btn btn-secondary"
+                               data-toggle="modal">
+                                <!--<i class="material-icons">&#xE147;</i>-->
+                                <div>[[#{greenCity.social.page.add.social}]]</div>
+                            </a>
+                            <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled"
+                               data-toggle="modal">
+                                <!--<i class="material-icons">&#xE15C;</i>-->
+                                <div>[[#{greenCity.pages.delete}]]</div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -81,14 +88,18 @@
                                     </span>
                             </td>
                             <td th:text="${socialnetworkimage.id}"></td>
-                            <td> <a th:href="${socialnetworkimage.hostPath}" th:text="${socialnetworkimage.hostPath}"></a> </td>
-                            <td><img th:src="${socialnetworkimage.imagePath}" th:width="100" th:height="100"> </td>
+                            <td><a th:href="${socialnetworkimage.hostPath}"
+                                   th:text="${socialnetworkimage.hostPath}"></a></td>
+                            <td><img th:src="${socialnetworkimage.imagePath}" th:width="100" th:height="100"></td>
                             <td>
-                                <a th:href="@{/management/socialnetworkimages/find/(id=${socialnetworkimage.getId()})}" class="edit eBtn">
+                                <a th:href="@{/management/socialnetworkimages/find/(id=${socialnetworkimage.getId()})}"
+                                   class="edit eBtn">
                                     <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                 </a>
-                                <a th:href="@{/management/socialnetworkimages/delete/(id=${socialnetworkimage.getId()})}" class="delete eDelBtn" data-toggle="modal">
-                                    <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                <a th:href="@{/management/socialnetworkimages/delete/(id=${socialnetworkimage.getId()})}"
+                                   class="delete eDelBtn" data-toggle="modal">
+                                    <i class="material-icons" data-toggle="tooltip"
+                                       th:title="#{greenCity.pages.delete}">&#xE872;</i>
                                 </a>
                             </td>
                         </tr>
@@ -97,16 +108,19 @@
                 </table>
                 <div class="clearfix">
                     <div class="hint-text">[[#{greenCity.page.paging.show}]] <b
-                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b> [[#{greenCity.page.paging.out.of}]] <b
-                            th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
+                            th:text="${pageable.getTotalElements()>20?20:pageable.getTotalElements()}">5</b>
+                        [[#{greenCity.page.paging.out.of}]] <b
+                                th:text="${pageable.getTotalElements()}">25</b> [[#{greenCity.page.paging.entries}]]
                     </div>
                     <ul class="pagination">
                         <li class="page-item" th:classappend="${pageable.getCurrentPage()==0?'disabled':''}"><a
-                                th:href="@{/management/socialnetworkimages(page=${pageable.getCurrentPage()-1})}" class="page-link">[[#{greenCity.page.paging.previous}]]</a>
+                                th:href="@{/management/socialnetworkimages(page=${pageable.getCurrentPage()-1})}"
+                                class="page-link">[[#{greenCity.page.paging.previous}]]</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(0,pageable.getTotalPages()-1)}"
                             th:classappend="${pageable.getCurrentPage()==i?'active':''}"><a
-                                th:href="@{/management/socialnetworkimages(page=${i})}" class="page-link" th:text="${i+1}">1</a></li>
+                                th:href="@{/management/socialnetworkimages(page=${i})}" class="page-link"
+                                th:text="${i+1}">1</a></li>
                         <li class="page-item"
                             th:classappend="${pageable.getCurrentPage()==pageable.getTotalPages()-1?'disabled':''}"><a
                                 th:href="@{/management/socialnetworkimages(page=${pageable.getCurrentPage()+1})}"
@@ -141,8 +155,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success btn-primary"
+                               th:value="#{greenCity.pages.popup.add.}" id="submitAddBtn">
                     </div>
                 </form>
             </div>
@@ -180,8 +196,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="submit" class="btn btn-success btn-primary"
+                               th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
                     </div>
                 </form>
             </div>
@@ -202,8 +220,11 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="deleteOneSubmit" class="btn btn-remove"><div>[[#{greenCity.pages.delete}]]</div></a>
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
+                        <a href="" id="deleteOneSubmit" class="btn btn-remove">
+                            <div>[[#{greenCity.pages.delete}]]</div>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -223,7 +244,8 @@
                         <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
                     </div>
                     <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal" th:value="#{greenCity.pages.popup.cancel.}">
+                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                               th:value="#{greenCity.pages.popup.cancel.}">
                         <a href="" id="deleteAllSubmit" class="btn btn-remove">[[#{greenCity.pages.delete}]]</a>
                     </div>
                 </form>
