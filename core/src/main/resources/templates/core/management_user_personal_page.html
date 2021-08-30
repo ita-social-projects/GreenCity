@@ -24,6 +24,7 @@
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
+    <script th:src="@{/management/habits/popUp.js}"></script>
 </head>
 
 <body>
@@ -35,7 +36,6 @@
             fullText: false
         });
     });
-
 
 </script>
 
@@ -52,8 +52,7 @@
                 <h1>[[#{greenCity.personal.page.h}]]</h1>
             </div>
         </div>
-
-        <div class="content">
+           <div class="content">
 
             <div class="user-info">
                 <div class="user-info-text" style="text-align: center; margin-top: 0px"
@@ -225,50 +224,11 @@
                 </div>
             </div>
 
-            <!--<div class="tooltip-container" style="display: none">
-                <div style="display: inline-block">
-                    <table>
-                        <colgroup>
-                            <col span="1" style="width: 145px">
-                            <col span="1" style="width: 20px">
-                            <col span="1" style="width: 37px">
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td><h2>Target time</h2></td>
-                            <td>10</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Time in progress</h2></td>
-                            <td>8</td>
-                            <td>days</td>
-                        </tr>
-                        <tr>
-                            <td><h2>Percent of done</h2></td>
-                            <td>80</td>
-                            <td>%</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="display: inline-block">
-                    <h2 style="margin-bottom: 8px">Shopping list</h2>
-                    <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}">
-                        <div class="custom-checkbox userpage">
-                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                   name="options[]" th:value="${item.id}"
-                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
-                                   th:text="${item.text}"></label>
-                        </div>
-                    </th:block>
-                </div>
-            </div>-->
+
 
             <div class="user-tables">
 
-                <div>
+                <div class="hoverable">
 
                     <!--Acquired Habits table-->
                     <div>
@@ -306,11 +266,11 @@
                                 </tr>
                                 </thead>
 
-                                <tbody id="table1">
+                                <tbody id="table1" class="box11">
                                 <th:block class="list-of" th:each="habitAssign, iterStatus :${acquiredHabits}">
-                                    <tr>
+                                    <tr class="box11">
                                         <td th:text="${habitAssign.id}"></td>
-                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class=""></td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
                                         <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
@@ -608,6 +568,47 @@
                         </div>
                     </div>
 
+                    <div id="pointer1" class="overlay tooltip-container box-pointer-hidden box-pointer">
+                        <div style="display: inline-block">
+                            <table>
+                                <colgroup>
+                                    <col span="1" style="width: 145px">
+                                    <col span="1" style="width: 20px">
+                                    <col span="1" style="width: 37px">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <td><h2>Target time</h2></td>
+                                    <td>10</td>
+                                    <td>days</td>
+                                </tr>
+                                <tr>
+                                    <td><h2>Time in progress</h2></td>
+                                    <td>8</td>
+                                    <td>days</td>
+                                </tr>
+                                <tr>
+                                    <td><h2>Percent of done</h2></td>
+                                    <td>80</td>
+                                    <td>%</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="display: inline-block">
+                            <h2 style="margin-bottom: 8px">Shopping list</h2>
+                            <th:block class="list-of" th:each="item, iterStatus :${habit1.shoppingListItems}" th:data-test = "${item}">
+                                <div class="custom-checkbox userpage" >
+                                    <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                           name="options[]" th:value="${item.id}"
+                                           th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                    <label th:for="checkbox+${iterStatus.count}" for="checkbox1"
+                                           th:text="${item.text}"></label>
+                                </div>
+                            </th:block>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -615,5 +616,16 @@
     </div>
     <div id="footer" th:insert="core/footer"></div>
 </div>
+<script th:src="@{../../static/management/habits/popUp.js}"></script>
+
+<script>
+
+
+
+
+
+
+
+</script>
 </body>
 </html>

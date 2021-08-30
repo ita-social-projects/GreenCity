@@ -186,13 +186,24 @@ body {
     min-width: 800px;
 }
 
-/*.hoverable {
-    color: red;
-    cursor: pointer;
+.hoverable:hover .overlay {
+    bottom: 50%;
 }
-.hoverable:hover .tooltip {
-    display: block;
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    buttom: 100%;
+    left: 0;
+    right: 0;
+    -webkit-transition: all 0.2s ease-in;
+    -moz-transition: all 0.2s ease-in;
+    -o-transition: all 0.2s ease-in;
+    -ms-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
 }
+
 .tooltip {
     position: absolute;
     white-space: nowrap;
@@ -202,10 +213,11 @@ body {
     padding: 5px;
     z-index: 1000;
     color: black;
-}*/
+}
 
 .tooltip-container {
-    display: flex;
+    display: inline-block;
+    overflow: hidden;
     width: fit-content;
     height: fit-content;
     padding: 32px;
@@ -229,7 +241,18 @@ body {
     margin-right: 30px;
     font-size: 13px;
 }
-
+.box-pointer {
+    position: absolute;
+}
+.box-pointer-hidden {
+    display: none;
+}
+/*.hoverable:hover .tooltip-container {
+    display: block;
+}
+.hoverable::after {
+    content: attr(tooltip-container);
+}*/
 .table-title h2 {
     display: inline-block;
     font-weight: bold;
