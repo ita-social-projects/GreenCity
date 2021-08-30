@@ -6,6 +6,7 @@
     <title>User Habits</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -86,7 +87,7 @@
                         <div class="row-box-and-sort">
                             <div class="main-search">
                                 <form class="form-inline searching" method="get" th:action="@{/management/habits}">
-                                     <input id="habitSearch" type="search" class="form-search" name="searchReg"
+                                    <input id="habitSearch" type="search" class="form-search" name="searchReg"
                                            th:placeholder="#{greenCity.pages.search}">
 
                                     <input type="submit" class="search-submit-btn">
@@ -97,7 +98,8 @@
 
                                     </button>
                                     <div class="form-popup" id="filter">
-                                        <form th:action="@{/management/habits}" class="form-container" style="width: 280px">
+                                        <form th:action="@{/management/habits}" class="form-container"
+                                              style="width: 280px">
                                             <div style="margin-bottom: 10px">
                                                 <input type="checkbox"
                                                        style="float: left; margin-top: 6px;margin-right: 5px">
@@ -107,10 +109,10 @@
                                                                       border-radius: 4px;
                                                                       height: 36px;
                                                                       margin-top: 15px;" name="searchReg">
-<!--                                            <input type="range" min="7" max="21" onchange="updateTextInput(this.value);"-->
-<!--                                                   style="width :239px;">-->
-<!--                                            <input  id="textInput" value="14 days"-->
-<!--                                                   style="padding: 0; color:#13AA57 ">-->
+                                            <!--                                            <input type="range" min="7" max="21" onchange="updateTextInput(this.value);"-->
+                                            <!--                                                   style="width :239px;">-->
+                                            <!--                                            <input  id="textInput" value="14 days"-->
+                                            <!--                                                   style="padding: 0; color:#13AA57 ">-->
 
                                             <div class="middle">
                                                 <div class="multi-range-slider">
@@ -131,12 +133,14 @@
                                                 <p id="leftText" style="color: #13aa57">7 - 56 days</p>
                                             </div>
 
-                                            <div class="habit_complexity_filter" id="habit_complexity_filter" style="margin-top: 20px">
+                                            <div class="habit_complexity_filter" id="habit_complexity_filter"
+                                                 style="margin-top: 20px">
                                                 <img src="/img/star-empty.png" class="complexity_1">
                                                 <img src="/img/star-empty.png" class="complexity_2">
                                                 <img src="/img/star-empty.png" class="complexity_3">
-                                                <input id="complexityInput" type="text" name="complexity" style="visibility: hidden; height: 0px;width: 0px">
-                                                </div>
+                                                <input id="complexityInput" type="text" name="complexity"
+                                                       style="visibility: hidden; height: 0px;width: 0px">
+                                            </div>
                                             <div style="margin-top: 21px">
                                                 <input type="checkbox" name="withoutImage"
                                                        style="float: left; margin-top: 6px;margin-right: 5px;color: #13aa57">
@@ -150,13 +154,13 @@
                                             </div>
 
                                             <div style="float: right;margin-top: 70px; margin-bottom: 18px; ">
-                                                <button th:action="@{/management/habits}" type="submit" class="filter-btn" style="width: 91px;
+                                                <button th:action="@{/management/habits}" type="submit"
+                                                        class="filter-btn" style="width: 91px;
                                             height: 40px"><b>Cancel</b></button>
                                                 <button type="submit" class="apply-btn" style="float: right">
                                                     <b>Apply</b>
                                                 </button>
                                             </div>
-
 
 
                                         </form>
@@ -199,8 +203,8 @@
                                 <th>[[#{greenCity.pages.table.category}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.complexity}]]
-                                        <span class="table-filter-icon filter"></span>
-                                    </th>
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
                                 <th>[[#{greenCity.pages.table.duration}]]
                                     <span class="table-filter-icon filter"></span></th>
                                 <th>[[#{greenCity.pages.table.description}]]
@@ -493,10 +497,12 @@
             </div>
         </div>
     </div>
+    <div id="footer" th:insert="core/footer"></div>
 </div>
 <script th:src="@{/management/habits/buttonsAJAX.js}"></script>
 <script>
     document.getElementById("habit_complexity_filter").style.cursor = 'pointer';
+
     function openForm() {
         if (document.getElementById("filter").style.display === "block") {
             document.getElementById("filter").style.display = "none";
@@ -517,6 +523,7 @@
     function showLeftVal(val) {
         document.getElementById("leftText").value = val + "-"
     }
+
     function showRightVal(val) {
         document.getElementById('rightText').value = val + "days";
     }
@@ -540,6 +547,7 @@
         thumbLeft.style.left = percent + "%";
         range.style.left = percent + "%";
     }
+
     setLeftValue();
 
     function setRightValue() {
@@ -554,34 +562,35 @@
         thumbRight.style.right = (100 - percent) + "%";
         range.style.right = (100 - percent) + "%";
     }
+
     setRightValue();
 
     inputLeft.addEventListener("input", setLeftValue);
     inputRight.addEventListener("input", setRightValue);
 
-    inputLeft.addEventListener("mouseover", function() {
+    inputLeft.addEventListener("mouseover", function () {
         thumbLeft.classList.add("hover");
     });
-    inputLeft.addEventListener("mouseout", function() {
+    inputLeft.addEventListener("mouseout", function () {
         thumbLeft.classList.remove("hover");
     });
-    inputLeft.addEventListener("mousedown", function() {
+    inputLeft.addEventListener("mousedown", function () {
         thumbLeft.classList.add("active");
     });
-    inputLeft.addEventListener("mouseup", function() {
+    inputLeft.addEventListener("mouseup", function () {
         thumbLeft.classList.remove("active");
     });
 
-    inputRight.addEventListener("mouseover", function() {
+    inputRight.addEventListener("mouseover", function () {
         thumbRight.classList.add("hover");
     });
-    inputRight.addEventListener("mouseout", function() {
+    inputRight.addEventListener("mouseout", function () {
         thumbRight.classList.remove("hover");
     });
-    inputRight.addEventListener("mousedown", function() {
+    inputRight.addEventListener("mousedown", function () {
         thumbRight.classList.add("active");
     });
-    inputRight.addEventListener("mouseup", function() {
+    inputRight.addEventListener("mouseup", function () {
         thumbRight.classList.remove("active");
     });
 

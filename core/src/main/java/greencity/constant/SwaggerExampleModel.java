@@ -16,13 +16,13 @@ public final class SwaggerExampleModel {
 
     private static final String EXAMPLE =
         "  \"image\": \"string\",\n"
-            + "  \"source\": \"string\",\n"
+            + "  \"source\": \"https://example.org/\",\n"
             + "  \"tags\": [\n"
             + "    \"string\"\n"
             + "  ],\n"
             + "  \"titleTranslation\":\n"
             + "     {\"content\": \"string\",\n"
-            + "     \"languageCode\": \"string\"}\n"
+            + "     \"languageCode\": \"string\"},\n"
             + "  \"textTranslation\":\n"
             + "     {\"content\": \"string\",\n"
             + "     \"languageCode\": \"string\"}\n";
