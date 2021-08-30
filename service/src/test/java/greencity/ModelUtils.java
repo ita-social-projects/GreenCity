@@ -290,6 +290,11 @@ public class ModelUtils {
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
+    public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
+        return new EcoNews(1L, null, TestConst.SITE, null, getUser(),
+            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
+    }
+
     public static EcoNewsVO getEcoNewsVO() {
         return new EcoNewsVO(1L, ZonedDateTime.now(), TestConst.SITE, null, getUserVO(),
             "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()));
@@ -431,6 +436,14 @@ public class ModelUtils {
             .habitAssign(HabitAssign.builder().id(1L).build())
             .status(ShoppingListItemStatus.DONE)
             .build();
+    }
+
+    public static List<String> getTagsForTestingString() {
+        List<String> tags = new ArrayList<>();
+        tags.add("Новини");
+        tags.add("News");
+        tags.add("Новины");
+        return tags;
     }
 
     public static List<UserShoppingListItem> getUserShoppingListItemList() {
@@ -1289,6 +1302,11 @@ public class ModelUtils {
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
             getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1);
+    }
+
+    public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
+        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", null,
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
