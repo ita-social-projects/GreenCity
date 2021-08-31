@@ -108,10 +108,9 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignDefaultHabitForUser() {
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
-            .thenReturn(Optional.empty());
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
@@ -132,10 +131,8 @@ class HabitAssignServiceImplTest {
 
     @Test
     void assignDefaultHabitForUserAlreadyHasTheHabit() {
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
-            .thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(HABIT_ASSIGN_IN_PROGRESS));
+
         assertThrows(UserAlreadyHasHabitAssignedException.class,
             () -> habitAssignService.assignDefaultHabitForUser(1L, userVO));
     }
@@ -217,8 +214,6 @@ class HabitAssignServiceImplTest {
     void assignCustomHabitForUser() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.findByHabitIdAndUserId(habit.getId(), user.getId()))
-            .thenReturn(Optional.empty());
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,

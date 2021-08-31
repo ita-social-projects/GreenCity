@@ -64,6 +64,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public HabitAssignManagementDto assignDefaultHabitForUser(Long habitId, UserVO userVO) {
+        checkStatusInProgressExists(habitId, userVO);
+
         User user = modelMapper.map(userVO, User.class);
 
         Habit habit = habitRepo.findById(habitId)
@@ -102,6 +104,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssignPropertiesDto habitAssignPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
+        checkStatusInProgressExists(habitId, userVO);
+
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
@@ -121,6 +125,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         saveUserShoppingListItems(shoppingList, habitAssign);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+    }
+
+    private void checkStatusInProgressExists(Long habitId, UserVO userVO) {
+        List<HabitAssign> habits = habitAssignRepo.findAllByUserId(userVO.getId());
+        boolean habitInProgress = habits.stream()
+            .filter(h -> h.getHabit().getId().equals(habitId))
+            .anyMatch(h -> h.getStatus().equals(HabitAssignStatus.INPROGRESS));
+
+        if (habitInProgress) {
+            throw new UserAlreadyHasHabitAssignedException(
+                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
+        }
     }
 
     /**
@@ -345,10 +361,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param user    {@link User} instance.
      */
     private void validateHabitForAssign(Long habitId, User user) {
-        if (habitAssignRepo.findByHabitIdAndUserId(habitId, user.getId()).isPresent()) {
-            throw new UserAlreadyHasHabitAssignedException(
-                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
-        }
         if (habitAssignRepo.countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(
             user.getId()) >= AppConstant.MAX_NUMBER_OF_HABIT_ASSIGNS_FOR_USER) {
             throw new UserAlreadyHasMaxNumberOfActiveHabitAssigns(
