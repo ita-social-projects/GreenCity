@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
@@ -134,21 +135,20 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 checks all Assigned Habits whether they are not expired.
+     * Every day at 00:00 checks all Assigned Habits and if they are timed out set status EXPIRED
      *
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
-    @Scheduled(cron = "0 0/10 * * * ?", zone = "Europe/Kiev")
-    public void checkExpired() {
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
+    public void setExpiredStatus() {
         ZonedDateTime now = ZonedDateTime.now();
-        List<HabitAssign> habits = habitAssignRepo.findAllInProgressHabitAssigns();
-        for (HabitAssign h : habits) {
+        List<HabitAssign> habitsInProgress = habitAssignRepo.findAllInProgressHabitAssigns();
+        habitsInProgress.forEach(h -> {
             if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
-                h.setStatus(HabitAssignStatus.EXPIRED);
-                habitAssignRepo.save(h);
                 log.info("Set status expired");
+                h.setStatus(HabitAssignStatus.EXPIRED);
             }
-        }
+        });
     }
 }

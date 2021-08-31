@@ -83,6 +83,7 @@ public class ModelUtils {
     public static UserStatusDto TEST_USER_STATUS_DTO = createUserStatusDto();
     public static String TEST_EMAIL = "test@mail.com";
     public static String TEST_EMAIL_2 = "test2@mail.com";
+    public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
@@ -1456,5 +1457,12 @@ public class ModelUtils {
             .role(Role.ROLE_MODERATOR)
             .email("test@mail.com")
             .build();
+    }
+
+    private static HabitAssign createHabitAssignInProgress() {
+        return HabitAssign.builder()
+                .habit(Habit.builder().id(1L).build())
+                .status(HabitAssignStatus.INPROGRESS)
+                .build();
     }
 }
