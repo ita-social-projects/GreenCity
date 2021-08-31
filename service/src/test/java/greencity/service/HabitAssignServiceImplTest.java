@@ -34,6 +34,8 @@ class HabitAssignServiceImplTest {
     @Mock
     HabitAssignRepo habitAssignRepo;
     @Mock
+    HabitAssignService mock;
+    @Mock
     ShoppingListItemRepo shoppingListItemRepo;
     @Mock
     UserShoppingListItemRepo userShoppingListItemRepo;
@@ -469,6 +471,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void addDefaultHabitIf() {
+
         UserVO userVo = ModelUtils.createUserVO2();
         UserVO userVo2 = new UserVO();
         User user = new User();
@@ -484,6 +487,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(new HabitAssignManagementDto());
 
         habitAssignService.addDefaultHabit(userVo, "eu");
+
+        verify(habitRepo).findById(1L);
     }
 
     @Test
