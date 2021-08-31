@@ -34,6 +34,7 @@ import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationNameDto;
@@ -1497,4 +1498,197 @@ public class ModelUtils {
             .status(HabitAssignStatus.INPROGRESS)
             .build();
     }
+
+    public static List<UserShoppingListItemVO> getUserShoppingListItemVOList() {
+        List<UserShoppingListItemVO> list = new ArrayList<>();
+        list.add(UserShoppingListItemVO.builder()
+            .id(1L)
+            .build());
+        return list;
+    }
+
+    public static List<CustomShoppingListItemVO> getCustomShoppingListItemVOList() {
+        List<CustomShoppingListItemVO> list = new ArrayList<>();
+        list.add(CustomShoppingListItemVO.builder()
+            .id(1L)
+            .text("text")
+            .build());
+        return list;
+    }
+
+    public static UserVO createUserVO2() {
+        return UserVO.builder()
+            .id(1L)
+            .name("name")
+            .email("test@mail.com")
+            .role(Role.ROLE_MODERATOR)
+            .userCredo("fdsfs")
+            .userStatus(UserStatus.ACTIVATED)
+            .userShoppingListItemVOS(getUserShoppingListItemVOList())
+            .customShoppingListItemVOS(getCustomShoppingListItemVOList())
+            .rating(13.4)
+            .verifyEmail(VerifyEmailVO.builder()
+                .id(1L)
+                .user(UserVO.builder()
+                    .id(1L)
+                    .name("name")
+                    .email("test@mail.com")
+                    .role(Role.ROLE_MODERATOR)
+                    .userCredo("fdsfs")
+                    .userStatus(UserStatus.ACTIVATED)
+                    .userShoppingListItemVOS(getUserShoppingListItemVOList())
+                    .customShoppingListItemVOS(getCustomShoppingListItemVOList())
+                    .rating(13.4)
+                    .emailNotification(EmailNotification.MONTHLY)
+                    .dateOfRegistration(LocalDateTime.now())
+                    .socialNetworks(Collections.singletonList(
+                        SocialNetworkVO.builder()
+                            .id(10L)
+                            .user(UserVO.builder()
+                                .id(1L)
+                                .email("namesurname1995@gmail.com")
+                                .build())
+                            .url("www.network.com")
+                            .socialNetworkImage(SocialNetworkImageVO.builder()
+                                .id(25L)
+                                .hostPath("path///")
+                                .imagePath("imagepath///")
+                                .build())
+                            .build()))
+                    .userFriends(Collections.singletonList(
+                        UserVO.builder()
+                            .id(75L)
+                            .name("Andrew")
+                            .build()))
+                    .userAchievements(List.of(
+                        UserAchievementVO.builder()
+                            .id(47L)
+                            .achievementStatus(AchievementStatus.ACTIVE)
+                            .user(UserVO.builder()
+                                .id(1L)
+                                .build())
+                            .achievement(AchievementVO.builder()
+                                .id(56L)
+                                .build())
+                            .build(),
+                        UserAchievementVO.builder()
+                            .id(39L)
+                            .achievementStatus(AchievementStatus.INACTIVE)
+                            .user(UserVO.builder()
+                                .id(1L)
+                                .build())
+                            .achievement(AchievementVO.builder()
+                                .id(14L)
+                                .build())
+                            .build()))
+                    .refreshTokenKey("fsdfsfd")
+                    .ownSecurity(OwnSecurityVO.builder()
+                        .id(1L)
+                        .password("password")
+                        .user(UserVO.builder()
+                            .id(1L)
+                            .build())
+                        .build())
+                    .profilePicturePath("../")
+                    .ecoNewsLiked(null)
+                    .ecoNewsCommentsLiked(null)
+                    .firstName("dfsfsdf")
+                    .city("fdsfsdf")
+                    .showLocation(true)
+                    .showEcoPlace(true)
+                    .showShoppingList(true)
+                    .lastActivityTime(LocalDateTime.now())
+                    .userActions(null)
+                    .languageVO(getLanguageVO())
+                    .build())
+                .expiryDate(LocalDateTime.of(2021, 7, 7, 7, 7))
+                .token("toooookkkeeeeen42324532542")
+//                        .rating(13.4)
+//                        .em
+                .build())
+            .userFriends(Collections.singletonList(
+                UserVO.builder()
+                    .id(75L)
+                    .name("Andrew")
+                    .build()))
+            .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
+            .ownSecurity(null)
+            .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
+            .city("Lviv")
+            .showShoppingList(true)
+            .showEcoPlace(true)
+            .showLocation(true)
+            .socialNetworks(Collections.singletonList(
+                SocialNetworkVO.builder()
+                    .id(10L)
+                    .user(UserVO.builder()
+                        .id(1L)
+                        .email("namesurname1995@gmail.com")
+                        .build())
+                    .url("www.network.com")
+                    .socialNetworkImage(SocialNetworkImageVO.builder()
+                        .id(25L)
+                        .hostPath("path///")
+                        .imagePath("imagepath///")
+                        .build())
+                    .build()))
+            .ownSecurity(OwnSecurityVO.builder()
+                .id(1L)
+                .password("password")
+                .user(UserVO.builder()
+                    .id(1L)
+                    .build())
+                .build())
+            .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
+            .userAchievements(List.of(
+                UserAchievementVO.builder()
+                    .id(47L)
+                    .achievementStatus(AchievementStatus.ACTIVE)
+                    .user(UserVO.builder()
+                        .id(1L)
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(56L)
+                        .build())
+                    .build(),
+                UserAchievementVO.builder()
+                    .id(39L)
+                    .achievementStatus(AchievementStatus.INACTIVE)
+                    .user(UserVO.builder()
+                        .id(1L)
+                        .build())
+                    .achievement(AchievementVO.builder()
+                        .id(14L)
+                        .build())
+                    .build()))
+            .userActions(Collections.singletonList(UserActionVO.builder()
+                .id(1L)
+                .achievementCategory(AchievementCategoryVO.builder()
+                    .id(1L)
+                    .build())
+                .count(0)
+                .user(UserVO.builder()
+                    .id(1L)
+                    .build())
+                .build()))
+            .build();
+    }
+
+    public static HabitAssign buildHabitAssign() {
+        return HabitAssign.builder()
+            .habit(getHabit())
+            .status(HabitAssignStatus.INPROGRESS)
+            .createDate(ZonedDateTime.now())
+            .user(getUser())
+            .duration(1)
+            .habitStreak(0)
+            .workingDays(0)
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+//    public static Habit getHabitWithUser() {
+//        return Habit.builder().id(1L).image("image.png")
+//                .complexity(1).tags(new HashSet<>(getTags())).build();
+//    }
 }

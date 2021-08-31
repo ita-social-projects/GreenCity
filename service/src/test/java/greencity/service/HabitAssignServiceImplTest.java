@@ -24,14 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -39,6 +33,8 @@ class HabitAssignServiceImplTest {
     HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
+    @Mock
+    HabitAssignService mock;
     @Mock
     ShoppingListItemRepo shoppingListItemRepo;
     @Mock
@@ -227,6 +223,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign,
             HabitAssignDto.class)).thenReturn(habitAssignDto);
+
         assertEquals(habitAssignDto, habitAssignService.findHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
     }
 
@@ -444,20 +441,54 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
 
         List<HabitAssignDto> dtoList =
+            habitAssignService.findInprogressHabitAssignsOnDate(id, date, language.getCode());
+        assertEquals(dtoList.get(0), habitAssignDto);
+
+    }
+
+    @Test
+    void findInprogressHabitAssignsOnDateContent() {
+
+        Long id = 3L;
+        LocalDate date = LocalDate.now();
+        Language language = ModelUtils.getLanguage();
+        language.setCode("en");
+
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(habitTranslation));
+
+        when(habitAssignRepo.findAllInprogressHabitAssignsOnDate(anyLong(), any(LocalDate.class)))
+            .thenReturn(Collections.singletonList(habitAssign));
+
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+
+        List<HabitAssignDto> dtoList =
             habitAssignService.findInprogressHabitAssignsOnDateContent(id, date, language.getCode());
         assertEquals(dtoList.get(0), habitAssignDto);
 
     }
 
     @Test
-    void addDefaultHabit() {
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
-        when(habitAssignRepo.save(any(HabitAssign.class))).thenReturn(habitAssign);
-        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+    void addDefaultHabitIf() {
 
-        assertEquals(habitAssignService.assignDefaultHabitForUser(1L, userVO), habitAssignManagementDto);
+        UserVO userVo = ModelUtils.createUserVO2();
+        UserVO userVo2 = new UserVO();
+        User user = new User();
+        Habit habit = new Habit();
+        habit.setId(1L);
+        HabitAssign habitAssign = getHabitAssign();
 
+        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(new ArrayList<>());
+        when(modelMapper.map(userVo, UserVO.class)).thenReturn(userVo2);
+        when(modelMapper.map(userVo2, User.class)).thenReturn(user);
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(1L, user.getId())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(new HabitAssignManagementDto());
+
+        habitAssignService.addDefaultHabit(userVo, "eu");
+
+        verify(habitRepo).findById(1L);
     }
 
     @Test
@@ -511,7 +542,16 @@ class HabitAssignServiceImplTest {
     @Test
     void updateUserShoppingListItemThrowException() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
+
         assertThrows(ShoppingListItemNotFoundException.class,
             () -> habitAssignService.updateUserShoppingListItem(getUpdateUserShoppingListDto()));
+    }
+
+    @Test
+    void getReadinessPercent() {
+        habitAssignDto.setWorkingDays(30);
+        habitAssignDto.setDuration(2);
+
+        assertEquals(1500, habitAssignService.getReadinessPercent(habitAssignDto));
     }
 }
