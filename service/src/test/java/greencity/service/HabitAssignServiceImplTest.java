@@ -483,7 +483,6 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(1L, user.getId())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(new HabitAssignManagementDto());
 
-        habitAssignService.assignDefaultHabitForUser(1L, userVo2);
         habitAssignService.addDefaultHabit(userVo, "eu");
     }
 
