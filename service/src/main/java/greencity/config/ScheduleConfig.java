@@ -135,7 +135,8 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 checks all Assigned Habits and if they are timed out set status EXPIRED
+     * Every day at 00:00 checks all Assigned Habits and if they are timed out set
+     * status EXPIRED.
      *
      * @author Ostap Mykhaylivskii
      **/

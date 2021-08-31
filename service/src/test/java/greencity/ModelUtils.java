@@ -1461,8 +1461,8 @@ public class ModelUtils {
 
     private static HabitAssign createHabitAssignInProgress() {
         return HabitAssign.builder()
-                .habit(Habit.builder().id(1L).build())
-                .status(HabitAssignStatus.INPROGRESS)
-                .build();
+            .habit(Habit.builder().id(1L).build())
+            .status(HabitAssignStatus.INPROGRESS)
+            .build();
     }
 }

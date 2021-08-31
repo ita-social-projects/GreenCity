@@ -130,12 +130,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void checkStatusInProgressExists(Long habitId, UserVO userVO) {
         List<HabitAssign> habits = habitAssignRepo.findAllByUserId(userVO.getId());
         boolean habitInProgress = habits.stream()
-                .filter(h -> h.getHabit().getId().equals(habitId))
-                .anyMatch(h -> h.getStatus().equals(HabitAssignStatus.INPROGRESS));
+            .filter(h -> h.getHabit().getId().equals(habitId))
+            .anyMatch(h -> h.getStatus().equals(HabitAssignStatus.INPROGRESS));
 
         if (habitInProgress) {
             throw new UserAlreadyHasHabitAssignedException(
-                    ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
+                ErrorMessage.USER_ALREADY_HAS_ASSIGNED_HABIT + habitId);
         }
     }
 
