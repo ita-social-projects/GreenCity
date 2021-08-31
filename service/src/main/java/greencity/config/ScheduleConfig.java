@@ -3,6 +3,7 @@ package greencity.config;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.dto.user.UserVO;
+import greencity.entity.HabitAssign;
 import greencity.entity.HabitFactTranslation;
 import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
@@ -10,18 +11,20 @@ import greencity.message.SendHabitNotification;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitFactTranslationRepo;
 import greencity.repository.RatingStatisticsRepo;
-import java.time.ZonedDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  * Config for scheduling.
@@ -29,6 +32,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * @author Nazar Stasyuk
  * @version 1.0
  */
+@Slf4j
 @Configuration
 @EnableScheduling
 @AllArgsConstructor
@@ -119,18 +123,6 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 deletes from the database users that have status
-     * 'DEACTIVATED' and last visited the site 2 years ago.
-     *
-     * @author Vasyl Zhovnir
-     **/
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
-    @Transactional
-    public void scheduleDeleteDeactivatedUsers() {
-        restClient.scheduleDeleteDeactivatedUsers();
-    }
-
-    /**
      * Every day at 00:00 deletes from the table rating_statistics records witch are
      * older than period in application properties.
      *
@@ -143,17 +135,20 @@ public class ScheduleConfig {
     }
 
     /**
-     * Every day at 00:00 checks all Assigned Habits whether they are not expired.
+     * Every day at 00:00 checks all Assigned Habits and if they are timed out set
+     * status EXPIRED.
      *
      * @author Ostap Mykhaylivskii
      **/
     @Transactional
     @Scheduled(cron = "0 0 0 * * ?", zone = "Europe/Kiev")
-    public void checkExpired() {
-        habitAssignRepo.findAllInProgressHabitAssigns().stream().forEach(h -> {
-            if (DAYS.between(h.getCreateDate(), ZonedDateTime.now()) > h.getDuration()) {
+    public void setExpiredStatus() {
+        ZonedDateTime now = ZonedDateTime.now();
+        List<HabitAssign> habitsInProgress = habitAssignRepo.findAllInProgressHabitAssigns();
+        habitsInProgress.forEach(h -> {
+            if (h.getCreateDate().plusDays(h.getDuration().longValue()).isBefore(now)) {
+                log.info("Set status expired");
                 h.setStatus(HabitAssignStatus.EXPIRED);
-                habitAssignRepo.save(h);
             }
         });
     }

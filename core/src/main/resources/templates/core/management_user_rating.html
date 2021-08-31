@@ -38,11 +38,16 @@
                         </div>
                         <div class="col-sm-6">
                             <a href="/management/rating">
-                                <button type="button" class="btn btn-success">[[#{greenCity.facts.rating.page.clear}]]</button>
+                                <button type="button" class="btn btn-success">[[#{greenCity.facts.rating.page.clear}]]
+                                </button>
                             </a>
-                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">[[#{greenCity.facts.rating.page.export.filtered}]]</button>
+                            <button type="submit" class="btn btn-success" onclick="exportFiltered()">
+                                [[#{greenCity.facts.rating.page.export.filtered}]]
+                            </button>
                             <a href="/management/rating/export">
-                                <button type="button" class="btn btn-success">[[#{greenCity.facts.rating.page.export.all}]]</button>
+                                <button type="button" class="btn btn-success">
+                                    [[#{greenCity.facts.rating.page.export.all}]]
+                                </button>
                             </a>
                         </div>
                     </div>
@@ -61,7 +66,7 @@
                     </thead>
                     <tbody>
 
-                    <form method="POST" action="/management/rating" id = "searchForm" onsubmit="applyFilters()">
+                    <form method="POST" action="/management/rating" id="searchForm" onsubmit="applyFilters()">
                         <tr>
                             <td>
 
@@ -196,6 +201,7 @@
         document.getElementById("searchForm").submit();
 
     }
+
     function applyFilters() {
         document.getElementById("searchForm").action = "/management/rating";
         document.getElementById("searchForm").submit();

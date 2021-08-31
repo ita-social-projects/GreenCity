@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
      * @param id    id of updatable user.
      * @param email email of admin/moderator.
      */
-    private void checkUpdatableUser(Long id, String email) {
+    protected void checkUpdatableUser(Long id, String email) {
         UserVO user = findByEmail(email);
         if (id.equals(user.getId())) {
             throw new BadUpdateRequestException(ErrorMessage.USER_CANT_UPDATE_HIMSELF);

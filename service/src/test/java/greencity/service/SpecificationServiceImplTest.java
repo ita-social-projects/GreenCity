@@ -1,13 +1,11 @@
 package greencity.service;
 
+import greencity.ModelUtils;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.specification.SpecificationVO;
 import greencity.entity.Specification;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.SpecificationRepo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +13,11 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -98,5 +101,19 @@ class SpecificationServiceImplTest {
         SpecificationVO specificationVO = specificationService.findByName(anyString());
 
         assertEquals(modelMapper.map(genericEntity, SpecificationVO.class), specificationVO);
+    }
+
+    @Test
+    void findAllSpecificationDto() {
+        SpecificationNameDto specificationNameDto = new SpecificationNameDto();
+        List<SpecificationVO> expectedVO = ModelUtils.getListSpecificationVO();
+        List<SpecificationNameDto> expectedNameDto = new ArrayList<>();
+
+        specificationNameDto.setName("Animal");
+        expectedNameDto.add(specificationNameDto);
+        when(specificationService.findAll()).thenReturn(expectedVO);
+        when(modelMapper.map(expectedVO, SpecificationNameDto.class)).thenReturn(new SpecificationNameDto("Animal"));
+
+        assertEquals(expectedNameDto.size(), specificationService.findAllSpecificationDto().size());
     }
 }

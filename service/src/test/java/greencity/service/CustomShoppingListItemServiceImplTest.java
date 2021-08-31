@@ -7,9 +7,7 @@ import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.CustomShoppingListItem;
-import greencity.entity.Habit;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
@@ -25,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import greencity.repository.HabitRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +55,9 @@ class CustomShoppingListItemServiceImplTest {
 
     @Mock
     private HabitRepo habitRepo;
+
+    @Mock
+    private UserShoppingListItemRepo userShoppingListItemRepo;
 
     @InjectMocks
     private CustomShoppingListItemServiceImpl customShoppingListItemService;
@@ -312,4 +314,19 @@ class CustomShoppingListItemServiceImplTest {
         List<Long> bulkDeleteResult = customShoppingListItemService.bulkDelete("1,2,3");
         assertEquals(expectedResult, bulkDeleteResult);
     }
+
+    @Test
+    void updateItemStatusToDone() {
+        ShoppingListItem shoppingListItem = ModelUtils.getShoppingListItem();
+        Long userShoppingListItemId = 1L;
+        UserShoppingListItem userShoppingListItem =
+            new UserShoppingListItem(1L, ModelUtils.getHabitAssignWithUserShoppingListItem(), shoppingListItem,
+                ShoppingListItemStatus.ACTIVE, LocalDateTime.now());
+        when(userShoppingListItemRepo.getByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userShoppingListItemId));
+        when(userShoppingListItemRepo.getOne(userShoppingListItemId)).thenReturn(userShoppingListItem);
+        customShoppingListItemService.updateItemStatusToDone(1L, 1L);
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
+        verify(userShoppingListItemRepo).save(userShoppingListItem);
+    }
+
 }

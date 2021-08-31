@@ -37,6 +37,8 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.specification.SpecificationNameDto;
+import greencity.dto.specification.SpecificationVO;
 import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
@@ -84,6 +86,7 @@ public class ModelUtils {
     public static UserStatusDto TEST_USER_STATUS_DTO = createUserStatusDto();
     public static String TEST_EMAIL = "test@mail.com";
     public static String TEST_EMAIL_2 = "test2@mail.com";
+    public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
@@ -289,6 +292,11 @@ public class ModelUtils {
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
+    public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
+        return new EcoNews(1L, null, TestConst.SITE, null, getUser(),
+            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
+    }
+
     public static EcoNewsVO getEcoNewsVO() {
         return new EcoNewsVO(1L, ZonedDateTime.now(), TestConst.SITE, null, getUserVO(),
             "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()));
@@ -430,6 +438,14 @@ public class ModelUtils {
             .habitAssign(HabitAssign.builder().id(1L).build())
             .status(ShoppingListItemStatus.DONE)
             .build();
+    }
+
+    public static List<String> getTagsForTestingString() {
+        List<String> tags = new ArrayList<>();
+        tags.add("Новини");
+        tags.add("News");
+        tags.add("Новины");
+        return tags;
     }
 
     public static List<UserShoppingListItem> getUserShoppingListItemList() {
@@ -852,6 +868,18 @@ public class ModelUtils {
             .build();
     }
 
+    public static List<SpecificationVO> getListSpecificationVO() {
+        List<SpecificationVO> listOfSpecificationVO = new ArrayList<>();
+        listOfSpecificationVO.add(SpecificationVO.builder().id(1L).name("Animal").build());
+        return listOfSpecificationVO;
+    }
+
+    public static List<SocialNetworkVO> getListSocialNetworkVO() {
+        List<SocialNetworkVO> socialNetworkVO = new ArrayList<>();
+        socialNetworkVO.add(SocialNetworkVO.builder().id(1L).url("url").build());
+        return socialNetworkVO;
+    }
+
     public static HabitFactTranslation getHabitFactTranslation() {
         return HabitFactTranslation.builder()
             .id(1L)
@@ -1180,7 +1208,7 @@ public class ModelUtils {
 
     public static Habit getHabit() {
         return Habit.builder().id(1L).image("image.png")
-            .complexity(1).tags(new HashSet<>(getTags())).defaultDuration(1).build();
+            .complexity(1).tags(new HashSet<>(getTags())).build();
     }
 
     public static HabitTranslation getHabitTranslation() {
@@ -1276,6 +1304,11 @@ public class ModelUtils {
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
             getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1);
+    }
+
+    public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
+        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", null,
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
@@ -1456,6 +1489,13 @@ public class ModelUtils {
             .id(1L)
             .role(Role.ROLE_MODERATOR)
             .email("test@mail.com")
+            .build();
+    }
+
+    private static HabitAssign createHabitAssignInProgress() {
+        return HabitAssign.builder()
+            .habit(Habit.builder().id(1L).build())
+            .status(HabitAssignStatus.INPROGRESS)
             .build();
     }
 
