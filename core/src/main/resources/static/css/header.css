@@ -616,3 +616,9 @@ header {
         margin-bottom: 40px;
     }
 }
+
+.logout {
+    margin-top: 4px;
+    position: absolute;
+    right: 40px;
+}
