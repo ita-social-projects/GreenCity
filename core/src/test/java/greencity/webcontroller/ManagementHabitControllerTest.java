@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
@@ -29,13 +28,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
-class HabitManagementControllerTest {
+class ManagementHabitControllerTest {
 
     private static final String habitManagementLink = "/management/habits";
 
@@ -48,11 +44,11 @@ class HabitManagementControllerTest {
     private LanguageService languageService;
 
     @InjectMocks
-    HabitManagementController habitManagementController;
+    ManagementHabitController managementHabitController;
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(habitManagementController)
+        this.mockMvc = MockMvcBuilders.standaloneSetup(managementHabitController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
     }
@@ -85,6 +81,13 @@ class HabitManagementControllerTest {
     void getHabitById() throws Exception {
         this.mockMvc.perform(get(habitManagementLink + "/find?id=1"))
             .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void getHabitByIdPage() throws Exception {
+        this.mockMvc.perform(get(habitManagementLink + "/1"))
+            .andExpect(view().name("core/management_user_habit"))
+            .andExpect(status().isOk());
     }
 
     @Test

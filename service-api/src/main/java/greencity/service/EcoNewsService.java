@@ -118,6 +118,7 @@ public interface EcoNewsService {
      *
      * @param userId {@link Long} user id.
      * @return list of {@link EcoNewsDto} instances.
+     * @author Vira Maksymets
      */
     List<EcoNewsDto> getAllPublishedNewsByUserId(Long userId);
 

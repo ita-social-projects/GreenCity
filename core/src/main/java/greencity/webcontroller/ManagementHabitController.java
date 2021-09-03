@@ -2,20 +2,20 @@ package greencity.webcontroller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.service.HabitFactService;
 import greencity.service.LanguageService;
 import greencity.service.ManagementHabitService;
+import greencity.service.ShoppingListItemService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,25 +23,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/habits")
-public class HabitManagementController {
+public class ManagementHabitController {
     private final ManagementHabitService managementHabitService;
     private final LanguageService languageService;
+    private final HabitFactService habitFactService;
+    private final ShoppingListItemService shoppingListItemService;
 
     /**
      * Returns management page with all {@link HabitVO}'s.
@@ -83,6 +80,32 @@ public class HabitManagementController {
     public ResponseEntity<HabitManagementDto> getHabitById(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(managementHabitService.getById(id));
+    }
+
+    /**
+     * Returns management page with single {@link HabitVO}.
+     *
+     * @param id of {@link HabitVO}.
+     * @return {@link HabitManagementDto}.
+     *
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Find habit by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/{id}")
+    public String getHabitPage(@PathVariable("id") Long id,
+        @ApiIgnore Pageable pageable,
+        @ApiIgnore @ValidLanguage Locale locale,
+        Model model) {
+        model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
+        model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
+        model.addAttribute("habit", managementHabitService.getById(id));
+        model.addAttribute("lang", locale);
+        return "core/management_user_habit";
     }
 
     /**
