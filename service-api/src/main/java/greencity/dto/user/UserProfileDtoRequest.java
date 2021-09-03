@@ -11,7 +11,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 public class UserProfileDtoRequest {
-    private String firstName;
+    private String name;
     private String city;
     private String userCredo;
     @ValidSocialNetworkLinks
