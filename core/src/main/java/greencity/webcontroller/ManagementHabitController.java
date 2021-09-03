@@ -2,7 +2,6 @@ package greencity.webcontroller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
@@ -29,7 +28,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
@@ -98,13 +96,10 @@ public class ManagementHabitController {
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore @ValidLanguage Locale locale,
-        Model model) {
+        @ApiIgnore Pageable pageable, Model model) {
         model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
-        model.addAttribute("lang", locale);
         return "core/management_user_habit";
     }
 

@@ -7,12 +7,15 @@ import static org.mockito.Mockito.*;
 import com.google.gson.Gson;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
-import greencity.service.LanguageService;
-import greencity.service.ManagementHabitService;
+import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
+import greencity.service.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +44,13 @@ class ManagementHabitControllerTest {
     private ManagementHabitService managementHabitService;
 
     @Mock
+    private HabitFactService habitFactService;
+
+    @Mock
     private LanguageService languageService;
+
+    @Mock
+    private ShoppingListItemService shoppingListItemService;
 
     @InjectMocks
     ManagementHabitController managementHabitController;
@@ -85,8 +94,19 @@ class ManagementHabitControllerTest {
 
     @Test
     void getHabitByIdPage() throws Exception {
-        this.mockMvc.perform(get(habitManagementLink + "/1"))
+        Pageable pageable = PageRequest.of(0, 5);
+
+        PageableDto<HabitFactVO> hfacts = habitFactService.getAllHabitFactsVO(pageable);
+        List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
+        HabitManagementDto habit = managementHabitService.getById(1L);
+
+        this.mockMvc.perform(get(habitManagementLink + "/1")
+            .param("page", "0")
+            .param("size", "5"))
             .andExpect(view().name("core/management_user_habit"))
+            .andExpect(model().attribute("hfacts", hfacts))
+            .andExpect(model().attribute("hshops", hshops))
+            .andExpect(model().attribute("habit", habit))
             .andExpect(status().isOk());
     }
 

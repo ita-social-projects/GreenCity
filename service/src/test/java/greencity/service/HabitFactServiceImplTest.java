@@ -102,7 +102,6 @@ class HabitFactServiceImplTest {
             .thenReturn(pageFacts);
 
         assertThrows(BadRequestException.class, () -> habitFactService.getAllHabitFacts(pageable, language));
-
     }
 
     @Test
@@ -114,7 +113,9 @@ class HabitFactServiceImplTest {
         when(habitFactTranslationRepo.getRandomHabitFactTranslationByHabitIdAndLanguage(language, id))
             .thenReturn(Optional.of(habitFactTranslation));
         when(modelMapper.map(habitFactTranslation, LanguageTranslationDTO.class)).thenReturn(languageTranslationDTO);
+
         LanguageTranslationDTO actual = habitFactService.getRandomHabitFactByHabitIdAndLanguage(id, language);
+
         assertEquals(languageTranslationDTO, actual);
     }
 
