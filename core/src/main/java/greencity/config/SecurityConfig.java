@@ -20,6 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -88,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
+            .antMatchers("/", "/management/login").permitAll()
             .antMatchers("/management/**",
                 "/econews/comments/replies/{parentCommentId}")
             .hasRole(ADMIN)
@@ -315,7 +317,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments",
                 "/tipsandtricks/{id}")
             .hasRole(ADMIN)
-            .anyRequest().hasAnyRole(ADMIN);
+            .anyRequest().hasAnyRole(ADMIN)
+            .and()
+            .logout()
+            .logoutUrl("/logout")
+            .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
+            .clearAuthentication(true)
+            .invalidateHttpSession(true)
+            .deleteCookies("accessToken")
+            .logoutSuccessUrl("/");
     }
 
     /**
