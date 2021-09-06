@@ -126,21 +126,22 @@
             width: 100%;
         }
 
-        .column .main tr{
+        .column .main tr {
             position: absolute;
             width: 438px;
             left: calc(50% - 438px / 2 + 124px);
             top: 25.9%;
             bottom: 72.13%;
         }
-        .aside-1 tr{
+
+        .aside-1 tr {
             display: flex;
             height: 38px;
             left: 281px;
             top: 428px;
         }
 
-            /* Clear floats after the columns */
+        /* Clear floats after the columns */
         .row:after {
             content: "";
             display: table;
@@ -333,10 +334,10 @@
                 </table>
             </div>
 
-            <!-- Shopping List table-->
+            <!-- Habit`s Advices table-->
             <div class="table-header">
-                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]
-                    <td th:text="${hshops.size()}"/>
+                <h3>[[#{greenCity.sidebar.habits.advice}]]
+                    <td th:text="${hadvices.size()}"/>
                 </h3>
                 <div class="hide-button">
                     <button id="button2" value="hide" onclick="hideTable(this.id)">
@@ -362,18 +363,70 @@
                     </thead>
 
                     <tbody id="table2">
-                    <th:block class="list-of" th:each="shopitem, iterStatus :${hshops}">
+                    <th:block class="list-of" th:each="advice, iterStatus :${hadvices}">
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox">
                                             <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox2"
-                                                   name="options[]" th:value="${shopitem.id}"
+                                                   name="options[]" th:value="${iterStatus.count}"
                                                    th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
                                             <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
 
                             <td id="translations2" style="width: 300px">
+                                    <h5 th:text="${advice.getContent()}"></h5>
+                            </td>
+
+                            <td style="width: 52px">Link</td>
+
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Shopping List table-->
+            <div class="table-header">
+                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]
+                    <td th:text="${hshops.size()}"/>
+                </h3>
+                <div class="hide-button">
+                    <button id="button3" value="hide" onclick="hideTable(this.id)">
+                        <span>hide</span>
+                        <img src="/img/arrow-up.svg" alt="arrow-icon">
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive userpage">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="table-primary light-text">
+                        <th style="width: 20px">
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll3">
+                                    <label for="selectAll"></label>
+                                </span>
+                        </th>
+                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
+                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="table3">
+                    <th:block class="list-of" th:each="shopitem, iterStatus :${hshops}">
+                        <tr class="light-text">
+                            <td style="width: 20px">
+                                    <span class="custom-checkbox">
+                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox3"
+                                                   name="options[]" th:value="${shopitem.id}"
+                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                    </span>
+                            </td>
+
+                            <td id="translations3" style="width: 300px">
                                 <div th:each="translation : ${shopitem.getTranslations()}">
                                     <h5 th:if="${translation.getLanguage().getCode()==('uk'==#locale.getLanguage() ?
                                     'ua' : #locale.getLanguage())}"

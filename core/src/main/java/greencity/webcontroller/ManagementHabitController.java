@@ -8,10 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
-import greencity.service.HabitFactService;
-import greencity.service.LanguageService;
-import greencity.service.ManagementHabitService;
-import greencity.service.ShoppingListItemService;
+import greencity.service.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -28,6 +25,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 @AllArgsConstructor
@@ -37,6 +35,7 @@ public class ManagementHabitController {
     private final LanguageService languageService;
     private final HabitFactService habitFactService;
     private final ShoppingListItemService shoppingListItemService;
+    private final AdviceService adviceService;
 
     /**
      * Returns management page with all {@link HabitVO}'s.
@@ -96,10 +95,12 @@ public class ManagementHabitController {
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @ApiIgnore Pageable pageable, Model model) {
+        @ApiIgnore Pageable pageable,
+        @ApiIgnore Locale locale, Model model) {
         model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
+        model.addAttribute("hadvices", adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage()));
         return "core/management_user_habit";
     }
 
