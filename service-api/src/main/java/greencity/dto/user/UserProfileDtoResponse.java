@@ -14,7 +14,7 @@ import lombok.*;
 @Builder
 public class UserProfileDtoResponse {
     private String profilePicturePath;
-    private String firstName;
+    private String name;
     private String city;
     private String userCredo;
     private List<SocialNetworkResponseDTO> socialNetworks;
