@@ -77,7 +77,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         if (image != null) {
             toSave.setImagePath(fileService.upload(image));
         }
-
         toSave.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(tipsAndTricksDtoRequest.getTags(), TagType.TIPS_AND_TRICKS),
             new TypeToken<List<Tag>>() {

@@ -72,6 +72,22 @@ public class HabitFactServiceImpl implements HabitFactService {
      * {@inheritDoc}
      */
     @Override
+    public List<LanguageTranslationDTO> getAllHabitFactsList(Pageable page, String language) {
+        Page<HabitFactTranslation> habitFactTranslation = habitFactTranslationRepo
+            .findAllByLanguageCode(page, language);
+        if (habitFactTranslation.getTotalPages() < page.getPageNumber()) {
+            throw new BadRequestException(ErrorMessage.PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES
+                + habitFactTranslation.getTotalPages());
+        }
+        return habitFactTranslation.stream()
+            .map(habitFact -> modelMapper.map(habitFactTranslation, LanguageTranslationDTO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableDto<HabitFactVO> getAllHabitFactsVO(Pageable pageable) {
         Page<HabitFact> page = habitFactRepo.findAll(pageable);
         List<HabitFactVO> habitFactVOS = page.stream()

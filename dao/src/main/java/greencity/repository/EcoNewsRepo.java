@@ -89,6 +89,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      *
      * @param userId {@link Long} user id.
      * @return list of {@link EcoNews} instances.
+     * @author Vira Maksymets
      */
     @Query(nativeQuery = true,
         value = "SELECT * FROM eco_news WHERE author_id = :userId")
