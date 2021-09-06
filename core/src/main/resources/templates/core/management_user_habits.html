@@ -226,7 +226,8 @@
                                         <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                 </span>
                                     </td>
-                                    <td th:text="${habit.id}"></td>
+                                    <td ><a class="id-link" th:text="${habit.id}"
+                                                                 th:href="@{/management/habits/{id} (id=${habit.id})}"/></td>
 
                                     <td style="min-width: 98px">
                                         <div class="habit_img">

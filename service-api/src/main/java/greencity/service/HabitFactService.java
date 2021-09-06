@@ -6,6 +6,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 /**
@@ -21,6 +22,14 @@ public interface HabitFactService {
      * @author Vitaliy Dzen
      */
     PageableDto<LanguageTranslationDTO> getAllHabitFacts(Pageable page, String language);
+
+    /**
+     * Method finds all {HabitFact}.
+     *
+     * @return List of all {@link LanguageTranslationDTO}
+     * @author Vira Maksymets
+     */
+    List<LanguageTranslationDTO> getAllHabitFactsList(Pageable page, String language);
 
     /**
      * Method finds all {@code HabitFact} with all {@code HabitFactTranslation}'s.
