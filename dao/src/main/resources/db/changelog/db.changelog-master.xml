@@ -99,5 +99,6 @@
     <include file="db/changelog/logs/ch-add-column-habit-complexity-Levko.xml"/>
     <include file="db/changelog/logs/ch-add-column-phone-to-user-Struk.xml"/>
     <include file="db/changelog/logs/ch-drop-constraint-habits-assign-table-Volianskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-column-to-crat-room-fedorkiv.xml"/>
 </databaseChangeLog>
 
