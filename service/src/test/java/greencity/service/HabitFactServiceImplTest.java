@@ -105,6 +105,18 @@ class HabitFactServiceImplTest {
     }
 
     @Test
+    void getAllHabitFactsListTest() {
+        String language = "en";
+        Pageable pageable = PageRequest.of(5, 5);
+        List<HabitFactTranslation> habitFactTranslation =
+            Collections.singletonList(ModelUtils.getHabitFactTranslation());
+        Page<HabitFactTranslation> pageFacts = new PageImpl<>(habitFactTranslation);
+        when(habitFactTranslationRepo.findAllByLanguageCode(pageable, language))
+            .thenReturn(pageFacts);
+        assertThrows(BadRequestException.class, () -> habitFactService.getAllHabitFactsList(pageable, language));
+    }
+
+    @Test
     void getRandomHabitFactByHabitIdAndLanguageTest_shouldReturnCorrectValue() {
         Long id = 1L;
         String language = "ua";

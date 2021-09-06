@@ -31,7 +31,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
-public class AboutUsControllerTest {
+class AboutUsControllerTest {
     private static final String managementLink = "/management/aboutus";
 
     private MockMvc mockMvc;
