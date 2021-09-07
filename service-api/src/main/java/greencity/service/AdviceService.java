@@ -53,6 +53,15 @@ public interface AdviceService {
     LanguageTranslationDTO getRandomAdviceByHabitIdAndLanguage(Long id, String language);
 
     /**
+     * Method find list of {@link LanguageTranslationDTO} of Advices by habitId and
+     * language.
+     *
+     * @return list of {@link LanguageTranslationDTO}
+     * @author Vira Maksymets
+     */
+    List<LanguageTranslationDTO> getAllByHabitIdAndLanguage(Long habitId, String language);
+
+    /**
      * Method find {@link AdviceVO} by id.
      *
      * @param id of {@link AdviceDto}

@@ -9,6 +9,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
 import greencity.service.*;
 
@@ -51,6 +52,9 @@ class ManagementHabitControllerTest {
 
     @Mock
     private ShoppingListItemService shoppingListItemService;
+
+    @Mock
+    private AdviceService adviceService;
 
     @InjectMocks
     ManagementHabitController managementHabitController;
@@ -99,6 +103,7 @@ class ManagementHabitControllerTest {
         PageableDto<HabitFactVO> hfacts = habitFactService.getAllHabitFactsVO(pageable);
         List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
+        List<LanguageTranslationDTO> hadvices = adviceService.getAllByHabitIdAndLanguage(1L, "en");
 
         this.mockMvc.perform(get(habitManagementLink + "/1")
             .param("page", "0")
@@ -107,6 +112,7 @@ class ManagementHabitControllerTest {
             .andExpect(model().attribute("hfacts", hfacts))
             .andExpect(model().attribute("hshops", hshops))
             .andExpect(model().attribute("habit", habit))
+            .andExpect(model().attribute("hadvices", hadvices))
             .andExpect(status().isOk());
     }
 
