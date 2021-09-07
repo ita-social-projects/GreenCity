@@ -10,6 +10,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
+import greencity.entity.Tag;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -24,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -105,6 +107,22 @@ class AdviceServiceImplTest {
         when(modelMapper.map(adviceTranslation, LanguageTranslationDTO.class)).thenReturn(expected);
         LanguageTranslationDTO actual = adviceService.getRandomAdviceByHabitIdAndLanguage(id, language);
 
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getAllByHabitIdAndLanguageTest() {
+        String language = "en";
+        Long id = 1L;
+        List<LanguageTranslationDTO> expected = ModelUtils.getLanguageTranslationsDTOs();
+        List<AdviceTranslation> adviceTranslationList = ModelUtils.getAdviceTranslations();
+        when(adviceTranslationRepo.getAllByHabitIdAndLanguageCode(id, language)).thenReturn(adviceTranslationList);
+
+        when(modelMapper.map(adviceTranslationList.get(0), LanguageTranslationDTO.class)).thenReturn(expected.get(0));
+        when(modelMapper.map(adviceTranslationList.get(1), LanguageTranslationDTO.class)).thenReturn(expected.get(1));
+        when(modelMapper.map(adviceTranslationList.get(2), LanguageTranslationDTO.class)).thenReturn(expected.get(2));
+
+        List<LanguageTranslationDTO> actual = adviceService.getAllByHabitIdAndLanguage(id, language);
         assertEquals(expected, actual);
     }
 

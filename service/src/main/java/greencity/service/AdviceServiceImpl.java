@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +76,19 @@ public class AdviceServiceImpl implements AdviceService {
         return modelMapper.map(adviceTranslationRepo.getRandomAdviceTranslationByHabitIdAndLanguage(language, id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ADVICE_NOT_FOUND_BY_ID + id)),
             LanguageTranslationDTO.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<LanguageTranslationDTO> getAllByHabitIdAndLanguage(Long habitId, String language) {
+        if (Objects.equals(language, "uk")) {
+            language = "ua";
+        }
+        return adviceTranslationRepo.getAllByHabitIdAndLanguageCode(habitId, language).stream()
+            .map(advice -> modelMapper.map(advice, LanguageTranslationDTO.class))
+            .collect(Collectors.toList());
     }
 
     /**
