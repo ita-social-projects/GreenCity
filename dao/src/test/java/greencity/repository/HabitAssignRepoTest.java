@@ -26,7 +26,7 @@ class HabitAssignRepoTest {
 
     @Test
     void findByHabitIdAndUserIdAndStatusIsCancelledTest() {
-        Long expected = 12L;
+        Long expected = 5L;
         Long actual = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(1L, 2L).getId();
         assertEquals(expected, actual);
     }
@@ -35,7 +35,7 @@ class HabitAssignRepoTest {
     void findAllByUserIdAndStatusAcquiredTest() {
         List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusAcquired(2L);
         assertEquals(1L, habitAssignList.size());
-        assertEquals(16L, habitAssignList.get(0).getId());
+        assertEquals(2L, habitAssignList.get(0).getId());
     }
 
     @Test
