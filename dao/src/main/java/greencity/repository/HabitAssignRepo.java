@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import greencity.enums.HabitAssignStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -132,25 +134,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("userId") Long userId);
 
     /**
-     * Method for counting all {@link HabitAssign}'s by {@link User} id (with not
-     * cancelled status).
-     *
-     * @param userId {@link User} id.
-     * @return amount of items in Optional in case of absence such info.
-     */
-    @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
-        + "WHERE upper(ha.status) <> 'CANCELLED'"
-        + "GROUP BY ha.id")
-    int countHabitAssignsByUserIdAndCancelledFalse(Long userId);
-
-    /**
      * Method for counting all inprogress {@link HabitAssign}'s by {@link User} id
      * (with not cancelled and not acquired status).
      *
      * @param userId {@link User} id.
      * @return amount of items in Optional in case of absence such info.
      */
-
     @Query(value = "SELECT COUNT(ha.id) FROM HabitAssign ha "
         + "WHERE upper(ha.status) = 'INPROGRESS' AND ha.user.id = :userId")
     int countHabitAssignsByUserIdAndAcquiredFalseAndCancelledFalse(@Param("userId") Long userId);
@@ -164,7 +153,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param end    {@link ZonedDateTime} end time.
      * @return amount of items in Optional in case of absence such info.
      */
-
     @Query(value = "SELECT COUNT(ha) "
         + "FROM HabitAssign ha "
         + "WHERE upper(ha.status) NOT IN ('CANCELLED','EXPIRED') "
@@ -222,7 +210,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
 
     /**
      * Method to find all inprogress, habit assigns.
-     *
+     * 
      * @return list of {@link HabitAssign} instances.
      */
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
@@ -230,4 +218,19 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) = 'INPROGRESS'")
     List<HabitAssign> findAllInProgressHabitAssigns();
+
+    /**
+     * Method to find all habit assigns by status.
+     * 
+     * @param status {@link HabitAssignStatus} status of habit assign.
+     *
+     * @return list of {@link HabitAssign} instances.
+     * @author Vira Maksymets
+     */
+    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
+        + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
+        + "JOIN FETCH ht.language l "
+        + "WHERE (upper(ha.status) = :status) AND (ha.habit.id = :habitId)")
+    List<HabitAssign> findAllHabitAssignsByStatusAndHabitId(@Param("status") HabitAssignStatus status,
+        @Param("habitId") Long habitId);
 }

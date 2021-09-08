@@ -11,6 +11,8 @@ import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
+import greencity.entity.HabitAssign;
+import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
 
 import java.util.Arrays;
@@ -55,6 +57,9 @@ class ManagementHabitControllerTest {
 
     @Mock
     private AdviceService adviceService;
+
+    @Mock
+    private HabitAssignService habitAssignService;
 
     @InjectMocks
     ManagementHabitController managementHabitController;
@@ -104,6 +109,9 @@ class ManagementHabitControllerTest {
         List<ShoppingListItemManagementDto> hshops = shoppingListItemService.getShoppingListByHabitId(1L);
         HabitManagementDto habit = managementHabitService.getById(1L);
         List<LanguageTranslationDTO> hadvices = adviceService.getAllByHabitIdAndLanguage(1L, "en");
+        Long acquired = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.ACQUIRED);
+        Long inProgress = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.INPROGRESS);
+        Long canceled = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(1L, HabitAssignStatus.CANCELLED);
 
         this.mockMvc.perform(get(habitManagementLink + "/1")
             .param("page", "0")
@@ -113,6 +121,9 @@ class ManagementHabitControllerTest {
             .andExpect(model().attribute("hshops", hshops))
             .andExpect(model().attribute("habit", habit))
             .andExpect(model().attribute("hadvices", hadvices))
+            .andExpect(model().attribute("acquired", acquired))
+            .andExpect(model().attribute("inProgress", inProgress))
+            .andExpect(model().attribute("canceled", canceled))
             .andExpect(status().isOk());
     }
 

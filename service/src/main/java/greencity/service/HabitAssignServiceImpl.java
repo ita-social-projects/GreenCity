@@ -454,6 +454,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
+    public Long getNumberHabitAssignsByHabitIdAndStatus(Long habitId, HabitAssignStatus status) {
+        List<HabitAssign> habitAssigns =
+            habitAssignRepo.findAllHabitAssignsByStatusAndHabitId(status, habitId);
+        return (long) habitAssigns.size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusAcquired(Long userId, String language) {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
