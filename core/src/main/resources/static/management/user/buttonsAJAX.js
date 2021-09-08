@@ -135,6 +135,18 @@ function updateCheckBoxCount(chInt) {
     } else deactivateButton.removeClass("disabled");
 }
 
+let checkedChAdvices = 0;
+function updateCheckBoxCountAdvices(chInt) {
+    let chBox = $('#advicescheckbox' + chInt);
+    chBox.is(":checked") ? checkedChAdvices++ : checkedChAdvices--;
+    console.log('advices '+checkedChAdvices)
+
+    let deactivateButton = $('#unlinktable2');
+    if (checkedChAdvices === 0) {
+        deactivateButton.addClass("disabled");
+    } else deactivateButton.removeClass("disabled");
+}
+
 $(document).ready(function () {
     let deactivateButton = $("#btnDeactivate");
 

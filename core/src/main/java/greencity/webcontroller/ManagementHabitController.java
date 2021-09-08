@@ -8,6 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -36,6 +37,7 @@ public class ManagementHabitController {
     private final HabitFactService habitFactService;
     private final ShoppingListItemService shoppingListItemService;
     private final AdviceService adviceService;
+    private final HabitAssignService habitAssignService;
 
     /**
      * Returns management page with all {@link HabitVO}'s.
@@ -101,6 +103,12 @@ public class ManagementHabitController {
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
         model.addAttribute("hadvices", adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage()));
+        model.addAttribute("acquired",
+            habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.ACQUIRED));
+        model.addAttribute("inProgress",
+            habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.INPROGRESS));
+        model.addAttribute("canceled",
+            habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.CANCELLED));
         return "core/management_user_habit";
     }
 

@@ -1,8 +1,8 @@
 package greencity.repository;
 
 import greencity.DaoApplication;
-import greencity.entity.EcoNews;
 import greencity.entity.HabitAssign;
+import greencity.enums.HabitAssignStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +36,12 @@ class HabitAssignRepoTest {
         List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusAcquired(3L);
         assertEquals(1L, habitAssignList.size());
         assertEquals(4L, habitAssignList.get(0).getId());
+    }
+
+    @Test
+    void findAllHabitAssignsByStatusTest() {
+        List<HabitAssign> habitAssignList =
+            habitAssignRepo.findAllHabitAssignsByStatusAndHabitId(HabitAssignStatus.INPROGRESS, 1L);
+        assertEquals(1L, habitAssignList.size());
     }
 }

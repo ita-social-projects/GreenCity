@@ -106,7 +106,6 @@
         .complexity-line {
             float: left;
             padding: 10px;
-            display: inline-block;
         }
 
         * {
@@ -148,6 +147,34 @@
             clear: both;
         }
 
+        .complexity-line:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .table-header a {
+            text-align: right;
+        }
+
+        .headline-4 h5 {
+            font-family: Lato;
+            font-size: 32px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 40px;
+            letter-spacing: 0.002em;
+            text-align: left;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+        }
+
+        .headline-4 p {
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+        }
 
     </style>
 </head>
@@ -234,22 +261,23 @@
                     <p class="light-text"> [[#{greenCity.pages.table.duration}]]: [[${habit.defaultDuration}]]
                         [[#{greenCity.pages.table.days}]]</p>
 
-                    <div class="middle">
-                        <div class="multi-range-slider">
-                            <input type="range" id="input-left" min="7" max="56" value="7"
-                                   name="durationFrom"
-                                   style="width: 294px;">
-                            <div class="slider">
-                                <div class="track"></div>
-                                <div class="range"></div>
-                                <div class="thumb left"></div>
-                                <div class="thumb right"></div>
-                            </div>
+
+                    <div class="multi-range-slider">
+                        <input type="range" id="input-left" min="7" max="56" value="7"
+                               name="durationFrom"
+                               style="width: 294px;">
+                        <div class="slider">
+                            <div class="track"></div>
+                            <div class="range"></div>
+                            <div class="thumb left"></div>
+                            <div class="thumb right"></div>
                         </div>
                     </div>
+
                     <div style="margin-top: 5px">
                         <p id="leftText" style="color: #13aa57">7 days</p>
                     </div>
+
 
                     <div class="complexity-line">
                         <p class="light-text" style="display: inline-block;
@@ -272,6 +300,26 @@
                                 <img src="/img/star-filled.png" class="complexity_1">
                                 <img src="/img/star-filled.png" class="complexity_2">
                                 <img src="/img/star-filled.png" class="complexity_3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="complexity-line headline-4">
+                        <div th:switch="${habit.complexity}" style="display: inline-block;
+                                              float: left;">
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${acquired}"></h5>
+                                <p>acquired by:</p>
+                            </div>
+
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${inProgress}"></h5>
+                                <p>in progress:</p>
+                            </div>
+
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${canceled}"></h5>
+                                <p>canceled by:</p>
                             </div>
                         </div>
                     </div>
@@ -345,6 +393,14 @@
                         <img src="/img/arrow-up.svg" alt="arrow-icon">
                     </button>
                 </div>
+                <a id="unlinktable2" class="btn btn-secondary"
+                   data-toggle="modal">
+                    <div>Unlink</div>
+                </a>
+                <a id="linknewtable2" class="btn btn-secondary"
+                   data-toggle="modal">
+                    <div>Link new</div>
+                </a>
             </div>
 
             <div class="table-responsive userpage">
@@ -354,7 +410,7 @@
                         <th style="width: 20px">
                                 <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll2">
-                                    <label for="selectAll"></label>
+                                    <label for="selectAll2"></label>
                                 </span>
                         </th>
                         <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
@@ -367,15 +423,15 @@
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox2"
+                                            <input type="checkbox" th:id="'advicescheckbox'+${iterStatus.count}"
                                                    name="options[]" th:value="${iterStatus.count}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                                   th:onclick="'updateCheckBoxCountAdvices('+${iterStatus.count}+')'">
                                             <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
 
                             <td id="translations2" style="width: 300px">
-                                    <h5 th:text="${advice.getContent()}"></h5>
+                                <h5 th:text="${advice.getContent()}"></h5>
                             </td>
 
                             <td style="width: 52px">Link</td>

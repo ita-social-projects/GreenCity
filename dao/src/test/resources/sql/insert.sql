@@ -514,7 +514,14 @@ VALUES ('Use a towel instead of paper towels and napkins', 'Description', 'Item'
        ('Товары женской гигиены', 'Description', 'Item', 3, 31);
 
 INSERT INTO habit_assign (habit_id, user_id, status, create_date, duration)
-VALUES (1, 1, 'ACTIVE', '2020-09-10 20:00:00', 14);
+VALUES (1, 1, 'ACQUIRED', '2020-09-10 20:00:00', 14),
+       (1, 2, 'ACQUIRED', '2020-09-10 20:00:00', 14),
+       (1, 3, 'INPROGRESS', '2020-09-10 20:00:00', 14),
+       (1, 4, 'INPROGRESS', '2020-09-10 20:00:00', 14),
+       (1, 5, 'CANCELLED', '2020-09-10 20:00:00', 14),
+       (1, 6, 'CANCELLED', '2020-09-10 20:00:00', 14),
+       (1, 7, 'EXPIRED', '2020-09-10 20:00:00', 14)
+;
 
 INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
