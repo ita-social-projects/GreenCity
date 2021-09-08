@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
+import greencity.enums.HabitAssignStatus;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -113,6 +114,16 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto}.
      */
     List<HabitAssignDto> getAllHabitAssignsByHabitIdAndStatusNotCancelled(Long habitId, String language);
+
+    /**
+     * Method to find number of {@code HabitAssign}'s by id and status.
+     * 
+     * @param habitId {@code Habit} id.
+     * @param status  {@code HabitAssignStatus} status.
+     * @return Long number of Acquired.
+     * @author Vira Maksymets
+     */
+    Long getNumberHabitAssignsByHabitIdAndStatus(Long habitId, HabitAssignStatus status);
 
     /**
      * Method to find all {@code HabitAssign}'s by {@code User} id and acquired

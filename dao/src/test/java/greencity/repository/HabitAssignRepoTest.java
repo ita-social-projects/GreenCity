@@ -1,8 +1,8 @@
 package greencity.repository;
 
 import greencity.DaoApplication;
-import greencity.entity.EcoNews;
 import greencity.entity.HabitAssign;
+import greencity.enums.HabitAssignStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +26,22 @@ class HabitAssignRepoTest {
 
     @Test
     void findByHabitIdAndUserIdAndStatusIsCancelledTest() {
-        Long expected = 2L;
-        Long actual = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(2L, 2L).getId();
+        Long expected = 12L;
+        Long actual = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(1L, 2L).getId();
         assertEquals(expected, actual);
     }
 
     @Test
     void findAllByUserIdAndStatusAcquiredTest() {
-        List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusAcquired(3L);
+        List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusAcquired(2L);
         assertEquals(1L, habitAssignList.size());
-        assertEquals(4L, habitAssignList.get(0).getId());
+        assertEquals(16L, habitAssignList.get(0).getId());
+    }
+
+    @Test
+    void findAllHabitAssignsByStatusTest() {
+        List<HabitAssign> habitAssignList =
+            habitAssignRepo.findAllHabitAssignsByStatusAndHabitId(HabitAssignStatus.ACQUIRED, 1L);
+        assertEquals(2L, habitAssignList.size());
     }
 }

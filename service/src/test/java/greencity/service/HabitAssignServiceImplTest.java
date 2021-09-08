@@ -378,6 +378,27 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void getNumberHabitAssignsByHabitIdAndStatusTest() {
+        Long habitId = 1L;
+
+        Language language = ModelUtils.getLanguage();
+        language.setCode("en");
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setLanguage(language);
+
+        List<HabitAssign> habitAssignList = Collections.singletonList(ModelUtils.getHabitAssign());
+
+        when(habitAssignRepo.findAllHabitAssignsByStatusAndHabitId(HabitAssignStatus.ACQUIRED, habitId))
+            .thenReturn(habitAssignList);
+
+        Long actual = habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(habitId, HabitAssignStatus.ACQUIRED);
+
+        assertEquals(habitAssignList.size(), actual);
+
+    }
+
+    @Test
     void deleteAllHabitAssignsByHabit() {
         HabitVO habit = ModelUtils.getHabitVO();
         HabitAssign habitAssign = ModelUtils.getHabitAssign();

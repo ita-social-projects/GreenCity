@@ -22,11 +22,15 @@ VALUES (1, 'image1'),
        (3, 'image3'),
        (4, 'image4');
 
-INSERT INTO habit_assign (id, habit_id, user_id, status, create_date)
-VALUES (1, 1, 1, 'INPROGRESS', '2020-09-09 11:00:00+00'),
-       (2, 2, 2, 'CANCELLED', '2020-09-10 11:00:00+00'),
-       (3, 3, 3, 'INPROGRESS', '2020-09-11 11:00:00+00'),
-       (4, 4, 3, 'ACQUIRED', '2021-07-09 11:00:00+00');
+INSERT INTO habit_assign (habit_id, user_id, status, create_date, duration)
+VALUES (1, 1, 'ACQUIRED', '2020-09-10 20:00:00', 14),
+       (1, 2, 'ACQUIRED', '2020-09-10 20:00:00', 14),
+       (1, 3, 'INPROGRESS', '2020-09-10 20:00:00', 14),
+       (1, 1, 'INPROGRESS', '2020-09-10 20:00:00', 14),
+       (1, 2, 'CANCELLED', '2020-09-10 20:00:00', 14),
+       (1, 3, 'CANCELLED', '2020-09-10 20:00:00', 14),
+       (1, 3, 'EXPIRED', '2020-09-10 20:00:00', 14)
+;
 
 
 INSERT INTO habit_translation (id, name, description, habit_item, language_id, habit_id)
