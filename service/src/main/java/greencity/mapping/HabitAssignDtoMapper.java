@@ -1,9 +1,7 @@
 package greencity.mapping;
 
 import greencity.dto.habit.HabitAssignDto;
-import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.entity.HabitAssign;
-import java.util.stream.Collectors;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

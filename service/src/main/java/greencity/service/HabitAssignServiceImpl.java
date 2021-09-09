@@ -721,7 +721,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return boolean.
      */
     private boolean checkIfHabitIsEnrolledOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
-        return habitAssign.getCreateDate()
+        return habitAssign.getCreateDate().toLocalDate()
             .equals(dto.getEnrollDate());
     }
 
