@@ -30,12 +30,6 @@ public class HabitAssignDtoMapper extends AbstractConverter<HabitAssign, HabitAs
             .habitStreak(habitAssign.getHabitStreak())
             .workingDays(habitAssign.getWorkingDays())
             .lastEnrollmentDate(habitAssign.getLastEnrollmentDate())
-            .habitStatusCalendarDtoList(habitAssign.getHabitStatusCalendars().stream().map(
-                habitStatusCalendar -> HabitStatusCalendarDto.builder()
-                    .id(habitStatusCalendar.getId())
-                    .enrollDate(habitStatusCalendar.getEnrollDate())
-                    .build())
-                .collect(Collectors.toList()))
             .build();
     }
 }
