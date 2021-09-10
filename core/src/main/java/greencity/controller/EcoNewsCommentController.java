@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -167,6 +168,7 @@ public class EcoNewsCommentController {
      * @param amountCommentLikesDto dto with id and count likes for comments.
      */
     @MessageMapping("/likeAndCount")
+    @SendTo("/topic/comment")
     public void getCountOfLike(AmountCommentLikesDto amountCommentLikesDto) {
         ecoNewsCommentService.countLikes(amountCommentLikesDto);
     }
