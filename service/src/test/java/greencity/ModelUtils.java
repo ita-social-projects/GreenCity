@@ -22,6 +22,7 @@ import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
@@ -36,6 +37,7 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
+import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
@@ -43,17 +45,25 @@ import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
 import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
+import greencity.dto.user.AuthorDto;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.RecommendedFriendDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserShoppingListItemVO;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.entity.AchievementCategory;
 import greencity.entity.*;
+import greencity.entity.AchievementCategory;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -64,6 +74,9 @@ import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static User TEST_USER = createUser();
@@ -318,6 +331,16 @@ public class ModelUtils {
             .enrollDate(LocalDate.now()).id(1L).build();
     }
 
+    public static HabitStatusCalendarVO getHabitStatusCalendarVO() {
+        return HabitStatusCalendarVO.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
+
+    public static HabitStatusCalendar getHabitStatusCalendar() {
+        return HabitStatusCalendar.builder()
+            .enrollDate(LocalDate.now()).id(1L).build();
+    }
+
     public static HabitAssignDto getHabitAssignDto() {
         return HabitAssignDto.builder()
             .id(1L)
@@ -349,6 +372,7 @@ public class ModelUtils {
             .duration(0)
             .habitStreak(0)
             .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
             .lastEnrollmentDate(ZonedDateTime.now())
             .build();
     }
@@ -375,6 +399,7 @@ public class ModelUtils {
             .duration(0)
             .habitStreak(0)
             .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
             .lastEnrollmentDate(ZonedDateTime.now())
             .build();
     }
@@ -1423,6 +1448,7 @@ public class ModelUtils {
             .duration(null)
             .habitStreak(1)
             .habitStatistic(null)
+            .habitStatusCalendars(null)
             .lastEnrollmentDate(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
             .build();
     }

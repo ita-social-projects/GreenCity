@@ -51,4 +51,7 @@ public class HabitAssign {
 
     @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
     private List<HabitStatistic> habitStatistic;
+
+    @OneToMany(mappedBy = "habitAssign", cascade = CascadeType.ALL)
+    private List<HabitStatusCalendar> habitStatusCalendars;
 }
