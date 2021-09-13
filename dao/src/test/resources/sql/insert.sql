@@ -526,8 +526,12 @@ VALUES (1, 1, 'ACQUIRED', '2020-09-10 20:00:00', 14),
 INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
 
--- HABITS END --
+INSERT INTO habit_status (working_days, habit_streak, habit_assign_id, last_enrollment)
+VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
+INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
+VALUES ('2020-09-10', 1);
+-- HABITS END --
 
 INSERT INTO news_subscribers (email_address, unsubscribe_token)
 VALUES ('majboroda.artur@mail.com', 'a06b0b4e-8696-419c-a776-611c36f79d39'),
@@ -1456,7 +1460,7 @@ VALUES (1, 1),
        (31, 144);
 
 insert into chat_rooms(name,type,participant_id)
-values('GreenCity Chat','SYSTEM',1);
+values('GreenCity Chat','SYSTEM',1)
 
 insert into chat_rooms_participants (room_id, participant_id)
-select 1, users.id  from users;
+select 1, users.id  from users

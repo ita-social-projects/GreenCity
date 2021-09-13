@@ -490,6 +490,12 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitStatusCalendar getHabitStatusCalendar() {
+        return HabitStatusCalendar.builder()
+            .id(1L)
+            .enrollDate(LocalDate.now()).build();
+    }
+
     public static AdviceTranslation getAdviceTranslation() {
         return AdviceTranslation.builder()
             .id(1L)

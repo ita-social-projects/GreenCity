@@ -4,6 +4,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
+import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
@@ -15,23 +16,21 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
-import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
+import org.hibernate.Hibernate;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -45,6 +44,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final HabitStatisticService habitStatisticService;
+    private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
 
@@ -519,9 +519,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+
         validateForEnroll(dateTime, habitAssign);
 
-        updateHabitAssignAfterEnroll(habitAssign, userId);
+        HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
+            .enrollDate(dateTime).habitAssign(habitAssign).build();
+
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
         return buildHabitAssignDto(habitAssign, "en");
     }
 
@@ -532,10 +536,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param dateTime    {@link LocalDate} date.
      */
     private void validateForEnroll(LocalDate dateTime, HabitAssign habitAssign) {
-        if (habitAssignRepo.findByHabitIdAndUserId(habitAssign.getHabit().getId(), habitAssign.getUser().getId())
-            .isPresent()) {
+        HabitAssignVO habitAssignVO = modelMapper.map(habitAssign, HabitAssignVO.class);
+        HabitStatusCalendarVO habitCalendarVO =
+            habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(
+                dateTime, habitAssignVO);
+        if (habitCalendarVO != null) {
             throw new UserAlreadyHasEnrolledHabitAssign(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
+
         LocalDate today = LocalDate.now();
         LocalDate lastDayToEnroll = today.minusDays(AppConstant.MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL);
         if (!(dateTime.isBefore(today.plusDays(1)) && dateTime.isAfter(lastDayToEnroll))) {
@@ -549,11 +557,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param habitAssign {@link HabitAssign} instance.
      */
-    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, Long userId) {
+    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
+        HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
-        int habitStreak = countNewHabitStreak(Collections.singletonList(habitAssign));
+        List<HabitStatusCalendar> habitStatusCalendars =
+            new ArrayList<>(habitAssign.getHabitStatusCalendars());
+        habitStatusCalendars.add(habitCalendar);
+        habitAssign.setHabitStatusCalendars(habitStatusCalendars);
+
+        int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(userId, AchievementType.COMPARISON,
@@ -595,9 +609,44 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(
                 () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
                     + userId + ", " + habitId));
+
+        deleteHabitStatusCalendarIfExists(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
 
         return modelMapper.map(habitAssign, HabitAssignDto.class);
+    }
+
+    /**
+     * Method checks and calls method for delete if enroll of {@link HabitAssign}
+     * exists.
+     *
+     * @param date        {@link LocalDate} date.
+     * @param habitAssign {@link HabitAssign} instance.
+     */
+    private void deleteHabitStatusCalendarIfExists(LocalDate date, HabitAssign habitAssign) {
+        HabitStatusCalendarVO habitCalendarVO =
+            habitStatusCalendarService
+                .findHabitStatusCalendarByEnrollDateAndHabitAssign(
+                    date, modelMapper.map(habitAssign, HabitAssignVO.class));
+        deleteHabitStatusCalendar(habitAssign, habitCalendarVO);
+    }
+
+    /**
+     * Method deletes enroll of {@link HabitAssign}.
+     *
+     * @param habitCalendarVO {@link HabitStatusCalendarVO} date.
+     * @param habitAssign     {@link HabitAssign} instance.
+     */
+    private void deleteHabitStatusCalendar(HabitAssign habitAssign, HabitStatusCalendarVO habitCalendarVO) {
+        if (habitCalendarVO != null) {
+            List<HabitStatusCalendar> habitCalendars =
+                new ArrayList<>(habitAssign.getHabitStatusCalendars());
+            habitCalendars.removeIf(hc -> hc.getEnrollDate().isEqual(habitCalendarVO.getEnrollDate()));
+            habitAssign.setHabitStatusCalendars(habitCalendars);
+            habitStatusCalendarService.delete(habitCalendarVO);
+        } else {
+            throw new BadRequestException(ErrorMessage.HABIT_IS_NOT_ENROLLED);
+        }
     }
 
     /**
@@ -607,7 +656,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     private void updateHabitAssignAfterUnenroll(HabitAssign habitAssign) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() - 1);
-        habitAssign.setHabitStreak(countNewHabitStreak(Collections.singletonList(habitAssign)));
+        habitAssign.setHabitStreak(countNewHabitStreak(habitAssign.getHabitStatusCalendars()));
 
         habitAssignRepo.save(habitAssign);
     }
@@ -615,17 +664,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * Method counts new habit streak for {@link HabitAssign}.
      *
-     * @param habitCalendars {@link List} of {@link HabitAssign}'s.
+     * @param habitCalendars {@link List} of {@link HabitStatusCalendar}'s.
      * @return int of habit days streak.
      */
-    private int countNewHabitStreak(List<HabitAssign> habitCalendars) {
-        habitCalendars.sort(Comparator.comparing(HabitAssign::getCreateDate).reversed());
+    private int countNewHabitStreak(List<HabitStatusCalendar> habitCalendars) {
+        habitCalendars.sort(Comparator.comparing(HabitStatusCalendar::getEnrollDate).reversed());
 
-        ZonedDateTime today = ZonedDateTime.now();
+        LocalDate today = LocalDate.now();
         int daysStreak = 0;
         int daysPast = 0;
-        for (HabitAssign hc : habitCalendars) {
-            if (today.minusDays(daysPast++).equals(hc.getCreateDate())) {
+        for (HabitStatusCalendar hc : habitCalendars) {
+            if (today.minusDays(daysPast++).equals(hc.getEnrollDate())) {
                 daysStreak++;
             } else {
                 return daysStreak;
@@ -721,8 +770,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return boolean.
      */
     private boolean checkIfHabitIsEnrolledOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
-        return habitAssign.getCreateDate().toLocalDate()
-            .equals(dto.getEnrollDate());
+        for (int i = 0; i < habitAssign.getHabitStatusCalendars().size(); i++) {
+            if (habitAssign.getHabitStatusCalendars().get(i).getEnrollDate()
+                .equals(dto.getEnrollDate())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -773,7 +827,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
         userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
