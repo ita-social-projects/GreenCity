@@ -45,7 +45,6 @@ public class ManagementUserController {
     public String getAllUsers(@RequestParam(required = false, name = "query") String query, Model model,
         UserManagementViewDto userViewDto,
         @ApiIgnore Pageable pageable) {
-
         PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
         model.addAttribute("paging", pageable);
         model.addAttribute("users", found);
