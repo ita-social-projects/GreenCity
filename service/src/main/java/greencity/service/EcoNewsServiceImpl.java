@@ -26,6 +26,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.EcoNewsRepo;
@@ -170,7 +171,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             if (page.getSort().isUnsorted()) {
                 pages = ecoNewsRepo.findAll(page);
             } else {
-                throw new UnsupportedOperationException(ErrorMessage.INVALID_SORTING_VALUE);
+                throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
             }
         }
         return buildPageableAdvancedDto(pages);
