@@ -531,9 +531,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    /**
+     * Customize the response for UnsupportedOperationException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
     @ExceptionHandler(UnsupportedOperationException.class)
     public final ResponseEntity<Object> handleUnsuportedSortException(
-            UnsupportedOperationException ex, WebRequest request) {
+        UnsupportedOperationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
