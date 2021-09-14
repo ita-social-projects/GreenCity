@@ -1,4 +1,4 @@
-function Order() {
+function chageIcons() {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
@@ -45,7 +45,6 @@ function Order() {
 }
 
 let filter=document.querySelectorAll('.filter');
-// console.log()
 for (i=0;i<filter.length;i++){
     let subMenu=filter[i].nextElementSibling;
     let thisFilter=filter[i];
@@ -54,8 +53,7 @@ for (i=0;i<filter.length;i++){
         thisFilter.classList.toggle('active');
     });
 }
-
-function byNameFieldAsc(nameField) {
+function sortByFieldName(nameField){
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
@@ -63,17 +61,14 @@ function byNameFieldAsc(nameField) {
     if (page !== null) {
         urlSearch.set("page", "0");
     }
-
-    if (sort == null) {
+    if(sort==nameField+",ASC"){
+        urlSearch.set("sort", nameField + ",DESC");
+        localStorage.setItem("sort", nameField + ",DESC");
+    }else{
         urlSearch.set("sort", nameField + ",ASC");
-    } else if (sort.includes(nameField)) {
-        sort = sort.toUpperCase();
-        if (!sort.includes("ASC")) {
-            urlSearch.set("sort", nameField + ",ASC");
-        }
+        localStorage.setItem("sort", nameField + ",ASC");
     }
-
-    let url = "/management/users?";
+   let url = "/management/users?";
     $.ajax({
         url: url + urlSearch.toString(),
         type: 'GET',
@@ -82,25 +77,13 @@ function byNameFieldAsc(nameField) {
         }
     });
 }
-
-function byNameFieldDesc(nameField) {
+function saveItemsOnPage(itemsOnPage){
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
-    var sort = urlSearch.get("sort");
-    var page = urlSearch.get("page");
-    if (page !== null) {
-        urlSearch.set("page", "0");
-    }
-    if (sort == null) {
-        urlSearch.set("sort", nameField + ",DESC");
-    } else if (sort.includes(nameField)) {
-        sort = sort.toUpperCase();
-        if (!sort.includes("DESC")) {
-            urlSearch.set("sort", nameField + ",DESC");
-        }
-    }
-
+    localStorage.setItem("size", itemsOnPage);
     let url = "/management/users?";
+    console.log(url);
+    urlSearch.set("size",itemsOnPage);
     $.ajax({
         url: url + urlSearch.toString(),
         type: 'GET',

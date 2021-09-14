@@ -17,7 +17,6 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,16 +46,8 @@ public class ManagementUserController {
         UserManagementViewDto userViewDto,
         @ApiIgnore Pageable pageable) {
         PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
-        model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
-        Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder("");
-        if (!sort.isEmpty()) {
-            for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
-            }
-            model.addAttribute("sortModel", orderUrl);
-        }
+        model.addAttribute("users", found);
 
         return "core/management_user";
     }
