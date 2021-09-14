@@ -167,7 +167,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (page.getSort().isEmpty()) {
             pages = ecoNewsRepo.findAllByOrderByCreationDateDesc(page);
         } else {
-            pages = ecoNewsRepo.findAll(page);
+            if (page.getSort().isUnsorted()) {
+                pages = ecoNewsRepo.findAll(page);
+            } else {
+                throw new UnsupportedOperationException(ErrorMessage.INVALID_SORTING_VALUE);
+            }
         }
         return buildPageableAdvancedDto(pages);
     }
