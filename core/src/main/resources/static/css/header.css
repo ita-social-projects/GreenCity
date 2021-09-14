@@ -482,7 +482,7 @@ header {
     border: solid 1px #ffffff;
 }
 
-.dropdown:hover .dropbtn {
+.dropdown:hover .header{
     background-color: #13aa57;
     color: #ffffff;
     border: solid 1px #ffffff;

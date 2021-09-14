@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" th:href="@{/css/sidebar.css}">
     <script defer type="text/javascript" th:src="@{/management/sidebar/sidebar.js}"></script>
+    <script th:src="@{/management/user/paginationAndSort.js}"></script>
 </head>
 
 <nav id="sidebar" class="menuVertical">
@@ -16,9 +17,9 @@
             </div>
         </block>
         <li>
-            <a th:href="@{/management/users}">
-                <div class="img_n"><img th:src="@{/img/icon_user.png}"></div>
-                <span>[[#{greenCity.sidebar.users}]]</span>
+            <a onclick="Order()" >
+            <div class="img_n"><img th:src="@{/img/icon_user.png}"></div>
+            <span id="to_be_white">[[#{greenCity.sidebar.users}]]</span>
             </a>
         </li>
 
