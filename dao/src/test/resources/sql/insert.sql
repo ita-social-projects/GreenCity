@@ -526,8 +526,6 @@ VALUES (1, 1, 'ACQUIRED', '2020-09-10 20:00:00', 14),
 INSERT INTO habit_statistics (rate, create_date, amount_of_items, habit_assign_id)
 VALUES ('GOOD', '2020-09-10 20:00:00', 5, 1);
 
-INSERT INTO habit_status (working_days, habit_streak, habit_assign_id, last_enrollment)
-VALUES (5, 4, 1, '2020-09-10 20:00:00.823000');
 
 INSERT INTO habit_status_calendar (enroll_date, habit_assign_id)
 VALUES ('2020-09-10', 1);
