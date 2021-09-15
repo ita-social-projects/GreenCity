@@ -361,10 +361,9 @@
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                            <input th:id="'factscheckbox'+${iterStatus.count}"
                                                    name="options[]" th:value="${habitFacts.getId()}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                                   th:onclick="'updateCheckBoxCountFacts('+${iterStatus.count}+')'">
                                     </span>
                             </td>
 
@@ -426,7 +425,6 @@
                                             <input type="checkbox" th:id="'advicescheckbox'+${iterStatus.count}"
                                                    name="options[]" th:value="${iterStatus.count}"
                                                    th:onclick="'updateCheckBoxCountAdvices('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
 
@@ -475,10 +473,9 @@
                         <tr class="light-text">
                             <td style="width: 20px">
                                     <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox3"
+                                            <input type="checkbox" th:id="'checkedChShop'+${iterStatus.count}"
                                                    name="options[]" th:value="${shopitem.id}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                                   th:onclick="'updateCheckBoxCountShop('+${iterStatus.count}+')'">
                                     </span>
                             </td>
 
