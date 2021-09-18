@@ -107,49 +107,12 @@ function clearAllErrorsSpan() {
 }
 
 let checkedCh = 0;
-
 function updateCheckBoxCount(chInt) {
     let chBox = $('#checkbox' + chInt);
-    let deactivateButton = $("#btnDeactivate");
     chBox.is(":checked") ? checkedCh++ : checkedCh--;
     console.log(checkedCh)
+    let deactivateButton = $("#btnDeactivate");
     if (checkedCh === 0) {
-        deactivateButton.addClass("disabled");
-    } else deactivateButton.removeClass("disabled");
-}
-
-let checkedChAdvices = 0;
-function updateCheckBoxCountAdvices(chInt) {
-    let chBox = $('#advicescheckbox' + chInt);
-    chBox.is(":checked") ? checkedChAdvices++ : checkedChAdvices--;
-    console.log('advices '+checkedChAdvices)
-
-    let deactivateButton = $('#unlinktable2');
-    if (checkedChAdvices === 0) {
-        deactivateButton.addClass("disabled");
-    } else deactivateButton.removeClass("disabled");
-}
-
-let checkedChFacts = 0;
-function updateCheckBoxCountFacts(chInt) {
-    let chBox = $('#factscheckbox' + chInt);
-    chBox.is(":checked") ? checkedChAdvices++ : checkedChAdvices--;
-    console.log('Facts '+checkedChAdvices)
-
-    let deactivateButton = $('#unlinktable2');
-    if (checkedChAdvices === 0) {
-        deactivateButton.addClass("disabled");
-    } else deactivateButton.removeClass("disabled");
-}
-
-let checkedChShop = 0;
-function updateCheckBoxCountShop(chInt) {
-    let chBox = $('#shopcheckbox' + chInt);
-    chBox.is(":checked") ? checkedChAdvices++ : checkedChAdvices--;
-    console.log('Shop '+checkedChAdvices)
-
-    let deactivateButton = $('#unlinktable2');
-    if (checkedChAdvices === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
 }

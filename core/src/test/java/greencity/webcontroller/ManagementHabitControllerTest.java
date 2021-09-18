@@ -128,6 +128,42 @@ class ManagementHabitControllerTest {
     }
 
     @Test
+    void unlinkFact() throws Exception {
+        List<Long> idsToDelete = Arrays.asList(1L, 2L);
+        Gson gson = new Gson();
+        String json = gson.toJson(idsToDelete);
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(habitManagementLink + "/1/unlink/fact")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void unlinkAdvice() throws Exception {
+        List<Long> idsToDelete = Arrays.asList(1L, 2L);
+        Gson gson = new Gson();
+        String json = gson.toJson(idsToDelete);
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(habitManagementLink + "/1/unlink/advice")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void unlinkShop() throws Exception {
+        List<Long> idsToDelete = Arrays.asList(1L, 2L);
+        Gson gson = new Gson();
+        String json = gson.toJson(idsToDelete);
+        this.mockMvc.perform(MockMvcRequestBuilders.delete(habitManagementLink + "/1/unlink/shop")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
     void save() throws Exception {
         HabitManagementDto habitManagementDto = new HabitManagementDto();
         Gson gson = new Gson();
