@@ -8,6 +8,7 @@ import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
 import io.swagger.annotations.ApiOperation;
@@ -86,7 +87,6 @@ public class ManagementHabitController {
      *
      * @param id of {@link HabitVO}.
      * @return {@link HabitManagementDto}.
-     *
      * @author Vira Maksymets
      */
     @ApiOperation(value = "Find habit by id.")
@@ -110,6 +110,67 @@ public class ManagementHabitController {
         model.addAttribute("canceled",
             habitAssignService.getNumberHabitAssignsByHabitIdAndStatus(id, HabitAssignStatus.CANCELLED));
         return "core/management_user_habit";
+    }
+
+    /**
+     * Deletes habitFacts by ids in list.
+     *
+     * @param id of {@link HabitVO}.
+     * @return {@link HttpStatus}.
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Deletes habitFacts by ids in list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{id}/unlink/fact")
+    public ResponseEntity<Long> unlinkFact(@PathVariable("id") Long id, @RequestBody Integer[] factsIds) {
+        System.out.println(factsIds[0]);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    /**
+     * Deletes Advices by indexes in list.
+     *
+     * @param id of {@link HabitVO}.
+     * @return {@link HttpStatus}.
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Deletes Advices by ids in list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{id}/unlink/advice")
+    public ResponseEntity<Long> unlinkAdvice(@PathVariable("id") Long id,
+        @ApiIgnore Locale locale,
+        @RequestBody Integer[] advicesIndexes) {
+        List<LanguageTranslationDTO> list = adviceService.getAllByHabitIdAndLanguage(id, locale.getLanguage());
+        list.forEach(System.out::println);
+        System.out.println(advicesIndexes[0]);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
+    }
+
+    /**
+     * Deletes Shopping List Items by indexes in list.
+     *
+     * @param id of {@link HabitVO}.
+     * @return {@link HttpStatus}.
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Deletes Advices by ids in list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{id}/unlink/shop")
+    public ResponseEntity<Long> unlinkShop(@PathVariable("id") Long id, @RequestBody Integer[] shopIds) {
+        System.out.println(shopIds[0]);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     /**

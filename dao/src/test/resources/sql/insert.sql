@@ -1458,7 +1458,7 @@ VALUES (1, 1),
        (31, 144);
 
 insert into chat_rooms(name,type,participant_id)
-values('GreenCity Chat','SYSTEM',1)
+values('GreenCity Chat','SYSTEM',1);
 
 insert into chat_rooms_participants (room_id, participant_id)
-select 1, users.id  from users
+select 1, users.id  from users;
