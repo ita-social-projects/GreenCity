@@ -268,14 +268,13 @@
 
 
                     <div class="multi-range-slider">
-                        <input type="range" id="input-left" min="7" max="56" value="7"
+                        <input type="range" id="input-left" min="7" max="56" th:value="${habit.defaultDuration}"
                                name="durationFrom"
                                style="width: 294px;">
                         <div class="slider">
                             <div class="track"></div>
                             <div class="range"></div>
                             <div class="thumb left"></div>
-                            <div class="thumb right"></div>
                         </div>
                     </div>
 
@@ -345,7 +344,7 @@
                     </button>
                 </div>
                 <div class="complexity-line">
-                    <a id="unlinktable1" class="btn btn-secondary"
+                    <a id="unlinktable1" class="btn btn-secondary disabled"
                        th:onclick="'unlinkFacts('+${habit.id}+')'">
                         <div>Unlink</div>
                     </a>
@@ -411,7 +410,7 @@
                     </button>
                 </div>
                 <div class="complexity-line">
-                    <a id="unlinktable2" class="btn btn-secondary"
+                    <a id="unlinktable2" class="btn btn-secondary disabled"
                        th:onclick="'unlinkAdvices('+${habit.id}+')'">
                         <div>Unlink</div>
                     </a>
@@ -475,7 +474,7 @@
                     </button>
                 </div>
                 <div class="complexity-line">
-                    <a id="unlinktable3" class="btn btn-secondary"
+                    <a id="unlinktable3" class="btn btn-secondary disabled"
                        th:onclick="'unlinkShop('+${habit.id}+')'">
                         <div>Unlink</div>
                     </a>

@@ -31,10 +31,6 @@ class ShoppingListItemResponseDtoMapperTest {
                 shoppingListItemTranslation -> ShoppingListItemTranslationDTO.builder()
                     .id(shoppingListItemTranslation.getId())
                     .content(shoppingListItemTranslation.getContent())
-                    .language(LanguageVO.builder()
-                        .id(shoppingListItemTranslation.getLanguage().getId())
-                        .code(shoppingListItemTranslation.getLanguage().getCode())
-                        .build())
                     .build())
                 .collect(Collectors.toList()))
             .build();

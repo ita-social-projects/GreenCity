@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemTranslationDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.entity.ShoppingListItem;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -25,10 +24,6 @@ public class ShoppingListItemResponseDtoMapper
                 shoppingListItemTranslation -> ShoppingListItemTranslationDTO.builder()
                     .id(shoppingListItemTranslation.getId())
                     .content(shoppingListItemTranslation.getContent())
-                    .language(LanguageVO.builder()
-                        .id(shoppingListItemTranslation.getLanguage().getId())
-                        .code(shoppingListItemTranslation.getLanguage().getCode())
-                        .build())
                     .build())
                 .collect(Collectors.toList()))
             .build();

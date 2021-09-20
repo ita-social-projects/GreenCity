@@ -29,7 +29,7 @@ public interface AdviceService {
      * Method finds all {@link AdviceVO}.
      *
      * @param pageable of {@link Pageable}
-     * @param filter   of {@Link String}
+     * @param filter   of String
      * @return List of {@link AdviceVO}
      * @author Markiyan Derevetskyi
      *
@@ -78,6 +78,16 @@ public interface AdviceService {
      * @author Vitaliy Dzen
      */
     AdviceDto getAdviceByName(String language, String name);
+
+    /**
+     * Method to unlink Advice.
+     *
+     * @param habitId        id of {@link HabitVO}
+     * @param advicesIndexes Integer array of advices Indexes
+     *
+     * @author Vira Maksymets
+     */
+    void unlinkAdvice(String language, Long habitId, Integer[] advicesIndexes);
 
     /**
      * Method saves new {@link AdvicePostDto}.

@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-public class UserServiceImplTest {
+class UserServiceImplTest {
     @Mock
     private UserRepo userRepo;
     @InjectMocks
