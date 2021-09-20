@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemTranslationDTO;
-import greencity.dto.language.LanguageVO;
 import greencity.entity.ShoppingListItem;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;

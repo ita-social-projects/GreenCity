@@ -20,9 +20,7 @@ public class HabitShoppingListItemServiceImpl implements HabitShoppingListItemSe
     @Override
     public void unlinkShoppingListItems(List<Long> shopIds, Long habitId) {
         Habit h = habitRepo.findById(habitId).orElseThrow();
-        shopIds.forEach(sh -> {
-            h.getShoppingListItems().remove(shoppingListItemRepo.findById(sh).orElseThrow());
-        });
+        shopIds.forEach(sh -> h.getShoppingListItems().remove(shoppingListItemRepo.findById(sh).orElseThrow()));
         habitRepo.save(h);
     }
 }

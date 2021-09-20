@@ -160,10 +160,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Integer duration = habitAssign.getDuration();
         Integer defaultDuration = habitAssign.getHabit().getDefaultDuration();
         List<UserShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems();
-        if (duration.equals(defaultDuration) || shoppingListItems.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !duration.equals(defaultDuration) && !shoppingListItems.isEmpty();
     }
 
     /**

@@ -121,7 +121,6 @@ public class ManagementShoppingListItemsController {
     @DeleteMapping("/deleteAll")
     @ResponseBody
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
-        System.out.println(listId);
         return ResponseEntity.status(HttpStatus.OK)
             .body(shoppingListItemService.deleteAllShoppingListItemsByListOfId(listId));
     }
