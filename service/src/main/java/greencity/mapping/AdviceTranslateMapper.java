@@ -12,6 +12,7 @@ public class AdviceTranslateMapper extends AbstractConverter<AdviceTranslation, 
     @Override
     public AdviceDto convert(AdviceTranslation entity) {
         return AdviceDto.builder()
+            .id(entity.getAdvice().getId())
             .content(entity.getContent()).build();
     }
 }
