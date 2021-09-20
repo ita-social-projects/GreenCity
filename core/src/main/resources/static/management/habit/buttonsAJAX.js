@@ -27,7 +27,7 @@ function unlinkFacts(habitId) {
 
     // Ajax request
     $.ajax({
-        url: link + habitId + '/unlink/fact',
+        url: '/management/facts/deleteAll',
         type: 'DELETE',
         dataType: 'json',
         contentType: 'application/json',
@@ -65,7 +65,7 @@ function unlinkAdvices(habitId) {
 
     // Ajax request
     $.ajax({
-        url: link + habitId + '/unlink/advice',
+        url: '/management/advices/' + habitId + '/unlink/advice',
         type: 'DELETE',
         dataType: 'json',
         contentType: 'application/json',
@@ -104,7 +104,7 @@ function unlinkShop(habitId) {
 
     // Ajax request
     $.ajax({
-        url: link + habitId + '/unlink/shop',
+        url: '/management/shopping-list-items/unlink/' + habitId,
         type: 'DELETE',
         dataType: 'json',
         contentType: 'application/json',

@@ -20,6 +20,7 @@ class AdviceTranslateMapperTest {
         AdviceTranslation adviceTranslation = ModelUtils.getAdviceTranslation();
 
         AdviceDto expected = AdviceDto.builder()
+            .id(adviceTranslation.getAdvice().getId())
             .content(adviceTranslation.getContent())
             .build();
 

@@ -2,18 +2,11 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.comment.CommentAdminDto;
-import greencity.dto.comment.CommentReturnDto;
-import greencity.dto.filter.FilterHabitDto;
-import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.entity.Comment;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
@@ -28,7 +21,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
@@ -39,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-public class ManagementHabitServiceImplTest {
+class ManagementHabitServiceImplTest {
 
     @Mock
     private HabitRepo habitRepo;
@@ -91,7 +83,7 @@ public class ManagementHabitServiceImplTest {
     void saveHabitAndTranslationsTest() {
         when(languageService.findByCode("en")).thenReturn(LanguageDTO.builder().id(1L).code("en").build());
         when(modelMapper.map(languageService.findByCode("en"),
-            Language.class)).thenReturn(Language.builder().id(1l).code("en").build());
+            Language.class)).thenReturn(Language.builder().id(1L).code("en").build());
         HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1L)
             .image(AppConstant.DEFAULT_HABIT_IMAGE)
             .habitTranslations(Arrays.asList(
@@ -123,9 +115,9 @@ public class ManagementHabitServiceImplTest {
 
     @Test
     void updateTest() {
-        when(habitRepo.findById(1l)).thenReturn(Optional.of(Habit.builder().id(1l).habitTranslations(Arrays
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(Habit.builder().id(1L).habitTranslations(Arrays
             .asList(HabitTranslation.builder().habitItem("Item").description("Description")
-                .language(Language.builder().id(1l).code("en").build()).name("Name").build()))
+                .language(Language.builder().id(1L).code("en").build()).name("Name").build()))
             .build()));
         HabitManagementDto habitManagementDto = HabitManagementDto.builder().id(1l).image("image")
             .habitTranslations(Arrays
@@ -135,7 +127,8 @@ public class ManagementHabitServiceImplTest {
         Map<String, HabitTranslationManagementDto> managementDtoMap = habitManagementDto.getHabitTranslations().stream()
             .collect(Collectors.toMap(HabitTranslationManagementDto::getLanguageCode,
                 Function.identity()));
-        Habit habit = habitRepo.findById(1l).orElse(null);
+        Habit habit = habitRepo.findById(1L).orElse(null);
+        assert habit != null;
         habit.getHabitTranslations().forEach(
             ht -> enhanceTranslationWithDto(managementDtoMap.get(ht.getLanguage().getCode()), ht));
         when(habitRepo.save(habit)).thenReturn(habit);

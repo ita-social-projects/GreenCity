@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationManagementDto;
@@ -11,16 +12,8 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongIdException;
-import greencity.dto.filter.FilterHabitDto;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import greencity.repository.options.HabitFilter;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,6 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link ManagementHabitService}.
