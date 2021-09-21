@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
@@ -12,8 +13,11 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import greencity.enums.Role;
+import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class ManagementUserController {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final UserService userService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -109,6 +114,23 @@ public class ManagementUserController {
     @ResponseBody
     public List<UserManagementDto> findFriendsById(@PathVariable Long id) {
         return restClient.findUserFriendsByUserId(id);
+    }
+
+    /**
+     * Method that change user's Role {@link Role} by given id.
+     *
+     * @param id          {@link Long} - user's id.
+     * @param userRole    {@link String} - new user's Role.
+     * @param currentUser {@link UserVO} - admin profile.
+     * @author Stepan Tehlivets.
+     */
+    @GetMapping("/{id}/{role}")
+    public String changeRole(@PathVariable Long id,
+        @PathVariable(name = "role") String userRole,
+        @CurrentUser UserVO currentUser, HttpServletRequest req) {
+        Role role = Role.valueOf(userRole);
+        userService.updateRole(id, role, currentUser.getEmail());
+        return "redirect:/management/users";
     }
 
     /**

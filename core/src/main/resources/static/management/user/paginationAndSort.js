@@ -1,6 +1,5 @@
 function Order() {
     var allParam = window.location.search;
-    var urlSearch = new URLSearchParams(allParam);
     var url = "/management/users?";
 
 
@@ -19,4 +18,13 @@ function Order() {
     window.location.href = url;
 
 
+}
+
+
+function findSize(){
+    return localStorage.getItem("size");
+}
+
+function findSort(){
+    return localStorage.getItem("sort");
 }

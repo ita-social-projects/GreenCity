@@ -101,6 +101,18 @@ function otherCheck() {
         document.getElementById("othertext").disabled = true;
     }
 }
+function changeRole(userId,role){
+     var href = "/management/users/"+userId+"/"+role;
+    console.log(userId);
+    console.log(role);
+    $.ajax({
+        url: href,
+        type: 'get',
+        success: function (data) {
+            location.reload();
+        },
+    });
+}
 
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
