@@ -10,7 +10,6 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.entity.Advice;
 import greencity.entity.Habit;
-import greencity.entity.localization.AdviceTranslation;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;

@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitShoppingListItemServiceImplTest {
@@ -47,5 +46,7 @@ class HabitShoppingListItemServiceImplTest {
         when(shoppingListItemRepo.findById(anyLong())).thenReturn(java.util.Optional.ofNullable(shoppingListItem));
         when(habitRepo.save(h)).thenReturn(h);
         habitShoppingListItemService.unlinkShoppingListItems(shopIds, habitId);
+
+        verify(habitRepo, times(1)).save(h);
     }
 }
