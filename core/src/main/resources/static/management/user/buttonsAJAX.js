@@ -103,8 +103,6 @@ function otherCheck() {
 }
 function changeRole(userId,role){
      var href = "/management/users/"+userId+"/"+role;
-    console.log(userId);
-    console.log(role);
     $.ajax({
         url: href,
         type: 'get',

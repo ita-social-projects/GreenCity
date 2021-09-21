@@ -13,7 +13,6 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import greencity.enums.Role;
@@ -127,7 +126,7 @@ public class ManagementUserController {
     @GetMapping("/{id}/{role}")
     public String changeRole(@PathVariable Long id,
         @PathVariable(name = "role") String userRole,
-        @CurrentUser UserVO currentUser, HttpServletRequest req) {
+        @CurrentUser UserVO currentUser) {
         Role role = Role.valueOf(userRole);
         userService.updateRole(id, role, currentUser.getEmail());
         return "redirect:/management/users";
