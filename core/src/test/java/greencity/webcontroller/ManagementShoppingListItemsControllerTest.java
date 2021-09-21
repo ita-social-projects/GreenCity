@@ -3,12 +3,13 @@ package greencity.webcontroller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.language.LanguageDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemViewDto;
-import greencity.dto.language.LanguageDTO;
-import greencity.service.ShoppingListItemService;
+import greencity.service.HabitShoppingListItemServiceImpl;
 import greencity.service.LanguageService;
+import greencity.service.ShoppingListItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,9 @@ class ManagementShoppingListItemsControllerTest {
 
     @Mock
     private ShoppingListItemService shoppingListItemService;
+
+    @Mock
+    private HabitShoppingListItemServiceImpl habitShoppingListItemService;
 
     @Mock
     private LanguageService languageService;
@@ -183,4 +187,17 @@ class ManagementShoppingListItemsControllerTest {
         verify(languageService, times(2)).getAllLanguages();
     }
 
+    @Test
+    void unlinkShoppingListItems() throws Exception {
+        List<Long> shopIds = List.of(1L, 3L);
+        Long habitId = 1L;
+
+        mockMvc.perform(delete(managementShoppingListLink + "/unlink/" + habitId)
+            .content(String.valueOf(shopIds))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(habitShoppingListItemService).unlinkShoppingListItems(shopIds, habitId);
+    }
 }

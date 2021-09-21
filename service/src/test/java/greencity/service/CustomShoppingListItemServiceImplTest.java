@@ -62,7 +62,7 @@ class CustomShoppingListItemServiceImplTest {
     @InjectMocks
     private CustomShoppingListItemServiceImpl customShoppingListItemService;
 
-    private User user =
+    private final User user =
         User.builder()
             .id(1L)
             .name("Test Testing")
@@ -75,11 +75,11 @@ class CustomShoppingListItemServiceImplTest {
             .customShoppingListItems(new ArrayList<>())
             .build();
 
-    private Habit habit = Habit.builder()
+    private final Habit habit = Habit.builder()
         .id(1L)
         .build();
 
-    private CustomShoppingListItem item =
+    private final CustomShoppingListItem item =
         CustomShoppingListItem.builder()
             .id(1L)
             .habit(habit)
@@ -250,11 +250,11 @@ class CustomShoppingListItemServiceImplTest {
         when(customShoppingListItemRepo.findByUserIdAndItemId(any(), anyLong())).thenReturn(null);
         Exception thrown1 = assertThrows(NotFoundException.class,
             () -> customShoppingListItemService.updateItemStatus(64L, 1L, "DONE"));
-        assertEquals(thrown1.getMessage(), ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID);
+        assertEquals(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID, thrown1.getMessage());
         when(customShoppingListItemRepo.findByUserIdAndItemId(12L, 2L)).thenReturn(customShoppingListItem1);
         Exception thrown2 = assertThrows(BadRequestException.class,
             () -> customShoppingListItemService.updateItemStatus(12L, 2L, "NOTDONE"));
-        assertEquals(thrown2.getMessage(), ErrorMessage.INCORRECT_INPUT_ITEM_STATUS);
+        assertEquals(ErrorMessage.INCORRECT_INPUT_ITEM_STATUS, thrown2.getMessage());
     }
 
     @Test
