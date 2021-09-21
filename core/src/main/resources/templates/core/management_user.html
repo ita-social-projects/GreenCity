@@ -253,10 +253,11 @@
                                         </button>
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content role">
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">user
-                                            </a>
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
+
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_ADMIN\');'"
+                                               th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_USER\');'" th:if="${!user.role.name().equals('ROLE_USER')}">user</a>
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_MODERATOR\');'" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
                                         </div>
                                     </div>
                                 </td>
@@ -275,7 +276,7 @@
                                 </td>
                                 <td th:if="${user.userStatus.name().equals('ACTIVATED')}"  class="whiteHover lightgreen">
                                     <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        <button class="dropbtn status"  th:text="active">
                                         </button>
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -294,7 +295,7 @@
                                         <div class="dropdown-content status">
                                             <a th:href="@{/management/users/reasons/(id=${user.id})}"
                                                class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">activatrd</a>
+                                               data-toggle="modal">active</a>
                                             <a th:href="@{/management/users/lang/(id=${user.id})}"
                                                class="deactivate-user eDeactBtn" data-toggle="modal">deactivated
                                             </a>
@@ -309,7 +310,7 @@
                                         <div class="dropdown-content status">
                                             <a th:href="@{/management/users/reasons/(id=${user.id})}"
                                                class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">activated</a>
+                                               data-toggle="modal">active</a>
                                             <a href="#">warned</a>
                                         </div>
                                     </div>

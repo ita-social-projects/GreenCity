@@ -1,6 +1,4 @@
 function Order() {
-    var allParam = window.location.search;
-    var urlSearch = new URLSearchParams(allParam);
     var url = "/management/users?";
 
 
