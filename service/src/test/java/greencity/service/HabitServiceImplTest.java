@@ -2,17 +2,15 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
-import java.util.*;
+import greencity.repository.ShoppingListItemTranslationRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +22,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -37,8 +40,6 @@ class HabitServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
-    @Mock
-    private ShoppingListItemRepo shoppingListItemRepo;
     @InjectMocks
     private HabitServiceImpl habitService;
 

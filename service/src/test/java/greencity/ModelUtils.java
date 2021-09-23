@@ -5,6 +5,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.dto.advice.AdviceDto;
 import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceTranslationVO;
 import greencity.dto.advice.AdviceVO;
@@ -1153,6 +1154,14 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .translations(getHabitFactTranslationUpdateDtos())
+            .build();
+    }
+
+    public static AdviceDto getAdviceDto() {
+        return AdviceDto.builder()
+            .id(1L)
+            .content("name")
+            .habit(getHabitDto())
             .build();
     }
 
