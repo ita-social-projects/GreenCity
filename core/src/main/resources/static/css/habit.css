@@ -1,0 +1,140 @@
+#title_name {
+    font-family: Lato;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 44px;
+    letter-spacing: 0.002em;
+    text-align: left;
+    color: #000000;
+}
+
+.light-text, p {
+    font-family: Lato;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0em;
+    text-align: left;
+
+    margin: 0;
+}
+
+.wrapper {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.wrapper > * {
+    padding: 10px;
+    flex: 1 100%;
+}
+
+@media all and (min-width: 800px) {
+    .aside-1 {
+        order: 1;
+    }
+
+    .main {
+        order: 2;
+    }
+
+    .aside-2 {
+        order: 3;
+    }
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    background-color: #13AA57;
+    height: 3px;
+    border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background-color: #13AA57;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 10px;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.complexity-line {
+    float: left;
+    padding: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 33.33%;
+    padding: 10px;
+}
+
+.column table, td, th {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.column .main tr {
+    position: absolute;
+    width: 438px;
+    left: calc(50% - 438px / 2 + 124px);
+    top: 25.9%;
+    bottom: 72.13%;
+}
+
+.aside-1 tr {
+    display: flex;
+    height: 38px;
+    left: 281px;
+    top: 428px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.complexity-line:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.table-header a {
+    text-align: right;
+}
+
+.headline-4 h5 {
+    font-family: Lato;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: 0.002em;
+    text-align: left;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
+
+.headline-4 p {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
