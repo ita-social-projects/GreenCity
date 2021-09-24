@@ -44,13 +44,4 @@ class FileServiceControllerTest {
 
         verify(fileService).upload(file);
     }
-
-    @Test
-    void convertToMultipartImageTest() throws Exception {
-        String image = "image.jpg";
-        mockMvc.perform(multipart("/files/convert" + "?image=" + image))
-            .andExpect(status().isOk());
-
-        verify(fileService).convertToMultipartImage(image);
-    }
 }
