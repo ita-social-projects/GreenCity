@@ -14,6 +14,8 @@ import greencity.dto.user.UserVO;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import greencity.enums.Role;
 import greencity.service.UserService;
@@ -25,9 +27,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+@Validated
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/users")
@@ -143,7 +147,7 @@ public class ManagementUserController {
     @PostMapping("/deactivate")
     public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(
         @RequestParam("id") Long id,
-        @RequestBody List<String> userReasons) {
+        @RequestBody @NotEmpty List<@Size(min = 9) String> userReasons) {
         restClient.deactivateUser(id, userReasons);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
