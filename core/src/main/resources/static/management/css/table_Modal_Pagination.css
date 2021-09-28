@@ -356,7 +356,7 @@ table.table tr th:last-child {
     width: 100px;
 }
 
-table.table-striped tbody tr{
+table.table-striped tbody tr {
     background-color: #e5ebef;
     white-space: nowrap;
 }
@@ -761,7 +761,8 @@ table.table .avatar {
     margin-top: 30px;
     border-radius: 0;
 }
-.arrow{
+
+.arrow {
     cursor: pointer;
     width: 12px;
     height: 6px;
@@ -795,7 +796,7 @@ table.table .avatar {
 }*/
 
 .table-filter-icon {
-    background-image: url("/img/filter-icon.svg") ;
+    background-image: url("/img/filter-icon.svg");
     width: 16px;
     height: 12px;
     float: right;
@@ -809,7 +810,7 @@ table.table .avatar {
     height: 16px;
     float: right;
     cursor: pointer;
-    margin-top:5px;
+    margin-top: 5px;
 }
 
 .table-edit-icon, .table-edit-translation-icon {
@@ -818,7 +819,7 @@ table.table .avatar {
     height: 12px;
     float: right;
     cursor: pointer;
-    margin-top:5px;
+    margin-top: 5px;
 }
 
 .cut-text {
@@ -1007,10 +1008,11 @@ table.table .avatar {
 
 }
 
-.change_color{
+.change_color {
     filter: invert(44%) sepia(11%) saturate(607%) hue-rotate(164deg) brightness(93%) contrast(80%);
 }
-.dropdown:hover .change_color{
+
+.dropdown:hover .change_color {
     filter: invert(32%) sepia(38%) saturate(579%) hue-rotate(94deg) brightness(96%) contrast(83%);
 }
 
@@ -1101,6 +1103,7 @@ table.table .avatar {
 }
 
 .deactivation-reasons {
+    color: black;
     margin-bottom: 0;
     margin-left: 12px;
 }
@@ -1112,7 +1115,8 @@ table.table .avatar {
 
 .modal-title-act {
     text-align: center !important;
-    color: #13aa57;
+    padding-top: 40px;
+    padding-bottom: 25px;
 }
 
 .modal-body-act1 {
@@ -1121,15 +1125,17 @@ table.table .avatar {
 }
 
 .modal-body-act {
-    text-align: center;
     margin: 0 !important;
 }
 
 .reason {
-    text-align: center;
+    margin-left: 25px;
+    color: #000000;
+    margin-top: 5px;
     width: 100%;
     display: inline-block;
 }
+
 .user-lang {
     width: 100%;
     display: inline-block;
@@ -1147,12 +1153,19 @@ table.table .avatar {
     margin-bottom: 24px;
 }
 
+.custom-reason:focus {
+    border-color: red;
+}
+
 .modal .modal-header, .modal .modal-body, .modal .modal-footer {
     padding: 0 40px;
     border: none !important;
+
 }
 
 .modal .modal-content {
+    padding-bottom: 40px;
+    box-sizing: border-box;
     border-radius: 3px;
     font-size: 14px;
 }
@@ -1216,7 +1229,6 @@ table.table .avatar {
 
 .errorSpan {
     color: red;
-    font-style: italic;
 }
 
 .main-search {
@@ -1229,7 +1241,8 @@ table.table .avatar {
     margin-top: 5px;
     vertical-align: middle;
 }
-.search-submit-btn{
+
+.search-submit-btn {
     visibility: hidden;
 }
 
@@ -1348,7 +1361,13 @@ td input[type=search] {
 }
 
 .btn-primary {
-    background-color: #9CA7B0;
+    background-color: #13AA57;
+    border: 1px solid #13AA57;
+    box-sizing: border-box;
+    border-radius: 4px;
+    width: 98px;
+    height: 40px;
+    margin-top: 25px;
 }
 
 .btn-primary:hover {
@@ -1391,6 +1410,7 @@ td input[type=search] {
     height: 40px;
     display: flex;
     justify-content: center;
+    margin-top: 25px;
 }
 
 .btn-tertiary:hover {
@@ -1443,7 +1463,7 @@ a#deactivateAllSubmit.btn.btn-danger {
     height: 59px;
 }
 
-a#deactivateOneSubmit.btn.btn-danger {
+a#deactivateOneSubmit.btn.btdeactivateUserModaln-danger {
     vertical-align: middle;
 }
 
@@ -1490,6 +1510,8 @@ a#deactivateOneSubmit.btn.btn-danger {
     height: 16px;
     width: 16px;
     margin: 10px 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
 }
 
 .table-hover thead tr:hover th {
@@ -1526,12 +1548,12 @@ button#searchByForUser {
     width: 90px;
 }
 
-.habit_complexity{
+.habit_complexity {
     white-space: nowrap;
 }
 
-.habit_edit_descriptions{
-    position:fixed;
+.habit_edit_descriptions {
+    position: fixed;
     display: none;
     height: 400px;
     width: 660px;
@@ -1541,6 +1563,7 @@ button#searchByForUser {
     border-radius: 4px;
     z-index: 1000;
 }
+
 .input_translation {
     display: flex;
     flex-direction: row;
@@ -1556,7 +1579,8 @@ button#searchByForUser {
     box-sizing: border-box;
     border-radius: 4px;
 }
-.btn_modal{
+
+.btn_modal {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -1575,6 +1599,7 @@ button#searchByForUser {
     font-size: 16px;
     border-color: #13AA57;
 }
+
 .save_changes_btn {
     background: #13AA57;
     color: #ffffff;
@@ -1584,23 +1609,23 @@ button#searchByForUser {
 .cancel_btn {
 
     background-color: #ffffff;
-    color:  #13AA57;
+    color: #13AA57;
 }
 
-.habit_img{
-    height:34px;
-    width:auto;
+.habit_img {
+    height: 34px;
+    width: auto;
 }
 
-.column-credo-text{
-    white-space:nowrap;
+.column-credo-text {
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     height: 39px;
     max-width: 195px;
 }
 
-#upload_image{
+#upload_image {
     height: 212px;
     width: auto;
     max-width: 456px;
@@ -1609,59 +1634,68 @@ button#searchByForUser {
     top: 169px;
 }
 
-#upload_image:hover{
+#upload_image:hover {
     background: #FFFFFF;
     opacity: 0.8;
     border: 1px dashed #9CA7B0;
     box-sizing: border-box;
     border-radius: 4px;
 }
+
 .dropdown:hover .dropbtn.size {
-        background: white;
-        color: #9CA7B0;
+    background: white;
+    color: #9CA7B0;
 }
-a.lightgrey{
+
+a.lightgrey {
     color: #9CA7B0 !important;
 }
 
-    .dropdown.status:hover .rotate{
-    transform:rotateX(180deg);
+.dropdown.status:hover .rotate {
+    transform: rotateX(180deg);
 }
 
-.cyan{
+.cyan {
     background-color: #E5F2FF;
 }
-.lightgreen{
+
+.lightgreen {
     background-color: #E7F7EE;
 }
-.lightmustard{
+
+.lightmustard {
     background-color: #fff7cf;
 }
-.lightpink{
+
+.lightpink {
     background-color: #FCE0DE;
 }
-.lightgreen:hover , .lightpink:hover, .lightmustard:hover,.cyan:hover{
-    background: white ;
+
+.lightgreen:hover, .lightpink:hover, .lightmustard:hover, .cyan:hover {
+    background: white;
 }
-.sorting{
+
+.sorting {
     right: 15px;
 }
 
 
-.fas.fa-chevron-up{
+.fas.fa-chevron-up {
     position: relative;
     left: 70%;
     filter: invert(66%) sepia(47%) saturate(7431%) hue-rotate(117deg) brightness(93%) contrast(85%);
 
 }
-.fas.fa-chevron-down{
+
+.fas.fa-chevron-down {
     position: relative;
     left: 70%;
     filter: invert(66%) sepia(47%) saturate(7431%) hue-rotate(117deg) brightness(93%) contrast(85%);
-    transform:rotateX(180deg);
+    transform: rotateX(180deg);
 }
-.sorting{
-   position: relative;
+
+.sorting {
+    position: relative;
     left: 60%;
     filter: invert(44%) sepia(8%) saturate(692%) hue-rotate(164deg) brightness(96%) contrast(93%);
 }
