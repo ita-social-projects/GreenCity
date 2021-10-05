@@ -1432,7 +1432,9 @@ td input[type=search] {
     border-radius: 4px;
 
 }
-
+#deactivateOneSubmit{
+    margin-top: 25px;
+}
 .btn-remove:hover {
     color: #fff;
     background-color: #B21D15;
