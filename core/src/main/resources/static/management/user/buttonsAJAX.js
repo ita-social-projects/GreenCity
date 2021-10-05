@@ -84,7 +84,6 @@ function saveItemsOnPage(itemsOnPage) {
     var urlSearch = new URLSearchParams(allParam);
     localStorage.setItem("size", itemsOnPage);
     let url = "/management/users?";
-    console.log(url);
     urlSearch.set("size", itemsOnPage);
     $.ajax({
         url: url + urlSearch.toString(),
@@ -306,7 +305,7 @@ $(document).ready(function () {
         if (otherClick.checked === true) {
             listReasons.push($("input#othertext").val() + "{" + globalVariable + "}");
             if ($("input#othertext").val().length <= 5) {
-                $(document.getElementById('errorDeactivateUser')).text("Pleae fill in the other reason field min 5 symbols or uncheck the other reason ");
+                $(document.getElementById('errorDeactivateUser')).text("Please fill in the other reason field min 5 symbols or uncheck the other reason ");
                 $("input#othertext").focus();
 
                 $("input#othertext").focus().css("border-color", "red");
@@ -332,7 +331,7 @@ $(document).ready(function () {
         });
     });
 
-    // Aactivate user button (popup)
+    // Activate user button (popup)
     $('td .activate-user.eActBtn').on('click', function (event) {
         event.preventDefault();
         let localStorage = window.localStorage;
@@ -344,17 +343,17 @@ $(document).ready(function () {
         let updateHref = href + "&admin=" + currentLang;
         $('#activateUserModal').modal();
         $('#activateOneSubmit').attr('href', href);
-        if (document.getElementsByClassName('reason').length === 0) {
-            $.get(updateHref, function (allReasons, status) {
-                allReasons.forEach(item => {
-                    let reason = document.createElement('div');
-                    reason.classList.add('reason');
-
-                    reason.innerHTML = `<div class="reason"> ${item.toString()}</div>
-                `;
-                    document.querySelector('#reasons').appendChild(reason);
-                });
+        $.get(updateHref, function (allReasons, status) {
+            allReasons.forEach(item => {
+                let reason = document.createElement('div');
+                reason.classList.add('reason');
+                reason.innerHTML = `<div class="reason"> ${item.toString()}</div>`;
+                document.querySelector('#reasons').appendChild(reason);
             });
+        });
+        const elements = document.getElementsByClassName('reason');
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
         }
     });
     // Confirm deactivation button in activateUserModal
