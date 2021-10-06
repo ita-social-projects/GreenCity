@@ -28,8 +28,6 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.List;
 import java.util.Locale;
 
-import static greencity.enums.EmailNotification.*;
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/factoftheday")

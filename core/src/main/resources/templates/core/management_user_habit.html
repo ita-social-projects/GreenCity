@@ -7,6 +7,7 @@
     <title>GreenCity</title>
     <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
     <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/habit.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/sidebar.css}">
@@ -27,6 +28,7 @@
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/buttonsAJAX.js}"></script>
     <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
+    <script th:src="@{/management/habit/buttonsAJAX.js}"></script>
     <script>
         $(function () {
             $('.pr').liTextLength({
@@ -36,147 +38,6 @@
             });
         });
     </script>
-
-    <style>
-
-        #title_name {
-            font-family: Lato;
-            font-size: 36px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: 44px;
-            letter-spacing: 0.002em;
-            text-align: left;
-            color: #000000;
-        }
-
-        .light-text, p {
-            font-family: Lato;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 24px;
-            letter-spacing: 0em;
-            text-align: left;
-
-            margin: 0;
-        }
-
-        .wrapper {
-            display: flex;
-            flex-flow: row wrap;
-        }
-
-        .wrapper > * {
-            padding: 10px;
-            flex: 1 100%;
-        }
-
-        @media all and (min-width: 800px) {
-            .aside-1 {
-                order: 1;
-            }
-
-            .main {
-                order: 2;
-            }
-
-            .aside-2 {
-                order: 3;
-            }
-        }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            background-color: #13AA57;
-            height: 3px;
-            border-radius: 2px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            background-color: #13AA57;
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 10px;
-            overflow: visible;
-            cursor: pointer;
-        }
-
-        .complexity-line {
-            float: left;
-            padding: 10px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Create three equal columns that floats next to each other */
-        .column {
-            float: left;
-            width: 33.33%;
-            padding: 10px;
-        }
-
-        .column table, td, th {
-            border: 1px solid black;
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        .column .main tr {
-            position: absolute;
-            width: 438px;
-            left: calc(50% - 438px / 2 + 124px);
-            top: 25.9%;
-            bottom: 72.13%;
-        }
-
-        .aside-1 tr {
-            display: flex;
-            height: 38px;
-            left: 281px;
-            top: 428px;
-        }
-
-        /* Clear floats after the columns */
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .complexity-line:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        .table-header a {
-            text-align: right;
-        }
-
-        .headline-4 h5 {
-            font-family: Lato;
-            font-size: 32px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: 40px;
-            letter-spacing: 0.002em;
-            text-align: left;
-            color: #000000;
-            margin: 0;
-            padding: 0;
-        }
-
-        .headline-4 p {
-            margin: 0;
-            padding: 0;
-            font-size: 12px;
-        }
-
-    </style>
 </head>
 <body>
 <div id="header" th:insert="core/header"></div>
@@ -261,23 +122,20 @@
                     <p class="light-text"> [[#{greenCity.pages.table.duration}]]: [[${habit.defaultDuration}]]
                         [[#{greenCity.pages.table.days}]]</p>
 
-
                     <div class="multi-range-slider">
-                        <input type="range" id="input-left" min="7" max="56" value="7"
+                        <input type="range" id="input-left" min="7" max="56" th:value="${habit.defaultDuration}"
                                name="durationFrom"
                                style="width: 294px;">
                         <div class="slider">
                             <div class="track"></div>
                             <div class="range"></div>
                             <div class="thumb left"></div>
-                            <div class="thumb right"></div>
                         </div>
                     </div>
 
                     <div style="margin-top: 5px">
                         <p id="leftText" style="color: #13aa57">7 days</p>
                     </div>
-
 
                     <div class="complexity-line">
                         <p class="light-text" style="display: inline-block;
@@ -339,6 +197,17 @@
                         <img src="/img/arrow-up.svg" alt="arrow-icon">
                     </button>
                 </div>
+                <div class="complexity-line">
+                    <a id="unlinktable1" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkFacts('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable1" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
+                </div>
             </div>
 
             <div class="table-responsive userpage">
@@ -347,8 +216,8 @@
                     <tr class="table-primary light-text">
                         <th style="width: 20px">
                                 <span class="custom-checkbox">
-                                    <input type="checkbox" id="selectAll">
-                                    <label for="selectAll"></label>
+                                    <input type="checkbox" id="selectAll1">
+                                    <label for="selectAll1"></label>
                                 </span>
                         </th>
                         <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
@@ -359,12 +228,13 @@
                     <tbody id="table1">
                     <th:block class="list-of" th:each="habitFacts, iterStatus :${hfacts.getPage()}">
                         <tr class="light-text">
-                            <td style="width: 20px">
+                            <td style="width: 20px;">
                                     <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                            <input type="checkbox" th:id="'factscheckbox'+${iterStatus.count}"
+                                                   id="checkbox1"
                                                    name="options[]" th:value="${habitFacts.getId()}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                                   th:onclick="'updateCheckBoxCountFacts('+${iterStatus.count}+','+${habitFacts.getId()}+')'">
+                                            <label th:for="'factscheckbox'+${iterStatus.count}" for="checkbox1"></label>
                                     </span>
                             </td>
 
@@ -384,7 +254,7 @@
 
             <!-- Habit`s Advices table-->
             <div class="table-header">
-                <h3>[[#{greenCity.sidebar.habits.advice}]]
+                <h3>[[#{greenCity.sidebar.habits.advice}]]:
                     <td th:text="${hadvices.size()}"/>
                 </h3>
                 <div class="hide-button">
@@ -393,17 +263,20 @@
                         <img src="/img/arrow-up.svg" alt="arrow-icon">
                     </button>
                 </div>
-                <a id="unlinktable2" class="btn btn-secondary"
-                   data-toggle="modal">
-                    <div>Unlink</div>
-                </a>
-                <a id="linknewtable2" class="btn btn-secondary"
-                   data-toggle="modal">
-                    <div>Link new</div>
-                </a>
+                <div class="complexity-line">
+                    <a id="unlinktable2" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkAdvices('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable2" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
+                </div>
             </div>
 
-            <div class="table-responsive userpage">
+            <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
                     <tr class="table-primary light-text">
@@ -424,9 +297,11 @@
                             <td style="width: 20px">
                                     <span class="custom-checkbox">
                                             <input type="checkbox" th:id="'advicescheckbox'+${iterStatus.count}"
+                                                   id="checkbox2"
                                                    name="options[]" th:value="${iterStatus.count}"
                                                    th:onclick="'updateCheckBoxCountAdvices('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                            <label th:for="'advicescheckbox'+${iterStatus.count}"
+                                                   for="checkbox2"></label>
                                     </span>
                             </td>
 
@@ -435,7 +310,6 @@
                             </td>
 
                             <td style="width: 52px">Link</td>
-
                         </tr>
                     </th:block>
                     </tbody>
@@ -444,7 +318,7 @@
 
             <!-- Shopping List table-->
             <div class="table-header">
-                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]
+                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]:
                     <td th:text="${hshops.size()}"/>
                 </h3>
                 <div class="hide-button">
@@ -452,6 +326,17 @@
                         <span>hide</span>
                         <img src="/img/arrow-up.svg" alt="arrow-icon">
                     </button>
+                </div>
+                <div class="complexity-line">
+                    <a id="unlinktable3" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkShop('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable3" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
                 </div>
             </div>
 
@@ -462,7 +347,7 @@
                         <th style="width: 20px">
                                 <span class="custom-checkbox">
                                     <input type="checkbox" id="selectAll3">
-                                    <label for="selectAll"></label>
+                                    <label for="selectAll3"></label>
                                 </span>
                         </th>
                         <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
@@ -474,11 +359,12 @@
                     <th:block class="list-of" th:each="shopitem, iterStatus :${hshops}">
                         <tr class="light-text">
                             <td style="width: 20px">
-                                    <span class="custom-checkbox">
-                                            <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox3"
+                                    <span class="custom-checkbox" style="">
+                                            <input type="checkbox" th:id="'Shopcheckbox'+${iterStatus.count}"
+                                                   id="checkbox3"
                                                    name="options[]" th:value="${shopitem.id}"
-                                                   th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                                   th:onclick="'updateCheckBoxCountShop('+${iterStatus.count}+','+${shopitem.id}+')'">
+                                            <label th:for="'Shopcheckbox'+${iterStatus.count}" for="checkbox3"></label>
                                     </span>
                             </td>
 

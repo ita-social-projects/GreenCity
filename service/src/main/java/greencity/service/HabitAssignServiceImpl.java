@@ -16,6 +16,7 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
@@ -111,7 +113,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         validateHabitForAssign(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
-
         if (habitAssign != null) {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
@@ -119,11 +120,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign = buildHabitAssign(habit, user);
         }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
+
         if (!habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
             List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
                     .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
+
+        habitAssignRepo.save(habitAssign);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
@@ -161,10 +165,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Integer duration = habitAssign.getDuration();
         Integer defaultDuration = habitAssign.getHabit().getDefaultDuration();
         List<UserShoppingListItem> shoppingListItems = habitAssign.getUserShoppingListItems();
-        if (duration.equals(defaultDuration) || shoppingListItems.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !duration.equals(defaultDuration) && !shoppingListItems.isEmpty();
     }
 
     /**

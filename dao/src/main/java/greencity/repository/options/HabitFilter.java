@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public class HabitFilter implements Specification<Habit> {
     private final transient FilterHabitDto filterHabitDto;
-    private String defaultHabitImage = "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
+    private final String defaultHabitImage = "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
         + "2021-06-01_15-39-56.jpg";
 
     /**
@@ -51,7 +51,7 @@ public class HabitFilter implements Specification<Habit> {
             predicates.add(hasComplexityEquals(root, criteriaBuilder, filterHabitDto.getComplexity()));
         }
         if (filterHabitDto != null
-            && (filterHabitDto.isWithImage() != false ^ filterHabitDto.isWithoutImage() != false)) {
+            && (filterHabitDto.isWithImage() ^ filterHabitDto.isWithoutImage())) {
             predicates.add(hasImage(root, criteriaBuilder, filterHabitDto.isWithoutImage(),
                 filterHabitDto.isWithImage()));
         }

@@ -6,6 +6,7 @@ import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.advice.AdviceVO;
 import greencity.dto.advice.AdviceViewDto;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.habit.HabitVO;
 import greencity.service.AdviceService;
 import greencity.service.LanguageService;
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -184,5 +186,26 @@ public class ManagementAdvicesController {
         model.addAttribute("fields", adviceViewDto);
 
         return "core/management_advices";
+    }
+
+    /**
+     * Deletes Advices by indexes in list.
+     *
+     * @param habitId of {@link HabitVO}.
+     * @return {@link HttpStatus}.
+     * @author Vira Maksymets
+     */
+    @ApiOperation(value = "Deletes Advices by ids in list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @DeleteMapping("/{habitId}/unlink/advice")
+    public ResponseEntity<Long> unlinkAdvice(@PathVariable("habitId") Long habitId,
+        @ApiIgnore Locale locale,
+        @RequestBody Integer[] advicesIndexes) {
+        adviceService.unlinkAdvice(locale.getLanguage(), habitId, advicesIndexes);
+        return ResponseEntity.status(HttpStatus.OK).body(habitId);
     }
 }

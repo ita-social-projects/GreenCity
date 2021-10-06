@@ -1,19 +1,13 @@
 package greencity.webcontroller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.constant.RestTemplateLinks;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
+import greencity.dto.user.*;
 import greencity.enums.Role;
-import greencity.enums.UserStatus;
 import greencity.service.UserService;
-import org.dom4j.rule.Mode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,15 +22,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.*;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -62,6 +55,14 @@ class ManagementUserControllerTest {
                 new UserArgumentResolver(userService, modelMapper))
             .build();
         objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    void changeRoleTest() {
+        UserVO userVO = new UserVO();
+        userVO.setEmail("test@mail.com");
+        managementUserController.changeRole(5L, "ROLE_ADMIN", userVO);
+        verify(userService, times(1)).updateRole(5L, Role.ROLE_ADMIN, userVO.getEmail());
     }
 
     @Test

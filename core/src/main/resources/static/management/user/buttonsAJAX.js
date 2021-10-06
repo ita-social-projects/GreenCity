@@ -44,16 +44,17 @@ function chageIcons() {
     }
 }
 
-let filter=document.querySelectorAll('.filter');
-for (i=0;i<filter.length;i++){
-    let subMenu=filter[i].nextElementSibling;
-    let thisFilter=filter[i];
+let filter = document.querySelectorAll('.filter');
+for (i = 0; i < filter.length; i++) {
+    let subMenu = filter[i].nextElementSibling;
+    let thisFilter = filter[i];
     filter[i].addEventListener('click', function () {
         subMenu.classList.toggle('open');
         thisFilter.classList.toggle('active');
     });
 }
-function sortByFieldName(nameField){
+
+function sortByFieldName(nameField) {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
@@ -61,14 +62,14 @@ function sortByFieldName(nameField){
     if (page !== null) {
         urlSearch.set("page", "0");
     }
-    if(sort==nameField+",ASC"){
+    if (sort == nameField + ",ASC") {
         urlSearch.set("sort", nameField + ",DESC");
         localStorage.setItem("sort", nameField + ",DESC");
-    }else{
+    } else {
         urlSearch.set("sort", nameField + ",ASC");
         localStorage.setItem("sort", nameField + ",ASC");
     }
-   let url = "/management/users?";
+    let url = "/management/users?";
     $.ajax({
         url: url + urlSearch.toString(),
         type: 'GET',
@@ -77,13 +78,13 @@ function sortByFieldName(nameField){
         }
     });
 }
-function saveItemsOnPage(itemsOnPage){
+
+function saveItemsOnPage(itemsOnPage) {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     localStorage.setItem("size", itemsOnPage);
     let url = "/management/users?";
-    console.log(url);
-    urlSearch.set("size",itemsOnPage);
+    urlSearch.set("size", itemsOnPage);
     $.ajax({
         url: url + urlSearch.toString(),
         type: 'GET',
@@ -96,10 +97,24 @@ function saveItemsOnPage(itemsOnPage){
 function otherCheck() {
     let other = document.getElementById('other');
     if (other.checked == true) {
-        document.getElementById("othertext").disabled = false;
+        document.getElementById("othertext").style = "display: unset";
+        document.getElementById("user-lang").style = "display: unset";
     } else {
-        document.getElementById("othertext").disabled = true;
+        document.getElementById("othertext").style = "display: none";
+        document.getElementById("user-lang").style = "display: none";
+
     }
+}
+
+function changeRole(userId, role) {
+    var href = "/management/users/" + userId + "/" + role;
+    $.ajax({
+        url: href,
+        type: 'get',
+        success: function (data) {
+            location.reload();
+        },
+    });
 }
 
 function clearAllErrorsSpan() {
@@ -110,22 +125,10 @@ let checkedCh = 0;
 
 function updateCheckBoxCount(chInt) {
     let chBox = $('#checkbox' + chInt);
-    let deactivateButton = $("#btnDeactivate");
     chBox.is(":checked") ? checkedCh++ : checkedCh--;
     console.log(checkedCh)
+    let deactivateButton = $("#btnDeactivate");
     if (checkedCh === 0) {
-        deactivateButton.addClass("disabled");
-    } else deactivateButton.removeClass("disabled");
-}
-
-let checkedChAdvices = 0;
-function updateCheckBoxCountAdvices(chInt) {
-    let chBox = $('#advicescheckbox' + chInt);
-    chBox.is(":checked") ? checkedChAdvices++ : checkedChAdvices--;
-    console.log('advices '+checkedChAdvices)
-
-    let deactivateButton = $('#unlinktable2');
-    if (checkedChAdvices === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
 }
@@ -271,14 +274,16 @@ $(document).ready(function () {
         event.preventDefault();
         var href = $(this).attr('href');
         $('#deactivateUserModal').modal();
-        $.get(href, function (lang, status) {
-            let userLang = document.createElement('div');
-            window.globalVariable=lang;
-            userLang.classList.add('user-lang');
-            userLang.innerHTML = `<div class="user-lang"> ${lang}</div>`;
-            document.querySelector('#user-lang').appendChild(userLang);
+        if (document.getElementsByClassName('user-lang').length === 0) {
+            $.get(href, function (lang, status) {
+                let userLang = document.createElement('div');
+                window.globalVariable = lang;
+                userLang.classList.add('user-lang');
+                userLang.innerHTML = `<div class="user-lang"> ${lang}</div>`;
+                document.querySelector('#user-lang').appendChild(userLang);
 
-        });
+            });
+        }
         $('#deactivateOneSubmit').attr('href', href);
     });
     // Confirm deactivation button in deactivateUserModal
@@ -299,8 +304,19 @@ $(document).ready(function () {
         }
         if (otherClick.checked === true) {
             listReasons.push($("input#othertext").val() + "{" + globalVariable + "}");
+            if ($("input#othertext").val().length <= 5) {
+                $(document.getElementById('errorDeactivateUser')).text("Please fill in the other reason field min 5 symbols or uncheck the other reason ");
+                $("input#othertext").focus();
+
+                $("input#othertext").focus().css("border-color", "red");
+                $("input#othertext").focus().css("outline", "none");
+
+            }
         }
-        let f= globalVariable;
+        let f = globalVariable;
+        if (listReasons.length === 0) {
+            $(document.getElementById('errorDeactivateUser')).text("Choose at least one reason to deactivate user");
+        }
 
         var href = $(this).attr('href');
         let newUrl = href.toString().replace("lang", "deactivate")
@@ -315,7 +331,7 @@ $(document).ready(function () {
         });
     });
 
-    // Aactivate user button (popup)
+    // Activate user button (popup)
     $('td .activate-user.eActBtn').on('click', function (event) {
         event.preventDefault();
         let localStorage = window.localStorage;
@@ -331,12 +347,14 @@ $(document).ready(function () {
             allReasons.forEach(item => {
                 let reason = document.createElement('div');
                 reason.classList.add('reason');
-
-                reason.innerHTML = `<div class="reason"> ${item.toString()}</div>
-                `;
+                reason.innerHTML = `<div class="reason"> ${item.toString()}</div>`;
                 document.querySelector('#reasons').appendChild(reason);
             });
         });
+        const elements = document.getElementsByClassName('reason');
+        while (elements.length > 0) {
+            elements[0].parentNode.removeChild(elements[0]);
+        }
     });
     // Confirm deactivation button in activateUserModal
     $('#activateOneSubmit').on('click', function (event) {
@@ -400,14 +418,14 @@ $(document).ready(function () {
 function openNav() {
     document.getElementById("mySidepanel").style.width = "250px";
     document.getElementById("openbtnId").hidden = true;
-    document.getElementById("tab-content").style.marginLeft="15%";
+    document.getElementById("tab-content").style.marginLeft = "15%";
     // document.getElementById("eco-news-content").style.marginRight="15%";
 }
 
 function closeNav() {
     document.getElementById("mySidepanel").style.width = "0";
     document.getElementById("openbtnId").hidden = false;
-    document.getElementById("tab-content").style.marginLeft="0";
+    document.getElementById("tab-content").style.marginLeft = "0";
     // document.getElementById("eco-news-content").style.marginRight="0";
 }
 
@@ -420,8 +438,7 @@ function hideTable(clickedId) {
         clickedButton.value = 'show';
         clickedButton.getElementsByTagName('span')[0].innerHTML = 'show';
         clickedButton.getElementsByTagName('img')[0].src = "/img/arrow-down.svg";
-    }
-    else if (state == 'show') {
+    } else if (state == 'show') {
         hideTable.style.display = "table-row-group";
         clickedButton.value = 'hide';
         clickedButton.getElementsByTagName('span')[0].innerHTML = 'hide';
@@ -444,7 +461,7 @@ function showTooltip(e) {
 }
 
 var tooltips = document.querySelectorAll('.hoverable');
-for(var i = 0; i < tooltips.length; i++) {
+for (var i = 0; i < tooltips.length; i++) {
     tooltips[i].addEventListener('mousemove', showTooltip);
     console.log("some");
 }

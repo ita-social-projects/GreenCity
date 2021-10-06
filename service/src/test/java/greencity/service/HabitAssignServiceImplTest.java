@@ -426,7 +426,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(any(LocalDate.class), any(HabitAssignVO.class)))
-                .thenReturn(calendarVO);
+                .thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
         HabitAssignDto actualDto = habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en");
@@ -547,7 +547,7 @@ class HabitAssignServiceImplTest {
         Exception thrown1 = assertThrows(InvalidStatusException.class,
             () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
                 getHabitAssignPropertiesDto()));
-        assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS);
+        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS, thrown1.getMessage());
     }
 
     @Test

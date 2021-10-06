@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
@@ -13,7 +14,11 @@ import greencity.dto.user.UserVO;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
+import greencity.enums.Role;
+import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +27,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+@Validated
 @Controller
 @AllArgsConstructor
 @RequestMapping("/management/users")
 public class ManagementUserController {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final UserService userService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -112,6 +120,23 @@ public class ManagementUserController {
     }
 
     /**
+     * Method that change user's Role {@link Role} by given id.
+     *
+     * @param id          {@link Long} - user's id.
+     * @param userRole    {@link String} - new user's Role.
+     * @param currentUser {@link UserVO} - admin profile.
+     * @author Stepan Tehlivets.
+     */
+    @GetMapping("/{id}/{role}")
+    public String changeRole(@PathVariable Long id,
+        @PathVariable(name = "role") String userRole,
+        @CurrentUser UserVO currentUser) {
+        Role role = Role.valueOf(userRole);
+        userService.updateRole(id, role, currentUser.getEmail());
+        return "redirect:/management/users";
+    }
+
+    /**
      * Method for setting {@link UserVO}'s status to DEACTIVATED, so the user will
      * not be able to log in into the system.
      *
@@ -122,7 +147,7 @@ public class ManagementUserController {
     @PostMapping("/deactivate")
     public ResponseEntity<ResponseEntity.BodyBuilder> deactivateUser(
         @RequestParam("id") Long id,
-        @RequestBody List<String> userReasons) {
+        @RequestBody @NotEmpty List<@Size(min = 9) String> userReasons) {
         restClient.deactivateUser(id, userReasons);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

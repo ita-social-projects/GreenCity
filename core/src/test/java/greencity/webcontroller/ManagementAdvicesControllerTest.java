@@ -173,4 +173,19 @@ class ManagementAdvicesControllerTest {
 
         verify(adviceService).update(advicePostDto, id);
     }
+
+    @Test
+    void unlinkAdvice() throws Exception {
+        Long habitId = 1L;
+        Integer[] advicesIndexes = new Integer[2];
+        advicesIndexes[0] = 1;
+        advicesIndexes[1] = 2;
+        mockMvc.perform(delete(managementAdvicesLink + "/" + habitId + "/unlink/advice")
+            .content(Arrays.toString(advicesIndexes))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(adviceService).unlinkAdvice("en", habitId, advicesIndexes);
+    }
 }

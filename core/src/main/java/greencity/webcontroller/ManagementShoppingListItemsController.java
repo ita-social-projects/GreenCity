@@ -3,6 +3,7 @@ package greencity.webcontroller;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.shoppinglistitem.*;
+import greencity.service.HabitShoppingListItemService;
 import greencity.service.ShoppingListItemService;
 import greencity.service.LanguageService;
 import java.util.List;
@@ -28,6 +29,7 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 public class ManagementShoppingListItemsController {
     private final ShoppingListItemService shoppingListItemService;
     private final LanguageService languageService;
+    private final HabitShoppingListItemService habitShoppingListItemService;
 
     /**
      * Method that returns management page with all {@link ShoppingListItemVO}.
@@ -121,6 +123,19 @@ public class ManagementShoppingListItemsController {
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(shoppingListItemService.deleteAllShoppingListItemsByListOfId(listId));
+    }
+
+    /**
+     * Method which deletes HabitShoppingListItem.
+     *
+     * @param shopIds list of IDs
+     * @author Vira Maksymets
+     */
+    @DeleteMapping("/unlink/{habitId}")
+    @ResponseBody
+    public ResponseEntity<Long> unlinkShoppingListItems(@RequestBody List<Long> shopIds, @PathVariable Long habitId) {
+        habitShoppingListItemService.unlinkShoppingListItems(shopIds, habitId);
+        return ResponseEntity.status(HttpStatus.OK).body(habitId);
     }
 
     /**

@@ -115,6 +115,19 @@ public class AdviceServiceImpl implements AdviceService {
      * {@inheritDoc}
      */
     @Override
+    public void unlinkAdvice(String language, Long habitId, Integer[] advicesIndexes) {
+        language = Objects.equals(language, "uk") ? "ua" : language;
+        List<LanguageTranslationDTO> allAdvices = getAllByHabitIdAndLanguage(habitId, language);
+        for (Integer index : advicesIndexes) {
+            Long id = getAdviceByName(language, allAdvices.get(index - 1).getContent()).getId();
+            delete(id);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public AdviceVO save(AdvicePostDto advicePostDTO) {
         Advice advice = modelMapper.map(advicePostDTO, Advice.class);
         advice.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAdvice(advice));

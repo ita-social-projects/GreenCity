@@ -40,21 +40,4 @@ public class FileServiceController {
     public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image));
     }
-
-    /**
-     * Method for convert image to multipart image.
-     *
-     * @param image image to convert.
-     * @return multipart image.
-     */
-    @ApiOperation(value = "Convert image.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.CREATED, response = MultipartFile.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
-    })
-    @PostMapping("/convert")
-    public ResponseEntity<MultipartFile> convertToMultipartImage(@RequestParam @NotEmpty String image) {
-        return ResponseEntity.status(HttpStatus.OK).body(fileService.convertToMultipartImage(image));
-    }
 }

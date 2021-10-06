@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
           rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
-    <script src="https://kit.fontawesome.com/c847fb58e4.js" crossorigin="anonymous"></script>
+<!--    <script src="https://kit.fontawesome.com/c847fb58e4.js" crossorigin="anonymous"></script>-->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
@@ -147,7 +147,7 @@
                             </th>
                             <th>  <!--style="width: 288px;"-->
                                 [[#{greenCity.pages.table.credo}]]
-                                <img id="credo-icon" class="sorting" style="left: 70%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
+                                <img id="credo-icon" class="sorting" style="left: 82%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
                                 <span class="table-filter-icon"></span>
 <!--                                <div class="name-filter-form">-->
 <!--                                    <div class="filter-sorting-buttons">-->
@@ -253,10 +253,11 @@
                                         </button>
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content role">
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_USER')}">user
-                                            </a>
-                                            <a href="#" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
+
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_ADMIN\');'"
+                                               th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_USER\');'" th:if="${!user.role.name().equals('ROLE_USER')}">user</a>
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_MODERATOR\');'" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
                                         </div>
                                     </div>
                                 </td>
@@ -275,7 +276,7 @@
                                 </td>
                                 <td th:if="${user.userStatus.name().equals('ACTIVATED')}"  class="whiteHover lightgreen">
                                     <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        <button class="dropbtn status"  th:text="active">
                                         </button>
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content status">
@@ -294,7 +295,7 @@
                                         <div class="dropdown-content status">
                                             <a th:href="@{/management/users/reasons/(id=${user.id})}"
                                                class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">activatrd</a>
+                                               data-toggle="modal">active</a>
                                             <a th:href="@{/management/users/lang/(id=${user.id})}"
                                                class="deactivate-user eDeactBtn" data-toggle="modal">deactivated
                                             </a>
@@ -309,7 +310,7 @@
                                         <div class="dropdown-content status">
                                             <a th:href="@{/management/users/reasons/(id=${user.id})}"
                                                class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">activated</a>
+                                               data-toggle="modal">active</a>
                                             <a href="#">warned</a>
                                         </div>
                                     </div>
@@ -471,9 +472,10 @@
                                 <input type="checkbox" id="other" onclick="otherCheck()" class="deactivate-checkbox">
                                 <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
                             </div>
-                            <div id="user-lang">
+                            <div id="user-lang" style="display: none">
                             </div>
-                            <input type="text" id="othertext" disabled="disabled" class="custom-reason">
+                            <input type="text" id="othertext" style="display: none" class="custom-reason">
+                            <span th:id="errorDeactivateUser" class="errorSpan"></span>
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"

@@ -86,7 +86,6 @@ public class ManagementHabitController {
      *
      * @param id of {@link HabitVO}.
      * @return {@link HabitManagementDto}.
-     *
      * @author Vira Maksymets
      */
     @ApiOperation(value = "Find habit by id.")
