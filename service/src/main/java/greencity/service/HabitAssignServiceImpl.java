@@ -16,6 +16,7 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
@@ -111,7 +113,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         validateHabitForAssign(habitId, user);
         HabitAssign habitAssign =
             habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habitId, user.getId());
-
         if (habitAssign != null) {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
@@ -120,9 +121,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
 
-        List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-            .getDefaultShoppingListItems());
+        List<ShoppingListItem> shoppingList =
+            shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto.getDefaultShoppingListItems());
         saveUserShoppingListItems(shoppingList, habitAssign);
+
+        habitAssignRepo.save(habitAssign);
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
