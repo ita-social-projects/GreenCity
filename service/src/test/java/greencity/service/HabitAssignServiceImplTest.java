@@ -86,7 +86,8 @@ class HabitAssignServiceImplTest {
 
     private List<HabitAssign> fullHabitAssigns = Collections.singletonList(fullHabitAssign);
 
-    private HabitAssignPropertiesDto habitAssignPropertiesDto = HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
+    private HabitAssignPropertiesDto habitAssignPropertiesDto =
+        HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
 
     private String language = "en";
 
