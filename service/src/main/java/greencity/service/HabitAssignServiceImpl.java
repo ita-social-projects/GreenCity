@@ -121,9 +121,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
 
-        List<ShoppingListItem> shoppingList =
-            shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto.getDefaultShoppingListItems());
-        saveUserShoppingListItems(shoppingList, habitAssign);
+        if (!habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
+            List<ShoppingListItem> shoppingList =
+                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+                    .getDefaultShoppingListItems());
+            saveUserShoppingListItems(shoppingList, habitAssign);
+        }
 
         habitAssignRepo.save(habitAssign);
 
