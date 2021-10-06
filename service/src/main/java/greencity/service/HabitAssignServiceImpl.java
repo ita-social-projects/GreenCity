@@ -126,6 +126,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         saveUserShoppingListItems(shoppingList, habitAssign);
 
         habitAssignRepo.save(habitAssign);
+
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
 
