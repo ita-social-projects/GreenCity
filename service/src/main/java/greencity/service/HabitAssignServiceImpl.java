@@ -119,10 +119,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign = buildHabitAssign(habit, user);
         }
         enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
-
-        List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-            .getDefaultShoppingListItems());
-        saveUserShoppingListItems(shoppingList, habitAssign);
+        if (!habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
+            List<ShoppingListItem> shoppingList = shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
+                    .getDefaultShoppingListItems());
+            saveUserShoppingListItems(shoppingList, habitAssign);
+        }
 
         return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
     }
@@ -221,15 +222,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {
         List<UserShoppingListItem> userShoppingList = new ArrayList<>();
-        for (ShoppingListItem shoppingItem : shoppingList) {
-            userShoppingList.add(UserShoppingListItem.builder()
-                .habitAssign(habitAssign)
-                .shoppingListItem(shoppingItem)
-                .dateCompleted(LocalDateTime.now())
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .build());
-        }
-        userShoppingListItemRepo.saveAll(userShoppingList);
+            for (ShoppingListItem shoppingItem : shoppingList) {
+                userShoppingList.add(UserShoppingListItem.builder()
+                        .habitAssign(habitAssign)
+                        .shoppingListItem(shoppingItem)
+                        .dateCompleted(LocalDateTime.now())
+                        .status(ShoppingListItemStatus.INPROGRESS)
+                        .build());
+            }
+            userShoppingListItemRepo.saveAll(userShoppingList);
     }
 
     /**
