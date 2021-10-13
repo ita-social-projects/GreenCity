@@ -1,10 +1,12 @@
 package greencity.mapping;
 
 import greencity.exception.exceptions.NotSavedException;
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import javax.imageio.ImageIO;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
@@ -47,8 +49,6 @@ public class MultipartBase64ImageMapper extends AbstractConverter<String, Multip
             }
         } catch (IOException e) {
             throw new NotSavedException("Cannot convert to BASE64 image");
-        } finally {
-            tempFile.delete();
         }
     }
 }
