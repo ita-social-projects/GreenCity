@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -50,6 +51,7 @@ public class PlaceFilter implements Specification<Place> {
             predicates.add(hasDiscount(root, cb, filterPlaceDto.getDiscountDto()));
             predicates.add(isNowOpen(root, cb, filterPlaceDto.getTime()));
             predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg(), filterPlaceDto.getStatus()));
+            predicates.add(hasCategory(root, cb, filterPlaceDto.getCategories()));
         }
         return cb.and(predicates.toArray(new Predicate[0]));
     }
@@ -72,6 +74,27 @@ public class PlaceFilter implements Specification<Place> {
     }
 
     /**
+     * Returns a predicate where Category of {@link Place} is member of
+     * {@param categories} array.
+     *
+     * @param r      must not be {@literal null}.
+     * @param cb     must not be {@literal null}.
+     * @param categories of {@link Place}'s to filter by.
+     * @return a {@link Predicate} may be {@literal null}.
+     * @author Pavlo Skolozdra
+     */
+    private Predicate hasCategory(Root<Place> r, CriteriaBuilder cb, String[] categories) {
+        if (categories == null) {
+            return cb.conjunction();
+        } else {
+            List<Predicate> predicates = new ArrayList<>();
+            Arrays.stream(categories).forEach(c -> predicates
+                    .add(cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), c)));
+            return cb.or(predicates.toArray(new Predicate[0]));
+        }
+    }
+
+    /**
      * Returns a predicate where {@link greencity.entity.Location}'s lat and lng are
      * in bounds of {@param bounds}.
      *
@@ -86,10 +109,10 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LAT),
-                bounds.getSouthWestLat(), bounds.getNorthEastLat()),
-            cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LNG),
-                bounds.getSouthWestLng(), bounds.getNorthEastLng()));
+                cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LAT),
+                        bounds.getSouthWestLat(), bounds.getNorthEastLat()),
+                cb.between(r.join(RepoConstants.LOCATION).get(RepoConstants.LOCATION_LNG),
+                        bounds.getSouthWestLng(), bounds.getNorthEastLng()));
     }
 
     /**
@@ -109,8 +132,8 @@ public class PlaceFilter implements Specification<Place> {
         }
         LocalDateTime time = LocalDateTime.parse(currentTime, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         return cb.and(cb.equal(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_DAY), time.getDayOfWeek()),
-            cb.lessThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_OPEN), time.toLocalTime()),
-            cb.greaterThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_CLOSE), time.toLocalTime()));
+                cb.lessThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_OPEN), time.toLocalTime()),
+                cb.greaterThan(r.join(RepoConstants.HOURS_LIST).get(RepoConstants.HOURS_CLOSE), time.toLocalTime()));
     }
 
     /**
@@ -134,9 +157,9 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(
-            cb.equal(r.join(RepoConstants.DISCOUNT_VALUES).join(RepoConstants.SPECIFICATION).get(RepoConstants.NAME),
-                discount.getSpecification().getName()),
-            cb.between(r.join(RepoConstants.DISCOUNT_VALUES).get(RepoConstants.VALUE), minValue, maxValue));
+                cb.equal(r.join(RepoConstants.DISCOUNT_VALUES).join(RepoConstants.SPECIFICATION).get(RepoConstants.NAME),
+                        discount.getSpecification().getName()),
+                cb.between(r.join(RepoConstants.DISCOUNT_VALUES).get(RepoConstants.VALUE), minValue, maxValue));
     }
 
     /**
@@ -153,11 +176,11 @@ public class PlaceFilter implements Specification<Place> {
             return cb.conjunction();
         }
         return cb.and(cb.or(
-            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg),
-            cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), reg),
-            cb.like(r.get(RepoConstants.NAME), reg),
-            cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), reg),
-            cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), reg)),
-            cb.equal(r.get(RepoConstants.STATUS), status));
+                        cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg),
+                        cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), reg),
+                        cb.like(r.get(RepoConstants.NAME), reg),
+                        cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), reg),
+                        cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), reg)),
+                cb.equal(r.get(RepoConstants.STATUS), status));
     }
 }
