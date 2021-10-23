@@ -19,4 +19,5 @@ public class FilterPlaceDto {
     @Valid
     private FilterDistanceDto distanceFromUserDto;
     private String searchReg;
+    private String[] categories;
 }
