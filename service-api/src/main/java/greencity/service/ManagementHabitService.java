@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.filter.FilterHabitDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import java.util.List;
