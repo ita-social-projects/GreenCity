@@ -90,7 +90,8 @@ public class PlaceFilter implements Specification<Place> {
             List<Predicate> predicates = new ArrayList<>();
             Arrays.stream(categories).forEach(c -> predicates
                     .add(cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), c)));
-            return cb.or(predicates.toArray(new Predicate[0]));
+
+                    return cb.or(predicates.toArray(new Predicate[0]));
         }
     }
 
