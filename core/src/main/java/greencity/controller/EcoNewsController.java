@@ -96,11 +96,10 @@ public class EcoNewsController {
     }
 
     /**
-     * Controller for updating eco news images
+     * Controller for uploading eco news images.
      *
-     * @param image
+     * @param image - eco news image
      * @return image path
-     * @author Dima Sannytski
      */
     @ApiOperation(value = "Upload image for eco news.")
     @ApiResponses(value = {
@@ -111,7 +110,7 @@ public class EcoNewsController {
     })
     @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadImage(
-        @ApiParam(value = "Image of eco news") @ImageValidation  MultipartFile image) {
+        @ApiParam(value = "Image of eco news") @ImageValidation MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.uploadImage(image));
     }

@@ -215,9 +215,9 @@ public interface EcoNewsService {
     Boolean checkNewsIsLikedByUser(Long id, UserVO user);
 
     /**
-     * Method to upload news image
+     * Method to upload news image.
      *
-     * @param image
+     * @param image - eco news image
      * @return image path
      */
     String uploadImage(MultipartFile image);

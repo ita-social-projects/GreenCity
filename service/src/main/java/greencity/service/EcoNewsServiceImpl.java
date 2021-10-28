@@ -488,10 +488,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * Method to upload news image
+     * Method to upload news image.
      *
-     * @param image
-     * @return image path
+     * @param image - eco news image
+     * @return imagePath
      */
     @Override
     public String uploadImage(MultipartFile image) {
