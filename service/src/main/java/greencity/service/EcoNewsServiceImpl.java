@@ -488,6 +488,20 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method to upload news image.
+     *
+     * @param image - eco news image
+     * @return imagePath
+     */
+    @Override
+    public String uploadImage(MultipartFile image) {
+        if (image != null) {
+            return fileService.upload(image);
+        }
+        return null;
+    }
+
+    /**
      * Returns {@link EcoNewsSpecification} for entered filter parameters.
      *
      * @param ecoNewsViewDto contains data from filters
