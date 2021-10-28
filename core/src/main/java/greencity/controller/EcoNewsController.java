@@ -88,8 +88,7 @@ public class EcoNewsController {
     public ResponseEntity<AddEcoNewsDtoResponse> save(
         @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST,
             required = true) @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = SwaggerExampleModel.IMAGE_DESCRIPTION) @ImageValidation @RequestPart(
-            required = false) MultipartFile image,
+        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
@@ -110,7 +109,7 @@ public class EcoNewsController {
     })
     @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadImage(
-        @ApiParam(value = "Image of eco news") @ImageValidation MultipartFile image) {
+        @ApiParam(value = ) @ImageValidation MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.uploadImage(image));
     }
@@ -134,7 +133,7 @@ public class EcoNewsController {
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS,
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
-        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = SwaggerExampleModel.IMAGE_DESCRIPTION) @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.update(updateEcoNewsDto, image, user));
