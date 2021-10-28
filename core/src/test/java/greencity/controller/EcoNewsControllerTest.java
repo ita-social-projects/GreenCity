@@ -27,7 +27,9 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -39,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EcoNewsControllerTest {
     private static final String ecoNewsLink = "/econews";
+    private static final String uploadImageLink = "/uploadImage";
     private MockMvc mockMvc;
     @InjectMocks
     private EcoNewsController ecoNewsController;
@@ -68,6 +71,15 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).getThreeLastEcoNews();
+    }
+
+    @Test
+    void uploadImageTest() throws Exception {
+        MockMultipartFile image = new MockMultipartFile("data", "filename.txt",
+            "text/plain", "some xml".getBytes());
+        mockMvc.perform(MockMvcRequestBuilders.multipart(ecoNewsLink + uploadImageLink)
+            .file(image)).andExpect(status().isCreated());
+        verify(ecoNewsService).uploadImage(isNull());
     }
 
     @Test

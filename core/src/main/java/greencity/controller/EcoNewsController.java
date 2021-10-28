@@ -95,6 +95,26 @@ public class EcoNewsController {
     }
 
     /**
+     * Controller for uploading eco news images.
+     *
+     * @param image - eco news image
+     * @return image path
+     */
+    @ApiOperation(value = "Upload image for eco news.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = String.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> uploadImage(
+        @ApiParam(value = "Image of eco news") @ImageValidation MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ecoNewsService.uploadImage(image));
+    }
+
+    /**
      * Method for updating {@link EcoNewsVO}.
      *
      * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.
@@ -113,7 +133,8 @@ public class EcoNewsController {
     public ResponseEntity<EcoNewsDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS,
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
-        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(
+            required = false) MultipartFile image,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(
             ecoNewsService.update(updateEcoNewsDto, image, user));
