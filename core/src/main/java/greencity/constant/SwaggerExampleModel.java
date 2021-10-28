@@ -1,7 +1,7 @@
 package greencity.constant;
 
 public final class SwaggerExampleModel {
-    private static final String IMAGE_DESCRIPTION = "pass image as base64 or upload image\n";
+    public static final String IMAGE_DESCRIPTION = "pass image as base64 or upload image\n";
 
     private static final String BEFORE_EXAMPLE = "<div>\n"
         + "\t<ul class=\"tab\">\n"

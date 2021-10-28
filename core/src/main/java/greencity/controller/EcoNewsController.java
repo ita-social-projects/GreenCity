@@ -88,10 +88,32 @@ public class EcoNewsController {
     public ResponseEntity<AddEcoNewsDtoResponse> save(
         @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST,
             required = true) @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiParam(value = SwaggerExampleModel.IMAGE_DESCRIPTION) @ImageValidation @RequestPart(
+            required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
+    }
+
+    /**
+     * Controller for updating eco news images
+     *
+     * @param image
+     * @return image path
+     * @author Dima Sannytski
+     */
+    @ApiOperation(value = "Upload image for eco news.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = String.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> uploadImage(
+        @ApiParam(value = "Image of eco news") @ImageValidation  MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ecoNewsService.uploadImage(image));
     }
 
     /**
