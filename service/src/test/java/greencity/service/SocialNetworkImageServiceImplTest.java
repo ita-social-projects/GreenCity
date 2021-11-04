@@ -3,6 +3,9 @@ package greencity.service;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -81,7 +84,7 @@ class SocialNetworkImageServiceImplTest {
     }
 
     @Test
-    void saveSocialNetworkImage() throws Exception {
+    void saveSocialNetworkImage() throws IOException {
         URL checkUrl = new URL("http://example.com/");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
