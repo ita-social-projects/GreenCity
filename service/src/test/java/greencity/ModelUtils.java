@@ -1312,12 +1312,12 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1,0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1, 0);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", null,
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0,0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0, 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {

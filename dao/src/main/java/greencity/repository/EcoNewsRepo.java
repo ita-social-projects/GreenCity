@@ -67,7 +67,6 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      */
     Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
 
-
     /**
      * Method that finds {@link EcoNews} by id.
      *
