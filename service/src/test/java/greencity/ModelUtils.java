@@ -293,6 +293,12 @@ public class ModelUtils {
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
+    public static EcoNews getEcoNewsForMethodConvertTest() {
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
+            "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
+            Collections.singletonList(getTag()), Collections.emptySet());
+    }
+
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, getUser(),
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
