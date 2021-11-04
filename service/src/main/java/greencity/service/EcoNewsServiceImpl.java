@@ -193,6 +193,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
         List<EcoNewsDto> ecoNewsDtos = ecoNewsPage.stream()
             .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsDto.class))
+
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
