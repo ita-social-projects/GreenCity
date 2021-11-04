@@ -20,7 +20,7 @@ class EcoNewsDtoMapperTest {
 
     @Test
     void convertTest() {
-        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNews ecoNews = ModelUtils.getEcoNewsForMethodConvertTest();
         String defaultLanguage = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
@@ -31,7 +31,7 @@ class EcoNewsDtoMapperTest {
                 .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()),
-            0);
+            0, 1);
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }

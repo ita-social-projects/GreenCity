@@ -293,6 +293,12 @@ public class ModelUtils {
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
+    public static EcoNews getEcoNewsForMethodConvertTest() {
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
+            "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
+            Collections.singletonList(getTag()), Collections.emptySet());
+    }
+
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
         return new EcoNews(1L, null, TestConst.SITE, null, getUser(),
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
@@ -1312,12 +1318,12 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1, 0);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", null,
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0, 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
