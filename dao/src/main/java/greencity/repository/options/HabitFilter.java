@@ -18,8 +18,9 @@ import java.util.Optional;
  */
 public class HabitFilter implements Specification<Habit> {
     private final transient FilterHabitDto filterHabitDto;
-    private final String defaultHabitImage = "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
-        + "2021-06-01_15-39-56.jpg";
+    private static final String DEFAULT_HABIT_IMAGE =
+        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_"
+            + "2021-06-01_15-39-56.jpg";
 
     /**
      * The constructor takes {@link FilterHabitDto} object.
@@ -79,12 +80,12 @@ public class HabitFilter implements Specification<Habit> {
             cb.like(habitTranslations.get("name"), reg));
     }
 
-    private Predicate hasImage(Root<Habit> r, CriteriaBuilder cb, Boolean withoutImage, Boolean withImage) {
+    private Predicate hasImage(Root<Habit> r, CriteriaBuilder cb, boolean withoutImage, boolean withImage) {
         if (withoutImage) {
-            return cb.like(r.get("image"), defaultHabitImage);
+            return cb.like(r.get("image"), DEFAULT_HABIT_IMAGE);
         }
         if (withImage) {
-            return cb.notLike(r.get("image"), defaultHabitImage);
+            return cb.notLike(r.get("image"), DEFAULT_HABIT_IMAGE);
         }
         return null;
     }
