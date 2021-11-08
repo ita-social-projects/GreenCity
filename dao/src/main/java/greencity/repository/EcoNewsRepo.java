@@ -4,7 +4,6 @@ import greencity.entity.EcoNews;
 import java.util.List;
 import java.util.Optional;
 
-import greencity.entity.EcoNewsComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
