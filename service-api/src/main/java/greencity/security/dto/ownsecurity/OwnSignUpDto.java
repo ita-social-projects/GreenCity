@@ -31,7 +31,7 @@ public class OwnSignUpDto {
 
     @NotBlank
     @Pattern(
-        regexp = "^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*\\d+)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]+).{8,}$",
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~`!@#$%^&*()+=_\\-{}|:;”’?/<>,.\\]\\[]).{8,}$",
         message = ServiceValidationConstants.INVALID_PASSWORD)
     private String password;
 }

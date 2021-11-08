@@ -509,4 +509,11 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
         assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "en"));
     }
+
+    @Test
+    void uploadImage() {
+        MultipartFile multipartFile = ModelUtils.getFile();
+        ecoNewsService.uploadImage(multipartFile);
+        verify(fileService).upload(multipartFile);
+    }
 }
