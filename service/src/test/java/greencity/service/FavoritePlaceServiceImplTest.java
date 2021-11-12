@@ -46,6 +46,7 @@ class FavoritePlaceServiceImplTest {
     private FavoritePlaceVO favoritePlaceVO = ModelUtils.getFavoritePlaceVO();
     private String userEmail = favoritePlace.getUser().getEmail();
     private Long favoritePlaceId = favoritePlace.getId();
+    private PlaceByBoundsDto placeByBoundsDto = ModelUtils.getPlaceByBoundsDtoForFindAllTest();
 
     @Test
     void saveFavoritePlaceAlreadyExistTest() {
@@ -170,16 +171,14 @@ class FavoritePlaceServiceImplTest {
     @Test
     void findAllTest() {
         List<FavoritePlace> favoritePlaces = new ArrayList<>();
-        List<FavoritePlaceDto> favoritePlaceDtos = new ArrayList<>();
+        List<PlaceByBoundsDto> placeByBoundsDtos = new ArrayList<>();
         for (long i = 0; i < 5; i++) {
             favoritePlaces.add(favoritePlace);
-            favoritePlaceDtos.add(dto);
+            placeByBoundsDtos.add(placeByBoundsDto);
         }
-
         when(favoritePlaceRepo.findAllByUserEmail(anyString())).thenReturn(favoritePlaces);
-        when(modelMapper.map(any(FavoritePlace.class), eq(FavoritePlaceDto.class))).thenReturn(dto);
-
-        assertEquals(favoritePlaceDtos, favoritePlaceService.findAllByUserEmail(TestConst.EMAIL));
+        when(modelMapper.map(any(FavoritePlace.class), eq(PlaceByBoundsDto.class))).thenReturn(placeByBoundsDto);
+        assertEquals(placeByBoundsDtos, favoritePlaceService.findAllByUserEmail(TestConst.EMAIL));
     }
 
     @Test
