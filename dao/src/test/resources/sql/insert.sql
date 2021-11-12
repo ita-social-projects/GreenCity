@@ -158,11 +158,16 @@ VALUES ('10:00:00', '06:00:00'),
        ('12:00:00', '10:00:00');
 
 INSERT INTO categories (name, parent_category_id)
-VALUES ('Food', null),
-       ('Park', null),
-       ('Castle', null),
-       ('Museum', null),
-       ('Hotel', null);
+VALUES ('Vegan products', null),
+       ('Charging station', null),
+       ('Bike parking', null),
+       ('Cycling routes', null),
+       ('Hotels', null),
+       ('Shops', null),
+       ('Restaurants', null),
+       ('Recycling points', null),
+       ('Events', null),
+       ('Bike rentals', null);
 
 INSERT INTO locations (address, lat, lng)
 VALUES ('вулиця Під Дубом', 49.84988, 24.022533),
@@ -177,12 +182,12 @@ VALUES ('вулиця Під Дубом', 49.84988, 24.022533),
        ('Вулиця Академіка А.Сахарова, Львів, Львівська область, 79000', 49.804341, 24.03959);
 
 INSERT INTO places (description, email, modified_date, name, phone, status, author_id, category_id, location_id)
-VALUES ('Shopping center', 'forum_lviv@gmail.com', '2020-09-10 20:15:00', 'Forum', '0322 489 850', 2, 1, 1, 1),
-       ('Shopping center', 'victoria_gardens@gmail.com', '2020-08-10 20:20:00', 'Victoria Gardens', '0322 590 202', 2, 1, 1, 2),
-       ('Restaurant', 'pravda_lviv@gmail.com', '2020-07-10 16:31:00', 'Pravda', '0322 157 694', 2, 1, 1, 3),
+VALUES ('Shopping center', 'forum_lviv@gmail.com', '2020-09-10 20:15:00', 'Forum', '0322 489 850', 2, 1, 6, 1),
+       ('Shopping center', 'victoria_gardens@gmail.com', '2020-08-10 20:20:00', 'Victoria Gardens', '0322 590 202', 2, 1, 6, 2),
+       ('Restaurant', 'pravda_lviv@gmail.com', '2020-07-10 16:31:00', 'Pravda', '0322 157 694', 2, 1, 7, 3),
        ('Restaurant', 'malevych_lviv@gmail.com', '2020-06-10 18:05:00', 'Malevych', '0322 849 348', 2, 1, 1, 4),
-       ('Restaurant', 'kryivka_lviv@gmail.com', '2020-06-10 20:00:00', 'Kryivka', '067 310 3145', 2, 1, 1, 5),
-       ('Park', 'high_castle@gmail.com', '2020-06-10 20:00:00', 'Park High Castle', '03222 47092', 2, 2, 3, 6),
+       ('Restaurant', 'kryivka_lviv@gmail.com', '2020-06-10 20:00:00', 'Kryivka', '067 310 3145', 2, 1, 7, 5),
+       ('Park', 'high_castle@gmail.com', '2020-06-10 20:00:00', 'Park High Castle', '03222 47092', 2, 2, 4, 6),
        ('Park', 'str_park@gmail.com', '2020-06-10 21:00:00', 'Stryiskyi Park', '03222 47792', 2, 2, 2, 7),
        ('Cemetery', 'lych_cem@gmail.com', '2020-06-10 22:00:00', 'Lychakiv Cemetery', '0322 755 415', 2, 2, 4, 8),
        ('Castle', 'mou_high@gmail.com', '2020-06-10 20:33:00', 'Mountain High Castle', '03288 47792', 2, 2, 3, 9),

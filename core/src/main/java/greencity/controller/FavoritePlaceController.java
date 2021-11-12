@@ -62,7 +62,7 @@ public class FavoritePlaceController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping
-    public ResponseEntity<List<FavoritePlaceDto>> findAllByUserEmail(@ApiIgnore Principal principal) {
+    public ResponseEntity<List<PlaceByBoundsDto>> findAllByUserEmail(@ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(favoritePlaceService.findAllByUserEmail(principal.getName()));
     }
 
