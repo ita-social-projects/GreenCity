@@ -40,7 +40,7 @@ public interface FavoritePlaceService {
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi
      */
-    List<FavoritePlaceDto> findAllByUserEmail(String email);
+    List<PlaceByBoundsDto> findAllByUserEmail(String email);
 
     /**
      * Delete {@link FavoritePlaceVO} by {@link UserVO} email and {@link PlaceVO} id

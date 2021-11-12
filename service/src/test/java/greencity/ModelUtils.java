@@ -29,10 +29,12 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
+import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.PlaceAddDto;
+import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
@@ -1096,6 +1098,19 @@ public class ModelUtils {
                 .id(getUser().getId())
                 .name(getUser().getName())
                 .userProfilePicturePath(getUser().getProfilePicturePath())
+                .build())
+            .build();
+    }
+
+    public static PlaceByBoundsDto getPlaceByBoundsDtoForFindAllTest() {
+        return PlaceByBoundsDto.builder()
+            .id(1L)
+            .name("Ekotel")
+            .location(LocationDto.builder()
+                .id(12L)
+                .lat(49.80)
+                .lng(24.03)
+                .address("Some adress")
                 .build())
             .build();
     }
