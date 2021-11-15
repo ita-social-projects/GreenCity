@@ -95,7 +95,7 @@ public class EcoNewsController {
     }
 
     /**
-     * Controller for uploading eco news images.
+     * Method for uploading eco news image.
      *
      * @param image - eco news image
      * @return image path
@@ -112,6 +112,26 @@ public class EcoNewsController {
         @ApiParam(value = "Image of eco news") @ImageValidation MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.uploadImage(image));
+    }
+
+    /**
+     * Method for uploading eco news images.
+     *
+     * @param images - array of eco news images
+     * @return array of images path
+     */
+    @ApiOperation(value = "Upload array of images for eco news.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
+            response = String.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @PostMapping(path = "/uploadImages", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String[]> uploadImages(
+        @ApiParam(value = "Array of eco news images") MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+            ecoNewsService.uploadImages(images));
     }
 
     /**

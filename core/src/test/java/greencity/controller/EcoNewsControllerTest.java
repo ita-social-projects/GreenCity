@@ -9,6 +9,7 @@ import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
