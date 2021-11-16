@@ -516,4 +516,11 @@ class EcoNewsServiceImplTest {
         ecoNewsService.uploadImage(multipartFile);
         verify(fileService).upload(multipartFile);
     }
+
+    @Test
+    void uploadImages() {
+        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
+        ecoNewsService.uploadImages(multipartFiles);
+        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
+    }
 }
