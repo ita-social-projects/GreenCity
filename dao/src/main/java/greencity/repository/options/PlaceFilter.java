@@ -50,7 +50,7 @@ public class PlaceFilter implements Specification<Place> {
             predicates.add(hasPositionInBounds(root, cb, filterPlaceDto.getMapBoundsDto()));
             predicates.add(hasDiscount(root, cb, filterPlaceDto.getDiscountDto()));
             predicates.add(isNowOpen(root, cb, filterPlaceDto.getTime()));
-            predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg(), filterPlaceDto.getStatus()));
+            predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg()));
             predicates.add(hasCategory(root, cb, filterPlaceDto.getCategories()));
         }
         return cb.and(predicates.toArray(new Predicate[0]));
@@ -164,23 +164,22 @@ public class PlaceFilter implements Specification<Place> {
 
     /**
      * Returns a predicate where {@link Place} has some values defined in the
-     * incoming {@link FilterDiscountDto} object.
+     * incoming {@link FilterPlaceDto} object.
      *
      * @param r  must not be {@literal null}.
      * @param cb must not be {@literal null}.
      * @return a {@link Predicate}, may be {@literal null}.
      * @author Rostyslav Khasanov
      */
-    private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg, PlaceStatus status) {
+    private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg) {
         if (filterPlaceDto.getSearchReg() == null) {
             return cb.conjunction();
         }
-        return cb.and(cb.or(
-            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), reg),
-            cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), reg),
-            cb.like(r.get(RepoConstants.NAME), reg),
-            cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), reg),
-            cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), reg)),
-            cb.equal(r.get(RepoConstants.STATUS), status));
+        return cb.or(
+            cb.like(r.join(RepoConstants.AUTHOR).get(RepoConstants.EMAIL), "%" + reg + "%"),
+            cb.like(r.join(RepoConstants.CATEGORY).get(RepoConstants.NAME), "%" + reg + "%"),
+            cb.like(r.get(RepoConstants.NAME), "%" + reg + "%"),
+            cb.like(r.join(RepoConstants.LOCATION).get(RepoConstants.ADDRESS), "%" + reg + "%"),
+            cb.like(r.get(RepoConstants.MODIFIED_DATE).as(String.class), "%" + reg + "%"));
     }
 }
