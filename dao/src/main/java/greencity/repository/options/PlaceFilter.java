@@ -50,7 +50,7 @@ public class PlaceFilter implements Specification<Place> {
             predicates.add(hasPositionInBounds(root, cb, filterPlaceDto.getMapBoundsDto()));
             predicates.add(hasDiscount(root, cb, filterPlaceDto.getDiscountDto()));
             predicates.add(isNowOpen(root, cb, filterPlaceDto.getTime()));
-            predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg(), filterPlaceDto.getStatus()));
+            predicates.add(hasFieldLike(root, cb, filterPlaceDto.getSearchReg()));
             predicates.add(hasCategory(root, cb, filterPlaceDto.getCategories()));
         }
         return cb.and(predicates.toArray(new Predicate[0]));
