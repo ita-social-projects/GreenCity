@@ -221,4 +221,12 @@ public interface EcoNewsService {
      * @return image path
      */
     String uploadImage(MultipartFile image);
+
+    /**
+     * Method to upload news images.
+     *
+     * @param images - array of eco news images
+     * @return array of images path
+     */
+    String[] uploadImages(MultipartFile[] images);
 }
