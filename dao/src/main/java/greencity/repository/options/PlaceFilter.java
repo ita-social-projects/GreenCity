@@ -171,7 +171,7 @@ public class PlaceFilter implements Specification<Place> {
      * @return a {@link Predicate}, may be {@literal null}.
      * @author Rostyslav Khasanov
      */
-    private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg, PlaceStatus status) {
+    private Predicate hasFieldLike(Root<Place> r, CriteriaBuilder cb, String reg) {
         if (filterPlaceDto.getSearchReg() == null) {
             return cb.conjunction();
         }
