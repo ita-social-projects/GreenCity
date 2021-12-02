@@ -100,5 +100,8 @@
     <include file="db/changelog/logs/ch-add-column-phone-to-user-Struk.xml"/>
     <include file="db/changelog/logs/ch-drop-constraint-habits-assign-table-Volianskyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-to-crat-room-fedorkiv.xml"/>
+    <include file="db/changelog/logs/ch-add-column-status_friend-in-table-users-friends-Boiarchuk.xml"/>
+    <include file="db/changelog/logs/ch-rename-column-status-in-user_status-Boiarchuk.xml"/>
+    <include file="db/changelog/logs/ch-update-colum-status_friend.xml"/>
 </databaseChangeLog>
 
