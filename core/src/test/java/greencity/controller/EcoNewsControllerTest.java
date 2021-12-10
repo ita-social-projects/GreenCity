@@ -1,9 +1,11 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
@@ -12,6 +14,8 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import liquibase.pro.packaged.E;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -236,5 +240,14 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).checkNewsIsLikedByUser(1L, userVO);
+    }
+
+    @Test
+    void findAmountOfPublishedNews() throws Exception {
+        mockMvc.perform(get(ecoNewsLink + "/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).getAmountOfPublishedNewsByUserId(1L);
     }
 }

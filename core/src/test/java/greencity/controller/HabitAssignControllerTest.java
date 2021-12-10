@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 
@@ -10,6 +11,7 @@ import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
 
@@ -25,6 +27,7 @@ import org.mockito.Mock;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -169,5 +172,42 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateUserShoppingListItem(updateUserShoppingListDto);
+    }
+
+    @Test
+    void assignCustom() throws Exception {
+        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
+        Gson gson = new Gson();
+        String json = gson.toJson(propertiesDto);
+        UserVO userVO = new UserVO();
+        mockMvc.perform(post(habitLink + "/{habitId}/custom", 1L)
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+        verify(habitAssignService).assignCustomHabitForUser(1L, userVO, propertiesDto);
+    }
+
+    @Test
+    void getAllHabitAssignsByHabitIdAndAcquired() throws Exception {
+        mockMvc.perform(get(habitLink + "/{habitId}/all", 1L)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getAllHabitAssignsByHabitIdAndStatusNotCancelled(1L, "en");
+    }
+
+    @Test
+    void getInprogressHabitAssignOnDate() throws Exception {
+        mockMvc.perform(get(habitLink + "/active/{date}", LocalDate.now()))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).findInprogressHabitAssignsOnDate(null, LocalDate.now(), "en");
+    }
+
+    @Test
+    void getUsersHabitByHabitId() throws Exception {
+        mockMvc.perform(get(habitLink + "/{habitId}/more", 1L))
+            .andExpect(status().isOk());
+
+        verify(habitAssignService).findHabitByUserIdAndHabitId(null, 1L, "en");
     }
 }

@@ -115,6 +115,15 @@ class CustomShoppingListItemControllerTest {
             .delete(customLink + "/{userId}/custom-shopping-list-items", 1)
             .param("ids", ids)).andExpect(status().isOk());
         verify(customShoppingListItemService).bulkDelete(ids);
-
     }
+
+    @Test
+    void updateItemStatusToDoneTest() throws Exception {
+        this.mockMvc.perform(patch(customLink + "/{userId}/done", 1)
+            .param("userId", "1")
+            .param("itemId", "1"))
+            .andExpect(status().isOk());
+        verify(customShoppingListItemService).updateItemStatusToDone(1L, 1L);
+    }
+
 }
