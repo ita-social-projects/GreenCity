@@ -146,4 +146,15 @@ class TipsAndTricksControllerTest {
 
         verify(tagService).findAllTipsAndTricksTags(language);
     }
+
+    @Test
+    void findAmountOfWrittenTipsAndTrick() throws Exception {
+
+        this.mockMvc.perform(get(tipsAndTricksLink + "/count")
+            .param("userId", "1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+
+        verify(tipsAndTricksService).getAmountOfWrittenTipsAndTrickByUserId(1L);
+    }
 }
