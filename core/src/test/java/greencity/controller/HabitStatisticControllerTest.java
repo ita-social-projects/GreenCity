@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -92,5 +94,28 @@ class HabitStatisticControllerTest {
             .content(json))
             .andExpect(status().isOk());
         verify(habitStatisticService).getTodayStatisticsForAllHabitItems(locale.getLanguage());
+    }
+
+    @Test
+    void findAllStatsByHabitAssignId() throws Exception {
+        mockMvc.perform(get(habitLink + "/assign/{habitAssignId}", 1L))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).findAllStatsByHabitAssignId(1L);
+    }
+
+    @Test
+    void findAmountOfAcquiredHabits() throws Exception {
+        mockMvc.perform(get(habitLink + "/acquired/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).getAmountOfAcquiredHabitsByUserId(1L);
+    }
+
+    @Test
+    void findAmountOfHabitsInProgress() throws Exception {
+        mockMvc.perform(get(habitLink + "/in-progress/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+        verify(habitStatisticService).getAmountOfHabitsInProgressByUserId(1L);
     }
 }

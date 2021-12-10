@@ -88,4 +88,22 @@ class HabitControllerTest {
             .andExpect(status().isOk());
         verify(tagsService).findAllHabitsTags(locale.getLanguage());
     }
+
+    @Test
+    void getHabitById() throws Exception {
+
+        mockMvc.perform(get(habitLink + "/{id}", 1L))
+            .andExpect(status().isOk());
+
+        verify(habitService).getByIdAndLanguageCode(1L, "en");
+    }
+
+    @Test
+    void getShoppingListItems() throws Exception {
+
+        mockMvc.perform(get(habitLink + "/{id}/shopping-list", 1L))
+            .andExpect(status().isOk());
+
+        verify(habitService).getShoppingListForHabit(1L, "en");
+    }
 }

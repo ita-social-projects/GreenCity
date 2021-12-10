@@ -1,6 +1,8 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.user.UserVO;
 import greencity.service.ShoppingListItemService;
 import java.util.Collections;
 import java.util.Locale;
@@ -15,6 +17,9 @@ import org.mockito.quality.Strictness;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -110,5 +115,16 @@ class ShoppingListItemControllerTest {
             .andExpect(status().isOk());
 
         verify(shoppingListItemService).getUserShoppingList(null, 1L, "en");
+    }
+
+    @Test
+    void deleteTest() throws Exception {
+
+        mockMvc.perform(delete(shoppingListItemLink)
+            .param("shoppingListItemId", "1")
+            .param("habitId", "1"))
+            .andExpect(status().isOk());
+
+        verify(shoppingListItemService).deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, null, 1L);
     }
 }
