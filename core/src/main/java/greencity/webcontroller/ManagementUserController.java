@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ValidLanguage;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
@@ -13,11 +14,13 @@ import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
 
 import java.util.List;
+import java.util.Locale;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import greencity.enums.Role;
+import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -39,6 +42,7 @@ public class ManagementUserController {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final UserService userService;
+    private final HabitAssignService habitAssignService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -222,5 +226,13 @@ public class ManagementUserController {
         model.addAttribute("fields", userViewDto);
         model.addAttribute("paging", pageable);
         return "core/management_user";
+    }
+
+    @PostMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public void updateUserRole(@PathVariable Long itemId, @PathVariable("habitId") Long habitId,
+        @CurrentUser UserVO currentUser) {
+        habitAssignService.updateShoppingItem(habitId, itemId, "en");
+        System.out.println(habitId + "_____" + itemId);
     }
 }

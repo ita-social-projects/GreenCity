@@ -249,4 +249,6 @@ public interface HabitAssignService {
      *                                  habitAssignDto.
      */
     void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
+
+    void updateShoppingItem(Long habitId, Long itemId, String en);
 }

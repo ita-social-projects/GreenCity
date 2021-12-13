@@ -18,4 +18,8 @@ public class UserShoppingListItemAdvanceDto {
     private ShoppingListItemStatus status;
     private LocalDateTime dateCompleted;
     private String content;
+
+    public Boolean getBoolStatus() {
+        return status.equals(ShoppingListItemStatus.DONE);
+    }
 }

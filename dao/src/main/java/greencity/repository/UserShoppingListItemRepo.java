@@ -73,6 +73,10 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
         value = "SELECT shopping_list_item_id FROM user_shopping_list WHERE habit_assign_id = :id")
     List<Long> getAllAssignedShoppingListItems(Long id);
 
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM user_shopping_list WHERE habit_assign_id = :id")
+    List<UserShoppingListItem> getAllAssignedShoppingListItemsFull(Long id);
+
     /**
      * Method returns shopping list with statuses DONE.
      *

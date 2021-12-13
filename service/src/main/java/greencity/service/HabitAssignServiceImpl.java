@@ -836,4 +836,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
+
+    public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId, String language) {
+
+        UserShoppingListItem usli = userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
+            .filter(f -> f.getId().equals(shoppingListItemId)).findAny().get();
+        if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
+            usli.setStatus(ShoppingListItemStatus.ACTIVE);
+        } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
+            usli.setStatus(ShoppingListItemStatus.DONE);
+        }
+
+        userShoppingListItemRepo.save(usli);
+    }
 }
