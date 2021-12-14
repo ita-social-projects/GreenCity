@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -844,12 +845,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param shoppingListItemId {@link Long} item id.
      */
     public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId) {
-        UserShoppingListItem usli = userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
-            .filter(f -> f.getId().equals(shoppingListItemId)).findAny().get();
-        if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
-            usli.setStatus(ShoppingListItemStatus.ACTIVE);
-        } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
-            usli.setStatus(ShoppingListItemStatus.DONE);
+        Optional<UserShoppingListItem> optionalUserShoppingListItem =
+            userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
+                .filter(f -> f.getId().equals(shoppingListItemId)).findAny();
+        UserShoppingListItem usli = null;
+        if (optionalUserShoppingListItem.isPresent()) {
+            usli = optionalUserShoppingListItem.get();
+            if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
+                usli.setStatus(ShoppingListItemStatus.ACTIVE);
+            } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
+                usli.setStatus(ShoppingListItemStatus.DONE);
+            }
         }
         userShoppingListItemRepo.save(usli);
     }
