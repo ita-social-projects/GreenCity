@@ -229,10 +229,10 @@ public class ManagementUserController {
     }
 
     /**
-     Method update shopping item by habitAssign id and shoppingListItem id.
+     * Method update shopping item by habitAssign id and shoppingListItem id.
      *
-     * @param habitId      {@link Long}  habitAssignId.
-     * @param itemId {@link Long} shoppingListItemId.
+     * @param habitId {@link Long} habitAssignId.
+     * @param itemId  {@link Long} shoppingListItemId.
      */
     @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
