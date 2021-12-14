@@ -250,5 +250,5 @@ public interface HabitAssignService {
      */
     void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
 
-    void updateShoppingItem(Long habitId, Long itemId, String en);
+    void updateShoppingItem(Long habitId, Long itemId);
 }

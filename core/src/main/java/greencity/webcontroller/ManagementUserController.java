@@ -228,11 +228,11 @@ public class ManagementUserController {
         return "core/management_user";
     }
 
-    @PostMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
+    @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public void updateUserRole(@PathVariable Long itemId, @PathVariable("habitId") Long habitId,
-        @CurrentUser UserVO currentUser) {
-        habitAssignService.updateShoppingItem(habitId, itemId, "en");
-        System.out.println(habitId + "_____" + itemId);
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserRole(@PathVariable("itemId") Long itemId,
+        @PathVariable("habitId") Long habitId) {
+        habitAssignService.updateShoppingItem(habitId, itemId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

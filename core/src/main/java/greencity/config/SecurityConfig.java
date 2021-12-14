@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/management/login", "/management/users/updateShoppingItem/{itemId}").permitAll()
+            .antMatchers("/", "/management/login").permitAll()
             .antMatchers("/management/**",
                 "/econews/comments/replies/{parentCommentId}")
             .hasRole(ADMIN)
@@ -193,7 +193,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tipsandtricks/count",
                 "/user",
                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
-                USER_CUSTOM_SHOPPING_LIST_ITEMS, "/management/users/updateShoppingItem/{itemId}",
+                USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 "/user/{userId}/custom-shopping-list-items/available",
                 "/user/{userId}/sixUserFriends/",
                 "/user/{userId}/profile/",

@@ -837,7 +837,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.delete(habitAssign);
     }
 
-    public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId, String language) {
+    public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId) {
 
         UserShoppingListItem usli = userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
             .filter(f -> f.getId().equals(shoppingListItemId)).findAny().get();
