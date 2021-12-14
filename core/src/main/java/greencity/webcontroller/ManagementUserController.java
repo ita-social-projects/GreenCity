@@ -1,24 +1,13 @@
 package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
-import greencity.annotations.ValidLanguage;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
-
-import java.util.List;
-import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import greencity.enums.Role;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
@@ -33,6 +22,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.util.List;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Validated
 @Controller

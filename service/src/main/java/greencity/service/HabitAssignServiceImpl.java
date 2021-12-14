@@ -848,15 +848,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Optional<UserShoppingListItem> optionalUserShoppingListItem =
             userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
                 .filter(f -> f.getId().equals(shoppingListItemId)).findAny();
-        UserShoppingListItem usli = null;
         if (optionalUserShoppingListItem.isPresent()) {
-            usli = optionalUserShoppingListItem.get();
+            UserShoppingListItem usli = optionalUserShoppingListItem.get();
             if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
                 usli.setStatus(ShoppingListItemStatus.ACTIVE);
             } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
                 usli.setStatus(ShoppingListItemStatus.DONE);
             }
+            userShoppingListItemRepo.save(usli);
         }
-        userShoppingListItemRepo.save(usli);
     }
 }
