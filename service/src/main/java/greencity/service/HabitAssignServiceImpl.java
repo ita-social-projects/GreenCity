@@ -837,8 +837,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssignRepo.delete(habitAssign);
     }
 
+    /**
+     * Method update shopping item by habitAssign id and shoppingListItem id.
+     *
+     * @param habitAssignId      {@link Long} habit id.
+     * @param shoppingListItemId {@link Long} item id.
+     */
     public void updateShoppingItem(Long habitAssignId, Long shoppingListItemId) {
-
         UserShoppingListItem usli = userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId).stream()
             .filter(f -> f.getId().equals(shoppingListItemId)).findAny().get();
         if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
@@ -846,7 +851,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
             usli.setStatus(ShoppingListItemStatus.DONE);
         }
-
         userShoppingListItemRepo.save(usli);
     }
 }

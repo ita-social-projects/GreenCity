@@ -228,6 +228,12 @@ public class ManagementUserController {
         return "core/management_user";
     }
 
+    /**
+     Method update shopping item by habitAssign id and shoppingListItem id.
+     *
+     * @param habitId      {@link Long}  habitAssignId.
+     * @param itemId {@link Long} shoppingListItemId.
+     */
     @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<ResponseEntity.BodyBuilder> updateUserRole(@PathVariable("itemId") Long itemId,

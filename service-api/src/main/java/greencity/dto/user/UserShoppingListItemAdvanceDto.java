@@ -19,6 +19,9 @@ public class UserShoppingListItemAdvanceDto {
     private LocalDateTime dateCompleted;
     private String content;
 
+    /**
+     * Method returns status in Boolean.
+     */
     public Boolean getBoolStatus() {
         return status.equals(ShoppingListItemStatus.DONE);
     }
