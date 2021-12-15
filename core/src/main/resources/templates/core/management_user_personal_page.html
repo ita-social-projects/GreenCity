@@ -682,7 +682,7 @@
     function saveListItem(itemId, habitId) {
 
         $.ajax({
-            type: "POST",
+            type: "PUT",
             url: "/management/users/updateShoppingItem/"+habitId+"/"+itemId,
         }).done(function(data) {
             console.log(data);
