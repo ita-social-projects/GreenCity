@@ -4,20 +4,12 @@ import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-
-import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserVO;
-
-import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import greencity.enums.Role;
+import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -31,6 +23,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.util.List;
+
+import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
+
 @Validated
 @Controller
 @AllArgsConstructor
@@ -39,6 +38,7 @@ public class ManagementUserController {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final UserService userService;
+    private final HabitAssignService habitAssignService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -222,5 +222,19 @@ public class ManagementUserController {
         model.addAttribute("fields", userViewDto);
         model.addAttribute("paging", pageable);
         return "core/management_user";
+    }
+
+    /**
+     * Method update shopping item by habitAssign id and shoppingListItem id.
+     *
+     * @param habitId {@link Long} habitAssignId.
+     * @param itemId  {@link Long} shoppingListItemId.
+     */
+    @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserRole(@PathVariable("itemId") Long itemId,
+        @PathVariable("habitId") Long habitId) {
+        habitAssignService.updateShoppingItem(habitId, itemId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

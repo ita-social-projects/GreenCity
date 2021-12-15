@@ -74,6 +74,16 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     List<Long> getAllAssignedShoppingListItems(Long id);
 
     /**
+     * Method returns UserShoppingListItem list by habit assign id.
+     *
+     * @param id id of needed habit assign
+     * @return List of {@link Long}
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM user_shopping_list WHERE habit_assign_id = :id")
+    List<UserShoppingListItem> getAllAssignedShoppingListItemsFull(Long id);
+
+    /**
      * Method returns shopping list with statuses DONE.
      *
      * @param habitAssignId id of needed habit assign

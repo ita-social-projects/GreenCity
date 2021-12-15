@@ -6,7 +6,10 @@ import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.user.*;
+import greencity.entity.UserShoppingListItem;
 import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Collections;
 import java.util.List;
 
+import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,6 +51,8 @@ class ManagementUserControllerTest {
     private static final String managementUserLink = "/management/users";
     @Mock
     private UserService userService;
+    @Mock
+    HabitAssignService habitAssignService;
 
     @BeforeEach
     void setUp() {
@@ -204,4 +210,11 @@ class ManagementUserControllerTest {
         verify(restClient).deactivateAllUsers(list);
     }
 
+    @Test
+    void updateUserRole() throws Exception {
+        mockMvc.perform(put(managementUserLink + "/updateShoppingItem/" + 1L + "/" + 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).updateShoppingItem(1L, 1L);
+    }
 }
