@@ -232,9 +232,8 @@ public class ManagementUserController {
      */
     @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserRole(@PathVariable("itemId") Long itemId,
+    public void updateShoppingItem(@PathVariable("itemId") Long itemId,
         @PathVariable("habitId") Long habitId) {
         habitAssignService.updateShoppingItem(habitId, itemId);
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
