@@ -423,11 +423,48 @@
                                 <th:block class="list-of" th:each="habitAssign, iterStatus :${inProgressHabits}">
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
-                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td class="pr">
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
+                                        </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
                                         <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
                                     </tr>
+
+                                    <div class="modal modal-warning fade in" th:id="modal-warning+${habitAssign.getId()}" >
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <!--<div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span></button>
+                                                </div>!-->
+                                                <div class="modal-body">
+
+                                                    <div style="float: left; min-width: 40%;  max-width: 40%;">
+                                                        <div style="margin: 0 auto; max-width: 75%";>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Target time  </span><span style="float: right"><span th:text="${habitAssign.getDuration()}"></span> days</span><br></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Time in progress  </span><span style="float: right"><span  th:text="${habitAssign.getHabitStreak()}"></span> days</span></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Percent of done </span><span style="float: right"><span th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)}"></span> %</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style="float: right; min-width: 55%;  max-width: 55%;">
+                                                        <div style="margin: 0 auto">
+                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            </th:block>
+                                                        </div>
+
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </th:block>
                                 </tbody>
                             </table>
@@ -474,11 +511,49 @@
                                 <th:block class="list-of" th:each="habitAssign, iterStatus :${cancelledHabits}">
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
-                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td class="pr">
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
+                                        </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td th:text="${#temporals.format(@habitAssignServiceImpl.getEndDate(habitAssign),'dd.MM.yy')}"></td>
                                         <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
                                     </tr>
+
+                                    <div class="modal modal-warning fade in" th:id="modal-warning+${habitAssign.getId()}" >
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <!--<div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span></button>
+                                                </div>!-->
+                                                <div class="modal-body">
+
+                                                    <div style="float: left; min-width: 40%;  max-width: 40%;">
+                                                        <div style="margin: 0 auto; max-width: 75%";>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Target time  </span><span style="float: right"><span th:text="${habitAssign.getDuration()}"></span> days</span><br></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Time in progress  </span><span style="float: right"><span  th:text="${habitAssign.getHabitStreak()}"></span> days</span></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Percent of done </span><span style="float: right"><span th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)}"></span> %</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style="float: right; min-width: 55%;  max-width: 55%;">
+                                                        <div style="margin: 0 auto">
+                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            </th:block>
+                                                        </div>
+
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </th:block>
                                 </tbody>
                             </table>
@@ -525,7 +600,9 @@
                                 <th:block class="list-of" th:each="habitAssign, iterStatus :${customHabits}">
                                     <tr>
                                         <td th:text="${habitAssign.id}"></td>
-                                        <td th:text="${habitAssign.habit.habitTranslation.name}" class="pr"></td>
+                                        <td class="pr">
+                                            <a data-toggle="modal" data-target="#modal-warning" th:attr="data-target='#modal-warning'+${habitAssign.getId()}"><span style="font-weight: 100; cursor: pointer;" th:text="${habitAssign.habit.habitTranslation.name}" > </span></a>
+                                        </td>
                                         <td th:text="${#temporals.format(habitAssign.createDateTime,'dd.MM.yy')}"></td>
                                         <td>
                                             <div class="dropdown userpage table-button">
@@ -553,6 +630,41 @@
                                         </td>
                                         <td th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)} + ' %'"></td>
                                     </tr>
+
+                                    <div class="modal modal-warning fade in" th:id="modal-warning+${habitAssign.getId()}" >
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <!--<div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span></button>
+                                                </div>!-->
+                                                <div class="modal-body">
+
+                                                    <div style="float: left; min-width: 40%;  max-width: 40%;">
+                                                        <div style="margin: 0 auto; max-width: 75%";>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Target time  </span><span style="float: right"><span th:text="${habitAssign.getDuration()}"></span> days</span><br></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Time in progress  </span><span style="float: right"><span  th:text="${habitAssign.getHabitStreak()}"></span> days</span></div>
+                                                            <div style="padding-top: 5px;"><span style="font-weight: bolder">Percent of done </span><span style="float: right"><span th:text="${@habitAssignServiceImpl.getReadinessPercent(habitAssign)}"></span> %</span></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style="float: right; min-width: 55%;  max-width: 55%;">
+                                                        <div style="margin: 0 auto">
+                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
+                                                                <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
+                                                                       th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
+                                                            </th:block>
+                                                        </div>
+
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </th:block>
                                 </tbody>
                             </table>
@@ -682,7 +794,7 @@
     function saveListItem(itemId, habitId) {
 
         $.ajax({
-            type: "POST",
+            type: "PUT",
             url: "/management/users/updateShoppingItem/"+habitId+"/"+itemId,
         }).done(function(data) {
             console.log(data);
