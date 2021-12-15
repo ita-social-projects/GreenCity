@@ -249,4 +249,12 @@ public interface HabitAssignService {
      *                                  habitAssignDto.
      */
     void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
+
+    /**
+     * Method update shopping item by habit id and item id.
+     *
+     * @param habitId {@link Long} habit id.
+     * @param itemId  {@link Long} item id.
+     */
+    void updateShoppingItem(Long habitId, Long itemId);
 }

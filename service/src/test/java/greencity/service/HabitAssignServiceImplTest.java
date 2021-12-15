@@ -8,6 +8,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
+import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 
@@ -576,5 +577,20 @@ class HabitAssignServiceImplTest {
         habitAssignDto.setDuration(2);
 
         assertEquals(1500, habitAssignService.getReadinessPercent(habitAssignDto));
+    }
+
+    @Test
+    void updateShoppingItem() {
+        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
+        userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(any()))
+            .thenReturn(List.of(userShoppingListItem));
+
+        habitAssignService.updateShoppingItem(1L, 1L);
+        assertEquals(ShoppingListItemStatus.DONE, userShoppingListItem.getStatus());
+
+        habitAssignService.updateShoppingItem(1L, 1L);
+        assertEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
+
     }
 }
