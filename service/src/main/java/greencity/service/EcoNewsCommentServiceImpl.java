@@ -226,7 +226,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
             .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
-
         amountCommentLikesDto.setLiked(isLiked);
         int size = comment.getUsersLiked().size();
         amountCommentLikesDto.setAmountLikes(size);
