@@ -4,6 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.BlobStorageException;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotSavedException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -64,5 +66,14 @@ public class AzureCloudStorageService implements FileService {
         } catch (Exception e) {
             throw new BadRequestException(ErrorMessage.MULTIPART_FILE_BAD_REQUEST + image);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(String path) {
+        BlobClient client = containerClient().getBlobClient(path);
+        client.delete();
     }
 }
