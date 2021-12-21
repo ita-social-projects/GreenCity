@@ -82,7 +82,7 @@ public class AzureCloudStorageService implements FileService {
             throw new ImageUrlParseException(ErrorMessage.PARSING_URL_FAILED + path);
         }
         BlobClient client = containerClient().getBlobClient(fileName);
-        if (client.exists() != null && client.exists()) {
+        if (Boolean.TRUE.equals(client.exists())) {
             client.delete();
         }
     }
