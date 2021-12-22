@@ -113,8 +113,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId  {@link User} id.
      * @return {@link HabitAssign} instance.
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
-        + " WHERE ha.habit.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'CANCELLED'")
+    @Query(value = "SELECT DISTINCT ha FROM habit_assign ha"
+        + " WHERE habit_id = :habitId AND user_id = :userId AND upper(ha.status) = 'CANCELLED'", nativeQuery = true)
     HabitAssign findByHabitIdAndUserIdAndStatusIsCancelled(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
