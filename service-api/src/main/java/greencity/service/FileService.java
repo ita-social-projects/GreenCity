@@ -17,4 +17,9 @@ public interface FileService {
      * @return MultipartFile.
      **/
     MultipartFile convertToMultipartImage(String image);
+
+    /**
+     * {@inheritDoc}
+     */
+    void delete(String path);
 }

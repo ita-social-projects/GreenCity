@@ -6,6 +6,7 @@ import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.ImageUrlParseException;
 import greencity.exception.exceptions.NotSavedException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
@@ -63,6 +67,23 @@ public class AzureCloudStorageService implements FileService {
             return modelMapper.map(image, MultipartFile.class);
         } catch (Exception e) {
             throw new BadRequestException(ErrorMessage.MULTIPART_FILE_BAD_REQUEST + image);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void delete(String path) {
+        String fileName;
+        try {
+            fileName = Paths.get(new URI(path).getPath()).getFileName().toString();
+        } catch (URISyntaxException e) {
+            throw new ImageUrlParseException(ErrorMessage.PARSING_URL_FAILED + path);
+        }
+        BlobClient client = containerClient().getBlobClient(fileName);
+        if (Boolean.TRUE.equals(client.exists())) {
+            client.delete();
         }
     }
 }
