@@ -23,6 +23,6 @@ public class UserShoppingListItemAdvanceDto {
      * Method returns status in Boolean.
      */
     public Boolean getBoolStatus() {
-        return status.equals(ShoppingListItemStatus.DONE);
+        return status.equals(ShoppingListItemStatus.INPROGRESS);
     }
 }
