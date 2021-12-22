@@ -81,7 +81,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
         } else {
+            List<ShoppingListItem> shoppingList =
+                shoppingListItemRepo.getShoppingListByListOfId(
+                    shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId));
             habitAssign = buildHabitAssign(habit, user);
+            saveUserShoppingListItems(shoppingList, habitAssign);
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
@@ -229,8 +233,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             userShoppingList.add(UserShoppingListItem.builder()
                 .habitAssign(habitAssign)
                 .shoppingListItem(shoppingItem)
-                .dateCompleted(LocalDateTime.now())
-                .status(ShoppingListItemStatus.INPROGRESS)
+                .status(ShoppingListItemStatus.ACTIVE)
                 .build());
         }
         userShoppingListItemRepo.saveAll(userShoppingList);
@@ -850,10 +853,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .filter(f -> f.getId().equals(shoppingListItemId)).findAny();
         if (optionalUserShoppingListItem.isPresent()) {
             UserShoppingListItem usli = optionalUserShoppingListItem.get();
-            if (usli.getStatus().equals(ShoppingListItemStatus.DONE)) {
+            if (usli.getStatus().equals(ShoppingListItemStatus.INPROGRESS)) {
                 usli.setStatus(ShoppingListItemStatus.ACTIVE);
             } else if (usli.getStatus().equals(ShoppingListItemStatus.ACTIVE)) {
-                usli.setStatus(ShoppingListItemStatus.DONE);
+                usli.setStatus(ShoppingListItemStatus.INPROGRESS);
             }
             userShoppingListItemRepo.save(usli);
         }

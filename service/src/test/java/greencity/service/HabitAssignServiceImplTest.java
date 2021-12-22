@@ -587,7 +587,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(List.of(userShoppingListItem));
 
         habitAssignService.updateShoppingItem(1L, 1L);
-        assertEquals(ShoppingListItemStatus.DONE, userShoppingListItem.getStatus());
+        assertEquals(ShoppingListItemStatus.INPROGRESS, userShoppingListItem.getStatus());
 
         habitAssignService.updateShoppingItem(1L, 1L);
         assertEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
