@@ -18,6 +18,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
+import greencity.service.FileService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -52,6 +53,7 @@ import springfox.documentation.annotations.ApiIgnore;
 public class EcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagService;
+    private final FileService fileService;
 
     /**
      * Method for getting three last eco news.
@@ -132,6 +134,21 @@ public class EcoNewsController {
         @ApiParam(value = "Array of eco news images") MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ecoNewsService.uploadImages(images));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @ApiOperation(value = "Delete image")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/deleteImage")
+    public void deleteImage(@RequestParam String imagePath) {
+        fileService.delete(imagePath);
     }
 
     /**

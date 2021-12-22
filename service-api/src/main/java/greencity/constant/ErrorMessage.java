@@ -9,6 +9,7 @@ public final class ErrorMessage {
         "Shopping list item with such id does not assigned fot this habit ";
     public static final String SHOPPING_LIST_ITEM_ALREADY_SELECTED =
         "Shopping list item with such id already selected by user ";
+    public static final String PARSING_URL_FAILED = "Can't parse image's url: ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
     public static final String USER_ALREADY_HAS_MAX_NUMBER_OF_HABIT_ASSIGNS =
