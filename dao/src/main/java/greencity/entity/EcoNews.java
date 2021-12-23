@@ -30,6 +30,8 @@ public class EcoNews {
 
     @Column
     private String source;
+    @Column
+    private String shortInfo;
 
     @ManyToOne
     private User author;

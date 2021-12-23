@@ -17,6 +17,7 @@ public final class SwaggerExampleModel {
     private static final String EXAMPLE =
         "  \"image\": \"string\",\n"
             + "  \"source\": \"https://example.org/\",\n"
+            + "  \"shortInfo\": \"string\",\n"
             + "  \"tags\": [\n"
             + "    \"string\"\n"
             + "  ],\n"
