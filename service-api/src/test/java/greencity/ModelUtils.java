@@ -88,7 +88,7 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
-            "text","shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+            "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
             Arrays.asList("Новини", "News", "Новины"));
     }
