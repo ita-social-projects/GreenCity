@@ -134,18 +134,18 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", null, Collections.singletonList(getTag()), null);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null, null);
+            Collections.singletonList("tag"), null, null, "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
-            "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+            "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
             Collections.singletonList("tag"));
     }

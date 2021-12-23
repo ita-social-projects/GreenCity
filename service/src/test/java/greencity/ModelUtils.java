@@ -291,18 +291,18 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForMethodConvertTest() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, getUser(),
+        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
             Collections.singletonList(getTag()), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
-        return new EcoNews(1L, null, TestConst.SITE, null, getUser(),
+        return new EcoNews(1L, null, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
@@ -696,12 +696,12 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), null, null);
+            Collections.singletonList("tag"), null, null, "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
-            "text", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
+            "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, null,
             Arrays.asList("Новини", "News", "Новины"));
     }
