@@ -31,6 +31,8 @@ public class AddEcoNewsDtoResponse implements Serializable {
     private String text;
 
     @NotEmpty
+    private String shortInfo;
+    @NotEmpty
     private EcoNewsAuthorDto ecoNewsAuthorDto;
 
     @NotEmpty
