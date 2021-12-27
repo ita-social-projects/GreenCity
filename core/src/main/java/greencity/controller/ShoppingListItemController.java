@@ -5,6 +5,8 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.NewShoppingListItemRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -177,4 +179,46 @@ public class ShoppingListItemController {
         return ResponseEntity.status(HttpStatus.OK).body(shoppingListItemService
             .deleteUserShoppingListItems(ids));
     }
+
+    /**
+     * Method adds shopping item by user id and NewShoppingListItemRequestDto.
+     *
+     * @param newShoppingListItemRequestDto {@link NewShoppingListItemRequestDto}.
+     * @author Max Bohonko
+     */
+    @ApiOperation(value = "Add new custom shopping item")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PutMapping("/newCustomShoppingItem")
+    public ResponseEntity<ResponseEntity.BodyBuilder> addNewCustomShoppingItem(
+        @Valid @RequestBody NewShoppingListItemRequestDto newShoppingListItemRequestDto,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        shoppingListItemService.addNewCustomShoppingItem(userVO.getId(), newShoppingListItemRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method returns custom shopping list items by user id and habit assign id.
+     *
+     * @param habitId {@link Long} habit id.
+     * @return List of {@link CustomShoppingListItemResponseDto}.
+     * @author Max Bohonko
+     */
+    @ApiOperation(value = "Get user`s custom shopping list.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @GetMapping("/getCustomShopingItem/{habitId}")
+    public ResponseEntity<List<CustomShoppingListItemResponseDto>> getCustomShoppingList(
+        @ApiIgnore @CurrentUser UserVO user,
+        @ApiParam("Id of the Habit can't be empty.") @PathVariable Long habitId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(shoppingListItemService.getCustomShoppingItems(user.getId(), habitId));
+    }
+
 }

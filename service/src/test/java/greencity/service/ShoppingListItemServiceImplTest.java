@@ -5,11 +5,7 @@ import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.entity.*;
@@ -19,10 +15,8 @@ import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.Role;
 import static greencity.enums.UserStatus.ACTIVATED;
 import greencity.exception.exceptions.*;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,14 +24,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -66,6 +59,12 @@ class ShoppingListItemServiceImplTest {
     HabitAssignRepo habitAssignRepo;
     @Mock
     private ShoppingListItemRepo shoppingListItemRepo;
+    @Mock
+    private HabitRepo habitRepo;
+    @Mock
+    private CustomShoppingListItemRepo customShoppingListItemRepo;
+    @Mock
+    private UserRepo userRepo;
     @InjectMocks
     private ShoppingListItemServiceImpl shoppingListItemService;
     @Mock
@@ -493,5 +492,40 @@ class ShoppingListItemServiceImplTest {
         PageableAdvancedDto<ShoppingListItemManagementDto> actual =
             shoppingListItemService.findAllShoppingListItemsForManagementPageNotContained(1L, pageable);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void addNewCustomShoppingItemTest() {
+        when(userRepo.getOne(any())).thenReturn(ModelUtils.getUser());
+        CustomShoppingListItem customShoppingListItem = CustomShoppingListItem.builder()
+            .text("Description")
+            .habit(ModelUtils.getHabitAssign().getHabit())
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .user(ModelUtils.getUser())
+            .build();
+        when(customShoppingListItemRepo.save(any())).thenReturn(customShoppingListItem);
+        when(habitAssignRepo.getOne(any())).thenReturn(ModelUtils.getHabitAssign());
+
+        NewShoppingListItemRequestDto newShoppingListItemRequestDto = new NewShoppingListItemRequestDto();
+        newShoppingListItemRequestDto.setItemDescription("Description");
+        newShoppingListItemRequestDto.setHabitAssignId(1L);
+
+        shoppingListItemService.addNewCustomShoppingItem(1L, newShoppingListItemRequestDto);
+    }
+
+    @Test
+    void getCustomShoppingItemsTest() {
+        CustomShoppingListItem customShoppingListItem = CustomShoppingListItem.builder()
+            .text("Description")
+            .habit(ModelUtils.getHabit())
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .user(ModelUtils.getUser())
+            .build();
+        List<CustomShoppingListItem> customShoppingListItems = List.of(customShoppingListItem);
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(customShoppingListItems);
+
+        assertTrue(shoppingListItemService.getCustomShoppingItems(1L, 1L)
+            .contains(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class)));
     }
 }
