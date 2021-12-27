@@ -496,18 +496,16 @@ class ShoppingListItemServiceImplTest {
         newShoppingListItemRequestDto.setItemDescription("Description");
         newShoppingListItemRequestDto.setHabitAssignId(1L);
 
-
         CustomShoppingListItem customShoppingListItem = CustomShoppingListItem.builder()
-                .text(newShoppingListItemRequestDto.getItemDescription())
-                .habit(habitAssignRepo.getOne(newShoppingListItemRequestDto.getHabitAssignId()).getHabit())
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .user(userRepo.getOne(userId))
-                .build();
+            .text(newShoppingListItemRequestDto.getItemDescription())
+            .habit(habitAssignRepo.getOne(newShoppingListItemRequestDto.getHabitAssignId()).getHabit())
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .user(userRepo.getOne(userId))
+            .build();
 
         shoppingListItemService.addNewCustomShoppingItem(1L, newShoppingListItemRequestDto);
 
         verify(customShoppingListItemRepo).save(customShoppingListItem);
-
 
     }
 
