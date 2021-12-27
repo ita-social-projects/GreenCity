@@ -220,5 +220,4 @@ public class ShoppingListItemController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(shoppingListItemService.getCustomShoppingItems(user.getId(), habitId));
     }
-
 }
