@@ -31,13 +31,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -59,8 +54,6 @@ class ShoppingListItemServiceImplTest {
     HabitAssignRepo habitAssignRepo;
     @Mock
     private ShoppingListItemRepo shoppingListItemRepo;
-    @Mock
-    private HabitRepo habitRepo;
     @Mock
     private CustomShoppingListItemRepo customShoppingListItemRepo;
     @Mock
@@ -496,21 +489,26 @@ class ShoppingListItemServiceImplTest {
 
     @Test
     void addNewCustomShoppingItemTest() {
-        when(userRepo.getOne(any())).thenReturn(ModelUtils.getUser());
-        CustomShoppingListItem customShoppingListItem = CustomShoppingListItem.builder()
-            .text("Description")
-            .habit(ModelUtils.getHabitAssign().getHabit())
-            .status(ShoppingListItemStatus.INPROGRESS)
-            .user(ModelUtils.getUser())
-            .build();
-        when(customShoppingListItemRepo.save(any())).thenReturn(customShoppingListItem);
         when(habitAssignRepo.getOne(any())).thenReturn(ModelUtils.getHabitAssign());
+        when(userRepo.getOne(any())).thenReturn(ModelUtils.getUser());
 
         NewShoppingListItemRequestDto newShoppingListItemRequestDto = new NewShoppingListItemRequestDto();
         newShoppingListItemRequestDto.setItemDescription("Description");
         newShoppingListItemRequestDto.setHabitAssignId(1L);
 
+
+        CustomShoppingListItem customShoppingListItem = CustomShoppingListItem.builder()
+                .text(newShoppingListItemRequestDto.getItemDescription())
+                .habit(habitAssignRepo.getOne(newShoppingListItemRequestDto.getHabitAssignId()).getHabit())
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .user(userRepo.getOne(userId))
+                .build();
+
         shoppingListItemService.addNewCustomShoppingItem(1L, newShoppingListItemRequestDto);
+
+        verify(customShoppingListItemRepo).save(customShoppingListItem);
+
+
     }
 
     @Test

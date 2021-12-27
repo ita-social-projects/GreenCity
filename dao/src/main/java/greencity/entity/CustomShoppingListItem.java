@@ -11,8 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 @ToString(exclude = {"user", "dateCompleted"})
+@EqualsAndHashCode(exclude = "dateCompleted")
 @Table(name = "custom_shopping_list_items")
 @Builder
 public class CustomShoppingListItem {
