@@ -5,7 +5,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.shoppinglistitem.*;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.entity.CustomShoppingListItem;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.UserShoppingListItem;
@@ -14,8 +13,10 @@ import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.filters.ShoppingListItemSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.repository.*;
-
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,8 +42,6 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     private final ModelMapper modelMapper;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final HabitAssignRepo habitAssignRepo;
-    private final CustomShoppingListItemRepo customShoppingListItemRepo;
-    private final UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -481,35 +480,5 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
                 .map(item -> modelMapper.map(item, ShoppingListItemManagementDto.class))
                 .collect(Collectors.toList());
         return getPagebleAdvancedDto(shoppingListItemManagementDtos, shoppingListItems);
-    }
-
-    /**
-     * Method adds shopping item by user id and NewShoppingListItemRequestDto.
-     *
-     * @param newShoppingListItemRequestDto {@link NewShoppingListItemRequestDto}
-     *                                      newShoppingListItemRequestDto.
-     * @param userId                        {@link Long} item id.
-     */
-    @Override
-    public void addNewCustomShoppingItem(Long userId, NewShoppingListItemRequestDto newShoppingListItemRequestDto) {
-        customShoppingListItemRepo.save(CustomShoppingListItem.builder()
-            .text(newShoppingListItemRequestDto.getItemDescription())
-            .habit(habitAssignRepo.getOne(newShoppingListItemRequestDto.getHabitAssignId()).getHabit())
-            .status(ShoppingListItemStatus.INPROGRESS)
-            .user(userRepo.getOne(userId))
-            .build());
-    }
-
-    /**
-     * Method returns custom shopping list items by user id and habit assign id.
-     *
-     * @param habitId {@link Long} habit id.
-     * @param userId  {@link Long} item id.
-     */
-    @Override
-    public List<CustomShoppingListItemResponseDto> getCustomShoppingItems(Long userId, Long habitId) {
-        return customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId).stream()
-            .map(item -> modelMapper.map(item, CustomShoppingListItemResponseDto.class))
-            .collect(Collectors.toList());
     }
 }

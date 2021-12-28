@@ -127,23 +127,4 @@ class ShoppingListItemControllerTest {
 
         verify(shoppingListItemService).deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, null, 1L);
     }
-
-    @Test
-    void addNewCustomShoppingItemTest() throws Exception {
-        String content = "{\n" +
-            "  \"habitAssignId\": 1,\n" +
-            "  \"itemDescription\": \"1\"\n" +
-            "}";
-        mockMvc.perform(put(shoppingListItemLink
-            + "/newCustomShoppingItem", 1, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void getCustomShoppingListTest() throws Exception {
-        mockMvc.perform(get(shoppingListItemLink + "/getCustomShopingItem/{habitId}", 1))
-            .andExpect(status().isOk());
-    }
 }
