@@ -166,4 +166,21 @@ public interface ShoppingListItemService {
      */
     PageableAdvancedDto<ShoppingListItemManagementDto> findAllShoppingListItemsForManagementPageNotContained(
         Long habitId, Pageable pageable);
+
+    /**
+     * Method adds shopping item by user id and NewShoppingListItemRequestDto.
+     *
+     * @param newShoppingListItemRequestDto {@link NewShoppingListItemRequestDto}
+     *                                      newShoppingListItemRequestDto.
+     * @param userId                        {@link Long} item id.
+     */
+    void addNewCustomShoppingItem(Long userId, NewShoppingListItemRequestDto newShoppingListItemRequestDto);
+
+    /**
+     * Method returns custom shopping list items by user id and habit assign id.
+     *
+     * @param habitId {@link Long} habit id.
+     * @param userId  {@link Long} item id.
+     */
+    List<CustomShoppingListItemResponseDto> getCustomShoppingItems(Long userId, Long habitId);
 }
