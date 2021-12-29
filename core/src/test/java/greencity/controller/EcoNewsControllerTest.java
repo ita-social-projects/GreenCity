@@ -5,8 +5,9 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import liquibase.pro.packaged.E;
+import liquibase.pro.packaged.O;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -38,6 +42,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,12 +67,15 @@ class EcoNewsControllerTest {
 
     private Principal principal = getPrincipal();
 
+    private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes))
             .build();
     }
 
@@ -258,5 +267,16 @@ class EcoNewsControllerTest {
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
 
+    }
+
+    @Test
+    void getContentAndSourceForEcoNewsByIdNot_Found_Request() throws Exception {
+
+        Mockito.when(ecoNewsService.getContentAndSourceForEcoNewsById(1L)).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get(ecoNewsLink + "/contentAndSourceForEcoNews/{id}", 1L))
+            .andExpect(status().isNotFound());
+
+        verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
     }
 }
