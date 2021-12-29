@@ -398,7 +398,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private void enhanceWithNewData(EcoNews toUpdate, UpdateEcoNewsDto updateEcoNewsDto,
         MultipartFile image) {
         toUpdate.setTitle(updateEcoNewsDto.getTitle());
-        toUpdate.setText(updateEcoNewsDto.getText());
+        toUpdate.setText(updateEcoNewsDto.getContent());
+        toUpdate.setShortInfo(updateEcoNewsDto.getShortInfo());
         toUpdate.setSource(updateEcoNewsDto.getSource());
         toUpdate.setTags(modelMapper.map(tagService
             .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
@@ -578,12 +579,31 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .id(ecoNews.getId())
             .imagePath(ecoNews.getImagePath())
             .author(ecoNewsAuthorDto)
-            .source(ecoNews.getSource())
             .likes(ecoNews.getUsersLikedNews().size())
             .tags(list)
-            .text(ecoNews.getText())
+            .shortInfo(ecoNews.getShortInfo())
+            .content(ecoNews.getText())
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
+            .build();
+    }
+
+    /**
+     * Method for getting some fields in eco news by id.
+     *
+     * @param id - {@link Long} eco news id.
+     * @return dto {@link EcoNewContentSourceDto}.
+     */
+    public EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id) {
+        EcoNews ecoNews = ecoNewsRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        return getContentSourceEcoNewsDto(ecoNews);
+    }
+
+    private EcoNewContentSourceDto getContentSourceEcoNewsDto(EcoNews ecoNews) {
+        return EcoNewContentSourceDto.builder()
+            .content(ecoNews.getText())
+            .source(ecoNews.getSource())
             .build();
     }
 }

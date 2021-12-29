@@ -1332,17 +1332,17 @@ public class ModelUtils {
     }
 
     public static EcoNewsDto getEcoNewsDto() {
-        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "text", "source",
+        return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
             getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1, 0);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
-        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", null,
+        return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
             getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0, 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
-        return new UpdateEcoNewsDto(1L, "title", "text", Collections.singletonList("tag"),
+        return new UpdateEcoNewsDto(1L, "title", "text", "shortInfo", Collections.singletonList("tag"),
             "image", "source");
     }
 

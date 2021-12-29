@@ -9,14 +9,11 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econews.*;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.service.EcoNewsService;
 import greencity.service.FileService;
 import greencity.service.TagsService;
@@ -34,15 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -363,5 +352,22 @@ public class EcoNewsController {
     public ResponseEntity<Boolean> checkNewsIsLikedByUser(@RequestParam("econewsId") Long econewsId,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(econewsId, user));
+    }
+
+    /**
+     * Method for getting some fields in eco news by id.
+     *
+     * @return dto {@link EcoNewContentSourceDto}.
+     */
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND, response = NotFoundException.class)
+    })
+    @GetMapping("/contentAndSourceForEcoNews/{id}")
+    public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.getContentAndSourceForEcoNewsById(id));
     }
 }
