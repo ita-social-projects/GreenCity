@@ -30,10 +30,9 @@ public class EcoNewsDto {
     private String title;
 
     @NotEmpty
-    private String text;
+    private String content;
 
-    private String source;
-
+    private String shortInfo;
     @NotEmpty
     private EcoNewsAuthorDto author;
 

@@ -24,7 +24,7 @@ class EcoNewsDtoMapperTest {
         String defaultLanguage = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
-            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getSource(),
+            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getShortInfo(),
             ModelUtils.getEcoNewsAuthorDto(),
             ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())

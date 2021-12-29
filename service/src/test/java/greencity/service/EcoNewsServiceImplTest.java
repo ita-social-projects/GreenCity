@@ -148,7 +148,7 @@ class EcoNewsServiceImplTest {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
         EcoNewsDto ecoNewsDto =
-            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "test text", null,
+            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "content", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0);
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
@@ -183,7 +183,7 @@ class EcoNewsServiceImplTest {
             pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(now, "test image path", 1L, "test title", "test text", null,
+            new EcoNewsDto(now, "test image path", 1L, "test title", "content", null,
                 ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0));
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
@@ -522,5 +522,15 @@ class EcoNewsServiceImplTest {
         MultipartFile[] multipartFiles = {ModelUtils.getFile()};
         ecoNewsService.uploadImages(multipartFiles);
         Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
+    }
+
+    @Test
+    void findEcoNewContentSourceDtoById() {
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+
+        ecoNewsService.findEcoNewContentSourceDtoById(1L);
+
+        verify(ecoNewsRepo).findById(1L);
     }
 }
