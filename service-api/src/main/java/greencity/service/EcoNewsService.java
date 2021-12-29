@@ -229,4 +229,12 @@ public interface EcoNewsService {
      * @return array of images path
      */
     String[] uploadImages(MultipartFile[] images);
+
+    /**
+     * Method for getting some fields in eco news by id.
+     *
+     * @param id - {@link Long} eco news id.
+     * @return dto {@link EcoNewContentSourceDto}.
+     */
+    EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id);
 }

@@ -26,7 +26,9 @@ public class UpdateEcoNewsDto {
 
     @NotEmpty
     @Size(min = 20, max = 63206)
-    private String text;
+    private String content;
+
+    private String shortInfo;
 
     @NotEmpty(message = ServiceValidationConstants.MIN_AMOUNT_OF_TAGS)
     private List<String> tags;
