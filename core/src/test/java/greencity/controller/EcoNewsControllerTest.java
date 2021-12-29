@@ -253,10 +253,10 @@ class EcoNewsControllerTest {
 
     @Test
     void getContentAndSourceForEcoNewsById() throws Exception {
-        mockMvc.perform(get(ecoNewsLink + "/getContentAndSourceForEcoNews/{id}", 1L))
+        mockMvc.perform(get(ecoNewsLink + "/contentAndSourceForEcoNews/{id}", 1L))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findEcoNewContentSourceDtoById(1L);
+        verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
 
     }
 }

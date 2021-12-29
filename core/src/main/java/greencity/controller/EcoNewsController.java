@@ -358,9 +358,9 @@ public class EcoNewsController {
      *
      * @return dto {@link EcoNewContentSourceDto}.
      */
-    @GetMapping("/getContentAndSourceForEcoNews/{id}")
+    @GetMapping("/contentAndSourceForEcoNews/{id}")
     public ResponseEntity<EcoNewContentSourceDto> getContentAndSourceForEcoNewsById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(ecoNewsService.findEcoNewContentSourceDtoById(id));
+            .body(ecoNewsService.getContentAndSourceForEcoNewsById(id));
     }
 }

@@ -236,5 +236,5 @@ public interface EcoNewsService {
      * @param id - {@link Long} eco news id.
      * @return dto {@link EcoNewContentSourceDto}.
      */
-    EcoNewContentSourceDto findEcoNewContentSourceDtoById(Long id);
+    EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id);
 }

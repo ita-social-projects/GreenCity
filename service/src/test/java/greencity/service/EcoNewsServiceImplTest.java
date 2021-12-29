@@ -525,12 +525,18 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void findEcoNewContentSourceDtoById() {
+    void getContentAndSourceForEcoNewsById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
 
-        ecoNewsService.findEcoNewContentSourceDtoById(1L);
+        ecoNewsService.getContentAndSourceForEcoNewsById(1L);
 
         verify(ecoNewsRepo).findById(1L);
     }
+
+    @Test
+    void getContentAndSourceForEcoNewsByIdException() {
+        assertThrows(NotFoundException.class, () -> ecoNewsService.getContentAndSourceForEcoNewsById(1L));
+    }
+
 }

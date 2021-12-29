@@ -594,7 +594,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param id - {@link Long} eco news id.
      * @return dto {@link EcoNewContentSourceDto}.
      */
-    public EcoNewContentSourceDto findEcoNewContentSourceDtoById(Long id) {
+    public EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         return getContentSourceEcoNewsDto(ecoNews);
