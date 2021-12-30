@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="5" author="Kravchenko">
+        <createTable tableName="chat_rooms">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="6" author="Kravchenko">
+        <createTable tableName="chat_messages">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="sender_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="room_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="content" type="varchar(170)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_date" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="sender_id" baseTableName="chat_messages"
+                                 constraintName="fk_sender_users_user_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="chat_messages"
+                                 constraintName="fk_messages_room_chat_rooms_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="chat_rooms"/>
+
+    </changeSet>
+
+    <changeSet id="7" author="Kravchenko">
+        <createTable tableName="chat_rooms_participants">
+            <column name="room_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="participant_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="participant_id" baseTableName="chat_rooms_participants"
+                                 constraintName="fk_participant_users_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="room_id" baseTableName="chat_rooms_participants"
+                                 constraintName="fk_room_chat_rooms_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="chat_rooms"/>
+
+        <addPrimaryKey tableName="chat_rooms_participants"
+                       columnNames="participant_id, room_id" clustered="true"/>
+    </changeSet>
+
+    <changeSet id="8" author="Kravchenko">
+        <addColumn tableName="chat_rooms">
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

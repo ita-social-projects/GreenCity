@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet author="Dmytro Khonko" id="dmytrokhonko5">
+        <createTable tableName="habit_goals">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="goal_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="dmytrokhonko6" author="Dmytro Khonko">
+        <addForeignKeyConstraint baseColumnNames="goal_id" baseTableName="habit_goals"
+                                 constraintName="FK_habit_goal_goal" referencedColumnNames="id"
+                                 referencedTableName="goals"/>
+
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_goals"
+                                 constraintName="FK_habit_goal_habit" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+</databaseChangeLog>

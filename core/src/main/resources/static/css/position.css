@@ -6,10 +6,16 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    min-height: 941px;
 }
 
 .main-content {
     flex: 1 0 auto;
-    padding-top: 70px;
-    padding-left: 20px;
+    padding-top: 54px;
+    padding-left: 277px;
+}
+@media screen and (max-width: 1152px){
+    .main-content {
+        padding-left: 60px;
+    }
 }

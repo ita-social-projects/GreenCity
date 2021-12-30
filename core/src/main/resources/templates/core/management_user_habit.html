@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenCity</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/habit.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
+    <script th:src="@{/management/habit/buttonsAJAX.js}"></script>
+    <script>
+        $(function () {
+            $('.pr').liTextLength({
+                length: 25,
+                afterLength: '...',
+                fullText: false
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="header" th:insert="core/header"></div>
+<div id="sidebar" th:insert="core/sidepanel"></div>
+<div class="main-content">
+    <div class="container-xl">
+        <div class="wrapper">
+            <div class="header">
+                <div class="title">
+                    <br>
+                    <h1 id="title_name"> Habit [[${habit.id}]]</h1>
+                    <p> [[#{greenCity.pages.table.date}]]: 2021/07/07</p>
+                    <p> [[#{greenCity.pages.table.author}]]: Jimmy Cornel</p>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="column aside-1">
+                    <img src="/img/eco.png" style="width: 326px; height: 218px;">
+                    <br>
+                    <table class="light-text" style="text-align: center">
+                        <tr>
+                            <td style="width: 105px;">Type</td>
+                            <td style="width: 221px;">System</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 105px;">Category</td>
+                            <td style="width: 221px;">Water saving</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 105px;">Status</td>
+                            <td style="width: 221px;">Active</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <div class="column main">
+                    <table class="light-text">
+                        <tr>
+                            <td>&nbsp ua
+                                <i id="habit_translation1" class="table-edit-translation-icon"
+                                   th:href="@{|/management/habits/${habit.getId()}/find|}"
+                                   style="padding: 5px"></i>
+                            </td>
+                        </tr>
+                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'ua']}">
+                            <td>&nbsp [[${translation.name}]]</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="light-text">
+                        <tr>
+                            <td>&nbsp en
+                                <i id="habit_translation2" class="table-edit-translation-icon"
+                                   th:href="@{|/management/habits/${habit.getId()}/find|}"
+                                   style="padding: 5px"></i>
+                            </td>
+                        </tr>
+                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'en']}">
+                            <td>&nbsp [[${translation.name}]]</td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="light-text">
+                        <tr>
+                            <td>&nbsp ru
+                                <i id="habit_translation3" class="table-edit-translation-icon"
+                                   th:href="@{|/management/habits/${habit.getId()}/find|}"
+                                   style="padding: 5px"></i>
+                            </td>
+                        </tr>
+                        <tr th:each="translation: ${habit.habitTranslations.?[languageCode == 'ru']}">
+                            <td>&nbsp [[${translation.name}]]</td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <div class="column aside-2">
+                    <p class="light-text"> [[#{greenCity.pages.table.duration}]]: [[${habit.defaultDuration}]]
+                        [[#{greenCity.pages.table.days}]]</p>
+
+                    <div class="multi-range-slider">
+                        <input type="range" id="input-left" min="7" max="56" th:value="${habit.defaultDuration}"
+                               name="durationFrom"
+                               style="width: 294px;">
+                        <div class="slider">
+                            <div class="track"></div>
+                            <div class="range"></div>
+                            <div class="thumb left"></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 5px">
+                        <p id="leftText" style="color: #13aa57">7 days</p>
+                    </div>
+
+                    <div class="complexity-line">
+                        <p class="light-text" style="display: inline-block;
+                                              float: left;">
+                            [[#{greenCity.pages.table.complexity}]]:
+                        </p>
+                        <div th:switch="${habit.complexity}" style="display: inline-block;
+                                              float: left;">
+                            <div th:case="1">
+                                <img src="/img/star-filled.png" class="complexity_1">
+                                <img src="/img/star-empty.png" class="complexity_2">
+                                <img src="/img/star-empty.png" class="complexity_3">
+                            </div>
+                            <div th:case="2">
+                                <img src="/img/star-filled.png" class="complexity_1">
+                                <img src="/img/star-filled.png" class="complexity_2">
+                                <img src="/img/star-empty.png" class="complexity_3">
+                            </div>
+                            <div th:case="3">
+                                <img src="/img/star-filled.png" class="complexity_1">
+                                <img src="/img/star-filled.png" class="complexity_2">
+                                <img src="/img/star-filled.png" class="complexity_3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="complexity-line headline-4">
+                        <div th:switch="${habit.complexity}" style="display: inline-block;
+                                              float: left;">
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${acquired}"></h5>
+                                <p>acquired by:</p>
+                            </div>
+
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${inProgress}"></h5>
+                                <p>in progress:</p>
+                            </div>
+
+                            <div class="column" style="width: 82px">
+                                <h5 th:text="${canceled}"></h5>
+                                <p>canceled by:</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Habit`s Facts table-->
+            <div class="table-header">
+                <h3>[[#{greenCity.personal.page.habitsFacts}]]
+                    <td th:text="${hfacts.getTotalElements()}"/>
+                </h3>
+                <div class="hide-button">
+                    <button id="button1" value="hide" onclick="hideTable(this.id)">
+                        <span>hide</span>
+                        <img src="/img/arrow-up.svg" alt="arrow-icon">
+                    </button>
+                </div>
+                <div class="complexity-line">
+                    <a id="unlinktable1" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkFacts('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable1" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive userpage">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="table-primary light-text">
+                        <th style="width: 20px">
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll1">
+                                    <label for="selectAll1"></label>
+                                </span>
+                        </th>
+                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
+                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="table1">
+                    <th:block class="list-of" th:each="habitFacts, iterStatus :${hfacts.getPage()}">
+                        <tr class="light-text">
+                            <td style="width: 20px;">
+                                    <span class="custom-checkbox">
+                                            <input type="checkbox" th:id="'factscheckbox'+${iterStatus.count}"
+                                                   id="checkbox1"
+                                                   name="options[]" th:value="${habitFacts.getId()}"
+                                                   th:onclick="'updateCheckBoxCountFacts('+${iterStatus.count}+','+${habitFacts.getId()}+')'">
+                                            <label th:for="'factscheckbox'+${iterStatus.count}" for="checkbox1"></label>
+                                    </span>
+                            </td>
+
+                            <td id="translations" style="width: 300px">
+                                <div th:each="translation : ${habitFacts.getTranslations()}">
+                                    <h5 th:text="${translation.getContent()}"></h5>
+                                </div>
+                            </td>
+
+                            <td style="width: 52px">Link</td>
+
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Habit`s Advices table-->
+            <div class="table-header">
+                <h3>[[#{greenCity.sidebar.habits.advice}]]:
+                    <td th:text="${hadvices.size()}"/>
+                </h3>
+                <div class="hide-button">
+                    <button id="button2" value="hide" onclick="hideTable(this.id)">
+                        <span>hide</span>
+                        <img src="/img/arrow-up.svg" alt="arrow-icon">
+                    </button>
+                </div>
+                <div class="complexity-line">
+                    <a id="unlinktable2" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkAdvices('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable2" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="table-primary light-text">
+                        <th style="width: 20px">
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll2">
+                                    <label for="selectAll2"></label>
+                                </span>
+                        </th>
+                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
+                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="table2">
+                    <th:block class="list-of" th:each="advice, iterStatus :${hadvices}">
+                        <tr class="light-text">
+                            <td style="width: 20px">
+                                    <span class="custom-checkbox">
+                                            <input type="checkbox" th:id="'advicescheckbox'+${iterStatus.count}"
+                                                   id="checkbox2"
+                                                   name="options[]" th:value="${iterStatus.count}"
+                                                   th:onclick="'updateCheckBoxCountAdvices('+${iterStatus.count}+')'">
+                                            <label th:for="'advicescheckbox'+${iterStatus.count}"
+                                                   for="checkbox2"></label>
+                                    </span>
+                            </td>
+
+                            <td id="translations2" style="width: 300px">
+                                <h5 th:text="${advice.getContent()}"></h5>
+                            </td>
+
+                            <td style="width: 52px">Link</td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Shopping List table-->
+            <div class="table-header">
+                <h3>[[#{greenCity.sidebar.habits.shoppingList}]]:
+                    <td th:text="${hshops.size()}"/>
+                </h3>
+                <div class="hide-button">
+                    <button id="button3" value="hide" onclick="hideTable(this.id)">
+                        <span>hide</span>
+                        <img src="/img/arrow-up.svg" alt="arrow-icon">
+                    </button>
+                </div>
+                <div class="complexity-line">
+                    <a id="unlinktable3" class="btn btn-secondary disabled"
+                       th:onclick="'unlinkShop('+${habit.id}+')'">
+                        <div>Unlink</div>
+                    </a>
+
+                    <a id="linknewtable3" class="btn btn-secondary"
+                       th:onclick="'linknew()'">
+                        <div>Link new</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive userpage">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="table-primary light-text">
+                        <th style="width: 20px">
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll3">
+                                    <label for="selectAll3"></label>
+                                </span>
+                        </th>
+                        <th style="width: 300px">[[#{greenCity.pages.table.name}]]</th>
+                        <th style="width: 52px">[[#{greenCity.pages.table.link}]]</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="table3">
+                    <th:block class="list-of" th:each="shopitem, iterStatus :${hshops}">
+                        <tr class="light-text">
+                            <td style="width: 20px">
+                                    <span class="custom-checkbox" style="">
+                                            <input type="checkbox" th:id="'Shopcheckbox'+${iterStatus.count}"
+                                                   id="checkbox3"
+                                                   name="options[]" th:value="${shopitem.id}"
+                                                   th:onclick="'updateCheckBoxCountShop('+${iterStatus.count}+','+${shopitem.id}+')'">
+                                            <label th:for="'Shopcheckbox'+${iterStatus.count}" for="checkbox3"></label>
+                                    </span>
+                            </td>
+
+                            <td id="translations3" style="width: 300px">
+                                <div th:each="translation : ${shopitem.getTranslations()}">
+                                    <h5 th:if="${translation.getLanguage().getCode()==('uk'==#locale.getLanguage() ?
+                                    'ua' : #locale.getLanguage())}"
+                                        th:text="${translation.getContent()}">
+                                    </h5>
+                                </div>
+                            </td>
+
+                            <td style="width: 52px">Link</td>
+
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+    <div id="footer" th:insert="core/footer"></div>
+</div>
+
+<script>
+    function showLeftVal(val) {
+        document.getElementById("leftText").value = val + " days"
+    }
+
+    var inputLeft = document.getElementById("input-left");
+
+    var thumbLeft = document.querySelector(".slider > .thumb.left");
+
+    function setLeftValue() {
+        var _this = inputLeft,
+            min = parseInt(_this.min),
+            max = parseInt(_this.max);
+
+        _this.value = parseInt(_this.value);
+
+        var percent = ((_this.value - min) / (max - min)) * 100;
+
+        thumbLeft.style.left = percent + "%";
+        range.style.left = percent + "%";
+        showLeftVal(_this.value);
+    }
+
+    setLeftValue();
+
+    inputLeft.addEventListener("input", setLeftValue);
+    inputRight.addEventListener("input", setRightValue);
+
+    inputLeft.addEventListener("mouseover", function () {
+        thumbLeft.classList.add("hover");
+    });
+    inputLeft.addEventListener("mouseout", function () {
+        thumbLeft.classList.remove("hover");
+    });
+    inputLeft.addEventListener("mousedown", function () {
+        thumbLeft.classList.add("active");
+    });
+    inputLeft.addEventListener("mouseup", function () {
+        thumbLeft.classList.remove("active");
+    });
+
+</script>
+</body>
+
+</html>

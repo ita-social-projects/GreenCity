@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>Graphs</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+          integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.2.0/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800&display=swap&subset=cyrillic"
+          rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&display=swap" rel="stylesheet"/>
+    <script src="https://kit.fontawesome.com/c847fb58e4.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script th:src="@{/management/user/graphs.js}"></script>
+</head>
+
+<body>
+<div id="header" th:insert="core/header"></div>
+<div id="sidebar" th:insert="core/sidepanel"></div>
+<div class="main-content">
+    <div class="container">
+        <h2 align="center">Users city Graph</h2>
+
+        <div id="usersCity" style="width: 550px; height: 400px; margin: 0 auto"></div>
+        <hr>
+        <div id="usersRegistration" style="width: 550px; height: 400px; margin: 0 auto"></div>
+    </div>
+    <script th:inline="javascript">
+        $(function () {
+            Highcharts.chart('usersCity', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: ''
+                },
+                credits: {
+                    enabled: false
+                },
+                xAxis: {
+                    categories: [[${usersByCities.keySet()}]],
+                    crosshair: true
+                },
+                yAxis: {
+                    title: {
+                        text: ''
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y}</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: 'City',
+                    data: [[${usersByCities.values()}]]
+                }]
+            });
+        });
+    </script>
+    <script th:inline="javascript">
+        Highcharts.setOptions({
+            colors: ['#64E572']
+        });
+        Highcharts.chart('usersRegistration', {
+            chart: {
+                type: 'line'
+            },
+            title: {
+                text: 'Monthly Average Users Registration'
+            },
+            credits: {
+                enabled: false
+            },
+            subtitle: {
+                text: [[${#dates.year(#dates.createNow())}]]
+            },
+            xAxis: {
+                categories: [[${months}]]
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                }
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: true
+                }
+            },
+            series: [{
+                name: 'Registered users',
+                data: [[${generalRegistrationStatistics.values()}]]
+            }]
+        });
+    </script>
+</div>
+<div id="footer" th:insert="core/footer"></div>
+</body>
+</html>

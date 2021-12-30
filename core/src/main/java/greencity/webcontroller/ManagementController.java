@@ -1,25 +1,57 @@
 package greencity.webcontroller;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@NoArgsConstructor
-@RequestMapping("/management")
+@RequiredArgsConstructor
+@RequestMapping
 public class ManagementController {
+    @Value("${greencityuser.server.address}")
+    private String greenCityUserServerAddress;
+
     /**
      * Returns index page.
      *
-     * @param model ModelAndView that will be configured and returned to user
      * @return model
      * @author Dovganyuk Taras
      */
 
-    @GetMapping("")
-    public String goToIndex(Model model) {
+    @GetMapping("/management")
+    public String goToIndex() {
         return "core/index";
+    }
+
+    /**
+     * Redirect to logIn page.
+     *
+     * @author Ihor Volianskyi
+     */
+
+    @GetMapping("/")
+    public String redirectLogin() {
+        return "redirect:/management/login";
+    }
+
+    /**
+     * Redirect to logIn page on GreenCityUser or redirect to management page if you
+     * already sign in.
+     *
+     * @author Ihor Volianskyi
+     */
+
+    @GetMapping("/management/login")
+    public String login() {
+        boolean anonymousUser =
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser");
+        if (anonymousUser) {
+            return "redirect:" + greenCityUserServerAddress + "/management/login";
+        } else {
+            return "redirect:/management";
+        }
     }
 }
