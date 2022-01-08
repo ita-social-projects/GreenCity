@@ -1,7 +1,5 @@
 package greencity.service;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
@@ -19,10 +17,10 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
-import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -30,10 +28,7 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.EcoNewsRepo;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import greencity.repository.EcoNewsSearchRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -49,6 +44,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 @Service
 @EnableCaching
 @RequiredArgsConstructor
@@ -62,6 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final AchievementCalculation achievementCalculation;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
+    private final EcoNewsSearchRepo ecoNewsSearchRepo;
 
     /**
      * {@inheritDoc}
@@ -284,14 +287,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public PageableDto<SearchNewsDto> search(String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), searchQuery, languageCode);
-
+        Page<EcoNews> page = ecoNewsSearchRepo.find(PageRequest.of(0, 100),searchQuery,languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 
     @Override
     public PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<EcoNews> page = ecoNewsRepo.searchEcoNews(pageable, searchQuery, languageCode);
+        Page<EcoNews> page = ecoNewsSearchRepo.find(pageable,searchQuery,languageCode);
         return getSearchNewsDtoPageableDto(page);
     }
 

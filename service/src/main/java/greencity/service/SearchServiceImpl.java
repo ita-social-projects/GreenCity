@@ -23,12 +23,12 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public SearchResponseDto search(String searchQuery, String languageCode) {
         PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery, languageCode);
-        PageableDto<SearchTipsAndTricksDto> tipsAndTricks = tipsAndTricksService.search(searchQuery, languageCode);
+//        PageableDto<SearchTipsAndTricksDto> tipsAndTricks = tipsAndTricksService.search(searchQuery, languageCode);
 
         return SearchResponseDto.builder()
             .ecoNews(ecoNews.getPage())
-            .tipsAndTricks(tipsAndTricks.getPage())
-            .countOfResults(ecoNews.getTotalElements() + tipsAndTricks.getTotalElements())
+//            .tipsAndTricks(tipsAndTricks.getPage())
+            .countOfResults(ecoNews.getTotalElements() /*+ tipsAndTricks.getTotalElements()*/)
             .build();
     }
 
