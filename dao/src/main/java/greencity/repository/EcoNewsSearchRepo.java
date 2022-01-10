@@ -1,9 +1,8 @@
 package greencity.repository;
 
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.Tag;
 import greencity.entity.localization.TagTranslation;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -65,12 +64,12 @@ public class EcoNewsSearchRepo {
         Expression<String> shortInfo = root.get("shortInfo").as(String.class);
 
         List<Predicate> predicateList = new ArrayList<>();
-        List<String> somth = new ArrayList<>(Arrays.asList(searcingText.split(" ")));
-        somth.forEach(smtgtext -> predicateList.add(
+        Arrays.stream(searcingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(
             criteriaBuilder.or(
-                criteriaBuilder.like(criteriaBuilder.lower(title), "%" + smtgtext.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(text), "%" + smtgtext.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(shortInfo), "%" + smtgtext.toLowerCase() + "%"))));
+                criteriaBuilder.like(criteriaBuilder.lower(title), "%" + partOfSearchingText.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(text), "%" + partOfSearchingText.toLowerCase() + "%"),
+                criteriaBuilder.like(criteriaBuilder.lower(shortInfo),
+                    "%" + partOfSearchingText.toLowerCase() + "%"))));
         return predicateList;
     }
 
@@ -96,10 +95,10 @@ public class EcoNewsSearchRepo {
     private Predicate predicateForTags(String searchingText, String languageCode,
         Join<TagTranslation, Tag> tagTranslationTagJoin) {
         List<Predicate> predicateList = new ArrayList<>();
-        Arrays.stream(searchingText.split(" ")).forEach(string -> {
+        Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> {
             predicateList.add(criteriaBuilder.and(
                 criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("name")),
-                    "%" + string.toLowerCase() + "%"),
+                    "%" + partOfSearchingText.toLowerCase() + "%"),
                 criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("language").get("code")),
                     "%" + languageCode.toLowerCase() + "%")));
         });

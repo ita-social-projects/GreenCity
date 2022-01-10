@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
-import greencity.dto.search.SearchTipsAndTricksDto;
 import org.springframework.data.domain.Pageable;
 
 /**
