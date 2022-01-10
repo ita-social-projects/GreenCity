@@ -55,13 +55,4 @@ class SearchControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
-
-    @Test
-    void searchTipsAndTricksTest() throws Exception {
-        mockMvc.perform(get(mainSearchLink +
-            tipsAndTricksLinkPart + "?searchQuery={query}", "Tips and tricks title")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-    }
-
 }

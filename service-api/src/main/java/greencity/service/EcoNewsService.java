@@ -99,7 +99,7 @@ public interface EcoNewsService {
      *
      * @param searchQuery query to search
      * @return list of {@link SearchNewsDto}
-     * @author Kovaliv Taras
+     * @author Vadym Makitra
      */
     PageableDto<SearchNewsDto> search(String searchQuery, String languageCode);
 
@@ -109,7 +109,7 @@ public interface EcoNewsService {
      * @param pageable    {@link Pageable}.
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
-     * @author Yurii Savchenko
+     * @author Vadym Maktra
      */
     PageableDto<SearchNewsDto> search(Pageable pageable, String searchQuery, String languageCode);
 

@@ -29,14 +29,4 @@ public interface SearchService {
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
     PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
-
-    /**
-     * Method that allow you to search {@link SearchTipsAndTricksDto}.
-     *
-     * @param pageable    {@link Pageable}.
-     * @param searchQuery query to search.
-     * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
-     */
-    PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery,
-        String languageCode);
 }
