@@ -7,7 +7,6 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
