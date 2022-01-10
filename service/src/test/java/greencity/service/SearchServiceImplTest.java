@@ -41,31 +41,10 @@ class SearchServiceImplTest {
             new PageableDto<>(Collections.singletonList(searchTipsAndTricksDto), 4, 1, 1);
 
         when(ecoNewsService.search(anyString(), eq(languageCode))).thenReturn(ecoNews);
-        when(tipsAndTricksService.search(anyString(), eq(languageCode))).thenReturn(tipsAndTricks);
 
         assertEquals(ecoNews.getPage(), searchService.search("tag", languageCode).getEcoNews());
-        assertEquals(tipsAndTricks.getPage(), searchService.search("tag", languageCode).getTipsAndTricks());
-        assertEquals(Long.valueOf(ecoNews.getTotalElements() + tipsAndTricks.getTotalElements()),
+        assertEquals(Long.valueOf(ecoNews.getTotalElements()),
             searchService.search("tag", languageCode).getCountOfResults());
-    }
-
-    @Test
-    void searchTipsAndTricksTest() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        AuthorDto author = new AuthorDto(1L, "Author");
-        List<SearchTipsAndTricksDto> searchDto =
-            Collections.singletonList(
-                new SearchTipsAndTricksDto(1L, "title", author, null, null));
-        PageableDto<SearchTipsAndTricksDto> pageableDto =
-            new PageableDto<>(searchDto, searchDto.size(), 0, 1);
-
-        when(tipsAndTricksService.search(pageRequest, "Author", "en")).thenReturn(pageableDto);
-
-        List<SearchTipsAndTricksDto> expected = pageableDto.getPage();
-        List<SearchTipsAndTricksDto> actual =
-            searchService.searchAllTipsAndTricks(pageRequest, "Author", "en").getPage();
-
-        assertEquals(expected, actual);
     }
 
     @Test

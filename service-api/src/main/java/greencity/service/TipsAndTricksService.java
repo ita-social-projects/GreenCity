@@ -1,14 +1,13 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface TipsAndTricksService {
     /**
@@ -101,23 +100,6 @@ public interface TipsAndTricksService {
      * @param listId list of id {@link TipsAndTricksVO}
      */
     void deleteAll(List<Long> listId);
-
-    /**
-     * Method for getting Tips & Tricks by searchQuery.
-     *
-     * @param searchQuery query to search
-     * @return list of {@link SearchTipsAndTricksDto}
-     */
-    PageableDto<SearchTipsAndTricksDto> search(String searchQuery, String languageCode);
-
-    /**
-     * Method for getting all Tips & Tricks by searchQuery.
-     *
-     * @param pageable    {@link Pageable}.
-     * @param searchQuery query to search.
-     * @return PageableDto of {@link SearchTipsAndTricksDto} instances.
-     */
-    PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery, String languageCode);
 
     /**
      * Method for getting Tips & Tricks by searchQuery.

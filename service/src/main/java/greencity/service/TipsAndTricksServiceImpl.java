@@ -7,7 +7,6 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.dto.search.SearchTipsAndTricksDto;
 import greencity.dto.tipsandtricks.*;
 import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.UserVO;
@@ -20,6 +19,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
 import greencity.filters.SearchCriteria;
 import greencity.filters.TipsAndTricksSpecification;
+import greencity.repository.EcoNewsSearchRepo;
 import greencity.repository.TipsAndTricksRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,7 +29,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -69,6 +68,8 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     private final greencity.rating.RatingCalculation ratingCalculation;
 
     private final HttpServletRequest httpServletRequest;
+
+    private final EcoNewsSearchRepo searchRepo;
 
     private void enhanceWithNewData(MultipartFile image, TipsAndTricks toSave,
         TipsAndTricksDtoRequest tipsAndTricksDtoRequest,
@@ -352,40 +353,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
     public TipsAndTricksDtoManagement findManagementDtoById(Long id) {
         TipsAndTricks tipsAndTricks = findTipsAndTricksById(id);
         return modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<SearchTipsAndTricksDto> search(String searchQuery, String languageCode) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(PageRequest.of(0, 3), searchQuery,
-            languageCode);
-
-        return getSearchTipsAndTricksDtoPageableDto(page);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<SearchTipsAndTricksDto> search(Pageable pageable, String searchQuery, String languageCode) {
-        Page<TipsAndTricks> page = tipsAndTricksRepo.searchTipsAndTricks(pageable, searchQuery,
-            languageCode);
-
-        return getSearchTipsAndTricksDtoPageableDto(page);
-    }
-
-    private PageableDto<SearchTipsAndTricksDto> getSearchTipsAndTricksDtoPageableDto(Page<TipsAndTricks> page) {
-        List<SearchTipsAndTricksDto> tipsAndTricksDtos = page.stream()
-            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
-            .collect(Collectors.toList());
-
-        return new PageableDto<>(
-            tipsAndTricksDtos,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
     }
 
     /**

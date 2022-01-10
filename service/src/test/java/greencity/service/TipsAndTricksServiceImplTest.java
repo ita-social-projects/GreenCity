@@ -360,27 +360,6 @@ class TipsAndTricksServiceImplTest {
     }
 
     @Test
-    void search() {
-        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
-        PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
-        List<SearchTipsAndTricksDto> dtoList = page.stream()
-            .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
-            .collect(Collectors.toList());
-        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo
-            .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-                .thenReturn(page);
-        when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
-
-        PageableDto<SearchTipsAndTricksDto> actual =
-            tipsAndTricksService.search(tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en");
-
-        assertEquals(pageableDto, actual);
-    }
-
-    @Test
     void update() throws MalformedURLException {
         MultipartFile image = ModelUtils.getFile();
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
@@ -411,28 +390,6 @@ class TipsAndTricksServiceImplTest {
         when(tipsAndTricksRepo.findById(1L)).thenReturn(Optional.of(tipsAndTricks));
         when(modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class)).thenReturn(tipsAndTricksDtoManagement);
         assertEquals(tipsAndTricksDtoManagement, tipsAndTricksService.findManagementDtoById(id));
-    }
-
-    @Test
-    void testSearch() {
-        List<TipsAndTricks> tipsAndTricks = Collections.singletonList(ModelUtils.getTipsAndTricks());
-        PageRequest pageRequest = PageRequest.of(0, 3);
-        Page<TipsAndTricks> page = new PageImpl<>(tipsAndTricks, pageRequest, tipsAndTricks.size());
-        List<SearchTipsAndTricksDto> dtoList = page.stream()
-            .map(t -> modelMapper.map(t, SearchTipsAndTricksDto.class))
-            .collect(Collectors.toList());
-        PageableDto<SearchTipsAndTricksDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
-        when(languageService.extractLanguageCodeFromRequest()).thenReturn("en");
-        when(tipsAndTricksRepo
-            .searchTipsAndTricks(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(), "en"))
-                .thenReturn(page);
-        when(modelMapper.map(tipsAndTricks.get(0), SearchTipsAndTricksDto.class)).thenReturn(dtoList.get(0));
-
-        PageableDto<SearchTipsAndTricksDto> actual =
-            tipsAndTricksService.search(pageRequest, tipsAndTricks.get(0).getTitleTranslations().get(0).getContent(),
-                "en");
-
-        assertEquals(pageableDto, actual);
     }
 
     @Test
