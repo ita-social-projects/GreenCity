@@ -95,13 +95,11 @@ public class EcoNewsSearchRepo {
     private Predicate predicateForTags(String searchingText, String languageCode,
         Join<TagTranslation, Tag> tagTranslationTagJoin) {
         List<Predicate> predicateList = new ArrayList<>();
-        Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> {
-            predicateList.add(criteriaBuilder.and(
-                criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("name")),
-                    "%" + partOfSearchingText.toLowerCase() + "%"),
-                criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("language").get("code")),
-                    "%" + languageCode.toLowerCase() + "%")));
-        });
+        Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(criteriaBuilder.and(
+            criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("name")),
+                "%" + partOfSearchingText.toLowerCase() + "%"),
+            criteriaBuilder.like(criteriaBuilder.lower(tagTranslationTagJoin.get("language").get("code")),
+                "%" + languageCode.toLowerCase() + "%"))));
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 

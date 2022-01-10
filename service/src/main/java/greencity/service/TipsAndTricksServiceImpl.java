@@ -356,18 +356,6 @@ public class TipsAndTricksServiceImpl implements TipsAndTricksService {
         return modelMapper.map(tipsAndTricks, TipsAndTricksDtoManagement.class);
     }
 
-    private PageableDto<SearchTipsAndTricksDto> getSearchTipsAndTricksDtoPageableDto(Page<TipsAndTricks> page) {
-        List<SearchTipsAndTricksDto> tipsAndTricksDtos = page.stream()
-            .map(tipsAndTricks -> modelMapper.map(tipsAndTricks, SearchTipsAndTricksDto.class))
-            .collect(Collectors.toList());
-
-        return new PageableDto<>(
-            tipsAndTricksDtos,
-            page.getTotalElements(),
-            page.getPageable().getPageNumber(),
-            page.getTotalPages());
-    }
-
     /**
      * {@inheritDoc}
      */
