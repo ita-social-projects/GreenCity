@@ -18,7 +18,6 @@ import greencity.exception.exceptions.*;
 import greencity.repository.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -283,7 +282,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        setShoppingListItems(habitAssignDto, habitAssign, language);
         return habitAssignDto;
+    }
+
+    private void setShoppingListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {
+        habitAssignDto.getHabit().setShoppingListItems(userShoppingListItemRepo
+            .getAllAssignedShoppingListItemsFull(habitAssign.getId()).stream()
+            .map(shoppingItem -> ShoppingListItemDto.builder()
+                .id(shoppingItem.getId())
+                .status(shoppingItem.getStatus().toString())
+                .text(shoppingItem.getShoppingListItem().getTranslations().stream()
+                    .filter(shopItem -> shopItem.getLanguage().getCode().equals(language)).findFirst()
+                    .orElseThrow(
+                        () -> new NotFoundException(
+                            ErrorMessage.SHOPPING_LIST_ITEM_TRANSLATION_NOT_FOUND + habitAssignDto.getHabit().getId()))
+                    .getContent())
+                .build())
+            .collect(Collectors.toList()));
     }
 
     private HabitAssignDto buildHabitAssignDtoContent(HabitAssign habitAssign, String language) {
