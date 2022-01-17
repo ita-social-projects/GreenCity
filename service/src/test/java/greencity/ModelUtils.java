@@ -1380,6 +1380,7 @@ public class ModelUtils {
     public static ShoppingListItem getShoppingListItem() {
         return ShoppingListItem.builder()
             .id(1L)
+            .translations(getShoppingListItemTranslations())
             .build();
     }
 
