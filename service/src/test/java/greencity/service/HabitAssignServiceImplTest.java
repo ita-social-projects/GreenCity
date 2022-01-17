@@ -94,13 +94,6 @@ class HabitAssignServiceImplTest {
     private String language = "en";
 
     @Test
-    void getById() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        assertEquals(habitAssignDto, habitAssignService.getById(1L, language));
-    }
-
-    @Test
     void getByIdFailed() {
         assertThrows(NotFoundException.class, () -> habitAssignService.getById(1L, language));
     }
