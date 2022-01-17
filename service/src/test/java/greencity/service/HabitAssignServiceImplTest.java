@@ -56,6 +56,7 @@ class HabitAssignServiceImplTest {
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
     private HabitAssignDto habitAssignDto = HabitAssignDto.builder().id(1L)
+        .habit(ModelUtils.getHabitDto())
         .createDateTime(zonedDateTime).habit(habitDto).build();
 
     private Habit habit = ModelUtils.getHabit();
@@ -220,54 +221,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitAssignByUserIdAndHabitId() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign,
-            HabitAssignDto.class)).thenReturn(habitAssignDto);
-
-        assertEquals(habitAssignDto, habitAssignService.findHabitAssignByUserIdAndHabitId(1L, 1L, "en"));
-    }
-
-    @Test
-    void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
-        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
-        assertEquals(habitAssignDtos, actual);
-    }
-
-    @Test
-    void getAllHabitAssignsByUserIdAndStatusAcquired() {
-        List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
-        when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
-        when(modelMapper.map(fullHabitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1L))
-            .thenReturn(list);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
-        assertEquals(habitAssignDtos, actual);
-    }
-
-    @Test
-    void getAllHabitAssignsByUserIdAndStatusAcquiredEmptyHabitAssign() {
-        List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
-        when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(habitAssigns);
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1L))
-            .thenReturn(list);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusAcquired(1L, "en");
-        assertEquals(habitAssignDtos, actual);
-    }
-
-    @Test
-    void getAllHabitAssignsByUserIdAndCancelledStatus() {
-        when(habitAssignRepo.findAllByUserIdAndStatusIsCancelled(1L)).thenReturn(habitAssigns);
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-        List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndCancelledStatus(1L, "en");
-        assertEquals(habitAssignDtos, actual);
-    }
-
-    @Test
     void updateStatusByHabitIdAndUserId() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
@@ -327,19 +280,6 @@ class HabitAssignServiceImplTest {
 
         assertThrows(NotFoundException.class, () -> habitAssignService
             .unenrollHabit(1L, 1L, enrollDate));
-    }
-
-    @Test
-    void cancelHabitAssign() {
-        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-
-        assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
-
-        verify(habitAssignRepo).save(habitAssign);
     }
 
     @Test
