@@ -135,7 +135,8 @@ class ShoppingListItemControllerTest {
     @Test
     void findAllByUserTest() throws Exception {
         Long id = 1L;
-        this.mockMvc.perform(get(shoppingListItemLink + "/" + id + "/get-all-inprogress")
+        this.mockMvc.perform(get(shoppingListItemLink + "/" + id + "/" + "get-all-inprogress")
+            .param("lang", "ua")
             .principal(principal)).andExpect(status().isOk());
         when(shoppingListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
             .thenReturn(new ArrayList<>());
