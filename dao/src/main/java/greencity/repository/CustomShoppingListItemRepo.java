@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.PrimaryKeyJoinColumn;
+
 /**
  * Provides an interface to manage {@link CustomShoppingListItem} entity.
  */
@@ -59,21 +61,23 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
     CustomShoppingListItem findByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
 
     /**
-     * Method returns user's shopping list for active items and habits in progress.
+     * Method returns custom shopping list items by status.
      *
-     * @param userId id of the {@link Long} current user
-     * @param code   language code {@link String}
-     * @return {@link ShoppingListItemTranslation}
+     * @param userId id of the {@link User} current user
+     * @param status item id {@link String}
+     * @return {@link CustomShoppingListItem}
      */
-    @Query("select translations from UserShoppingListItem as usli \n"
-        + "join HabitAssign as ha on ha.id = usli.habitAssign.id\n"
-        + "join ShoppingListItemTranslation as translations on\n"
-        + "translations.shoppingListItem.id = usli.shoppingListItem.id\n"
-        + "join Language as lang on translations.language.id = lang.id\n"
-        + "where usli.status = 'INPROGRESS'\n"
-        + "and ha.status = 'INPROGRESS'\n"
-        + "and ha.user.id = :userId\n"
-        + "and lang.code = :code")
-    List<ShoppingListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
-        @Param("code") String code);
+    @Query(value = "SELECT * from custom_shopping_list_items where user_id = :userId and status = :stat",
+        nativeQuery = true)
+    List<CustomShoppingListItem> findAllByUserIdAndStatus(@Param(value = "userId") Long userId,
+        @Param(value = "stat") String status);
+
+    /**
+     * Method returns all custom shopping list items.
+     *
+     * @param userId id of the {@link User} current user
+     * @return {@link CustomShoppingListItem}
+     */
+    @Query(value = "SELECT * from custom_shopping_list_items where user_id = :userId", nativeQuery = true)
+    List<CustomShoppingListItem> findAllByUserId(@Param(value = "userId") Long userId);
 }

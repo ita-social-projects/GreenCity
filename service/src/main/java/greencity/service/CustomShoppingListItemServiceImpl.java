@@ -2,10 +2,7 @@ package greencity.service;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
-import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
@@ -233,16 +230,6 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
             }.getType());
     }
 
-    @Override
-    public List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
-        List<ShoppingListItemDto> shoppingListItemDtos = customShoppingListItemRepo
-            .findInProgressByUserIdAndLanguageCode(userId, code)
-            .stream().map(x -> modelMapper.map(x, ShoppingListItemDto.class))
-            .collect(Collectors.toList());
-        shoppingListItemDtos.forEach(x -> x.setStatus(ShoppingListItemStatus.INPROGRESS.toString()));
-        return shoppingListItemDtos;
-    }
-
     /**
      * Method for deleting custom shopping list item by id.
      *
@@ -269,5 +256,30 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private CustomShoppingListItem findOne(Long id) {
         return customShoppingListItemRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID + " " + id));
+    }
+
+    /**
+     * Method returns all user's custom shopping items by status(if is defined).
+     *
+     * @param userId user id.
+     * @return list of {@link CustomShoppingListItemVO}
+     * @author Max Bohonko.
+     */
+    @Override
+    public List<CustomShoppingListItemResponseDto> findAllUsersCustomShoppingListItemsByStatus(Long userId,
+        String status) {
+        List<CustomShoppingListItem> customShoppingListItems;
+        if (statusIsGiven(status)) {
+            customShoppingListItems = customShoppingListItemRepo.findAllByUserIdAndStatus(userId, status);
+        } else {
+            customShoppingListItems = customShoppingListItemRepo.findAllByUserId(userId);
+        }
+        return customShoppingListItems.stream()
+            .map(item -> modelMapper.map(item, CustomShoppingListItemResponseDto.class)).collect(Collectors.toList());
+    }
+
+    private Boolean statusIsGiven(String status) {
+        return status != null
+            && Arrays.stream(ShoppingListItemStatus.values()).anyMatch(s -> s.toString().equals(status));
     }
 }

@@ -481,4 +481,14 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
                 .collect(Collectors.toList());
         return getPagebleAdvancedDto(shoppingListItemManagementDtos, shoppingListItems);
     }
+
+    @Override
+    public List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
+        List<ShoppingListItemDto> shoppingListItemDtos = shoppingListItemRepo
+            .findInProgressByUserIdAndLanguageCode(userId, code)
+            .stream().map(x -> modelMapper.map(x, ShoppingListItemDto.class))
+            .collect(Collectors.toList());
+        shoppingListItemDtos.forEach(x -> x.setStatus(ShoppingListItemStatus.INPROGRESS.toString()));
+        return shoppingListItemDtos;
+    }
 }

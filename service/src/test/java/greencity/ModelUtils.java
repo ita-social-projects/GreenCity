@@ -37,6 +37,7 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -1715,6 +1716,22 @@ public class ModelUtils {
             .habitStreak(0)
             .workingDays(0)
             .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto customShoppingListItemResponseDto() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .text("TEXT")
+            .build();
+    }
+
+    public static CustomShoppingListItem customShoppingListItem() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .text("TEXT")
             .build();
     }
 

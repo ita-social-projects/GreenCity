@@ -80,11 +80,10 @@ public interface CustomShoppingListItemService {
     List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId);
 
     /**
-     * Method returns user's shopping list for active items and habits in progress.
+     * Method returns all user's custom shopping items by status(if is defined).
      *
-     * @param userId id of the {@link Long} current user
-     * @param code   language code {@link String}
-     * @return {@link ShoppingListItemDto}
+     * @param userId user id.
+     * @return list of {@link CustomShoppingListItemVO}
      */
-    List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
+    List<CustomShoppingListItemResponseDto> findAllUsersCustomShoppingListItemsByStatus(Long userId, String status);
 }
