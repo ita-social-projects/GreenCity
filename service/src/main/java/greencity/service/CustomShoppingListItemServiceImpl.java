@@ -270,7 +270,8 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
         String status) {
         List<CustomShoppingListItem> customShoppingListItems;
         if (status != null
-            && Arrays.stream(ShoppingListItemStatus.values()).anyMatch(s -> s.toString().equals(status))) {
+            && Arrays.stream(ShoppingListItemStatus.values())
+                .anyMatch(itemStatus -> itemStatus.toString().equals(status))) {
             customShoppingListItems = customShoppingListItemRepo.findAllByUserIdAndStatus(userId, status);
         } else {
             customShoppingListItems = customShoppingListItemRepo.findAllByUserId(userId);

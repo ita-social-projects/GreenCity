@@ -486,7 +486,8 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     public List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code) {
         List<ShoppingListItemDto> shoppingListItemDtos = shoppingListItemRepo
             .findInProgressByUserIdAndLanguageCode(userId, code)
-            .stream().map(x -> modelMapper.map(x, ShoppingListItemDto.class))
+            .stream()
+            .map(shoppingListItemTranslation -> modelMapper.map(shoppingListItemTranslation, ShoppingListItemDto.class))
             .collect(Collectors.toList());
         shoppingListItemDtos.forEach(x -> x.setStatus(ShoppingListItemStatus.INPROGRESS.toString()));
         return shoppingListItemDtos;
