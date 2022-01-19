@@ -166,4 +166,13 @@ public interface ShoppingListItemService {
      */
     PageableAdvancedDto<ShoppingListItemManagementDto> findAllShoppingListItemsForManagementPageNotContained(
         Long habitId, Pageable pageable);
+
+    /**
+     * Method returns user's shopping list for active items and habits in progress.
+     *
+     * @param userId id of the {@link Long} current user
+     * @param code   language code {@link String}
+     * @return {@link ShoppingListItemDto}
+     */
+    List<ShoppingListItemDto> findInProgressByUserIdAndLanguageCode(Long userId, String code);
 }
