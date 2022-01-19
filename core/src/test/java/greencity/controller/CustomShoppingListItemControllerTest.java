@@ -1,13 +1,10 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.ModelUtils;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
-import greencity.entity.ShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.service.CategoryService;
 import greencity.service.CustomShoppingListItemService;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,16 +17,16 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.security.Principal;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,17 +67,6 @@ class CustomShoppingListItemControllerTest {
         verify(customShoppingListItemService).findAllAvailableCustomShoppingListItems(id, id);
         assertEquals(dto,
             customController.getAllAvailableCustomShoppingListItems(id, id).getBody().get(0));
-    }
-
-    @Test
-    void findAllByUserTest() throws Exception {
-        Long id = 1L;
-        this.mockMvc.perform(get(customLink + "/" + id + "/" + "custom-shopping-list-items?lang=ua")
-            .principal(principal)).andExpect(status().isOk());
-        when(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
-            .thenReturn(new ArrayList<>());
-        verify(customShoppingListItemService).findInProgressByUserIdAndLanguageCode(id, "ua");
-        assertTrue(customController.findAllByUser(id, "ua").getBody().isEmpty());
     }
 
     @Test
@@ -126,4 +112,14 @@ class CustomShoppingListItemControllerTest {
         verify(customShoppingListItemService).updateItemStatusToDone(1L, 1L);
     }
 
+    @Test
+    void getAllCustomShoppingItemsByStatus() throws Exception {
+        Long id = 1L;
+        this.mockMvc.perform(get(customLink + "/" + id + "/custom-shopping-list-items")).andExpect(status().isOk());
+        when(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(anyLong(), anyString()))
+            .thenReturn(Collections.singletonList(dto));
+
+        assertEquals(dto,
+            customController.getAllCustomShoppingItemsByStatus(id, "ACTIVE").getBody().get(0));
+    }
 }

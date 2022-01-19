@@ -5,7 +5,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.BulkSaveUserShoppingListItemDto;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomShoppingListItemService;
@@ -44,26 +43,6 @@ public class CustomShoppingListItemController {
         @PathVariable Long userId, @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId));
-    }
-
-    /**
-     * Method returns list user custom shopping-list.
-     *
-     * @param userId {@link UserVO} id
-     * @return list of {@link ResponseEntity}
-     * @author Bogdan Kuzenko
-     */
-    @ApiOperation(value = "Get all user custom shopping-list-items.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-    })
-    @GetMapping("/{userId}/custom-shopping-list-items")
-    public ResponseEntity<List<ShoppingListItemDto>> findAllByUser(
-        @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(userId, code));
     }
 
     /**
@@ -156,5 +135,30 @@ public class CustomShoppingListItemController {
             required = true) @RequestParam String ids,
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customShoppingListItemService.bulkDelete(ids));
+    }
+
+    /**
+     * Method returns all user's custom shopping items by status if is defined.
+     *
+     * @param userId {@link Long} id
+     * @param status {@link String} status
+     * @return list of {@link ResponseEntity}
+     * @author Max Bohonko
+     */
+    @ApiOperation(value = "Get all user's custom shopping items")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+    })
+    @GetMapping("/{userId}/custom-shopping-list-items")
+    public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllCustomShoppingItemsByStatus(
+        @PathVariable @CurrentUserId Long userId,
+        @ApiParam(value = "Available values : ACTIVE, DONE, DISABLED, INPROGRESS."
+            + " Leave this field empty if you need items with any status") @RequestParam(
+                required = false) String status) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(userId, status));
     }
 }

@@ -2,6 +2,8 @@ package greencity.repository;
 
 import greencity.entity.ShoppingListItem;
 import java.util.List;
+
+import greencity.entity.localization.ShoppingListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -66,4 +68,23 @@ public interface ShoppingListItemRepo
      */
     @Query("select g from ShoppingListItem g where g.id in( :listId )")
     List<ShoppingListItem> getShoppingListByListOfId(List<Long> listId);
+
+    /**
+     * Method returns user's shopping list for active items and habits in progress.
+     *
+     * @param userId id of the {@link Long} current user
+     * @param code   language code {@link String}
+     * @return {@link ShoppingListItemTranslation}
+     */
+    @Query("select translations from UserShoppingListItem as usli \n"
+        + "join HabitAssign as ha on ha.id = usli.habitAssign.id\n"
+        + "join ShoppingListItemTranslation as translations on\n"
+        + "translations.shoppingListItem.id = usli.shoppingListItem.id\n"
+        + "join Language as lang on translations.language.id = lang.id\n"
+        + "where usli.status = 'INPROGRESS'\n"
+        + "and ha.status = 'INPROGRESS'\n"
+        + "and ha.user.id = :userId\n"
+        + "and lang.code = :code")
+    List<ShoppingListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
+        @Param("code") String code);
 }

@@ -494,4 +494,11 @@ class ShoppingListItemServiceImplTest {
             shoppingListItemService.findAllShoppingListItemsForManagementPageNotContained(1L, pageable);
         assertEquals(expected, actual);
     }
+
+    @Test
+    void findInProgressByUserIdAndLanguageCodeTest() {
+        when(shoppingListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua"))
+            .thenReturn(new ArrayList<>());
+        assertEquals(0, shoppingListItemRepo.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
+    }
 }

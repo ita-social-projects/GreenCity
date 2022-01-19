@@ -2,9 +2,11 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.constant.ValidationConstants;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
@@ -176,5 +178,25 @@ public class ShoppingListItemController {
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(shoppingListItemService
             .deleteUserShoppingListItems(ids));
+    }
+
+    /**
+     * Method returns list user custom shopping-list.
+     *
+     * @param userId {@link UserVO} id
+     * @return list of {@link ResponseEntity}
+     * @author Bogdan Kuzenko
+     */
+    @ApiOperation(value = "Get all user shopping-list-items with 'INPROGRESS' status.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+    })
+    @GetMapping("/{userId}/get-all-inprogress")
+    public ResponseEntity<List<ShoppingListItemDto>> findInProgressByUserId(
+        @PathVariable @CurrentUserId Long userId, @RequestParam(name = "lang") String code) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(shoppingListItemService.findInProgressByUserIdAndLanguageCode(userId, code));
     }
 }

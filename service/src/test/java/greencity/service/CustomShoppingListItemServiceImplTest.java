@@ -258,13 +258,6 @@ class CustomShoppingListItemServiceImplTest {
     }
 
     @Test
-    void findInProgressByUserIdAndLanguageCodeTest() {
-        when(customShoppingListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua"))
-            .thenReturn(new ArrayList<>());
-        assertEquals(0, customShoppingListItemService.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
-    }
-
-    @Test
     void findAllByUserWithNullIdTest() {
         Assertions
             .assertThrows(NotFoundException.class,
@@ -329,4 +322,26 @@ class CustomShoppingListItemServiceImplTest {
         verify(userShoppingListItemRepo).save(userShoppingListItem);
     }
 
+    @Test
+    void findAllUsersCustomShoppingListItemsByStatusWithStatus() {
+        when(customShoppingListItemRepo.findAllByUserIdAndStatus(1L, "INPROGRESS"))
+            .thenReturn(List.of(ModelUtils.customShoppingListItem()));
+        when(modelMapper.map(ModelUtils.customShoppingListItem(), CustomShoppingListItemResponseDto.class))
+            .thenReturn(ModelUtils.customShoppingListItemResponseDto());
+
+        assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, "INPROGRESS")
+            .contains(ModelUtils.customShoppingListItemResponseDto()));
+        ;
+    }
+
+    @Test
+    void findAllUsersCustomShoppingListItemsByStatusWithoutStatus() {
+        when(customShoppingListItemRepo.findAllByUserId(1L))
+            .thenReturn(List.of(ModelUtils.customShoppingListItem()));
+        when(modelMapper.map(ModelUtils.customShoppingListItem(), CustomShoppingListItemResponseDto.class))
+            .thenReturn(ModelUtils.customShoppingListItemResponseDto());
+
+        assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, null)
+            .contains(ModelUtils.customShoppingListItemResponseDto()));
+    }
 }
