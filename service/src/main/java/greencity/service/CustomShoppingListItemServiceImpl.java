@@ -269,17 +269,13 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     public List<CustomShoppingListItemResponseDto> findAllUsersCustomShoppingListItemsByStatus(Long userId,
         String status) {
         List<CustomShoppingListItem> customShoppingListItems;
-        if (statusIsGiven(status)) {
+        if (status != null
+            && Arrays.stream(ShoppingListItemStatus.values()).anyMatch(s -> s.toString().equals(status))) {
             customShoppingListItems = customShoppingListItemRepo.findAllByUserIdAndStatus(userId, status);
         } else {
             customShoppingListItems = customShoppingListItemRepo.findAllByUserId(userId);
         }
         return customShoppingListItems.stream()
             .map(item -> modelMapper.map(item, CustomShoppingListItemResponseDto.class)).collect(Collectors.toList());
-    }
-
-    private Boolean statusIsGiven(String status) {
-        return status != null
-            && Arrays.stream(ShoppingListItemStatus.values()).anyMatch(s -> s.toString().equals(status));
     }
 }
