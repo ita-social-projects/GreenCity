@@ -156,7 +156,7 @@ public class CustomShoppingListItemController {
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllCustomShoppingItemsByStatus(
         @PathVariable @CurrentUserId Long userId,
         @ApiParam(value = "Available values : ACTIVE, DONE, DISABLED, INPROGRESS."
-                + " Leave this field empty if you need items with any status") @RequestParam(
+            + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) String status) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(userId, status));
