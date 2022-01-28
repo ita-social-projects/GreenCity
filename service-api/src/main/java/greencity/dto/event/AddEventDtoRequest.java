@@ -3,14 +3,14 @@ package greencity.dto.event;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
+import java.time.ZonedDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
 @EqualsAndHashCode
-public class AddEventDtoRequest {
+public final class AddEventDtoRequest {
     @NotEmpty
     private String title;
 
@@ -18,7 +18,10 @@ public class AddEventDtoRequest {
     private String description;
 
     @NotEmpty
-    private String location;
+    private CoordinatesDto coordinates;
 
-    private List<String> images;
+    @NotEmpty
+    private ZonedDateTime dateTime;
+
+    private String titleImage;
 }

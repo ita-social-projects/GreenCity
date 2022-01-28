@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @EqualsAndHashCode
-public class AddEventDtoResponse {
+public final class AddEventDtoResponse {
     @NotEmpty
     private Long id;
 
@@ -19,7 +19,7 @@ public class AddEventDtoResponse {
     private String description;
 
     @NotEmpty
-    private String location;
+    private CoordinatesDto coordinates;
 
     private List<String> images;
 
@@ -28,5 +28,4 @@ public class AddEventDtoResponse {
 
     @NotEmpty
     private EventAuthorDto organizer;
-
 }

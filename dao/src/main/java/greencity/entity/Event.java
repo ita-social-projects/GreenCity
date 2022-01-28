@@ -15,7 +15,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +24,10 @@ public class Event {
     @NonNull
     private String title;
 
+    @Column
+    private String titleImage;
+
     @ManyToOne
-    @NonNull
     private User organizer;
 
     @Column
@@ -37,15 +38,14 @@ public class Event {
     @NonNull
     private ZonedDateTime dateTime;
 
-    @Column
-    @NonNull
-    private String location;
+    @Embedded
+    private Coordinates coordinates;
 
     @ManyToMany
     @JoinTable(
-            name = "events_attenders",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+        name = "events_attenders",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attenders = new HashSet<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)

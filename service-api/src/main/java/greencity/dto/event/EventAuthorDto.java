@@ -6,9 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode
-public class EventAuthorDto {
+public final class EventAuthorDto {
     private Long id;
     private String name;
 }
