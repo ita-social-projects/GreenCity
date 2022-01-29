@@ -37,6 +37,7 @@
         <sonar.exclusions>**/config/*</sonar.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
+        <test.containers.version>1.15.1</test.containers.version>
     </properties>
 
     <build>
