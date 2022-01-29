@@ -17,6 +17,7 @@ import java.util.List;
 public class LanguageRepoTest extends IntegrationTestBase {
     @Autowired
     private LanguageRepo languageRepo;
+
     @Test
     void findById() {
         List<Object> expected = new ArrayList<>();

@@ -9,7 +9,7 @@ import javax.transaction.Transactional;
 
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = {
-        PostgreSQLInitializer.Initializer.class
+    PostgreSQLInitializer.Initializer.class
 })
 @Transactional
 public abstract class IntegrationTestBase {
