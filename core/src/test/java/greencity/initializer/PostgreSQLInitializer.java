@@ -17,8 +17,6 @@ public class PostgreSQLInitializer {
                 "spring.datasource.url=" + postgreSQLContainer.getJdbcUrl(),
                 "spring.datasource.username=" + postgreSQLContainer.getUsername(),
                 "spring.datasource.password=" + postgreSQLContainer.getPassword(),
-                // "spring.datasource.driver-class-name=" +
-                // postgreSQLContainer.getDriverClassName(),
                 "spring.liquibase.enabled=true",
                 "spring.liquibase.change-log=classpath:db/changelog/db.changelog-master.xml")
                 .applyTo(configurableApplicationContext.getEnvironment());
