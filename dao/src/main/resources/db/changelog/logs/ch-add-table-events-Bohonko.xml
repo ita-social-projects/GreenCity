@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="changeSetEventsMax5" author="Max Bohonko">
+        <createTable tableName="events">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name ="title" type="VARCHAR"/>
+            <column name="description" type="VARCHAR"/>
+            <column name="date_time" type="TIMESTAMP WITH TIME ZONE" />
+            <column name="location" type="VARCHAR"/>
+            <column name="organizer_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_events_users" references="users (id)"/>
+            </column>
+            <column name="latitude"  type="DOUBLE"/>
+            <column name="longitude"  type="DOUBLE"/>
+            <column name="title_image" type="VARCHAR"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="events"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="changeSetEventImagesMax5" author="Max Bohonko">
+        <createTable tableName="events_images">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name ="link" type="VARCHAR"/>
+            <column name="event_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_image_event__id" references="events (id)"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="events_images"/>
+        </rollback>
+    </changeSet>
+    <changeSet id="changeSetEventIAttendersMax5" author="Max Bohonko">
+        <createTable tableName="events_attenders">
+            <column name="event_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_event_attender_id" references="events (id)"/>
+            </column>
+            <column name="user_id"  type="BIGINT">
+                <constraints foreignKeyName="FK_user_events" references="users (id)"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="events_attenders"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
