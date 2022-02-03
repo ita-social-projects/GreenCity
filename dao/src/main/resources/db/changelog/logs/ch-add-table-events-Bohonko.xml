@@ -29,7 +29,7 @@
             </column>
             <column name ="link" type="VARCHAR"/>
             <column name="event_id"  type="BIGINT">
-                <constraints foreignKeyName="FK_event_id" references="events (id)"/>
+                <constraints foreignKeyName="FK_image_event__id" references="events (id)"/>
             </column>
         </createTable>
         <rollback>
@@ -39,10 +39,10 @@
     <changeSet id="changeSetEventIAttendersMax5" author="Max Bohonko">
         <createTable tableName="events_attenders">
             <column name="event_id"  type="BIGINT">
-                <constraints foreignKeyName="FK_event_id" references="events (id)"/>
+                <constraints foreignKeyName="FK_event_attender_id" references="events (id)"/>
             </column>
             <column name="user_id"  type="BIGINT">
-                <constraints foreignKeyName="FK_user" references="users (id)"/>
+                <constraints foreignKeyName="FK_user_events" references="users (id)"/>
             </column>
         </createTable>
         <rollback>
