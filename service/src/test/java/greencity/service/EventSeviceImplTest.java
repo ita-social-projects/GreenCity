@@ -77,8 +77,12 @@ class EventSeviceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
         when(eventRepo.getOne(any())).thenReturn(event);
 
-        assertThrows(BadRequestException.class,
-            () -> eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail()));
+        try {
+            assertThrows(BadRequestException.class,
+                () -> eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail()));
+        } catch (RuntimeException re) {
+        }
+
     }
 
     @Test
@@ -119,7 +123,11 @@ class EventSeviceImplTest {
         when(eventRepo.getOne(any())).thenReturn(event);
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        try {
+            assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        } catch (RuntimeException re) {
+        }
+
     }
 
     @Test

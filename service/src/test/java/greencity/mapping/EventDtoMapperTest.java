@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-public class EventDtoMapperTest {
+class EventDtoMapperTest {
     @InjectMocks
     EventDtoMapper mapper;
 
