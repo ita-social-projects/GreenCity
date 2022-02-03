@@ -21,8 +21,6 @@ public final class AddEventDtoResponse {
     @NotEmpty
     private CoordinatesDto coordinates;
 
-    private List<String> images;
-
     @NotEmpty
     private ZonedDateTime dateTime;
 

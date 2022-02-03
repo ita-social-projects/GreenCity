@@ -31,7 +31,6 @@ public class AddEventDtoResponseMapper extends AbstractConverter<Event, AddEvent
                 .longitude(event.getCoordinates().getLongitude())
                 .build())
             .dateTime(event.getDateTime())
-            .images(event.getImages().stream().map(image -> image.getLink()).collect(Collectors.toList()))
             .description(event.getDescription())
             .organizer(EventAuthorDto.builder()
                 .id(event.getOrganizer().getId())

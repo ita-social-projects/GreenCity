@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class EventSeviceImpl {
+public class EventSeviceImplTest {
 
     @Mock
     ModelMapper modelMapper;

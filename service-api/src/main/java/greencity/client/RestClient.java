@@ -40,8 +40,6 @@ public class RestClient {
     @Value("${greencityuser.server.address}")
     private String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
-    @Value("${greencitychat.server.address}")
-    private String greenCityChatServerAddress;
 
     /**
      * Method for getting all users by their {@link EmailNotification}.
