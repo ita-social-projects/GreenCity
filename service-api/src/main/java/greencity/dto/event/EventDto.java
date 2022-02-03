@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class EventDto {
+public class EventDto {
     private Long id;
 
     private String title;

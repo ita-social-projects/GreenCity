@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Getter
 @Builder
 @EqualsAndHashCode
-public final class CoordinatesDto {
+public class CoordinatesDto {
     @NotEmpty
     private double latitude;
 

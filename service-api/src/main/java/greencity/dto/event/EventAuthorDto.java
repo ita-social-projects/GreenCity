@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class EventAuthorDto {
+public class EventAuthorDto {
     private Long id;
     private String name;
 }

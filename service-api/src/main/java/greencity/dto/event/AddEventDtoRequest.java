@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Builder
 @EqualsAndHashCode
-public final class AddEventDtoRequest {
+public class AddEventDtoRequest {
     @NotEmpty
     private String title;
 

@@ -4,14 +4,13 @@ import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
 @EqualsAndHashCode
-public final class AddEventDtoResponse {
+public class AddEventDtoResponse {
     @NotEmpty
     private Long id;
 

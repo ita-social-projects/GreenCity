@@ -50,7 +50,7 @@ public class EventServiceImpl implements EventService {
     public void delete(Long eventId, String email) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Event toDelete = eventRepo.getOne(eventId);
-        if (toDelete.getOrganizer().getId() == user.getId()) {
+        if (toDelete.getOrganizer().getId().equals(user.getId())) {
             eventRepo.delete(toDelete);
         } else {
             throw new BadRequestException(ErrorMessage.NOT_EVENT_ORGANIZER);
@@ -91,7 +91,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.getOne(eventId);
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        if (event.getAttenders().stream().noneMatch(attender -> attender.getId() == currentUser.getId())) {
+        if (event.getAttenders().stream().noneMatch(attender -> attender.getId().equals(currentUser.getId()))) {
             event.getAttenders().add(currentUser);
             eventRepo.save(event);
         } else {
@@ -104,7 +104,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.getOne(eventId);
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        event.setAttenders(event.getAttenders().stream().filter(user -> user.getId() != currentUser.getId())
+        event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals( currentUser.getId()))
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
