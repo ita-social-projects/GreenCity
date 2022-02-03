@@ -76,10 +76,12 @@ class EventSeviceImplTest {
         user.setId(2L);
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
         when(eventRepo.getOne(any())).thenReturn(event);
+        String userEmail = ModelUtils.getUserVO().getEmail();
+        Long eventId = event.getId();
 
         try {
-            assertThrows(BadRequestException.class,
-                () -> eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail()));
+            eventService.delete(eventId, userEmail);
+            fail();
         } catch (RuntimeException re) {
         }
 
@@ -122,9 +124,11 @@ class EventSeviceImplTest {
         User user = ModelUtils.getUser();
         when(eventRepo.getOne(any())).thenReturn(event);
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
-
+        Long eventId = event.getId();
+        String userEmail = user.getEmail();
         try {
-            assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+            eventService.addAttender(eventId, userEmail);
+            fail();
         } catch (RuntimeException re) {
         }
 
