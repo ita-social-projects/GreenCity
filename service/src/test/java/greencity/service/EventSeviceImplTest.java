@@ -22,14 +22,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class EventSeviceImplTest {
+class EventSeviceImplTest {
 
     @Mock
     ModelMapper modelMapper;
@@ -71,7 +70,7 @@ public class EventSeviceImplTest {
     }
 
     @Test
-    void deleteWithException() {
+    void deleteWithException() throws BadRequestException {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
         user.setId(2L);
@@ -111,7 +110,7 @@ public class EventSeviceImplTest {
     }
 
     @Test
-    void addAttenderThrows() {
+    void addAttenderThrows() throws BadRequestException {
         Event event = ModelUtils.getEvent();
         Set<User> userSet = new HashSet();
         userSet.add(ModelUtils.getUser());
@@ -148,5 +147,6 @@ public class EventSeviceImplTest {
         when(modelMapper.map(ModelUtils.getEvent(), EventDto.class)).thenReturn(ModelUtils.getEventDto());
 
         eventService.getAll(pageRequest);
+        assertNotEquals(null, ModelUtils.getEventDto());
     }
 }
