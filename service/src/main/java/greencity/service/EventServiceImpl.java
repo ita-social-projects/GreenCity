@@ -104,7 +104,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepo.getOne(eventId);
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals( currentUser.getId()))
+        event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
