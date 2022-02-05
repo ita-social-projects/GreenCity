@@ -103,5 +103,17 @@
     <include file="db/changelog/logs/ch-update-column-status-in-users_friends.xml"/>
     <include file="db/changelog/logs/ch-add-eco_news-Boiarchuk.xml"/>
     <include file="db/changelog/logs/ch-add-table-events-Bohonko.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-languages-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-categories-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-fact-of-the-day-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-fact-of-the-day-translations-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-habits-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-habit-translation-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-shopping-list-items-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-shopping-list-item-translations-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-habit-shopping-list-items-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-specifications-Kozak.xml.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tags-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
 </databaseChangeLog>
 

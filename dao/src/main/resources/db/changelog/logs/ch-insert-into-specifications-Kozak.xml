@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Natalia-10" author="Kozak">
+        <insert tableName="specifications">
+            <column name="id">1</column>
+            <column name="name">Animal</column>
+        </insert>
+        <insert tableName="specifications">
+            <column name="id">2</column>
+            <column name="name">Own cup</column>
+        </insert>
+        <insert tableName="specifications">
+            <column name="id">3</column>
+            <column name="name">Karaoke</column>
+        </insert>
+        <insert tableName="specifications">
+            <column name="id">4</column>
+            <column name="name">Shopping</column>
+        </insert>
+        <insert tableName="specifications">
+            <column name="id">5</column>
+            <column name="name">Ukrainian food</column>
+        </insert>
+        <insert tableName="specifications">
+            <column name="id">6</column>
+            <column name="name">Dance</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
