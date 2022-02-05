@@ -112,7 +112,7 @@
     <include file="db/changelog/logs/ch-insert-into-shopping-list-items-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-shopping-list-item-translations-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-habit-shopping-list-items-Kozak.xml"/>
-    <include file="db/changelog/logs/ch-insert-into-specifications-Kozak.xml.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-specifications-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
 </databaseChangeLog>
