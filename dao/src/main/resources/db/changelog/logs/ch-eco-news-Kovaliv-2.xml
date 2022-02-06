@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="taraskovaliv4" author="Kovaliv Taras">
         <createTable tableName="tags">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column autoIncrement="true" startWith="12" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(20)">

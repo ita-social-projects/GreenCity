@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Natalia-3" author="Kozak">
+        <insert tableName="fact_of_the_day">
+            <column name="id">1</column>
+            <column name="name">fact 1</column>
+            <column name="create_date">2020-10-24 22:48:23.762175 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">2</column>
+            <column name="name">fact 2</column>
+            <column name="create_date">2020-10-24 22:48:23.762175 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">3</column>
+            <column name="name">fact 3</column>
+            <column name="create_date">2020-09-15 13:55:55.310380 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">4</column>
+            <column name="name">fact 4</column>
+            <column name="create_date">2020-09-15 13:56:54.512104 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">5</column>
+            <column name="name">fact 5</column>
+            <column name="create_date">2020-09-15 13:57:26.030376 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">6</column>
+            <column name="name">fact 6</column>
+            <column name="create_date">2020-09-15 13:58:05.953815 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">7</column>
+            <column name="name">fact 7</column>
+            <column name="create_date">2020-09-15 13:58:52.468949 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">8</column>
+            <column name="name">fact 8</column>
+            <column name="create_date">2020-09-15 13:59:25.322927 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">9</column>
+            <column name="name">fact 9</column>
+            <column name="create_date">2020-09-15 13:59:49.369267 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">10</column>
+            <column name="name">fact 10</column>
+            <column name="create_date">2020-09-15 14:00:17.560930 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">11</column>
+            <column name="name">fact 11</column>
+            <column name="create_date">2020-09-15 14:00:46.928563 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">12</column>
+            <column name="name">fact 12</column>
+            <column name="create_date">2020-09-15 14:01:09.218612 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">13</column>
+            <column name="name">fact 13</column>
+            <column name="create_date">2020-09-15 14:01:34.603122 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">14</column>
+            <column name="name">fact 14</column>
+            <column name="create_date">2020-09-15 14:04:43.161394 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">15</column>
+            <column name="name">fact 15</column>
+            <column name="create_date">2020-09-15 14:05:07.645510 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">16</column>
+            <column name="name">fact 16</column>
+            <column name="create_date">2020-09-15 14:05:49.437058 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">17</column>
+            <column name="name">fact 17</column>
+            <column name="create_date">2020-09-15 14:06:13.265204 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">18</column>
+            <column name="name">fact 18</column>
+            <column name="create_date">2020-09-15 14:06:35.589553 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">19</column>
+            <column name="name">fact 19</column>
+            <column name="create_date">2020-09-15 14:07:10.672312 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">20</column>
+            <column name="name">fact 20</column>
+            <column name="create_date">2020-09-15 14:07:33.090250 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">21</column>
+            <column name="name">fact 21</column>
+            <column name="create_date">2020-09-15 14:08:05.227732 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">22</column>
+            <column name="name">fact 22</column>
+            <column name="create_date">2020-09-15 14:08:47.365797 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">23</column>
+            <column name="name">fact 23</column>
+            <column name="create_date">2020-09-15 14:09:13.295976 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">24</column>
+            <column name="name">fact 24</column>
+            <column name="create_date">2020-09-15 14:10:21.854912 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">25</column>
+            <column name="name">fact 25</column>
+            <column name="create_date">2020-09-15 14:10:42.129962 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">26</column>
+            <column name="name">fact 26</column>
+            <column name="create_date">2020-09-15 14:11:06.400030 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">27</column>
+            <column name="name">fact 27</column>
+            <column name="create_date">2020-09-15 14:11:32.471215 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">28</column>
+            <column name="name">fact 28</column>
+            <column name="create_date">2020-09-15 14:11:58.185648 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">29</column>
+            <column name="name">fact 29</column>
+            <column name="create_date">2020-09-15 14:13:21.319787 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">30</column>
+            <column name="name">fact 30</column>
+            <column name="create_date">2020-09-15 14:13:57.926788 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">31</column>
+            <column name="name">fact 31</column>
+            <column name="create_date">2020-09-15 14:14:24.285240 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">32</column>
+            <column name="name">fact 32</column>
+            <column name="create_date">2020-09-15 14:14:48.156264 +00:00</column>
+        </insert>
+        <insert tableName="fact_of_the_day">
+            <column name="id">33</column>
+            <column name="name">fact 33</column>
+            <column name="create_date">2020-09-15 14:15:35.041366 +00:00</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
