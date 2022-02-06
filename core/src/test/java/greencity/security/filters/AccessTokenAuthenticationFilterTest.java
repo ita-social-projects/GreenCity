@@ -84,7 +84,8 @@ class AccessTokenAuthenticationFilterTest {
             new UsernamePasswordAuthenticationToken(token, null)))
                 .thenThrow(ExpiredJwtException.class);
         authenticationFilter.doFilterInternal(request, response, chain);
-        assertTrue(systemOutContent.toString().contains("Token has expired: "));
+        verify(jwtTool).getTokenFromHttpServletRequest(request);
+        verify(authenticationManager).authenticate(any());
     }
 
     @Test
@@ -95,6 +96,7 @@ class AccessTokenAuthenticationFilterTest {
             .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
         when(restClient.findNotDeactivatedByEmail("test@mail.com")).thenThrow(RuntimeException.class);
         authenticationFilter.doFilterInternal(request, response, chain);
-        assertTrue(systemOutContent.toString().contains("Access denied with token: "));
+        verify(jwtTool).getTokenFromHttpServletRequest(request);
+        verify(authenticationManager).authenticate(any());
     }
 }
