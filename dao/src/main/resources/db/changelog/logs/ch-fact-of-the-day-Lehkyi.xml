@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Lehkyi-5" author="Mykola Lehkyi">
         <createTable tableName="fact_of_the_day">
-            <column name="id" autoIncrement="true" type="BIGINT">
+            <column name="id" autoIncrement="true" startWith="34" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
 
@@ -18,7 +18,7 @@
 
    <changeSet id="Lehkyi-6" author="Mykola Lehkyi">
        <createTable tableName="fact_of_the_day_translations">
-           <column name="id" autoIncrement="true" type="BIGINT">
+           <column name="id" autoIncrement="true" startWith="100" type="BIGINT">
                <constraints primaryKey="true"/>
            </column>
 

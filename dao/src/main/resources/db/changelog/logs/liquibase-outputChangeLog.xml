@@ -15,7 +15,7 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-2">
         <createTable tableName="category">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column autoIncrement="true" startWith="11" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(100)">
@@ -165,7 +165,7 @@
     </changeSet>
     <changeSet author="Marian (generated)" id="1571227598316-13">
         <createTable tableName="specification">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column autoIncrement="true" startWith="7" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(100)">

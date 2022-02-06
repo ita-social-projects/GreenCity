@@ -3,7 +3,7 @@
 
     <changeSet author="Volodymyr" id="1571227598316-76">
         <createTable tableName="habits">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column autoIncrement="true" startWith="32" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="BIGINT">
