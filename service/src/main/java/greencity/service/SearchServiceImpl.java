@@ -23,12 +23,10 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public SearchResponseDto search(String searchQuery, String languageCode) {
         PageableDto<SearchNewsDto> ecoNews = ecoNewsService.search(searchQuery, languageCode);
-        PageableDto<SearchTipsAndTricksDto> tipsAndTricks = tipsAndTricksService.search(searchQuery, languageCode);
 
         return SearchResponseDto.builder()
             .ecoNews(ecoNews.getPage())
-            .tipsAndTricks(tipsAndTricks.getPage())
-            .countOfResults(ecoNews.getTotalElements() + tipsAndTricks.getTotalElements())
+            .countOfResults(ecoNews.getTotalElements())
             .build();
     }
 
@@ -38,14 +36,5 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode) {
         return ecoNewsService.search(pageable, searchQuery, languageCode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PageableDto<SearchTipsAndTricksDto> searchAllTipsAndTricks(Pageable pageable, String searchQuery,
-        String languageCode) {
-        return tipsAndTricksService.search(pageable, searchQuery, languageCode);
     }
 }

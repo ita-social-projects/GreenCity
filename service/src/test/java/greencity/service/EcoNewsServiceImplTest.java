@@ -31,6 +31,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
+
+import greencity.repository.EcoNewsSearchRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,6 +72,9 @@ class EcoNewsServiceImplTest {
 
     @Mock
     HttpServletRequest httpServletRequest;
+
+    @Mock
+    EcoNewsSearchRepo ecoNewsSearchRepo;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -248,7 +253,7 @@ class EcoNewsServiceImplTest {
         PageableDto<SearchNewsDto> pageableDto = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1, 2);
         Page<EcoNews> page = new PageImpl<>(Collections.singletonList(ecoNews), PageRequest.of(1, 3), 1);
 
-        when(ecoNewsRepo.searchEcoNews(PageRequest.of(0, 3), "test", "en")).thenReturn(page);
+        when(ecoNewsSearchRepo.find(PageRequest.of(0, 3), "test", "en")).thenReturn(page);
         when(modelMapper.map(ecoNews, SearchNewsDto.class)).thenReturn(searchNewsDto);
 
         PageableDto<SearchNewsDto> actual = ecoNewsService.search("test", "en");
@@ -300,7 +305,7 @@ class EcoNewsServiceImplTest {
         List<SearchNewsDto> searchNewsDtos = Collections.singletonList(searchNewsDto);
         PageableDto<SearchNewsDto> actual = new PageableDto<>(searchNewsDtos, page.getTotalElements(),
             page.getPageable().getPageNumber(), page.getTotalPages());
-        when(ecoNewsRepo.searchEcoNews(pageable, "query", "en")).thenReturn(page);
+        when(ecoNewsSearchRepo.find(pageable, "query", "en")).thenReturn(page);
         when(modelMapper.map(ecoNews, SearchNewsDto.class)).thenReturn(searchNewsDto);
         PageableDto<SearchNewsDto> expected = ecoNewsService.search(pageable, "query", "en");
         assertEquals(expected.getTotalPages(), actual.getTotalPages());

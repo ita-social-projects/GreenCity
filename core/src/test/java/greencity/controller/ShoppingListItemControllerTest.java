@@ -1,9 +1,10 @@
 package greencity.controller;
 
-import greencity.ModelUtils;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
-import greencity.dto.user.UserVO;
 import greencity.service.ShoppingListItemService;
+
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +19,13 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.nullable;
+import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.validation.Validator;
 
@@ -38,6 +40,8 @@ class ShoppingListItemControllerTest {
     private ShoppingListItemService shoppingListItemService;
     @Mock
     private Validator mockValidator;
+
+    private Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
@@ -126,5 +130,17 @@ class ShoppingListItemControllerTest {
             .andExpect(status().isOk());
 
         verify(shoppingListItemService).deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, null, 1L);
+    }
+
+    @Test
+    void findAllByUserTest() throws Exception {
+        Long id = 1L;
+        this.mockMvc.perform(get(shoppingListItemLink + "/" + id + "/" + "get-all-inprogress")
+            .param("lang", "ua")
+            .principal(principal)).andExpect(status().isOk());
+        when(shoppingListItemService.findInProgressByUserIdAndLanguageCode(id, "ua"))
+            .thenReturn(new ArrayList<>());
+        verify(shoppingListItemService).findInProgressByUserIdAndLanguageCode(id, "ua");
+        assertTrue(shoppingListItemController.findInProgressByUserId(id, "ua").getBody().isEmpty());
     }
 }

@@ -68,7 +68,7 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      * @return list of tag's names.
      */
     @Query("select tt from TagTranslation tt join fetch tt.tag t join fetch tt.language l "
-        + "where t.type = :tagType and l.code = :languageCode")
+        + "where t.type = :tagType and l.code = :languageCode order by tt.id")
     List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
 
     /**

@@ -4,17 +4,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 import greencity.enums.ShoppingListItemStatus;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
+@Builder
 @EqualsAndHashCode
 public class CustomShoppingListItemResponseDto {
     @NonNull

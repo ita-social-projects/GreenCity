@@ -84,21 +84,6 @@ class SocialNetworkImageServiceImplTest {
     }
 
     @Test
-    void saveSocialNetworkImage() throws IOException {
-        URL checkUrl = new URL("http://example.com/");
-        SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
-        socialNetworkImageVO.setId(1L);
-        socialNetworkImageVO.setHostPath(checkUrl.getHost());
-        socialNetworkImageVO.setImagePath("http://example.com/");
-        SocialNetworkImage socialNetworkImage = new SocialNetworkImage();
-
-        when(fileService.upload(any())).thenReturn(checkUrl.toString());
-        when(socialNetworkImageRepo.save(any())).thenReturn(socialNetworkImage);
-        when(modelMapper.map(socialNetworkImage, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
-        assertEquals(socialNetworkImageVO, socialNetworkImageService.saveSocialNetworkImage(checkUrl));
-    }
-
-    @Test
     void getDefaultSocialNetworkImage() {
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
