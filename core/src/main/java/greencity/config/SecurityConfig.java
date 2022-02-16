@@ -4,8 +4,10 @@ import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
+
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
+    private static final String EVENTS = "/events";
     private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
@@ -137,6 +140,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/count/likes",
                 "/econews/comments/replies/active/{parentCommentId}",
                 "/econews/comments/active",
+                EVENTS,
+                EVENTS + "/event/{eventId}",
                 "/language",
                 TIPS_AND_TRICKS_COMMENTS,
                 "/tipsandtricks/comments/count/comments",
@@ -215,12 +220,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/like",
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
+                EVENTS + "/addAttender/{eventId}",
+                EVENTS + "/create",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 "/files/image",
                 "/files/convert",
                 HABIT_ASSIGN_ID,
                 HABIT_ASSIGN_ID + "/custom",
-                HABIT_ASSIGN_ID + "/enroll/{date}",
+                HABIT_ASSIGN_ID + "/enroll/**",
                 HABIT_ASSIGN_ID + "/unenroll/{date}",
                 "/habit/statistic/{habitId}",
                 "/newsSubscriber",
@@ -272,6 +279,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST + "/user-shopping-list-items",
                 USER_SHOPPING_LIST,
+                EVENTS + "/delete/{eventId}",
+                EVENTS + "/removeAttender/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitId}")
             .hasAnyRole(USER, ADMIN, MODERATOR)
