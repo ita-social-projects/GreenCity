@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Natalia-11" author="Kozak">
+        <insert tableName="tags">
+            <column name="id">1</column>
+            <column name="type">ECO_NEWS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">2</column>
+            <column name="type">ECO_NEWS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">3</column>
+            <column name="type">ECO_NEWS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">4</column>
+            <column name="type">ECO_NEWS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">5</column>
+            <column name="type">ECO_NEWS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">6</column>
+            <column name="type">TIPS_AND_TRICKS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">7</column>
+            <column name="type">TIPS_AND_TRICKS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">8</column>
+            <column name="type">TIPS_AND_TRICKS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">9</column>
+            <column name="type">TIPS_AND_TRICKS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">10</column>
+            <column name="type">TIPS_AND_TRICKS</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">11</column>
+            <column name="type">HABIT</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

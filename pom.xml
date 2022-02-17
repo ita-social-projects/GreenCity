@@ -37,6 +37,9 @@
         <sonar.exclusions>**/config/*</sonar.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
+        <test.containers.version>1.15.1</test.containers.version>
+        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <net.java.dev.jna.version>4.5.2</net.java.dev.jna.version>
     </properties>
 
     <build>
@@ -69,6 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
                 </configuration>

@@ -17,6 +17,7 @@ import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
+import greencity.dto.event.*;
 import greencity.dto.factoftheday.*;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
@@ -79,6 +80,7 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import greencity.mapping.AddEventDtoResponseMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1732,6 +1734,64 @@ public class ModelUtils {
             .id(1L)
             .status(ShoppingListItemStatus.INPROGRESS)
             .text("TEXT")
+            .build();
+    }
+
+    public static Event getEvent() {
+        Event event = new Event();
+
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setCoordinates(Coordinates.builder()
+            .latitude(45.45)
+            .longitude(45.45)
+            .build());
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+
+        return event;
+    }
+
+    public static AddEventDtoResponse getAddEventDtoResponse() {
+        return AddEventDtoResponse.builder()
+            .id(1L)
+            .coordinates(CoordinatesDto.builder()
+                .latitude(45.45)
+                .longitude(45.45)
+                .build())
+            .dateTime(ZonedDateTime.now())
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .id(1L)
+                .name("User")
+                .build())
+            .build();
+    }
+
+    public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
+        .coordinates(CoordinatesDto.builder()
+            .latitude(45.45)
+            .longitude(45.45)
+            .build())
+        .dateTime(ZonedDateTime.now())
+        .description("Description")
+        .title("Title")
+        .build();
+
+    public static EventDto getEventDto() {
+        return EventDto.builder()
+            .id(1L)
+            .coordinates(
+                CoordinatesDto.builder()
+                    .latitude(45.45)
+                    .longitude(45.45)
+                    .build())
+            .description("Desc")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
             .build();
     }
 
