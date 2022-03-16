@@ -97,6 +97,20 @@ Though there are two GitHub projects ([GreenCity](https://github.com/ita-social-
 
 There is no special configurations required. Just clone [GreenCityClient](https://github.com/ita-social-projects/GreenCityClient) and run it. If you want to sign in with Google account, it's mandatory to set `google.clientId`. Read more about how to obtain [Google client id](https://developers.google.com/adwords/api/docs/guides/authentication), it's free.
 
+### 4.5. How to connect with front-end if some issues
+
+1. Run ng version and npm -v in the console. You must have the following versions to work correctly:
+Angular CLI: 9.1.15
+Node: 14.7.6
+npm: 6.14.15
+
+In most cases reinstalling the Node is enough.
+Use this link to install Node v.14.17.6 (https://nodejs.org/en/blog/release/v14.17.6/) before that, uninstall your installed version.
+
+If the problem persists, try to install npm:6.14.15 at this link (https://www.npmjs.com/package/npm/v/6.14.15).
+
+You should install Angular CLI 9.1.15 writting this in console: npm install -g @angular/cli@6.1.15
+
 ## 5. Setup Checkstyle
 
 Here you can read more about [how to set up checkstyle](https://github.com/ita-social-projects/GreenCity/wiki/Setup-CheckStyle-to-your-IDE);
