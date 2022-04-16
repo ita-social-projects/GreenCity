@@ -20,7 +20,7 @@ variables:
   coreRepoName: core
   onbootJarName: app.jar
   
-  azureSub: GreenCity
+  azureSub: GreenCity2022
   resourceGroup: GreenCity
   coreServiceName: greencity
 
