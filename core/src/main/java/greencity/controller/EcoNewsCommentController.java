@@ -41,6 +41,7 @@ public class EcoNewsCommentController {
      * @return dto {@link greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
+    @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEcoNewsCommentDtoResponse.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
@@ -139,7 +140,8 @@ public class EcoNewsCommentController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("")
     public void update(Long id, @RequestParam @NotBlank String text, @ApiIgnore @CurrentUser UserVO user) {
@@ -155,7 +157,8 @@ public class EcoNewsCommentController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("like")
     public void like(Long id, @ApiIgnore @CurrentUser UserVO user) {
