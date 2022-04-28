@@ -37,7 +37,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -191,12 +190,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (page.getSort().isEmpty()) {
             pages = ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(modelMapper.map(user, User.class), page);
         } else {
-            if (page.getSort().isUnsorted()) {
-                pages = new PageImpl<>(ecoNewsRepo.findAll(page)
-                    .stream().filter(p -> p.getAuthor().getId().equals(user.getId())).collect(Collectors.toList()));
-            } else {
-                throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
-            }
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
         return buildPageableAdvancedDto(pages);
     }

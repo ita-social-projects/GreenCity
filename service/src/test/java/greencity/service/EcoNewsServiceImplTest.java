@@ -23,6 +23,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.EcoNewsRepo;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsSearchRepo;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -204,7 +206,6 @@ class EcoNewsServiceImplTest {
         ZonedDateTime now = ZonedDateTime.now();
 
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
-
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> translationPage = new PageImpl<>(ecoNews,
             pageRequest, ecoNews.size());
@@ -224,6 +225,17 @@ class EcoNewsServiceImplTest {
         PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
 
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllByUserPageInvalidSorted() {
+        PageRequest pageRequest = PageRequest.of(0, 1, Sort.by("id"));
+
+        UserVO userVO = UserVO.builder().id(1L).build();
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            ecoNewsService.findAllByUser(userVO, pageRequest);
+        });
     }
 
     @Test
