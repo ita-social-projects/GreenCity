@@ -18,6 +18,7 @@ import java.util.List;
 
 import liquibase.pro.packaged.E;
 import liquibase.pro.packaged.O;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -163,6 +164,19 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).findAll(pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    void getEcoNewsByUserByPage() {
+        int pageNumber = 1;
+        int pageSize = 2;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        mockMvc.perform(get(ecoNewsLink + "/byUserPage?page=1&size=2"))
+            .andExpect(status().isOk());
+
+        verify(ecoNewsService).findAllByUser(null, pageable);
     }
 
     @Test
