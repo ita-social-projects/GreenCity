@@ -4,6 +4,7 @@ import greencity.entity.EcoNews;
 import java.util.List;
 import java.util.Optional;
 
+import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -65,6 +66,15 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @return all {@link EcoNews} by page.
      */
     Page<EcoNews> findAllByOrderByCreationDateDesc(Pageable page);
+
+    /**
+     * Method returns all users {@link EcoNews} by page.
+     *
+     * @param user author of news.
+     * @param page page of news.
+     * @return all {@link EcoNews} by page.
+     */
+    Page<EcoNews> findAllByAuthorOrderByCreationDateDesc(User user, Pageable page);
 
     /**
      * Method that finds {@link EcoNews} by id.
