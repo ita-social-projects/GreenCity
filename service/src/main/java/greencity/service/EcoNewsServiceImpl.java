@@ -58,7 +58,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final EcoNewsRepo ecoNewsRepo;
     private final RestClient restClient;
     private final ModelMapper modelMapper;
-    private final NewsSubscriberService newsSubscriberService;
     private final TagsService tagService;
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
@@ -176,6 +175,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             } else {
                 throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
             }
+        }
+        return buildPageableAdvancedDto(pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Danylo Hlynskyi.
+     */
+    @Override
+    public PageableAdvancedDto<EcoNewsDto> findAllByUser(UserVO user, Pageable page) {
+        Page<EcoNews> pages;
+        if (page.getSort().isEmpty()) {
+            pages = ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(modelMapper.map(user, User.class), page);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
         return buildPageableAdvancedDto(pages);
     }

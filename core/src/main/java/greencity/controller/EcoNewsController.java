@@ -222,6 +222,24 @@ public class EcoNewsController {
     }
 
     /**
+     * Method for getting all authorised user eco news by page.
+     *
+     * @return PageableDto of {@link EcoNewsDto} instances.
+     * @author Danylo Hlynskyi.
+     */
+    @ApiOperation(value = "Find all eco news by page.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("/byUserPage")
+    @ApiPageable
+    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> getEcoNewsByUserByPage(@ApiIgnore @CurrentUser UserVO user,
+        @ApiIgnore Pageable page) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAllByUser(user, page));
+    }
+
+    /**
      * Method for deleting {@link EcoNewsVO} by its id.
      *
      * @param econewsId {@link EcoNewsVO} id which will be deleted.

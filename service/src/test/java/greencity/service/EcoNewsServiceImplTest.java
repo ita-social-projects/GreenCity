@@ -18,10 +18,12 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.EcoNewsRepo;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsSearchRepo;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,10 +43,7 @@ import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -199,6 +199,43 @@ class EcoNewsServiceImplTest {
         PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAll(pageRequest);
 
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllByUserPageIsSort() {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNews> translationPage = new PageImpl<>(ecoNews,
+            pageRequest, ecoNews.size());
+
+        List<EcoNewsDto> dtoList = Collections.singletonList(
+            new EcoNewsDto(now, "test image path", 1L, "test title", "content", null,
+                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0));
+        PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
+            0, false, false, true, true);
+
+        UserVO userVO = UserVO.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(user, pageRequest)).thenReturn(translationPage);
+        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+
+        PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
+
+        assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllByUserPageInvalidSorted() {
+        PageRequest pageRequest = PageRequest.of(0, 1, Sort.by("id"));
+
+        UserVO userVO = UserVO.builder().id(1L).build();
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            ecoNewsService.findAllByUser(userVO, pageRequest);
+        });
     }
 
     @Test
