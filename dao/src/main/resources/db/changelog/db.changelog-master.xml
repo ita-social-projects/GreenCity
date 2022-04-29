@@ -115,5 +115,6 @@
     <include file="db/changelog/logs/ch-insert-into-specifications-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tags-Kozak.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
+    <include file="db/changelog/logs/ch-modify-function-Hlynskyi.xml"/>
 </databaseChangeLog>
 
