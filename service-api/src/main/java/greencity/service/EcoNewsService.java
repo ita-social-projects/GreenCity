@@ -45,6 +45,15 @@ public interface EcoNewsService {
     PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
 
     /**
+     * Method for getting all users eco news by page.
+     *
+     * @param user author of news.
+     * @param page parameters of to search.
+     * @return PageableDto of {@link EcoNewsDto} instances.
+     */
+    PageableAdvancedDto<EcoNewsDto> findAllByUser(UserVO user, Pageable page);
+
+    /**
      * Method for getting eco news by params.
      *
      * @param page parameters of to search.
