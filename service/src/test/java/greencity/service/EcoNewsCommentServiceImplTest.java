@@ -443,7 +443,6 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(null));
 
         assertThrows(NotFoundException.class, () -> ecoNewsCommentService.countOfComments(1L));
-//        assertEquals(0, ecoNewsCommentService.countOfComments(1L));
     }
 
     @Test
