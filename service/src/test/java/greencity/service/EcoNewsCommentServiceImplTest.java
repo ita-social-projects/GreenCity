@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
+import greencity.repository.EcoNewsRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +60,8 @@ class EcoNewsCommentServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private HttpServletRequest httpServletRequest;
+    @Mock
+    EcoNewsRepo ecoNewsRepo;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
 
@@ -435,12 +439,11 @@ class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    void countComments() {
-        Long ecoNewsId = 1L;
+    void countCommentsThrowsExceptionTest() {
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(null));
 
-        when(ecoNewsCommentRepo.countOfComments(ecoNewsId)).thenReturn(0);
-
-        assertEquals(0, ecoNewsCommentService.countOfComments(ecoNewsId));
+        assertThrows(NotFoundException.class, () -> ecoNewsCommentService.countOfComments(1L));
+//        assertEquals(0, ecoNewsCommentService.countOfComments(1L));
     }
 
     @Test
