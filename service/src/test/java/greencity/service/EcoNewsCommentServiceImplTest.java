@@ -440,7 +440,7 @@ class EcoNewsCommentServiceImplTest {
 
     @Test
     void countCommentsThrowsExceptionTest() {
-        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(null));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> ecoNewsCommentService.countOfComments(1L));
     }
