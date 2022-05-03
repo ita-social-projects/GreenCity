@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,14 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
     @Query("SELECT count(ec) FROM EcoNewsComment ec "
         + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.deleted = FALSE")
     int countOfComments(Long ecoNewsId);
+
+    /**
+     * The method returns the count of not deleted comments, specified by
+     * {@link greencity.entity.EcoNews}.
+     *
+     * @return count of comments, specified by {@link greencity.entity.EcoNews}
+     */
+    int countEcoNewsCommentByEcoNews(EcoNews ecoNews);
 
     /**
      * Method returns all {@link EcoNewsComment} by page.

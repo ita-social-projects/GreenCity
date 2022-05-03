@@ -23,6 +23,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EcoNewsCommentRepo;
 import javax.servlet.http.HttpServletRequest;
+
+import greencity.repository.EcoNewsRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -45,6 +47,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final SimpMessagingTemplate messagingTemplate;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
+    private final EcoNewsRepo ecoNewsRepo;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -256,7 +259,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public int countOfComments(Long ecoNewsId) {
-        return ecoNewsCommentRepo.countOfComments(ecoNewsId);
+        return ecoNewsCommentRepo.countEcoNewsCommentByEcoNews(ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId)));
     }
 
     /**
