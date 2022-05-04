@@ -162,7 +162,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("like")
-    public void like(Long id, @ApiIgnore @CurrentUser UserVO user) {
+    public void like(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsCommentService.like(id, user);
     }
 
