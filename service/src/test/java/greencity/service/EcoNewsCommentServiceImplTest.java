@@ -417,8 +417,8 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
-        BadRequestException badRequestException =
-            assertThrows(BadRequestException.class, () -> ecoNewsCommentService.countReplies(commentId));
+        NotFoundException badRequestException =
+            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.countReplies(commentId));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
     }
 
