@@ -1,16 +1,14 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
-import greencity.annotations.CurrentUser;
+import greencity.annotations.*;
+import io.swagger.annotations.*;
+
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.*;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 import javax.validation.constraints.NotBlank;
 
@@ -191,7 +189,7 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/active")
-    @ApiPageable
+    @ApiPageableWithoutSort
     public ResponseEntity<PageableDto<EcoNewsCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
         Long ecoNewsId,
         @ApiIgnore @CurrentUser UserVO user) {
