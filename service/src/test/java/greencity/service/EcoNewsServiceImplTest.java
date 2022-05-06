@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsSearchRepo;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,6 +83,7 @@ class EcoNewsServiceImplTest {
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private EcoNews ecoNews = ModelUtils.getEcoNews();
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
+    private EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
 
     @Test
     void save() throws MalformedURLException {
@@ -146,6 +148,32 @@ class EcoNewsServiceImplTest {
         when(fileService.upload(image)).thenReturn(ModelUtils.getUrl().toString());
 
         assertThrows(NotSavedException.class, () -> ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL));
+    }
+
+    @Test
+    @SneakyThrows
+    void saveEcoNews() {
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        addEcoNewsDtoRequest.setImage(imageToEncode);
+
+        when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
+        when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        List<Tag> tags = ModelUtils.getTags();
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsGenericDto);
+
+        when(modelMapper.map(tagVOList,
+            new TypeToken<List<Tag>>() {
+            }.getType())).thenReturn(tags);
+
+        EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
+
+        assertEquals(ecoNewsGenericDto, actual);
     }
 
     @Test
