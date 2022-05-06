@@ -123,6 +123,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         restClient.addEcoNews(dto);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Danylo Hlynskyi.
+     */
     public void sendEmailDto(EcoNewsGenericDto ecoNewsDto,
         User user) {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
