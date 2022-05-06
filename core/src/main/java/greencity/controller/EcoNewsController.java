@@ -72,16 +72,16 @@ public class EcoNewsController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED,
-            response = AddEcoNewsDtoResponse.class),
+            response = EcoNewsGenericDto.class),
     })
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<AddEcoNewsDtoResponse> save(
+    public ResponseEntity<EcoNewsGenericDto> save(
         @ApiParam(value = SwaggerExampleModel.ADD_ECO_NEWS_REQUEST,
             required = true) @RequestPart @ValidEcoNewsDtoRequest AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.save(addEcoNewsDtoRequest, image, principal.getName()));
+            ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, principal.getName()));
     }
 
     /**
@@ -149,14 +149,14 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Update eco news")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsGenericDto.class),
         @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
 
     @PutMapping(path = "/update", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,
         MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<EcoNewsDto> update(
+    public ResponseEntity<EcoNewsGenericDto> update(
         @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS,
             required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
         @ApiParam(value = "Image of eco news") @ImageValidation @RequestPart(
@@ -217,8 +217,8 @@ public class EcoNewsController {
     })
     @GetMapping("")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> findAll(@ApiIgnore Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAll(page));
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findAll(@ApiIgnore Pageable page) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findGenericAll(page));
     }
 
     /**
@@ -234,7 +234,7 @@ public class EcoNewsController {
     })
     @GetMapping("/byUserPage")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> getEcoNewsByUserByPage(@ApiIgnore @CurrentUser UserVO user,
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> getEcoNewsByUserByPage(@ApiIgnore @CurrentUser UserVO user,
         @ApiIgnore Pageable page) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAllByUser(user, page));
     }
@@ -271,13 +271,13 @@ public class EcoNewsController {
     })
     @GetMapping("/tags")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> getEcoNews(
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> getEcoNews(
         @ApiIgnore Pageable page,
         @ApiParam(value = "Tags to filter (if do not input tags get all)") @RequestParam(
             required = false) List<String> tags) {
         if (tags == null || tags.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                ecoNewsService.findAll(page));
+                ecoNewsService.findGenericAll(page));
         }
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.find(page, tags));
     }

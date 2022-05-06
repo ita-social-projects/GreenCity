@@ -222,7 +222,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(user, pageRequest)).thenReturn(translationPage);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
 
-        PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
+        PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
 
         assertEquals(pageableDto, actual);
     }
@@ -253,7 +253,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findByTags(pageRequest, lowerCaseTags))
             .thenReturn(page);
 
-        PageableAdvancedDto<EcoNewsDto> actual =
+        PageableAdvancedDto<EcoNewsGenericDto> actual =
             ecoNewsService.find(pageRequest, tags);
 
         assertEquals(pageableDto, actual);
@@ -437,7 +437,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        EcoNewsDto expected = ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO());
+        EcoNewsGenericDto expected = ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO());
         assertEquals(expected, ecoNewsDto);
     }
 
