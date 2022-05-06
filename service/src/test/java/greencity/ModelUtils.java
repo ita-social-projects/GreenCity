@@ -93,6 +93,7 @@ public class ModelUtils {
     public static String TEST_EMAIL = "test@mail.com";
     public static String TEST_EMAIL_2 = "test2@mail.com";
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
+    public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
@@ -294,7 +295,7 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
-        return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
+        return new EcoNews(1L, zonedDateTime, TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
     }
 
@@ -310,7 +311,7 @@ public class ModelUtils {
     }
 
     public static EcoNewsVO getEcoNewsVO() {
-        return new EcoNewsVO(1L, ZonedDateTime.now(), TestConst.SITE, null, getUserVO(),
+        return new EcoNewsVO(1L, zonedDateTime, TestConst.SITE, null, getUserVO(),
             "title", "text", null, Collections.emptySet(), Collections.singletonList(getTagVO()));
     }
 
@@ -1337,6 +1338,13 @@ public class ModelUtils {
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
             getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1, 0);
+    }
+
+    public static EcoNewsGenericDto getEcoNewsGenericDto() {
+        String[] tags = {"Новини", "News", "Новины"};
+        return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
+            ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
+            List.of(tags), 0, 0);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {

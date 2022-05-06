@@ -21,7 +21,15 @@ public interface EcoNewsService {
      */
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
+    /**
+     * Method for creating {@link EcoNewsVO} instance.
+     *
+     * @param addEcoNewsDtoRequest - dto with {@link EcoNewsVO} title, text, image
+     *                             path.
+     * @return {@link EcoNewsGenericDto} instance.
+     */
     EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
+
     /**
      * Method for getting last three eco news.
      *

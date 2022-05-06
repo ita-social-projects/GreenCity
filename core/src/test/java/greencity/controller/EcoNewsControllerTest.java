@@ -122,7 +122,7 @@ class EcoNewsControllerTest {
         AddEcoNewsDtoRequest addEcoNewsDtoRequest = mapper.readValue(json, AddEcoNewsDtoRequest.class);
 
         verify(ecoNewsService)
-            .save(eq(addEcoNewsDtoRequest), isNull(), eq("Olivia.Johnson@gmail.com"));
+            .saveEcoNews(eq(addEcoNewsDtoRequest), isNull(), eq("Olivia.Johnson@gmail.com"));
     }
 
     @Test
@@ -163,7 +163,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(pageable);
+        verify(ecoNewsService).findGenericAll(pageable);
     }
 
     @Test
@@ -213,7 +213,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get("/econews/tags?page=5"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findAll(pageable);
+        verify(ecoNewsService).findGenericAll(pageable);
     }
 
     @Test

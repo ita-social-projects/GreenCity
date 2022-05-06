@@ -203,24 +203,21 @@ class EcoNewsServiceImplTest {
 
     @Test
     void findAllByUserPageIsSort() {
-        ZonedDateTime now = ZonedDateTime.now();
-
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> translationPage = new PageImpl<>(ecoNews,
             pageRequest, ecoNews.size());
 
-        List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(now, "test image path", 1L, "test title", "content", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0));
-        PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
+        List<EcoNewsGenericDto> dtoList = Collections.singletonList(
+            ModelUtils.getEcoNewsGenericDto());
+        PageableAdvancedDto<EcoNewsGenericDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
 
         UserVO userVO = UserVO.builder().id(1L).build();
         User user = User.builder().id(1L).build();
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(user, pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
 
         PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
 
@@ -430,15 +427,23 @@ class EcoNewsServiceImplTest {
     void updateEcoNewsDtoTest() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
-        EcoNewsDto ecoNewsDto = ModelUtils.getEcoNewsDto();
+        EcoNewsGenericDto ecoNewsDto = ModelUtils.getEcoNewsGenericDto();
         UpdateEcoNewsDto updateEcoNewsDto = ModelUtils.getUpdateEcoNewsDto();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(ecoNewsService.findById(1L)).thenReturn(ecoNewsVO);
         when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
         when(ecoNewsRepo.save(ecoNews)).thenReturn(ecoNews);
-        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
-        EcoNewsGenericDto expected = ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO());
-        assertEquals(expected, ecoNewsDto);
+        when(modelMapper.map(ecoNews, EcoNewsGenericDto.class)).thenReturn(ecoNewsDto);
+        List<TagVO> tags = ModelUtils.getEcoNewsVO().getTags();
+        when(tagService.findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS)).thenReturn(tags);
+        when(modelMapper.map(tagService
+            .findTagsByNamesAndType(updateEcoNewsDto.getTags(), TagType.ECO_NEWS),
+            new TypeToken<List<Tag>>() {
+            }.getType())).thenReturn(ecoNews.getTags());
+
+        EcoNewsGenericDto actual =
+            ecoNewsService.update(updateEcoNewsDto, any(MultipartFile.class), ModelUtils.getUserVO());
+        assertEquals(ecoNewsDto, actual);
     }
 
     @Test

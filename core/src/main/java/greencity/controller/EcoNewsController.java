@@ -234,7 +234,8 @@ public class EcoNewsController {
     })
     @GetMapping("/byUserPage")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> getEcoNewsByUserByPage(@ApiIgnore @CurrentUser UserVO user,
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> getEcoNewsByUserByPage(
+        @ApiIgnore @CurrentUser UserVO user,
         @ApiIgnore Pageable page) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAllByUser(user, page));
     }
