@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @ToString(exclude = "author")
 @Builder
 @EqualsAndHashCode
