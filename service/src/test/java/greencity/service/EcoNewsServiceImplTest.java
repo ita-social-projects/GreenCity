@@ -268,13 +268,13 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> page = new PageImpl<>(ecoNews, pageRequest, ecoNews.size());
-        List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
-        PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
+        List<EcoNewsGenericDto> dtoList = Collections.singletonList(ModelUtils.getEcoNewsGenericDto());
+        PageableAdvancedDto<EcoNewsGenericDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
         List<String> tags = Collections.singletonList(ModelUtils.getTagTranslations().get(0).getName());
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
         when(ecoNewsRepo.findByTags(pageRequest, lowerCaseTags))
             .thenReturn(page);
 
