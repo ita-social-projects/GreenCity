@@ -94,7 +94,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
 
-        EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithTag(toSave);
+        EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
@@ -260,8 +260,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGeneticDto(Page<EcoNews> ecoNewsPage) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
-            .map(this::getEcoNewsGenericDto)
+            .map(this::getEcoNewsGenericDtoWithEnTags)
             .collect(Collectors.toList());
+
         return new PageableAdvancedDto<>(
             ecoNewsDtos,
             ecoNewsPage.getTotalElements(),
@@ -504,7 +505,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         enhanceWithNewData(toUpdate, updateEcoNewsDto, image);
         ecoNewsRepo.save(toUpdate);
-        return getEcoNewsGenericDtoWithTag(toUpdate);
+        return getEcoNewsGenericDtoWithAllTags(toUpdate);
     }
 
     @Override
@@ -637,37 +638,28 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .collect(Collectors.toList());
     }
 
-    private EcoNewsGenericDto getEcoNewsGenericDtoWithTag(EcoNews ecoNews) {
-        User author = ecoNews.getAuthor();
-        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-
+    private EcoNewsGenericDto getEcoNewsGenericDtoWithAllTags(EcoNews ecoNews) {
         List<String> tags = ecoNews.getTags().stream()
             .flatMap(t -> t.getTagTranslations().stream())
             .map(TagTranslation::getName)
             .collect(Collectors.toList());
 
-        return EcoNewsGenericDto.builder()
-            .id(ecoNews.getId())
-            .imagePath(ecoNews.getImagePath())
-            .author(ecoNewsAuthorDto)
-            .tags(tags)
-            .shortInfo(ecoNews.getShortInfo())
-            .content(ecoNews.getText())
-            .title(ecoNews.getTitle())
-            .creationDate(ecoNews.getCreationDate())
-            .source(ecoNews.getSource())
-            .build();
+        return buildEcoNewsGenericDto(ecoNews, tags);
     }
 
-    private EcoNewsGenericDto getEcoNewsGenericDto(EcoNews ecoNews) {
-        User author = ecoNews.getAuthor();
-        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-
+    private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews) {
         List<String> tags = ecoNews.getTags().stream()
             .flatMap(t -> t.getTagTranslations().stream())
             .filter(t -> t.getLanguage().getCode().equals("en"))
             .map(TagTranslation::getName)
             .collect(Collectors.toList());
+
+        return buildEcoNewsGenericDto(ecoNews, tags);
+    }
+
+    private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
+        User author = ecoNews.getAuthor();
+        var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
 
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
