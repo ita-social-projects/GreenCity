@@ -54,7 +54,7 @@ class EventSeviceImplTest {
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, AddEventDtoResponse.class)).thenReturn(addEventDtoResponse);
 
-        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail()));
+        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
     }
 
     @Test
