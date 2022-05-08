@@ -34,7 +34,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email,
-                                    MultipartFile[] images) {
+        MultipartFile[] images) {
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
