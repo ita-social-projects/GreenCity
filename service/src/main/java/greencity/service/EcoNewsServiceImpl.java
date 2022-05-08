@@ -260,9 +260,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private PageableAdvancedDto<EcoNewsGenericDto> buildPageableAdvancedGeneticDto(Page<EcoNews> ecoNewsPage) {
         List<EcoNewsGenericDto> ecoNewsDtos = ecoNewsPage.stream()
-            .map(ecoNews -> modelMapper.map(ecoNews, EcoNewsGenericDto.class))
+            .map(this::getEcoNewsGenericDto)
             .collect(Collectors.toList());
-
         return new PageableAdvancedDto<>(
             ecoNewsDtos,
             ecoNewsPage.getTotalElements(),
@@ -642,7 +641,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
 
-        List<String> tags = ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+        List<String> tags = ecoNews.getTags().stream()
+            .flatMap(t -> t.getTagTranslations().stream())
+            .filter(t -> t.getLanguage().getCode().equals("en"))
             .map(TagTranslation::getName)
             .collect(Collectors.toList());
 
