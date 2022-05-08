@@ -22,6 +22,15 @@ public interface EcoNewsService {
     AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
 
     /**
+     * Method for creating {@link EcoNewsVO} instance.
+     *
+     * @param addEcoNewsDtoRequest - dto with {@link EcoNewsVO} title, text, image
+     *                             path.
+     * @return {@link EcoNewsGenericDto} instance.
+     */
+    EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email);
+
+    /**
      * Method for getting last three eco news.
      *
      * @return list of {@link EcoNewsDto} instances.
@@ -45,13 +54,21 @@ public interface EcoNewsService {
     PageableAdvancedDto<EcoNewsDto> findAll(Pageable page);
 
     /**
+     * Method for getting all eco news by page.
+     *
+     * @param page parameters of to search.
+     * @return PageableDto of {@link EcoNewsGenericDto} instances.
+     */
+    PageableAdvancedDto<EcoNewsGenericDto> findGenericAll(Pageable page);
+
+    /**
      * Method for getting all users eco news by page.
      *
      * @param user author of news.
      * @param page parameters of to search.
-     * @return PageableDto of {@link EcoNewsDto} instances.
+     * @return PageableDto of {@link EcoNewsGenericDto} instances.
      */
-    PageableAdvancedDto<EcoNewsDto> findAllByUser(UserVO user, Pageable page);
+    PageableAdvancedDto<EcoNewsGenericDto> findAllByUser(UserVO user, Pageable page);
 
     /**
      * Method for getting eco news by params.
@@ -60,7 +77,7 @@ public interface EcoNewsService {
      * @param tags tags to search.
      * @return PageableDto with {@link EcoNewsDto} instance.
      */
-    PageableAdvancedDto<EcoNewsDto> find(Pageable page, List<String> tags);
+    PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags);
 
     /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
@@ -187,7 +204,7 @@ public interface EcoNewsService {
      * @param updateEcoNewsDto - instance of {@link UpdateEcoNewsDto}.
      * @return instance of {@link EcoNewsDto};=.
      */
-    EcoNewsDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
+    EcoNewsGenericDto update(UpdateEcoNewsDto updateEcoNewsDto, MultipartFile multipartFile, UserVO user);
 
     /**
      * Find {@link EcoNewsVO} for management.
