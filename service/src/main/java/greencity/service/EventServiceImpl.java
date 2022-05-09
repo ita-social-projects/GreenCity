@@ -4,9 +4,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.EventDto;
+import greencity.dto.event.*;
 import greencity.entity.Event;
 import greencity.entity.EventImages;
 import greencity.entity.User;
@@ -67,7 +65,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long eventId) {
         Event event = eventRepo.getOne(eventId);
-        return modelMapper.map(event, EventDto.class);
+        return getEventDto(event);
     }
 
     @Override
@@ -78,7 +76,7 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-            .map(event -> modelMapper.map(event, EventDto.class))
+            .map(this::getEventDto)
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
@@ -115,5 +113,18 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
+    }
+
+    private EventDto getEventDto(Event event) {
+        return EventDto.builder()
+            .id(event.getId())
+            .coordinates(modelMapper.map(event.getCoordinates(), CoordinatesDto.class))
+            .description(event.getDescription())
+            .organizer(modelMapper.map(event.getOrganizer(), EventAuthorDto.class))
+            .title(event.getTitle())
+            .titleImage(event.getTitleImage())
+            .dateTime(event.getDateTime())
+            .images(event.getImages().stream().map(EventImages::getLink).collect(Collectors.toList()))
+            .build();
     }
 }
