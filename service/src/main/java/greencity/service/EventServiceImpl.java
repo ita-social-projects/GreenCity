@@ -124,7 +124,9 @@ public class EventServiceImpl implements EventService {
             .title(event.getTitle())
             .titleImage(event.getTitleImage())
             .dateTime(event.getDateTime())
-            .images(event.getImages().stream().map(EventImages::getLink).collect(Collectors.toList()))
+            .images(event.getImages() != null
+                ? event.getImages().stream().map(EventImages::getLink).collect(Collectors.toList())
+                : null)
             .build();
     }
 }

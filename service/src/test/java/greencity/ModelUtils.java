@@ -1791,7 +1791,7 @@ public class ModelUtils {
                     .latitude(45.45)
                     .longitude(45.45)
                     .build())
-            .description("Desc")
+            .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
                 .id(1L)

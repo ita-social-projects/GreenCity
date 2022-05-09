@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
@@ -103,8 +104,10 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         when(eventRepo.getOne(anyLong())).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-
-        assertEquals(eventDto, eventService.getEvent(1L));
+        EventDto actual = eventService.getEvent(1L);
+        assertEquals(eventDto.getId(), actual.getId());
+        assertEquals(eventDto.getImages(), actual.getImages());
+        assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
     }
 
     @Test
@@ -145,7 +148,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void removeAtetnder() {
+    void removeAttender() {
         Event event = ModelUtils.getEvent();
         Set<User> userSet = new HashSet();
         User user = ModelUtils.getUser();
@@ -166,9 +169,14 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-        when(modelMapper.map(ModelUtils.getEvent(), EventDto.class)).thenReturn(ModelUtils.getEventDto());
 
-        eventService.getAll(pageRequest);
-        assertNotEquals(null, ModelUtils.getEventDto());
+        EventDto expected = ModelUtils.getEventDto();
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getImages(), actual.getImages());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 }
