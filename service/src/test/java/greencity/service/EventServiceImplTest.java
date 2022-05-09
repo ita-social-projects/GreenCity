@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-class EventSeviceImplTest {
+class EventServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
@@ -39,11 +40,14 @@ class EventSeviceImplTest {
     @Mock
     RestClient restClient;
 
+    @Mock
+    private FileService fileService;
+
     @InjectMocks
     EventServiceImpl eventService;
 
     @Test
-    void save() {
+    void saveWithoutImages() {
         AddEventDtoResponse addEventDtoResponse = ModelUtils.getAddEventDtoResponse();
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
@@ -55,6 +59,12 @@ class EventSeviceImplTest {
         when(modelMapper.map(event, AddEventDtoResponse.class)).thenReturn(addEventDtoResponse);
 
         assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        assertEquals(addEventDtoResponse,
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
     @Test

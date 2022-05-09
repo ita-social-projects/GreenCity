@@ -1768,6 +1768,11 @@ public class ModelUtils {
             .build();
     }
 
+    public static MultipartFile[] getMultipartFiles() {
+        return new MultipartFile[] {new MockMultipartFile("firstFile.tmp", "Hello World".getBytes()),
+            new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};
+    }
+
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .coordinates(CoordinatesDto.builder()
             .latitude(45.45)
