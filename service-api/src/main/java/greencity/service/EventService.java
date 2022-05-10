@@ -5,6 +5,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EventService {
     /**
@@ -13,7 +14,7 @@ public interface EventService {
      * @param addEventDtoRequest - dto.
      * @return {@link AddEventDtoResponse} instance.
      */
-    AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email);
+    AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
      * Method for deleting Event instance.

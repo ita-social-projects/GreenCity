@@ -13,9 +13,12 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
@@ -35,15 +38,17 @@ public class EventsController {
      */
     @ApiOperation(value = "Create new event")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
-    @PostMapping("/create")
-    public ResponseEntity<AddEventDtoResponse> save(@RequestBody AddEventDtoRequest addEventDtoRequest,
-        @ApiIgnore Principal principal) {
+    @PostMapping(value = "/create",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity<AddEventDtoResponse> save(@RequestPart AddEventDtoRequest addEventDtoRequest,
+        @ApiIgnore Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(eventService.save(addEventDtoRequest, principal.getName()));
+            .body(eventService.save(addEventDtoRequest, principal.getName(), images));
     }
 
     /**

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
@@ -17,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-class EventSeviceImplTest {
+class EventServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
@@ -39,11 +41,14 @@ class EventSeviceImplTest {
     @Mock
     RestClient restClient;
 
+    @Mock
+    private FileService fileService;
+
     @InjectMocks
     EventServiceImpl eventService;
 
     @Test
-    void save() {
+    void saveWithoutImages() {
         AddEventDtoResponse addEventDtoResponse = ModelUtils.getAddEventDtoResponse();
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
@@ -54,7 +59,13 @@ class EventSeviceImplTest {
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, AddEventDtoResponse.class)).thenReturn(addEventDtoResponse);
 
-        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail()));
+        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
+        assertEquals(addEventDtoResponse,
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
     @Test
@@ -93,8 +104,10 @@ class EventSeviceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         when(eventRepo.getOne(anyLong())).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-
-        assertEquals(eventDto, eventService.getEvent(1L));
+        EventDto actual = eventService.getEvent(1L);
+        assertEquals(eventDto.getId(), actual.getId());
+        assertEquals(eventDto.getImages(), actual.getImages());
+        assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
     }
 
     @Test
@@ -135,7 +148,7 @@ class EventSeviceImplTest {
     }
 
     @Test
-    void removeAtetnder() {
+    void removeAttender() {
         Event event = ModelUtils.getEvent();
         Set<User> userSet = new HashSet();
         User user = ModelUtils.getUser();
@@ -156,9 +169,14 @@ class EventSeviceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-        when(modelMapper.map(ModelUtils.getEvent(), EventDto.class)).thenReturn(ModelUtils.getEventDto());
 
-        eventService.getAll(pageRequest);
-        assertNotEquals(null, ModelUtils.getEventDto());
+        EventDto expected = ModelUtils.getEventDto();
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getImages(), actual.getImages());
+        assertEquals(expected.getDescription(), actual.getDescription());
     }
 }
