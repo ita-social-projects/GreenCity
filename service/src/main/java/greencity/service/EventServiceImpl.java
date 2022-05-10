@@ -1,12 +1,12 @@
 package greencity.service;
 
 import greencity.client.RestClient;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.EventDto;
+import greencity.dto.event.*;
 import greencity.entity.Event;
+import greencity.entity.EventImages;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,20 +28,24 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final FileService fileService;
+    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
-    public AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email) {
+    public AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email,
+        MultipartFile[] images) {
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
 
-        MultipartFile multipartFile = null;
-        if (addEventDtoRequest.getTitleImage() != null) {
-            multipartFile = fileService.convertToMultipartImage(addEventDtoRequest.getTitleImage());
-        }
-
-        if (multipartFile != null) {
-            toSave.setTitleImage(fileService.upload(multipartFile));
+        if (images != null && images.length > 0 && images[0] != null) {
+            toSave.setTitleImage(fileService.upload(images[0]));
+            List<EventImages> eventImages = new ArrayList<>();
+            for (int i = 1; i < images.length; i++) {
+                eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+            }
+            toSave.setImages(eventImages);
+        } else {
+            toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
 
         return modelMapper.map(eventRepo.save(toSave), AddEventDtoResponse.class);
@@ -60,7 +65,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long eventId) {
         Event event = eventRepo.getOne(eventId);
-        return modelMapper.map(event, EventDto.class);
+        return getEventDto(event);
     }
 
     @Override
@@ -71,7 +76,7 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-            .map(event -> modelMapper.map(event, EventDto.class))
+            .map(this::getEventDto)
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
@@ -108,5 +113,20 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
+    }
+
+    private EventDto getEventDto(Event event) {
+        return EventDto.builder()
+            .id(event.getId())
+            .coordinates(modelMapper.map(event.getCoordinates(), CoordinatesDto.class))
+            .description(event.getDescription())
+            .organizer(modelMapper.map(event.getOrganizer(), EventAuthorDto.class))
+            .title(event.getTitle())
+            .titleImage(event.getTitleImage())
+            .dateTime(event.getDateTime())
+            .images(event.getImages() != null
+                ? event.getImages().stream().map(EventImages::getLink).collect(Collectors.toList())
+                : null)
+            .build();
     }
 }
