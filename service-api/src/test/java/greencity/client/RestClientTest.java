@@ -335,7 +335,9 @@ class RestClientTest {
     @Test
     void sendReport() {
         SendReportEmailMessage message = ModelUtils.getSendReportEmailMessage();
-        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, new HttpHeaders());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, headers);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
