@@ -42,7 +42,6 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
-import greencity.dto.specification.SpecificationNameDto;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.tag.*;
 import greencity.dto.tipsandtricks.*;
@@ -63,7 +62,6 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.AchievementCategory;
 import greencity.entity.*;
-import greencity.entity.AchievementCategory;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -80,7 +78,6 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import greencity.mapping.AddEventDtoResponseMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1757,7 +1754,33 @@ public class ModelUtils {
             .build());
         event.setOrganizer(getUser());
         event.setTitle("Title");
+        List<EventDate> dates = new ArrayList<>();
+        dates.add(new EventDate(1L, event,
+            LocalDateTime.of(2000, 1, 1, 1, 1),
+            LocalDateTime.of(2000, 2, 1, 1, 1)));
+        dates.add(new EventDate(2L, event,
+            LocalDateTime.of(2002, 1, 1, 1, 1),
+            LocalDateTime.of(2002, 2, 1, 1, 1)));
+        event.setDates(dates);
+        return event;
+    }
 
+    public static Event getEventWithoutCoordinates() {
+        Event event = new Event();
+
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOnlineLink("url");
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDate> dates = new ArrayList<>();
+        dates.add(new EventDate(1L, event,
+            LocalDateTime.of(2000, 1, 1, 1, 1),
+            LocalDateTime.of(2000, 2, 1, 1, 1)));
+        dates.add(new EventDate(2L, event,
+            LocalDateTime.of(2002, 1, 1, 1, 1),
+            LocalDateTime.of(2002, 2, 1, 1, 1)));
+        event.setDates(dates);
         return event;
     }
 
@@ -1768,7 +1791,7 @@ public class ModelUtils {
                 .latitude(45.45)
                 .longitude(45.45)
                 .build())
-            .dateTime(ZonedDateTime.now())
+            // .dateTime(ZonedDateTime.now())
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .id(1L)
@@ -1787,7 +1810,33 @@ public class ModelUtils {
             .latitude(45.45)
             .longitude(45.45)
             .build())
-        .dateTime(ZonedDateTime.now())
+        .dates(List.of(new EventDateDto(1L, null,
+            LocalDateTime.of(2000, 1, 1, 1, 1),
+            LocalDateTime.of(2000, 2, 1, 1, 1)
+
+        )))
+        .description("Description")
+        .title("Title")
+        .build();
+
+    public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
+        .onlineLink("url")
+        .dates(List.of(new EventDateDto(1L, null,
+            LocalDateTime.of(2000, 1, 1, 1, 1),
+            LocalDateTime.of(2000, 2, 1, 1, 1)
+
+        )))
+        .description("Description")
+        .title("Title")
+        .build();
+
+    public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
+        .onlineLink("url")
+        .dates(List.of(new EventDateDto(1L, null,
+            LocalDateTime.of(2000, 1, 1, 1, 1),
+            LocalDateTime.of(2000, 2, 1, 1, 1)
+
+        )))
         .description("Description")
         .title("Title")
         .build();
@@ -1806,11 +1855,29 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
+            .dates(List.of(new EventDateDto(1L, null,
+                LocalDateTime.of(2000, 1, 1, 1, 1),
+                LocalDateTime.of(2000, 2, 1, 1, 1)
+
+            )))
             .build();
     }
 
-//    public static Habit getHabitWithUser() {
-//        return Habit.builder().id(1L).image("image.png")
-//                .complexity(1).tags(new HashSet<>(getTags())).build();
-//    }
+    public static EventDto getEventWithoutCoordinatesDto() {
+        return EventDto.builder()
+            .id(1L)
+            .onlineLink("url")
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
+            .dates(List.of(new EventDateDto(1L, null,
+                LocalDateTime.of(2000, 1, 1, 1, 1),
+                LocalDateTime.of(2000, 2, 1, 1, 1)
+
+            )))
+            .build();
+    }
 }

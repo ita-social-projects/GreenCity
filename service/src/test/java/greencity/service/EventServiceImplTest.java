@@ -49,7 +49,7 @@ class EventServiceImplTest {
 
     @Test
     void saveWithoutImages() {
-        AddEventDtoResponse addEventDtoResponse = ModelUtils.getAddEventDtoResponse();
+        EventDto eventDto = ModelUtils.getEventDto();
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
 
@@ -57,14 +57,14 @@ class EventServiceImplTest {
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(eventRepo.save(event)).thenReturn(event);
-        when(modelMapper.map(event, AddEventDtoResponse.class)).thenReturn(addEventDtoResponse);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
 
-        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+        assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
         when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
-        assertEquals(addEventDtoResponse,
+        assertEquals(eventDto,
             eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
     }
 
@@ -106,7 +106,7 @@ class EventServiceImplTest {
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         EventDto actual = eventService.getEvent(1L);
         assertEquals(eventDto.getId(), actual.getId());
-        assertEquals(eventDto.getImages(), actual.getImages());
+        assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
         assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
     }
 
@@ -166,17 +166,17 @@ class EventServiceImplTest {
     @Test
     void getAll() {
         List<Event> events = List.of(ModelUtils.getEvent());
+        EventDto expected = ModelUtils.getEventDto();
+
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-
-        EventDto expected = ModelUtils.getEventDto();
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
 
         assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getImages(), actual.getImages());
         assertEquals(expected.getDescription(), actual.getDescription());
     }
 }

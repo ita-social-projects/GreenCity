@@ -1,9 +1,10 @@
 package greencity.dto.event;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.ZonedDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,11 +18,14 @@ public class AddEventDtoRequest {
     @NotEmpty
     private String description;
 
-    @NotEmpty
+    @Nullable
     private CoordinatesDto coordinates;
 
+    @Nullable
+    private String onlineLink;
+
     @NotEmpty
-    private ZonedDateTime dateTime;
+    private List<EventDateDto> dates;
 
     private String titleImage;
 }
