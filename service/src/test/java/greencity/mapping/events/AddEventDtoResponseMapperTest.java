@@ -1,4 +1,4 @@
-package greencity.mapping;
+package greencity.mapping.events;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoResponse;

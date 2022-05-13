@@ -24,7 +24,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
      */
 
     @Override
-    protected Event convert(EventDto eventDto) {
+    public Event convert(EventDto eventDto) {
         List<EventDate> dates = new ArrayList<>();
         for (EventDateDto eventDate : eventDto.getDates()) {
             dates.add(EventDate.builder().startDate(eventDate.getStartDate())

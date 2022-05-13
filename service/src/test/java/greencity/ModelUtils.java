@@ -1846,6 +1846,11 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
+            .dates(List.of(new EventDateDto(1L, null,
+                LocalDateTime.of(2000, 1, 1, 1, 1),
+                LocalDateTime.of(2000, 2, 1, 1, 1)
+
+            )))
             .build();
     }
 
@@ -1859,6 +1864,11 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
+            .dates(List.of(new EventDateDto(1L, null,
+                LocalDateTime.of(2000, 1, 1, 1, 1),
+                LocalDateTime.of(2000, 2, 1, 1, 1)
+
+            )))
             .build();
     }
 }
