@@ -1,9 +1,10 @@
 package greencity.entity;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,12 +35,13 @@ public class Event {
     @NonNull
     private String description;
 
-    @Column(nullable = false)
-    @NonNull
-    private ZonedDateTime dateTime;
-
     @Embedded
+    @Nullable
     private Coordinates coordinates;
+
+    @Column(name = "online_link")
+    @Nullable
+    private String onlineLink;
 
     @ManyToMany
     @JoinTable(
@@ -48,6 +50,12 @@ public class Event {
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attenders = new HashSet<>();
 
+    @NonNull
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventImages> images;
+    private List<EventDate> dates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<EventImages> additionalImages = new ArrayList<>();
+
+    private boolean isOpen = true;
 }

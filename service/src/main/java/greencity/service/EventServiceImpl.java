@@ -31,7 +31,7 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
-    public AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email,
+    public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -43,12 +43,11 @@ public class EventServiceImpl implements EventService {
             for (int i = 1; i < images.length; i++) {
                 eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
             }
-            toSave.setImages(eventImages);
+            toSave.setAdditionalImages(eventImages);
         } else {
             toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
-
-        return modelMapper.map(eventRepo.save(toSave), AddEventDtoResponse.class);
+        return modelMapper.map(eventRepo.save(toSave), EventDto.class);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long eventId) {
         Event event = eventRepo.getOne(eventId);
-        return getEventDto(event);
+        return modelMapper.map(event, EventDto.class);
     }
 
     @Override
@@ -76,7 +75,7 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-            .map(this::getEventDto)
+            .map(event -> modelMapper.map(event, EventDto.class))
             .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
@@ -113,20 +112,5 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
-    }
-
-    private EventDto getEventDto(Event event) {
-        return EventDto.builder()
-            .id(event.getId())
-            .coordinates(modelMapper.map(event.getCoordinates(), CoordinatesDto.class))
-            .description(event.getDescription())
-            .organizer(modelMapper.map(event.getOrganizer(), EventAuthorDto.class))
-            .title(event.getTitle())
-            .titleImage(event.getTitleImage())
-            .dateTime(event.getDateTime())
-            .images(event.getImages() != null
-                ? event.getImages().stream().map(EventImages::getLink).collect(Collectors.toList())
-                : null)
-            .build();
     }
 }
