@@ -14,7 +14,7 @@ public interface EventService {
      * @param addEventDtoRequest - dto.
      * @return {@link AddEventDtoResponse} instance.
      */
-    AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
+    EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
      * Method for deleting Event instance.

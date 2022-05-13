@@ -3,10 +3,11 @@ package greencity.dto.event;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
-import java.time.ZonedDateTime;
+import javax.validation.constraints.Max;
 import java.util.List;
 
 @Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,13 +21,21 @@ public class EventDto {
 
     private String description;
 
-    private ZonedDateTime dateTime;
+    @Max(7)
+    private List<EventDateDto> dates;
 
+    @Nullable
     private CoordinatesDto coordinates;
+
+    @Nullable
+    private String onlineLink;
 
     @Nullable
     private String titleImage;
 
     @Nullable
-    private List<String> images;
+    @Max(4)
+    private List<String> additionalImages;
+
+    private boolean isOpen = true;
 }
