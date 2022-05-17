@@ -1800,6 +1800,10 @@ public class ModelUtils {
             .build();
     }
 
+    public static MultipartFile getMultipartFile() {
+        return new MockMultipartFile("firstFile.tmp", "Hello World".getBytes());
+    }
+
     public static MultipartFile[] getMultipartFiles() {
         return new MultipartFile[] {new MockMultipartFile("firstFile.tmp", "Hello World".getBytes()),
             new MockMultipartFile("secondFile.tmp", "Hello World".getBytes())};

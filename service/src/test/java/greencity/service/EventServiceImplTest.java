@@ -58,8 +58,13 @@ class EventServiceImplTest {
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-
         assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(eventDto,
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(),
+                new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
         when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
