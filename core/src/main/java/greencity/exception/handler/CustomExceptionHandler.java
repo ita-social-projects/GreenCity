@@ -49,7 +49,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Danylo Hlynskyi
      */
     @ExceptionHandler(MultipartException.class)
-    public final ResponseEntity<Object> handleTooBigLargeMultipartFileRequest(MultipartException ex,
+    public final ResponseEntity<Object> handleTooLargeMultipartFileRequest(MultipartException ex,
         WebRequest request) {
         log.info(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
