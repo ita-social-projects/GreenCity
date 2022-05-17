@@ -1745,22 +1745,19 @@ public class ModelUtils {
 
     public static Event getEvent() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
-        event.setCoordinates(Coordinates.builder()
-            .latitude(45.45)
-            .longitude(45.45)
-            .build());
         event.setOrganizer(getUser());
         event.setTitle("Title");
-        List<EventDate> dates = new ArrayList<>();
-        dates.add(new EventDate(1L, event,
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
             LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1)));
-        dates.add(new EventDate(2L, event,
+            LocalDateTime.of(2000, 2, 1, 1, 1),
+            new Coordinates(45.45, 45.45), null));
+        dates.add(new EventDateLocation(2L, event,
             LocalDateTime.of(2002, 1, 1, 1, 1),
-            LocalDateTime.of(2002, 2, 1, 1, 1)));
+            LocalDateTime.of(2002, 2, 1, 1, 1),
+            new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
         return event;
     }
@@ -1770,16 +1767,17 @@ public class ModelUtils {
 
         event.setDescription("Description");
         event.setId(1L);
-        event.setOnlineLink("url");
         event.setOrganizer(getUser());
         event.setTitle("Title");
-        List<EventDate> dates = new ArrayList<>();
-        dates.add(new EventDate(1L, event,
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
             LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1)));
-        dates.add(new EventDate(2L, event,
+            LocalDateTime.of(2000, 2, 1, 1, 1),
+            new Coordinates(45.45, 45.45), null));
+        dates.add(new EventDateLocation(2L, event,
             LocalDateTime.of(2002, 1, 1, 1, 1),
-            LocalDateTime.of(2002, 2, 1, 1, 1)));
+            LocalDateTime.of(2002, 2, 1, 1, 1),
+            new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
         return event;
     }
@@ -1787,11 +1785,8 @@ public class ModelUtils {
     public static AddEventDtoResponse getAddEventDtoResponse() {
         return AddEventDtoResponse.builder()
             .id(1L)
-            .coordinates(CoordinatesDto.builder()
-                .latitude(45.45)
-                .longitude(45.45)
-                .build())
-            // .dateTime(ZonedDateTime.now())
+            .dates(new ArrayList<EventDateDto>())
+            .title("Title")
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .id(1L)
@@ -1810,24 +1805,21 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
-        .coordinates(CoordinatesDto.builder()
-            .latitude(45.45)
-            .longitude(45.45)
-            .build())
         .dates(List.of(new EventDateDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1)
-
-        )))
+            LocalDateTime.of(2000, 2, 1, 1, 1),
+            "/url",
+            CoordinatesDto.builder().build())))
         .description("Description")
         .title("Title")
         .build();
 
     public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
-        .onlineLink("url")
         .dates(List.of(new EventDateDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1)
+            LocalDateTime.of(2000, 2, 1, 1, 1),
+            "/url",
+            CoordinatesDto.builder().build()
 
         )))
         .description("Description")
@@ -1835,12 +1827,11 @@ public class ModelUtils {
         .build();
 
     public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
-        .onlineLink("url")
         .dates(List.of(new EventDateDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1)
-
-        )))
+            LocalDateTime.of(2000, 2, 1, 1, 1),
+            "/url",
+            CoordinatesDto.builder().build())))
         .description("Description")
         .title("Title")
         .build();
@@ -1848,11 +1839,6 @@ public class ModelUtils {
     public static EventDto getEventDto() {
         return EventDto.builder()
             .id(1L)
-            .coordinates(
-                CoordinatesDto.builder()
-                    .latitude(45.45)
-                    .longitude(45.45)
-                    .build())
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -1861,16 +1847,15 @@ public class ModelUtils {
             .title("Title")
             .dates(List.of(new EventDateDto(1L, null,
                 LocalDateTime.of(2000, 1, 1, 1, 1),
-                LocalDateTime.of(2000, 2, 1, 1, 1)
-
-            )))
+                LocalDateTime.of(2000, 2, 1, 1, 1),
+                "/url",
+                CoordinatesDto.builder().build())))
             .build();
     }
 
     public static EventDto getEventWithoutCoordinatesDto() {
         return EventDto.builder()
             .id(1L)
-            .onlineLink("url")
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -1879,9 +1864,9 @@ public class ModelUtils {
             .title("Title")
             .dates(List.of(new EventDateDto(1L, null,
                 LocalDateTime.of(2000, 1, 1, 1, 1),
-                LocalDateTime.of(2000, 2, 1, 1, 1)
-
-            )))
+                LocalDateTime.of(2000, 2, 1, 1, 1),
+                "/url",
+                CoordinatesDto.builder().build())))
             .build();
     }
 }

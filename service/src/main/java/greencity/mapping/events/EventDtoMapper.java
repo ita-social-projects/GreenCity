@@ -4,8 +4,9 @@ import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateDto;
 import greencity.dto.event.EventDto;
+import greencity.entity.Coordinates;
 import greencity.entity.Event;
-import greencity.entity.EventDate;
+import greencity.entity.EventDateLocation;
 import greencity.entity.EventImages;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -30,34 +31,37 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
 
     @Override
     public EventDto convert(Event event) {
-        List<EventDateDto> dates = new ArrayList<>();
-        for (EventDate eventDate : event.getDates()) {
-            dates.add(EventDateDto.builder().startDate(eventDate.getStartDate())
-                .finishDate(eventDate.getFinishDate()).build());
-        }
         EventDto eventDto = new EventDto();
         eventDto.setId(event.getId());
-        eventDto.setDates(dates);
-        eventDto.setDescription(event.getDescription());
-        eventDto.setOrganizer(EventAuthorDto.builder()
-            .name(event.getOrganizer().getName())
-            .id(event.getOrganizer().getId())
-            .build());
         eventDto.setTitle(event.getTitle());
+        eventDto.setDescription(event.getDescription());
         eventDto.setTitleImage(event.getTitleImage());
-
-        if (event.getCoordinates() != null) {
-            eventDto.setCoordinates(CoordinatesDto.builder()
-                .latitude(event.getCoordinates().getLatitude())
-                .longitude(event.getCoordinates().getLongitude())
-                .build());
-        } else {
-            eventDto.setOnlineLink(event.getOnlineLink());
+        eventDto.setOpen(event.isOpen());
+        List<EventDateDto> datesLocations = new ArrayList<>();
+        for (EventDateLocation eventDateLocation : event.getDates()) {
+            EventDateDto eventDateDto = new EventDateDto();
+            eventDateDto.setStartDate(eventDateLocation.getStartDate());
+            eventDateDto.setFinishDate(eventDateLocation.getFinishDate());
+            if (eventDateLocation.getOnlineLink() != null) {
+                eventDateDto.setOnlineLink(eventDateLocation.getOnlineLink());
+            }
+            if (eventDateLocation.getCoordinates() != null) {
+                Coordinates coordinates = eventDateLocation.getCoordinates();
+                CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
+                        .longitude(coordinates.getLongitude()).build();
+                eventDateDto.setCoordinatesDto(coordinatesDto);
+            }
+            datesLocations.add(eventDateDto);
         }
-
-        eventDto.setAdditionalImages(event.getAdditionalImages().stream()
-            .map(EventImages::getLink).collect(Collectors.toList()));
-
+        eventDto.setDates(datesLocations);
+        eventDto.setOrganizer(EventAuthorDto.builder()
+            .id(event.getOrganizer().getId())
+            .name(event.getOrganizer().getName())
+            .build());
+        if (eventDto.getAdditionalImages() != null) {
+            eventDto.setAdditionalImages(event.getAdditionalImages().stream()
+                .map(EventImages::getLink).collect(Collectors.toList()));
+        }
         return eventDto;
     }
 }

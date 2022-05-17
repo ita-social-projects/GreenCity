@@ -1,6 +1,10 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.event.AddEventDtoRequest;
@@ -22,6 +26,7 @@ import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -29,6 +34,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
@@ -58,44 +64,35 @@ class EventControllerTest {
 
     private ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
-    private String createJson =
-        "{\n" +
-            "  \"title\": \"string\",\n" +
-            "  \"description\": \"string\",\n" +
-            "  \"coordinates\":  {\"latitude\": 1, \"longitude\" : 2}\n" +
-            "}";;
+    private String createJson = "{\n" +
+        "  \"dates\": [\n" +
+        "    {\n" +
+        "      \"coordinatesDto\": {\n" +
+        "        \"latitude\": 0,\n" +
+        "        \"longitude\": 0\n" +
+        "      },\n" +
+        "      \"startDate\" : \"2016-05-28T17:39:44.937\", \n" +
+        "      \"finishDate\" : \"2016-05-28T18:39:44.938\",\n" +
+        "      \"onlineLink\": \"string\"\n" +
+        "    }\n" +
+        "  ],\n" +
+        "  \"description\": \"string\",\n" +
+        "  \"open\": true,\n" +
+        "  \"title\": \"string\"\n" +
+        "}";
 
     @BeforeEach
     public void setUp() {
-        this.mockMvc = MockMvcBuilders
-            .standaloneSetup(eventsController)
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter =
+            new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setObjectMapper(new ObjectMapper().setPropertyNamingStrategy(
+            PropertyNamingStrategies.SNAKE_CASE));
+        mockMvc = MockMvcBuilders.standaloneSetup(eventsController)
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes))
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
             .setControllerAdvice(new CustomExceptionHandler(errorAttributes))
-            .build();
-    }
-
-    @Test
-    @SneakyThrows
-    void saveTest() {
-        Principal principal = Mockito.mock(Principal.class);
-        when(principal.getName()).thenReturn("danylo@gmail.com");
-
-        MockMultipartFile jsonFile =
-            new MockMultipartFile("addEventDtoRequest", "", "application/json", createJson.getBytes());
-
-        this.mockMvc.perform(multipart(eventsLink + "/create")
-            .file(jsonFile)
-            .principal(principal)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isCreated());
-
-        ObjectMapper mapper = new ObjectMapper();
-        AddEventDtoRequest addEcoNewsDtoRequest = mapper.readValue(createJson, AddEventDtoRequest.class);
-
-        verify(eventService)
-            .save(eq(addEcoNewsDtoRequest), eq("danylo@gmail.com"), any());
+            .setMessageConverters(mappingJackson2HttpMessageConverter).build();
     }
 
     @Test

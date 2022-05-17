@@ -1,7 +1,6 @@
 package greencity.dto.event;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -22,12 +21,6 @@ public class AddEventDtoResponse {
 
     @NotEmpty
     private String description;
-
-    @Nullable
-    private CoordinatesDto coordinates;
-
-    @Nullable
-    private String onlineLink;
 
     @Max(7)
     private List<EventDateDto> dates;
