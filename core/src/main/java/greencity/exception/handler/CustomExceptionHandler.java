@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
@@ -32,12 +34,28 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  * @author Marian Milian
  */
-
 @AllArgsConstructor
 @RestControllerAdvice
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
+
+    /**
+     * Method intercept exception {@link MultipartException}.
+     *
+     * @param ex      Exception witch should be intercepted.
+     * @param request contain detail about occur exception.
+     * @return ResponseEntity which contains http status and body with message of
+     *         exception.
+     * @author Danylo Hlynskyi
+     */
+    @ExceptionHandler(MultipartException.class)
+    public final ResponseEntity<Object> handleTooBigLargeMultipartFileRequest(MultipartException ex,
+        WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(exceptionResponse);
+    }
 
     /**
      * Method intercept exception

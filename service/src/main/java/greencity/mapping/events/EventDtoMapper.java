@@ -54,6 +54,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         } else {
             eventDto.setOnlineLink(event.getOnlineLink());
         }
+
         eventDto.setAdditionalImages(event.getAdditionalImages().stream()
             .map(EventImages::getLink).collect(Collectors.toList()));
 

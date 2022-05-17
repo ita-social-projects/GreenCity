@@ -50,11 +50,13 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
             event.setOnlineLink(eventDto.getOnlineLink());
         }
 
-        List<EventImages> eventImages = new ArrayList<>();
-        for (String url : eventDto.getAdditionalImages()) {
-            eventImages.add(EventImages.builder().link(url).event(event).build());
+        if (eventDto.getAdditionalImages() != null) {
+            List<EventImages> eventImages = new ArrayList<>();
+            for (String url : eventDto.getAdditionalImages()) {
+                eventImages.add(EventImages.builder().link(url).event(event).build());
+            }
+            event.setAdditionalImages(eventImages);
         }
-        event.setAdditionalImages(eventImages);
 
         return event;
     }
