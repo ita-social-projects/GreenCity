@@ -36,12 +36,13 @@ public class EventServiceImpl implements EventService {
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
-
         if (images != null && images.length > 0 && images[0] != null) {
             toSave.setTitleImage(fileService.upload(images[0]));
             List<EventImages> eventImages = new ArrayList<>();
             for (int i = 1; i < images.length; i++) {
-                eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+                if (images[i] != null) {
+                    eventImages.add(EventImages.builder().event(toSave).link(fileService.upload(images[i])).build());
+                }
             }
             toSave.setAdditionalImages(eventImages);
         } else {
