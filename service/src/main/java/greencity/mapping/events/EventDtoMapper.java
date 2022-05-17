@@ -48,7 +48,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             if (eventDateLocation.getCoordinates() != null) {
                 Coordinates coordinates = eventDateLocation.getCoordinates();
                 CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                        .longitude(coordinates.getLongitude()).build();
+                    .longitude(coordinates.getLongitude()).build();
                 eventDateDto.setCoordinatesDto(coordinatesDto);
             }
             datesLocations.add(eventDateDto);
