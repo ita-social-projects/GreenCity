@@ -25,17 +25,11 @@ public class EventDto {
     private List<EventDateDto> dates;
 
     @Nullable
-    private CoordinatesDto coordinates;
-
-    @Nullable
-    private String onlineLink;
-
-    @Nullable
     private String titleImage;
 
     @Nullable
     @Max(4)
     private List<String> additionalImages;
 
-    private boolean isOpen = true;
+    private boolean isOpen;
 }

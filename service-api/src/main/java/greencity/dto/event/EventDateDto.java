@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
+@Setter
 public class EventDateDto {
     private Long id;
 
@@ -17,4 +18,8 @@ public class EventDateDto {
     private LocalDateTime startDate;
 
     private LocalDateTime finishDate;
+
+    private String onlineLink;
+
+    private CoordinatesDto coordinatesDto;
 }

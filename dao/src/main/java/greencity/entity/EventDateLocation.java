@@ -1,17 +1,20 @@
 package greencity.entity;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "event_dates")
+@Table(name = "event_dates_locations")
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Getter
 @Builder
-public class EventDate {
+public class EventDateLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,4 +30,12 @@ public class EventDate {
     @Column(name = "finish_date", nullable = false)
     @NonNull
     private LocalDateTime finishDate;
+
+    @Embedded
+    @Nullable
+    private Coordinates coordinates;
+
+    @Column(name = "online_link")
+    @Nullable
+    private String onlineLink;
 }

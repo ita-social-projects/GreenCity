@@ -33,6 +33,6 @@ class AddEventDtoRequestMapperTest {
 
         AddEventDtoRequest request = ModelUtils.addEventDtoWithoutCoordinatesRequest;
 
-        assertEquals(expected.getOnlineLink(), mapper.convert(request).getOnlineLink());
+        assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
     }
 }

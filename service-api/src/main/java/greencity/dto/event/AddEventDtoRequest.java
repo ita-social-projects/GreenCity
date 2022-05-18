@@ -1,8 +1,8 @@
 package greencity.dto.event;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -18,14 +18,11 @@ public class AddEventDtoRequest {
     @NotEmpty
     private String description;
 
-    @Nullable
-    private CoordinatesDto coordinates;
-
-    @Nullable
-    private String onlineLink;
-
     @NotEmpty
+    @Max(7)
     private List<EventDateDto> dates;
 
     private String titleImage;
+
+    private boolean isOpen;
 }
