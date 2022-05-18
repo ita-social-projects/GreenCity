@@ -40,7 +40,7 @@ public class EventsController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @PostMapping(value = "/create",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})

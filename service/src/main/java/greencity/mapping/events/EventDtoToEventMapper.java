@@ -1,6 +1,6 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.EventDateDto;
+import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDto;
 import greencity.entity.*;
 import org.modelmapper.AbstractConverter;
@@ -25,30 +25,15 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
 
     @Override
     public Event convert(EventDto eventDto) {
-        List<EventDate> dates = new ArrayList<>();
-        for (EventDateDto eventDate : eventDto.getDates()) {
-            dates.add(EventDate.builder().startDate(eventDate.getStartDate())
-                .finishDate(eventDate.getFinishDate()).build());
-        }
         Event event = new Event();
         event.setId(eventDto.getId());
-        event.setDates(dates);
+        event.setTitle(eventDto.getTitle());
         event.setDescription(eventDto.getDescription());
         event.setOrganizer(User.builder()
             .name(eventDto.getOrganizer().getName())
             .id(eventDto.getOrganizer().getId())
             .build());
-        event.setTitle(eventDto.getTitle());
         event.setTitleImage(eventDto.getTitleImage());
-
-        if (event.getCoordinates() != null) {
-            event.setCoordinates(Coordinates.builder()
-                .latitude(event.getCoordinates().getLatitude())
-                .longitude(event.getCoordinates().getLongitude())
-                .build());
-        } else {
-            event.setOnlineLink(eventDto.getOnlineLink());
-        }
 
         if (eventDto.getAdditionalImages() != null) {
             List<EventImages> eventImages = new ArrayList<>();
@@ -57,6 +42,19 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
             }
             event.setAdditionalImages(eventImages);
         }
+
+        List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
+        for (var date : eventDto.getDates()) {
+            CoordinatesDto coordinatesDto = date.getCoordinatesDto();
+            eventDateLocationsDto.add(EventDateLocation.builder()
+                .startDate(date.getStartDate())
+                .finishDate(date.getFinishDate())
+                .coordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
+                    .longitude(coordinatesDto.getLongitude()).build())
+                .onlineLink(date.getOnlineLink())
+                .event(event).build());
+        }
+        event.setDates(eventDateLocationsDto);
 
         return event;
     }

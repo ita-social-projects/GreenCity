@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class Event {
     @NonNull
     private String title;
 
-    @Column
+    @Column(name = "title_image")
     private String titleImage;
 
     @ManyToOne
@@ -34,14 +33,6 @@ public class Event {
     @Column
     @NonNull
     private String description;
-
-    @Embedded
-    @Nullable
-    private Coordinates coordinates;
-
-    @Column(name = "online_link")
-    @Nullable
-    private String onlineLink;
 
     @ManyToMany
     @JoinTable(
@@ -52,10 +43,11 @@ public class Event {
 
     @NonNull
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventDate> dates = new ArrayList<>();
+    private List<EventDateLocation> dates = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventImages> additionalImages = new ArrayList<>();
 
+    @Column(name = "is_open")
     private boolean isOpen = true;
 }
