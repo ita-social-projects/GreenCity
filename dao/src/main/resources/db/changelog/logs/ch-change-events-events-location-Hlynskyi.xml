@@ -21,7 +21,7 @@
             </column>
         </addColumn>
 
-        <renameTable oldTableName="event_dates" newTableName="events_dates_location" />
+        <renameTable oldTableName="event_dates" newTableName="event_dates_locations" />
 
         <dropColumn tableName="events">
             <column name="online_link"/>
