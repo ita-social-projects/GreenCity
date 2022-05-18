@@ -45,8 +45,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             if (eventDateLocation.getOnlineLink() != null) {
                 eventDateDto.setOnlineLink(eventDateLocation.getOnlineLink());
             }
-            if (eventDateLocation.getCoordinates() != null) {
-                Coordinates coordinates = eventDateLocation.getCoordinates();
+            Coordinates coordinates = eventDateLocation.getCoordinates();
+            if (coordinates != null) {
                 CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
                     .longitude(coordinates.getLongitude()).build();
                 eventDateDto.setCoordinatesDto(coordinatesDto);
