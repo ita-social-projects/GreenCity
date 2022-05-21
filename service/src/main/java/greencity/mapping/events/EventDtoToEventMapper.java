@@ -16,7 +16,6 @@ import java.util.List;
  */
 @Component
 public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
-
     /**
      * Method for converting {@link EventDto} into {@link Event}.
      *
