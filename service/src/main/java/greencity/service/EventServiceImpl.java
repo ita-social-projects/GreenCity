@@ -5,13 +5,17 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
+import greencity.dto.tag.TagVO;
 import greencity.entity.Event;
 import greencity.entity.EventImages;
+import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,7 @@ public class EventServiceImpl implements EventService {
     private final ModelMapper modelMapper;
     private final RestClient restClient;
     private final FileService fileService;
+    private final TagsService tagService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
@@ -48,6 +53,14 @@ public class EventServiceImpl implements EventService {
         } else {
             toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
+
+        List<TagVO> tagVOs = tagService.findTagsByNamesAndType(
+            addEventDtoRequest.getTags(), TagType.EVENT);
+
+        toSave.setTags(modelMapper.map(tagVOs,
+            new TypeToken<List<Tag>>() {
+            }.getType()));
+
         return modelMapper.map(eventRepo.save(toSave), EventDto.class);
     }
 

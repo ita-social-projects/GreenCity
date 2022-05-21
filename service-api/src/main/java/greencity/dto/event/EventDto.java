@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Builder
@@ -22,7 +23,10 @@ public class EventDto {
     private String description;
 
     @Max(7)
-    private List<EventDateDto> dates;
+    private List<EventDateLocationDto> dates;
+
+    @NotEmpty
+    private List<String> tags;
 
     @Nullable
     private String titleImage;

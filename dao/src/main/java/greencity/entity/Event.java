@@ -50,4 +50,11 @@ public class Event {
 
     @Column(name = "is_open")
     private boolean isOpen = true;
+
+    @ManyToMany
+    @JoinTable(
+        name = "events_tags",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tag> tags;
 }

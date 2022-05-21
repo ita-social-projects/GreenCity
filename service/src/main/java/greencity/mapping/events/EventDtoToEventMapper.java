@@ -16,13 +16,13 @@ import java.util.List;
  */
 @Component
 public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
+
     /**
      * Method for converting {@link EventDto} into {@link Event}.
      *
      * @param eventDto object to convert.
      * @return converted object.
      */
-
     @Override
     public Event convert(EventDto eventDto) {
         Event event = new Event();
@@ -45,7 +45,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
 
         List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
         for (var date : eventDto.getDates()) {
-            CoordinatesDto coordinatesDto = date.getCoordinatesDto();
+            CoordinatesDto coordinatesDto = date.getCoordinates();
             eventDateLocationsDto.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())

@@ -95,13 +95,13 @@ public class ModelUtils {
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static Tag getTipsTag() {
         return new Tag(1L, TagType.TIPS_AND_TRICKS, getTipsTagTranslations(), Collections.emptyList(),
             Collections.emptyList(),
-            Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static List<TagTranslation> getTagTranslations() {
@@ -1785,7 +1785,7 @@ public class ModelUtils {
     public static AddEventDtoResponse getAddEventDtoResponse() {
         return AddEventDtoResponse.builder()
             .id(1L)
-            .dates(new ArrayList<EventDateDto>())
+            .dates(new ArrayList<EventDateLocationDto>())
             .title("Title")
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -1805,7 +1805,7 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
-        .dates(List.of(new EventDateDto(1L, null,
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
             LocalDateTime.of(2000, 2, 1, 1, 1),
             "/url",
@@ -1815,7 +1815,7 @@ public class ModelUtils {
         .build();
 
     public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
-        .dates(List.of(new EventDateDto(1L, null,
+        .dates(List.of(new EventDateLocationDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
             LocalDateTime.of(2000, 2, 1, 1, 1),
             "/url",
@@ -1827,7 +1827,7 @@ public class ModelUtils {
         .build();
 
     public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
-        .dates(List.of(new EventDateDto(1L, null,
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
             LocalDateTime.of(2000, 1, 1, 1, 1),
             LocalDateTime.of(2000, 2, 1, 1, 1),
             "/url",
@@ -1845,7 +1845,7 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .dates(List.of(new EventDateDto(1L, null,
+            .dates(List.of(new EventDateLocationDto(1L, null,
                 LocalDateTime.of(2000, 1, 1, 1, 1),
                 LocalDateTime.of(2000, 2, 1, 1, 1),
                 "/url",
@@ -1862,7 +1862,7 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .dates(List.of(new EventDateDto(1L, null,
+            .dates(List.of(new EventDateLocationDto(1L, null,
                 LocalDateTime.of(2000, 1, 1, 1, 1),
                 LocalDateTime.of(2000, 2, 1, 1, 1),
                 "/url",

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "event_dates_locations")
+@Table(name = "events_dates_locations")
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor

@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode
 @Setter
-public class EventDateDto {
+public class EventDateLocationDto {
     private Long id;
 
-    private EventDto eventDto;
+    private EventDto event;
 
     private LocalDateTime startDate;
 
@@ -21,5 +21,5 @@ public class EventDateDto {
 
     private String onlineLink;
 
-    private CoordinatesDto coordinatesDto;
+    private CoordinatesDto coordinates;
 }
