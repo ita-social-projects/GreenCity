@@ -98,6 +98,11 @@ public class ModelUtils {
             Collections.emptySet(), Collections.emptySet());
     }
 
+    public static Tag getEventTag() {
+        return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+            Collections.emptySet(), Collections.emptySet());
+    }
+
     public static Tag getTipsTag() {
         return new Tag(1L, TagType.TIPS_AND_TRICKS, getTipsTagTranslations(), Collections.emptyList(),
             Collections.emptyList(),
@@ -120,12 +125,24 @@ public class ModelUtils {
             TagTranslation.builder().id(3L).name("Эко-город").language(language).build());
     }
 
+    public static List<TagTranslation> getEventTagTranslations() {
+        Language language = getLanguage();
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Соціальний").language(language).build(),
+            TagTranslation.builder().id(2L).name("Social").language(language).build(),
+            TagTranslation.builder().id(3L).name("Соціальний").language(language).build());
+    }
+
     public static TagDto getTagDto() {
         return TagDto.builder().id(2L).name("News").build();
     }
 
     public static List<Tag> getTags() {
         return Collections.singletonList(getTag());
+    }
+
+    public static List<Tag> getEventTags() {
+        return Collections.singletonList(getEventTag());
     }
 
     public static User getUser() {
@@ -824,12 +841,26 @@ public class ModelUtils {
                 .build());
     }
 
+    public static List<TagTranslationVO> getEventTagTranslationsVO() {
+        return Arrays.asList(TagTranslationVO.builder().id(1L).name("Соціальний")
+            .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
+            TagTranslationVO.builder().id(2L).name("Social").languageVO(LanguageVO.builder().id(2L).code("en").build())
+                .build(),
+            TagTranslationVO.builder().id(3L).name("Соціальний")
+                .languageVO(LanguageVO.builder().id(3L).code("ru").build())
+                .build());
+    }
+
     public static LanguageVO getLanguageVO() {
         return new LanguageVO(1L, AppConstant.DEFAULT_LANGUAGE_CODE);
     }
 
     public static TagVO getTagVO() {
         return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+    }
+
+    public static TagVO getEventTagVO() {
+        return new TagVO(1L, TagType.EVENT, getEventTagTranslationsVO(), null, null, null);
     }
 
     public static TagPostDto getTagPostDto() {
@@ -1759,6 +1790,7 @@ public class ModelUtils {
             LocalDateTime.of(2002, 2, 1, 1, 1),
             new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
         return event;
     }
 
@@ -1812,6 +1844,7 @@ public class ModelUtils {
             CoordinatesDto.builder().build())))
         .description("Description")
         .title("Title")
+        .tags(List.of("Social"))
         .build();
 
     public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
@@ -1850,6 +1883,7 @@ public class ModelUtils {
                 LocalDateTime.of(2000, 2, 1, 1, 1),
                 "/url",
                 CoordinatesDto.builder().build())))
+            .tags(List.of("Social"))
             .build();
     }
 
@@ -1867,6 +1901,7 @@ public class ModelUtils {
                 LocalDateTime.of(2000, 2, 1, 1, 1),
                 "/url",
                 CoordinatesDto.builder().build())))
+            .tags(List.of("Social"))
             .build();
     }
 }
