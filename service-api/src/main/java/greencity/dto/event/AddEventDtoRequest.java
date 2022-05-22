@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.Max;
@@ -20,9 +21,11 @@ public class AddEventDtoRequest {
 
     @NotEmpty
     @Max(7)
-    private List<EventDateDto> dates;
+    private List<EventDateLocationDto> datesLocations;
 
-    private String titleImage;
+    @NotEmpty
+    private List<String> tags;
 
+    @JsonProperty(value = "open")
     private boolean isOpen;
 }
