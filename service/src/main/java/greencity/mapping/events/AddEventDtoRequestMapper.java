@@ -35,15 +35,15 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
         event.setOpen(addEventDtoRequest.isOpen());
 
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
-        for (var date : addEventDtoRequest.getDates()) {
-            if (date.getCoordinatesDto() == null && date.getOnlineLink() == null) {
-                throw new BadRequestException("coordinates or link should be set");
+        for (var date : addEventDtoRequest.getDatesLocations()) {
+            if (date.getCoordinates() == null && date.getOnlineLink() == null) {
+                throw new BadRequestException("Coordinates or link should be set!");
             }
             EventDateLocation eventDateLocation = new EventDateLocation();
             eventDateLocation.setStartDate(date.getStartDate());
             eventDateLocation.setFinishDate(date.getFinishDate());
-            if (date.getCoordinatesDto() != null) {
-                CoordinatesDto coordinatesDto = date.getCoordinatesDto();
+            if (date.getCoordinates() != null) {
+                CoordinatesDto coordinatesDto = date.getCoordinates();
                 eventDateLocation.setCoordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
                     .longitude(coordinatesDto.getLongitude()).build());
             }

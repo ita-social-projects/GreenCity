@@ -73,7 +73,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet());
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {

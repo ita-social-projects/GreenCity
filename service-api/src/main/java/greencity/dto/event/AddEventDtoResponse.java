@@ -23,7 +23,7 @@ public class AddEventDtoResponse {
     private String description;
 
     @Max(7)
-    private List<EventDateDto> dates;
+    private List<EventDateLocationDto> dates;
 
     @NotEmpty
     private EventAuthorDto organizer;

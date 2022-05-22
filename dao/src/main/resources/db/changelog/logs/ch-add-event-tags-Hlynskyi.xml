@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Danylo Hlynskyi" id="event-tags-Hlynskyi">
+        <insert tableName="tags">
+            <column name="id">12</column>
+            <column name="type">EVENT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">13</column>
+            <column name="type">EVENT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">14</column>
+            <column name="type">EVENT</column>
+        </insert>
+
+        <insert tableName="tag_translations">
+            <column name="name">Соціальний</column>
+            <column name="tag_id">12</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Social</column>
+            <column name="tag_id">12</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Социальный</column>
+            <column name="tag_id">12</column>
+            <column name="language_id">3</column>
+        </insert>
+
+
+        <insert tableName="tag_translations">
+            <column name="name">Екологічний</column>
+            <column name="tag_id">13</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Environmental</column>
+            <column name="tag_id">13</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Экологический</column>
+            <column name="tag_id">13</column>
+            <column name="language_id">3</column>
+        </insert>
+
+        <insert tableName="tag_translations">
+            <column name="name">Економічний</column>
+            <column name="tag_id">14</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Economic</column>
+            <column name="tag_id">14</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="name">Экономический</column>
+            <column name="tag_id">14</column>
+            <column name="language_id">3</column>
+        </insert>
+
+
+        <createTable tableName="events_tags">
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="event_id" baseTableName="events_tags"
+                                 constraintName="event_id_to_event_fk" referencedColumnNames="id"
+                                 referencedTableName="events"/>
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="events_tags"
+                                 constraintName="event_tag_id_to_tag_fk" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+
+        <renameTable oldTableName="event_dates_locations" newTableName="events_dates_locations" />
+    </changeSet>
+</databaseChangeLog>

@@ -6,8 +6,11 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
+import greencity.dto.tag.TagVO;
 import greencity.entity.Event;
+import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import org.junit.jupiter.api.Test;
@@ -15,11 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +36,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
-
     @Mock
     ModelMapper modelMapper;
 
@@ -42,22 +46,31 @@ class EventServiceImplTest {
     RestClient restClient;
 
     @Mock
+    TagsService tagService;
+
+    @Mock
     private FileService fileService;
 
     @InjectMocks
     EventServiceImpl eventService;
 
     @Test
-    void saveWithoutImages() {
+    void save() {
         EventDto eventDto = ModelUtils.getEventDto();
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
+        List<Tag> tags = ModelUtils.getEventTags();
 
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+
         assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
