@@ -1811,6 +1811,7 @@ public class ModelUtils {
             LocalDateTime.of(2002, 2, 1, 1, 1),
             new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
         return event;
     }
 
