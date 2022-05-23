@@ -95,7 +95,7 @@ stages:
       inputs:
         containerRegistry: 'Dockerhub_Skyere'
         repository: 'skyere/greencity'
-        command: 'build'
+        command: 'buildAndPush'
         Dockerfile: 'Dockerfile'
 
     - task: PublishBuildArtifacts@1
