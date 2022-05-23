@@ -58,7 +58,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             .map(TagTranslation::getName)
             .collect(Collectors.toList()));
 
-        if (eventDto.getAdditionalImages() != null) {
+        if (event.getAdditionalImages() != null) {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
