@@ -93,6 +93,7 @@ stages:
         TargetFolder: '$(build.artifactstagingdirectory)'
     - task: Docker@2
       inputs:
+        containerRegistry: 'Dockerhub_Skyere'
         repository: 'skyere/greencity'
         command: 'build'
         Dockerfile: 'Dockerfile'
