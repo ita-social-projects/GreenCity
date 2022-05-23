@@ -80,6 +80,7 @@ stages:
         jdkVersionOption: '1.11'
         mavenVersionOption: 'Default'
         options: '-Dmaven.test.skip=true'
+
         
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
@@ -90,6 +91,11 @@ stages:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/target/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+    - task: Docker@2
+      inputs:
+        repository: 'skyere/greencity'
+        command: 'build'
+        Dockerfile: 'Dockerfile'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
