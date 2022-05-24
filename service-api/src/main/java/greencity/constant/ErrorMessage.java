@@ -160,6 +160,8 @@ public final class ErrorMessage {
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
     public static final String NO_EVENT_LINK_OR_COORDINATES = "Invalid online-link or coordinates";
+    public static final String EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST =
+        "Start date must be in future and before finish date";
 
     private ErrorMessage() {
     }
