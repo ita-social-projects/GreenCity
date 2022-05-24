@@ -1,12 +1,10 @@
 package greencity.mapping.events;
 
 import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.Coordinates;
-import greencity.entity.Event;
-import greencity.entity.EventDateLocation;
-import greencity.entity.EventImages;
+import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -37,6 +35,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setDescription(event.getDescription());
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
+        User organizer = event.getOrganizer();
+        eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName()).build());
         List<EventDateLocationDto> datesLocations = new ArrayList<>();
         for (EventDateLocation eventDateLocation : event.getDates()) {
             EventDateLocationDto eventDateLocationDto = new EventDateLocationDto();
