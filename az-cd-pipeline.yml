@@ -91,12 +91,6 @@ stages:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/target/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'Dockerhub_Skyere'
-        repository: 'skyere/greencity'
-        command: 'buildAndPush'
-        Dockerfile: 'Dockerfile'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
