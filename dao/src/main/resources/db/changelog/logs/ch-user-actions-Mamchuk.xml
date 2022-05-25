@@ -12,13 +12,9 @@
             </column>
             <column name="eco_news_likes" type="int">
             </column>
-            <column name="tips_and_tricks_likes" type="int">
-            </column>
             <column name="published_eco_news" type="int">
             </column>
             <column name="eco_news_comment" type="int">
-            </column>
-            <column name="tips_and_tricks_comment" type="int">
             </column>
             <column name="acquired_habit" type="int">
             </column>

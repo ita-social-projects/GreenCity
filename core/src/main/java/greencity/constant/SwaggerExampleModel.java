@@ -40,15 +40,6 @@ public final class SwaggerExampleModel {
             + "}\n"
             + AFTER_EXAMPLE;
 
-    public static final String ADD_TIPS_AND_TRICKS_REQUEST =
-        "Add tips & tricks request\n"
-            + IMAGE_DESCRIPTION
-            + BEFORE_EXAMPLE
-            + "{\n"
-            + EXAMPLE
-            + "}"
-            + AFTER_EXAMPLE;
-
     public static final String ADD_ECO_NEWS_REQUEST =
         "Add Eco News Request\n"
             + IMAGE_DESCRIPTION

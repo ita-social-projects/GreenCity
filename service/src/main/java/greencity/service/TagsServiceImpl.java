@@ -204,30 +204,9 @@ public class TagsServiceImpl implements TagsService {
         }.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> findAllTipsAndTricksTags(String languageCode) {
-        return tagRepo.findAllTipsAndTricksTags(languageCode);
-    }
-
     @Override
     public List<String> findAllHabitsTags(String languageCode) {
         return tagRepo.findAllHabitsTags(languageCode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type) {
-        try {
-            findTagsByNamesAndType(tipsAndTricksTagNames, type);
-        } catch (TagNotFoundException e) {
-            return false;
-        }
-        return true;
     }
 
     /**

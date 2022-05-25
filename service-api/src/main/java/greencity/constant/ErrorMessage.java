@@ -38,8 +38,8 @@ public final class ErrorMessage {
 
     public static final String TAG_NOT_DELETED = "Tag not deleted by id : ";
     public static final String TAG_NOT_FOUND = "Tag not found by id : ";
-    public static final String TAGS_NOT_FOUND = "Tips & Tricks should have at least one valid tag";
-    public static final String DUPLICATED_TAG = "Tips & Tricks tags should be unique";
+    public static final String TAGS_NOT_FOUND = "Item should have at least one valid tag";
+    public static final String DUPLICATED_TAG = "Item tags should be unique";
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ServiceValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
@@ -115,12 +115,7 @@ public final class ErrorMessage {
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
-    public static final String TIPS_AND_TRICKS_NOT_SAVED =
-        "Tips & tricks advice hasn't been saved due to constraint violation";
-    public static final String TIPS_AND_TRICKS_NOT_FOUND_BY_ID = "Tips & tricks advice doesn't exist by this id: ";
     public static final String CANNOT_REPLY_TO_DELETED_COMMENT = "Can not reply to deleted comment";
-    public static final String CANNOT_REPLY_WITH_OTHER_DIFFERENT_TIPSANDTRICKS_ID = "Can not make a reply with "
-        + "different TipsAndTricks Id";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";

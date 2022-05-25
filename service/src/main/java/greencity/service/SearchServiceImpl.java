@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
-import greencity.dto.search.SearchTipsAndTricksDto;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,13 +11,12 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class SearchServiceImpl implements SearchService {
     private final EcoNewsService ecoNewsService;
-    private final TipsAndTricksService tipsAndTricksService;
 
     /**
      * Method that allow you to search {@link SearchResponseDto}.
      *
      * @param searchQuery query to search
-     * @return list of {@link SearchResponseDto} and {@link SearchTipsAndTricksDto}
+     * @return list of {@link SearchResponseDto}
      */
     @Override
     public SearchResponseDto search(String searchQuery, String languageCode) {

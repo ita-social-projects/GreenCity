@@ -25,26 +25,6 @@
         </insert>
         <insert tableName="tags">
             <column name="id">6</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">7</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">8</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">9</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">10</column>
-            <column name="type">TIPS_AND_TRICKS</column>
-        </insert>
-        <insert tableName="tags">
-            <column name="id">11</column>
             <column name="type">HABIT</column>
         </insert>
     </changeSet>
