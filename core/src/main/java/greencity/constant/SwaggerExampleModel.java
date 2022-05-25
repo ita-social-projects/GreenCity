@@ -66,6 +66,24 @@ public final class SwaggerExampleModel {
             + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
+    public static final String ADD_EVENT = BEFORE_EXAMPLE
+        + "{\n"
+        + "\t\"title\":\"string\",\n"
+        + "\t\"description\":\"string\",\n"
+        + "\t\"open\":true,\n"
+        + "\t\"datesLocations\":[\n"
+        + "\t\t{\n"
+        + "\t\t\t\"startDate\":[2022, 5, 25, 21, 0],\n"
+        + "\t\t\t\"finishDate\":[2022, 5, 25, 23, 0],\n"
+        + "\t\t\t\"coordinates\":{\n"
+        + "\t\t\t\t\"latitude\":1,\n"
+        + "\t\t\t\t\"longitude\":1\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"onlineLink\":\"string\"\n"
+        + "\t\t}\n"
+        + "\t],\n"
+        + "\t\"tags\":[\"Social\"]\n"
+        + "}" + AFTER_EXAMPLE;
 
     private SwaggerExampleModel() {
     }
