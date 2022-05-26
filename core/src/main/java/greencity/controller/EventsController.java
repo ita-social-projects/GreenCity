@@ -1,13 +1,16 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +47,9 @@ public class EventsController {
     })
     @PostMapping(value = "/create",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public ResponseEntity<EventDto> save(@RequestPart AddEventDtoRequest addEventDtoRequest,
+    public ResponseEntity<EventDto> save(
+        @ApiParam(value = SwaggerExampleModel.ADD_EVENT,
+            required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
         @ApiIgnore Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)

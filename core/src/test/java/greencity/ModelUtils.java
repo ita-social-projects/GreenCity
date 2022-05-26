@@ -16,6 +16,9 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econewscomment.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -60,6 +63,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -590,5 +594,61 @@ public class ModelUtils {
                 .status(ShoppingListItemStatus.INPROGRESS)
                 .build()))
             .build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithoutDates() {
+        return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithZeroDates() {
+        return AddEventDtoRequest.builder().datesLocations(new ArrayList<>()).build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithTooManyDates() {
+        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+        }
+        return AddEventDtoRequest.builder().datesLocations(eventDateLocationDtos).build();
+    }
+
+    public static AddEventDtoRequest getEventWithPastStartDate() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.of(2020, 1, 1, 0, 0))
+            .finishDate(LocalDateTime.now()).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithStartDateAfterFinishDate() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.of(2020, 1, 1, 0, 0))
+            .finishDate(LocalDateTime.of(2019, 1, 1, 0, 0)).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithoutCoordinatesAndLink() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.now().plusDays(5))
+            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1)).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithInvalidLink() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.now().plusDays(5))
+            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink").build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithTooManyTags() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.now().plusDays(5))
+            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/").build()))
+            .tags(List.of("first", "second", "third", "fourth")).build();
+    }
+
+    public static AddEventDtoRequest getAddEventDtoRequest() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(LocalDateTime.now().plusDays(5))
+            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/")
+            .build())).tags(List.of("first", "second", "third")).build();
     }
 }

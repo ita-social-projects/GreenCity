@@ -38,8 +38,8 @@ public final class ErrorMessage {
 
     public static final String TAG_NOT_DELETED = "Tag not deleted by id : ";
     public static final String TAG_NOT_FOUND = "Tag not found by id : ";
-    public static final String TAGS_NOT_FOUND = "Item should have at least one valid tag";
-    public static final String DUPLICATED_TAG = "Item tags should be unique";
+    public static final String TAGS_NOT_FOUND = "There should be at least one valid tag";
+    public static final String DUPLICATED_TAG = "Tags should be unique";
     public static final String INVALID_NUM_OF_TAGS =
         "Invalid tags. You must have less than " + ServiceValidationConstants.MAX_AMOUNT_OF_TAGS + " tags";
     public static final String FACT_OF_THE_DAY_NOT_FOUND = "The fact of the day not found: ";
@@ -152,6 +152,11 @@ public final class ErrorMessage {
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
     public static final String NOT_EVENT_ORGANIZER = "You're not the organizer of this event";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
+    public static final String WRONG_COUNT_OF_EVENT_DATES =
+        "Count of dates should be at least one but not more seven";
+    public static final String NO_EVENT_LINK_OR_COORDINATES = "Invalid online-link or coordinates";
+    public static final String EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST =
+        "Start date must be in future and before finish date";
 
     private ErrorMessage() {
     }
