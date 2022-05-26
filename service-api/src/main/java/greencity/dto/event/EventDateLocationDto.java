@@ -2,6 +2,7 @@ package greencity.dto.event;
 
 import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Builder
@@ -15,8 +16,10 @@ public class EventDateLocationDto {
 
     private EventDto event;
 
+    @NotEmpty
     private LocalDateTime startDate;
 
+    @NotEmpty
     private LocalDateTime finishDate;
 
     private String onlineLink;
