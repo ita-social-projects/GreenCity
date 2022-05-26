@@ -8,10 +8,8 @@ public enum AchievementCategoryType {
     ECO_NEWS_COMMENT("EcoNewsComments"),
     ECO_NEWS_LIKE("EcoNewsLikes"),
     ACHIEVEMENTS("Achievements"),
-    TIPS_AND_TRICKS_LIKES("Tips&TricksLikes"),
     HABIT_STREAK("HabitStreak"),
     ACQUIRED_HABIT("AcquiredHabits"),
-    TIPS_AND_TRICKS_COMMENTS("Tips&TricksComments"),
     SOCIAL_NETWORK("SocialNetworks");
 
     private final String category;

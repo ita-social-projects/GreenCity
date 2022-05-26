@@ -240,7 +240,7 @@ class TagsServiceImplTest {
 
     @Test
     void findTagsByNamesThrowTagNotFoundException() {
-        TagType tagType = TagType.TIPS_AND_TRICKS;
+        TagType tagType = TagType.ECO_NEWS;
         List<String> tagsNames = Collections.singletonList("News");
         List<String> lowerTagsNames = tagsNames.stream()
             .map(String::toLowerCase)
@@ -265,45 +265,12 @@ class TagsServiceImplTest {
     }
 
     @Test
-    void findAllTipsAndTricksTags() {
-        List<String> actual = Collections.singletonList("Новини");
-        when(tagRepo.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE)).thenReturn(actual);
-        List<String> expected = tagsService.findAllTipsAndTricksTags(UKRAINIAN_LANGUAGE);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
     void findAllHabitsTags() {
         List<String> actual = Collections.singletonList("Новини");
         when(tagRepo.findAllHabitsTags(UKRAINIAN_LANGUAGE)).thenReturn(actual);
         List<String> expected = tagsService.findAllHabitsTags(UKRAINIAN_LANGUAGE);
 
         assertEquals(expected, actual);
-    }
-
-    @Test
-    void isAllTipsAndTricksValidReturnTrue() {
-        TagType tagType = TagType.TIPS_AND_TRICKS;
-        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        TagsServiceImpl tagsServiceSpy = Mockito.spy(tagsService);
-        List<TagVO> tagVOS = Collections.singletonList(ModelUtils.getTagVO());
-        Mockito.doReturn(tagVOS).when(tagsServiceSpy)
-            .findTagsByNamesAndType(tipsAndTricksTagsNames, tagType);
-
-        boolean expected = tagsServiceSpy.isAllTipsAndTricksValid(tipsAndTricksTagsNames, tagType);
-
-        assertTrue(expected);
-    }
-
-    @Test
-    void isAllTipsAndTricksValidReturnFalse() {
-        TagType tagType = TagType.TIPS_AND_TRICKS;
-        List<String> tipsAndTricksTagsNames = Collections.singletonList("News");
-        when(tagRepo.findTagsByNamesAndType(tipsAndTricksTagsNames, tagType)).thenThrow(TagNotFoundException.class);
-        boolean expected = tagsService.isAllTipsAndTricksValid(tipsAndTricksTagsNames, tagType);
-
-        assertFalse(expected);
     }
 
     @Test

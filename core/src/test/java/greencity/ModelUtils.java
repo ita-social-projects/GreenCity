@@ -46,10 +46,6 @@ import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
@@ -76,7 +72,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());
     }
 
@@ -91,7 +87,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null);
     }
 
     public static TagPostDto getTagPostDto() {
@@ -134,7 +130,7 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
@@ -231,7 +227,7 @@ public class ModelUtils {
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -243,8 +239,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .shoppingListItem(
                     new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -252,8 +247,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .shoppingListItem(
                     new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -342,29 +336,6 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static TipsAndTricks getTipsAndTricks() {
-        return TipsAndTricks.builder()
-            .id(1L)
-            .titleTranslations(Collections.singletonList(TitleTranslation.builder()
-                .content("title content")
-                .language(getLanguage())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslation.builder()
-                .content("text content for tips and tricks")
-                .language(getLanguage())
-                .build()))
-            .creationDate(ZonedDateTime.now())
-            .author(getUser())
-            .tags(Collections.singletonList(getTag()))
-            .imagePath(null)
-            .source(null)
-            .build();
-    }
-
-    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
-        return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
-    }
-
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
             .id(1L)
@@ -394,33 +365,6 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
-        return AddTipsAndTricksCommentDtoRequest.builder()
-            .text(getTipsAndTricksComment().getText().intern())
-            .parentCommentId(getTipsAndTricksComment().getId())
-            .build();
-    }
-
-    public static TipsAndTricksComment getTipsAndTricksComment() {
-        return TipsAndTricksComment.builder()
-            .id(1L)
-            .text("text")
-            .user(getUser())
-            .build();
-    }
-
-    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
-        return AddTipsAndTricksCommentDtoResponse.builder()
-            .id(getTipsAndTricksComment().getId())
-            .text(getTipsAndTricksComment().getText())
-            .author(TipsAndTricksCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build())
             .build();
     }
 

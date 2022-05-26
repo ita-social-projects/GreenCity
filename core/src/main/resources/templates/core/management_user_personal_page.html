@@ -29,7 +29,7 @@
 <body>
 <style>
     .checkbox-popup{
-        margin: 10 10px 0 0;
+        margin: 10px 10px 0 0;
         accent-color: rgb(78 166 96);
         transform: scale(1.2);
     }
@@ -361,7 +361,7 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
                                                             <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
                                                                 <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
                                                                        th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
@@ -450,7 +450,7 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
                                                             <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
                                                                 <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
                                                                        th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
@@ -538,7 +538,7 @@
 
                                                     <div style="float: right; min-width: 55%;  max-width: 55%;">
                                                         <div style="margin: 0 auto">
-                                                            <span style="font-weight: bolder; margin: 10 10px 0 0;">Shopping list</span><br>
+                                                            <span style="font-weight: bolder; margin: 10px 10px 0 0;">Shopping list</span><br>
                                                             <th:block class="list-of" th:each="shoppingItem, iterStatuss :${habitAssign.getUserShoppingListItems()}">
                                                                 <input class="checkbox-popup" type="checkbox" th:checked="${shoppingItem.getBoolStatus()}" th:text="${shoppingItem.getContent()}" id="#checkbox"
                                                                        th:onclick="'saveListItem(' + ${shoppingItem.getId()} +','+ ${habitAssign.getId()} + ')'"><br>
@@ -699,41 +699,6 @@
                                 <th:block class="list-of" th:each="ecoNews, iterStatus :${publishedEcoNews}">
                                     <tr>
                                         <td th:text="${ecoNews.title}"></td>
-                                    </tr>
-                                </th:block>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!--Published Tips And Tricks table-->
-                    <div>
-                        <div class="table-header">
-                            <h3>[[#{greenCity.personal.page.publishedTipsAndTricksH}]]
-                                <td th:text="${publishedTipsAndTricks.size()}"/>
-                            </h3>
-                            <div class="hide-button">
-                                <button id="button6" value="hide" onclick="hideTable(this.id)">
-                                    <span>hide</span>
-                                    <img src="/img/arrow-up.svg" alt="arrow-icon">
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="table-responsive userpage">
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr class="table-primary">
-                                    <th style="width: 950px;">
-                                        [[#{greenCity.pages.table.name}]]
-                                    </th>
-                                </tr>
-                                </thead>
-
-                                <tbody id="table6">
-                                <th:block class="list-of" th:each="tip, iterStatus :${publishedTipsAndTricks}">
-                                    <tr>
-                                        <td th:text="${tip.title}"></td>
                                     </tr>
                                 </th:block>
                                 </tbody>
