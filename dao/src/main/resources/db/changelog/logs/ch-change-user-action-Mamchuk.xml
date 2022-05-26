@@ -5,8 +5,10 @@
     <changeSet author="Orest Mamchuk" id="Mamchuk-5">
         <dropColumn tableName="user_actions">
             <column name="eco_news_likes"/>
+            <column name="tips_and_tricks_likes"/>
             <column name="published_eco_news"/>
             <column name="eco_news_comment"/>
+            <column name="tips_and_tricks_comment"/>
             <column name="acquired_habit"/>
             <column name="habit_streak"/>
             <column name="social_networks"/>

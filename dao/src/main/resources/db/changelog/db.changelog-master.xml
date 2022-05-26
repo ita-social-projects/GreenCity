@@ -34,20 +34,25 @@
     <include file="db/changelog/logs/ch-eco-news-Kovaliv-4.xml"/>
     <include file="db/changelog/logs/ch-change-users-addColumn-datsko.xml"/>
     <include file="db/changelog/logs/ch-change-fact-translations-Patsula.xml"/>
+    <include file="db/changelog/logs/ch-add-tips-and-tricks-Ostriychuk-1.xml"/>
     <include file="db/changelog/logs/ch-add-econews-comment-Patsula.xml"/>
     <include file="db/changelog/logs/ch-users-friends-Datsko.xml"/>
     <include file="db/changelog/logs/ch-change-users-rating-Datsko.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-add-column-Zhurakovskyi-1.xml"/>
+    <include file="db/changelog/logs/ch-add-tipsandtricks-comment-Beshlei.xml"/>
     <include file="db/changelog/logs/ch-user-profile-Datsko.xml.xml"/>
+    <include file="db/changelog/logs/ch-merge-tags-Ostriychuk.xml"/>
     <include file="db/changelog/logs/ch-habit-status-Beshlei-2.xml"/>
     <include file="db/changelog/logs/ch-habits-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-habit-status-calendar-Beshlei-1.xml"/>
     <include file="db/changelog/logs/ch-primarykey-eco-news-tags-Lehkyi-1.xml"/>
+    <include file="db/changelog/logs/ch-primarykey-tips-and-tricks-tags-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch-fact-of-the-day-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch-social-network-Lehkyi.xml"/>
     <include file="db/changelog/logs/ch_rating_statictics_Dovganyuk.xml"/>
     <include file="/db/changelog/logs/ch-user-username-column-type.xml"/>
+    <include file="/db/changelog/logs/ch-tips-and-tricks-translations-Petryshak.xml"/>
     <include file="db/changelog/logs/ch-habits-refactor-Kravchenko.xml"/>
     <include file="/db/changelog/logs/ch-change-column-name-goals-Petryshak.xml"/>
     <include file="db/changelog/logs/ch-change-custom-goals-Khonko.xml"/>
@@ -115,5 +120,6 @@
     <include file="db/changelog/logs/ch-change-events-and-create-eventsdate-table-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-change-events-events-location-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-event-tags-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-drop-all-tips-and-tricks-tables-Yezenitskyi.xml"/>
 </databaseChangeLog>
 
