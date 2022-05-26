@@ -120,5 +120,6 @@
     <include file="db/changelog/logs/ch-change-events-and-create-eventsdate-table-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-change-events-events-location-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-event-tags-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-drop-all-tips-and-tricks-tables-Yezenitskyi.xml"/>
 </databaseChangeLog>
 

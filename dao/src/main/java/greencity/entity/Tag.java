@@ -14,8 +14,8 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "tags")
-@ToString(exclude = {"ecoNews", "tipsAndTricks", "habits", "events"})
-@EqualsAndHashCode(exclude = {"ecoNews", "tipsAndTricks", "habits", "events"})
+@ToString(exclude = {"ecoNews", "habits", "events"})
+@EqualsAndHashCode(exclude = {"ecoNews", "habits", "events"})
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +30,6 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private List<EcoNews> ecoNews;
-
-    @ManyToMany(mappedBy = "tags")
-    private List<TipsAndTricks> tipsAndTricks;
 
     @ManyToMany(mappedBy = "tags")
     private Set<Habit> habits;

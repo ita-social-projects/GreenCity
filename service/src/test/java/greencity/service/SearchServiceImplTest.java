@@ -2,17 +2,16 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
-import greencity.dto.search.SearchTipsAndTricksDto;
-import greencity.dto.user.AuthorDto;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,18 +26,11 @@ class SearchServiceImplTest {
     @Mock
     private EcoNewsService ecoNewsService;
 
-    @Mock
-    private TipsAndTricksService tipsAndTricksService;
-
     @Test
     void searchTest() {
         String languageCode = "en";
         SearchNewsDto searchNewsDto = new SearchNewsDto(1L, "title", null, null, Collections.singletonList("tag"));
         PageableDto<SearchNewsDto> ecoNews = new PageableDto<>(Collections.singletonList(searchNewsDto), 4, 1, 1);
-        SearchTipsAndTricksDto searchTipsAndTricksDto =
-            new SearchTipsAndTricksDto(1L, "title", null, null, Collections.singletonList("tips_tag"));
-        PageableDto<SearchTipsAndTricksDto> tipsAndTricks =
-            new PageableDto<>(Collections.singletonList(searchTipsAndTricksDto), 4, 1, 1);
 
         when(ecoNewsService.search(anyString(), eq(languageCode))).thenReturn(ecoNews);
 

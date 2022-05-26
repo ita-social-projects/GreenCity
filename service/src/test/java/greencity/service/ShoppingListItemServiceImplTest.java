@@ -96,7 +96,7 @@ class ShoppingListItemServiceImplTest {
         ShoppingListItemTranslation.builder()
             .id(1L)
             .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -104,7 +104,6 @@ class ShoppingListItemServiceImplTest {
         ShoppingListItemTranslation.builder()
             .id(2L)
             .language(new Language(1L, language, Collections.emptyList(), Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList()))
             .content("TEST")
             .shoppingListItem(

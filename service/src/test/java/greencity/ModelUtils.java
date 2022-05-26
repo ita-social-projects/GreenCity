@@ -44,11 +44,6 @@ import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
 import greencity.dto.tag.*;
-import greencity.dto.tipsandtricks.*;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentVO;
 import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
@@ -94,18 +89,12 @@ public class ModelUtils {
     public static LocalDateTime localDateTime = LocalDateTime.now();
 
     public static Tag getTag() {
-        return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(), Collections.emptyList(),
+        return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());
     }
 
     public static Tag getEventTag() {
-        return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet(), Collections.emptySet());
-    }
-
-    public static Tag getTipsTag() {
-        return new Tag(1L, TagType.TIPS_AND_TRICKS, getTipsTagTranslations(), Collections.emptyList(),
-            Collections.emptyList(),
+        return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());
     }
 
@@ -115,14 +104,6 @@ public class ModelUtils {
             TagTranslation.builder().id(1L).name("Новини").language(language).build(),
             TagTranslation.builder().id(2L).name("News").language(language).build(),
             TagTranslation.builder().id(3L).name("Новины").language(language).build());
-    }
-
-    public static List<TagTranslation> getTipsTagTranslations() {
-        Language language = getLanguage();
-        return Arrays.asList(
-            TagTranslation.builder().id(1L).name("Еко-місто").language(language).build(),
-            TagTranslation.builder().id(2L).name("Eco-city").language(language).build(),
-            TagTranslation.builder().id(3L).name("Эко-город").language(language).build());
     }
 
     public static List<TagTranslation> getEventTagTranslations() {
@@ -306,7 +287,7 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
@@ -335,7 +316,7 @@ public class ModelUtils {
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -347,7 +328,7 @@ public class ModelUtils {
             .id(1L)
             .language(
                 new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -545,21 +526,12 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserShoppingListItemResponseDto getPredefinedUserShoppingListItemDto() {
-        return UserShoppingListItemResponseDto.builder()
-            .id(2L)
-            .text("Buy a bamboo toothbrush")
-            .status(ShoppingListItemStatus.ACTIVE)
-            .build();
-    }
-
     public static List<ShoppingListItemTranslation> getShoppingListItemTranslations() {
         return Arrays.asList(
             ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .shoppingListItem(
                     new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -567,8 +539,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .shoppingListItem(
                     new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -747,25 +718,6 @@ public class ModelUtils {
         return new EcoNewsAuthorDto(1L, TestConst.NAME);
     }
 
-    public static TipsAndTricks getTipsAndTricks() {
-        return TipsAndTricks.builder()
-            .id(1L)
-            .titleTranslations(Collections.singletonList(TitleTranslation.builder()
-                .content("title content")
-                .language(getLanguage())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslation.builder()
-                .content("text content for tips and tricks")
-                .language(getLanguage())
-                .build()))
-            .creationDate(ZonedDateTime.now())
-            .author(getUser())
-            .tags(Collections.singletonList(getTag()))
-            .imagePath(null)
-            .source(null)
-            .build();
-    }
-
     public static UserProfilePictureDto getUserProfilePictureDto() {
         return new UserProfilePictureDto(1L, "name", "image");
     }
@@ -813,25 +765,6 @@ public class ModelUtils {
         return new DiscountValueDto(33, null);
     }
 
-    public static TipsAndTricksVO getTipsAndTricksVO() {
-        return TipsAndTricksVO.builder()
-            .id(1L)
-            .titleTranslations(Collections.singletonList(TitleTranslationVO.builder()
-                .content("title content")
-                .language(getLanguageVO())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslationVO.builder()
-                .content("text content for tips and tricks")
-                .language(getLanguageVO())
-                .build()))
-            .creationDate(ZonedDateTime.now())
-            .author(getUserVO())
-            .tags(Collections.singletonList(getTagVO()))
-            .imagePath(null)
-            .source(null)
-            .build();
-    }
-
     public static List<TagTranslationVO> getTagTranslationsVO() {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
             .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
@@ -856,11 +789,11 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null);
     }
 
     public static TagVO getEventTagVO() {
-        return new TagVO(1L, TagType.EVENT, getEventTagTranslationsVO(), null, null, null);
+        return new TagVO(1L, TagType.EVENT, getEventTagTranslationsVO(), null, null);
     }
 
     public static TagPostDto getTagPostDto() {
@@ -883,24 +816,6 @@ public class ModelUtils {
         return new PageableAdvancedDto<>(Collections.singletonList(getTagVO()),
             9, 1, 2, 1,
             true, false, false, true);
-    }
-
-    public static TitleTranslationVO getTitleTranslationVO() {
-        return TitleTranslationVO.builder()
-            .id(1L)
-            .content("Content")
-            .language(ModelUtils.getLanguageVO())
-            .tipsAndTricks(ModelUtils.getTipsAndTricksVO())
-            .build();
-    }
-
-    public static TextTranslationVO getTextTranslationVO() {
-        return TextTranslationVO.builder()
-            .id(1L)
-            .content("Content")
-            .language(ModelUtils.getLanguageVO())
-            .tipsAndTricks(ModelUtils.getTipsAndTricksVO())
-            .build();
     }
 
     public static Specification getSpecification() {
@@ -1027,111 +942,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
-        return new TipsAndTricksDtoRequest(TitleTranslationEmbeddedPostDTO.builder()
-            .content("title content")
-            .languageCode("en")
-            .build(),
-            TextTranslationDTO.builder()
-                .content("text content for tips and tricks")
-                .languageCode("en")
-                .build(),
-            Collections.singletonList("Testing"), null, null);
-    }
-
-    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequestWithData() {
-        TipsAndTricksDtoRequest tipsAndTricksDtoRequest = TipsAndTricksDtoRequest.builder()
-            .titleTranslation(TitleTranslationEmbeddedPostDTO.builder()
-                .content("title content")
-                .languageCode("en")
-                .build())
-            .textTranslation(TextTranslationDTO.builder()
-                .content("text content for tips and tricks")
-                .languageCode("en")
-                .build())
-            .tags(Collections.singletonList("Testing"))
-            .source("wiki")
-            .build();
-
-        return tipsAndTricksDtoRequest;
-    }
-
-    public static TipsAndTricksDtoResponse getTipsAndTricksDtoResponse() {
-        return TipsAndTricksDtoResponse.builder()
-            .id(1L)
-            .title("title")
-            .text("text")
-            .creationDate(ZonedDateTime.now())
-            .author(getAuthorDto())
-            .tags(Collections.singletonList("tipsAndTricksTag"))
-            .imagePath(TestConst.SITE)
-            .source(null)
-            .build();
-    }
-
-    public static TipsAndTricksDtoManagement getTipsAndTricksDtoManagement() {
-        return TipsAndTricksDtoManagement.builder()
-            .id(1L)
-            .source("sourceExample")
-            .creationDate(getTipsAndTricks().getCreationDate())
-            .authorName("orest@gmail.com")
-            .tags(getTipsAndTricks().getTags()
-                .stream()
-                .flatMap(t -> t.getTagTranslations().stream())
-                .map(TagTranslation::getName)
-                .collect(Collectors.toList()))
-            .titleTranslations(Collections.singletonList(TitleTranslationEmbeddedPostDTO.builder()
-                .content("title content")
-                .languageCode(getLanguage().getCode())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslationDTO.builder()
-                .content("text content")
-                .languageCode(getLanguage().getCode())
-                .build()))
-            .build();
-    }
-
     private static AuthorDto getAuthorDto() {
         return AuthorDto.builder()
             .id(1L)
             .name("author")
-            .build();
-    }
-
-    public static TipsAndTricksComment getTipsAndTricksComment() {
-        return TipsAndTricksComment.builder()
-            .id(1L)
-            .text("TipsAndTricksComment")
-            .tipsAndTricks(getTipsAndTricks())
-            .user(getUser())
-            .build();
-    }
-
-    public static TipsAndTricksCommentVO getTipsAndTricksCommentVO() {
-        TipsAndTricksCommentVO tipsAndTricksCommentVO = new TipsAndTricksCommentVO();
-        tipsAndTricksCommentVO.setId(1L);
-        tipsAndTricksCommentVO.setText("text");
-        tipsAndTricksCommentVO.setUser(getUserVO());
-        tipsAndTricksCommentVO.setUsersLiked(new HashSet<>());
-        return tipsAndTricksCommentVO;
-    }
-
-    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
-        return AddTipsAndTricksCommentDtoRequest.builder()
-            .text(getTipsAndTricksComment().getText().intern())
-            .parentCommentId(getTipsAndTricksComment().getId())
-            .build();
-    }
-
-    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
-        return AddTipsAndTricksCommentDtoResponse.builder()
-            .id(getTipsAndTricksComment().getId())
-            .text(getTipsAndTricksComment().getText())
-            .author(TipsAndTricksCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build())
             .build();
     }
 

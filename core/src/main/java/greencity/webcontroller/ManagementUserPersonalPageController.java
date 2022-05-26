@@ -5,7 +5,6 @@ import greencity.annotations.ValidLanguage;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoResponse;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -26,7 +25,6 @@ import java.util.Locale;
 public class ManagementUserPersonalPageController {
     private final HabitAssignService habitAssignService;
     private final EcoNewsService ecoNewsService;
-    private final TipsAndTricksService tipsAndTricksService;
     private final PlaceService placeService;
     private final UserService userService;
 
@@ -54,8 +52,6 @@ public class ManagementUserPersonalPageController {
         List<HabitAssignDto> customHabits = habitAssignService
             .getAllCustomHabitAssignsByUserId(id, locale.getLanguage());
         List<EcoNewsDto> publishedEcoNews = ecoNewsService.getAllPublishedNewsByUserId(user.getId());
-        List<TipsAndTricksDtoResponse> publishedTipsAndTricks = tipsAndTricksService
-            .getAllTipsAndTricksByUserId(user.getId());
         List<PlaceVO> createdEcoPlaces = placeService.getAllCreatedPlacesByUserId(user.getId());
 
         model.addAttribute("user", user);
@@ -64,7 +60,6 @@ public class ManagementUserPersonalPageController {
         model.addAttribute("cancelledHabits", cancelledHabits);
         model.addAttribute("customHabits", customHabits);
         model.addAttribute("publishedEcoNews", publishedEcoNews);
-        model.addAttribute("publishedTipsAndTricks", publishedTipsAndTricks);
         model.addAttribute("createdEcoPlaces", createdEcoPlaces);
         return "core/management_user_personal_page";
     }
