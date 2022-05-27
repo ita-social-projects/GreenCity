@@ -24,7 +24,7 @@ public class Event {
     @NonNull
     private String title;
 
-    @Column(name = "title_image")
+    @Column
     private String titleImage;
 
     @ManyToOne
@@ -48,7 +48,7 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventImages> additionalImages = new ArrayList<>();
 
-    @Column(name = "is_open")
+    @Column
     private boolean isOpen = true;
 
     @ManyToMany

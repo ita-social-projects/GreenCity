@@ -6,7 +6,6 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
@@ -36,8 +35,8 @@ public class EventsController {
     /**
      * Method for creating an event.
      *
-     * @return {@link AddEventDtoResponse} instance.
-     * @author Max Bohonko.
+     * @return {@link EventDto} instance.
+     * @author Max Bohonko, Danylo Hlynskyi.
      */
     @ApiOperation(value = "Create new event")
     @ApiResponses(value = {

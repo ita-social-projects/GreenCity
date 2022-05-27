@@ -4,8 +4,8 @@ import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
-import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -37,31 +37,40 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setOpen(event.isOpen());
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName()).build());
-        List<EventDateLocationDto> datesLocations = new ArrayList<>();
-        for (EventDateLocation eventDateLocation : event.getDates()) {
-            EventDateLocationDto eventDateLocationDto = new EventDateLocationDto();
-            eventDateLocationDto.setStartDate(eventDateLocation.getStartDate());
-            eventDateLocationDto.setFinishDate(eventDateLocation.getFinishDate());
-            if (eventDateLocation.getOnlineLink() != null) {
-                eventDateLocationDto.setOnlineLink(eventDateLocation.getOnlineLink());
-            }
-            Coordinates coordinates = eventDateLocation.getCoordinates();
-            if (coordinates != null) {
-                CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                    .longitude(coordinates.getLongitude()).build();
-                eventDateLocationDto.setCoordinates(coordinatesDto);
-            }
-            datesLocations.add(eventDateLocationDto);
-        }
-        eventDto.setDates(datesLocations);
-        eventDto.setTags(event.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-            .map(TagTranslation::getName)
-            .collect(Collectors.toList()));
+        eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));
+
+        List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+        event.getTags().forEach(t -> {
+            var translations = t.getTagTranslations();
+            tagUaEnDtos.add(TagUaEnDto.builder().id(t.getId())
+                .nameUa(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
+                    .orElseThrow().getName())
+                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst()
+                    .orElseThrow().getName())
+                .build());
+        });
+        eventDto.setTags(tagUaEnDtos);
 
         if (event.getAdditionalImages() != null) {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
         return eventDto;
+    }
+
+    private EventDateLocationDto convertEventDateLocation(EventDateLocation eventDateLocation) {
+        EventDateLocationDto eventDateLocationDto = new EventDateLocationDto();
+        eventDateLocationDto.setStartDate(eventDateLocation.getStartDate());
+        eventDateLocationDto.setFinishDate(eventDateLocation.getFinishDate());
+        if (eventDateLocation.getOnlineLink() != null) {
+            eventDateLocationDto.setOnlineLink(eventDateLocation.getOnlineLink());
+        }
+        Coordinates coordinates = eventDateLocation.getCoordinates();
+        if (coordinates != null) {
+            CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
+                .longitude(coordinates.getLongitude()).build();
+            eventDateLocationDto.setCoordinates(coordinatesDto);
+        }
+        return eventDateLocationDto;
     }
 }
