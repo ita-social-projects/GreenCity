@@ -58,11 +58,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -614,40 +610,40 @@ public class ModelUtils {
 
     public static AddEventDtoRequest getEventWithPastStartDate() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.of(2020, 1, 1, 0, 0))
-            .finishDate(LocalDateTime.now()).build())).build();
+            .startDate(ZonedDateTime.of(LocalDateTime.of(2022, 1, 1, 0 , 0), ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())).build())).build();
     }
 
     public static AddEventDtoRequest getEventWithStartDateAfterFinishDate() {
-        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.of(2020, 1, 1, 0, 0))
-            .finishDate(LocalDateTime.of(2019, 1, 1, 0, 0)).build())).build();
+             return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 0, 0), ZoneId.systemDefault()))
+                .finishDate(ZonedDateTime.of(LocalDateTime.of(2019, 1, 1, 0, 0), ZoneId.systemDefault())).build())).build();
     }
 
     public static AddEventDtoRequest getEventWithoutCoordinatesAndLink() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.now().plusDays(5))
-            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1)).build())).build();
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
     }
 
     public static AddEventDtoRequest getEventWithInvalidLink() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.now().plusDays(5))
-            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink").build())).build();
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink").build())).build();
     }
 
     public static AddEventDtoRequest getEventWithTooManyTags() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.now().plusDays(5))
-            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1))
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/").build()))
             .tags(List.of("first", "second", "third", "fourth")).build();
     }
 
     public static AddEventDtoRequest getAddEventDtoRequest() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(LocalDateTime.now().plusDays(5))
-            .finishDate(LocalDateTime.now().plusDays(5).plusHours(1))
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
             .build())).tags(List.of("first", "second", "third")).build();
     }

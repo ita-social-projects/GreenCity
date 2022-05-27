@@ -1596,12 +1596,12 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-            LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1),
+            ZonedDateTime.of(2000, 1, 1, 1, 1,1,1,ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1,1,1,ZoneId.systemDefault()),
             new Coordinates(45.45, 45.45), null));
         dates.add(new EventDateLocation(2L, event,
-            LocalDateTime.of(2002, 1, 1, 1, 1),
-            LocalDateTime.of(2002, 2, 1, 1, 1),
+            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
@@ -1617,12 +1617,12 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-            LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1),
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             new Coordinates(45.45, 45.45), null));
         dates.add(new EventDateLocation(2L, event,
-            LocalDateTime.of(2002, 1, 1, 1, 1),
-            LocalDateTime.of(2002, 2, 1, 1, 1),
+                ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             new Coordinates(45.45, 45.45), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
@@ -1653,8 +1653,8 @@ public class ModelUtils {
 
     public static AddEventDtoRequest addEventDtoRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1),
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
             CoordinatesDto.builder().build())))
         .description("Description")
@@ -1664,8 +1664,8 @@ public class ModelUtils {
 
     public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
         .dates(List.of(new EventDateLocationDto(1L, null,
-            LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1),
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
             CoordinatesDto.builder().build()
 
@@ -1676,8 +1676,8 @@ public class ModelUtils {
 
     public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            LocalDateTime.of(2000, 1, 1, 1, 1),
-            LocalDateTime.of(2000, 2, 1, 1, 1),
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
             CoordinatesDto.builder().build())))
         .description("Description")
@@ -1694,11 +1694,12 @@ public class ModelUtils {
                 .build())
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
-                LocalDateTime.of(2000, 1, 1, 1, 1),
-                LocalDateTime.of(2000, 2, 1, 1, 1),
+                    ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                    ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 CoordinatesDto.builder().build())))
-            .tags(List.of("Social"))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                    .nameUa("Соціальний").build()))
             .build();
     }
 
@@ -1712,11 +1713,12 @@ public class ModelUtils {
                 .build())
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
-                LocalDateTime.of(2000, 1, 1, 1, 1),
-                LocalDateTime.of(2000, 2, 1, 1, 1),
+                    ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 CoordinatesDto.builder().build())))
-            .tags(List.of("Social"))
-            .build();
+                .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                        .nameUa("Соціальний").build()))
+                .build();
     }
 }

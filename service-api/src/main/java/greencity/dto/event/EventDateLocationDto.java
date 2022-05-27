@@ -3,9 +3,10 @@ package greencity.dto.event;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Builder
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -17,10 +18,10 @@ public class EventDateLocationDto {
     private EventDto event;
 
     @NotEmpty
-    private LocalDateTime startDate;
+    private ZonedDateTime startDate;
 
     @NotEmpty
-    private LocalDateTime finishDate;
+    private ZonedDateTime finishDate;
 
     private String onlineLink;
 

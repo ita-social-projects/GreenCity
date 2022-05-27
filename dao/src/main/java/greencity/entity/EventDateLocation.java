@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "events_dates_locations")
@@ -23,19 +23,19 @@ public class EventDateLocation {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(nullable = false)
     @NonNull
-    private LocalDateTime startDate;
+    private ZonedDateTime startDate;
 
-    @Column(name = "finish_date", nullable = false)
+    @Column(nullable = false)
     @NonNull
-    private LocalDateTime finishDate;
+    private ZonedDateTime finishDate;
 
     @Embedded
     @Nullable
     private Coordinates coordinates;
 
-    @Column(name = "online_link")
+    @Column
     @Nullable
     private String onlineLink;
 }
