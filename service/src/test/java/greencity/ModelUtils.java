@@ -109,7 +109,7 @@ public class ModelUtils {
     public static List<TagTranslation> getEventTagTranslations() {
         Language language = getLanguage();
         return Arrays.asList(
-            TagTranslation.builder().id(1L).name("Соціальний").language(language).build(),
+            TagTranslation.builder().id(1L).name("Соціальний").language(getLanguageUa()).build(),
             TagTranslation.builder().id(2L).name("Social").language(language).build(),
             TagTranslation.builder().id(3L).name("Соціальний").language(language).build());
     }
@@ -287,6 +287,11 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList(), Collections.emptyList());
+    }
+
+    public static Language getLanguageUa() {
+        return new Language(2L, "ua", Collections.emptyList(), Collections.emptyList(),
             Collections.emptyList(), Collections.emptyList());
     }
 
