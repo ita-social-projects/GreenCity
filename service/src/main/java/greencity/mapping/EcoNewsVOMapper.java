@@ -2,9 +2,13 @@ package greencity.mapping;
 
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.language.LanguageVO;
+import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
+import greencity.entity.localization.TagTranslation;
+
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +34,16 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
             .tags(ecoNews.getTags().stream()
                 .map(tag -> TagVO.builder()
                     .id(tag.getId())
+                    .tagTranslations(tag.getTagTranslations().stream()
+                        .map(tagTranslation -> TagTranslationVO.builder()
+                            .name(tagTranslation.getName())
+                            .id(tagTranslation.getId())
+                            .languageVO(LanguageVO.builder()
+                                .code(tagTranslation.getLanguage().getCode())
+                                .id(tagTranslation.getId())
+                                .build())
+                            .build())
+                        .collect(Collectors.toList()))
                     .build())
                 .collect(Collectors.toList()))
             .usersLikedNews(ecoNews.getUsersLikedNews().stream()
