@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
-
-
     /**
      * Method for converting {@link Event} into {@link EventDto}.
      *
@@ -39,23 +37,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setOpen(event.isOpen());
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName()).build());
-        List<EventDateLocationDto> datesLocations = new ArrayList<>();
-        for (EventDateLocation eventDateLocation : event.getDates()) {
-            EventDateLocationDto eventDateLocationDto = new EventDateLocationDto();
-            eventDateLocationDto.setStartDate(eventDateLocation.getStartDate());
-            eventDateLocationDto.setFinishDate(eventDateLocation.getFinishDate());
-            if (eventDateLocation.getOnlineLink() != null) {
-                eventDateLocationDto.setOnlineLink(eventDateLocation.getOnlineLink());
-            }
-            Coordinates coordinates = eventDateLocation.getCoordinates();
-            if (coordinates != null) {
-                CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                    .longitude(coordinates.getLongitude()).build();
-                eventDateLocationDto.setCoordinates(coordinatesDto);
-            }
-            datesLocations.add(eventDateLocationDto);
-        }
-        eventDto.setDates(datesLocations);
+        eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));
+
         List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
         event.getTags().forEach(t -> {
             var translations = t.getTagTranslations();
@@ -70,5 +53,21 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                 .map(EventImages::getLink).collect(Collectors.toList()));
         }
         return eventDto;
+    }
+
+    private EventDateLocationDto convertEventDateLocation(EventDateLocation eventDateLocation) {
+        EventDateLocationDto eventDateLocationDto = new EventDateLocationDto();
+        eventDateLocationDto.setStartDate(eventDateLocation.getStartDate());
+        eventDateLocationDto.setFinishDate(eventDateLocation.getFinishDate());
+        if (eventDateLocation.getOnlineLink() != null) {
+            eventDateLocationDto.setOnlineLink(eventDateLocation.getOnlineLink());
+        }
+        Coordinates coordinates = eventDateLocation.getCoordinates();
+        if (coordinates != null) {
+            CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
+                    .longitude(coordinates.getLongitude()).build();
+            eventDateLocationDto.setCoordinates(coordinatesDto);
+        }
+        return eventDateLocationDto;
     }
 }
