@@ -4,8 +4,8 @@ import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
-import greencity.entity.localization.TagTranslation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
+
+
     /**
      * Method for converting {@link Event} into {@link EventDto}.
      *
@@ -54,9 +56,14 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
             datesLocations.add(eventDateLocationDto);
         }
         eventDto.setDates(datesLocations);
-        eventDto.setTags(event.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-            .map(TagTranslation::getName)
-            .collect(Collectors.toList()));
+        List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
+        event.getTags().forEach(t -> {
+            var translations = t.getTagTranslations();
+            tagUaEnDtos.add(TagUaEnDto.builder().id(t.getId())
+                .nameUa(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst().orElseThrow().getName())
+                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst().orElseThrow().getName()).build());
+        });
+        eventDto.setTags(tagUaEnDtos);
 
         if (event.getAdditionalImages() != null) {
             eventDto.setAdditionalImages(event.getAdditionalImages().stream()

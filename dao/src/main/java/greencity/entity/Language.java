@@ -8,11 +8,11 @@ import lombok.*;
 
 @Entity
 @Table(name = "languages")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
-@ToString(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
+@Data
+@EqualsAndHashCode(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+@ToString(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
 @Builder
 public class Language {
     @Id
