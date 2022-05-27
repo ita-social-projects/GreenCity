@@ -223,11 +223,12 @@ public class TagsServiceImpl implements TagsService {
         }
         return true;
     }
+
     @Override
     public List<TagVO> findTagsWithAllTranslationsByNamesAndType(List<String> tagNames, TagType tagType) {
         List<String> lowerCaseTagNames = tagNames.stream()
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
         List<Tag> tags = tagRepo.findAllByTagTranslations(lowerCaseTagNames, tagType);
         if (tags.isEmpty()) {
             throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
@@ -235,5 +236,4 @@ public class TagsServiceImpl implements TagsService {
         return modelMapper.map(tags, new TypeToken<List<TagVO>>() {
         }.getType());
     }
-
 }

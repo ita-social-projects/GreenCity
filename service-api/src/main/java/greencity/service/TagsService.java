@@ -85,7 +85,6 @@ public interface TagsService {
      */
     List<TagVO> findTagsByNamesAndType(List<String> tags, TagType tagType);
 
-
     /**
      * Method that allow you to find list of Tags with all translations by names.
      *

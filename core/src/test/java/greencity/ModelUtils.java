@@ -610,14 +610,14 @@ public class ModelUtils {
 
     public static AddEventDtoRequest getEventWithPastStartDate() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(ZonedDateTime.of(LocalDateTime.of(2022, 1, 1, 0 , 0), ZoneId.systemDefault()))
+            .startDate(ZonedDateTime.of(LocalDateTime.of(2022, 1, 1, 0, 0), ZoneId.systemDefault()))
             .finishDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())).build())).build();
     }
 
     public static AddEventDtoRequest getEventWithStartDateAfterFinishDate() {
-             return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-                .startDate(ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 0, 0), ZoneId.systemDefault()))
-                .finishDate(ZonedDateTime.of(LocalDateTime.of(2019, 1, 1, 0, 0), ZoneId.systemDefault())).build())).build();
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 0, 0), ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(LocalDateTime.of(2019, 1, 1, 0, 0), ZoneId.systemDefault())).build())).build();
     }
 
     public static AddEventDtoRequest getEventWithoutCoordinatesAndLink() {

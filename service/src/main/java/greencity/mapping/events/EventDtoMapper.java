@@ -43,8 +43,11 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         event.getTags().forEach(t -> {
             var translations = t.getTagTranslations();
             tagUaEnDtos.add(TagUaEnDto.builder().id(t.getId())
-                .nameUa(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst().orElseThrow().getName())
-                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst().orElseThrow().getName()).build());
+                .nameUa(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("ua")).findFirst()
+                    .orElseThrow().getName())
+                .nameEn(translations.stream().filter(tr -> tr.getLanguage().getCode().equals("en")).findFirst()
+                    .orElseThrow().getName())
+                .build());
         });
         eventDto.setTags(tagUaEnDtos);
 
@@ -65,7 +68,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         Coordinates coordinates = eventDateLocation.getCoordinates();
         if (coordinates != null) {
             CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                    .longitude(coordinates.getLongitude()).build();
+                .longitude(coordinates.getLongitude()).build();
             eventDateLocationDto.setCoordinates(coordinatesDto);
         }
         return eventDateLocationDto;

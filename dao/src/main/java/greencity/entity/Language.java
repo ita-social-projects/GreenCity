@@ -11,8 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@EqualsAndHashCode(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
-@ToString(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+@EqualsAndHashCode(
+    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+@ToString(
+    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
 @Builder
 public class Language {
     @Id

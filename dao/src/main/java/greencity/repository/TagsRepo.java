@@ -44,16 +44,16 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
 
-
     /**
-     * Method that allow you to find list of {@link Tag}s with all translations by names and type.
+     * Method that allow you to find list of {@link Tag}s with all translations by
+     * names and type.
      *
      * @param names   list of {@link String} values
      * @param tagType {@link String}
      * @return list of {@link Tag}
      */
-    @Query("SELECT t FROM Tag t WHERE t.id IN (SELECT tt.tag.id FROM t.tagTranslations tt " +
-            "WHERE LOWER(tt.name) IN :names) AND t.type = :tagType")
+    @Query("SELECT t FROM Tag t WHERE t.id IN (SELECT tt.tag.id FROM t.tagTranslations tt "
+        + "WHERE LOWER(tt.name) IN :names) AND t.type = :tagType")
     List<Tag> findAllByTagTranslations(List<String> names, TagType tagType);
 
     /**
