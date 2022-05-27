@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -26,7 +27,7 @@ public class EventDto {
     private List<EventDateLocationDto> dates;
 
     @NotEmpty
-    private List<String> tags;
+    private List<TagUaEnDto> tags;
 
     @Nullable
     private String titleImage;

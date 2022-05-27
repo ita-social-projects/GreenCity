@@ -10,7 +10,7 @@ import greencity.exception.exceptions.EventDtoValidationException;
 
 import static greencity.validator.UrlValidator.isUrlValid;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -31,7 +31,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
         }
 
         for (var eventDateLocationDto : eventDateLocationDtos) {
-            if (eventDateLocationDto.getStartDate().isBefore(LocalDateTime.now())
+            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now())
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
