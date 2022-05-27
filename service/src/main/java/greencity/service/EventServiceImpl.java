@@ -54,7 +54,7 @@ public class EventServiceImpl implements EventService {
             toSave.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
 
-        List<TagVO> tagVOs = tagService.findTagsByNamesAndType(
+        List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
             addEventDtoRequest.getTags(), TagType.EVENT);
 
         toSave.setTags(modelMapper.map(tagVOs,
