@@ -4,7 +4,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.entity.EcoNews;
-import greencity.entity.User;
 import java.util.stream.Collectors;
 
 import greencity.entity.localization.TagTranslation;
