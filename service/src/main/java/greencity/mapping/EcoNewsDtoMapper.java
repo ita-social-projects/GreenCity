@@ -42,7 +42,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
                 .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
             .title(ecoNews.getTitle())
-            .countComments(ecoNews.getEcoNewsComments().size())
+            .countComments((int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count())
             .build();
     }
 }
