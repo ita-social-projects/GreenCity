@@ -26,16 +26,23 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
      */
     @Override
     public EcoNewsDto convert(EcoNews ecoNews) {
-        User author = ecoNews.getAuthor();
-        EcoNewsAuthorDto ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(),
-            author.getName());
-
-        return new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
-            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getShortInfo(),
-            ecoNewsAuthorDto,
-            ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+        return EcoNewsDto.builder()
+            .author(EcoNewsAuthorDto.builder()
+                .id(ecoNews.getAuthor().getId())
+                .name(ecoNews.getAuthor().getName())
+                .build())
+            .id(ecoNews.getId())
+            .content(ecoNews.getText())
+            .creationDate(ecoNews.getCreationDate())
+            .imagePath(ecoNews.getImagePath())
+            .likes(ecoNews.getUsersLikedNews().size())
+            .shortInfo(ecoNews.getShortInfo())
+            .tags(ecoNews.getTags().stream()
+                .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
-                .map(TagTranslation::getName).collect(Collectors.toList()),
-            ecoNews.getUsersLikedNews().size(), ecoNews.getEcoNewsComments().size());
+                .map(TagTranslation::getName).collect(Collectors.toList()))
+            .title(ecoNews.getTitle())
+            .countComments(ecoNews.getEcoNewsComments().size())
+            .build();
     }
 }

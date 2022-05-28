@@ -294,10 +294,7 @@ public class EcoNewsController {
         @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("/recommended")
-    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(
-        @RequestParam() Long openedEcoNewsId
-
-    ) {
+    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(@RequestParam() Long openedEcoNewsId) {
         List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
     }
