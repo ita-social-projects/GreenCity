@@ -1,13 +1,7 @@
 package greencity.dto.event;
 
-import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
