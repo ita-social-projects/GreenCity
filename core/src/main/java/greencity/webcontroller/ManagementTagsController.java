@@ -6,6 +6,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
+import greencity.enums.TagType;
 import greencity.service.LanguageService;
 import greencity.service.TagsService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import springfox.documentation.annotations.ApiIgnore;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -43,9 +46,11 @@ public class ManagementTagsController {
         @RequestParam(required = false) String filter) {
         PageableAdvancedDto<TagVO> tags = tagsService.findAll(pageable, filter);
         List<LanguageDTO> languages = languageService.getAllLanguages();
+        List<TagType> tagTypes = Arrays.asList(TagType.values());
 
         model.addAttribute("tags", tags);
         model.addAttribute("languages", languages);
+        model.addAttribute("tagTypes", tagTypes);
 
         return "core/management_tags";
     }
