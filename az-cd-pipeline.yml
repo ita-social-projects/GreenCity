@@ -104,6 +104,9 @@ stages:
         repository: 'skyere/greencity'
         command: 'buildAndPush'
         Dockerfile: 'Dockerfile'
+        tags: |
+          $(Build.BuildId)
+          latest
 
 - stage: Deploy
   jobs:
