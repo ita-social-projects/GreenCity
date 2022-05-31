@@ -99,6 +99,7 @@ stages:
         artifactName: '$(artifactName)'
     
     - task: Docker@2
+      displayName: Build image
       inputs:
         containerRegistry: 'Dockerhub_Skyere'
         repository: 'skyere/greencity'
