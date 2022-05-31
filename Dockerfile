@@ -1,3 +1,4 @@
-FROM tomcat:9-jdk8-temurin as runner
-
-COPY **/target/*.jar /usr/local/tomcat/webapps/
+FROM openjdk:11.0.15-jre as runner
+WORKDIR runner
+COPY **/target/app.jar runner/
+CMD java -jar runner/app.jar
