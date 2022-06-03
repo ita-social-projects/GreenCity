@@ -1,21 +1,26 @@
 package greencity.mapping;
 
+import java.util.Optional;
+
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 import greencity.dto.tag.NewTagDto;
 import greencity.entity.Tag;
+import greencity.entity.localization.TagTranslation;
 
 @Component
 public class NewTagDtoMapper extends AbstractConverter<Tag, NewTagDto> {
     @Override
     protected NewTagDto convert(Tag source) {
-        String name = source.getTagTranslations().stream()
+        Optional<TagTranslation> tagTranslationEn = source.getTagTranslations().stream()
             .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals("en"))
-            .findFirst().get().getName();
-        String nameUa = source.getTagTranslations().stream()
+            .findFirst();
+        Optional<TagTranslation> tagTranslationUa = source.getTagTranslations().stream()
             .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals("ua"))
-            .findFirst().get().getName();
+            .findFirst();
+        String name = tagTranslationEn.map(TagTranslation::getName).orElse(null);
+        String nameUa = tagTranslationUa.map(TagTranslation::getName).orElse(null);
 
         return NewTagDto.builder()
             .name(name)
