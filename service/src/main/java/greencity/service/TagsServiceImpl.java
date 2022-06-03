@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
@@ -190,6 +191,14 @@ public class TagsServiceImpl implements TagsService {
         List<TagTranslation> tagTranslations = tagRepo.findTagsByTypeAndLanguageCode(type, languageCode);
 
         return modelMapper.map(tagTranslations, new TypeToken<List<TagDto>>() {
+        }.getType());
+    }
+
+    @Override
+    public List<NewTagDto> findByType(TagType type) {
+        List<Tag> tags = tagRepo.findTagsByType(type);
+
+        return modelMapper.map(tags, new TypeToken<List<NewTagDto>>() {
         }.getType());
     }
 

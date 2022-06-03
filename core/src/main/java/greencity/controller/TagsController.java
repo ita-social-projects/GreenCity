@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
+import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.enums.TagType;
 import greencity.service.TagsService;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/tags")
 @AllArgsConstructor
+@RequestMapping("/tags")
 public class TagsController {
     private final TagsService tagsService;
 
@@ -45,5 +46,21 @@ public class TagsController {
         @RequestParam TagType type) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tagsService.findByTypeAndLanguageCode(type, locale.getLanguage()));
+    }
+
+    /**
+     * The method which returns all tags' names by type and language code.
+     *
+     * @param type   {@link TagType}
+     * @return list of {@link NewTagDto} (tag's names).
+     */
+    @ApiOperation(value = "Find all tags by type and language code")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK)
+    })
+    @GetMapping("/v2/search")
+    public ResponseEntity<List<NewTagDto>> findByType( @RequestParam TagType type) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(tagsService.findByType(type));
     }
 }

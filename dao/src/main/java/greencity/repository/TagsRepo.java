@@ -83,6 +83,10 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
         + "where t.type = :tagType and l.code = :languageCode order by tt.id")
     List<TagTranslation> findTagsByTypeAndLanguageCode(TagType tagType, String languageCode);
 
+    @Query("select t from Tag t "
+        + "where t.type = :tagType order by t.id")
+    List<Tag> findTagsByType (TagType tagType);
+
     /**
      * Method that finds all Habits {@link Tag}'s.
      *

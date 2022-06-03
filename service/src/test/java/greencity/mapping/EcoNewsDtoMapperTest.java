@@ -23,15 +23,27 @@ class EcoNewsDtoMapperTest {
         EcoNews ecoNews = ModelUtils.getEcoNewsForMethodConvertTest();
         String defaultLanguage = AppConstant.DEFAULT_LANGUAGE_CODE;
 
-        EcoNewsDto expected = new EcoNewsDto(ecoNews.getCreationDate(), ecoNews.getImagePath(),
-            ecoNews.getId(), ecoNews.getTitle(), ecoNews.getText(), ecoNews.getShortInfo(),
-            ModelUtils.getEcoNewsAuthorDto(),
-            ecoNews.getTags().stream()
+        EcoNewsDto expected = EcoNewsDto.builder()
+            .id(ecoNews.getId())
+            .tagsUa( ecoNews.getTags().stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals("ua"))
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()))
+            .tags(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
-                .collect(Collectors.toList()),
-            0, 1);
+                .collect(Collectors.toList()))
+            .countComments(ecoNews.getEcoNewsComments().size())
+            .title(ecoNews.getTitle())
+            .shortInfo(ecoNews.getShortInfo())
+            .imagePath(ecoNews.getImagePath())
+            .likes(ecoNews.getUsersLikedNews().size())
+            .author(ModelUtils.getEcoNewsAuthorDto())
+            .creationDate(ecoNews.getCreationDate())
+            .content("text")
+            .build();
 
         assertEquals(expected, ecoNewsDtoMapper.convert(ecoNews));
     }

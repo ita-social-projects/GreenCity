@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsSearchRepo;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.Order;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -180,9 +180,20 @@ class EcoNewsServiceImplTest {
     void getThreeLastEcoNews() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
-        EcoNewsDto ecoNewsDto =
-            new EcoNewsDto(zonedDateTime, "test image path", 1L, "test title", "content", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0);
+        EcoNewsDto ecoNewsDto = EcoNewsDto.builder()
+            .creationDate(zonedDateTime)
+            .imagePath("test image path")
+            .id(1L)
+            .title("test title")
+            .content("content")
+            .shortInfo(null)
+            .author(ModelUtils.getEcoNewsAuthorDto())
+            .tags(Collections.emptyList())
+            .tagsUa(Collections.emptyList())
+            .likes(1)
+            .countComments(0)
+            .build();
+
         EcoNews ecoNews = ModelUtils.getEcoNews();
 
         List<EcoNewsDto> dtoList = Collections.singletonList(ecoNewsDto);
@@ -216,8 +227,19 @@ class EcoNewsServiceImplTest {
             pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-            new EcoNewsDto(now, "test image path", 1L, "test title", "content", null,
-                ModelUtils.getEcoNewsAuthorDto(), Collections.emptyList(), 1, 0));
+            EcoNewsDto.builder()
+                .creationDate(now)
+                .imagePath("test image path")
+                .id(1L)
+                .title("test title")
+                .content("content")
+                .shortInfo(null)
+                .author(ModelUtils.getEcoNewsAuthorDto())
+                .tags(Collections.emptyList())
+                .tagsUa(Collections.emptyList())
+                .likes(1)
+                .countComments(0)
+                .build());
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
             0, false, false, true, true);
 
@@ -579,10 +601,8 @@ class EcoNewsServiceImplTest {
     void findDtoByIdAndLanguage() {
         EcoNews ecoNews = ModelUtils.getEcoNewsForFindDtoByIdAndLanguage();
         EcoNewsDto expected = ModelUtils.getEcoNewsDtoForFindDtoByIdAndLanguage();
-        List<String> tags = ModelUtils.getTagsForTestingString();
-        expected.setTags(tags);
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
-        assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "en"));
+        assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "ua"));
     }
 
     @Test

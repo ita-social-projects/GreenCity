@@ -102,8 +102,7 @@ public class ModelUtils {
         Language language = getLanguage();
         return Arrays.asList(
             TagTranslation.builder().id(1L).name("Новини").language(language).build(),
-            TagTranslation.builder().id(2L).name("News").language(language).build(),
-            TagTranslation.builder().id(3L).name("Новины").language(language).build());
+            TagTranslation.builder().id(2L).name("News").language(language).build());
     }
 
     public static List<TagTranslation> getEventTagTranslations() {
@@ -296,15 +295,21 @@ public class ModelUtils {
     }
 
     public static EcoNews getEcoNews() {
+        Tag tag = new Tag();
+        tag.setTagTranslations(List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
+                TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
             "title", "text", List.of(EcoNewsComment.builder().id(1L).text("test").build()),
-            Collections.singletonList(getTag()), Collections.emptySet());
+            Collections.singletonList(tag), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForMethodConvertTest() {
+        Tag tag = new Tag();
+        tag.setTagTranslations(List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
+            TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
-            Collections.singletonList(getTag()), Collections.emptySet());
+            Collections.singletonList(tag), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForFindDtoByIdAndLanguage() {
@@ -457,9 +462,7 @@ public class ModelUtils {
 
     public static List<String> getTagsForTestingString() {
         List<String> tags = new ArrayList<>();
-        tags.add("Новини");
         tags.add("News");
-        tags.add("Новины");
         return tags;
     }
 
@@ -692,14 +695,14 @@ public class ModelUtils {
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
         return new AddEcoNewsDtoRequest("title", "text",
-            Collections.singletonList("tag"), "source", null, "shortInfo");
+            Collections.singletonList("News"), "source", null, "shortInfo");
     }
 
     public static AddEcoNewsDtoResponse getAddEcoNewsDtoResponse() {
         return new AddEcoNewsDtoResponse(1L, "title",
             "text", "shortInfo", EcoNewsAuthorDto.builder().id(1L).name(TestConst.NAME).build(),
             ZonedDateTime.now(), TestConst.SITE, "source",
-            Arrays.asList("Новини", "News", "Новины"));
+            Arrays.asList("Новини", "News"));
     }
 
     public static MultipartFile getFile() {
@@ -775,8 +778,6 @@ public class ModelUtils {
         return Arrays.asList(TagTranslationVO.builder().id(1L).name("Новини")
             .languageVO(LanguageVO.builder().id(1L).code("ua").build()).build(),
             TagTranslationVO.builder().id(2L).name("News").languageVO(LanguageVO.builder().id(2L).code("en").build())
-                .build(),
-            TagTranslationVO.builder().id(3L).name("Новины").languageVO(LanguageVO.builder().id(3L).code("ru").build())
                 .build());
     }
 
@@ -1186,19 +1187,20 @@ public class ModelUtils {
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.now(), "imagePath", 1L, "title", "content", "text",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 1, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("tag"), Collections.singletonList("тег"), 1, 0);
     }
 
     public static EcoNewsGenericDto getEcoNewsGenericDto() {
-        String[] tags = {"Новини", "News", "Новины"};
+        String[] tagsEn = {"News"};
+        String[] tagsUa = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tags), 0, 1);
+            List.of(tagsUa),List.of(tagsEn), 0, 1);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
         return new EcoNewsDto(null, TestConst.SITE, 1L, "title", "text", "shortInfo",
-            getEcoNewsAuthorDto(), Collections.singletonList("tag"), 0, 0);
+            getEcoNewsAuthorDto(), Collections.singletonList("News"), Collections.singletonList("Новини"), 0, 0);
     }
 
     public static UpdateEcoNewsDto getUpdateEcoNewsDto() {
