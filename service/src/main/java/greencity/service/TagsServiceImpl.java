@@ -5,6 +5,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
@@ -20,6 +21,7 @@ import greencity.constant.ErrorMessage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -121,11 +123,13 @@ public class TagsServiceImpl implements TagsService {
     private void enhanceTagWithNewData(Tag toUpdate, TagPostDto tagPostDto) {
         toUpdate.setType(tagPostDto.getType());
         toUpdate.getTagTranslations()
-            .forEach(tagTranslation -> tagTranslation.setName(
-                tagPostDto.getTagTranslations().stream().filter(newTranslation -> newTranslation.getLanguage().getId()
-                    .equals(tagTranslation.getLanguage().getId()))
-                    .findFirst()
-                    .get().getName()));
+            .forEach(tagTranslation -> {
+                Optional<TagTranslationDto> tagTranslationDto = tagPostDto.getTagTranslations().stream()
+                    .filter(newTranslation -> newTranslation.getLanguage().getId()
+                        .equals(tagTranslation.getLanguage().getId()))
+                    .findFirst();
+                tagTranslation.setName(tagTranslationDto.map(TagTranslationDto::getName).orElse(null));
+            });
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {

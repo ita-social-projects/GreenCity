@@ -99,10 +99,11 @@ public class ModelUtils {
     }
 
     public static List<TagTranslation> getTagTranslations() {
-        Language language = getLanguage();
         return Arrays.asList(
-            TagTranslation.builder().id(1L).name("Новини").language(language).build(),
-            TagTranslation.builder().id(2L).name("News").language(language).build());
+            TagTranslation.builder().id(1L).name("Новини").language(Language.builder().id(2L).code("ua").build())
+                .build(),
+            TagTranslation.builder().id(2L).name("News").language(Language.builder().id(1L).code("en").build())
+                .build());
     }
 
     public static List<TagTranslation> getEventTagTranslations() {
@@ -810,11 +811,11 @@ public class ModelUtils {
     }
 
     public static List<TagTranslationDto> getTagTranslationDtos() {
-        LanguageDTO language = getLanguageDTO();
         return Arrays.asList(
-            TagTranslationDto.TagTranslationDtoBuilder().name("Новини").language(language).build(),
-            TagTranslationDto.TagTranslationDtoBuilder().name("News").language(language).build(),
-            TagTranslationDto.TagTranslationDtoBuilder().name("Новины").language(language).build());
+            TagTranslationDto.TagTranslationDtoBuilder().name("Новини")
+                .language(LanguageDTO.builder().id(2L).code("ua").build()).build(),
+            TagTranslationDto.TagTranslationDtoBuilder().name("News")
+                .language(LanguageDTO.builder().id(1L).code("en").build()).build());
     }
 
     public static TagViewDto getTagViewDto() {

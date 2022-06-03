@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
@@ -295,5 +296,20 @@ class TagsServiceImplTest {
 
         assertThrows(InvalidNumOfTagsException.class,
             () -> tagsService.isValidNumOfUniqueTags(tagNames));
+    }
+
+    @Test
+    void findByTypeTest() {
+        List<NewTagDto> tags = List.of(NewTagDto.builder().id(1L).name("News").nameUa("Новини").build());
+
+        when(tagRepo.findTagsByType(TagType.ECO_NEWS)).thenReturn(ModelUtils.getTags());
+        when(modelMapper.map(ModelUtils.getTags(), new TypeToken<List<NewTagDto>>() {
+        }.getType())).thenReturn(tags);
+
+        assertEquals(tags, tagsService.findByType(TagType.ECO_NEWS));
+
+        verify(tagRepo).findTagsByType(TagType.ECO_NEWS);
+        verify(modelMapper).map(ModelUtils.getTags(), new TypeToken<List<NewTagDto>>() {
+        }.getType());
     }
 }
