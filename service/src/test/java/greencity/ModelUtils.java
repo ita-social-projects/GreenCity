@@ -297,7 +297,8 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), Collections.emptySet());
+            "title", "text", List.of(EcoNewsComment.builder().id(1L).text("test").build()),
+            Collections.singletonList(getTag()), Collections.emptySet());
     }
 
     public static EcoNews getEcoNewsForMethodConvertTest() {
@@ -794,11 +795,11 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
     }
 
     public static TagVO getEventTagVO() {
-        return new TagVO(1L, TagType.EVENT, getEventTagTranslationsVO(), null, null);
+        return new TagVO(1L, TagType.EVENT, getEventTagTranslationsVO(), null, null, null);
     }
 
     public static TagPostDto getTagPostDto() {
@@ -1192,7 +1193,7 @@ public class ModelUtils {
         String[] tags = {"Новини", "News", "Новины"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tags), 0, 0);
+            List.of(tags), 0, 1);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {

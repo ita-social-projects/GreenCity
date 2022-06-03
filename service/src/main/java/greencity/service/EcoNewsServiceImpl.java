@@ -671,6 +671,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
             .source(ecoNews.getSource())
+            .likes(ecoNews.getUsersLikedNews().size())
+            .countComments(
+                (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count())
             .build();
     }
 

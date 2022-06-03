@@ -83,7 +83,7 @@ public class ModelUtils {
     }
 
     public static TagVO getTagVO() {
-        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null);
+        return new TagVO(1L, TagType.ECO_NEWS, getTagTranslationsVO(), null, null, null);
     }
 
     public static TagPostDto getTagPostDto() {
