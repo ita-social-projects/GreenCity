@@ -106,7 +106,7 @@ public interface TagsService {
     /**
      * Method that allow you to find list of Tags by type.
      *
-     * @param type         {@link TagType}
+     * @param type {@link TagType}
      * @return {@link List} of {@link TagDto}
      */
     List<NewTagDto> findByType(TagType type);

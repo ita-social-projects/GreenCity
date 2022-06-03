@@ -8,7 +8,6 @@ import greencity.entity.Tag;
 
 @Component
 public class NewTagDtoMapper extends AbstractConverter<Tag, NewTagDto> {
-
     @Override
     protected NewTagDto convert(Tag source) {
         String name = source.getTagTranslations().stream()

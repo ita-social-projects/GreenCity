@@ -51,7 +51,7 @@ public class TagsController {
     /**
      * The method which returns all tags' names by type and language code.
      *
-     * @param type   {@link TagType}
+     * @param type {@link TagType}
      * @return list of {@link NewTagDto} (tag's names).
      */
     @ApiOperation(value = "Find all tags by type and language code")
@@ -59,7 +59,7 @@ public class TagsController {
         @ApiResponse(code = 200, message = HttpStatuses.OK)
     })
     @GetMapping("/v2/search")
-    public ResponseEntity<List<NewTagDto>> findByType( @RequestParam TagType type) {
+    public ResponseEntity<List<NewTagDto>> findByType(@RequestParam TagType type) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(tagsService.findByType(type));
     }

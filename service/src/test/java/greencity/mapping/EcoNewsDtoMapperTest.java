@@ -25,7 +25,7 @@ class EcoNewsDtoMapperTest {
 
         EcoNewsDto expected = EcoNewsDto.builder()
             .id(ecoNews.getId())
-            .tagsUa( ecoNews.getTags().stream()
+            .tagsUa(ecoNews.getTags().stream()
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals("ua"))
                 .map(TagTranslation::getName)

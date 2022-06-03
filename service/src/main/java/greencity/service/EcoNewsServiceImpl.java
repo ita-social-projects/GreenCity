@@ -64,7 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
-    private final List<String> languageCode = List.of("en","ua");
+    private final List<String> languageCode = List.of("en", "ua");
 
     /**
      * {@inheritDoc}
@@ -312,8 +312,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         var ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         List<String> tags = new ArrayList<>();
-        for(String lang : languageCode) {
-        tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+        for (String lang : languageCode) {
+            tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
                 .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()));
@@ -652,12 +652,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews) {
         List<String> tags = new ArrayList<>();
-        for(String language : languageCode){
-           tags.addAll(ecoNews.getTags().stream()
-               .flatMap(t -> t.getTagTranslations().stream())
-               .filter(t -> t.getLanguage().getCode().equals(language))
-               .map(TagTranslation::getName)
-               .collect(Collectors.toList()));
+        for (String language : languageCode) {
+            tags.addAll(ecoNews.getTags().stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals(language))
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()));
         }
 
         return buildEcoNewsGenericDto(ecoNews, tags);
@@ -666,7 +666,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-        int countOfComments = ecoNews.getEcoNewsComments() != null ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count() : 0;
+        int countOfComments = ecoNews.getEcoNewsComments() != null
+            ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count()
+            : 0;
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
             .imagePath(ecoNews.getImagePath())

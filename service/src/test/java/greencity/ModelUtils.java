@@ -296,7 +296,8 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         Tag tag = new Tag();
-        tag.setTagTranslations(List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
+        tag.setTagTranslations(
+            List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
             "title", "text", List.of(EcoNewsComment.builder().id(1L).text("test").build()),
@@ -305,8 +306,9 @@ public class ModelUtils {
 
     public static EcoNews getEcoNewsForMethodConvertTest() {
         Tag tag = new Tag();
-        tag.setTagTranslations(List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
-            TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
+        tag.setTagTranslations(
+            List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
+                TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
             Collections.singletonList(tag), Collections.emptySet());
@@ -1195,7 +1197,7 @@ public class ModelUtils {
         String[] tagsUa = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tagsUa),List.of(tagsEn), 0, 1);
+            List.of(tagsUa), List.of(tagsEn), 0, 1);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {
