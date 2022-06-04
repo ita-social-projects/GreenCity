@@ -52,4 +52,14 @@ class TagsControllerTest {
 
         verify(tagsService).findByTypeAndLanguageCode(type, locale.getLanguage());
     }
+
+    @Test
+    void findByTypeTest() throws Exception {
+        String tagsLink = "/tags";
+
+        mockMvc.perform(get(tagsLink + "/v2/search?type=" + TagType.ECO_NEWS))
+            .andExpect(status().isOk());
+
+        verify(tagsService).findByType(TagType.ECO_NEWS);
+    }
 }

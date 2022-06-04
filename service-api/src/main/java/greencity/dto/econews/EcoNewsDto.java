@@ -39,6 +39,9 @@ public class EcoNewsDto {
     @NotEmpty
     private List<String> tags;
 
+    @NotEmpty
+    private List<String> tagsUa;
+
     private int likes;
 
     private int countComments;
