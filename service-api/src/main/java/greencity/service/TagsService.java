@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagVO;
@@ -101,6 +102,14 @@ public interface TagsService {
      * @return {@link List} of {@link TagDto}
      */
     List<TagDto> findByTypeAndLanguageCode(TagType type, String languageCode);
+
+    /**
+     * Method that allow you to find list of Tags by type.
+     *
+     * @param type {@link TagType}
+     * @return {@link List} of {@link TagDto}
+     */
+    List<NewTagDto> findByType(TagType type);
 
     /**
      * Method that allow you to find all EcoNews Tags.

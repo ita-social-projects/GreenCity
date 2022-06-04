@@ -40,6 +40,10 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(AppConstant.DEFAULT_LANGUAGE_CODE))
                 .map(TagTranslation::getName).collect(Collectors.toList()))
+            .tagsUa(ecoNews.getTags().stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals("ua"))
+                .map(TagTranslation::getName).collect(Collectors.toList()))
             .title(ecoNews.getTitle())
             .countComments(
                 (int) ecoNews.getEcoNewsComments().stream().filter(deleted -> !deleted.isDeleted()).count())

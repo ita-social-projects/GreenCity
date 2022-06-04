@@ -64,6 +64,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
+    private final List<String> languageCode = List.of("en", "ua");
 
     /**
      * {@inheritDoc}
@@ -310,11 +311,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public EcoNewsDto findDtoByIdAndLanguage(Long id, String language) {
         var ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
-
-        List<String> tags = ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
-            .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(language))
-            .map(TagTranslation::getName)
-            .collect(Collectors.toList());
+        List<String> tags = new ArrayList<>();
+        for (String lang : languageCode) {
+            tags.addAll(ecoNews.getTags().stream().flatMap(t -> t.getTagTranslations().stream())
+                .filter(tagTranslation -> tagTranslation.getLanguage().getCode().equals(lang))
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()));
+        }
         return getEcoNewsDto(ecoNews, tags);
     }
 
@@ -648,11 +651,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private EcoNewsGenericDto getEcoNewsGenericDtoWithEnTags(EcoNews ecoNews) {
-        List<String> tags = ecoNews.getTags().stream()
-            .flatMap(t -> t.getTagTranslations().stream())
-            .filter(t -> t.getLanguage().getCode().equals("en"))
-            .map(TagTranslation::getName)
-            .collect(Collectors.toList());
+        List<String> tags = new ArrayList<>();
+        for (String language : languageCode) {
+            tags.addAll(ecoNews.getTags().stream()
+                .flatMap(t -> t.getTagTranslations().stream())
+                .filter(t -> t.getLanguage().getCode().equals(language))
+                .map(TagTranslation::getName)
+                .collect(Collectors.toList()));
+        }
 
         return buildEcoNewsGenericDto(ecoNews, tags);
     }
@@ -660,20 +666,22 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private EcoNewsGenericDto buildEcoNewsGenericDto(EcoNews ecoNews, List<String> tags) {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
-
+        int countOfComments = ecoNews.getEcoNewsComments() != null
+            ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count()
+            : 0;
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
             .imagePath(ecoNews.getImagePath())
             .author(ecoNewsAuthorDto)
-            .tags(tags)
+            .tagsEn(tags.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
+            .tagsUa(tags.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
             .shortInfo(ecoNews.getShortInfo())
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
             .creationDate(ecoNews.getCreationDate())
             .source(ecoNews.getSource())
-            .likes(ecoNews.getUsersLikedNews().size())
-            .countComments(
-                (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count())
+            .likes(ecoNews.getUsersLikedNews() != null ? ecoNews.getUsersLikedNews().size() : 0)
+            .countComments(countOfComments)
             .build();
     }
 
@@ -687,7 +695,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .imagePath(ecoNews.getImagePath())
             .author(ecoNewsAuthorDto)
             .likes(ecoNews.getUsersLikedNews().size())
-            .tags(list)
+            .tags(list.stream().filter(tag -> tag.matches("^([A-Za-z-])+$")).collect(Collectors.toList()))
+            .tagsUa(list.stream().filter(tag -> tag.matches("^([А-Яа-яієїґ'-])+$")).collect(Collectors.toList()))
             .shortInfo(ecoNews.getShortInfo())
             .content(ecoNews.getText())
             .title(ecoNews.getTitle())
