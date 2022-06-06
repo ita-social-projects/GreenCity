@@ -1,8 +1,7 @@
 package greencity.service;
 
-import greencity.ModelUtils;
-import greencity.dto.useraction.UserActionVO;
-import greencity.entity.UserAction;
+import greencity.dto.user.UserVO;
+import greencity.entity.User;
 import greencity.repository.UserActionRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserActionServiceImplTest {
@@ -23,41 +20,18 @@ class UserActionServiceImplTest {
     @Mock
     private UserActionRepo userActionRepo;
     @Mock
+    private AchievementServiceImpl achievementService;
+    @Mock
     private ModelMapper modelMapper;
 
     @Test
-    void updateUserActions() {
-        UserAction userAction = ModelUtils.getUserAction();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionRepo.findById(1L)).thenReturn(Optional.of(userAction));
-        when(userActionRepo.save(userAction)).thenReturn(userAction);
-        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
-        assertEquals(userActionVO, userActionService.updateUserActions(userActionVO));
-    }
+    void log() {
+        when(userActionRepo.existsByUserAndActionTypeAndActionId(any(), any(), any())).thenReturn(false);
 
-    @Test
-    void updateUserActionsNull() {
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionRepo.findById(1L)).thenReturn(Optional.empty());
-        assertNull(userActionService.updateUserActions(userActionVO));
-    }
+        userActionService.log(new User(), null, null);
+        userActionService.log(new UserVO(), null, null);
 
-    @Test
-    void findUserActionByUserId() {
-        UserAction userAction = ModelUtils.getUserAction();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(userAction);
-        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
-        assertEquals(userActionVO, userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L));
-    }
-
-    @Test
-    void save() {
-        UserAction userAction = ModelUtils.getUserAction();
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(modelMapper.map(userActionVO, UserAction.class)).thenReturn(userAction);
-        when(userActionRepo.save(userAction)).thenReturn(userAction);
-        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
-        assertEquals(userActionVO, userActionService.save(userActionVO));
+        verify(userActionRepo, times(2)).saveAndFlush(any());
+        verify(achievementService, times(2)).tryToGiveUserAchievementsByActionType(any(), any());
     }
 }

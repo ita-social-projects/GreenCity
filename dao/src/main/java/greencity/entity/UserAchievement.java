@@ -1,9 +1,10 @@
 package greencity.entity;
 
-import greencity.enums.AchievementStatus;
 import javax.persistence.*;
 
 import lombok.*;
+
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "user_achievements")
@@ -19,16 +20,15 @@ public class UserAchievement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Achievement achievement;
 
     @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
+    private ZonedDateTime achievedTimestamp;
 
-    @Column
+    @Column(nullable = false)
     private boolean notified;
 }

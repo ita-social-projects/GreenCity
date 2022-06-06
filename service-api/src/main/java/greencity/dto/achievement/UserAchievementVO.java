@@ -1,10 +1,10 @@
 package greencity.dto.achievement;
 
 import greencity.dto.user.UserVO;
-import greencity.enums.AchievementStatus;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.ZonedDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,5 +22,8 @@ public class UserAchievementVO {
     private AchievementVO achievement;
 
     @NotEmpty
-    private AchievementStatus achievementStatus;
+    private ZonedDateTime achievedTimestamp;
+
+    @NotEmpty
+    private boolean notified;
 }

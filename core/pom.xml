@@ -44,7 +44,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>dao</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

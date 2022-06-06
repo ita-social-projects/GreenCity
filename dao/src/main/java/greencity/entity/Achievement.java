@@ -1,46 +1,50 @@
 package greencity.entity;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import greencity.entity.localization.AchievementTranslation;
+import greencity.enums.AchievementStatus;
+import greencity.enums.UserActionType;
+import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 
+import javax.persistence.*;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.util.Map;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString(
-    exclude = {"userAchievements"})
+@ToString(exclude = {"userAchievements"})
 @Table(name = "achievements")
+@TypeDefs({
+    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement")
     private List<AchievementTranslation> translations;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement")
     private List<UserAchievement> userAchievements;
 
     @ManyToOne
     private AchievementCategory achievementCategory;
 
     @Column(nullable = false)
-    private Integer condition;
+    @Enumerated(value = EnumType.STRING)
+    private AchievementStatus achievementStatus = AchievementStatus.ACTIVE;
+
+    @Column(columnDefinition = "json")
+    @Type(type = "jsonb")
+    private Map<UserActionType, Long> condition;
+
+    @Column
+    private String icon;
 }

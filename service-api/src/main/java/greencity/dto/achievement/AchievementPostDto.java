@@ -1,9 +1,11 @@
 package greencity.dto.achievement;
 
 import greencity.dto.achievementcategory.AchievementCategoryDto;
+import greencity.enums.UserActionType;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,5 +17,5 @@ public class AchievementPostDto {
 
     private AchievementCategoryDto achievementCategory;
 
-    private Integer condition;
+    private Map<UserActionType, Long> condition;
 }

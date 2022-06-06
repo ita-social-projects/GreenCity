@@ -28,7 +28,4 @@ public class AchievementCategory {
 
     @OneToMany(mappedBy = "achievementCategory")
     private List<Achievement> achievementList;
-
-    @OneToMany(mappedBy = "achievementCategory")
-    private List<UserAction> userActions;
 }

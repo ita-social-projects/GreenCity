@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Yezenitskyi-3" author="Andrii Yezenitskyi">
+        <dropColumn tableName="achievements" columnName="condition"/>
+        <addColumn tableName="achievements">
+            <column name="condition" type="json"/>
+            <column name="achievement_status" type="varchar(10)"/>
+            <column name="icon" type="varchar(255)"/>
+        </addColumn>
+
+        <dropColumn tableName="user_actions" columnName="achievement_category_id"/>
+        <dropColumn tableName="user_actions" columnName="count"/>
+        <addColumn tableName="user_actions">
+            <column name="timestamp" type="timestamp with time zone"/>
+            <column name="action_type" type="varchar(30)"/>
+            <column name="action_id" type="bigint"/>
+        </addColumn>
+
+        <dropColumn tableName="user_achievements" columnName="achievement_status"/>
+        <addColumn tableName="user_achievements">
+            <column name="achieved_timestamp" type="timestamp with time zone"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

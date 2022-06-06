@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
@@ -10,12 +9,16 @@ import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.UserActionType;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+import lombok.AllArgsConstructor;
+import org.hibernate.Hibernate;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -27,12 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -47,7 +44,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
-    private final AchievementCalculation achievementCalculation;
+    private final UserActionService userActionService;
     private final ModelMapper modelMapper;
 
     /**
@@ -592,14 +589,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, AchievementType.COMPARISON,
-                AchievementCategoryType.HABIT_STREAK, habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
-            CompletableFuture.runAsync(() -> achievementCalculation
-                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT_STREAK, 0));
+            CompletableFuture.runAsync(() -> userActionService.log(
+                habitAssign.getUser(), UserActionType.HABIT_ADDED, habitAssign.getHabit().getId()));
         }
         habitAssignRepo.save(habitAssign);
     }

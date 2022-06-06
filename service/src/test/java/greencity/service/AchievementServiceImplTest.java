@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
@@ -15,14 +14,12 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.Language;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
@@ -59,8 +56,6 @@ class AchievementServiceImplTest {
     private UserActionService userActionService;
     @Mock
     private UserAchievementRepo userAchievementRepo;
-    @Mock
-    private AchievementCalculation achievementCalculation;
     @InjectMocks
     private AchievementServiceImpl achievementService;
     @Mock
@@ -109,34 +104,6 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    void saveTest() {
-        Achievement achievement = ModelUtils.getAchievement();
-        AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
-        AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
-        AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        UserVO userVO = ModelUtils.getUserVO();
-        UserAchievementVO userAchievement = ModelUtils.getUserAchievementVO();
-        List<UserAchievementVO> userAchievements = new ArrayList<>();
-        userAchievements.add(userAchievement);
-        userVO.setUserAchievements(userAchievements);
-        UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        List<UserActionVO> userActionVOS = new ArrayList<>();
-        userActionVOS.add(userActionVO);
-        userVO.setUserActions(userActionVOS);
-        when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
-        when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
-        when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
-        when(achievementRepo.save(achievement)).thenReturn(achievement);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
-
-        AchievementVO expected = achievementService.save(achievementPostDto);
-        assertEquals(expected, achievementVO);
-    }
-
-    @Test
     void findByIdTest() {
         Achievement achievement = ModelUtils.getAchievement();
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
@@ -175,39 +142,25 @@ class AchievementServiceImplTest {
     @Test
     void deleteTest() {
         Achievement achievement = ModelUtils.getAchievement();
-        doNothing().when(achievementRepo).deleteById(1L);
-        achievementRepo.deleteById(1L);
-        verify(achievementRepo, times(1)).deleteById(1L);
+        when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         long expected = achievementService.delete(1L);
         Assertions.assertEquals(expected, achievement.getId());
     }
 
     @Test
     void deleteWithNonExistingId() {
-        doThrow(EmptyResultDataAccessException.class).when(achievementRepo).deleteById(345L);
-        assertThrows(NotDeletedException.class, () -> achievementService.delete(345L));
+        when(achievementRepo.findById(345L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> achievementService.delete(345L));
     }
 
     @Test
     void deleteAll() {
         List<Long> listId = Arrays.asList(1L, 2L, 3L, 4L);
-        listId.forEach(l -> {
-            doNothing().when(achievementRepo).deleteById(l);
-            achievementRepo.deleteById(l);
-            verify(achievementRepo, times(1)).deleteById(l);
-        });
-        achievementService.deleteAll(listId);
-    }
 
-    @Test
-    void findByCategoryIdAndCondition() {
-        Achievement achievement = ModelUtils.getAchievement();
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        achievement.setAchievementCategory(ModelUtils.getAchievementCategory());
-        achievementVO.setAchievementCategory(ModelUtils.getAchievementCategoryVO());
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
+        listId.forEach(l -> when(achievementRepo.findById(l))
+            .thenReturn(Optional.ofNullable(Achievement.builder().id(l).build())));
+        achievementService.deleteAll(listId);
+        verify(achievementRepo, times(4)).save(any());
     }
 
     @Test
@@ -239,21 +192,11 @@ class AchievementServiceImplTest {
                 .build());
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         when(restClient.findById(1L)).thenReturn(userVO);
-        when(achievementTranslationRepo.findAchievementsWithStatusActive(1L, 1L))
+        when(achievementTranslationRepo.findAllUnnotifiedForUser(1L, 1L))
             .thenReturn(achievementTranslations);
         when(userAchievementRepo.getUserAchievementByIdAndAchievementId(1L, 1L)).thenReturn(userAchievement);
         userAchievement.setNotified(true);
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
-        assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
-    }
-
-    @Test
-    void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
-        verify(achievementCalculation).calculateAchievement(
-            anyLong(),
-            any(AchievementType.class),
-            any(AchievementCategoryType.class),
-            anyInt());
+        assertEquals(achievementNotifications, achievementService.findAllUnnotifiedForUser(1L));
     }
 }
