@@ -1,6 +1,5 @@
 package greencity.webcontroller;
 
-import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.EventDto;
@@ -9,9 +8,10 @@ import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -57,7 +56,8 @@ class ManagementEventsControllerTest {
     }
 
     @Test
-    void getAllEventsWithoutQuery() throws Exception {
+    @SneakyThrows
+    void getAllEventsWithoutQuery() {
         Pageable pageable = PageRequest.of(0, 10);
         List<EventDto> eventDtos = Collections.singletonList(new EventDto());
         PageableAdvancedDto<EventDto> eventsDtoPageableDto =
@@ -79,7 +79,8 @@ class ManagementEventsControllerTest {
     }
 
     @Test
-    void getAllEventsWithQuery() throws Exception {
+    @SneakyThrows
+    void getAllEventsWithQuery() {
         Pageable pageable = PageRequest.of(0, 10);
         List<EventDto> eventDtos = Collections.singletonList(new EventDto());
         PageableAdvancedDto<EventDto> eventsDtoPageableDto =
@@ -101,4 +102,28 @@ class ManagementEventsControllerTest {
         verify(eventService).searchEventsBy(pageable, "query");
     }
 
+    @Test
+    @SneakyThrows
+    void getAllEvents() {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<EventDto> eventDtos = Collections.singletonList(new EventDto());
+        PageableAdvancedDto<EventDto> eventsDtoPageableDto =
+            new PageableAdvancedDto<>(eventDtos, 2, 0, 3, 0, true, true, true, true);
+        List<TagDto> tagDtoList = Collections.singletonList(TagDto.builder()
+            .id(1L)
+            .name("Social").build());
+        when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
+        when(eventService.getAll(pageable)).thenReturn(eventsDtoPageableDto);
+
+        this.mockMvc.perform(get(managementEventsLink)
+            .param("page", "0")
+            .param("size", "10")
+            .param("query", "query")
+            .param("title", "title"))
+            .andExpect(view().name("core/management_events"))
+            .andExpect(model().attribute("pageable", eventsDtoPageableDto))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAll(pageable);
+    }
 }
