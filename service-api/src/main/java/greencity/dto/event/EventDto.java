@@ -37,4 +37,16 @@ public class EventDto {
     private List<String> additionalImages;
 
     private boolean isOpen;
+
+    public String tagsToStringEn() {
+        if (!tags.isEmpty()) {
+            var ref = new Object() {
+                String tagsEn = "";
+            };
+            tags.forEach(t -> ref.tagsEn += t.getNameEn() + ", ");
+            ref.tagsEn = ref.tagsEn.substring(0, ref.tagsEn.length() - 2);
+            return ref.tagsEn;
+        }
+        return "";
+    }
 }

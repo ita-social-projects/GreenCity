@@ -52,4 +52,6 @@ public interface EventService {
      * @param email   - user email.
      */
     void removeAttender(Long eventId, String email);
+
+    PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query);
 }
