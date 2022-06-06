@@ -20,9 +20,7 @@ import java.util.Map;
 @Builder
 @ToString(exclude = {"userAchievements"})
 @Table(name = "achievements")
-@TypeDefs({
-    @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

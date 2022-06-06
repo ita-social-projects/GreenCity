@@ -1,7 +1,6 @@
 package greencity.dto.achievementcategory;
 
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.useraction.UserActionVO;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;

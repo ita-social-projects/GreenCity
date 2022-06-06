@@ -545,7 +545,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(dateTime).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
         return buildHabitAssignDto(habitAssign, "en");
     }
 
@@ -577,8 +577,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *
      * @param habitAssign {@link HabitAssign} instance.
      */
-    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar, Long userId) {
+    private void updateHabitAssignAfterEnroll(HabitAssign habitAssign, HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
