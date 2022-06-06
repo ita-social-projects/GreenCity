@@ -3,6 +3,7 @@ package greencity.dto.event;
 import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -43,7 +44,7 @@ public class EventDto {
      *
      */
     public String tagsToStringEn() {
-        if (!tags.isEmpty()) {
+        if (!CollectionUtils.isEmpty(tags)) {
             var ref = new Object() {
                 String tagsEn = "";
             };

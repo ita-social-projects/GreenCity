@@ -3,8 +3,10 @@ package greencity;
 import greencity.dto.category.CategoryDto;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -110,5 +113,15 @@ public class ModelUtils {
             .source("string")
             .title("string")
             .build();
+    }
+
+    public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
+
+    public static EventDto getEventDtoWithTag() {
+        return EventDto.builder().id(1L).tags(List.of(tagUaEnDto)).build();
+    }
+
+    public static EventDto getEventDtoWithoutTag() {
+        return EventDto.builder().id(1L).build();
     }
 }
