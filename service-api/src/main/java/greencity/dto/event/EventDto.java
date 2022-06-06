@@ -38,6 +38,10 @@ public class EventDto {
 
     private boolean isOpen;
 
+    /**
+     * Return String of event tags in English.
+     *
+     */
     public String tagsToStringEn() {
         if (!tags.isEmpty()) {
             var ref = new Object() {
