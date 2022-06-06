@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
