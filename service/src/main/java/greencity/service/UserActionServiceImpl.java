@@ -60,7 +60,7 @@ public class UserActionServiceImpl implements UserActionService {
     /**
      * Listens {@code greencity.user.actions} topic and logs {@link UserAction}s.
      */
-    @KafkaListener(topics = USER_ACTIONS_TOPIC)
+    @KafkaListener(topics = USER_ACTIONS_TOPIC, autoStartup = "${kafka.enable}")
     public void listenAndLog(@Payload UserActionMessage message) {
         User user = userRepo.findByEmail(message.getUserEmail())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + message.getUserEmail()));
