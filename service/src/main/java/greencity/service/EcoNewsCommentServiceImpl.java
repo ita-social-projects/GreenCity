@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
@@ -15,8 +14,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.enums.UserActionType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -42,7 +40,7 @@ import java.util.stream.Collectors;
 public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private EcoNewsCommentRepo ecoNewsCommentRepo;
     private EcoNewsService ecoNewsService;
-    private final AchievementCalculation achievementCalculation;
+    private final UserActionService userActionService;
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final greencity.rating.RatingCalculation ratingCalculation;
@@ -78,13 +76,17 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
         }
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userVO.getId(), AchievementType.INCREMENT,
-                AchievementCategoryType.ECO_NEWS_COMMENT, 0));
+        ecoNewsComment = ecoNewsCommentRepo.save(ecoNewsComment);
+
+        Long commentId = ecoNewsComment.getId();
+        User user = ecoNewsComment.getUser();
+        CompletableFuture.runAsync(() -> userActionService.log(
+            user, UserActionType.COMMENT_CREATED, commentId));
+
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
-        return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
+        return modelMapper.map(ecoNewsComment, AddEcoNewsCommentDtoResponse.class);
     }
 
     /**

@@ -2,7 +2,6 @@ package greencity.mapping;
 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -79,7 +78,6 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .userAchievements(user.getUserAchievements() != null ? user.getUserAchievements()
                 .stream().map(userAchievement -> UserAchievementVO.builder()
                     .id(userAchievement.getId())
-                    .achievementStatus(userAchievement.getAchievementStatus())
                     .user(UserVO.builder()
                         .id(userAchievement.getUser().getId())
                         .build())
@@ -91,10 +89,9 @@ public class UserVOMapper extends AbstractConverter<User, UserVO> {
             .userActions(user.getUserActions() != null ? user.getUserActions()
                 .stream().map(userAction -> UserActionVO.builder()
                     .id(userAction.getId())
-                    .achievementCategory(AchievementCategoryVO.builder()
-                        .id(userAction.getAchievementCategory().getId())
-                        .build())
-                    .count(userAction.getCount())
+                    .timestamp(userAction.getTimestamp())
+                    .actionType(userAction.getActionType())
+                    .actionId(userAction.getActionId())
                     .user(UserVO.builder()
                         .id(userAction.getUser().getId())
                         .build())

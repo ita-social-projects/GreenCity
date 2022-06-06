@@ -71,7 +71,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -254,7 +253,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -264,7 +262,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -274,10 +271,9 @@ public class ModelUtils {
                     .build()))
             .userActions(Collections.singletonList(UserActionVO.builder()
                 .id(13L)
-                .achievementCategory(AchievementCategoryVO.builder()
-                    .id(1L)
-                    .build())
-                .count(0)
+                .actionType(UserActionType.REGISTERED)
+                .timestamp(ZonedDateTime.now())
+                .actionId(13L)
                 .user(UserVO.builder()
                     .id(13L)
                     .build())
@@ -1135,21 +1131,41 @@ public class ModelUtils {
         return new AdvicePostDto(getLanguageTranslationsDTOs(), new HabitIdRequestDto(1L));
     }
 
+    public static Map<UserActionType, Long> getAchievementCondition() {
+        Map<UserActionType, Long> condition = new HashMap<>();
+        condition.put(UserActionType.COMMENT_CREATED, 1L);
+        return condition;
+    }
+
     public static Achievement getAchievement() {
-        return new Achievement(1L, Collections.singletonList(getAchievementTranslation()), Collections.emptyList(),
-            new AchievementCategory(), 1);
+        return Achievement.builder()
+            .id(1L)
+            .translations(Collections.singletonList(getAchievementTranslation()))
+            .userAchievements(Collections.emptyList())
+            .achievementCategory(getAchievementCategory())
+            .achievementStatus(AchievementStatus.ACTIVE)
+            .condition(getAchievementCondition()).build();
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", null, null);
+        return AchievementCategory.builder()
+            .id(1L)
+            .name("Name")
+            .achievementList(new ArrayList<>()).build();
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
+        return AchievementVO.builder()
+            .id(1L)
+            .translations(Collections.emptyList())
+            .userAchievements(Collections.emptyList())
+            .achievementCategory(getAchievementCategoryVO())
+            .achievementStatus(AchievementStatus.ACTIVE)
+            .condition(getAchievementCondition()).build();
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), getAchievementCondition());
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
@@ -1161,7 +1177,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category", null, null);
+        return new AchievementCategoryVO(1L, "Category", null);
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
@@ -1173,19 +1189,29 @@ public class ModelUtils {
     }
 
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+        return UserAchievementVO.builder()
+            .id(1L)
+            .achievement(getAchievementVO())
+            .user(getUserVO())
+            .achievedTimestamp(getUserAchievement().getAchievedTimestamp())
+            .notified(false).build();
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE, false);
+        return UserAchievement.builder()
+            .id(1L)
+            .achievement(getAchievement())
+            .user(getUser())
+            .achievedTimestamp(ZonedDateTime.now())
+            .notified(false).build();
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
+        return new UserAction(1L, ModelUtils.getUser(), ZonedDateTime.now(), UserActionType.REGISTERED, 0L);
     }
 
     public static UserActionVO getUserActionVO() {
-        return new UserActionVO(1L, ModelUtils.getUserVO(), ModelUtils.getAchievementCategoryVO(), 0);
+        return new UserActionVO(1L, ModelUtils.getUserVO(), ZonedDateTime.now(), UserActionType.REGISTERED, 0L);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
@@ -1459,7 +1485,6 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-                            .achievementStatus(AchievementStatus.ACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1469,7 +1494,6 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-                            .achievementStatus(AchievementStatus.INACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1539,7 +1563,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1549,7 +1572,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1559,10 +1581,9 @@ public class ModelUtils {
                     .build()))
             .userActions(Collections.singletonList(UserActionVO.builder()
                 .id(1L)
-                .achievementCategory(AchievementCategoryVO.builder()
-                    .id(1L)
-                    .build())
-                .count(0)
+                .actionType(UserActionType.REGISTERED)
+                .timestamp(ZonedDateTime.now())
+                .actionId(0L)
                 .user(UserVO.builder()
                     .id(1L)
                     .build())

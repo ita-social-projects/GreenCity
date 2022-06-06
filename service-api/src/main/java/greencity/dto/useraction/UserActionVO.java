@@ -1,8 +1,10 @@
 package greencity.dto.useraction;
 
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
+import greencity.enums.UserActionType;
 import lombok.*;
+
+import java.time.ZonedDateTime;
 
 @EqualsAndHashCode
 @Getter
@@ -15,7 +17,9 @@ public class UserActionVO {
 
     private UserVO user;
 
-    private AchievementCategoryVO achievementCategory;
+    private ZonedDateTime timestamp;
 
-    private Integer count = 0;
+    private UserActionType actionType;
+
+    private Long actionId;
 }

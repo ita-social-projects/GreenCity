@@ -3,8 +3,9 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.user.UserVO;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.entity.Achievement;
+import greencity.entity.User;
+import greencity.enums.UserActionType;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -81,26 +82,39 @@ public interface AchievementService {
     AchievementPostDto update(AchievementManagementDto achievementManagementDto);
 
     /**
-     * Method find {@link AchievementVO} by categoryId and condition.
-     *
-     * @param categoryId of {@link AchievementVO}
-     * @param condition  of {@link AchievementVO}
-     * @return {@link AchievementVO}
-     * @author Orest Mamchuk
-     */
-    AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
-
-    /**
-     * Method notifies of the achievement.
+     * Returns all unnotified achievement notifications for user.
      *
      * @param userId of {@link UserVO}
-     * @return list {@link AchievementNotification}
+     * @return {@link List} of {@link AchievementNotification}
      */
-    List<AchievementNotification> findAchievementsWithStatusActive(Long userId);
+    List<AchievementNotification> findAllUnnotifiedForUser(Long userId);
 
     /**
-     * Method for achievement Calculation.
+     * Checks if the user has completed all conditions for the achievement.
+     *
+     * @param user        {@link User}
+     * @param achievement {@link Achievement}
+     * @return {@code true} if user has competed all conditions, {@code false}
+     *         otherwise.
      */
-    void calculateAchievements(Long id, AchievementType achievementType,
-        AchievementCategoryType achievementCategory, Integer size);
+    boolean isAchieved(User user, Achievement achievement);
+
+    /**
+     * Creates and saves a new {@link greencity.entity.UserAchievement} for the user
+     * if all conditions are completed.
+     *
+     * @param user        {@link User}
+     * @param achievement {@link Achievement}
+     */
+    void tryToGiveUserAchievement(User user, Achievement achievement);
+
+    /**
+     * Checks if the user has completed all the conditions for achievements of given
+     * {@link UserActionType}. Creates and saves a new
+     * {@link greencity.entity.UserAchievement} for each completed achievement.
+     *
+     * @param user       {@link User}
+     * @param actionType {@link UserActionType}
+     */
+    void tryToGiveUserAchievementsByActionType(User user, UserActionType actionType);
 }

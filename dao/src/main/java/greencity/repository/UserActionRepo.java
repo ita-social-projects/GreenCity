@@ -1,24 +1,29 @@
 package greencity.repository;
 
-import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAction;
+import greencity.enums.UserActionType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserActionRepo extends JpaRepository<UserAction, Long> {
     /**
-     * Method find {@link UserAction} by userId and achievementCategoryId.
+     * Finds out if action is already logged.
      *
-     * @param userId                of {@link User}
-     * @param achievementCategoryId of {@link AchievementCategory}
-     * @return UserAction {@link UserAction}
-     * @author Orest Mamchuk
+     * @param user       {@link User} of action.
+     * @param actionType {@link UserActionType} of action.
+     * @param actionId   {@link Long} of action.
+     * @return {@code true} if action is logged, {@code false} otherwise.
      */
-    @Query(value = "SELECT ua FROM UserAction ua "
-        + "WHERE ua.achievementCategory.id = :achievementCategoryId "
-        + "AND ua.user.id = :userId")
-    UserAction findByUserIdAndAchievementCategoryId(Long userId, Long achievementCategoryId);
+    boolean existsByUserAndActionTypeAndActionId(User user, UserActionType actionType, Long actionId);
+
+    /**
+     * Counts all actions of user by given action type.
+     *
+     * @param user       {@link User} whose actions are to be counted.
+     * @param actionType {@link UserActionType} type of actions.
+     * @return {@link Long} - number of actions.
+     */
+    Long countAllByUserAndActionType(User user, UserActionType actionType);
 }

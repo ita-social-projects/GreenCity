@@ -109,7 +109,9 @@
                                 </table>
                             </td>
                             <td th:text="${allAchievements.getAchievementCategory().getName()}"></td>
-                            <td th:text="${allAchievements.getCondition()}"></td>
+                            <td th:each="condition: ${allAchievements.getCondition() != null ? allAchievements.getCondition().entrySet() : null}">
+                                <div th:text="${condition.getKey()+': '+condition.getValue()}"></div>
+                            </td>
                             <td>
                                 <a th:href="@{/management/achievement/{id}(id=${allAchievements.getId()})}"
                                    class="edit eBtn">
@@ -242,8 +244,21 @@
                         </div>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.condition}]]</label>
-                            <input class="form-control" name="condition" required type="number">
-                            <span th:id="errorModalSavecondition" class="errorSpan"></span>
+                            <div id="conditionBlock1">
+                                <select style="width: 70%; display: inline-block" class="form-control" name="conditionKey">
+                                    <th:block th:each="condition : ${conditionList}">
+                                        <tr>
+                                            <option>
+                                                <td th:text="${condition.name()}"></td>
+                                            </option>
+                                        </tr>
+                                    </th:block>
+                                </select>
+                                <input style="width: 29%; float: right; display: inline-block" class="form-control" name="conditionValue" type="text">
+                                <span th:id="errorModalSavecondition" class="errorSpan"></span>
+                            </div>
+                            <input type="button" class="btn-secondary" id="addConditionButton" onclick="addNewConditionBlock()" value="+">
+                            <input type="button" class="btn-secondary" id="removeConditionButton" onclick="removeLastConditionBlock()" value="-">
                         </div>
                     </div>
                     <div class="modal-footer">

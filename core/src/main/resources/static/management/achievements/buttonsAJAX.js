@@ -113,7 +113,7 @@ $(document).ready(function () {
             "id": formData.id,
             "translations": getTranslationsFormFormData(formData),
             "achievementCategory": formData.achievementCategory,
-            "condition": formData.condition
+            "condition": getConditions()
         };
 
         //save request in addAchievementModal
@@ -215,4 +215,37 @@ function getTranslationsFormFormData(formData) {
     }
 
     return translations;
+}
+
+let conditionsTotal = 1;
+
+function getConditions() {
+    let dict = {};
+    for (let i = 1; i <= conditionsTotal; i++) {
+        let conditionBlock = $('#conditionBlock'+i);
+        let key = conditionBlock.children('[name="conditionKey"]').children('option:selected').val();
+        dict[key] = conditionBlock.children('[name="conditionValue"]').val();
+    }
+    return dict;
+}
+
+function addNewConditionBlock() {
+    const button = $("#addConditionButton");
+    let newConditionBlock =
+        $('div[id^="conditionBlock"]:first')
+            .clone()
+            .prop("id", "conditionBlock"+ (++conditionsTotal));
+
+    newConditionBlock.children('[name="conditionKey"]').prop("selected", false);
+    newConditionBlock.children('[name="conditionValue"]').prop("value", "");
+
+    newConditionBlock.insertBefore(button);
+}
+
+function removeLastConditionBlock() {
+    if (conditionsTotal > 1) {
+        conditionsTotal--;
+        const lastConditionBlock = $('div[id^="conditionBlock"]:last');
+        lastConditionBlock.remove();
+    }
 }

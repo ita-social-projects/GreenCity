@@ -1,35 +1,26 @@
 package greencity.service;
 
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
+import greencity.entity.User;
+import greencity.entity.UserAction;
+import greencity.enums.UserActionType;
 
 public interface UserActionService {
     /**
-     * Method updates {@link UserActionVO}.
+     * Logs a new {@link UserAction}.
      *
-     * @param userActionVO {@link UserActionVO}
-     * @return {@link UserActionVO}
-     * @author Orest Mamchuk
+     * @param user       {@link User}
+     * @param actionType {@link UserActionType}
+     * @param actionId   {@link Long} id of entity linked to action.
      */
-    UserActionVO updateUserActions(UserActionVO userActionVO);
+    void log(User user, UserActionType actionType, Long actionId);
 
     /**
-     * Method find {@link UserActionVO} by id.
+     * Logs a new {@link UserAction}.
      *
-     * @param userId     of {@link UserVO}
-     * @param categoryId of {@link AchievementCategoryVO}
-     * @return {@link UserActionVO}
-     * @author Orest Mamchuk
+     * @param userVO     {@link UserVO}
+     * @param actionType {@link UserActionType}
+     * @param actionId   {@link Long} id of entity linked to action.
      */
-    UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId);
-
-    /**
-     * Method saves {@link UserActionVO}.
-     *
-     * @param userActionVO {@link UserActionVO}
-     * @return {@link UserActionVO}
-     * @author Orest Mamchuk
-     */
-    UserActionVO save(UserActionVO userActionVO);
+    void log(UserVO userVO, UserActionType actionType, Long actionId);
 }

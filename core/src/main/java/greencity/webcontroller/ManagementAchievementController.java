@@ -5,6 +5,7 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.enums.UserActionType;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
@@ -50,6 +51,7 @@ public class ManagementAchievementController {
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAll());
         model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("conditionList", UserActionType.values());
         return "core/management_achievement";
     }
 

@@ -1,8 +1,10 @@
 package greencity.entity;
 
+import greencity.enums.UserActionType;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 
 @Entity
 
@@ -21,9 +23,13 @@ public class UserAction {
     @ManyToOne
     private User user;
 
-    @ManyToOne
-    private AchievementCategory achievementCategory;
+    @Column
+    private ZonedDateTime timestamp;
 
-    @Column(name = "count")
-    private Integer count = 0;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private UserActionType actionType;
+
+    @Column
+    private Long actionId;
 }

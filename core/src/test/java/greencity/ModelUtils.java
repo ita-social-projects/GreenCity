@@ -59,10 +59,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -533,14 +531,26 @@ public class ModelUtils {
         return new AchievementCategoryDto("name");
     }
 
+    public static Map<UserActionType, Long> getAchievementCondition() {
+        Map<UserActionType, Long> condition = new HashMap<>();
+        condition.put(UserActionType.COMMENT_CREATED, 1L);
+        return condition;
+    }
+
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(getAchievementTranslationVOS(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto(getAchievementTranslationVOS(), getAchievementCategoryDto(),
+            getAchievementCondition());
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, getAchievementTranslationVOS(),
-            Collections.singletonList(new UserAchievementVO()),
-            new AchievementCategoryVO(1L, "name", null, null), 1);
+        return AchievementVO.builder()
+            .id(1L)
+            .translations(getAchievementTranslationVOS())
+            .userAchievements(Collections.singletonList(new UserAchievementVO()))
+            .achievementStatus(AchievementStatus.ACTIVE)
+            .achievementCategory(new AchievementCategoryVO(1L, "name", null))
+            .condition(getAchievementCondition()).build();
+
     }
 
     public static UserShoppingListItem getUserShoppingListItem() {

@@ -1,6 +1,8 @@
 package greencity.dto.achievement;
 
 import greencity.dto.achievementcategory.AchievementCategoryVO;
+import greencity.enums.AchievementStatus;
+import greencity.enums.UserActionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +26,10 @@ public class AchievementVO {
     @NotEmpty
     private AchievementCategoryVO achievementCategory;
 
+    private AchievementStatus achievementStatus;
+
     @NotEmpty
-    private Integer condition;
+    private Map<UserActionType, Long> condition;
+
+    private String icon;
 }
