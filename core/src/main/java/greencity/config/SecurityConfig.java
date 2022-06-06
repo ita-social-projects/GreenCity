@@ -161,7 +161,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
-                "/achievements/{userId}",
                 "/advices/random/{habitId}",
                 "/advices",
                 CUSTOM_SHOPPING_LIST_ITEMS,
