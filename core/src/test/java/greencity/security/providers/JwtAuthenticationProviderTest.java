@@ -1,23 +1,24 @@
 package greencity.security.providers;
 
-import greencity.enums.Role;
-import greencity.security.jwt.JwtTool;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Assertions;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import greencity.enums.Role;
+import greencity.security.jwt.JwtTool;
+import io.jsonwebtoken.ExpiredJwtException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Yurii Koval
@@ -38,17 +39,10 @@ class JwtAuthenticationProviderTest {
 
     @Test
     void authenticateWithValidAccessToken() {
-        final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxcXFAZW1haW"
-            + "wuY29tIiwicm9sZSI6WyJST0xFX0FETUlOIl0sImlhdCI6MTY1NDYyNzM"
-            + "xMiwiZXhwIjoxNjU0NjM0NTEyfQ.epHBjkH6-2iuj5O5wHPZDPsOQi57eX"
-            + "w3NQ8bTQ2exzM";
+        final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxcXFAZW1haWwu"
+            + "Y29tIiwicm9sZSI6WyJST0xFX0FETUlOIl0sImlhdCI6MTY1NDYzNjc2OSwiZXh"
+            + "wIjo2MTY1NDYzNjcwOX0.Ug-epWHV0a9f7BFPa1geKhqWysWkOdoG5wd4h2Hzpi4";
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
-        Date actualExpiration = Jwts.parser()
-            .setSigningKey(jwtTool.getAccessTokenKey())
-            .parseClaimsJws(accessToken)
-            .getBody()
-            .getExpiration();
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             accessToken,
             null);
