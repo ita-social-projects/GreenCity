@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="Max Bohonko" id="1">
+        <sql>
+            alter table users alter column role type varchar using role::varchar;
+            UPDATE users set role = 'ROLE_ADMIN' where role = '1';
+            UPDATE users set role = 'ROLE_USER' where role = '0';
+
+            create table employee_authorities
+            (
+                id   bigserial
+                    constraint employee_authorities_pkey
+                        primary key,
+                name varchar(255)
+            );
+
+            create table employee_authorities_mapping
+            (
+                authority_id bigint not null
+                    constraint fkhoy6c05kg66iogn1pmgw0djup
+                        references employee_authorities,
+                user_id      bigint not null
+                    constraint fk4uq2ytt6y7txx8xgpp4u5r33i
+                        references users
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
