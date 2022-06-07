@@ -16,4 +16,24 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(value = "SELECT * FROM events ORDER BY title", nativeQuery = true)
     Page<Event> getAll(Pageable page);
+
+    /**
+     * Method returns {@link Event} by search query and page.
+     *
+     * @param paging {@link Pageable}.
+     * @param query  query to search.
+     * @return list of {@link Event}.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT e.id, e.title, e.descripton, e.author_id, u.name, tt.name"
+            + "FROM events e "
+            + "JOIN users u on u.id = e.author_id "
+            + "JOIN events_tags ent on e.id = ent.event_id "
+            + "JOIN tag_translations tt on tt.tag_id = ent.tags_id "
+            + "WHERE concat(e.id,'') like :query or "
+            + "    lower(e.title) like lower(concat('%', :query, '%')) or "
+            + "    lower(e.description) like lower(concat('%', :query, '%')) or "
+            + "    lower(u.name) like lower(concat('%', :query, '%')) or "
+            + "    lower(tt.name) like lower(concat('%', :query, '%'))")
+    Page<Event> searchEventsBy(Pageable paging, String query);
 }
