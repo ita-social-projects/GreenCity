@@ -7,6 +7,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagVO;
+import greencity.entity.EcoNews;
 import greencity.entity.Event;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -19,8 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -196,5 +196,17 @@ class EventServiceImplTest {
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void searchEventsBy() {
+        List<Event> events = Collections.singletonList(ModelUtils.getEvent());
+        List<EventDto> eventDtos = Collections.singletonList(ModelUtils.getEventDto());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
+        when(eventRepo.searchEventsBy(pageRequest, "query")).thenReturn(page);
+        PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
+            0, false, false, true, true);
+        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
     }
 }

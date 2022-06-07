@@ -3,6 +3,7 @@ package greencity.dto.event;
 import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
@@ -37,4 +38,20 @@ public class EventDto {
     private List<String> additionalImages;
 
     private boolean isOpen;
+
+    /**
+     * Return String of event tags in English.
+     *
+     */
+    public String tagsToStringEn() {
+        if (!CollectionUtils.isEmpty(tags)) {
+            var ref = new Object() {
+                String tagsEn = "";
+            };
+            tags.forEach(t -> ref.tagsEn += t.getNameEn() + ", ");
+            ref.tagsEn = ref.tagsEn.substring(0, ref.tagsEn.length() - 2);
+            return ref.tagsEn;
+        }
+        return "";
+    }
 }
