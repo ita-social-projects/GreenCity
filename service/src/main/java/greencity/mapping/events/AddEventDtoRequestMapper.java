@@ -18,7 +18,7 @@ import java.util.List;
  * {@link greencity.dto.event.AddEventDtoRequest} into
  * {@link greencity.entity.Event}.
  */
-@Component
+@Component(value = "eventDtoRequestMapper")
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
     /**
      * Method for converting {@link greencity.dto.event.AddEventDtoRequest} into
