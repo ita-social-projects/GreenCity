@@ -23,7 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
  * @author Yurii Koval
  */
 class JwtAuthenticationProviderTest {
-    private final Role expectedRole = Role.ROLE_USER;
+    private final Role expectedRole = Role.ROLE_ADMIN;
 
     @Mock
     JwtTool jwtTool;
@@ -38,23 +38,22 @@ class JwtAuthenticationProviderTest {
 
     @Test
     void authenticateWithValidAccessToken() {
-        final String accessToken = "eyJhbGciOiJIUzI1NiJ9"
-            + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVN"
-            + "FUiJdLCJpYXQiOjE1NzU4NDUzNTAsImV4cCI6NjE1NzU4NDUyOTB9"
-            + ".x1D799yGc0dj2uWDQYusnLyG5r6-Rjj6UgBhp2JjVDE";
+        final String accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxcXFAZW1haW"
+            + "wuY29tIiwicm9sZSI6WyJST0xFX0FETUlOIl0sImlhdCI6MTY1NDYyNzM"
+            + "xMiwiZXhwIjoxNjU0NjM0NTEyfQ.epHBjkH6-2iuj5O5wHPZDPsOQi57eX"
+            + "w3NQ8bTQ2exzM";
         when(jwtTool.getAccessTokenKey()).thenReturn("123123123");
-        Date expectedExpiration = new Date(61575845290000L); // 3921 year
         Date actualExpiration = Jwts.parser()
             .setSigningKey(jwtTool.getAccessTokenKey())
             .parseClaimsJws(accessToken)
             .getBody()
             .getExpiration();
-        assertEquals(expectedExpiration, actualExpiration);
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(
             accessToken,
             null);
         Authentication actual = jwtAuthenticationProvider.authenticate(authentication);
-        final String expectedEmail = "test@gmail.com";
+        final String expectedEmail = "qqq@email.com";
         assertEquals(expectedEmail, actual.getPrincipal());
         assertEquals(
             Stream.of(expectedRole)
