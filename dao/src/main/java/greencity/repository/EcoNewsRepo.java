@@ -139,4 +139,13 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
             + "    lower(e.source) like lower(concat('%', :query, '%')) or "
             + "    lower(tt.name) like lower(concat('%', :query, '%'))")
     Page<EcoNews> searchEcoNewsBy(Pageable paging, String query);
+
+    /**
+     * Method for get total Eco News count.
+     * 
+     * @return {@link int} total count of Eco News
+     */
+    @Query(nativeQuery = true,
+        value = "select count(id) from eco_news")
+    int totalCountOfCreationNews();
 }
