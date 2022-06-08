@@ -5,6 +5,21 @@ function clearAllTagsInTagList(){
     document.getElementById("tagsEdit").innerHTML='';
 }
 
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/eco-news?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
 function searchTableFunction() {
     var userRequestInput, filteredRequest, table, tr, i;
     userRequestInput = document.getElementById("search");
