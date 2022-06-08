@@ -151,7 +151,7 @@ class ManagementEcoNewsControllerTest {
         MockMultipartFile jsonFile =
             new MockMultipartFile("addEcoNewsDtoRequest", "", "application/json", json.getBytes());
 
-        this.mockMvc.perform(multipart(managementEcoNewsLink + "/")
+        this.mockMvc.perform(multipart(managementEcoNewsLink + "/save")
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
