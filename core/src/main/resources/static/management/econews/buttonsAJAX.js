@@ -5,45 +5,34 @@ function clearAllTagsInTagList(){
     document.getElementById("tagsEdit").innerHTML='';
 }
 
-function sendDataFromSearchForm(){
-    var url = "/management/eco-news?"
-    var id = document.getElementById("idSearchForm").value;
-    var author = document.getElementById("authorSearchForm").value;
-    var title = document.getElementById("titleSearchForm").value;
-    var text = document.getElementById("textSearchForm").value;
-    var startDateS = document.getElementById("startDateSearchForm").value;
-    var endDateS = document.getElementById("endDateSearchForm").value;
-    var tag = document.getElementById("tagSearchForm").value;
-
-    if (id!==""){
-        url = url.concat("id="+id+"&");
-    }
-    if (author!==""){
-        url = url.concat("author="+author+"&");
-    }
-    if (title!==""){
-        url = url.concat("title="+title+"&");
-    }
-    if (text!==""){
-        url = url.concat("text="+text+"&");
-    }
-    if (startDateS!==""){
-        url = url.concat("startDate="+startDateS+"&");
-    }
-    if (endDateS!==""){
-        url = url.concat("endDate="+endDateS+"&");
-    }
-    if (tag!==""){
-        url = url.concat("tags="+tag+"&");
-    }
-    $.ajax({
-        url: url,
-        type: 'GET',
-        success: function(res) {
-            window.location.href= url;
+function searchTableFunction() {
+    var userRequestInput, filteredRequest, table, tr, i;
+    userRequestInput = document.getElementById("search");
+    filteredRequest = userRequestInput.value.toUpperCase();
+    table = document.getElementById("tabElement");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        id = tr[i].getElementsByTagName("td")[1];
+        author =tr[i].getElementsByTagName("td")[2];
+        title = tr[i].getElementsByTagName("td")[3];
+        content = tr[i].getElementsByTagName("td")[4];
+        if (id || author || title || content) {
+            idValue= id.textContent || id.innerText;
+            authorValue = author.textContent || author.innerText;
+            titleValue = title.textContent || title.innerText;
+            contentValue = content.textContent || content.innerText;
+            if (idValue.toUpperCase().indexOf(filteredRequest) > -1 ||
+                authorValue.toUpperCase().indexOf(filteredRequest) > -1 ||
+                titleValue.toUpperCase().indexOf(filteredRequest) > -1 ||
+                contentValue.toUpperCase().indexOf(filteredRequest) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
         }
-    });
+    }
 }
+
 function toggle(source) {
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
@@ -62,7 +51,7 @@ function updateCheckBoxCount(chInt){
     } else deleteBtn.removeClass("disabled");
 }
 function addBtnDisabled(){
-     document.getElementById('submitAddBtn').disabled=true;
+    document.getElementById('submitAddBtn').disabled=true;
 }
 let formAddValid = false;
 function addFormInputValidate(){
@@ -71,25 +60,33 @@ function addFormInputValidate(){
         obj[item.name] = item.value;
         return obj;
     }, {});
-     if(!(formData.title.length>1&&formData.title.length<170)){
-         document.getElementById("errorModalSavetitle").innerText = "size must be between 1 and 170";
-         titleValid = false;
-     }else{
-         titleValid = true;
-     }
-     var textValid;
-     if (!(formData.text.length>20 && formData.text.length<63206)){
-         document.getElementById("errorModalSavetext").innerText = "size must be between 20 and 63206";
-         textValid = false;
-     }else {
-         textValid = true;
-     }
-     if((textValid==true)&&(titleValid==true)){
+    if(!(formData.title.length>1&&formData.title.length<170)){
+        document.getElementById("errorModalSavetitle").innerText = "Size must be between 1 and 170";
+        titleValid = false;
+    }else{
+        titleValid = true;
+    }
+    var textValid;
+    if (!(formData.text.length>20 && formData.text.length<63206)){
+        document.getElementById("errorModalSavetext").innerText = "Size must be between 20 and 63206";
+        textValid = false;
+    }else {
+        textValid = true;
+    }
+    var textValid;
+        if (formData.source.length>0 && !(formData.source.startsWith("http://")) && !(formData.source.startsWith("https://"))){
+            document.getElementById("errorModalSavesource").innerText = "Must start with http(s)://";
+            textValid = false;
+        }else {
+            textValid = true;
+        }
+    if((textValid==true)&&(titleValid==true)){
         formAddValid = true;
     }else{
-         formAddValid = false;
+        formAddValid = false;
     }
 }
+//count tags for add
 function tagClick(){
     var  tagsCheckBoxes = document.getElementsByClassName("tag-checkbox");
     let count = 0;
@@ -118,6 +115,7 @@ function tagClick(){
         }
     }
 }
+//count tags for edit
 function countOfCheckedItem() {
     var  tagsCheckBoxes = document.getElementsByName('EditTags[]');
     let count = 0;
@@ -179,14 +177,14 @@ function editFormInputValidate(){
         return obj;
     }, {});
     if(!(formData.title.length>1&&formData.title.length<170)){
-        document.getElementById("errorModalUpdatetitle").innerText = "size must be between 1 and 170";
+        document.getElementById("errorModalUpdatetitle").innerText = "Size must be between 1 and 170";
         titleValid = false;
     }else{
         titleValid = true;
     }
     var textValid;
     if (!(formData.text.length>20 && formData.text.length<63206)){
-        document.getElementById("errorModalUpdatetext").innerText = "size must be between 20 and 63206";
+        document.getElementById("errorModalUpdatetext").innerText = "Size must be between 20 and 63206";
         textValid = false;
     }else {
         textValid = true;
@@ -287,6 +285,10 @@ $(document).ready(function () {
         });
     });
 
+    //add EcoNews button at the top
+    $('#addEcoNewsModalBtn').on('click', function (event) {
+        clearAllErrorsSpan();
+    });
     //submit button in addEcoNewsModal
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
@@ -299,10 +301,11 @@ $(document).ready(function () {
             "id": formData.id,
             "title": formData.title,
             "text": formData.text,
-            "image": formData.image,
+            "imagePath": formData.imagePath,
             "source": formData.source,
             "tags": []
         };
+        console.log(payload);
         $("input:checked").each(function() {
             payload.tags.push($(this).val());
         });
@@ -310,13 +313,13 @@ $(document).ready(function () {
         var result = new FormData();
         result.append("addEcoNewsDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
         var file = document.getElementById("creationFile").files[0];
-        result.append("file", file);
+        result.append("imagePath", file);
         addFormInputValidate()
         if(formAddValid==true){
             //save request in addEcoNewsModal
             document.getElementById("submitAddBtn").disabled=true;
             $.ajax({
-                url: '/management/eco-news/',
+                url: '/management/eco-news/save',
                 type: 'post',
                 contentType: false,
                 processData: false,
