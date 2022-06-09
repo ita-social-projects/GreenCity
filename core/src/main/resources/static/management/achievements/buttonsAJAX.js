@@ -115,13 +115,18 @@ $(document).ready(function () {
             "achievementCategory": formData.achievementCategory,
             "condition": getConditions()
         };
+        var multipartFormData = new FormData();
+        multipartFormData.append(
+            "achievementPostDto", new Blob([JSON.stringify(payload)], {type: "application/json"}));
+        multipartFormData.append("file", document.getElementById("achievementIcon").files[0]);
 
         //save request in addAchievementModal
         $.ajax({
             url: '/management/achievement',
             type: 'post',
             dataType: 'json',
-            contentType: 'application/json',
+            contentType: false,
+            processData: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
@@ -131,7 +136,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(payload)
+            data: multipartFormData
         });
     });
 

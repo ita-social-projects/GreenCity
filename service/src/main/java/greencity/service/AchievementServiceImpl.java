@@ -24,6 +24,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionRepo userActionRepo;
     private final UserRepo userRepo;
     private final AchievementCategoryService achievementCategoryService;
+    private final FileService fileService;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
 
@@ -50,12 +52,13 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public AchievementVO save(AchievementPostDto achievementPostDto) {
+    public AchievementVO save(AchievementPostDto achievementPostDto, MultipartFile icon) {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
         achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
+        achievement.setIcon(fileService.upload(icon));
         Achievement savedAchievement = achievementRepo.save(achievement);
 
         userRepo.findAll()

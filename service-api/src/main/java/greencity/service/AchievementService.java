@@ -7,6 +7,7 @@ import greencity.entity.Achievement;
 import greencity.entity.User;
 import greencity.enums.UserActionType;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface AchievementService {
      * @return a dto of {@link AchievementVO}
      * @author Orest Mamchuk
      */
-    AchievementVO save(AchievementPostDto achievementPostDto);
+    AchievementVO save(AchievementPostDto achievementPostDto, MultipartFile icon);
 
     /**
      * Method for getting {@link AchievementVO} by search query.
