@@ -260,6 +260,11 @@
                             <input type="button" class="btn-secondary" id="addConditionButton" onclick="addNewConditionBlock()" value="+">
                             <input type="button" class="btn-secondary" id="removeConditionButton" onclick="removeLastConditionBlock()" value="-">
                         </div>
+                        <div class="form-group">
+                            <label for="achievementIcon">[[#{greenCity.pages.table.image.upload}]]</label>
+                            <input type="file" class="form-control" id="achievementIcon" name="file">
+                            <span th:id="errorModalAddfile" class="errorSpan"></span>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"

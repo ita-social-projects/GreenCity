@@ -15,5 +15,5 @@ public enum UserActionType {
 
     FRIEND_ADDED,
 
-    UBS_ORDER_MADE
+    UBS_ORDER_DONE
 }

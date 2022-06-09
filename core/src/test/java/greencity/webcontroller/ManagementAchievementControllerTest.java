@@ -23,15 +23,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.util.Collections;
 import java.util.List;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -111,17 +113,20 @@ class ManagementAchievementControllerTest {
 
     @Test
     void saveAchievementTest() throws Exception {
-//        String accessToken = "accessToken";
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(AUTHORIZATION, accessToken);
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
-        String content = objectMapper.writeValueAsString(achievementPostDto);
-        this.mockMvc.perform(post(link)
-            .content(content)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
+
+        MockMultipartFile json =
+            new MockMultipartFile("achievementPostDto", "", "application/json",
+                objectMapper.writeValueAsBytes(achievementPostDto));
+        MockMultipartFile file =
+            new MockMultipartFile("file", "icon.png", "image/png", (byte[]) null);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.multipart(link)
+            .file(json)
+            .file(file))
             .andExpect(status().isOk());
-        verify(achievementService).save(achievementPostDto);
+
+        verify(achievementService).save(achievementPostDto, file);
     }
 
     @Test

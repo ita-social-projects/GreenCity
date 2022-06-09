@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ImageValidation;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -64,10 +66,10 @@ public class ManagementAchievementController {
      */
     @PostMapping
     @ResponseBody
-    public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-        BindingResult bindingResult) {
+    public GenericResponseDto saveAchievement(@Valid @RequestPart AchievementPostDto achievementPostDto,
+        BindingResult bindingResult, @ImageValidation @RequestParam MultipartFile file) {
         if (!bindingResult.hasErrors()) {
-            achievementService.save(achievementPostDto);
+            achievementService.save(achievementPostDto, file);
         }
         return buildGenericResponseDto(bindingResult);
     }
