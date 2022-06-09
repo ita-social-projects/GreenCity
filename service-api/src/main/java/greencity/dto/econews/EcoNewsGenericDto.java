@@ -48,4 +48,6 @@ public class EcoNewsGenericDto {
     private int likes;
 
     private int countComments;
+
+    private int countOfEcoNews;
 }

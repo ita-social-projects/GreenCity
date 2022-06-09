@@ -1224,7 +1224,7 @@ public class ModelUtils {
         String[] tagsUa = {"Новини"};
         return new EcoNewsGenericDto(1L, "title", "text", "shortInfo",
             ModelUtils.getEcoNewsAuthorDto(), zonedDateTime, "https://google.com/", "source",
-            List.of(tagsUa), List.of(tagsEn), 0, 1);
+            List.of(tagsUa), List.of(tagsEn), 0, 1, 0);
     }
 
     public static EcoNewsDto getEcoNewsDtoForFindDtoByIdAndLanguage() {

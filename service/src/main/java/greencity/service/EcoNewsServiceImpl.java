@@ -668,6 +668,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         int countOfComments = ecoNews.getEcoNewsComments() != null
             ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count()
             : 0;
+        int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()
             .id(ecoNews.getId())
             .imagePath(ecoNews.getImagePath())
@@ -681,6 +682,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .source(ecoNews.getSource())
             .likes(ecoNews.getUsersLikedNews() != null ? ecoNews.getUsersLikedNews().size() : 0)
             .countComments(countOfComments)
+            .countOfEcoNews(countOfEcoNews)
             .build();
     }
 

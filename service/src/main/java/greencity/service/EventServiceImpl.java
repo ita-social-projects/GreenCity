@@ -6,10 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
 import greencity.dto.tag.TagVO;
-import greencity.entity.Event;
-import greencity.entity.EventImages;
-import greencity.entity.Tag;
-import greencity.entity.User;
+import greencity.entity.*;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
@@ -126,5 +123,11 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toSet()));
 
         eventRepo.save(event);
+    }
+
+    @Override
+    public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
+        Page<Event> page = eventRepo.searchEventsBy(paging, query);
+        return buildPageableAdvancedDto(page);
     }
 }

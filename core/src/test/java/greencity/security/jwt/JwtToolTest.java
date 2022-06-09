@@ -16,8 +16,8 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static greencity.constant.AppConstant.ROLE;
 import static org.mockito.Mockito.when;
-import static greencity.constant.AppConstant.AUTHORITIES;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -56,7 +56,7 @@ class JwtToolTest {
             .setSigningKey(jwtTool.getAccessTokenKey())
             .parseClaimsJws(accessToken)
             .getBody()
-            .get(AUTHORITIES);
+            .get(ROLE);
         assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
     }
 
@@ -80,7 +80,7 @@ class JwtToolTest {
             .setSigningKey(userVO.getRefreshTokenKey())
             .parseClaimsJws(refreshToken)
             .getBody()
-            .get(AUTHORITIES);
+            .get(ROLE);
         assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
     }
 

@@ -10,7 +10,7 @@ public final class AppConstant {
     public static final String MODERATOR = "MODERATOR";
     public static final String USER = "USER";
     public static final String AUTHORIZATION = "Authorization";
-    public static final String AUTHORITIES = "authorities";
+    public static final String ROLE = "role";
     public static final String VALIDATION_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     public static final String DEFAULT_LANGUAGE_CODE = "en";
     public static final Double DEFAULT_RATING = 0.0;
@@ -22,7 +22,7 @@ public final class AppConstant {
     public static final int MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 56;
     public static final Integer MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL = 8;
     public static final String DEFAULT_HABIT_IMAGE =
-        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg";
+        "https://csb10032000a548f571.blob.core.windows.net/allfiles/5994e369-c6e5-4f4c-889f-78b520d542d6hebit.png";
 
     private AppConstant() {
     }
