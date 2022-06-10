@@ -374,6 +374,13 @@ table.table td:last-child i {
     margin: 0 5px;
 }
 
+table.table td:last-child i.fa-star {
+    opacity: 0.9;
+    font-size: 19px;
+    margin: 0;
+    color: #13AA57;
+}
+
 table.table td a {
     font-weight: bold;
     color: #566787;
@@ -1419,6 +1426,7 @@ td input[type=search] {
 
 .btn-tertiary:focus {
     color: #13AA57;
+    box-shadow: 0 0 0 0.2rem rgb(76 175 80 / 25%);
 }
 
 .btn-remove {
@@ -1445,6 +1453,7 @@ td input[type=search] {
     color: #fff;
     background-color: #B21D15;
     outline: none;
+    box-shadow: 0 0 0 .2rem rgba(225,83,97,.5);
 }
 
 .btn-remove.disabled {
@@ -1455,6 +1464,16 @@ td input[type=search] {
     /*width: 130px;*/
     /*height: 40px;*/
     display: none;
+}
+
+.button-delete:focus{
+    box-shadow: 0 0 0 .2rem rgba(225,83,97,.5);
+}
+
+.btn-danger{
+    height: 40px;
+    margin-top: 25px;
+    width: 98px;
 }
 
 .dropbtn.userpage:focus {
