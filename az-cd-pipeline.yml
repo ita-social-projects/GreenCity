@@ -105,12 +105,6 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
         
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'greencity-chart'
-        publishLocation: 'Container'
-    
     - task: Docker@2
       displayName: Build image
       inputs:
