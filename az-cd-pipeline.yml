@@ -97,7 +97,7 @@ stages:
       inputs:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/greencity-chart'
-        TargetFolder: '$(build.artifactstagingdirectory)/chart'
+        TargetFolder: '$(build.artifactstagingdirectory)'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
@@ -107,7 +107,7 @@ stages:
         
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/chart/'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'greencity-chart'
         publishLocation: 'Container'
     
@@ -147,7 +147,7 @@ stages:
                 buildType: 'current'
                 downloadType: 'single'
                 artifactName: 'greencity-chart'
-                downloadPath: '$(System.ArtifactsDirectory)/chart/'
+                downloadPath: '$(System.ArtifactsDirectory)'
                 
             - task: AzureRmWebAppDeployment@4
               inputs:
