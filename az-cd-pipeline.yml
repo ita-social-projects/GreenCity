@@ -91,6 +91,13 @@ stages:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/target/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+    
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)/greencity-chart'
+        Contents: '**'
+        TargetFolder: '$(build.artifactstagingdirectory)/greencity-chart'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
@@ -135,13 +142,6 @@ stages:
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
 
-            - task: DownloadBuildArtifacts@0
-              inputs:
-                buildType: 'current'
-                downloadType: 'single'
-                artifactName: 'greencity-chart'
-                downloadPath: '$(System.ArtifactsDirectory)'
-                
             - task: AzureRmWebAppDeployment@4
               inputs:
                 azureSubscription: '$(azureSub)'
