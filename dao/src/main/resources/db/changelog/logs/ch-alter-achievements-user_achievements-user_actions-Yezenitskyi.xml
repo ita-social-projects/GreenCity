@@ -15,7 +15,8 @@
         <addColumn tableName="user_actions">
             <column name="timestamp" type="timestamp with time zone"/>
             <column name="action_type" type="varchar(30)"/>
-            <column name="action_id" type="bigint"/>
+            <column name="context_type" type="varchar(30)"/>
+            <column name="context_id" type="bigint"/>
         </addColumn>
 
         <dropColumn tableName="user_achievements" columnName="achievement_status"/>

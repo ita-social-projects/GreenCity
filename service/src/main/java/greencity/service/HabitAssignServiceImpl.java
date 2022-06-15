@@ -9,6 +9,7 @@ import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
+import greencity.enums.ActionContextType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.UserActionType;
@@ -592,7 +593,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
             CompletableFuture.runAsync(() -> userActionService.log(
-                habitAssign.getUser(), UserActionType.HABIT_ADDED, habitAssign.getHabit().getId()));
+                habitAssign.getUser(), UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT,
+                habitAssign.getHabit().getId()));
         }
         habitAssignRepo.save(habitAssign);
     }

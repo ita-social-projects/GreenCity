@@ -16,6 +16,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.ActionContextType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.enums.UserActionType;
@@ -78,7 +79,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
 
         CompletableFuture.runAsync(() -> userActionService.log(
-            toSave.getAuthor(), UserActionType.ECO_NEWS_CREATED, toSave.getId()));
+            toSave.getAuthor(), UserActionType.ECO_NEWS_CREATED, ActionContextType.ECO_NEWS, toSave.getId()));
 
         return addEcoNewsDtoResponse;
     }
@@ -97,7 +98,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
 
         CompletableFuture.runAsync(() -> userActionService.log(
-            toSave.getAuthor(), UserActionType.ECO_NEWS_CREATED, toSave.getId()));
+            toSave.getAuthor(), UserActionType.ECO_NEWS_CREATED, ActionContextType.ECO_NEWS, toSave.getId()));
 
         return ecoNewsDto;
     }
@@ -426,7 +427,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
-        CompletableFuture.runAsync(() -> userActionService.log(user, UserActionType.LIKED_COMMENT, comment.getId()));
+        CompletableFuture.runAsync(() -> userActionService.log(
+            user, UserActionType.ECO_NEWS_COMMENT_LIKED, ActionContextType.ECO_NEWS_COMMENT, comment.getId()));
     }
 
     /**
@@ -529,7 +531,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            CompletableFuture.runAsync(() -> userActionService.log(userVO, UserActionType.LIKED_ECO_NEWS, id));
+            CompletableFuture.runAsync(
+                () -> userActionService.log(userVO, UserActionType.ECO_NEWS_LIKED, ActionContextType.ECO_NEWS, id));
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
     }

@@ -2,50 +2,48 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
-import greencity.dto.useraction.UserActionVO;
-import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
-import greencity.entity.Language;
-import greencity.entity.UserAchievement;
+import greencity.entity.*;
 import greencity.entity.localization.AchievementTranslation;
-import greencity.exception.exceptions.NotDeletedException;
+import greencity.enums.AchievementStatus;
+import greencity.enums.ActionContextType;
+import greencity.enums.UserActionType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.repository.AchievementRepo;
-
-import java.util.*;
-
-import greencity.repository.AchievementTranslationRepo;
-import greencity.repository.UserAchievementRepo;
+import greencity.repository.*;
 import org.junit.jupiter.api.Assertions;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.*;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
     @Mock
     private AchievementRepo achievementRepo;
+    @Mock
+    private UserActionRepo userActionRepo;
+    @Mock
+    private UserRepo userRepo;
     @Mock
     private ModelMapper modelMapper;
     @Mock
@@ -53,13 +51,35 @@ class AchievementServiceImplTest {
     @Mock
     private RestClient restClient;
     @Mock
-    private UserActionService userActionService;
-    @Mock
     private UserAchievementRepo userAchievementRepo;
     @InjectMocks
     private AchievementServiceImpl achievementService;
     @Mock
     private AchievementTranslationRepo achievementTranslationRepo;
+    @Mock
+    private FileService fileService;
+
+    @Test
+    void save() {
+        AchievementPostDto dto = ModelUtils.getAchievementPostDto();
+        Achievement achievement = ModelUtils.getAchievement();
+        MultipartFile file = new MockMultipartFile("icon.png", new byte[] {});
+
+        when(modelMapper.map(dto, Achievement.class)).thenReturn(achievement);
+        when(achievementCategoryService.findByName(dto.getAchievementCategory().getName()))
+            .thenReturn(ModelUtils.getAchievementCategoryVO());
+        when(modelMapper.map(ModelUtils.getAchievementCategoryVO(), AchievementCategory.class))
+            .thenReturn(ModelUtils.getAchievementCategory());
+        when(fileService.upload(file)).thenReturn("https://link.for.file/icon.png");
+        when(achievementRepo.save(achievement)).thenReturn(achievement);
+        when(userRepo.findAll()).thenReturn(List.of(ModelUtils.getUser()));
+        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(ModelUtils.getAchievementVO());
+        when(userAchievementRepo.existsByUserAndAchievement(ModelUtils.getUser(), achievement)).thenReturn(true);
+
+        achievementService.save(dto, file);
+
+        verify(achievementRepo).save(achievement);
+    }
 
     @Test
     void findAllWithEmptyListTest() {
@@ -133,9 +153,9 @@ class AchievementServiceImplTest {
     @Test
     void updateWithUnknownId() {
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-        when(achievementRepo.findById(achievementManagementDto.getId()))
-            .thenThrow(
-                new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID + achievementManagementDto.getId()));
+
+        when(achievementRepo.findById(achievementManagementDto.getId())).thenReturn(Optional.empty());
+
         assertThrows(NotUpdatedException.class, () -> achievementService.update(achievementManagementDto));
     }
 
@@ -198,5 +218,102 @@ class AchievementServiceImplTest {
         userAchievement.setNotified(true);
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
         assertEquals(achievementNotifications, achievementService.findAllUnnotifiedForUser(1L));
+    }
+
+    @Test
+    void isAchievedDefaultAchievement() {
+        User user = ModelUtils.getUser();
+        Achievement defaultAchievement = ModelUtils.getAchievement();
+
+        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(0L);
+        assertFalse(achievementService.isAchieved(user, defaultAchievement));
+
+        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+        assertTrue(achievementService.isAchieved(user, defaultAchievement));
+    }
+
+    @Test
+    void isAchievedRegisteredAchievement() {
+        User user = ModelUtils.getUser();
+        Achievement registeredAchievement = ModelUtils.getRegisteredAchievement();
+
+        assertTrue(achievementService.isAchieved(user, registeredAchievement));
+    }
+
+    @Test
+    void isAchievedHabitAcquiredAchievement() {
+        User user = ModelUtils.getUser();
+        Achievement habitAcquiredAchievement = ModelUtils.getHabitAcquiredAchievement();
+
+        when(userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
+            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(false);
+        assertFalse(achievementService.isAchieved(user, habitAcquiredAchievement));
+
+        when(userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
+            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(true);
+        assertTrue(achievementService.isAchieved(user, habitAcquiredAchievement));
+    }
+
+    @Test
+    void tryToGiveUserAchievementSuccess() {
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+
+        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(false);
+        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+
+        achievementService.tryToGiveUserAchievement(user, achievement);
+
+        verify(userAchievementRepo).save(any(UserAchievement.class));
+    }
+
+    @Test
+    void tryToGiveUserAchievementFailureInactiveAchievement() {
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+        achievement.setAchievementStatus(AchievementStatus.INACTIVE);
+
+        achievementService.tryToGiveUserAchievement(user, achievement);
+
+        verify(userAchievementRepo, never()).save(any(UserAchievement.class));
+    }
+
+    @Test
+    void tryToGiveUserAchievementFailureAlreadyExists() {
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+
+        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(true);
+
+        achievementService.tryToGiveUserAchievement(user, achievement);
+
+        verify(userAchievementRepo, never()).save(any(UserAchievement.class));
+    }
+
+    @Test
+    void tryToGiveUserAchievementFailureNotAchieved() {
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+
+        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(false);
+        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(0L);
+
+        achievementService.tryToGiveUserAchievement(user, achievement);
+
+        verify(userAchievementRepo, never()).save(any(UserAchievement.class));
+    }
+
+    @Test
+    void tryToGiveUserAchievementsByActionType() {
+        User user = ModelUtils.getUser();
+        UserActionType actionType = UserActionType.ECO_NEWS_CREATED;
+
+        when(achievementRepo.findAllByActionType(actionType)).thenReturn(List.of(ModelUtils.getAchievement()));
+        when(userAchievementRepo.existsByUserAndAchievement(eq(user), any(Achievement.class))).thenReturn(false);
+        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+
+        achievementService.tryToGiveUserAchievementsByActionType(user, actionType);
+
+        verify(userAchievementRepo).save(any(UserAchievement.class));
     }
 }

@@ -13,6 +13,7 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.enums.AchievementStatus;
+import greencity.enums.ActionContextType;
 import greencity.enums.UserActionType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -56,7 +57,7 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
-        achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
+        achievement.getTranslations().forEach(translation -> translation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         achievement.setIcon(fileService.upload(icon));
         Achievement savedAchievement = achievementRepo.save(achievement);
@@ -220,6 +221,9 @@ public class AchievementServiceImpl implements AchievementService {
             });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isAchieved(User user, Achievement achievement) {
         return achievement.getCondition().entrySet().stream()
@@ -227,9 +231,9 @@ public class AchievementServiceImpl implements AchievementService {
                 switch (condition.getKey()) {
                     case REGISTERED:
                         return true;
-                    case HABIT_ADDED:
-                        // will be implemented later
-                        return false;
+                    case HABIT_ACQUIRED:
+                        return userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
+                            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, condition.getValue());
                     default:
                         return userActionRepo.countAllByUserAndActionType(user, condition.getKey()) >= condition
                             .getValue();
@@ -237,6 +241,9 @@ public class AchievementServiceImpl implements AchievementService {
             });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void tryToGiveUserAchievement(User user, Achievement achievement) {
         if (AchievementStatus.INACTIVE.equals(achievement.getAchievementStatus())) {
@@ -256,6 +263,9 @@ public class AchievementServiceImpl implements AchievementService {
         userAchievementRepo.save(newUserAchievement);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void tryToGiveUserAchievementsByActionType(User user, UserActionType actionType) {
         achievementRepo.findAllByActionType(actionType)
