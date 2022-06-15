@@ -92,11 +92,24 @@ stages:
         Contents: '**/target/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
 
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)'
+        Contents: '**/greencity-chart'
+        TargetFolder: '$(build.artifactstagingdirectory)/chart'
+
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
+        
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/chart/'
+        ArtifactName: 'greencity-chart'
+        publishLocation: 'Container'
     
     - task: Docker@2
       displayName: Build image
@@ -128,6 +141,13 @@ stages:
                 downloadType: 'single'
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'greencity-chart'
+                downloadPath: '$(System.ArtifactsDirectory)/chart/'
                 
             - task: AzureRmWebAppDeployment@4
               inputs:
