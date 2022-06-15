@@ -137,3 +137,20 @@ stages:
                 deployToSlotOrASE: true
                 ResourceGroupName: '$(resourceGroup)'
                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+
+            - task: HelmInstaller@0
+              inputs:
+                helmVersion: '3.9.0'
+                installKubectl: true
+                
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'k8s-stage'
+                namespace: 'default'
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '**/greencity-chart'
+                releaseName: 'greencity'
+                overrideValues: 'image=skyere/greencity:$(Build.BuildId)'
+                arguments: '--debug'
