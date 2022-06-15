@@ -96,8 +96,8 @@ stages:
       displayName: Copy Files
       inputs:
         SourceFolder: '$(system.defaultworkingdirectory)'
-        Contents: '**/greencity-chart'
-        TargetFolder: '$(build.artifactstagingdirectory)'
+        Contents: '*'
+        TargetFolder: '$(build.artifactstagingdirectory)/greencity-chart'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
