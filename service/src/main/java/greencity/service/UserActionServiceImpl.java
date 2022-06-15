@@ -5,6 +5,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionMessage;
 import greencity.entity.User;
 import greencity.entity.UserAction;
+import greencity.enums.ActionContextType;
 import greencity.enums.UserActionType;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserActionRepo;
@@ -24,26 +25,27 @@ public class UserActionServiceImpl implements UserActionService {
     private final UserRepo userRepo;
     private final AchievementService achievementService;
     private final ModelMapper modelMapper;
-    private static final String USER_ACTIONS_TOPIC = "greencity.user.actions";
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void log(User user, UserActionType actionType, Long actionId) {
-        logWithTimestamp(user, actionType, actionId, ZonedDateTime.now());
+    public void log(User user, UserActionType actionType, ActionContextType contextType, Long contextId) {
+        logWithTimestamp(user, actionType, contextType, contextId, ZonedDateTime.now());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void log(UserVO userVO, UserActionType actionType, Long actionId) {
-        logWithTimestamp(modelMapper.map(userVO, User.class), actionType, actionId, ZonedDateTime.now());
+    public void log(UserVO userVO, UserActionType actionType, ActionContextType contextType, Long contextId) {
+        logWithTimestamp(modelMapper.map(userVO, User.class), actionType, contextType, contextId, ZonedDateTime.now());
     }
 
-    private void logWithTimestamp(User user, UserActionType actionType, Long actionId, ZonedDateTime timestamp) {
-        if (userActionRepo.existsByUserAndActionTypeAndActionId(user, actionType, actionId)) {
+    private void logWithTimestamp(User user, UserActionType actionType, ActionContextType contextType, Long contextId,
+        ZonedDateTime timestamp) {
+        if (userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(user, actionType, contextType,
+            contextId)) {
             return;
         }
 
@@ -51,20 +53,21 @@ public class UserActionServiceImpl implements UserActionService {
             .user(user)
             .timestamp(timestamp)
             .actionType(actionType)
-            .actionId(actionId).build();
+            .contextType(contextType)
+            .contextId(contextId).build();
         userActionRepo.saveAndFlush(userAction);
 
         achievementService.tryToGiveUserAchievementsByActionType(user, actionType);
     }
 
     /**
-     * Listens {@code greencity.user.actions} topic and logs {@link UserAction}s.
+     * Listens {@code user.actions} topic and logs {@link UserAction}s.
      */
-    @KafkaListener(topics = USER_ACTIONS_TOPIC, autoStartup = "${kafka.enable}")
+    @KafkaListener(topics = "${kafka.topic.user.actions}", autoStartup = "${kafka.enable}")
     public void listenAndLog(@Payload UserActionMessage message) {
         User user = userRepo.findByEmail(message.getUserEmail())
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + message.getUserEmail()));
         logWithTimestamp(
-            user, message.getActionType(), message.getActionId(), ZonedDateTime.parse(message.getTimestamp()));
+            user, message.getActionType(), message.getContextType(), message.getContextId(), message.getTimestamp());
     }
 }

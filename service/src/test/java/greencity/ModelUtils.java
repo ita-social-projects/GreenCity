@@ -53,6 +53,7 @@ import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.user.*;
+import greencity.dto.useraction.UserActionMessage;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.AchievementCategory;
@@ -273,7 +274,8 @@ public class ModelUtils {
                 .id(13L)
                 .actionType(UserActionType.REGISTERED)
                 .timestamp(ZonedDateTime.now())
-                .actionId(13L)
+                .contextType(ActionContextType.USER)
+                .contextId(13L)
                 .user(UserVO.builder()
                     .id(13L)
                     .build())
@@ -1133,7 +1135,7 @@ public class ModelUtils {
 
     public static Map<UserActionType, Long> getAchievementCondition() {
         Map<UserActionType, Long> condition = new HashMap<>();
-        condition.put(UserActionType.COMMENT_CREATED, 1L);
+        condition.put(UserActionType.ECO_NEWS_CREATED, 1L);
         return condition;
     }
 
@@ -1145,6 +1147,30 @@ public class ModelUtils {
             .achievementCategory(getAchievementCategory())
             .achievementStatus(AchievementStatus.ACTIVE)
             .condition(getAchievementCondition()).build();
+    }
+
+    public static Achievement getRegisteredAchievement() {
+        Map<UserActionType, Long> registeredCondition = new HashMap<>();
+        registeredCondition.put(UserActionType.REGISTERED, null);
+        return Achievement.builder()
+            .id(1L)
+            .translations(Collections.singletonList(getAchievementTranslation()))
+            .userAchievements(Collections.emptyList())
+            .achievementCategory(getAchievementCategory())
+            .achievementStatus(AchievementStatus.ACTIVE)
+            .condition(registeredCondition).build();
+    }
+
+    public static Achievement getHabitAcquiredAchievement() {
+        Map<UserActionType, Long> habitAcquiredCondition = new HashMap<>();
+        habitAcquiredCondition.put(UserActionType.HABIT_ACQUIRED, 1L);
+        return Achievement.builder()
+            .id(1L)
+            .translations(Collections.singletonList(getAchievementTranslation()))
+            .userAchievements(Collections.emptyList())
+            .achievementCategory(getAchievementCategory())
+            .achievementStatus(AchievementStatus.ACTIVE)
+            .condition(habitAcquiredCondition).build();
     }
 
     public static AchievementCategory getAchievementCategory() {
@@ -1207,11 +1233,23 @@ public class ModelUtils {
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ZonedDateTime.now(), UserActionType.REGISTERED, 0L);
+        return UserAction.builder()
+            .id(1L)
+            .user(getEcoNews().getAuthor())
+            .actionType(UserActionType.ECO_NEWS_CREATED)
+            .contextType(ActionContextType.ECO_NEWS)
+            .contextId(getEcoNews().getId())
+            .timestamp(ZonedDateTime.now()).build();
     }
 
     public static UserActionVO getUserActionVO() {
-        return new UserActionVO(1L, ModelUtils.getUserVO(), ZonedDateTime.now(), UserActionType.REGISTERED, 0L);
+        return UserActionVO.builder()
+            .id(1L)
+            .user(getEcoNewsVO().getAuthor())
+            .actionType(UserActionType.ECO_NEWS_CREATED)
+            .contextType(ActionContextType.ECO_NEWS)
+            .contextId(getEcoNewsVO().getId())
+            .timestamp(ZonedDateTime.now()).build();
     }
 
     public static EcoNewsDto getEcoNewsDto() {
@@ -1583,7 +1621,8 @@ public class ModelUtils {
                 .id(1L)
                 .actionType(UserActionType.REGISTERED)
                 .timestamp(ZonedDateTime.now())
-                .actionId(0L)
+                .contextType(ActionContextType.USER)
+                .contextId(0L)
                 .user(UserVO.builder()
                     .id(1L)
                     .build())
@@ -1752,5 +1791,14 @@ public class ModelUtils {
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
+    }
+
+    public static UserActionMessage getUserActionMessage() {
+        return UserActionMessage.builder()
+            .userEmail(getUser().getEmail())
+            .actionType(UserActionType.ECO_NEWS_CREATED)
+            .contextType(ActionContextType.ECO_NEWS)
+            .contextId(1L)
+            .timestamp(ZonedDateTime.now()).build();
     }
 }

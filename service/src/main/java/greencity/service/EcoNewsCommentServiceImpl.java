@@ -14,6 +14,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
+import greencity.enums.ActionContextType;
 import greencity.enums.UserActionType;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -81,7 +82,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         Long commentId = ecoNewsComment.getId();
         User user = ecoNewsComment.getUser();
         CompletableFuture.runAsync(() -> userActionService.log(
-            user, UserActionType.COMMENT_CREATED, commentId));
+            user, UserActionType.ECO_NEWS_COMMENT_CREATED, ActionContextType.ECO_NEWS_COMMENT, commentId));
 
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(

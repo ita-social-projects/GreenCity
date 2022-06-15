@@ -1,6 +1,7 @@
 package greencity.dto.useraction;
 
 import greencity.dto.user.UserVO;
+import greencity.enums.ActionContextType;
 import greencity.enums.UserActionType;
 import lombok.*;
 
@@ -21,5 +22,7 @@ public class UserActionVO {
 
     private UserActionType actionType;
 
-    private Long actionId;
+    private ActionContextType contextType;
+
+    private Long contextId;
 }

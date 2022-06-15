@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import greencity.enums.ActionContextType;
 import greencity.enums.UserActionType;
 import lombok.*;
 
@@ -31,5 +32,9 @@ public class UserAction {
     private UserActionType actionType;
 
     @Column
-    private Long actionId;
+    @Enumerated(EnumType.STRING)
+    private ActionContextType contextType;
+
+    @Column
+    private Long contextId;
 }

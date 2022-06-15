@@ -18,7 +18,6 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econewscomment.*;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -533,7 +532,7 @@ public class ModelUtils {
 
     public static Map<UserActionType, Long> getAchievementCondition() {
         Map<UserActionType, Long> condition = new HashMap<>();
-        condition.put(UserActionType.COMMENT_CREATED, 1L);
+        condition.put(UserActionType.ECO_NEWS_COMMENT_CREATED, 1L);
         return condition;
     }
 
