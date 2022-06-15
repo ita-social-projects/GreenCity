@@ -150,7 +150,7 @@ stages:
                 namespace: 'default'
                 command: 'upgrade'
                 chartType: 'FilePath'
-                chartPath: '**/greencity-chart'
+                chartPath: 'greencity-chart'
                 releaseName: 'greencity'
                 overrideValues: 'image=skyere/greencity:$(Build.BuildId)'
                 arguments: '--debug'
