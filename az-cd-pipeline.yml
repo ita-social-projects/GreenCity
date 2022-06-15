@@ -163,7 +163,7 @@ stages:
                 namespace: 'default'
                 command: 'upgrade'
                 chartType: 'FilePath'
-                chartPath: 'drop/greencity-chart'
+                chartPath: '$(System.ArtifactsDirectory)/greencity-chart'
                 releaseName: 'greencity'
                 overrideValues: 'image=skyere/greencity:$(Build.BuildId)'
                 arguments: '--debug'
