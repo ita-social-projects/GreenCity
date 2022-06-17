@@ -38,6 +38,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -163,13 +164,17 @@ class PlaceServiceImplTest {
     private CategoryRepo categoryRepo;
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
+    @Mock
+    private GoogleApiService googleApiService;
+    @Mock
+    UserRepo userRepo;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, restClient, openingHoursService, discountService,
-            notificationService, zoneId, proposePlaceMapper, categoryRepo);
+            notificationService, zoneId, proposePlaceMapper, categoryRepo, googleApiService, userRepo);
     }
 
     @Test

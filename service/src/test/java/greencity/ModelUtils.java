@@ -615,7 +615,7 @@ public class ModelUtils {
 
     public static Place getPlace() {
         Place place = new Place();
-        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", "test", place));
         place.setId(1L);
         place.setName("Forum");
         place.setDescription("Shopping center");

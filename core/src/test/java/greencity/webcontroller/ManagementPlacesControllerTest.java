@@ -64,7 +64,7 @@ class ManagementPlacesControllerTest {
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.findAll(pageable)).thenReturn(adminPlaceDtoPageableDto);
-        when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test", null)));
+        when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test","test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
@@ -156,7 +156,7 @@ class ManagementPlacesControllerTest {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(1L);
         placeUpdateDto.setName("test");
-        placeUpdateDto.setCategory(new CategoryDto("Food", null));
+        placeUpdateDto.setCategory(new CategoryDto("Food","test", null));
         placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto("address", 111.1, 111.1));
 
         return placeUpdateDto;
