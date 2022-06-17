@@ -210,5 +210,8 @@ public interface PlaceService {
      */
     List<FilterPlaceCategory> getAllPlaceCategories();
 
+    /**
+     * Method for create new place From UI.
+     */
     PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email);
 }

@@ -25,7 +25,7 @@ public class GoogleApiService {
     /**
      * Send request to the google and receive response with geocoding.
      *
-     * @param searchRequest - address for search
+     * @param searchRequest - address to search
      * @return GeocodingResults - return result from geocoding service
      */
     public List<GeocodingResult> getResultFromGeoCode(String searchRequest) {
@@ -42,6 +42,12 @@ public class GoogleApiService {
         return geocodingResults;
     }
 
+    /**
+     * Send request to the google and receive response with geocoding.
+     *
+     * @param searchCoordinates - coordinates to search
+     * @return GeocodingResults - return result from geocoding service
+     */
     public List<GeocodingResult> getResultFromGeoCodeByCoordinates(LatLng searchCoordinates) {
         List<GeocodingResult> geocodingResults = new ArrayList<>();
         locales.forEach(locale -> {

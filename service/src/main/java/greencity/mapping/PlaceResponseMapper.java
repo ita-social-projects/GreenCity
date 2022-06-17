@@ -28,7 +28,7 @@ public class PlaceResponseMapper extends AbstractConverter<Place, PlaceResponse>
                     .openTime(hour.getOpenTime())
                     .closeTime(hour.getCloseTime())
                     .build())
-                    .collect(Collectors.toSet()))
+                .collect(Collectors.toSet()))
             .locationAddressAndGeoDto(AddPlaceLocation.builder()
                 .address(source.getLocation().getAddressUa())
                 .addressEng(source.getLocation().getAddress())

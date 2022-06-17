@@ -554,7 +554,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Override
     public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email) {
-        PlaceResponse placeResponse = modelMapper.map(dto,PlaceResponse.class);
+        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
         User user = userRepo.findByEmail(email)
             .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
         if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
@@ -565,9 +565,9 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = modelMapper.map(placeResponse, Place.class);
         place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
         place.setAuthor(user);
-        place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(),Location.class));
+        place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
 
-        return modelMapper.map(placeRepo.save(place),PlaceResponse.class);
+        return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
     }
 
     private AddPlaceLocation initializeGeoCodingResults(
@@ -581,5 +581,4 @@ public class PlaceServiceImpl implements PlaceService {
             .lng(ukrLang.geometry.location.lng)
             .build();
     }
-
 }

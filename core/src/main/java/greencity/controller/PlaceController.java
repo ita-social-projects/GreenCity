@@ -383,11 +383,19 @@ public class PlaceController {
             .collect(Collectors.toList())));
     }
 
+    /**
+     * Controller to get information about places categories.
+     */
+    @ApiOperation(value = "Return all place categories to filter")
     @GetMapping("/v2/filteredPlacesCategories")
     public ResponseEntity<List<FilterPlaceCategory>> allFilterPlaceCategories() {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getAllPlaceCategories());
     }
 
+    /**
+     * Controller to save new place from UI.
+     */
+    @ApiOperation(value = "Create new place from Ui")
     @PostMapping("/v2/save")
     public ResponseEntity<PlaceResponse> saveEcoPlaceFromUi(@RequestBody AddPlaceDto dto,
         @ApiIgnore Principal principal) {
