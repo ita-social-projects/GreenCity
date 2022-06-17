@@ -16,7 +16,7 @@ import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.PlaceResponse;
 
 @ExtendWith(MockitoExtension.class)
-public class AddPlaceDtoMapperTest {
+class AddPlaceDtoMapperTest {
     @InjectMocks
     AddPlaceDtoMapper mapper;
 

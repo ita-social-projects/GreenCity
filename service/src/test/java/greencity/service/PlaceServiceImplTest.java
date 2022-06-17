@@ -39,6 +39,7 @@ import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
@@ -614,5 +615,21 @@ class PlaceServiceImplTest {
         verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
         verify(placeRepo).save(place);
         verify(modelMapper).map(place, PlaceResponse.class);
+    }
+
+    @Test
+    void addPlaceFromUiThrowsException() {
+        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
+        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
+        User user = ModelUtils.getUser();
+        user.setUserStatus(UserStatus.BLOCKED);
+
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, user.getEmail()));
+
+        verify(modelMapper).map(dto, PlaceResponse.class);
+        verify(userRepo).findByEmail(user.getEmail());
     }
 }

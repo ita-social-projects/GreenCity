@@ -40,7 +40,7 @@ public class GoogleApiService {
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
                 log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
-                throw new GoogleApiException(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         });
         return geocodingResults;
@@ -61,7 +61,7 @@ public class GoogleApiService {
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
                 log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
-                throw new GoogleApiException(e.getMessage());
+                Thread.currentThread().interrupt();
             }
         });
         return geocodingResults;

@@ -1,6 +1,5 @@
 package greencity.mapping;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.AbstractConverter;

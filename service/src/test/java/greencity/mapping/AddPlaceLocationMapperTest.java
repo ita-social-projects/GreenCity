@@ -11,7 +11,7 @@ import greencity.dto.location.AddPlaceLocation;
 import greencity.entity.Location;
 
 @ExtendWith(MockitoExtension.class)
-public class AddPlaceLocationMapperTest {
+class AddPlaceLocationMapperTest {
     @InjectMocks
     AddPlaceLocationMapper mapper;
 
