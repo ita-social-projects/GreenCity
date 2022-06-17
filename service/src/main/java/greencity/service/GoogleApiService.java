@@ -8,6 +8,8 @@ import com.google.maps.model.LatLng;
 
 import greencity.exception.exceptions.GoogleApiException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,12 +20,13 @@ import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleApiService {
     private final GeoApiContext context;
     private static final List<Locale> locales = List.of(new Locale("uk"), new Locale("en"));
 
     /**
-     * Send request to the google and receive response with geocoding.
+     * Send request to the Google and receive response with geocoding.
      *
      * @param searchRequest - address to search
      * @return GeocodingResults - return result from geocoding service
@@ -36,6 +39,7 @@ public class GoogleApiService {
                     .address(searchRequest).language(locale.getLanguage()).await();
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
+                log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
                 throw new GoogleApiException(e.getMessage());
             }
         });
@@ -43,7 +47,7 @@ public class GoogleApiService {
     }
 
     /**
-     * Send request to the google and receive response with geocoding.
+     * Send request to the Google and receive response with geocoding.
      *
      * @param searchCoordinates - coordinates to search
      * @return GeocodingResults - return result from geocoding service
@@ -56,6 +60,7 @@ public class GoogleApiService {
                     .latlng(searchCoordinates).language(locale.getLanguage()).await();
                 Collections.addAll(geocodingResults, results);
             } catch (IOException | InterruptedException | ApiException e) {
+                log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
                 throw new GoogleApiException(e.getMessage());
             }
         });

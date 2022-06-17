@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.openhours.OpeningHoursDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class AddPlaceDto {
     @NotBlank
     @Length(max = ServiceValidationConstants.PLACE_NAME_MAX_LENGTH)

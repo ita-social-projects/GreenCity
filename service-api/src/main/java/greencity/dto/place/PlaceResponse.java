@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode
 @Builder
+@ToString
 public class PlaceResponse {
     private String placeName;
     private CategoryDto category;
