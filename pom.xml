@@ -52,7 +52,7 @@
                     <excludes>
                         <exclude>**/config/*</exclude>
                         <exclude>**/enums/*</exclude>
-                        <exclude>**/exception/exceptions/*</exclude>
+                        <exclude>**/exception/**/*</exclude>
                         <exclude>**/entity/*</exclude>
                     </excludes>
                 </configuration>
