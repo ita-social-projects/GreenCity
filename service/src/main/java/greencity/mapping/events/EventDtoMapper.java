@@ -6,6 +6,9 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -15,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link greencity.entity.Event}
+ * Class that used by {@link ModelMapper} to map {@link Event}
  * into {@link EventDto}.
  */
 @Component

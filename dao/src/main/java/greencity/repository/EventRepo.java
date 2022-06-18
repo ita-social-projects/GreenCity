@@ -1,7 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.EcoNews;
-import greencity.entity.Event;
+import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

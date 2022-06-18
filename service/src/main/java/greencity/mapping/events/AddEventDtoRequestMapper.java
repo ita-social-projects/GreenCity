@@ -3,8 +3,8 @@ package greencity.mapping.events;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.CoordinatesDto;
 import greencity.entity.Coordinates;
-import greencity.entity.Event;
-import greencity.entity.EventDateLocation;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Class that used by {@link ModelMapper} to map
  * {@link greencity.dto.event.AddEventDtoRequest} into
- * {@link greencity.entity.Event}.
+ * {@link Event}.
  */
 @Component(value = "eventDtoRequestMapper")
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
