@@ -1,6 +1,5 @@
 package greencity.entity.event;
 
-import greencity.entity.Coordinates;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
