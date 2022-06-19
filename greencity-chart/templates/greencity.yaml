@@ -281,11 +281,11 @@ spec:
               name: appsecret
               key: VERIFY-EMAIL
 
-        # - name: WEBSITE_ENABLE_SYNC_UPDATE_SITE
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: appsecret
-        #       key: API-KEY
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: GOOGLE-API-KEY
 
         ports:
         - containerPort: 8080
