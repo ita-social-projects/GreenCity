@@ -6,6 +6,7 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
+import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
@@ -71,7 +72,9 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         Coordinates coordinates = eventDateLocation.getCoordinates();
         if (coordinates != null) {
             CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                .longitude(coordinates.getLongitude()).build();
+                .longitude(coordinates.getLongitude())
+                .addressEn(coordinates.getAddressEn())
+                .addressUa(coordinates.getAddressUa()).build();
             eventDateLocationDto.setCoordinates(coordinatesDto);
         }
         return eventDateLocationDto;

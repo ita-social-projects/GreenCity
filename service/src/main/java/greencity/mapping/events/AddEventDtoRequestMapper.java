@@ -2,7 +2,7 @@ package greencity.mapping.events;
 
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.CoordinatesDto;
-import greencity.entity.Coordinates;
+import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
@@ -45,7 +45,9 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
             if (date.getCoordinates() != null) {
                 CoordinatesDto coordinatesDto = date.getCoordinates();
                 eventDateLocation.setCoordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude()).build());
+                    .longitude(coordinatesDto.getLongitude())
+                    .addressUa(coordinatesDto.getAddressUa())
+                    .addressEn(coordinatesDto.getAddressEn()).build());
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());

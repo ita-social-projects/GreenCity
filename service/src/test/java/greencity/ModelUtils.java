@@ -57,6 +57,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.AchievementCategory;
 import greencity.entity.*;
+import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.localization.AchievementTranslation;
@@ -1610,11 +1611,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1631,11 +1632,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1644,7 +1645,7 @@ public class ModelUtils {
     public static AddEventDtoResponse getAddEventDtoResponse() {
         return AddEventDtoResponse.builder()
             .id(1L)
-            .dates(new ArrayList<EventDateLocationDto>())
+            .dates(new ArrayList<>())
             .title("Title")
             .description("Description")
             .organizer(EventAuthorDto.builder()
