@@ -23,8 +23,11 @@ public class Location {
     @Column(nullable = false)
     private Double lng;
 
-    @Column(name = "address", nullable = false)
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
+    private String addressUa;
 
     @OneToOne(mappedBy = "location")
     private Place place;
