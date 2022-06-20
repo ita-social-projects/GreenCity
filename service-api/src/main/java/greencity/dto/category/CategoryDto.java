@@ -33,5 +33,7 @@ public class CategoryDto implements Serializable {
     @NotBlank
     private String name;
 
+    private String nameUa;
+
     private Long parentCategoryId;
 }

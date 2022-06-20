@@ -1,8 +1,42 @@
 package greencity;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
+
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdviceDto;
@@ -15,27 +49,64 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.*;
-import greencity.dto.event.*;
-import greencity.dto.factoftheday.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddEventDtoResponse;
+import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
-import greencity.dto.habit.*;
-import greencity.dto.habitfact.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitManagementDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habitfact.HabitFactDto;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.place.AddPlaceDto;
+import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
+import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -43,19 +114,61 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
-import greencity.dto.tag.*;
+import greencity.dto.tag.TagDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagUaEnDto;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.RecommendedFriendDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
-import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.Comment;
+import greencity.entity.Coordinates;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.Event;
+import greencity.entity.EventDateLocation;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.UserAchievement;
+import greencity.entity.UserAction;
+import greencity.entity.UserShoppingListItem;
+import greencity.entity.VerifyEmail;
 import greencity.entity.*;
 import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
@@ -64,6 +177,17 @@ import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.AchievementStatus;
+import greencity.enums.CommentStatus;
+import greencity.enums.EmailNotification;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.PlaceStatus;
+import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.TagType;
+import greencity.enums.UserStatus;
 import greencity.enums.*;
 
 import java.io.IOException;
@@ -134,6 +258,7 @@ public class ModelUtils {
             .email(TestConst.EMAIL)
             .name(TestConst.NAME)
             .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
@@ -617,7 +742,7 @@ public class ModelUtils {
 
     public static Place getPlace() {
         Place place = new Place();
-        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", "test", place));
         place.setId(1L);
         place.setName("Forum");
         place.setDescription("Shopping center");
@@ -1023,6 +1148,7 @@ public class ModelUtils {
     public static Location getLocation() {
         return Location.builder()
             .address("address")
+            .addressUa("test")
             .lng(12.12d)
             .lat(12.12d)
             .build();
@@ -1732,6 +1858,133 @@ public class ModelUtils {
                 CoordinatesDto.builder().build())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static FilterPlaceCategory getFilterPlaceCategory() {
+        return FilterPlaceCategory.builder()
+            .name("category")
+            .nameUa("Категорії")
+            .build();
+    }
+
+    public static AddPlaceDto getAddPlaceDto() {
+        return AddPlaceDto.builder()
+            .categoryName("category")
+            .placeName("test")
+            .locationName("Test")
+            .openingHoursList(Set.of(OpeningHoursDto.builder()
+                .openTime(LocalTime.now())
+                .closeTime(LocalTime.now())
+                .weekDay(DayOfWeek.MONDAY)
+                .build()))
+            .build();
+    }
+
+    public static PlaceResponse getPlaceResponse() {
+        return PlaceResponse.builder()
+            .category(CategoryDto.builder()
+                .name("category")
+                .nameUa("Test")
+                .build())
+            .locationAddressAndGeoDto(AddPlaceLocation.builder()
+                .lng(32.2)
+                .lat(32.3)
+                .addressEng("test")
+                .address("test")
+                .build())
+            .openingHoursList(Set.of(OpeningHoursDto.builder()
+                .weekDay(DayOfWeek.MONDAY)
+                .openTime(LocalTime.now())
+                .closeTime(LocalTime.now())
+                .build()))
+            .build();
+    }
+
+    public static List<GeocodingResult> getGeocodingResult() {
+        List<GeocodingResult> geocodingResults = new ArrayList<>();
+
+        GeocodingResult geocodingResult1 = new GeocodingResult();
+
+        Geometry geometry = new Geometry();
+        geometry.location = new LatLng(50.5555555d, 50.5555555d);
+
+        AddressComponent locality = new AddressComponent();
+        locality.longName = "fake street";
+        locality.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
+
+        AddressComponent streetNumber = new AddressComponent();
+        streetNumber.longName = "13";
+        streetNumber.types = new AddressComponentType[] {AddressComponentType.STREET_NUMBER};
+
+        AddressComponent region = new AddressComponent();
+        region.longName = "fake region";
+        region.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
+
+        AddressComponent sublocality = new AddressComponent();
+        sublocality.longName = "fake district";
+        sublocality.types = new AddressComponentType[] {AddressComponentType.SUBLOCALITY};
+
+        AddressComponent route = new AddressComponent();
+        route.longName = "fake street name";
+        route.types = new AddressComponentType[] {AddressComponentType.ROUTE};
+
+        geocodingResult1.addressComponents = new AddressComponent[] {
+            locality,
+            streetNumber,
+            region,
+            sublocality,
+            route
+        };
+
+        geocodingResult1.formattedAddress = "fake address";
+        geocodingResult1.geometry = geometry;
+
+        GeocodingResult geocodingResult2 = new GeocodingResult();
+
+        AddressComponent locality2 = new AddressComponent();
+        locality2.longName = "fake street";
+        locality2.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
+
+        AddressComponent streetNumber2 = new AddressComponent();
+        streetNumber2.longName = "13";
+        streetNumber2.types = new AddressComponentType[] {AddressComponentType.STREET_NUMBER};
+
+        AddressComponent region2 = new AddressComponent();
+        region2.longName = "fake region";
+        region2.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
+
+        AddressComponent sublocality2 = new AddressComponent();
+        sublocality2.longName = "fake district";
+        sublocality2.types = new AddressComponentType[] {AddressComponentType.SUBLOCALITY};
+
+        AddressComponent route2 = new AddressComponent();
+        route2.longName = "fake street name";
+        route2.types = new AddressComponentType[] {AddressComponentType.ROUTE};
+
+        geocodingResult2.addressComponents = new AddressComponent[] {
+            locality2,
+            streetNumber2,
+            region2,
+            sublocality2,
+            route2
+        };
+
+        geocodingResult2.formattedAddress = "fake address 2";
+        geocodingResult2.geometry = geometry;
+
+        geocodingResults.add(geocodingResult1);
+        geocodingResults.add(geocodingResult2);
+
+        return geocodingResults;
+    }
+
+    public static AddPlaceLocation getAddPlaceLocation() {
+        return AddPlaceLocation.builder()
+            .address("test")
+            .addressEng("address")
+            .lat(12.12)
+            .lng(12.12)
             .build();
     }
 }
