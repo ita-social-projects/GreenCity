@@ -1,0 +1,292 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greencity
+  annotations:
+    reloader.stakater.com/auto: "true"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greencity
+  template:
+    metadata:
+      labels:
+        app: greencity
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: greencity
+        image: {{ .Values.image }}
+        resources:
+          requests:
+            cpu: 50m
+            memory: 300Mi
+          limits:
+            cpu: 2
+            memory: 1024Mi
+        env:
+
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: API-KEY
+
+        - name: API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: API-SECRET
+
+        - name: AZURE_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: AZURE-CONNECTION-STRING
+
+        - name: AZURE_CONTAINER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: AZURE-CONTAINER-NAME
+
+        - name: BACKEND_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: BACKEND-ADDRESS
+
+        - name: BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: BUCKET-NAME
+
+        - name: CACHE_SPEC
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: CACHE-SPEC
+
+        - name: CLIENT_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: CLIENT-ADDRESS
+
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: DATABASE-PASSWORD
+
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: DATABASE-USER
+
+        # - name: DATASOURCE_URL
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: appsecret
+        #       key: API-KEY
+
+        - name: DIALECT
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: DIALECT
+
+        - name: DRIVER
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: DRIVER
+
+        - name: ECO_NEWS_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: ECO-NEWS-ADDRESS
+
+        # - name: EMAIL_TOPIC
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: appsecret
+        #       key: EMAIL-TOPIC
+
+        - name: FACEBOOK_APP_ID
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: FACEBOOK-APP-ID
+
+        - name: FACEBOOK_APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: FACEBOOK-APP-SECRET
+
+        - name: GREENCITYUSER_SERVER_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: GREENCITYUSER-SERVER-ADDRESS
+
+        - name: HIBERNATE_CONFIG
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: HIBERNATE-CONFIG
+
+        - name: JAWSDB_URL
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: JAWSDB-URL
+
+        - name: JDBC_LOB
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: JDBC-LOB
+
+        - name: LIQUIBASE_ENABLE
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LIQUIBASE-ENABLE
+
+        - name: LIQUIBASE_LOG
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LIQUIBASE-LOG
+
+        - name: LOG_EXCEPTION_HANDLER
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LOG-EXCEPTION-HANDLER
+
+        - name: LOG_FILE
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LOG-FILE
+
+        - name: LOG_LEVEL_ROOT
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LOG-LEVEL-ROOT
+
+        - name: LOG_PATH
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LOG-PATH
+
+        - name: LOG_PATTERN
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: LOG-PATTERN
+
+        - name: MAIL_HOST
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: MAIL-HOST
+
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: MAIL-PASSWORD
+
+        - name: MAIL_PORT
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: MAIL-PORT
+
+        - name: MAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: MAIL-USER
+
+        # - name: MAX_FILE_SIZE
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: appsecret
+        #       key: API-KEY
+
+        - name: POOL_SIZE
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: POOL-SIZE
+
+        - name: SHOW_SQL
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: SHOW-SQL
+
+        - name: SMTP_AUTH
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: SMTP-AUTH
+              
+        - name: SMTP_ENABLE
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: SMTP-ENABLE
+
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: SPRING-PROFILES-ACTIVE
+
+        - name: TOKEN_ACCESS_TIME
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: TOKEN-ACCESS-TIME
+
+        - name: TOKEN_KEY
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: TOKEN-KEY
+
+        - name: TOKEN_REFRESH_TIME
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: TOKEN-REFRESH-TIME
+
+        - name: VERIFY_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: VERIFY-EMAIL
+
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: GOOGLE-API-KEY
+
+        ports:
+        - containerPort: 8080
+          name: tomcat
