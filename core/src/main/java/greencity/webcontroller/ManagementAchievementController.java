@@ -8,7 +8,6 @@ import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.language.LanguageDTO;
-import greencity.entity.Language;
 import greencity.enums.UserActionType;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
@@ -54,9 +53,11 @@ public class ManagementAchievementController {
             ? achievementService.findAll(paging)
             : achievementService.searchAchievementBy(paging, query);
         List<LanguageDTO> languages = languageService.getAllLanguages();
+
         languages.stream()
             .filter(language -> "ru".equalsIgnoreCase(language.getCode()))
-            .forEach(languages::remove);
+            .findFirst().ifPresent(languages::remove);
+
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAll());
         model.addAttribute("languages", languages);
