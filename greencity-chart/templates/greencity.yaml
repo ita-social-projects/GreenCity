@@ -41,6 +41,12 @@ spec:
               name: appsecret
               key: API-SECRET
 
+        - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: appsecret
+              key: APPLICATIONINSIGHTS-CONNECTION-STRING
+
         - name: AZURE_CONNECTION_STRING
           valueFrom:
             secretKeyRef:
