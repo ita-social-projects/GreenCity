@@ -1,10 +1,8 @@
 package greencity.mapping.achievement;
 
-import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementDto;
 import greencity.entity.Achievement;
 import greencity.entity.localization.AchievementTranslation;
-import greencity.exception.exceptions.NotFoundException;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 

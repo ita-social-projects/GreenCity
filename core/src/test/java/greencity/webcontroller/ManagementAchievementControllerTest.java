@@ -7,7 +7,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.service.AchievementCategoryService;
@@ -39,7 +38,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
