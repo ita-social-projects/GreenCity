@@ -1,9 +1,8 @@
 package greencity.repository;
 
-import greencity.entity.Place;
-import greencity.enums.PlaceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +10,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import greencity.entity.Place;
+import greencity.enums.PlaceStatus;
 
 /**
  * Provides an interface to manage {@link Place} entity.
@@ -99,4 +101,17 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
     @Query("SELECT p FROM Place p WHERE CONCAT(p.id,'') LIKE LOWER(CONCAT('%', :searchQuery, '%')) "
         + "OR LOWER(p.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
     Page<Place> searchBy(Pageable pageable, String searchQuery);
+
+    /**
+     * Method to get place by category name.
+     *
+     * @param category category to search
+     * @return - places with searching category
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM places p "
+            + "join categories c on c.id = p.category_id "
+            + "WHERE c.name IN (:category) "
+            + "or c.name_ua IN (:category)")
+    List<Place> findPlaceByCategory(String[] category);
 }

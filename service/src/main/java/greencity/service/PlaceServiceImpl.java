@@ -1,6 +1,26 @@
 package greencity.service;
 
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.maps.model.GeocodingResult;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -10,8 +30,8 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
-import greencity.dto.location.LocationVO;
 import greencity.dto.location.AddPlaceLocation;
+import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.place.AddPlaceDto;
@@ -44,30 +64,10 @@ import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.maps.model.GeocodingResult;
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
@@ -470,7 +470,9 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        List<Place> list =
+            ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
+                : placeRepo.findAll(new PlaceFilter(filterDto));
         list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
