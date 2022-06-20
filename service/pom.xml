@@ -19,6 +19,9 @@
         <commons-fileupload.version>1.3</commons-fileupload.version>
         <commons-io.version>2.6</commons-io.version>
         <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
+        <!-- check actual version on git account google-maps api for java -->
+        <google.maps.version>2.0.0</google.maps.version>
+        <slf4.version>1.7.25</slf4.version>
         <spring-kafka.version>2.7.2</spring-kafka.version>
     </properties>
 
@@ -130,6 +133,13 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
             <version>${spring-kafka.version}</version>
+        </dependency>
+
+        <!--Google geocoding Api dependency-->
+        <dependency>
+            <groupId>com.google.maps</groupId>
+            <artifactId>google-maps-services</artifactId>
+            <version>${google.maps.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,6 +1,29 @@
 package greencity;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
@@ -12,7 +35,10 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
@@ -20,10 +46,8 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
@@ -37,13 +61,45 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.*;
@@ -168,7 +224,7 @@ public class ModelUtils {
 
     public static Place getPlace() {
         Place place = new Place();
-        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", "test", place));
         place.setId(1L);
         place.setName("Forum");
         place.setDescription("Shopping center");
@@ -667,5 +723,18 @@ public class ModelUtils {
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
             .build())).tags(List.of("first", "second", "third")).build();
+    }
+
+    public static AddPlaceDto getAddPlaceDto() {
+        return AddPlaceDto.builder()
+            .placeName("test")
+            .categoryName("category")
+            .locationName("Test")
+            .openingHoursList(Set.of(OpeningHoursDto.builder()
+                .openTime(LocalTime.now())
+                .closeTime(LocalTime.now())
+                .weekDay(DayOfWeek.MONDAY)
+                .build()))
+            .build();
     }
 }
