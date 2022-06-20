@@ -186,24 +186,6 @@ body {
     min-width: 800px;
 }
 
-/*.hoverable {
-    color: red;
-    cursor: pointer;
-}
-.hoverable:hover .tooltip {
-    display: block;
-}
-.tooltip {
-    position: absolute;
-    white-space: nowrap;
-    display: none;
-    background: #ffffcc;
-    border: 1px solid black;
-    padding: 5px;
-    z-index: 1000;
-    color: black;
-}*/
-
 .tooltip-container {
     display: flex;
     width: fit-content;
@@ -288,7 +270,6 @@ body {
     border: none;
     min-width: 50px;
     border-radius: 5px;
-    border: none;
     outline: none !important;
     margin-left: 20px;
 }
@@ -775,33 +756,6 @@ table.table .avatar {
     height: 6px;
 }
 
-/*.dropbtn.access {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 25px;
-}
-.dropdown-content.access {
-    width: 80px;
-    height: 44px;
-    margin-top: 25px;
-}
-.dropdown-content.access a {
-    line-height: 19px;
-    color: #000000;
-    text-decoration: none;
-    border-radius: 5px;
-    padding: 2px;
-    display: block;
-    font-weight: normal;
-}
-.dropdown.access {
-    position: static;
-    display: flex;
-    margin-left: 0;
-}*/
-
 .table-filter-icon {
     background-image: url("/img/filter-icon.svg");
     width: 16px;
@@ -963,7 +917,7 @@ table.table .avatar {
     height: 60px;
     margin-left: -11px;
     border: 1px solid #CACFD3;
-    border-top: 0px solid #CACFD3;
+    border-top: 0 solid #CACFD3;
 
 }
 
@@ -985,7 +939,7 @@ table.table .avatar {
 .dropdown-content.status a:hover {
     color: #000000 !important;
     background-color: #9CA7B0;
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .dropbtn {
@@ -1219,7 +1173,7 @@ table.table .avatar {
     order: 1;
     align-self: stretch;
     flex-grow: 0;
-    margin: 0px 0px;
+    margin: 0 0;
 }
 
 .modal textarea.form-control {
@@ -1616,7 +1570,7 @@ button#searchByForUser {
     flex: none;
     order: 0;
     flex-grow: 0;
-    margin: 0px 0px;
+    margin: 0 0;
     font-size: 16px;
     border-color: #13AA57;
 }
@@ -1719,4 +1673,44 @@ a.lightgrey {
     position: relative;
     left: 60%;
     filter: invert(44%) sepia(8%) saturate(692%) hue-rotate(164deg) brightness(96%) contrast(93%);
+}
+
+.achievement-icon {
+    height: 150px;
+    width: 150px;
+}
+
+.text-with-line-breaks {
+    white-space: normal;
+}
+
+.achievement-condition-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.condition-block {
+    margin-bottom: 5px;
+}
+
+.condition-key {
+    width: 70%;
+    display: inline-block;
+}
+
+.condition-value {
+    width: 29%;
+    float: right;
+    display: inline-block;
+}
+
+.condition-buttons-block .btn {
+    min-width: 2em;
+    width: 2em;
+    height: 2em;
+}
+
+.modal-footer .btn {
+    margin-top: 0;
 }

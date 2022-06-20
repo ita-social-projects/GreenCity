@@ -1,8 +1,10 @@
 package greencity.webcontroller;
 
+import com.azure.core.http.ContentType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.achievement.AchievementDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
@@ -11,6 +13,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
+import org.apache.poi.openxml4j.opc.ContentTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +26,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -70,8 +75,8 @@ class ManagementAchievementControllerTest {
     @Test
     void getAllAchievementTest() throws Exception {
         Pageable paging = PageRequest.of(0, 3, Sort.by("id").descending());
-        List<AchievementVO> list = Collections.singletonList(ModelUtils.getAchievementVO());
-        PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
+        List<AchievementDto> list = Collections.singletonList(ModelUtils.getAchievementDto());
+        PageableAdvancedDto<AchievementDto> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         when(achievementService.findAll(paging)).thenReturn(allAchievements);
@@ -90,8 +95,8 @@ class ManagementAchievementControllerTest {
     @Test
     void getAllAchievementSearchByQueryTest() throws Exception {
         Pageable pageable = PageRequest.of(0, 3, Sort.by("id").descending());
-        List<AchievementVO> list = Collections.singletonList(new AchievementVO());
-        PageableAdvancedDto<AchievementVO> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
+        List<AchievementDto> list = Collections.singletonList(new AchievementDto());
+        PageableAdvancedDto<AchievementDto> allAchievements = new PageableAdvancedDto<>(list, 3, 0,
             3, 0, false, true, true, false);
         List<AchievementCategoryVO> achievementCategoryList = Collections.singletonList(new AchievementCategoryVO());
         List<LanguageDTO> languages = Collections.singletonList(ModelUtils.getLanguageDTO());
@@ -116,10 +121,10 @@ class ManagementAchievementControllerTest {
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
 
         MockMultipartFile json =
-            new MockMultipartFile("achievementPostDto", "", "application/json",
+            new MockMultipartFile("achievementPostDto", "", ContentType.APPLICATION_JSON,
                 objectMapper.writeValueAsBytes(achievementPostDto));
         MockMultipartFile file =
-            new MockMultipartFile("file", "icon.png", "image/png", (byte[]) null);
+            new MockMultipartFile("file", "icon.png", ContentTypes.IMAGE_PNG, (byte[]) null);
 
         this.mockMvc.perform(MockMvcRequestBuilders.multipart(link)
             .file(json)
@@ -159,12 +164,23 @@ class ManagementAchievementControllerTest {
     @Test
     void updateTest() throws Exception {
         AchievementManagementDto achievementManagementDto = new AchievementManagementDto(1L);
-        String content = objectMapper.writeValueAsString(achievementManagementDto);
-        this.mockMvc.perform(put(link)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(achievementService).update(achievementManagementDto);
-    }
 
+        MockMultipartFile json =
+            new MockMultipartFile("achievementManagementDto", "", ContentType.APPLICATION_JSON,
+                objectMapper.writeValueAsBytes(achievementManagementDto));
+        MockMultipartFile file =
+            new MockMultipartFile("file", "icon.png", ContentTypes.IMAGE_PNG, (byte[]) null);
+
+        MockMultipartHttpServletRequestBuilder builder = MockMvcRequestBuilders.multipart(link)
+            .file(json)
+            .file(file);
+        builder.with(request -> {
+            request.setMethod(HttpMethod.PUT.name());
+            return request;
+        });
+
+        this.mockMvc.perform(builder).andExpect(status().isOk());
+
+        verify(achievementService).update(achievementManagementDto, file);
+    }
 }

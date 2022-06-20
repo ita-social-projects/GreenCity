@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -75,8 +76,8 @@ public class AchievementServiceImpl implements AchievementService {
      */
     @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
     @Override
-    public List<AchievementVO> findAll() {
-        return filterActiveAndMapToAchievementVO(achievementRepo.findAll());
+    public List<AchievementDto> findAll() {
+        return filterActiveAndMapToAchievementDto(achievementRepo.findAll());
     }
 
     /**
@@ -85,23 +86,23 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
+    public PageableAdvancedDto<AchievementDto> findAll(Pageable page) {
         Page<Achievement> pages = achievementRepo.findAll(page);
-        List<AchievementVO> achievementVOS = filterActiveAndMapToAchievementVO(pages);
-        return createPageable(achievementVOS, pages);
+        List<AchievementDto> achievementDtos = filterActiveAndMapToAchievementDto(pages);
+        return createPageable(achievementDtos, pages);
     }
 
-    private List<AchievementVO> filterActiveAndMapToAchievementVO(Iterable<Achievement> achievements) {
+    private List<AchievementDto> filterActiveAndMapToAchievementDto(Iterable<Achievement> achievements) {
         return StreamSupport.stream(achievements.spliterator(), false)
             .filter(achievement -> AchievementStatus.ACTIVE.equals(achievement.getAchievementStatus()))
-            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .map(achievement -> modelMapper.map(achievement, AchievementDto.class))
             .collect(Collectors.toList());
     }
 
-    private PageableAdvancedDto<AchievementVO> createPageable(List<AchievementVO> achievementVOS,
+    private PageableAdvancedDto<AchievementDto> createPageable(List<AchievementDto> achievementDtos,
         Page<Achievement> pages) {
         return new PageableAdvancedDto<>(
-            achievementVOS,
+            achievementDtos,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages(),
@@ -118,10 +119,10 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query) {
+    public PageableAdvancedDto<AchievementDto> searchAchievementBy(Pageable paging, String query) {
         Page<Achievement> page = achievementRepo.searchAchievementsBy(paging, query);
-        List<AchievementVO> achievementVOS = filterActiveAndMapToAchievementVO(page);
-        return createPageable(achievementVOS, page);
+        List<AchievementDto> achievementDtos = filterActiveAndMapToAchievementDto(page);
+        return createPageable(achievementDtos, page);
     }
 
     /**
@@ -168,13 +169,22 @@ public class AchievementServiceImpl implements AchievementService {
      * @author Orest Mamchuk
      */
     @Override
-    public AchievementPostDto update(AchievementManagementDto achievementManagementDto) {
+    public AchievementPostDto update(AchievementManagementDto achievementManagementDto, MultipartFile icon) {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
         setTranslations(achievement, achievementManagementDto);
         achievement.setCondition(achievementManagementDto.getCondition());
+        if (Objects.nonNull(icon)) {
+            String oldIcon = achievement.getIcon();
+            achievement.setIcon(fileService.upload(icon));
+            fileService.delete(oldIcon);
+        }
         Achievement updated = achievementRepo.save(achievement);
+
+        userRepo.findAll()
+            .forEach(user -> tryToGiveUserAchievement(user, updated));
+
         return modelMapper.map(updated, AchievementPostDto.class);
     }
 
@@ -232,11 +242,12 @@ public class AchievementServiceImpl implements AchievementService {
                     case REGISTERED:
                         return true;
                     case HABIT_ACQUIRED:
-                        return userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
-                            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, condition.getValue());
+                        return userActionRepo.existsByUserIdAndActionTypeAndContextTypeAndContextId(
+                            user.getId(), UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, condition.getValue());
                     default:
-                        return userActionRepo.countAllByUserAndActionType(user, condition.getKey()) >= condition
-                            .getValue();
+                        return userActionRepo.countAllByUserIdAndActionType(user.getId(),
+                            condition.getKey()) >= condition
+                                .getValue();
                 }
             });
     }
@@ -249,7 +260,7 @@ public class AchievementServiceImpl implements AchievementService {
         if (AchievementStatus.INACTIVE.equals(achievement.getAchievementStatus())) {
             return;
         }
-        if (userAchievementRepo.existsByUserAndAchievement(user, achievement)) {
+        if (userAchievementRepo.existsByUserIdAndAchievementId(user.getId(), achievement.getId())) {
             return;
         }
         if (!isAchieved(user, achievement)) {

@@ -74,7 +74,8 @@ class AchievementServiceImplTest {
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(userRepo.findAll()).thenReturn(List.of(ModelUtils.getUser()));
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(ModelUtils.getAchievementVO());
-        when(userAchievementRepo.existsByUserAndAchievement(ModelUtils.getUser(), achievement)).thenReturn(true);
+        when(userAchievementRepo.existsByUserIdAndAchievementId(ModelUtils.getUser().getId(), achievement.getId()))
+            .thenReturn(true);
 
         achievementService.save(dto, file);
 
@@ -84,7 +85,7 @@ class AchievementServiceImplTest {
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        List<AchievementDto> findAllResult = achievementService.findAll();
         assertTrue(findAllResult.isEmpty());
     }
 
@@ -93,9 +94,9 @@ class AchievementServiceImplTest {
         Achievement achievement = ModelUtils.getAchievement();
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
-        when(modelMapper.map(achievement, AchievementVO.class))
-            .thenReturn(ModelUtils.getAchievementVO());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        when(modelMapper.map(achievement, AchievementDto.class))
+            .thenReturn(ModelUtils.getAchievementDto());
+        List<AchievementDto> findAllResult = achievementService.findAll();
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
@@ -103,11 +104,11 @@ class AchievementServiceImplTest {
     void findAllByPageableTest() {
         Pageable pageable = PageRequest.of(0, 2);
         Achievement achievement = ModelUtils.getAchievement();
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        AchievementDto achievementDto = ModelUtils.getAchievementDto();
         Page<Achievement> pages = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
         when(achievementRepo.findAll(pageable)).thenReturn(pages);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.findAll(pageable);
+        when(modelMapper.map(achievement, AchievementDto.class)).thenReturn(achievementDto);
+        PageableAdvancedDto<AchievementDto> pageableAdvancedDto = achievementService.findAll(pageable);
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
@@ -116,10 +117,10 @@ class AchievementServiceImplTest {
         Pageable pageable = PageRequest.of(0, 2);
         Achievement achievement = ModelUtils.getAchievement();
         Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
+        AchievementDto achievementDto = ModelUtils.getAchievementDto();
         when(achievementRepo.searchAchievementsBy(pageable, "")).thenReturn(page);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
+        when(modelMapper.map(achievement, AchievementDto.class)).thenReturn(achievementDto);
+        PageableAdvancedDto<AchievementDto> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
@@ -143,10 +144,12 @@ class AchievementServiceImplTest {
         AchievementTranslationVO achievementTranslationVO = ModelUtils.getAchievementTranslationVO();
         achievementManagementDto.setTranslations(Collections.singletonList(achievementTranslationVO));
         achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationVO()));
+        MultipartFile file = ModelUtils.getFile();
         when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
+        when(fileService.upload(file)).thenReturn("https://link.for.file/icon.png");
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
-        AchievementPostDto expected = achievementService.update(achievementManagementDto);
+        AchievementPostDto expected = achievementService.update(achievementManagementDto, file);
         assertEquals(expected, achievementPostDto);
     }
 
@@ -156,7 +159,7 @@ class AchievementServiceImplTest {
 
         when(achievementRepo.findById(achievementManagementDto.getId())).thenReturn(Optional.empty());
 
-        assertThrows(NotUpdatedException.class, () -> achievementService.update(achievementManagementDto));
+        assertThrows(NotUpdatedException.class, () -> achievementService.update(achievementManagementDto, null));
     }
 
     @Test
@@ -225,10 +228,12 @@ class AchievementServiceImplTest {
         User user = ModelUtils.getUser();
         Achievement defaultAchievement = ModelUtils.getAchievement();
 
-        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(0L);
+        when(userActionRepo.countAllByUserIdAndActionType(user.getId(), UserActionType.ECO_NEWS_CREATED))
+            .thenReturn(0L);
         assertFalse(achievementService.isAchieved(user, defaultAchievement));
 
-        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+        when(userActionRepo.countAllByUserIdAndActionType(user.getId(), UserActionType.ECO_NEWS_CREATED))
+            .thenReturn(1L);
         assertTrue(achievementService.isAchieved(user, defaultAchievement));
     }
 
@@ -245,12 +250,12 @@ class AchievementServiceImplTest {
         User user = ModelUtils.getUser();
         Achievement habitAcquiredAchievement = ModelUtils.getHabitAcquiredAchievement();
 
-        when(userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
-            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(false);
+        when(userActionRepo.existsByUserIdAndActionTypeAndContextTypeAndContextId(
+            user.getId(), UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(false);
         assertFalse(achievementService.isAchieved(user, habitAcquiredAchievement));
 
-        when(userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
-            user, UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(true);
+        when(userActionRepo.existsByUserIdAndActionTypeAndContextTypeAndContextId(
+            user.getId(), UserActionType.HABIT_ACQUIRED, ActionContextType.HABIT, 1L)).thenReturn(true);
         assertTrue(achievementService.isAchieved(user, habitAcquiredAchievement));
     }
 
@@ -259,8 +264,9 @@ class AchievementServiceImplTest {
         User user = ModelUtils.getUser();
         Achievement achievement = ModelUtils.getAchievement();
 
-        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(false);
-        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+        when(userAchievementRepo.existsByUserIdAndAchievementId(user.getId(), achievement.getId())).thenReturn(false);
+        when(userActionRepo.countAllByUserIdAndActionType(user.getId(), UserActionType.ECO_NEWS_CREATED))
+            .thenReturn(1L);
 
         achievementService.tryToGiveUserAchievement(user, achievement);
 
@@ -283,7 +289,7 @@ class AchievementServiceImplTest {
         User user = ModelUtils.getUser();
         Achievement achievement = ModelUtils.getAchievement();
 
-        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(true);
+        when(userAchievementRepo.existsByUserIdAndAchievementId(user.getId(), achievement.getId())).thenReturn(true);
 
         achievementService.tryToGiveUserAchievement(user, achievement);
 
@@ -295,8 +301,9 @@ class AchievementServiceImplTest {
         User user = ModelUtils.getUser();
         Achievement achievement = ModelUtils.getAchievement();
 
-        when(userAchievementRepo.existsByUserAndAchievement(user, achievement)).thenReturn(false);
-        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(0L);
+        when(userAchievementRepo.existsByUserIdAndAchievementId(user.getId(), achievement.getId())).thenReturn(false);
+        when(userActionRepo.countAllByUserIdAndActionType(user.getId(), UserActionType.ECO_NEWS_CREATED))
+            .thenReturn(0L);
 
         achievementService.tryToGiveUserAchievement(user, achievement);
 
@@ -309,8 +316,9 @@ class AchievementServiceImplTest {
         UserActionType actionType = UserActionType.ECO_NEWS_CREATED;
 
         when(achievementRepo.findAllByActionType(actionType)).thenReturn(List.of(ModelUtils.getAchievement()));
-        when(userAchievementRepo.existsByUserAndAchievement(eq(user), any(Achievement.class))).thenReturn(false);
-        when(userActionRepo.countAllByUserAndActionType(user, UserActionType.ECO_NEWS_CREATED)).thenReturn(1L);
+        when(userAchievementRepo.existsByUserIdAndAchievementId(eq(user.getId()), anyLong())).thenReturn(false);
+        when(userActionRepo.countAllByUserIdAndActionType(user.getId(), UserActionType.ECO_NEWS_CREATED))
+            .thenReturn(1L);
 
         achievementService.tryToGiveUserAchievementsByActionType(user, actionType);
 

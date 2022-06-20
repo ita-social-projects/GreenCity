@@ -89,7 +89,7 @@ public class User {
     @ManyToMany(mappedBy = "usersLiked")
     private Set<EcoNewsComment> ecoNewsCommentsLiked;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_friends",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))

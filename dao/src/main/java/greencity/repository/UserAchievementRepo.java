@@ -22,10 +22,10 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
     /**
      * Checks if a user already has specified {@link Achievement}.
      *
-     * @param user        {@link User}
-     * @param achievement {@link Achievement}
+     * @param userId        id of {@link User}.
+     * @param achievementId id of {@link Achievement}.
      * @return {@code true} if a user already has given {@link Achievement},
      *         {@code false} otherwise.
      */
-    boolean existsByUserAndAchievement(User user, Achievement achievement);
+    boolean existsByUserIdAndAchievementId(Long userId, Long achievementId);
 }

@@ -1,4 +1,4 @@
-package greencity.mapping;
+package greencity.mapping.achievement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,6 +10,8 @@ import greencity.dto.language.LanguageVO;
 import greencity.entity.Achievement;
 import java.util.ArrayList;
 import java.util.List;
+
+import greencity.mapping.achievement.AchievementVOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -46,6 +48,7 @@ class AchievementVOMapperTest {
                 .build())
             .achievementStatus(achievement.getAchievementStatus())
             .condition(achievement.getCondition())
+            .icon(achievement.getIcon())
             .build();
 
         assertEquals(expected, achievementVOMapper.convert(achievement));

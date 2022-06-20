@@ -2,10 +2,13 @@ package greencity.webcontroller;
 
 import greencity.annotations.ImageValidation;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.achievement.AchievementDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.language.LanguageDTO;
+import greencity.entity.Language;
 import greencity.enums.UserActionType;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
@@ -47,12 +50,16 @@ public class ManagementAchievementController {
     public String getAllAchievement(@RequestParam(required = false, name = "query") String query, Pageable pageable,
         Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
-        PageableAdvancedDto<AchievementVO> allAchievements = query == null || query.isEmpty()
+        PageableAdvancedDto<AchievementDto> allAchievements = query == null || query.isEmpty()
             ? achievementService.findAll(paging)
             : achievementService.searchAchievementBy(paging, query);
+        List<LanguageDTO> languages = languageService.getAllLanguages();
+        languages.stream()
+            .filter(language -> "ru".equalsIgnoreCase(language.getCode()))
+            .forEach(languages::remove);
         model.addAttribute("pageable", allAchievements);
         model.addAttribute("categoryList", achievementCategoryService.findAll());
-        model.addAttribute("languages", languageService.getAllLanguages());
+        model.addAttribute("languages", languages);
         model.addAttribute("conditionList", UserActionType.values());
         return "core/management_achievement";
     }
@@ -67,7 +74,7 @@ public class ManagementAchievementController {
     @PostMapping
     @ResponseBody
     public GenericResponseDto saveAchievement(@Valid @RequestPart AchievementPostDto achievementPostDto,
-        BindingResult bindingResult, @ImageValidation @RequestParam MultipartFile file) {
+        @ImageValidation @RequestParam MultipartFile file, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
             achievementService.save(achievementPostDto, file);
         }
@@ -119,10 +126,10 @@ public class ManagementAchievementController {
      */
     @PutMapping
     @ResponseBody
-    public GenericResponseDto update(@Valid @RequestBody AchievementManagementDto achievementManagementDto,
-        BindingResult bindingResult) {
+    public GenericResponseDto update(@Valid @RequestPart AchievementManagementDto achievementManagementDto,
+        @ImageValidation @RequestParam(required = false) MultipartFile file, BindingResult bindingResult) {
         if (!bindingResult.hasErrors()) {
-            achievementService.update(achievementManagementDto);
+            achievementService.update(achievementManagementDto, file);
         }
         return buildGenericResponseDto(bindingResult);
     }

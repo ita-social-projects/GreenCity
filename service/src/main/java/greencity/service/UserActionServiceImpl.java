@@ -44,7 +44,7 @@ public class UserActionServiceImpl implements UserActionService {
 
     private void logWithTimestamp(User user, UserActionType actionType, ActionContextType contextType, Long contextId,
         ZonedDateTime timestamp) {
-        if (userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(user, actionType, contextType,
+        if (userActionRepo.existsByUserIdAndActionTypeAndContextTypeAndContextId(user.getId(), actionType, contextType,
             contextId)) {
             return;
         }

@@ -105,7 +105,9 @@ $(document).ready(function () {
     $('#submitAddBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        var formData = $('#addAchievementForm').serializeArray().reduce(function (obj, item) {
+        const form = $('#addAchievementForm');
+
+        var formData = form.serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
             return obj;
         }, {});
@@ -113,12 +115,13 @@ $(document).ready(function () {
             "id": formData.id,
             "translations": getTranslationsFormFormData(formData),
             "achievementCategory": formData.achievementCategory,
-            "condition": getConditions()
+            "condition": getConditions(this)
         };
         var multipartFormData = new FormData();
         multipartFormData.append(
             "achievementPostDto", new Blob([JSON.stringify(payload)], {type: "application/json"}));
-        multipartFormData.append("file", document.getElementById("achievementIcon").files[0]);
+        multipartFormData.append("file",
+            form.find('[name="achievementIcon"]').prop('files')[0]);
 
         //save request in addAchievementModal
         $.ajax({
@@ -160,14 +163,30 @@ $(document).ready(function () {
                     .val(translation.message);
             });
             $('#achievementCategory').val(achievement.achievementCategory.name);
-            $('#condition').val(achievement.condition);
+
+            const conditionsBlock = $('#editAchievementModal').find('.conditions-block');
+            conditionsBlock.children('.condition-block').each(function () {
+                removeLastConditionBlock(this)
+            });
+
+            for (let conditionKey in achievement.condition) {
+                const currentConditionBlock = conditionsBlock.children('.condition-block:last');
+
+                currentConditionBlock.children('[name="conditionKey"]').val(conditionKey);
+                currentConditionBlock.children('[name="conditionValue"]').val(achievement.condition[conditionKey]);
+
+                if (conditionsBlock.children('.condition-block').length < Object.keys(achievement.condition).length) {
+                    addNewConditionBlock(currentConditionBlock);
+                }
+            }
         });
     });
     //submit button in editEcoNewsModal
     $('#submitEditBtn').on('click', function (event) {
         event.preventDefault();
         clearAllErrorsSpan();
-        var formData = $('#editAchievementForm').serializeArray().reduce(function (obj, item) {
+        const form = $('#editAchievementForm');
+        var formData = form.serializeArray().reduce(function (obj, item) {
             obj[item.name] = item.value;
             return obj;
         }, {});
@@ -175,14 +194,21 @@ $(document).ready(function () {
             "id": formData.id,
             "translations": getTranslationsFormFormData(formData),
             "achievementCategory": formData.achievementCategory,
-            "condition": formData.condition
+            "condition": getConditions(this)
         };
+        var multipartFormData = new FormData();
+        multipartFormData.append(
+            "achievementManagementDto", new Blob([JSON.stringify(payload)], {type: "application/json"}));
+        multipartFormData.append("file",
+            form.find('[name="achievementIcon"]').prop('files')[0]);
+
         //save request in editAchievementModal
         $.ajax({
             url: '/management/achievement',
             type: 'put',
             dataType: 'json',
-            contentType: 'application/json',
+            contentType: false,
+            processData: false,
             success: function (data) {
                 if (Array.isArray(data.errors) && data.errors.length) {
                     data.errors.forEach(function (el) {
@@ -192,7 +218,7 @@ $(document).ready(function () {
                     location.reload();
                 }
             },
-            data: JSON.stringify(payload)
+            data: multipartFormData
         });
     })
 });
@@ -222,35 +248,31 @@ function getTranslationsFormFormData(formData) {
     return translations;
 }
 
-let conditionsTotal = 1;
-
-function getConditions() {
-    let dict = {};
-    for (let i = 1; i <= conditionsTotal; i++) {
-        let conditionBlock = $('#conditionBlock'+i);
-        let key = conditionBlock.children('[name="conditionKey"]').children('option:selected').val();
-        dict[key] = conditionBlock.children('[name="conditionValue"]').val();
-    }
-    return dict;
+function getConditions(button) {
+    const conditionsBlock = $(button).closest('form').find('div[class*="conditions-block"]');
+    let conditions = {};
+    conditionsBlock.children('.condition-block').each(function () {
+        let key = $(this).find('[name="conditionKey"]').children('option:selected').val();
+        conditions[key] = $(this).find('[name="conditionValue"]').val();
+    });
+    return conditions;
 }
 
-function addNewConditionBlock() {
-    const button = $("#addConditionButton");
-    let newConditionBlock =
-        $('div[id^="conditionBlock"]:first')
-            .clone()
-            .prop("id", "conditionBlock"+ (++conditionsTotal));
+function addNewConditionBlock(innerElement) {
+    const conditionsBlock = $(innerElement).closest('div[class*="conditions-block"]');
+    const newConditionBlock = conditionsBlock.children('.condition-block:first').clone();
 
     newConditionBlock.children('[name="conditionKey"]').prop("selected", false);
     newConditionBlock.children('[name="conditionValue"]').prop("value", "");
 
-    newConditionBlock.insertBefore(button);
+    newConditionBlock.insertAfter(conditionsBlock.children(".condition-block:last"));
 }
 
-function removeLastConditionBlock() {
+function removeLastConditionBlock(innerElement) {
+    const conditionsBlock = $(innerElement).closest('div[class*="conditions-block"]');
+    const conditionsTotal = conditionsBlock.children('.condition-block').length
     if (conditionsTotal > 1) {
-        conditionsTotal--;
-        const lastConditionBlock = $('div[id^="conditionBlock"]:last');
+        const lastConditionBlock = conditionsBlock.children('.condition-block:last');
         lastConditionBlock.remove();
     }
 }

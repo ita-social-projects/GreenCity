@@ -15,9 +15,9 @@ public interface AchievementService {
     /**
      * Method for finding all the achievements.
      *
-     * @return list of all{@link AchievementDTO}.
+     * @return list of all{@link AchievementDto}.
      */
-    List<AchievementVO> findAll();
+    List<AchievementDto> findAll();
 
     /**
      * Find {@link AchievementVO} for management by page .
@@ -26,7 +26,7 @@ public interface AchievementService {
      * @return a dto of {@link PageableAdvancedDto}.
      * @author Orest Mamchuk
      */
-    PageableAdvancedDto<AchievementVO> findAll(Pageable page);
+    PageableAdvancedDto<AchievementDto> findAll(Pageable page);
 
     /**
      * {@inheritDoc} Method that allow you to save new achievement
@@ -45,7 +45,7 @@ public interface AchievementService {
      * @return {@link PageableAdvancedDto} of {@link AchievementVO} instances.
      * @author Orest Mamchuk
      */
-    PageableAdvancedDto<AchievementVO> searchAchievementBy(Pageable paging, String query);
+    PageableAdvancedDto<AchievementDto> searchAchievementBy(Pageable paging, String query);
 
     /**
      * Method delete {@link AchievementVO} by id.
@@ -80,7 +80,7 @@ public interface AchievementService {
      * @return instance of {@link AchievementPostDto}
      * @author Orest Mamchuk
      */
-    AchievementPostDto update(AchievementManagementDto achievementManagementDto);
+    AchievementPostDto update(AchievementManagementDto achievementManagementDto, MultipartFile icon);
 
     /**
      * Returns all unnotified achievement notifications for user.

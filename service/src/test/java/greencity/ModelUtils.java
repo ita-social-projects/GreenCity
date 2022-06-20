@@ -1142,11 +1142,12 @@ public class ModelUtils {
     public static Achievement getAchievement() {
         return Achievement.builder()
             .id(1L)
-            .translations(Collections.singletonList(getAchievementTranslation()))
+            .translations(List.of(getAchievementTranslation(), getAchievementTranslationUK()))
             .userAchievements(Collections.emptyList())
             .achievementCategory(getAchievementCategory())
             .achievementStatus(AchievementStatus.ACTIVE)
-            .condition(getAchievementCondition()).build();
+            .condition(getAchievementCondition())
+            .icon("https://link.for.file/icon.png").build();
     }
 
     public static Achievement getRegisteredAchievement() {
@@ -1190,6 +1191,21 @@ public class ModelUtils {
             .condition(getAchievementCondition()).build();
     }
 
+    public static AchievementDto getAchievementDto() {
+        return AchievementDto.builder()
+            .id(getAchievement().getId())
+            .icon("https://link.for.file/icon.png")
+            .titleEn("Title")
+            .titleUk("TitleUK")
+            .descriptionEn("Description")
+            .descriptionUk("DescriptionUK")
+            .messageEn("Message")
+            .messageUk("MessageUK")
+            .category(getAchievementCategory().getName())
+            .condition(getAchievementCondition())
+            .usersAchievedTotal(0L).build();
+    }
+
     public static AchievementPostDto getAchievementPostDto() {
         return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), getAchievementCondition());
     }
@@ -1212,6 +1228,12 @@ public class ModelUtils {
 
     public static AchievementTranslation getAchievementTranslation() {
         return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", null);
+    }
+
+    public static AchievementTranslation getAchievementTranslationUK() {
+        Language language = getLanguage();
+        language.setCode("ua");
+        return new AchievementTranslation(1L, language, "TitleUK", "DescriptionUK", "MessageUK", null);
     }
 
     public static UserAchievementVO getUserAchievementVO() {

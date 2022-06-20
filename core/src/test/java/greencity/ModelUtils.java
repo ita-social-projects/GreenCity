@@ -3,10 +3,7 @@ package greencity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
+import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -549,7 +546,22 @@ public class ModelUtils {
             .achievementStatus(AchievementStatus.ACTIVE)
             .achievementCategory(new AchievementCategoryVO(1L, "name", null))
             .condition(getAchievementCondition()).build();
+    }
 
+    public static AchievementDto getAchievementDto() {
+        return AchievementDto.builder()
+            .id(1L)
+            .icon("https://link.for.file/icon.png")
+            .titleEn("title")
+            .titleUk("title")
+            .descriptionEn("description")
+            .descriptionUk("description")
+            .messageEn("message")
+            .messageUk("message")
+            .category("name")
+            .condition(getAchievementCondition())
+            .usersAchievedTotal(0L)
+            .build();
     }
 
     public static UserShoppingListItem getUserShoppingListItem() {

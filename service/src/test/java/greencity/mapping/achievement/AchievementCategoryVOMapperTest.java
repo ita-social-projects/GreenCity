@@ -1,10 +1,10 @@
-package greencity.mapping;
+package greencity.mapping.achievement;
 
 import greencity.ModelUtils;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
+import greencity.mapping.achievement.AchievementCategoryVOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

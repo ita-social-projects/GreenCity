@@ -44,7 +44,7 @@ class UserActionServiceImplTest {
         Long contextId = 1L;
 
         when(userActionRepo
-            .existsByUserAndActionTypeAndContextTypeAndContextId(user, actionType, contextType, contextId))
+            .existsByUserIdAndActionTypeAndContextTypeAndContextId(user.getId(), actionType, contextType, contextId))
                 .thenReturn(false);
 
         userActionService.log(user, actionType, contextType, contextId);
@@ -61,7 +61,7 @@ class UserActionServiceImplTest {
         Long contextId = 1L;
 
         when(userActionRepo
-            .existsByUserAndActionTypeAndContextTypeAndContextId(user, actionType, contextType, contextId))
+            .existsByUserIdAndActionTypeAndContextTypeAndContextId(user.getId(), actionType, contextType, contextId))
                 .thenReturn(true);
 
         userActionService.log(user, actionType, contextType, contextId);
@@ -80,7 +80,7 @@ class UserActionServiceImplTest {
         Long contextId = 1L;
 
         when(userActionRepo
-            .existsByUserAndActionTypeAndContextTypeAndContextId(user, actionType, contextType, contextId))
+            .existsByUserIdAndActionTypeAndContextTypeAndContextId(user.getId(), actionType, contextType, contextId))
                 .thenReturn(false);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
@@ -96,8 +96,8 @@ class UserActionServiceImplTest {
         UserActionMessage message = ModelUtils.getUserActionMessage();
 
         when(userRepo.findByEmail(message.getUserEmail())).thenReturn(Optional.of(user));
-        when(userActionRepo.existsByUserAndActionTypeAndContextTypeAndContextId(
-            user, message.getActionType(), message.getContextType(), message.getContextId()))
+        when(userActionRepo.existsByUserIdAndActionTypeAndContextTypeAndContextId(
+            user.getId(), message.getActionType(), message.getContextType(), message.getContextId()))
                 .thenReturn(false);
 
         userActionService.listenAndLog(message);

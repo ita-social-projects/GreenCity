@@ -66,9 +66,11 @@
                                 </span>
                         </th>
                         <th>[[#{greenCity.pages.table.id}]]</th>
+                        <th>[[#{greenCity.pages.table.achievement.icon}]]</th>
                         <th>[[#{greenCity.pages.table.translations}]]</th>
                         <th>[[#{greenCity.pages.table.achievement.category}]]</th>
-                        <th>[[#{greenCity.pages.table.condition}]]</th>
+                        <th>[[#{greenCity.pages.table.achievement.condition}]]</th>
+                        <th>[[#{greenCity.pages.table.achievement.users-achieved-total}]]</th>
                         <th>[[#{greenCity.pages.table.actions}]]</th>
                     </tr>
                     </thead>
@@ -86,32 +88,44 @@
                             </td>
                             <td th:text="${allAchievements.getId()}"></td>
                             <td>
+                                <img class="achievement-icon" th:src="${allAchievements.getIcon()}" th:alt="#{greenCity.pages.table.achievement.icon}">
+                            </td>
+                            <td>
                                 <table class="table table-borderless m-0">
                                     <thead>
                                     <tr class="table-secondary">
-                                        <th style="width: 8%">[[#{greenCity.pages.table.translation.id}]]</th>
-                                        <th style="width: 12%">[[#{greenCity.pages.table.title}]]</th>
-                                        <th style="width: 20%">[[#{greenCity.pages.table.description}]]</th>
-                                        <th style="width: 60%">[[#{greenCity.pages.table.message}]]</th>
+                                        <th style="width: 5%">[[#{greenCity.pages.table.language.code}]]</th>
+                                        <th style="width: 15%">[[#{greenCity.pages.table.title}]]</th>
+                                        <th style="width: 55%">[[#{greenCity.pages.table.description}]]</th>
+                                        <th style="width: 25%">[[#{greenCity.pages.table.message}]]</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <th:block
-                                            th:each="translation : ${pageable.getPage().get(iterStatus.index).getTranslations()}">
+                                    <th:block>
                                         <tr>
-                                            <td th:text="${translation.getId()}"></td>
-                                            <td th:text="${translation.getTitle()}"></td>
-                                            <td th:text="${translation.getDescription()}"></td>
-                                            <td th:text="${translation.getMessage()}"></td>
+                                            <td th:text="EN"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getTitleEn()}"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getDescriptionEn()}"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getMessageEn()}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="UK"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getTitleUk()}"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getDescriptionUk()}"></td>
+                                            <td class="text-with-line-breaks" th:text="${allAchievements.getMessageUk()}"></td>
                                         </tr>
                                     </th:block>
                                     </tbody>
                                 </table>
                             </td>
-                            <td th:text="${allAchievements.getAchievementCategory().getName()}"></td>
-                            <td th:each="condition: ${allAchievements.getCondition() != null ? allAchievements.getCondition().entrySet() : null}">
-                                <div th:text="${condition.getKey()+': '+condition.getValue()}"></div>
-                            </td>
+                            <td th:text="${allAchievements.getCategory()}"></td>
+                            <td><ul class="achievement-condition-list">
+                                <li th:each="condition: ${allAchievements.getCondition() != null
+                                ? allAchievements.getCondition().entrySet()
+                                : null}"
+                                    th:text="${condition.getKey() + ': ' + condition.getValue()}"></li>
+                            </ul></td>
+                            <td th:text="${allAchievements.getUsersAchievedTotal()}"></td>
                             <td>
                                 <a th:href="@{/management/achievement/{id}(id=${allAchievements.getId()})}"
                                    class="edit eBtn">
@@ -242,27 +256,25 @@
                             </select>
                             <span th:id="errorModalSavecategory" class="errorSpan"></span>
                         </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.condition}]]</label>
-                            <div id="conditionBlock1">
-                                <select style="width: 70%; display: inline-block" class="form-control" name="conditionKey">
+                        <div class="form-group conditions-block">
+                            <label>[[#{greenCity.pages.table.achievement.condition}]]</label>
+                            <div class="condition-block">
+                                <select class="form-control condition-key" name="conditionKey">
                                     <th:block th:each="condition : ${conditionList}">
-                                        <tr>
-                                            <option>
-                                                <td th:text="${condition.name()}"></td>
-                                            </option>
-                                        </tr>
+                                        <tr><option><td th:text="${condition.name()}"></td></option></tr>
                                     </th:block>
                                 </select>
-                                <input style="width: 29%; float: right; display: inline-block" class="form-control" name="conditionValue" type="text">
+                                <input class="form-control condition-value" name="conditionValue" type="text">
                                 <span th:id="errorModalSavecondition" class="errorSpan"></span>
                             </div>
-                            <input type="button" class="btn-secondary" id="addConditionButton" onclick="addNewConditionBlock()" value="+">
-                            <input type="button" class="btn-secondary" id="removeConditionButton" onclick="removeLastConditionBlock()" value="-">
+                            <div class="condition-buttons-block" style="text-align:center">
+                                <input type="button" class="btn btn-default btn-secondary" onclick="addNewConditionBlock(this)" value="+">
+                                <input type="button" class="btn btn-default btn-secondary" onclick="removeLastConditionBlock(this)" value="-">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="achievementIcon">[[#{greenCity.pages.table.image.upload}]]</label>
-                            <input type="file" class="form-control" id="achievementIcon" name="file">
+                            <label>[[#{greenCity.pages.table.achievement.icon}]]</label>
+                            <input type="file" class="form-control" name="achievementIcon">
                             <span th:id="errorModalAddfile" class="errorSpan"></span>
                         </div>
                     </div>
@@ -346,19 +358,37 @@
                         </th:block>
                         <div class="form-group">
                             <label>[[#{greenCity.pages.table.achievement.category}]]</label>
-                            <input type="text" class="form-control" id="achievementCategory" name="achievementCategory"
-                                   readonly required>
-                            <th:block th:each="category : ${categoryList}">
-                                <tr>
-                                    <td th:text="${category.getName()}"></td>
-                                </tr>
-                            </th:block>
+                            <select class="form-control" name="achievementCategory">
+                                <th:block th:each="category : ${categoryList}">
+                                    <tr>
+                                        <option>
+                                            <td th:text="${category.getName()}"></td>
+                                        </option>
+                                    </tr>
+                                </th:block>
+                            </select>
                             <span th:id="errorModalUpdatecategory" class="errorSpan"></span>
                         </div>
+                        <div class="form-group conditions-block">
+                            <label>[[#{greenCity.pages.table.achievement.condition}]]</label>
+                            <div class="condition-block">
+                                <select class="form-control condition-key" name="conditionKey">
+                                    <th:block th:each="condition : ${conditionList}">
+                                        <tr><option><td th:text="${condition.name()}"></td></option></tr>
+                                    </th:block>
+                                </select>
+                                <input class="form-control condition-key" name="conditionValue" type="text">
+                                <span th:id="errorModalUpdatecondition" class="errorSpan"></span>
+                            </div>
+                            <div class="condition-buttons-block" style="text-align:center">
+                                <input type="button" class="btn btn-default btn-secondary" onclick="addNewConditionBlock(this)" value="+">
+                                <input type="button" class="btn btn-default btn-secondary" onclick="removeLastConditionBlock(this)" value="-">
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label>[[#{greenCity.pages.table.condition}]]</label>
-                            <input class="form-control" id="condition" name="condition" required type="number">
-                            <span th:id="errorModalUpdatecondition" class="errorSpan"></span>
+                            <label>[[#{greenCity.pages.table.achievement.icon}]]</label>
+                            <input type="file" class="form-control" name="achievementIcon">
+                            <span th:id="errorModalEditfile" class="errorSpan"></span>
                         </div>
                     </div>
                     <div class="modal-footer">

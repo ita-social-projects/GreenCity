@@ -1,7 +1,7 @@
 package greencity.controller;
 
 import greencity.constant.HttpStatuses;
-import greencity.dto.achievement.AchievementDTO;
+import greencity.dto.achievement.AchievementDto;
 import greencity.dto.achievement.AchievementNotification;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.user.UserVO;
@@ -28,7 +28,7 @@ public class AchievementController {
     /**
      * Method returns all achievements, available for achieving.
      *
-     * @return list of {@link AchievementDTO}
+     * @return list of {@link AchievementDto}
      */
     @ApiOperation(value = "Get all achievements.")
     @ApiResponses(value = {
@@ -37,7 +37,7 @@ public class AchievementController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("")
-    public ResponseEntity<List<AchievementVO>> getAll() {
+    public ResponseEntity<List<AchievementDto>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
     }
 

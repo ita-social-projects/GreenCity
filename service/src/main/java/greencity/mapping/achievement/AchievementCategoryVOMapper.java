@@ -1,4 +1,4 @@
-package greencity.mapping;
+package greencity.mapping.achievement;
 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
