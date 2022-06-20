@@ -15,8 +15,7 @@ import java.util.List;
 
 /**
  * Class that used by {@link ModelMapper} to map
- * {@link greencity.dto.event.AddEventDtoRequest} into
- * {@link Event}.
+ * {@link greencity.dto.event.AddEventDtoRequest} into {@link Event}.
  */
 @Component(value = "eventDtoRequestMapper")
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {

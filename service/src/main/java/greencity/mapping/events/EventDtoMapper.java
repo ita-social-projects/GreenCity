@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link Event}
- * into {@link EventDto}.
+ * Class that used by {@link ModelMapper} to map {@link Event} into
+ * {@link EventDto}.
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {

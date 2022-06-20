@@ -7,6 +7,7 @@ import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -64,12 +65,35 @@ public class EventsController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/delete/{eventId}")
     public ResponseEntity<Object> delete(@PathVariable Long eventId, @ApiIgnore Principal principal) {
         eventService.delete(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for updating {@link EventDto}.
+     *
+     * @author Danylo Hlynskyi
+     */
+    @ApiOperation(value = "Update eco news")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EventDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PutMapping(value = "/update",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity<EventDto> update(
+        @ApiParam(value = SwaggerExampleModel.UPDATE_ECO_NEWS, required = true) @RequestPart UpdateEventDto eventDto,
+        @ApiIgnore Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            eventService.update(eventDto, principal.getName(), images));
     }
 
     /**
@@ -101,6 +125,7 @@ public class EventsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+
     @ApiPageable
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable) {

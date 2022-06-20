@@ -7,6 +7,10 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
 import greencity.dto.tag.TagVO;
 import greencity.entity.*;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
+import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
@@ -129,5 +133,72 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
         Page<Event> page = eventRepo.searchEventsBy(paging, query);
         return buildPageableAdvancedDto(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return EventDto
+     */
+    @Override
+    public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
+        Event toUpdate = modelMapper.map(getEvent(eventDto.getId()), Event.class);
+        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+        if (organizer.getRole() != Role.ROLE_ADMIN && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        enhanceWithNewData(toUpdate, eventDto, images);
+        eventRepo.save(toUpdate);
+        return modelMapper.map(toUpdate, EventDto.class);
+    }
+
+    private void enhanceWithNewData(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        if (updateEventDto.getTitle() != null) {
+            toUpdate.setTitle(updateEventDto.getTitle());
+        }
+        if (updateEventDto.getDescription() != null) {
+            toUpdate.setDescription(updateEventDto.getDescription());
+        }
+        if (updateEventDto.getIsOpen() != null) {
+            toUpdate.setOpen(updateEventDto.getIsOpen());
+        }
+
+        if (updateEventDto.getTags() != null) {
+            toUpdate.setTags(modelMapper.map(tagService
+                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
+        }
+
+        List<String> additionalImagesStr = new ArrayList<>();
+        if (updateEventDto.getAdditionalImages() != null) {
+            additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+        }
+
+        if (updateEventDto.getImagesToDelete() != null) {
+            for (String img : updateEventDto.getImagesToDelete()) {
+                fileService.delete(img);
+                toUpdate.getAdditionalImages()
+                    .removeAll(toUpdate.getAdditionalImages().stream().filter(i -> i.getLink().equals(img))
+                        .collect(Collectors.toList()));
+            }
+        }
+
+        if (images.length > 0) {
+            int imageCounter = 0;
+            if (updateEventDto.getImagesToDelete().contains(toUpdate.getTitleImage())) {
+                toUpdate.setTitleImage(fileService.upload(images[imageCounter++]));
+            }
+            for (int i = imageCounter; i < images.length; i++) {
+                additionalImagesStr.add(fileService.upload(images[i]));
+            }
+        }
+        toUpdate.setAdditionalImages(additionalImagesStr.stream().map(img -> EventImages.builder().event(toUpdate)
+            .link(img).build()).collect(Collectors.toList()));
+
+        if (updateEventDto.getDates() != null) {
+            toUpdate.setDates(updateEventDto.getDates().stream().map(d -> modelMapper.map(d, EventDateLocation.class))
+                .collect(Collectors.toList()));
+        }
     }
 }
