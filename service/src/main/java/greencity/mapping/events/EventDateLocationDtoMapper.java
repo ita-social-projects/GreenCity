@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocationDto, EventDateLocation> {
     /**
-     * Method for converting {@link EventDateLocationDto} into {@link EventDateLocation}.
+     * Method for converting {@link EventDateLocationDto} into
+     * {@link EventDateLocation}.
      *
      * @param eventDateLocationDto object to convert.
      * @return converted object.
@@ -34,10 +35,10 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
         if (eventDateLocationDto.getCoordinates() != null) {
             CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
             eventDateLocation.setCoordinates(Coordinates.builder()
-                    .latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude())
-                    .addressUa(coordinatesDto.getAddressUa())
-                    .addressEn(coordinatesDto.getAddressEn()).build());
+                .latitude(coordinatesDto.getLatitude())
+                .longitude(coordinatesDto.getLongitude())
+                .addressUa(coordinatesDto.getAddressUa())
+                .addressEn(coordinatesDto.getAddressEn()).build());
         }
         return eventDateLocation;
     }

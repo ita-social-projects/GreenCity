@@ -182,7 +182,7 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventDto.getImagesToDelete() != null) {
             if (updateEventDto.getImagesToDelete().size() == toUpdate.getAdditionalImages().size() + 1
-                    && images.length <= 0) {
+                && images.length <= 0) {
                 toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
             }
             for (String img : updateEventDto.getImagesToDelete()) {
@@ -211,7 +211,7 @@ public class EventServiceImpl implements EventService {
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
                 .peek(d -> d.setEvent(toUpdate))
-            .collect(Collectors.toList()));
+                .collect(Collectors.toList()));
         }
     }
 
@@ -220,7 +220,7 @@ public class EventServiceImpl implements EventService {
             if (date.getCoordinates() != null) {
                 CoordinatesDto coordinatesDto = date.getCoordinates();
                 List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
-                        new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
                 GeocodingResult resultUa = address.get(0);
                 GeocodingResult resultEn = address.get(1);
                 coordinatesDto.setAddressUa(resultUa.formattedAddress);
