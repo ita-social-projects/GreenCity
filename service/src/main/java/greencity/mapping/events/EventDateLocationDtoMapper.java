@@ -22,9 +22,6 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
      * @param eventDateLocationDto object to convert.
      * @return converted object.
      */
-
-
-
     @Override
     public EventDateLocation convert(EventDateLocationDto eventDateLocationDto) {
         EventDateLocation eventDateLocation = new EventDateLocation();
