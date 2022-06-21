@@ -150,7 +150,8 @@ public class EventServiceImpl implements EventService {
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
         Event toUpdate = eventRepo.getOne(eventDto.getId());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
-        if (organizer.getRole() != Role.ROLE_ADMIN && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+        if ((organizer.getRole() != Role.ROLE_ADMIN || organizer.getRole() != Role.ROLE_MODERATOR)
+                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, eventDto, images);
@@ -191,35 +192,71 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
-        List<String> additionalImagesStr = new ArrayList<>();
-        if (updateEventDto.getAdditionalImages() != null) {
-            additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
-        }
-
-        if (updateEventDto.getImagesToDelete() != null) {
-            if (updateEventDto.getImagesToDelete().size() == toUpdate.getAdditionalImages().size() + 1
-                && images.length <= 0) {
+        if((images == null || images.length == 0) && updateEventDto.getImagesToDelete() == null) {
+            if(updateEventDto.getTitleImage() != null) {
+                toUpdate.setTitleImage(updateEventDto.getTitleImage());
+            } else {
                 toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
             }
-            for (String img : updateEventDto.getImagesToDelete()) {
-                fileService.delete(img);
-                toUpdate.getAdditionalImages()
-                    .removeAll(toUpdate.getAdditionalImages().stream().filter(i -> i.getLink().equals(img))
-                        .collect(Collectors.toList()));
+            if (updateEventDto.getAdditionalImages() != null) {
+                updateEventDto.getAdditionalImages().forEach(img ->
+                    toUpdate.setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+            } else {
+                toUpdate.setAdditionalImages(null);
+            }
+        } else if (images == null || images.length == 0) {
+            updateEventDto.getImagesToDelete().forEach(fileService::delete);
+            if (updateEventDto.getTitleImage() != null) {
+                toUpdate.setTitleImage(updateEventDto.getTitleImage());
+                if (updateEventDto.getAdditionalImages() != null) {
+                    toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream().map(url ->
+                            EventImages.builder().event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                }
+            } else {
+                toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+            }
+        } else if (updateEventDto.getImagesToDelete() == null) {
+            int imagesCounter = 0;
+            if (toUpdate.getTitleImage() != null) {
+                toUpdate.setTitleImage(updateEventDto.getTitleImage());
+            } else {
+                toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+            }
+            List<String> additionalImagesStr = new ArrayList<>();
+            for (int i = imagesCounter; i < images.length; i++) {
+                if (updateEventDto.getAdditionalImages() != null) {
+                    additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+                }
+                additionalImagesStr.add(fileService.upload(images[imagesCounter]));
+            }
+            if (!additionalImagesStr.isEmpty()) {
+                toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
+                        .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+            } else {
+                toUpdate.setAdditionalImages(null);
+            }
+        } else {
+            updateEventDto.getImagesToDelete().forEach(fileService::delete);
+            int imagesCounter = 0;
+            if (updateEventDto.getTitleImage() == null) {
+                toUpdate.setTitleImage(updateEventDto.getTitleImage());
+            } else {
+                toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+            }
+            List<String> additionalImagesStr = new ArrayList<>();
+            for (int i = imagesCounter; i < images.length; i++) {
+                if (updateEventDto.getAdditionalImages() != null) {
+                    additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+                }
+                additionalImagesStr.add(fileService.upload(images[imagesCounter]));
+            }
+            if (!additionalImagesStr.isEmpty()) {
+                toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
+                        .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+            } else {
+                toUpdate.setAdditionalImages(null);
             }
         }
-
-        if (images.length > 0) {
-            int imageCounter = 0;
-            if (updateEventDto.getImagesToDelete().contains(toUpdate.getTitleImage())) {
-                toUpdate.setTitleImage(fileService.upload(images[imageCounter++]));
-            }
-            for (int i = imageCounter; i < images.length; i++) {
-                additionalImagesStr.add(fileService.upload(images[i]));
-            }
-        }
-        toUpdate.setAdditionalImages(additionalImagesStr.stream().map(img -> EventImages.builder().event(toUpdate)
-            .link(img).build()).collect(Collectors.toList()));
     }
 
     private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
