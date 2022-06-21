@@ -159,5 +159,5 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'image=skyere/greencity:$(Build.BuildId)'
+                overrideValues: 'deployment.image=skyere/greencity:$(Build.BuildId)'
                 arguments: '--debug'
