@@ -14,7 +14,7 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *
      * @return list of {@link Event} instances.
      */
-    @Query(value = "SELECT * FROM events ORDER BY title", nativeQuery = true)
+    @Query(value = "SELECT * FROM events ORDER BY id", nativeQuery = true)
     Page<Event> getAll(Pageable page);
 
     /**

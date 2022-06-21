@@ -49,6 +49,9 @@ class EventServiceImplTest {
     @Mock
     private FileService fileService;
 
+    @Mock
+    GoogleApiService googleApiService;
+
     @InjectMocks
     EventServiceImpl eventService;
 
@@ -68,6 +71,8 @@ class EventServiceImplTest {
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(tags);
+
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
 
         assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
 

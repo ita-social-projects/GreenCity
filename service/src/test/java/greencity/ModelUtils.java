@@ -215,6 +215,14 @@ public class ModelUtils {
             Collections.emptySet(), Collections.emptySet());
     }
 
+    public static GeocodingResult[] getGeocodingResults() {
+        GeocodingResult addressUa = new GeocodingResult();
+        addressUa.formattedAddress = "Ua address";
+        GeocodingResult addressEn = new GeocodingResult();
+        addressEn.formattedAddress = "Ua address";
+        return new GeocodingResult[] {addressUa, addressEn};
+    }
+
     public static Tag getEventTag() {
         return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());

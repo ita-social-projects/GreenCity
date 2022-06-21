@@ -148,7 +148,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
-        Event toUpdate = modelMapper.map(getEvent(eventDto.getId()), Event.class);
+        Event toUpdate = eventRepo.getOne(eventDto.getId());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         if (organizer.getRole() != Role.ROLE_ADMIN && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
