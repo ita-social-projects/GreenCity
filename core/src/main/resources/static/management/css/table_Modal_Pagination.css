@@ -1173,7 +1173,7 @@ table.table .avatar {
     order: 1;
     align-self: stretch;
     flex-grow: 0;
-    margin: 0 0;
+    margin: 0;
 }
 
 .modal textarea.form-control {
@@ -1570,7 +1570,7 @@ button#searchByForUser {
     flex: none;
     order: 0;
     flex-grow: 0;
-    margin: 0 0;
+    margin: 0;
     font-size: 16px;
     border-color: #13AA57;
 }
@@ -1713,4 +1713,20 @@ a.lightgrey {
 
 .modal-footer .btn {
     margin-top: 0;
+}
+
+.header-language-code {
+    width: 5%;
+}
+
+.header-title {
+    width: 15%;
+}
+
+.header-description {
+    width: 55%;
+}
+
+.header-message {
+    width: 25%;
 }

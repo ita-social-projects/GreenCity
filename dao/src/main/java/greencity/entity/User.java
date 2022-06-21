@@ -77,7 +77,7 @@ public class User {
     @Column(name = "refresh_token_key", nullable = false)
     private String refreshTokenKey;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<CustomShoppingListItem> customShoppingListItems = new ArrayList<>();
 
     @Column(name = "profile_picture")
@@ -89,13 +89,13 @@ public class User {
     @ManyToMany(mappedBy = "usersLiked")
     private Set<EcoNewsComment> ecoNewsCommentsLiked;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinTable(name = "users_friends",
         joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id"))
     private List<User> userFriends = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAchievement> userAchievements = new ArrayList<>();
 
     @Column(name = "rating")

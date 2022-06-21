@@ -13,6 +13,7 @@ import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.LanguageService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -49,7 +50,7 @@ public class ManagementAchievementController {
     public String getAllAchievement(@RequestParam(required = false, name = "query") String query, Pageable pageable,
         Model model) {
         Pageable paging = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending());
-        PageableAdvancedDto<AchievementDto> allAchievements = query == null || query.isEmpty()
+        PageableAdvancedDto<AchievementDto> allAchievements = StringUtils.isEmpty(query)
             ? achievementService.findAll(paging)
             : achievementService.searchAchievementBy(paging, query);
         List<LanguageDTO> languages = languageService.getAllLanguages();
