@@ -151,7 +151,7 @@ public class EventServiceImpl implements EventService {
         Event toUpdate = eventRepo.getOne(eventDto.getId());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         if ((organizer.getRole() != Role.ROLE_ADMIN || organizer.getRole() != Role.ROLE_MODERATOR)
-                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, eventDto, images);
@@ -192,15 +192,15 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
-        if((images == null || images.length == 0) && updateEventDto.getImagesToDelete() == null) {
-            if(updateEventDto.getTitleImage() != null) {
+        if ((images == null || images.length == 0) && updateEventDto.getImagesToDelete() == null) {
+            if (updateEventDto.getTitleImage() != null) {
                 toUpdate.setTitleImage(updateEventDto.getTitleImage());
             } else {
                 toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
             }
             if (updateEventDto.getAdditionalImages() != null) {
-                updateEventDto.getAdditionalImages().forEach(img ->
-                    toUpdate.setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+                updateEventDto.getAdditionalImages().forEach(img -> toUpdate
+                    .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
             } else {
                 toUpdate.setAdditionalImages(null);
             }
@@ -209,8 +209,9 @@ public class EventServiceImpl implements EventService {
             if (updateEventDto.getTitleImage() != null) {
                 toUpdate.setTitleImage(updateEventDto.getTitleImage());
                 if (updateEventDto.getAdditionalImages() != null) {
-                    toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream().map(url ->
-                            EventImages.builder().event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                    toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
+                        .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                        .collect(Collectors.toList()));
                 }
             } else {
                 toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
@@ -231,7 +232,7 @@ public class EventServiceImpl implements EventService {
             }
             if (!additionalImagesStr.isEmpty()) {
                 toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                        .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
             } else {
                 toUpdate.setAdditionalImages(null);
             }
@@ -252,7 +253,7 @@ public class EventServiceImpl implements EventService {
             }
             if (!additionalImagesStr.isEmpty()) {
                 toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                        .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
             } else {
                 toUpdate.setAdditionalImages(null);
             }
