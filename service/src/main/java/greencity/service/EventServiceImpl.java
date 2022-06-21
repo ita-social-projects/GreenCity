@@ -175,6 +175,22 @@ public class EventServiceImpl implements EventService {
                 }.getType()));
         }
 
+        updateImages(toUpdate, updateEventDto, images);
+
+        if (updateEventDto.getDatesLocations() != null) {
+            addAddressesToLocation(updateEventDto.getDatesLocations());
+            eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
+            toUpdate.setDates(updateEventDto.getDatesLocations().stream()
+                .map(d -> modelMapper.map(d, EventDateLocation.class))
+                .map(d -> {
+                    d.setEvent(toUpdate);
+                    return d;
+                })
+                .collect(Collectors.toList()));
+        }
+    }
+
+    private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         List<String> additionalImagesStr = new ArrayList<>();
         if (updateEventDto.getAdditionalImages() != null) {
             additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
@@ -204,15 +220,6 @@ public class EventServiceImpl implements EventService {
         }
         toUpdate.setAdditionalImages(additionalImagesStr.stream().map(img -> EventImages.builder().event(toUpdate)
             .link(img).build()).collect(Collectors.toList()));
-
-        if (updateEventDto.getDatesLocations() != null) {
-            addAddressesToLocation(updateEventDto.getDatesLocations());
-            eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
-            toUpdate.setDates(updateEventDto.getDatesLocations().stream()
-                .map(d -> modelMapper.map(d, EventDateLocation.class))
-                .peek(d -> d.setEvent(toUpdate))
-                .collect(Collectors.toList()));
-        }
     }
 
     private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
