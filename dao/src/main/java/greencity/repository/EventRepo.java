@@ -1,18 +1,18 @@
 package greencity.repository;
 
-import greencity.entity.EcoNews;
 import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
      * Method for getting three last eco news.
      *
-     * @return list of {@link EcoNews} instances.
+     * @return list of {@link Event} instances.
      */
     @Query(value = "SELECT * FROM events ORDER BY title", nativeQuery = true)
     Page<Event> getAll(Pageable page);
@@ -36,4 +36,13 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
             + "    lower(u.name) like lower(concat('%', :query, '%')) or "
             + "    lower(tt.name) like lower(concat('%', :query, '%'))")
     Page<Event> searchEventsBy(Pageable paging, String query);
+
+    /**
+     * Remove event datesLocations.
+     *
+     * @return list of {@link Event} instances.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM events_dates_locations WHERE event_id = :eventId", nativeQuery = true)
+    void deleteEventDateLocationsByEventId(Long eventId);
 }

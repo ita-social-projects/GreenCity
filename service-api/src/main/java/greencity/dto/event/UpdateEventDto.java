@@ -23,6 +23,7 @@ public class UpdateEventDto {
     @Size(min = 20, max = 63206)
     private String description;
 
+    @Max(7)
     private List<EventDateLocationDto> datesLocations;
 
     private String titleImage;
@@ -30,9 +31,6 @@ public class UpdateEventDto {
     private List<String> additionalImages;
 
     private List<String> imagesToDelete;
-
-    @Max(7)
-    private List<EventDateLocationDto> dates;
 
     private List<String> tags;
 

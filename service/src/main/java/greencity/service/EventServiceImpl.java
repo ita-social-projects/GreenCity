@@ -1,5 +1,7 @@
 package greencity.service;
 
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -20,6 +22,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -34,11 +37,13 @@ public class EventServiceImpl implements EventService {
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
+    private final GoogleApiService googleApiService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
+        addAddressesToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
@@ -141,6 +146,7 @@ public class EventServiceImpl implements EventService {
      * @return EventDto
      */
     @Override
+    @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
         Event toUpdate = modelMapper.map(getEvent(eventDto.getId()), Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -148,8 +154,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         enhanceWithNewData(toUpdate, eventDto, images);
-        eventRepo.save(toUpdate);
-        return modelMapper.map(toUpdate, EventDto.class);
+        return modelMapper.map(eventRepo.save(toUpdate), EventDto.class);
     }
 
     private void enhanceWithNewData(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
@@ -176,6 +181,10 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEventDto.getImagesToDelete() != null) {
+            if (updateEventDto.getImagesToDelete().size() == toUpdate.getAdditionalImages().size() + 1
+                    && images.length <= 0) {
+                toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+            }
             for (String img : updateEventDto.getImagesToDelete()) {
                 fileService.delete(img);
                 toUpdate.getAdditionalImages()
@@ -196,9 +205,28 @@ public class EventServiceImpl implements EventService {
         toUpdate.setAdditionalImages(additionalImagesStr.stream().map(img -> EventImages.builder().event(toUpdate)
             .link(img).build()).collect(Collectors.toList()));
 
-        if (updateEventDto.getDates() != null) {
-            toUpdate.setDates(updateEventDto.getDates().stream().map(d -> modelMapper.map(d, EventDateLocation.class))
-                .collect(Collectors.toList()));
+        if (updateEventDto.getDatesLocations() != null) {
+            addAddressesToLocation(updateEventDto.getDatesLocations());
+            eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
+            toUpdate.setDates(updateEventDto.getDatesLocations().stream()
+                .map(d -> modelMapper.map(d, EventDateLocation.class))
+                .peek(d -> d.setEvent(toUpdate))
+            .collect(Collectors.toList()));
+        }
+    }
+
+    private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
+        for (var date : eventDateLocationDtos) {
+            if (date.getCoordinates() != null) {
+                CoordinatesDto coordinatesDto = date.getCoordinates();
+                List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
+                        new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+                GeocodingResult resultUa = address.get(0);
+                GeocodingResult resultEn = address.get(1);
+                coordinatesDto.setAddressUa(resultUa.formattedAddress);
+                coordinatesDto.setAddressEn(resultEn.formattedAddress);
+                date.setCoordinates(coordinatesDto);
+            }
         }
     }
 }
