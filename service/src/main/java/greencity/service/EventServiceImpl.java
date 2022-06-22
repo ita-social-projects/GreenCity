@@ -212,51 +212,39 @@ public class EventServiceImpl implements EventService {
                     toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
                         .map(url -> EventImages.builder().event(toUpdate).link(url).build())
                         .collect(Collectors.toList()));
+                } else {
+                    toUpdate.setAdditionalImages(null);
                 }
             } else {
                 toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
             }
         } else if (updateEventDto.getImagesToDelete() == null) {
-            int imagesCounter = 0;
-            if (toUpdate.getTitleImage() != null) {
-                toUpdate.setTitleImage(updateEventDto.getTitleImage());
-            } else {
-                toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
-            }
-            List<String> additionalImagesStr = new ArrayList<>();
-            for (int i = imagesCounter; i < images.length; i++) {
-                if (updateEventDto.getAdditionalImages() != null) {
-                    additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
-                }
-                additionalImagesStr.add(fileService.upload(images[imagesCounter]));
-            }
-            if (!additionalImagesStr.isEmpty()) {
-                toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
-            } else {
-                toUpdate.setAdditionalImages(null);
-            }
+            addNewImages(toUpdate, updateEventDto, images);
         } else {
             updateEventDto.getImagesToDelete().forEach(fileService::delete);
-            int imagesCounter = 0;
-            if (updateEventDto.getTitleImage() == null) {
-                toUpdate.setTitleImage(updateEventDto.getTitleImage());
-            } else {
-                toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+            addNewImages(toUpdate, updateEventDto, images);
+        }
+    }
+
+    private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        int imagesCounter = 0;
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+        } else {
+            toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+        }
+        List<String> additionalImagesStr = new ArrayList<>();
+        for (int i = imagesCounter; i < images.length; i++) {
+            if (updateEventDto.getAdditionalImages() != null) {
+                additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
             }
-            List<String> additionalImagesStr = new ArrayList<>();
-            for (int i = imagesCounter; i < images.length; i++) {
-                if (updateEventDto.getAdditionalImages() != null) {
-                    additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
-                }
-                additionalImagesStr.add(fileService.upload(images[imagesCounter]));
-            }
-            if (!additionalImagesStr.isEmpty()) {
-                toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
-            } else {
-                toUpdate.setAdditionalImages(null);
-            }
+            additionalImagesStr.add(fileService.upload(images[imagesCounter]));
+        }
+        if (!additionalImagesStr.isEmpty()) {
+            toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
+                .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+        } else {
+            toUpdate.setAdditionalImages(null);
         }
     }
 
