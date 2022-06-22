@@ -193,36 +193,44 @@ public class EventServiceImpl implements EventService {
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         if ((images == null || images.length == 0) && updateEventDto.getImagesToDelete() == null) {
-            if (updateEventDto.getTitleImage() != null) {
-                toUpdate.setTitleImage(updateEventDto.getTitleImage());
-            } else {
-                toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
-            }
-            if (updateEventDto.getAdditionalImages() != null) {
-                updateEventDto.getAdditionalImages().forEach(img -> toUpdate
-                    .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
-            } else {
-                toUpdate.setAdditionalImages(null);
-            }
+            changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
-            updateEventDto.getImagesToDelete().forEach(fileService::delete);
-            if (updateEventDto.getTitleImage() != null) {
-                toUpdate.setTitleImage(updateEventDto.getTitleImage());
-                if (updateEventDto.getAdditionalImages() != null) {
-                    toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
-                        .map(url -> EventImages.builder().event(toUpdate).link(url).build())
-                        .collect(Collectors.toList()));
-                } else {
-                    toUpdate.setAdditionalImages(null);
-                }
-            } else {
-                toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
-            }
+            deleteOldImages(toUpdate, updateEventDto);
         } else if (updateEventDto.getImagesToDelete() == null) {
             addNewImages(toUpdate, updateEventDto, images);
         } else {
             updateEventDto.getImagesToDelete().forEach(fileService::delete);
             addNewImages(toUpdate, updateEventDto, images);
+        }
+    }
+
+    private void changeOldImagesWithoutRemovingAndAdding(Event toUpdate, UpdateEventDto updateEventDto) {
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+        } else {
+            toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+        }
+        if (updateEventDto.getAdditionalImages() != null) {
+            updateEventDto.getAdditionalImages().forEach(img -> toUpdate
+                .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+        } else {
+            toUpdate.setAdditionalImages(null);
+        }
+    }
+
+    private void deleteOldImages(Event toUpdate, UpdateEventDto updateEventDto) {
+        updateEventDto.getImagesToDelete().forEach(fileService::delete);
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+            if (updateEventDto.getAdditionalImages() != null) {
+                toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
+                    .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                    .collect(Collectors.toList()));
+            } else {
+                toUpdate.setAdditionalImages(null);
+            }
+        } else {
+            toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
     }
 
