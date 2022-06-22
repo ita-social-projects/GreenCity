@@ -6,6 +6,10 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
+import greencity.entity.event.Coordinates;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -15,8 +19,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Class that used by {@link ModelMapper} to map {@link greencity.entity.Event}
- * into {@link EventDto}.
+ * Class that used by {@link ModelMapper} to map {@link Event} into
+ * {@link EventDto}.
  */
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
@@ -68,7 +72,9 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         Coordinates coordinates = eventDateLocation.getCoordinates();
         if (coordinates != null) {
             CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                .longitude(coordinates.getLongitude()).build();
+                .longitude(coordinates.getLongitude())
+                .addressEn(coordinates.getAddressEn())
+                .addressUa(coordinates.getAddressUa()).build();
             eventDateLocationDto.setCoordinates(coordinatesDto);
         }
         return eventDateLocationDto;

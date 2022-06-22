@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 
+import greencity.entity.event.Event;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import lombok.*;

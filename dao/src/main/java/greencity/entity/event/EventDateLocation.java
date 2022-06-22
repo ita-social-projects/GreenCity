@@ -1,4 +1,4 @@
-package greencity.entity;
+package greencity.entity.event;
 
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -19,7 +19,7 @@ public class EventDateLocation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "event_id")
     private Event event;
 

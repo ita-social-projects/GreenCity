@@ -1,4 +1,4 @@
-package greencity.entity;
+package greencity.entity.event;
 
 import lombok.*;
 
@@ -14,10 +14,14 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 public final class Coordinates {
     @Column
-    @NonNull
     private double latitude;
 
     @Column
-    @NonNull
     private double longitude;
+
+    @Column
+    private String addressUa;
+
+    @Column
+    private String addressEn;
 }

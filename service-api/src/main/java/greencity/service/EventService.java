@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,4 +61,15 @@ public interface EventService {
      * @param query  - query to search by.
      */
     PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query);
+
+    /**
+     * Update Event.
+     *
+     * @param email    - user that edits event
+     *
+     * @param eventDto - new event information
+     * @param images   - new images of event
+     * @return EventDto
+     */
+    EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
 }
