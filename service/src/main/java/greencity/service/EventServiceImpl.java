@@ -1,5 +1,7 @@
 package greencity.service;
 
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -7,15 +9,21 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
 import greencity.dto.tag.TagVO;
 import greencity.entity.*;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
+import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -30,11 +38,13 @@ public class EventServiceImpl implements EventService {
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
+    private final GoogleApiService googleApiService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
+        addAddressesToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
@@ -129,5 +139,136 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
         Page<Event> page = eventRepo.searchEventsBy(paging, query);
         return buildPageableAdvancedDto(page);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return EventDto
+     */
+    @Override
+    @Transactional
+    public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
+        Event toUpdate = eventRepo.getOne(eventDto.getId());
+        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+        if ((organizer.getRole() != Role.ROLE_ADMIN || organizer.getRole() != Role.ROLE_MODERATOR)
+            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        enhanceWithNewData(toUpdate, eventDto, images);
+        return modelMapper.map(eventRepo.save(toUpdate), EventDto.class);
+    }
+
+    private void enhanceWithNewData(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        if (updateEventDto.getTitle() != null) {
+            toUpdate.setTitle(updateEventDto.getTitle());
+        }
+        if (updateEventDto.getDescription() != null) {
+            toUpdate.setDescription(updateEventDto.getDescription());
+        }
+        if (updateEventDto.getIsOpen() != null) {
+            toUpdate.setOpen(updateEventDto.getIsOpen());
+        }
+
+        if (updateEventDto.getTags() != null) {
+            toUpdate.setTags(modelMapper.map(tagService
+                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
+        }
+
+        updateImages(toUpdate, updateEventDto, images);
+
+        if (updateEventDto.getDatesLocations() != null) {
+            addAddressesToLocation(updateEventDto.getDatesLocations());
+            eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
+            toUpdate.setDates(updateEventDto.getDatesLocations().stream()
+                .map(d -> modelMapper.map(d, EventDateLocation.class))
+                .map(d -> {
+                    d.setEvent(toUpdate);
+                    return d;
+                })
+                .collect(Collectors.toList()));
+        }
+    }
+
+    private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
+            changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
+        } else if (images == null || images.length == 0) {
+            deleteOldImages(toUpdate, updateEventDto);
+        } else if (updateEventDto.getImagesToDelete() == null) {
+            addNewImages(toUpdate, updateEventDto, images);
+        } else {
+            updateEventDto.getImagesToDelete().forEach(fileService::delete);
+            addNewImages(toUpdate, updateEventDto, images);
+        }
+    }
+
+    private void changeOldImagesWithoutRemovingAndAdding(Event toUpdate, UpdateEventDto updateEventDto) {
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+        } else {
+            toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+        }
+        if (updateEventDto.getAdditionalImages() != null) {
+            updateEventDto.getAdditionalImages().forEach(img -> toUpdate
+                .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+        } else {
+            toUpdate.setAdditionalImages(null);
+        }
+    }
+
+    private void deleteOldImages(Event toUpdate, UpdateEventDto updateEventDto) {
+        updateEventDto.getImagesToDelete().forEach(fileService::delete);
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+            if (updateEventDto.getAdditionalImages() != null) {
+                toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
+                    .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                    .collect(Collectors.toList()));
+            } else {
+                toUpdate.setAdditionalImages(null);
+            }
+        } else {
+            toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
+        }
+    }
+
+    private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        int imagesCounter = 0;
+        if (updateEventDto.getTitleImage() != null) {
+            toUpdate.setTitleImage(updateEventDto.getTitleImage());
+        } else {
+            toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
+        }
+        List<String> additionalImagesStr = new ArrayList<>();
+        for (int i = imagesCounter; i < images.length; i++) {
+            if (updateEventDto.getAdditionalImages() != null) {
+                additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+            }
+            additionalImagesStr.add(fileService.upload(images[imagesCounter]));
+        }
+        if (!additionalImagesStr.isEmpty()) {
+            toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
+                .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+        } else {
+            toUpdate.setAdditionalImages(null);
+        }
+    }
+
+    private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
+        for (var date : eventDateLocationDtos) {
+            if (date.getCoordinates() != null) {
+                CoordinatesDto coordinatesDto = date.getCoordinates();
+                List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
+                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+                GeocodingResult resultUa = address.get(0);
+                GeocodingResult resultEn = address.get(1);
+                coordinatesDto.setAddressUa(resultUa.formattedAddress);
+                coordinatesDto.setAddressEn(resultEn.formattedAddress);
+                date.setCoordinates(coordinatesDto);
+            }
+        }
     }
 }

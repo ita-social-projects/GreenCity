@@ -3,6 +3,10 @@ package greencity.mapping.events;
 import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDto;
 import greencity.entity.*;
+import greencity.entity.event.Coordinates;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -49,7 +53,9 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
                 .coordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude()).build())
+                    .longitude(coordinatesDto.getLongitude())
+                    .addressEn(coordinatesDto.getAddressEn())
+                    .addressUa(coordinatesDto.getAddressUa()).build())
                 .onlineLink(date.getOnlineLink())
                 .event(event).build());
         }

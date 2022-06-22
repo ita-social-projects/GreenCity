@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import greencity.dto.event.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,12 +63,6 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.CoordinatesDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -139,13 +134,13 @@ import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
-import greencity.entity.Coordinates;
+import greencity.entity.event.Coordinates;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
-import greencity.entity.Event;
-import greencity.entity.EventDateLocation;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
@@ -184,6 +179,19 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import greencity.enums.*;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.*;
+import java.util.*;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 public class ModelUtils {
     public static User TEST_USER = createUser();
@@ -1720,11 +1728,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1741,11 +1749,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1754,7 +1762,7 @@ public class ModelUtils {
     public static AddEventDtoResponse getAddEventDtoResponse() {
         return AddEventDtoResponse.builder()
             .id(1L)
-            .dates(new ArrayList<EventDateLocationDto>())
+            .dates(new ArrayList<>())
             .title("Title")
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -1970,4 +1978,50 @@ public class ModelUtils {
             .lng(12.12)
             .build();
     }
+
+    public static Event getExpectedEvent() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        dates.add(new EventDateLocation(2L, event,
+            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
+    public static UpdateEventDto getUpdateEventDto() {
+        UpdateEventDto updateEventDto = new UpdateEventDto();
+        updateEventDto.setId(1L);
+        return updateEventDto;
+    }
+
+    public static List<String> getUpdatedEventTags() {
+        return List.of("Social");
+    }
+
+    public static List<TagUaEnDto> getUpdatedEventTagUaEn() {
+        return List.of(TagUaEnDto.builder().nameEn("Social").nameUa("Сщціальний").build());
+    }
+
+    public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
+        return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+            .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
+    }
+
+    public static EventDateLocation getUpdatedEventDateLocation() {
+        return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+            .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
+    }
+
 }

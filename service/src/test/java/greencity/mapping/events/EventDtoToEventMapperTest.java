@@ -1,9 +1,8 @@
 package greencity.mapping.events;
 
 import greencity.ModelUtils;
-import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
-import greencity.entity.Event;
+import greencity.entity.event.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

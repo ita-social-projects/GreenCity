@@ -2,9 +2,9 @@ package greencity.mapping.events;
 
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.CoordinatesDto;
-import greencity.entity.Coordinates;
-import greencity.entity.Event;
-import greencity.entity.EventDateLocation;
+import greencity.entity.event.Coordinates;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -15,8 +15,7 @@ import java.util.List;
 
 /**
  * Class that used by {@link ModelMapper} to map
- * {@link greencity.dto.event.AddEventDtoRequest} into
- * {@link greencity.entity.Event}.
+ * {@link greencity.dto.event.AddEventDtoRequest} into {@link Event}.
  */
 @Component(value = "eventDtoRequestMapper")
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
@@ -45,7 +44,9 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
             if (date.getCoordinates() != null) {
                 CoordinatesDto coordinatesDto = date.getCoordinates();
                 eventDateLocation.setCoordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude()).build());
+                    .longitude(coordinatesDto.getLongitude())
+                    .addressUa(coordinatesDto.getAddressUa())
+                    .addressEn(coordinatesDto.getAddressEn()).build());
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());
