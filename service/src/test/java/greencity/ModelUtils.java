@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import greencity.dto.event.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,12 +63,6 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.CoordinatesDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -213,14 +208,6 @@ public class ModelUtils {
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());
-    }
-
-    public static GeocodingResult[] getGeocodingResults() {
-        GeocodingResult addressUa = new GeocodingResult();
-        addressUa.formattedAddress = "Ua address";
-        GeocodingResult addressEn = new GeocodingResult();
-        addressEn.formattedAddress = "Ua address";
-        return new GeocodingResult[] {addressUa, addressEn};
     }
 
     public static Tag getEventTag() {
@@ -1991,4 +1978,29 @@ public class ModelUtils {
             .lng(12.12)
             .build();
     }
+
+    public static UpdateEventDto getUpdateEventDto() {
+        UpdateEventDto updateEventDto = new UpdateEventDto();
+        updateEventDto.setId(1L);
+        return updateEventDto;
+    }
+
+    public static List<String> getUpdatedEventTags() {
+        return List.of("Social");
+    }
+
+    public static List<TagUaEnDto> getUpdatedEventTagUaEn() {
+        return List.of(TagUaEnDto.builder().nameEn("Social").nameUa("Сщціальний").build());
+    }
+
+    public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
+        return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+                .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
+    }
+
+    public static EventDateLocation getUpdatedEventDateLocation() {
+        return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+                .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
+    }
+
 }

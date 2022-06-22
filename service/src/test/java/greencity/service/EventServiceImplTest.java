@@ -5,15 +5,18 @@ import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.event.Event;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.event.EventDateLocation;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -29,8 +32,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
@@ -47,7 +49,7 @@ class EventServiceImplTest {
     TagsService tagService;
 
     @Mock
-    private FileService fileService;
+    FileService fileService;
 
     @Mock
     GoogleApiService googleApiService;
@@ -87,6 +89,49 @@ class EventServiceImplTest {
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
         assertEquals(eventDto,
             eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
+    }
+
+    @Test
+    void update() {
+        EventDto eventDto = ModelUtils.getEventDto();
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.getOne(1L)).thenReturn(event);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(eventRepo.save(event)).thenReturn(event);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+
+        EventDto updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+        assertEquals(updatedEventDto, eventDto);
+
+        eventToUpdateDto.setTitle("New title");
+        eventToUpdateDto.setDescription("New description");
+        eventToUpdateDto.setIsOpen(false);
+        eventToUpdateDto.setTags(ModelUtils.getUpdatedEventTags());
+        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdatedEventDateLocationDto());
+
+        eventDto.setTitle("New title");
+        eventDto.setDescription("New description");
+        eventDto.setOpen(false);
+        eventDto.setTags(ModelUtils.getUpdatedEventTagUaEn());
+        eventDto.setDates(ModelUtils.getUpdatedEventDateLocationDto());
+
+        List updatedTagVO = List.of(ModelUtils.getTagVO());
+
+        when(tagService.findTagsWithAllTranslationsByNamesAndType(eventToUpdateDto.getTags(), TagType.EVENT))
+                        .thenReturn(updatedTagVO);
+        when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>(){}.getType())).thenReturn(ModelUtils.getEventTags());
+        doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class)).thenReturn(ModelUtils.getUpdatedEventDateLocation());
+
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+
+        updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+
+        assertEquals(updatedEventDto, eventDto);
     }
 
     @Test
