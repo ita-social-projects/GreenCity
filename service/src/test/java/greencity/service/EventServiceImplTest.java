@@ -122,10 +122,12 @@ class EventServiceImplTest {
         List updatedTagVO = List.of(ModelUtils.getTagVO());
 
         when(tagService.findTagsWithAllTranslationsByNamesAndType(eventToUpdateDto.getTags(), TagType.EVENT))
-                        .thenReturn(updatedTagVO);
-        when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>(){}.getType())).thenReturn(ModelUtils.getEventTags());
+            .thenReturn(updatedTagVO);
+        when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class)).thenReturn(ModelUtils.getUpdatedEventDateLocation());
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+            .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
         when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
 

@@ -1995,12 +1995,12 @@ public class ModelUtils {
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
         return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-                .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
+            .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {
         return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-                .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
+            .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
     }
 
 }
