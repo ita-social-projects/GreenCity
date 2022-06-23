@@ -124,6 +124,7 @@
     <include file="db/changelog/logs/ch-change-event-date-to-zoned-type-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-changed-user-role-to-varchar.xml"/>
     <include file="db/changelog/logs/ch-add-places-tags.xml"/>
+    <include file="db/changelog/logs/ch-change-events-location-add-addresses-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-alter-achievements-user_achievements-user_actions-Yezenitskyi.xml"/>
 </databaseChangeLog>
 

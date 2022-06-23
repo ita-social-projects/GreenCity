@@ -1,26 +1,34 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: greencity-ingress
+  name: {{ .Release.Name }}-greencity-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/issuer: "letsencrypt-prod"
+{{- if .Values.ingress.enable_cors}}
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://ita-social-projects.github.io.ga, https://ita-social-projects.github.io.ga/, https://ita-social-projects.github.io/* "
+    {{- if eq .Values.ingress.cors_allow_origin "" }}  
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    {{- else }}
+    nginx.ingress.kubernetes.io/cors-allow-origin: {{ .Values.ingress.cors_allow_origin }} 
+    {{- end }}
+    {{- if eq .Values.ingress.cors_allow_credentials "true" }}
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    {{- end }}
+{{- end }}
 spec:
   tls:
   - hosts:
-    - greencity.testgreencity.ga
+    - {{ .Values.ingress.hostname }}
     secretName: greencity
   rules:
-  - host: greencity.testgreencity.ga
+  - host: {{ .Values.ingress.hostname }}
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service: 
-            name: greencity-service
+            name: {{ .Release.Name }}-greencity-service
             port: 
               number: 80

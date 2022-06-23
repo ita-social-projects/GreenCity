@@ -58,7 +58,7 @@ public class GoogleApiService {
             try {
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
                     .latlng(searchCoordinates).language(locale.getLanguage()).await();
-                Collections.addAll(geocodingResults, results);
+                geocodingResults.add(results[0]);
             } catch (IOException | InterruptedException | ApiException e) {
                 log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
                 Thread.currentThread().interrupt();

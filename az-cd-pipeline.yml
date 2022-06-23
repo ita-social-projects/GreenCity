@@ -47,30 +47,30 @@ stages:
         KeyVaultName: '$(azKeyVault)'
         SecretsFilter: 'ftpHost, ftpUser, ftpPass'
         
-    - task: FtpUpload@2
-      displayName: Upload json to app service via FTP
-      inputs:
-        credentialsOption: 'inputs'
-        serverUrl: '$(ftpHost)'
-        username: '$(ftpUser)'
-        password: '$(ftpPass)'
-        filePatterns: '$(jsonFile)'
-        remoteDirectory: '$(jsonLocation)'
+#     - task: FtpUpload@2
+#       displayName: Upload json to app service via FTP
+#       inputs:
+#         credentialsOption: 'inputs'
+#         serverUrl: '$(ftpHost)'
+#         username: '$(ftpUser)'
+#         password: '$(ftpPass)'
+#         filePatterns: '$(jsonFile)'
+#         remoteDirectory: '$(jsonLocation)'
 
-    - task: AzureAppServiceSettings@1
-      displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-      inputs:
-        azureSubscription: '$(azureSub)'
-        appName: '$(coreServiceName)'
-        resourceGroupName: '$(resourceGroup)'
-        appSettings: |
-          [
-            {
-              "name": "GOOGLE_APPLICATION_CREDENTIALS",
-              "value": "/home$(jsonLocation)/$(jsonFile)", 
-              "slotSetting": false
-            }
-          ]
+#     - task: AzureAppServiceSettings@1
+#       displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+#       inputs:
+#         azureSubscription: '$(azureSub)'
+#         appName: '$(coreServiceName)'
+#         resourceGroupName: '$(resourceGroup)'
+#         appSettings: |
+#           [
+#             {
+#               "name": "GOOGLE_APPLICATION_CREDENTIALS",
+#               "value": "/home$(jsonLocation)/$(jsonFile)", 
+#               "slotSetting": false
+#             }
+#           ]
      
     - task: Maven@3
       displayName: Maven package
@@ -136,14 +136,14 @@ stages:
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
 
-            - task: AzureRmWebAppDeployment@4
-              inputs:
-                azureSubscription: '$(azureSub)'
-                appType: 'webAppLinux'
-                WebAppName: '$(coreServiceName)'
-                deployToSlotOrASE: true
-                ResourceGroupName: '$(resourceGroup)'
-                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+#             - task: AzureRmWebAppDeployment@4
+#               inputs:
+#                 azureSubscription: '$(azureSub)'
+#                 appType: 'webAppLinux'
+#                 WebAppName: '$(coreServiceName)'
+#                 deployToSlotOrASE: true
+#                 ResourceGroupName: '$(resourceGroup)'
+#                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
 
             - task: HelmInstaller@0
               inputs:
@@ -159,5 +159,5 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'image=skyere/greencity:$(Build.BuildId)'
+                overrideValues: 'deployment.image=skyere/greencity:$(Build.BuildId)'
                 arguments: '--debug'

@@ -1,6 +1,38 @@
 package greencity;
 
+
 import com.google.maps.model.*;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import greencity.dto.event.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
+import com.google.maps.model.LatLng;
+
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
@@ -16,10 +48,32 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.comment.AddCommentDto;
 import greencity.dto.comment.CommentReturnDto;
 import greencity.dto.discount.DiscountValueDto;
+
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
 import greencity.dto.event.*;
 import greencity.dto.factoftheday.*;
+
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.factoftheday.FactOfTheDayDTO;
+import greencity.dto.factoftheday.FactOfTheDayPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
+import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
+import greencity.dto.factoftheday.FactOfTheDayVO;
+
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.habit.*;
@@ -48,6 +102,33 @@ import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionMessage;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
+
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.Comment;
+import greencity.entity.event.Coordinates;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FactOfTheDayTranslation;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+
 import greencity.entity.OpeningHours;
 import greencity.entity.Photo;
 import greencity.entity.*;
@@ -55,9 +136,23 @@ import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
+
 import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+
+import greencity.enums.AchievementStatus;
+import greencity.enums.CommentStatus;
+import greencity.enums.EmailNotification;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.PlaceStatus;
+import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.TagType;
+import greencity.enums.UserStatus;
+import greencity.enums.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -67,6 +162,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 import java.util.*;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 
 public class ModelUtils {
     public static User TEST_USER = createUser();
@@ -1685,11 +1784,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1706,11 +1805,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45), null));
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1719,7 +1818,7 @@ public class ModelUtils {
     public static AddEventDtoResponse getAddEventDtoResponse() {
         return AddEventDtoResponse.builder()
             .id(1L)
-            .dates(new ArrayList<EventDateLocationDto>())
+            .dates(new ArrayList<>())
             .title("Title")
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -1944,4 +2043,50 @@ public class ModelUtils {
             .lng(12.12)
             .build();
     }
+
+    public static Event getExpectedEvent() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        dates.add(new EventDateLocation(2L, event,
+            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
+    public static UpdateEventDto getUpdateEventDto() {
+        UpdateEventDto updateEventDto = new UpdateEventDto();
+        updateEventDto.setId(1L);
+        return updateEventDto;
+    }
+
+    public static List<String> getUpdatedEventTags() {
+        return List.of("Social");
+    }
+
+    public static List<TagUaEnDto> getUpdatedEventTagUaEn() {
+        return List.of(TagUaEnDto.builder().nameEn("Social").nameUa("Сщціальний").build());
+    }
+
+    public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
+        return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+            .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
+    }
+
+    public static EventDateLocation getUpdatedEventDateLocation() {
+        return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
+            .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
+    }
+
 }

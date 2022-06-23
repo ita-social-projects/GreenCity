@@ -1,32 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: greencity
+  name: {{ .Release.Name }}-greencity
   annotations:
     reloader.stakater.com/auto: "true"
 
 spec:
-  replicas: 1
+  replicas: {{ .Values.deployment.replicas }}
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app: greencity
+      app: {{ .Release.Name }}-greencity
   template:
     metadata:
       labels:
-        app: greencity
+        app: {{ .Release.Name }}-greencity
     spec:
       nodeSelector:
         "kubernetes.io/os": linux
       containers:
-      - name: greencity
-        image: {{ .Values.image }}
+      - name: {{ .Release.Name }}-greencity
+        image: {{ .Values.deployment.image }}
         resources:
           requests:
-            cpu: 50m
-            memory: 300Mi
+            cpu: {{ .Values.deployment.requests.cpu }}
+            memory: {{ .Values.deployment.requests.memory }}
           limits:
-            cpu: 2
-            memory: 1024Mi
+            cpu: {{ .Values.deployment.limits.cpu }}
+            memory: {{ .Values.deployment.limits.memory }}
         env:
 
         - name: API_KEY

@@ -1,5 +1,7 @@
-package greencity.entity;
+package greencity.entity.event;
 
+import greencity.entity.Tag;
+import greencity.entity.User;
 import lombok.*;
 
 import javax.persistence.*;
