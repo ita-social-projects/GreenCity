@@ -10,12 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
-     * Method for getting three last eco news.
+     * Method for getting all events.
      *
      * @return list of {@link Event} instances.
      */
-    @Query(value = "SELECT * FROM events ORDER BY id", nativeQuery = true)
-    Page<Event> getAll(Pageable page);
+    Page<Event> findAllByOrderByIdDesc(Pageable page);
 
     /**
      * Method returns {@link Event} by search query and page.

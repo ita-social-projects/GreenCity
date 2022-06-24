@@ -198,7 +198,7 @@ class EventServiceImplTest {
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
         assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
             event.getAdditionalImages().get(0).getLink());
-        assertEquals("Add img 1", event.getAdditionalImages().get(3).getLink());
+        assertEquals("url2", event.getAdditionalImages().get(3).getLink());
 
         eventToUpdateDto.setAdditionalImages(null);
         expectedEvent.setAdditionalImages(null);
@@ -263,6 +263,8 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(ModelUtils.getUser());
         when(eventRepo.getOne(any())).thenReturn(event);
+
+        doNothing().when(fileService).delete(any());
 
         eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail());
 
@@ -359,7 +361,8 @@ class EventServiceImplTest {
 
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
