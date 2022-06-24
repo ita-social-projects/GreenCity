@@ -237,6 +237,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/",
                 "/ownSecurity",
                 "/user/profile",
+                EVENTS + "/update",
                 HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
