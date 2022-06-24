@@ -75,7 +75,15 @@ public class EventServiceImpl implements EventService {
     public void delete(Long eventId, String email) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Event toDelete = eventRepo.getOne(eventId);
+        List<String> eventImages = new ArrayList<>();
+        eventImages.add(toDelete.getTitleImage());
+        if (toDelete.getAdditionalImages() != null) {
+            eventImages
+                .addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink).collect(Collectors.toList()));
+        }
+
         if (toDelete.getOrganizer().getId().equals(user.getId())) {
+            deleteImagesFromServer(eventImages);
             eventRepo.delete(toDelete);
         } else {
             throw new BadRequestException(ErrorMessage.NOT_EVENT_ORGANIZER);
@@ -90,7 +98,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page) {
-        Page<Event> pages = eventRepo.getAll(page);
+        Page<Event> pages = eventRepo.findAllByOrderByIdDesc(page);
         return buildPageableAdvancedDto(pages);
     }
 
@@ -151,7 +159,7 @@ public class EventServiceImpl implements EventService {
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
         Event toUpdate = eventRepo.getOne(eventDto.getId());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
-        if ((organizer.getRole() != Role.ROLE_ADMIN || organizer.getRole() != Role.ROLE_MODERATOR)
+        if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -200,7 +208,7 @@ public class EventServiceImpl implements EventService {
         } else if (updateEventDto.getImagesToDelete() == null) {
             addNewImages(toUpdate, updateEventDto, images);
         } else {
-            updateEventDto.getImagesToDelete().forEach(fileService::delete);
+            deleteImagesFromServer(updateEventDto.getImagesToDelete());
             addNewImages(toUpdate, updateEventDto, images);
         }
     }
@@ -220,7 +228,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void deleteOldImages(Event toUpdate, UpdateEventDto updateEventDto) {
-        updateEventDto.getImagesToDelete().forEach(fileService::delete);
+        deleteImagesFromServer(updateEventDto.getImagesToDelete());
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
             if (updateEventDto.getAdditionalImages() != null) {
@@ -235,6 +243,10 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void deleteImagesFromServer(List<String> images) {
+        images.stream().filter(img -> !img.equals(DEFAULT_TITLE_IMAGE_PATH)).forEach(fileService::delete);
+    }
+
     private void addNewImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         int imagesCounter = 0;
         if (updateEventDto.getTitleImage() != null) {
@@ -243,11 +255,11 @@ public class EventServiceImpl implements EventService {
             toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
         }
         List<String> additionalImagesStr = new ArrayList<>();
+        if (updateEventDto.getAdditionalImages() != null) {
+            additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+        }
         for (int i = imagesCounter; i < images.length; i++) {
-            if (updateEventDto.getAdditionalImages() != null) {
-                additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
-            }
-            additionalImagesStr.add(fileService.upload(images[imagesCounter]));
+            additionalImagesStr.add(fileService.upload(images[imagesCounter++]));
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()

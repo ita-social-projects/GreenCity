@@ -1735,6 +1735,7 @@ public class ModelUtils {
             new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
         return event;
     }
 
