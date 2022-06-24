@@ -98,7 +98,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page) {
-        Page<Event> pages = eventRepo.getAll(page);
+        Page<Event> pages = eventRepo.findAllByOrderByIdDesc(page);
         return buildPageableAdvancedDto(pages);
     }
 

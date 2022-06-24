@@ -361,7 +361,7 @@ class EventServiceImplTest {
 
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
