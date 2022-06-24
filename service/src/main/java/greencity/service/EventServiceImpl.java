@@ -255,11 +255,11 @@ public class EventServiceImpl implements EventService {
             toUpdate.setTitleImage(fileService.upload(images[imagesCounter++]));
         }
         List<String> additionalImagesStr = new ArrayList<>();
+        if (updateEventDto.getAdditionalImages() != null) {
+            additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
+        }
         for (int i = imagesCounter; i < images.length; i++) {
-            if (updateEventDto.getAdditionalImages() != null) {
-                additionalImagesStr.addAll(updateEventDto.getAdditionalImages());
-            }
-            additionalImagesStr.add(fileService.upload(images[i]));
+            additionalImagesStr.add(fileService.upload(images[imagesCounter++]));
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()

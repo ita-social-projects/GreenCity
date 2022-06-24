@@ -22,7 +22,7 @@ public final class AppConstant {
     public static final int MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER = 56;
     public static final Integer MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL = 8;
     public static final String DEFAULT_HABIT_IMAGE =
-        "https://csb10032000a548f571.blob.core.windows.net/allfiles/23320c2d-9572-4fad-b345-b366b9208b70EventDefaultImage.png";
+        "https://csb10032000a548f571.blob.core.windows.net/allfiles/8f09887c-2fbf-4ee1-95fc-6763a1873b93EventDefaultImage.png";
 
     private AppConstant() {
     }
