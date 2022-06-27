@@ -44,4 +44,13 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     @Modifying
     @Query(value = "DELETE FROM events_dates_locations WHERE event_id = :eventId", nativeQuery = true)
     void deleteEventDateLocationsByEventId(Long eventId);
+
+    /**
+     * Remove event additional images.
+     *
+     * @param eventId {@link Long}.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM events_images WHERE event_id = :eventId", nativeQuery = true)
+    void deleteEventAdditionalImagesByEventId(Long eventId);
 }
