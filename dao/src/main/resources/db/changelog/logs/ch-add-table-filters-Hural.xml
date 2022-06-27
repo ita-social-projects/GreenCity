@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="crateTableFilter1" author="Pavlo Hural">
+        <createTable tableName="filters">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR"/>
+            <column name="type" type="VARCHAR"/>
+            <column name="values" type="VARCHAR"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="addKey" author="Pavlo Hural">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="filters"
+                                 constraintName="user_filters_users_id_fk" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

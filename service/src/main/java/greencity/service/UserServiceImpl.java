@@ -2,6 +2,10 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterUserDto;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -24,10 +28,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -191,5 +198,30 @@ public class UserServiceImpl implements UserService {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
+        Pageable pageable) {
+        FilterUserDto filterUserDto = new FilterUserDto(criteria);
+        Page<User> users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
+        List<UserManagementVO> listOfUsers = users
+            .getContent()
+            .stream()
+            .map(user -> modelMapper.map(user, UserManagementVO.class))
+            .collect(Collectors.toList());
+
+        if (role != null && status != null) {
+            listOfUsers = listOfUsers.stream()
+                .filter(userManagementVO -> userManagementVO.getRole().name().equals(role))
+                .filter(userManagementVO -> userManagementVO.getUserStatus().name().equals(status))
+                .collect(Collectors.toList());
+        }
+
+        return new PageableDto<>(
+            listOfUsers,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 }

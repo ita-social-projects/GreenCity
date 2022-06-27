@@ -157,6 +157,7 @@ public final class ErrorMessage {
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
     public static final String NOT_EVENT_ORGANIZER = "You're not the organizer of this event";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
+    public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
 
     private ErrorMessage() {
     }

@@ -117,5 +117,6 @@
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
     <include file="db/changelog/logs/ch-modify-function-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-insert-table-users-service-account-Yezenitskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-table-filters-Hural.xml"/>
 </databaseChangeLog>
 
