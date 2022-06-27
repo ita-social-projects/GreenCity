@@ -32,7 +32,7 @@ table th, table td {
 /* Add styles to the form container */
 .form-container {
     max-width: 280px;
-    height: 428px;
+    height: 700px;
     border-top: none;
     border-left: 1px solid #9CA7B0;
     border-right: 1px solid #9CA7B0;
@@ -78,6 +78,8 @@ table th, table td {
 .form-container .btn:hover, .open-button:hover {
     opacity: 1;
 }
+
+
 
 .filter-btn{
     height: 35px;

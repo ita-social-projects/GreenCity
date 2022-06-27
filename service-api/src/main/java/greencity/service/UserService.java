@@ -1,10 +1,14 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
@@ -96,4 +100,12 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances
      */
     List<UserVO> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Method that returns list of users filtered by criteria.
+     * 
+     * @param criteria value which we used to filter users.
+     * @return PageableAdvancedDto<UserManagementVO>
+     */
+    PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
 }

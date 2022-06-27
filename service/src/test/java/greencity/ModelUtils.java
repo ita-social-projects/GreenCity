@@ -2025,4 +2025,37 @@ public class ModelUtils {
             .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
     }
 
+    public static  UserFilterDtoRequest getUserFilterDtoRequest() {
+        return UserFilterDtoRequest.builder()
+                .userRole("USER")
+                .name("Test_Filter")
+                .searchCriteria("Test")
+                .userStatus("ACTIVATED")
+                .build();
+    }
+
+    public static UserFilterDtoResponse getUserFilterDtoResponse() {
+        return UserFilterDtoResponse.builder()
+                .id(1L)
+                .userRole("ADMIN")
+                .searchCriteria("Test")
+                .userStatus("ACTIVATED")
+                .name("Test")
+                .build();
+    }
+
+    public static Filter  getFilter() {
+        return Filter.builder()
+                .id(1L)
+                .name("Test")
+                .user(new User())
+                .type("USERS")
+                .values("Test;ADMIN;ACTIVATED")
+                .build();
+    }
+
+//    public static Habit getHabitWithUser() {
+//        return Habit.builder().id(1L).image("image.png")
+//                .complexity(1).tags(new HashSet<>(getTags())).build();
+//    }
 }

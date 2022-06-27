@@ -429,6 +429,16 @@ function closeNav() {
     // document.getElementById("eco-news-content").style.marginRight="0";
 }
 
+function openForm() {
+    if (document.getElementById("filter").style.display === "block") {
+        document.getElementById("filter").style.display = "none";
+        document.getElementById("filter-button").style.width = "113px";
+    } else {
+        document.getElementById("filter").style.display = "block";
+        document.getElementById("filter-button").style.width = "280px";
+    }
+}
+
 function hideTable(clickedId) {
     var clickedButton = document.getElementById(clickedId);
     var hideTable = document.getElementById('table' + clickedId.match(/\d+/));
