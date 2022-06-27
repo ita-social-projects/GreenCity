@@ -201,6 +201,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
         if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
