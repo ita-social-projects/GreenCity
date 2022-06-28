@@ -5,6 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: 150m
 {{- if .Values.ingress.enable_cors}}
     nginx.ingress.kubernetes.io/enable-cors: "true"
     {{- if eq .Values.ingress.cors_allow_origin "" }}  
