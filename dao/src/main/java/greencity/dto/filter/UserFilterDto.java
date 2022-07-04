@@ -1,8 +1,5 @@
 package greencity.dto.filter;
 
-import javax.validation.Valid;
-
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FilterUserDto {
-    @Valid
-    private String searchReg;
+public class UserFilterDto {
+    private String searchCriteria;
+    private String role;
+    private String status;
 }

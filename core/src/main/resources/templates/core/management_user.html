@@ -120,44 +120,43 @@
                             <div class="form-popup" id="filter">
                                 <form class="form-container"
                                       style="width: 280px" method="post" th:action="@{/management/users/filter-save}">
-                                   <label>Filter name</label>
-                                    <input type="text" name="name" class="form-control">
-                                    <label>Search criteria</label>
-                                    <input type="text" name="searchCriteria" class="form-control">
+                                   <label>[[#{greenCity.pages.table.filtername}]]</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                    <label>[[#{greenCity.pages.table.search}]]</label>
+                                    <input type="text" name="searchCriteria" class="form-control" required>
                                     <div class="form-group">
                                         <label>[[#{greenCity.pages.table.role}]]</label>
                                         <select class="form-control" name="userRole">
-                                            <option selected="selected">ROLE_USER</option>
-                                            <option>ROLE_ADMIN</option>
-                                            <option>ROLE_MODERATOR</option>
+                                            <option selected="selected" value="all">All types</option>
+                                            <option value="0">ROLE_USER</option>
+                                            <option value="1">ROLE_ADMIN</option>
+                                            <option value="2">ROLE_MODERATOR</option>
                                         </select>
                                         <span th:id="errorModalSaverole" class="errorSpan"></span>
                                     </div>
                                     <div class="form-group">
                                         <label>[[#{greenCity.pages.table.status}]]</label>
                                         <select class="form-control" name="userStatus">
-                                            <option selected="selected">ACTIVATED</option>
-                                            <option>DEACTIVATED</option>
-                                            <option>BLOCKED</option>
-                                            <option>CREATED</option>
+                                            <option selected="selected" value="all">All types</option>
+                                            <option value="2">ACTIVATED</option>
+                                            <option value="1">DEACTIVATED</option>
+                                            <option value="0">BLOCKED</option>
+                                            <option value="3">CREATED</option>
                                         </select>
                                         <span th:id="errorModalSaverole" class="errorSpan"></span>
                                     </div>
-
-                                    <div style="float: right;margin-top: 70px; margin-bottom: 18px; ">
-                                        <button th:action="@{/management/users}" type="submit"
-                                                class="filter-btn" style="width: 91px;
-                                            height: 40px"><b>Cancel</b></button>
-                                        <button type="submit" class="apply-btn" style="float: right">
-                                            <b>Save</b>
-                                        </button>
-                                    </div>
-                                    <table class="table table-bordered">
-                                        <tr th:each="filter: ${filters}" class="table-primary ">
+                                    <table class="table">
+                                        <tr th:each="filter: ${filters}" class="filter-table">
                                             <td><a th:href="@{|/management/users/select-filter/${filter.getId()}|}" th:text="${filter.getName()}"></a></td>
                                             <td><a th:href="@{|/management/users/${filter.getId()}/delete-filter|}">&#215;</a></td>
                                         </tr>
                                     </table>
+                                    <span th:if="${filters.size() == 3}" style="color: red;">[[#{greenCity.pages.table.filtermessage}]]</span>
+                                    <div style="float: right;margin-top: 30px; margin-bottom: 18px; ">
+                                        <button type="submit" class="filter-btn" style="float: right" th:if="${filters.size() <= 3}">
+                                            <b>[[#{greenCity.pages.popup.save.}]]</b>
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                             </div>

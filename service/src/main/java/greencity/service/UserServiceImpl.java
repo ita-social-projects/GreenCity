@@ -2,9 +2,9 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
@@ -22,7 +22,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -203,20 +202,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
         Pageable pageable) {
-        FilterUserDto filterUserDto = new FilterUserDto(criteria);
+        if (status != null) {
+            status = status.equals("all") ? null : status;
+        }
+        if (role != null) {
+            role = role.equals("all") ? null : role;
+        }
+        UserFilterDto filterUserDto = new UserFilterDto(criteria, role, status);
         Page<User> users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
         List<UserManagementVO> listOfUsers = users
             .getContent()
             .stream()
             .map(user -> modelMapper.map(user, UserManagementVO.class))
             .collect(Collectors.toList());
-
-        if (role != null && status != null) {
-            listOfUsers = listOfUsers.stream()
-                .filter(userManagementVO -> userManagementVO.getRole().name().equals(role))
-                .filter(userManagementVO -> userManagementVO.getUserStatus().name().equals(status))
-                .collect(Collectors.toList());
-        }
 
         return new PageableDto<>(
             listOfUsers,

@@ -12,6 +12,14 @@ body {
     background-color: #F5F6F6;
 }
 
+.filter-table {
+    background-color: white;
+    border: #4b9b25;
+    border-radius: 2px;
+    font-size: 14px;
+    color: #4b9b25;
+}
+
 .table-wrapper {
     background: #fff;
     margin-top: 5px;

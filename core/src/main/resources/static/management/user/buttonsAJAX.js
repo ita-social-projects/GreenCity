@@ -479,3 +479,7 @@ for (var i = 0; i < tooltips.length; i++) {
 $('.popover-dismiss').popover({
     trigger: 'focus'
 })
+
+function showNotificationAboutFilters() {
+    alert("Максимальна кількість фільтрів 3. Видаліть фільтр для створення нового.")
+}

@@ -3,6 +3,7 @@ package greencity.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "filters")
@@ -22,6 +23,7 @@ public class Filter {
     private User user;
 
     @Column
+    @NotEmpty
     private String name;
 
     @Column

@@ -10,7 +10,7 @@ public interface FilterService {
      * 
      * @param userId user's id who created filter.
      * @param dto    filters dto.
-     * @return FilterUserDto.
+     * @return UserFilterDtoResponse.
      */
     UserFilterDtoResponse save(Long userId, UserFilterDtoRequest dto);
 
@@ -18,17 +18,21 @@ public interface FilterService {
      * Method for getting user's filters.
      * 
      * @param userId user's id.
-     * @return
+     * @return UserFilterDtoResponse.
      */
     List<UserFilterDtoResponse> getAllFilters(Long userId);
 
     /**
-     *
+     * return filter by id.
      * @param filterId filter's id.
      * @return UserFilterDtoResponse.
      */
     UserFilterDtoResponse getFilterById(Long filterId);
 
+    /**
+     *  Method delete filter.
+     * @param filterId filter's id which we have to delete.
+     */
     void deleteFilterById(Long filterId);
 
 }
