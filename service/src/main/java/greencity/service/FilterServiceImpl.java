@@ -23,6 +23,10 @@ public class FilterServiceImpl implements FilterService {
 
     @Override
     public UserFilterDtoResponse save(Long userId, UserFilterDtoRequest dto) {
+        List<Filter> filters = filterRepo.getAllFilters(userId);
+        if (filters.size() == 3) {
+           return modelMapper.map(filters.get(0), UserFilterDtoResponse.class);
+        }
         Filter filter = modelMapper.map(dto, Filter.class);
         User user = userRepo.findById(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
