@@ -8,6 +8,8 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -26,232 +28,165 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
-    <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
+    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
+    <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
+
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
+    <style>
+        .text{
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 150px;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
+<body>
+<div id="page">
+    <div id="header" th:insert="core/header"></div>
+    <div id="sidebar" th:insert="core/sidepanel"></div>
+    <div class="main-content">
+        <div class="container-xl">
+            <div class="table-responsive">
+                <div class="table-wrapper">
+                    <div class="table-title">
+                        <div class="row manager-user">
+                            <h2 class="text-describe">[[#{greenCity.econews.page.h}]]</h2>
+                            <div class="buttons">
+                                <a href="#deleteAllSelectedModal" id="btnDelete" class="btn btn-remove disabled"
+                                   data-toggle="modal">
+                                    <div>[[#{greenCity.pages.delete}]]</div></a>
+                                <a href="#addEcoNewsModal" addEcoNewsForm  id="addEcoNewsModalBtn"
+                                   class="btn btn-secondary" data-toggle="modal" th:onclick="addBtnDisabled()">
+                                    <div>[[#{greenCity.econews.page.add.eco.news}]]</div>
+                                </a>
+                            </div>
+                        </div>
 
-<body onload="markCurentPageOnNav(), markOrder()">
-<div id="header" th:insert="core/header"></div>
-<div id="sidebar" th:insert="core/sidepanel"></div>
-<div class="main-content">
-    <div class="container-xl">
-        <div class="row" id="eco-news-content" style="margin:auto">
-            <div id="tab-content" style="padding-left: 5%; padding-right: 5%; width: 100%">
-                <div id="eco-news" class="row " style="margin-top: 3%; ">
-                    <div class="col-sm-8">
-                        <h2 class="text-success">[[#{greenCity.econews.page.h}]]</h2>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="d-flex justify-content-end">
-                                    <a href="#addEcoNewsModal" addEcoNewsForm id="addEcoNewsModalBtn"
-                                       class="btn btn-success" data-toggle="modal" th:onclick="addBtnDisabled()">
-                                        <!-- -->
-                                        <div style="width: 100px;">[[#{greenCity.econews.page.add.eco.news}]]</div>
-                                    </a>
-                                    <a href="#deleteAllSelectedModal" id="btnDelete" class="btn button-delete disabled"
-                                       data-toggle="modal">
-                                        <div class="text-danger" style="width: 100px;">[[#{greenCity.pages.delete}]]
-                                        </div>
-                                    </a>
+                        <div class="row-box-and-sort">
+                            <div class="main-search">
+                                <!-- Search Form  -->
+                                <form class="form-inline searching" action="#">
+                                    <input id="search" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}"
+                                           onkeyup="searchTableFunction()" style="margin-left: -82px;">
+                                    <input class="search-submit-btn" type="submit">
+                                </form>
+                                    <button id="econews-filter-button" class="filter-button">  <!--onclick="openForm()"  -->
+                                        <img src="/img/filter-icon.svg" alt="Filter icon">Filter
+                                    </button>
+                                    <!-- todo-->
+                            </div>
+
+                            <div class="filter-list-grid">
+                                <div class="dropdown size">
+                                    <img src="/img/arrow-down.svg" alt="arrow-icon" class="change_color">
+                                    <button class="dropbtn size">20</button>
+                                    <div class="dropdown-content size">
+                                        <a class="lightgrey" onclick="saveItemsOnPage('20')">20</a>
+                                        <a class="lightgrey" onclick="saveItemsOnPage('40')">40</a>
+                                        <a class="lightgrey" onclick="saveItemsOnPage('100')">100</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 3%">
-                    <div class="col-sm-10">
-                        <div class="row">
-                            <div class="col-sm-12">
-                               <span class="custom-checkbox">
-                                   <span class="modal-checkbox">
-                                       <input type="checkbox" id="selectAll">
-                                        <label for="selectAll"></label>
-                                   </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <!--                SOME BUTTONS TO SHANGE FORM-->
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="d-flex justify-content-end">
-                                    <select style="margin-right: 5%;" onchange="location = this.value">
-                                        <option>[[${pageSize}]]</option>
-                                        <option value="/management/eco-news?size=20">20</option>
-                                        <option value="/management/eco-news?size=40">40</option>
-                                        <option value="/management/eco-news?size=60">60</option>
-                                        <option value="/management/eco-news?size=80">80</option>
-                                        <option value="/management/eco-news?size=100">100</option>
 
-                                    </select>
-                                    <a style="margin-right: 5%;">
-                                        <i class="fas fa-filter"
-                                           style="font-size: 20px;color: black; margin-left: 5%;"></i>
-                                    </a>
-                                    <a style="margin-right: 5%;">
-                                        <i class="fas fa-th-large"
-                                           style="font-size: 20px;color: black; margin-left: 5%;"></i>
-                                    </a>
-                                    <a style="margin-right: 5%;">
-                                        <i class="fas fa-align-justify"
-                                           style="font-size: 20px; color: green; margin-left: 5%;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 3%">
-                    <div class="col-sm-12">
-                        <table class="table table-striped">
+
+                        <table class="table table-bordered" id="tabElement">
                             <thead>
-                            <tr style="background-color: #afbfbd">
+                            <tr class="table-primary">
                                 <th>
-                                    <span onclick="orderByNameField('id')">[[#{greenCity.pages.table.id}]]
-                                        <i id="id-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                </th>
-                                <th>
-                                    <span onclick="orderByNameField('author.name')">[[#{greenCity.pages.table.author}]]
-                                        <i id="author-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                </th>
-                                <th>
-                                    <span onclick="orderByNameField('title')">[[#{greenCity.pages.table.title}]]
-                                        <i id="title-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                </th>
-                                <th>
-                                    <span onclick="orderByNameField('text')">[[#{greenCity.pages.table.text}]]
-                                    <i id="text-icon" style="color: #8ea59f;"></i>
-                                    </span>
-                                </th>
-                                <th>[[#{greenCity.pages.table.image}]]</th>
-                                <th style="padding: 0;"> <span onclick="orderByNameField('creationDate')">[[#{greenCity.pages.table.date}]]
-                                    <i id="date-icon" style="color: #8ea59f;"></i>
+                                <span class="custom-checkbox">
+                                    <input type="checkbox" id="selectAll">
+                                    <label for="selectAll"></label>
                                 </span>
                                 </th>
                                 <th>
-                                    <span onclick="orderByNameField('tags')">[[#{greenCity.pages.table.tags}]]
-                                        <i id="tags-icon" style="color: #8ea59f;"></i>
-
-                                    </span>
+                                    [[#{greenCity.pages.table.id}]]
+                                    <span class="table-filter-icon filter"></span>
                                 </th>
                                 <th>
-                                    <span><!--onclick="orderByNameField('usersLikedNews')"-->
-                                        <i class="fas fa-star" style="color: green"></i>
-                                        <i id="likes-icon" class="fas fa-chevron-down" style="color: #8ea59f;"></i>
-                                    </span>
-
+                                    [[#{greenCity.pages.table.userName}]]
+                                    <span class="table-filter-icon filter"></span>
                                 </th>
-                                <th>[[#{greenCity.pages.table.actions}]]</th>
+
+                                <th>[[#{greenCity.pages.table.title}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+
+                                <th>[[#{greenCity.pages.table.text}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+
+                                <th>[[#{greenCity.pages.table.image}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+                                <th>[[#{greenCity.pages.table.tags}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+                                <th>
+                                    [[#{greenCity.sidebar.ratings}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
                             </tr>
                             </thead>
 
-                            <tbody>
 
-                            <form>
+                            <th:block th:each="econew, iterStatus :${pageable.getPage()}">
                                 <tr>
                                     <td>
-                                        <input id="idSearchForm" placeholder="" class="input-search-form" type="search"
-                                               th:value="${fields eq null ? '' : fields.id }"/>
+                                       <span class="custom-checkbox">
+                                           <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                                  name="options[]" th:value="${econew.id}"
+                                                  th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
+                                           <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                       </span>
                                     </td>
-                                    <td>
-                                        <input id="authorSearchForm" class="input-search-form" type="search"
-                                               th:value="${fields eq null ? '' : fields.author }"
-                                        />
-                                    </td>
-                                    <td>
-                                        <input id="titleSearchForm" class="input-search-form" type="search"
-                                               th:value="${fields eq null ? '' : fields.title }"
-                                        />
-                                    </td>
-                                    <td>
-                                        <input id="textSearchForm" class="input-search-form" type="search"
-                                               th:value="${fields eq null ? '' : fields.text }"/>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <div class="input-group input-daterange">
-                                            <input id="startDateSearchForm" type="search"
-                                                   class="form-control input-search-form"
-                                                   th:value="${fields eq null ? '' : fields.startDate }"/>
-                                            <div>to</div>
-                                            <input id="endDateSearchForm" type="search"
-                                                   class="form-control input-search-form"
-                                                   th:value="${fields eq null ? '' : fields.endDate }"/>
+
+                                    <td class="text" th:text="${econew.id}"></td>
+                                    <td class="text" th:text="${econew.author.getName()}"></td>
+                                    <td class="text" th:text="${econew.title}"></td>
+                                    <td class="text" th:text="${econew.content}"></td>
+                                    <td style="width: 95px">
+                                        <div>
+                                            <img th:src="${econew.imagePath}" style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
-                                    <td>
-                                        <input id="tagSearchForm" class="input-search-form" type="search"/>
+                                    <td style = "width: 173px">
+                                        <div class="dropdown role">
+                                            <button class="dropbtn role" th:text="${econew.tags.get(0)}">
+                                            </button>
+                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                            <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                <a th:each="tag, iterStatus :${econew.tags}" th:text="${tag}"></a>                                            </div>
+                                        </div>
                                     </td>
-                                    <td></td>
-                                    <td>
-                                        <span id="searchBy" onclick="sendDataFromSearchForm()">
-                                            <img alt="search" src="/img/search.png">
-                                        </span>
+                                    <!--todo-->
+                                    <td th:if="${econew.likes < 100}">
+                                        <i class="fal fa-star"></i>
+                                        <i class="fal fa-star"></i>
+                                        <i class="fal fa-star"></i>
                                     </td>
-                                </tr>
-                            </form>
-
-                            <th:block th:each="allEcoNews, iterStatus :${pageable.getPage()}">
-                                <tr>
-                                    <td style="width: 8%">
-                                        <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
-                                               name="options[]" th:value="${allEcoNews.getId()}"
-                                               th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
-                                    </span>
-                                        <span>[[${allEcoNews.getId()}]]</span>
+                                    <td th:if="${econew.likes == 100}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fal fa-star"></i>
+                                        <i class="fal fa-star"></i>
                                     </td>
-                                    <td th:text="${allEcoNews.getAuthor().getName()}" style="white-space: nowrap; /* Заборона переносу */
-                                                                                            overflow: hidden;
-                                                                                            max-width: 0px;
-                                                                                            text-overflow: ellipsis; /* ... */">
-
+                                    <td th:if="${econew.likes == 200}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fal fa-star"></i>
                                     </td>
-                                    <td th:text="${allEcoNews.getTitle()}" style="white-space: nowrap; /* Заборона переносу */
-                                                                                                overflow: hidden;
-                                                                                                max-width: 150px;
-                                                                                                text-overflow: ellipsis; /* ... */">
-                                    </td>
-                                    <td th:text="${allEcoNews.getText()}" style="white-space: nowrap; /* Заборона переносу */
-                                                                                                overflow: hidden;
-                                                                                                max-width: 150px;
-                                                                                                text-overflow: ellipsis;">
-                                    </td>
-                                    <td>
-                                        <img th:src="${allEcoNews.getImagePath()} == null ? @{/img/default-image-list-view.png} : ${allEcoNews.getImagePath()}"
-                                             th:width="120" th:height="100">
-                                    </td>
-                                    <td th:text="${#temporals.format(allEcoNews.getCreationDate(), 'dd/MM/yyyy HH:mm')}"></td>
-                                    <td>
-                                        <th:block
-                                                th:each="translation : ${pageable.getPage().get(iterStatus.index).getTags()}">
-                                            <li th:type="1" th:text="${translation}"></li>
-                                        </th:block>
-                                    </td>
-                                    <td th:text="${allEcoNews.getLikes()}"></td>
-                                    <td>
-                                        <a th:href="@{/management/eco-news/find/(id=${allEcoNews.getId()})}"
-                                           class="edit eBtn">
-                                            <i class="material-icons" data-toggle="tooltip"
-                                               th:title="#{greenCity.pages.edit}">&#xE254;</i>
-                                        </a>
-                                        <a th:href="@{/management/eco-news/delete/(id=${allEcoNews.getId()})}"
-                                           class="delete eDelBtn" data-toggle="modal">
-                                            <i class="material-icons" data-toggle="tooltip"
-                                               th:title="#{greenCity.pages.delete}">&#xE872;</i>
-                                        </a>
+                                    <td th:if="${econew.likes == 300}">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
                                     </td>
                                 </tr>
+                                </tbody>
                             </th:block>
-                            </tbody>
                         </table>
+                        <!-- Start of Paging -->
                         <div class="clearfix" th:if="${pageable.getPage().size() ne 0}">
                             <div class="d-flex justify-content-center">
                                 <ul class="pagination">
@@ -283,37 +218,37 @@
                                 </ul>
                             </div>
                         </div>
+                        <!-- End of Paging -->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <!-- Add Modal HTML -->
-    <div id="addEcoNewsModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{management/econews}" method="post" id="addEcoNewsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.econews.page.add.eco.news}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.title}]]</label>
-                            <textarea type="text" class="form-control" name="title" required></textarea>
-                            <span th:id="errorModalSavetitle" id="errorModalSavetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.text}]]</label>
-                            <textarea type="text" class="form-control" name="text" required></textarea>
-                            <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.tags}]]</label>
-                            <div style="width: 100%; display: inline-block;">
-                                <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
-                                    <div style="margin-right: 5%" class="custom-checkbox">
+
+            <!-- Add Modal HTML -->
+            <div id="addEcoNewsModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{management/eco-news/save}" method="post" id="addEcoNewsForm" enctype="multipart/form-data">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.econews.page.add.eco.news}]]</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" class="form-control" name="id" value="0" readonly required>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.title}]]</label>
+                                    <textarea type="text" class="form-control" name="title" required></textarea>
+                                    <span th:id="errorModalSavetitle" id="errorModalSavetitle" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.text}]]</label>
+                                    <textarea type="text" class="form-control" name="text" required></textarea>
+                                    <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.tags}]]</label>
+                                    <div style="width: 100%; display: inline-block;">
+                                        <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
+                                            <div style="margin-right: 5%" class="custom-checkbox">
                                             <span class="modal-checkbox">
                                                 <input class="tag-checkbox" type="checkbox"
                                                        th:id="checkboxTag+${iterStatus.count}" id="checkboxTag1"
@@ -322,138 +257,62 @@
                                                 <label th:for="checkboxTag+${iterStatus.count}"
                                                        th:text="${allTags.getName()}" for="checkboxTag1"></label>
                                             </span>
+                                            </div>
+                                            <span th:id="errorModalAddTags" class="errorSpan"></span>
+                                        </th:block>
                                     </div>
-                                    <span th:id="errorModalAddTags" class="errorSpan"></span>
-                                </th:block>
-                            </div>
-                            <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
+                                    <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
 
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.source}]]</label>
-                            <textarea type="text" class="form-control" name="source"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>[[#{greenCity.pages.table.image}]]</label>
-                            <input type="file" class="form-control" name="file" id="creationFile" placeholder="ferf">
-                            <span th:id="errorModalSavefile" class="errorSpan"></span>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Modal HTML -->
-    <div id="editEcoNewsModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editEcoNewsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.econews.page.edit.eco.news}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="id">[[#{greenCity.pages.table.id}]]</label>
-                            <input type="text" class="form-control" id="id" name="id" readonly required>
-                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="title">[[#{greenCity.pages.table.title}]]</label>
-                            <textarea type="text" class="form-control" id="title" name="title" required></textarea>
-                            <span th:id="errorModalUpdatetitle" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="text">[[#{greenCity.pages.table.text}]]</label>
-                            <textarea type="text" class="form-control" id="text" name="text" required></textarea>
-                            <span th:id="errorModalUpdatetext" class="errorSpan"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="tagsEdit">[[#{greenCity.pages.table.tags}]]</label>
-                            <div id="tagsEdit" style="width: 100%; display: inline-block;">
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.source}]]</label>
+                                    <textarea type="text" class="form-control" name="source"></textarea>
+                                    <span th:id="errorModalSavesource" id="errorModalSavesource" class="errorSpan"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>[[#{greenCity.pages.table.image}]]</label>
+                                    <input type="file" class="form-control" name="imagePath" id="creationFile" placeholder="ferf">
+                                    <span th:id="errorModalSavefile" class="errorSpan"></span>
+                                </div>
 
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="imagePath">[[#{greenCity.pages.table.image.path}]]</label>
-                            <textarea type="text" class="form-control" id="imagePath" name="imagePath"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="source">[[#{greenCity.pages.table.source}]]</label>
-                            <textarea type="text" class="form-control" id="source" name="source"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="file">[[#{greenCity.pages.table.image}]]</label>
-                            <input type="file" class="form-control" id="file" name="file">
-                            <span th:id="errorModalUpdatefile" class="errorSpan"></span>
-                        </div>
+                            <div class="modal-footer">
+                                <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <input type="submit" class="btn btn-info btn-primary" th:value="#{greenCity.pages.popup.save.}"
-                               id="submitEditBtn">
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Delete Modal HTML -->
-    <div id="deleteEcoNewsModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="deleteEcoNewsForm">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.econews.page.delete.eco.news}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <!-- Delete all selected Modal HTML -->
+            <div id="deleteAllSelectedModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="">
+                            <div class="modal-header">
+                                <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                                <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                <a href="" id="deleteAllSubmit" class="btn btn-danger">
+                                    <div>[[#{greenCity.pages.delete}]]</div>
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="deleteOneSubmit" class="btn btn-remove">
-                            <div>[[#{greenCity.pages.delete}]]</div>
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Delete all selected Modal HTML -->
-    <div id="deleteAllSelectedModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="">
-                    <div class="modal-header">
-                        <h4 class="modal-title">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="deleteAllSubmit" class="btn btn-danger">
-                            <div>[[#{greenCity.pages.delete}]]</div>
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <div id="footer" th:insert="core/footer"></div>
 </div>
-<div id="footer" th:insert="core/footer"></div>
 </body>
 </html>

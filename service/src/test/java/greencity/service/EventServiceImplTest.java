@@ -2,36 +2,41 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
+import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
-import greencity.entity.Event;
+import greencity.dto.event.UpdateEventDto;
+import greencity.dto.tag.TagVO;
+import greencity.entity.event.Event;
+import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventImages;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
-
     @Mock
     ModelMapper modelMapper;
 
@@ -42,30 +47,214 @@ class EventServiceImplTest {
     RestClient restClient;
 
     @Mock
-    private FileService fileService;
+    TagsService tagService;
+
+    @Mock
+    FileService fileService;
+
+    @Mock
+    GoogleApiService googleApiService;
 
     @InjectMocks
     EventServiceImpl eventService;
 
     @Test
-    void saveWithoutImages() {
-        AddEventDtoResponse addEventDtoResponse = ModelUtils.getAddEventDtoResponse();
+    void save() {
+        EventDto eventDto = ModelUtils.getEventDto();
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
+        List<Tag> tags = ModelUtils.getEventTags();
 
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(eventRepo.save(event)).thenReturn(event);
-        when(modelMapper.map(event, AddEventDtoResponse.class)).thenReturn(addEventDtoResponse);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
 
-        assertEquals(addEventDtoResponse, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+
+        assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
+
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(eventDto,
+            eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(),
+                new MultipartFile[] {multipartFile}));
 
         MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
         when(fileService.upload(multipartFiles[0])).thenReturn("/url1");
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
-        assertEquals(addEventDtoResponse,
+        assertEquals(eventDto,
             eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
+    }
+
+    @Test
+    void update() {
+        EventDto eventDto = ModelUtils.getEventDto();
+        Event expectedEvent = ModelUtils.getEvent();
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+
+        when(eventRepo.getOne(1L)).thenReturn(expectedEvent);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
+        when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
+        EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+        assertEquals(eventDto, actualEvent);
+    }
+
+    @Test
+    @SneakyThrows
+    void enhanceWithNewData() {
+        Method method = EventServiceImpl.class.getDeclaredMethod("enhanceWithNewData", Event.class,
+            UpdateEventDto.class, MultipartFile[].class);
+        method.setAccessible(true);
+        Event event = ModelUtils.getEvent();
+        Event expectedEvent = ModelUtils.getExpectedEvent();
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
+
+        eventToUpdateDto.setTitle("New title");
+        eventToUpdateDto.setDescription("New description");
+        eventToUpdateDto.setIsOpen(false);
+        eventToUpdateDto.setTags(ModelUtils.getUpdatedEventTags());
+        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdatedEventDateLocationDto());
+
+        expectedEvent.setTitle("New title");
+        expectedEvent.setDescription("New description");
+        expectedEvent.setOpen(false);
+        expectedEvent.setTags(ModelUtils.getEventTags());
+        expectedEvent.setDates(List.of(ModelUtils.getUpdatedEventDateLocation()));
+
+        List updatedTagVO = List.of(ModelUtils.getTagVO());
+        when(tagService.findTagsWithAllTranslationsByNamesAndType(eventToUpdateDto.getTags(), TagType.EVENT))
+            .thenReturn(updatedTagVO);
+        when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(ModelUtils.getEventTags());
+        doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+            .thenReturn(ModelUtils.getUpdatedEventDateLocation());
+
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
+        assertEquals(event.getDescription(), expectedEvent.getDescription());
+        assertEquals(event.getTags(), expectedEvent.getTags());
+
+        eventToUpdateDto.setTitleImage("New img");
+        eventToUpdateDto.setAdditionalImages(List.of("New addition image"));
+        expectedEvent.setTitleImage("New img");
+        expectedEvent.setAdditionalImages(List.of(EventImages.builder().link("New addition image").build()));
+
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+            event.getAdditionalImages().get(0).getLink());
+        assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
+
+        eventToUpdateDto.setImagesToDelete(List.of("New addition image"));
+        doNothing().when(fileService).delete(any());
+
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
+        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+            event.getAdditionalImages().get(0).getLink());
+
+        eventToUpdateDto.setAdditionalImages(null);
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertNull(event.getAdditionalImages());
+
+        eventToUpdateDto.setTitleImage(null);
+        expectedEvent.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        method.invoke(eventService, event, eventToUpdateDto, null);
+        assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
+
+        MultipartFile[] multipartFiles = ModelUtils.getMultipartFiles();
+        when(fileService.upload(multipartFiles[0])).thenReturn("url1");
+        when(fileService.upload(multipartFiles[1])).thenReturn("url2");
+
+        method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
+
+        expectedEvent.setTitleImage("url1");
+        expectedEvent.setAdditionalImages(List.of(EventImages.builder().event(expectedEvent).link("url2").build()));
+
+        method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
+        assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
+        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+            event.getAdditionalImages().get(0).getLink());
+
+        eventToUpdateDto.setImagesToDelete(null);
+        eventToUpdateDto.setTitleImage("url");
+        eventToUpdateDto.setAdditionalImages(List.of("Add img 1", "Add img 2"));
+        expectedEvent.setTitleImage("url");
+        expectedEvent.setAdditionalImages(List.of(EventImages.builder().event(expectedEvent).link("Add img 1").build(),
+            EventImages.builder().event(expectedEvent).link("Add img 2").build()));
+        method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
+        assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
+        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+            event.getAdditionalImages().get(0).getLink());
+        assertEquals("url2", event.getAdditionalImages().get(3).getLink());
+
+        eventToUpdateDto.setAdditionalImages(null);
+        expectedEvent.setAdditionalImages(null);
+        eventToUpdateDto.setTitleImage(null);
+        expectedEvent.setTitleImage("title url");
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("title url");
+
+        method.invoke(eventService, event, eventToUpdateDto, new MultipartFile[] {multipartFile});
+        assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
+        assertNull(event.getAdditionalImages());
+    }
+
+    @Test
+    void updateTitleImage() {
+        EventDto eventDto = ModelUtils.getEventDto();
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        Event event = ModelUtils.getEvent();
+
+        when(eventRepo.getOne(1L)).thenReturn(event);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(eventRepo.save(event)).thenReturn(event);
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+
+        EventDto updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+        assertEquals(updatedEventDto, eventDto);
+
+        eventToUpdateDto.setTitle("New title");
+        eventToUpdateDto.setDescription("New description");
+        eventToUpdateDto.setIsOpen(false);
+        eventToUpdateDto.setTags(ModelUtils.getUpdatedEventTags());
+        eventToUpdateDto.setDatesLocations(ModelUtils.getUpdatedEventDateLocationDto());
+
+        eventDto.setTitle("New title");
+        eventDto.setDescription("New description");
+        eventDto.setOpen(false);
+        eventDto.setTags(ModelUtils.getUpdatedEventTagUaEn());
+        eventDto.setDates(ModelUtils.getUpdatedEventDateLocationDto());
+
+        List updatedTagVO = List.of(ModelUtils.getTagVO());
+
+        when(tagService.findTagsWithAllTranslationsByNamesAndType(eventToUpdateDto.getTags(), TagType.EVENT))
+            .thenReturn(updatedTagVO);
+        when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(ModelUtils.getEventTags());
+        doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+            .thenReturn(ModelUtils.getUpdatedEventDateLocation());
+
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+
+        updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+
+        assertEquals(updatedEventDto, eventDto);
     }
 
     @Test
@@ -74,6 +263,8 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(ModelUtils.getUser());
         when(eventRepo.getOne(any())).thenReturn(event);
+
+        doNothing().when(fileService).delete(any());
 
         eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail());
 
@@ -106,7 +297,7 @@ class EventServiceImplTest {
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         EventDto actual = eventService.getEvent(1L);
         assertEquals(eventDto.getId(), actual.getId());
-        assertEquals(eventDto.getImages(), actual.getImages());
+        assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
         assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
     }
 
@@ -166,17 +357,30 @@ class EventServiceImplTest {
     @Test
     void getAll() {
         List<Event> events = List.of(ModelUtils.getEvent());
+        EventDto expected = ModelUtils.getEventDto();
+
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.getAll(pageRequest)).thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-
-        EventDto expected = ModelUtils.getEventDto();
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
 
         assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getImages(), actual.getImages());
         assertEquals(expected.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void searchEventsBy() {
+        List<Event> events = Collections.singletonList(ModelUtils.getEvent());
+        List<EventDto> eventDtos = Collections.singletonList(ModelUtils.getEventDto());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
+        when(eventRepo.searchEventsBy(pageRequest, "query")).thenReturn(page);
+        PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
+            0, false, false, true, true);
+        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
     }
 }

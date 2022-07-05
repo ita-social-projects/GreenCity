@@ -42,7 +42,6 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
-    private static final String TIPS_AND_TRICKS_COMMENTS = "/tipsandtricks/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -122,6 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/{id}",
                 "/habit/{id}/shopping-list",
                 "/tags/search",
+                "/tags/v2/search",
                 "/habit/tags/all",
                 "/habit/statistic/{habitId}",
                 "/habit/statistic/assign/{habitAssignId}",
@@ -143,18 +143,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS,
                 EVENTS + "/event/{eventId}",
                 "/language",
-                TIPS_AND_TRICKS_COMMENTS,
-                "/tipsandtricks/comments/count/comments",
-                "/tipsandtricks/comments/replies/{parentCommentId}",
-                "/tipsandtricks/comments/count/likes",
-                "/tipsandtricks/comments/count/replies",
-                "/tipsandtricks/{id}",
-                "/tipsandtricks",
-                "/tipsandtricks/tags",
-                "/tipsandtricks/tags/all",
                 "/search",
                 "/search/econews",
-                "/search/tipsandtricks",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
@@ -195,7 +185,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
                 "/social-networks/image",
-                "/tipsandtricks/count",
                 "/user",
                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
@@ -234,9 +223,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{placeId}/comments",
                 "/place/propose",
                 "/place/save/favorite/",
-                "/tipsandtricks/comments/{tipsAndTricksId}",
-                "/tipsandtricks/comments/like",
-                "/tipsandtricks",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST,
                 "/user/{userId}/habit",
@@ -251,6 +237,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/favorite_place/",
                 "/ownSecurity",
                 "/user/profile",
+                EVENTS + "/update",
                 HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
             .hasAnyRole(USER, ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
@@ -261,7 +248,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/shopping-list-items/shoppingList/{userId}",
                 HABIT_ASSIGN_ID,
                 "/habit/assign/cancel/{habitId}",
-                TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
@@ -275,7 +261,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 CUSTOM_SHOPPING_LIST_URL,
                 "/favorite_place/{placeId}",
                 "/social-networks",
-                TIPS_AND_TRICKS_COMMENTS,
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST + "/user-shopping-list-items",
                 USER_SHOPPING_LIST,
@@ -323,8 +308,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.DELETE,
                 "/advices/{adviceId}",
                 "/facts/{factId}",
-                "/comments",
-                "/tipsandtricks/{id}")
+                "/comments")
             .hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN)
             .and()

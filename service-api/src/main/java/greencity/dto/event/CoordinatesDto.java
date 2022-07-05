@@ -2,17 +2,15 @@ package greencity.dto.event;
 
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
 @EqualsAndHashCode
+@Setter
 public class CoordinatesDto {
-    @NotEmpty
     private double latitude;
-
-    @NotEmpty
     private double longitude;
+    private String addressUa;
+    private String addressEn;
 }

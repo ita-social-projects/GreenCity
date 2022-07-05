@@ -1,6 +1,29 @@
 package greencity;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
@@ -15,16 +38,19 @@ import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.econews.AddEcoNewsDtoResponse;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
@@ -38,42 +64,60 @@ import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.tag.TagPostDto;
 import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.tipsandtricks.TipsAndTricksDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoRequest;
-import greencity.dto.tipsandtrickscomment.AddTipsAndTricksCommentDtoResponse;
-import greencity.dto.tipsandtrickscomment.TipsAndTricksCommentAuthorDto;
-import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.*;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.TagType;
+import greencity.enums.UserStatus;
 
 public class ModelUtils {
     public static Tag getTag() {
-        return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
-            Collections.emptySet());
+        return new Tag(1L, TagType.ECO_NEWS, Collections.emptyList(), Collections.emptyList(),
+            Collections.emptySet(), Collections.emptySet());
     }
 
     public static List<TagTranslationVO> getTagTranslationsVO() {
@@ -130,7 +174,7 @@ public class ModelUtils {
 
     public static Language getLanguage() {
         return new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-            Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList());
     }
 
     public static EcoNews getEcoNews() {
@@ -178,7 +222,7 @@ public class ModelUtils {
 
     public static Place getPlace() {
         Place place = new Place();
-        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", place));
+        place.setLocation(new Location(1L, 49.84988, 24.022533, "вулиця Під Дубом, 7Б", "test", place));
         place.setId(1L);
         place.setName("Forum");
         place.setDescription("Shopping center");
@@ -227,7 +271,7 @@ public class ModelUtils {
             .id(2L)
             .language(
                 new Language(2L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(), Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList()))
             .shoppingListItem(
                 new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
             .content("Buy a bamboo toothbrush")
@@ -239,8 +283,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(2L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Buy a bamboo toothbrush")
                 .shoppingListItem(
                     new ShoppingListItem(1L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -248,8 +291,7 @@ public class ModelUtils {
             ShoppingListItemTranslation.builder()
                 .id(11L)
                 .language(new Language(1L, AppConstant.DEFAULT_LANGUAGE_CODE, Collections.emptyList(),
-                    Collections.emptyList(),
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
+                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList()))
                 .content("Start recycling batteries")
                 .shoppingListItem(
                     new ShoppingListItem(4L, Collections.emptyList(), Collections.emptySet(), Collections.emptyList()))
@@ -338,29 +380,6 @@ public class ModelUtils {
         return new LanguageTranslationDTO(getLanguageDTO(), "content");
     }
 
-    public static TipsAndTricks getTipsAndTricks() {
-        return TipsAndTricks.builder()
-            .id(1L)
-            .titleTranslations(Collections.singletonList(TitleTranslation.builder()
-                .content("title content")
-                .language(getLanguage())
-                .build()))
-            .textTranslations(Collections.singletonList(TextTranslation.builder()
-                .content("text content for tips and tricks")
-                .language(getLanguage())
-                .build()))
-            .creationDate(ZonedDateTime.now())
-            .author(getUser())
-            .tags(Collections.singletonList(getTag()))
-            .imagePath(null)
-            .source(null)
-            .build();
-    }
-
-    public static TipsAndTricksDtoRequest getTipsAndTricksDtoRequest() {
-        return new TipsAndTricksDtoRequest(null, null, Collections.singletonList("tipsAndTricksTag"), null, null);
-    }
-
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
             .id(1L)
@@ -390,33 +409,6 @@ public class ModelUtils {
             .id(getUser().getId())
             .name(getUser().getName().trim())
             .userProfilePicturePath(getUser().getProfilePicturePath())
-            .build();
-    }
-
-    public static AddTipsAndTricksCommentDtoRequest getAddTipsAndTricksCommentDtoRequest() {
-        return AddTipsAndTricksCommentDtoRequest.builder()
-            .text(getTipsAndTricksComment().getText().intern())
-            .parentCommentId(getTipsAndTricksComment().getId())
-            .build();
-    }
-
-    public static TipsAndTricksComment getTipsAndTricksComment() {
-        return TipsAndTricksComment.builder()
-            .id(1L)
-            .text("text")
-            .user(getUser())
-            .build();
-    }
-
-    public static AddTipsAndTricksCommentDtoResponse getAddTipsAndTricksCommentDtoResponse() {
-        return AddTipsAndTricksCommentDtoResponse.builder()
-            .id(getTipsAndTricksComment().getId())
-            .text(getTipsAndTricksComment().getText())
-            .author(TipsAndTricksCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build())
             .build();
     }
 
@@ -644,6 +636,75 @@ public class ModelUtils {
                 .id(1L)
                 .shoppingListItemId(1L)
                 .status(ShoppingListItemStatus.INPROGRESS)
+                .build()))
+            .build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithoutDates() {
+        return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithZeroDates() {
+        return AddEventDtoRequest.builder().datesLocations(new ArrayList<>()).build();
+    }
+
+    public static AddEventDtoRequest getEventDtoWithTooManyDates() {
+        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+        }
+        return AddEventDtoRequest.builder().datesLocations(eventDateLocationDtos).build();
+    }
+
+    public static AddEventDtoRequest getEventWithPastStartDate() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.of(LocalDateTime.of(2022, 1, 1, 0, 0), ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault())).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithStartDateAfterFinishDate() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 0, 0), ZoneId.systemDefault()))
+            .finishDate(ZonedDateTime.of(LocalDateTime.of(2019, 1, 1, 0, 0), ZoneId.systemDefault())).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithoutCoordinatesAndLink() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithInvalidLink() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink").build())).build();
+    }
+
+    public static AddEventDtoRequest getEventWithTooManyTags() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/").build()))
+            .tags(List.of("first", "second", "third", "fourth")).build();
+    }
+
+    public static AddEventDtoRequest getAddEventDtoRequest() {
+        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/")
+            .build())).tags(List.of("first", "second", "third")).build();
+    }
+
+    public static AddPlaceDto getAddPlaceDto() {
+        return AddPlaceDto.builder()
+            .placeName("test")
+            .categoryName("category")
+            .locationName("Test")
+            .openingHoursList(Set.of(OpeningHoursDto.builder()
+                .openTime(LocalTime.now())
+                .closeTime(LocalTime.now())
+                .weekDay(DayOfWeek.MONDAY)
                 .build()))
             .build();
     }

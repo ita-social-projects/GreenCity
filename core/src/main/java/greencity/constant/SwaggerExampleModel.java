@@ -40,15 +40,6 @@ public final class SwaggerExampleModel {
             + "}\n"
             + AFTER_EXAMPLE;
 
-    public static final String ADD_TIPS_AND_TRICKS_REQUEST =
-        "Add tips & tricks request\n"
-            + IMAGE_DESCRIPTION
-            + BEFORE_EXAMPLE
-            + "{\n"
-            + EXAMPLE
-            + "}"
-            + AFTER_EXAMPLE;
-
     public static final String ADD_ECO_NEWS_REQUEST =
         "Add Eco News Request\n"
             + IMAGE_DESCRIPTION
@@ -66,6 +57,24 @@ public final class SwaggerExampleModel {
             + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
+    public static final String ADD_EVENT = BEFORE_EXAMPLE
+        + "{\n"
+        + "\t\"title\":\"string\",\n"
+        + "\t\"description\":\"string\",\n"
+        + "\t\"open\":true,\n"
+        + "\t\"datesLocations\":[\n"
+        + "\t\t{\n"
+        + "\t\t\t\"startDate\":\"2023-05-27T15:00:00Z\",\n"
+        + "\t\t\t\"finishDate\":\"2023-05-27T17:00:00Z\",\n"
+        + "\t\t\t\"coordinates\":{\n"
+        + "\t\t\t\t\"latitude\":1,\n"
+        + "\t\t\t\t\"longitude\":1\n"
+        + "\t\t\t},\n"
+        + "\t\t\t\"onlineLink\":\"string\"\n"
+        + "\t\t}\n"
+        + "\t],\n"
+        + "\t\"tags\":[\"Social\"]\n"
+        + "}" + AFTER_EXAMPLE;
 
     private SwaggerExampleModel() {
     }

@@ -8,11 +8,13 @@ import lombok.*;
 
 @Entity
 @Table(name = "languages")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
-@ToString(exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations"})
+@Data
+@EqualsAndHashCode(
+    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
+@ToString(
+    exclude = {"adviceTranslations", "shoppingListItemTranslations", "habitTranslations", "factOfTheDayTranslations"})
 @Builder
 public class Language {
     @Id
@@ -33,10 +35,4 @@ public class Language {
 
     @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
     private List<FactOfTheDayTranslation> factOfTheDayTranslations;
-
-    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<TitleTranslation> titleTranslations;
-
-    @OneToMany(mappedBy = "language", fetch = FetchType.LAZY)
-    private List<TextTranslation> textTranslations;
 }

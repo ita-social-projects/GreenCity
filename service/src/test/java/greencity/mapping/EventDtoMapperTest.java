@@ -2,7 +2,8 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
-import greencity.entity.Event;
+import greencity.entity.event.Event;
+import greencity.mapping.events.EventDtoMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,9 +21,19 @@ class EventDtoMapperTest {
     @Test
     void convertTest() {
         Event event = ModelUtils.getEvent();
-        event.setImages(new ArrayList<>());
+        event.setAdditionalImages(new ArrayList<>());
 
         EventDto expected = ModelUtils.getEventDto();
+
+        assertEquals(expected.getTitle(), mapper.convert(event).getTitle());
+    }
+
+    @Test
+    void convertWithoutCoordinatesTest() {
+        Event event = ModelUtils.getEventWithoutCoordinates();
+        event.setAdditionalImages(new ArrayList<>());
+
+        EventDto expected = ModelUtils.getEventWithoutCoordinatesDto();
 
         assertEquals(expected.getTitle(), mapper.convert(event).getTitle());
     }

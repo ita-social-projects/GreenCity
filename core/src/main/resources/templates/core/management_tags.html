@@ -201,9 +201,7 @@
                             <label> [[#{greenCity.pages.table.type}]]</label>
                             <label>
                                 <select name="tagType" class="form-control">
-                                    <option>ECO_NEWS</option>
-                                    <option>TIPS_AND_TRICKS</option>
-                                    <option>HABIT</option>
+                                    <option th:each="type, iterStatus :${tagTypes}" th:text="${type}"></option>
                                 </select>
                             </label>
                             <span class="errorSpan" th:id="errorModalSavetype"></span>
@@ -259,9 +257,7 @@
                             <label>[[#{greenCity.pages.table.type}]]</label>
                             <label>
                                 <select name="tagType" class="form-control">
-                                    <option>ECO_NEWS</option>
-                                    <option>TIPS_AND_TRICKS</option>
-                                    <option>HABIT</option>
+                                    <option th:each="type, iterStatus :${tagTypes}" th:text="${type}"></option>
                                 </select>
                             </label>
                             <span class="errorSpan" th:id="errorModalUpdatetype"></span>

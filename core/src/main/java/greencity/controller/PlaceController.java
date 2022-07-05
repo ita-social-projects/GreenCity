@@ -5,11 +5,14 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.PlaceWithUserDto;
@@ -378,5 +381,24 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.bulkDelete(Arrays.stream(ids.split(","))
             .map(Long::valueOf)
             .collect(Collectors.toList())));
+    }
+
+    /**
+     * Controller to get information about places categories.
+     */
+    @ApiOperation(value = "Return all place categories to filter")
+    @GetMapping("/v2/filteredPlacesCategories")
+    public ResponseEntity<List<FilterPlaceCategory>> allFilterPlaceCategories() {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getAllPlaceCategories());
+    }
+
+    /**
+     * Controller to save new place from UI.
+     */
+    @ApiOperation(value = "Create new place from Ui")
+    @PostMapping("/v2/save")
+    public ResponseEntity<PlaceResponse> saveEcoPlaceFromUi(@RequestBody AddPlaceDto dto,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.addPlaceFromUi(dto, principal.getName()));
     }
 }

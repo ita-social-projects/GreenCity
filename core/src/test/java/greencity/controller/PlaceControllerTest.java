@@ -1,5 +1,31 @@
 package greencity.controller;
 
+import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import greencity.client.RestClient;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryDto;
@@ -24,33 +50,21 @@ import greencity.dto.user.UserVO;
 import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.*;
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static greencity.ModelUtils.getPrincipal;
 import static greencity.enums.PlaceStatus.APPROVED;
 import static greencity.enums.PlaceStatus.PROPOSED;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -73,6 +87,8 @@ class PlaceControllerTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    private Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
@@ -548,6 +564,34 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService).bulkDelete(longList);
+    }
+
+    @Test
+    void allFilterPlaceCategoriesTest() throws Exception {
+        this.mockMvc.perform(get(placeLink + "/v2/filteredPlacesCategories"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void saveEcoPlaceFromUi() throws Exception {
+        String json = "{\n" +
+            "  \"categoryName\": \"test\",\n" +
+            "  \"locationName\": \"вулиця Під Дубом, 7Б, Львів, Львівська область, 79000\",\n" +
+            "  \"openingHoursList\": [\n" +
+            "    {\n" +
+            "      \"closeTime\": \"20:00\",\n" +
+            "      \"openTime\": \"08:00\",\n" +
+            "      \"weekDay\": \"MONDAY\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"placeName\": \"Форум Львів\"\n" +
+            "}";
+
+        this.mockMvc.perform(post(placeLink + "/v2/save")
+            .contentType(MediaType.APPLICATION_JSON)
+            .principal(principal)
+            .content(json))
+            .andExpect(status().isOk());
     }
 
 }

@@ -1,9 +1,11 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
-import java.time.ZonedDateTime;
+import javax.validation.constraints.Size;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,16 +14,19 @@ import java.time.ZonedDateTime;
 @EqualsAndHashCode
 public class AddEventDtoRequest {
     @NotEmpty
+    @Size(min = 1, max = 70)
     private String title;
 
     @NotEmpty
+    @Size(min = 20, max = 63206)
     private String description;
 
     @NotEmpty
-    private CoordinatesDto coordinates;
+    private List<EventDateLocationDto> datesLocations;
 
     @NotEmpty
-    private ZonedDateTime dateTime;
+    private List<String> tags;
 
-    private String titleImage;
+    @JsonProperty(value = "open")
+    private boolean isOpen;
 }

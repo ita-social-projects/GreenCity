@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 
+import greencity.entity.event.Event;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import lombok.*;
@@ -14,8 +15,8 @@ import lombok.*;
 @Getter
 @Setter
 @Table(name = "tags")
-@ToString(exclude = {"ecoNews", "tipsAndTricks", "habits"})
-@EqualsAndHashCode(exclude = {"ecoNews", "tipsAndTricks", "habits"})
+@ToString(exclude = {"ecoNews", "habits", "events"})
+@EqualsAndHashCode(exclude = {"ecoNews", "habits", "events"})
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +33,8 @@ public class Tag {
     private List<EcoNews> ecoNews;
 
     @ManyToMany(mappedBy = "tags")
-    private List<TipsAndTricks> tipsAndTricks;
+    private Set<Habit> habits;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Habit> habits;
+    private Set<Event> events;
 }

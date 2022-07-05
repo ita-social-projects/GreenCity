@@ -117,6 +117,14 @@
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Kozak.xml"/>
     <include file="db/changelog/logs/ch-modify-function-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-insert-table-users-service-account-Yezenitskyi.xml"/>
+    <include file="db/changelog/logs/ch-change-events-and-create-eventsdate-table-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-change-events-events-location-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-event-tags-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-drop-all-tips-and-tricks-tables-Yezenitskyi.xml"/>
+    <include file="db/changelog/logs/ch-change-event-date-to-zoned-type-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-changed-user-role-to-varchar.xml"/>
+    <include file="db/changelog/logs/ch-add-places-tags.xml"/>
+    <include file="db/changelog/logs/ch-change-events-location-add-addresses-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-table-filters-Hural.xml"/>
 </databaseChangeLog>
 

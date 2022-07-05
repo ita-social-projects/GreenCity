@@ -2,8 +2,10 @@ package greencity.service;
 
 import greencity.constant.ValidationConstants;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.tag.NewTagDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.entity.Tag;
@@ -19,6 +21,7 @@ import greencity.constant.ErrorMessage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -120,11 +123,13 @@ public class TagsServiceImpl implements TagsService {
     private void enhanceTagWithNewData(Tag toUpdate, TagPostDto tagPostDto) {
         toUpdate.setType(tagPostDto.getType());
         toUpdate.getTagTranslations()
-            .forEach(tagTranslation -> tagTranslation.setName(
-                tagPostDto.getTagTranslations().stream().filter(newTranslation -> newTranslation.getLanguage().getId()
-                    .equals(tagTranslation.getLanguage().getId()))
-                    .findFirst()
-                    .get().getName()));
+            .forEach(tagTranslation -> {
+                Optional<TagTranslationDto> tagTranslationDto = tagPostDto.getTagTranslations().stream()
+                    .filter(newTranslation -> newTranslation.getLanguage().getId()
+                        .equals(tagTranslation.getLanguage().getId()))
+                    .findFirst();
+                tagTranslation.setName(tagTranslationDto.map(TagTranslationDto::getName).orElse(null));
+            });
     }
 
     private PageableAdvancedDto<TagVO> buildPageableAdvanceDtoFromPage(Page<Tag> pageTags) {
@@ -193,6 +198,14 @@ public class TagsServiceImpl implements TagsService {
         }.getType());
     }
 
+    @Override
+    public List<NewTagDto> findByType(TagType type) {
+        List<Tag> tags = tagRepo.findTagsByType(type);
+
+        return modelMapper.map(tags, new TypeToken<List<NewTagDto>>() {
+        }.getType());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -204,30 +217,9 @@ public class TagsServiceImpl implements TagsService {
         }.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<String> findAllTipsAndTricksTags(String languageCode) {
-        return tagRepo.findAllTipsAndTricksTags(languageCode);
-    }
-
     @Override
     public List<String> findAllHabitsTags(String languageCode) {
         return tagRepo.findAllHabitsTags(languageCode);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isAllTipsAndTricksValid(List<String> tipsAndTricksTagNames, TagType type) {
-        try {
-            findTagsByNamesAndType(tipsAndTricksTagNames, type);
-        } catch (TagNotFoundException e) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -243,5 +235,18 @@ public class TagsServiceImpl implements TagsService {
             throw new InvalidNumOfTagsException(ErrorMessage.INVALID_NUM_OF_TAGS);
         }
         return true;
+    }
+
+    @Override
+    public List<TagVO> findTagsWithAllTranslationsByNamesAndType(List<String> tagNames, TagType tagType) {
+        List<String> lowerCaseTagNames = tagNames.stream()
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
+        List<Tag> tags = tagRepo.findAllByTagTranslations(lowerCaseTagNames, tagType);
+        if (tags.isEmpty()) {
+            throw new TagNotFoundException(ErrorMessage.TAGS_NOT_FOUND);
+        }
+        return modelMapper.map(tags, new TypeToken<List<TagVO>>() {
+        }.getType());
     }
 }

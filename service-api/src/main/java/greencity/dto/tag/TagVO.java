@@ -1,8 +1,8 @@
 package greencity.dto.tag;
 
 import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.event.EventVO;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.tipsandtricks.TipsAndTricksVO;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +20,6 @@ public class TagVO {
     private TagType type;
     private List<TagTranslationVO> tagTranslations;
     private List<EcoNewsVO> ecoNews;
-    private List<TipsAndTricksVO> tipsAndTricks;
     private Set<HabitVO> habits;
+    private Set<EventVO> events;
 }

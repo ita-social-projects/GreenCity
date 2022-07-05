@@ -50,7 +50,7 @@ public class User {
     @Column(unique = true, nullable = false, length = 50)
     private String email;
 
-    @Enumerated(value = EnumType.ORDINAL)
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 

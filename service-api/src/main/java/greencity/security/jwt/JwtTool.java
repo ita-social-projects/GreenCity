@@ -1,6 +1,6 @@
 package greencity.security.jwt;
 
-import static greencity.constant.AppConstant.AUTHORITIES;
+import static greencity.constant.AppConstant.ROLE;
 
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
@@ -49,7 +49,7 @@ public class JwtTool {
      */
     public String createAccessToken(String email, Role role) {
         Claims claims = Jwts.claims().setSubject(email);
-        claims.put(AUTHORITIES, Collections.singleton(role.name()));
+        claims.put(ROLE, Collections.singleton(role.name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -69,7 +69,7 @@ public class JwtTool {
      */
     public String createRefreshToken(UserVO user) {
         Claims claims = Jwts.claims().setSubject(user.getEmail());
-        claims.put(AUTHORITIES, Collections.singleton(user.getRole().name()));
+        claims.put(ROLE, Collections.singleton(user.getRole().name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);

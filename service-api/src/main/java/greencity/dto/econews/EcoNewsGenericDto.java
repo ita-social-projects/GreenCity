@@ -40,9 +40,14 @@ public class EcoNewsGenericDto {
     private String source;
 
     @NotEmpty
-    private List<String> tags;
+    private List<String> tagsUa;
+
+    @NotEmpty
+    private List<String> tagsEn;
 
     private int likes;
 
     private int countComments;
+
+    private int countOfEcoNews;
 }

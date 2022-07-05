@@ -13,7 +13,5 @@ public class UserProfileStatisticsDto {
 
     private Long amountHabitsAcquired;
 
-    private Long amountWrittenTipsAndTrick;
-
     private Long amountPublishedNews;
 }

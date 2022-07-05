@@ -2,26 +2,28 @@ package greencity.dto.event;
 
 import lombok.*;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
-import java.time.ZonedDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Builder
+@Setter
 @EqualsAndHashCode
+@Builder
 public class AddEventDtoResponse {
     @NotEmpty
     private Long id;
 
     @NotEmpty
+    private String title;
+
+    @NotEmpty
     private String description;
 
-    @NotEmpty
-    private CoordinatesDto coordinates;
-
-    @NotEmpty
-    private ZonedDateTime dateTime;
+    @Max(7)
+    private List<EventDateLocationDto> dates;
 
     @NotEmpty
     private EventAuthorDto organizer;

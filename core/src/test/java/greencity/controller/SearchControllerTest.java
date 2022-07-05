@@ -2,7 +2,6 @@ package greencity.controller;
 
 import greencity.service.EcoNewsService;
 import greencity.service.SearchService;
-import greencity.service.TipsAndTricksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,8 +21,6 @@ class SearchControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    TipsAndTricksService tipsAndTricksService;
-    @Mock
     EcoNewsService ecoNewsService;
     @Mock
     SearchService searchService;
@@ -32,7 +29,6 @@ class SearchControllerTest {
 
     private static final String mainSearchLink = "/search";
     private static final String ecoNewsSearchLinkPart = "/econews";
-    private static final String tipsAndTricksLinkPart = "/tipsandtricks";
 
     @BeforeEach
     void setup() {

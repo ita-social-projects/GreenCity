@@ -34,7 +34,7 @@ public class ManagementHabitFactsController {
     private LanguageService languageService;
 
     /**
-     * Method for getting tips & tricks by id.
+     * Method for getting habit facts by id.
      *
      * @return {@link HabitFactVO} instance.
      * @author Ivan Behar

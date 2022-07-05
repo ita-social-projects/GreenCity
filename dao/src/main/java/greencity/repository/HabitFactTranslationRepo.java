@@ -101,7 +101,7 @@ public interface HabitFactTranslationRepo extends JpaRepository<HabitFactTransla
     /**
      * Method returns all {@link HabitFactTranslation} by languageCode and page.
      *
-     * @param page         of tips & tricks.
+     * @param page         of habit facts.
      * @param languageCode of titleTranslation.
      * @return all {@link HabitFactTranslation} by languageCode and page.
      */

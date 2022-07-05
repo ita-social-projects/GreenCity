@@ -1,13 +1,16 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageable;
+import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -33,18 +36,20 @@ public class EventsController {
     /**
      * Method for creating an event.
      *
-     * @return {@link AddEventDtoResponse} instance.
-     * @author Max Bohonko.
+     * @return {@link EventDto} instance.
+     * @author Max Bohonko, Danylo Hlynskyi.
      */
     @ApiOperation(value = "Create new event")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @PostMapping(value = "/create",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public ResponseEntity<AddEventDtoResponse> save(@RequestPart AddEventDtoRequest addEventDtoRequest,
+    public ResponseEntity<EventDto> save(
+        @ApiParam(value = SwaggerExampleModel.ADD_EVENT,
+            required = true) @ValidEventDtoRequest @RequestPart AddEventDtoRequest addEventDtoRequest,
         @ApiIgnore Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,12 +65,35 @@ public class EventsController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/delete/{eventId}")
     public ResponseEntity<Object> delete(@PathVariable Long eventId, @ApiIgnore Principal principal) {
         eventService.delete(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for updating {@link EventDto}.
+     *
+     * @author Danylo Hlynskyi
+     */
+    @ApiOperation(value = "Update eco news")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EventDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @PutMapping(value = "/update",
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseEntity<EventDto> update(
+        @ApiParam(required = true) @RequestPart UpdateEventDto eventDto,
+        @ApiIgnore Principal principal,
+        @RequestPart(required = false) @Nullable MultipartFile[] images) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+            eventService.update(eventDto, principal.getName(), images));
     }
 
     /**
@@ -97,6 +125,7 @@ public class EventsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
+
     @ApiPageable
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable) {

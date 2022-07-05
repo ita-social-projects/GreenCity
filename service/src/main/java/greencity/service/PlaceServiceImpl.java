@@ -1,6 +1,26 @@
 package greencity.service;
 
-import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.maps.model.GeocodingResult;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
@@ -10,20 +30,25 @@ import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
+import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.DiscountValue;
+import greencity.entity.Location;
 import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.Specification;
@@ -37,32 +62,19 @@ import greencity.exception.exceptions.UserBlockedException;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
 /**
  * The class provides implementation of the {@code PlaceService}.
  */
 @Slf4j
 @Service
+@AllArgsConstructor
 public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
@@ -76,36 +88,8 @@ public class PlaceServiceImpl implements PlaceService {
     private final ZoneId datasourceTimezone;
     private final ProposePlaceService proposePlaceService;
     private CategoryRepo categoryRepo;
-
-    /**
-     * Constructor.
-     */
-    @Autowired
-    public PlaceServiceImpl(PlaceRepo placeRepo,
-        ModelMapper modelMapper,
-        CategoryService categoryService,
-        LocationService locationService,
-        SpecificationService specificationService,
-        RestClient restClient,
-        OpenHoursService openingHoursService,
-        DiscountService discountService,
-        NotificationService notificationService,
-        @Qualifier(value = "datasourceTimezone") ZoneId datasourceTimezone,
-        ProposePlaceServiceImpl proposePlaceService,
-        CategoryRepo categoryRepo) {
-        this.placeRepo = placeRepo;
-        this.modelMapper = modelMapper;
-        this.categoryService = categoryService;
-        this.locationService = locationService;
-        this.specificationService = specificationService;
-        this.restClient = restClient;
-        this.openingHoursService = openingHoursService;
-        this.discountService = discountService;
-        this.notificationService = notificationService;
-        this.datasourceTimezone = datasourceTimezone;
-        this.proposePlaceService = proposePlaceService;
-        this.categoryRepo = categoryRepo;
-    }
+    private final GoogleApiService googleApiService;
+    private final UserRepo userRepo;
 
     /**
      * {@inheritDoc}
@@ -157,7 +141,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public List<PlaceVO> getAllCreatedPlacesByUserId(Long userId) {
@@ -487,7 +470,9 @@ public class PlaceServiceImpl implements PlaceService {
      */
     @Override
     public List<PlaceByBoundsDto> getPlacesByFilter(FilterPlaceDto filterDto) {
-        List<Place> list = placeRepo.findAll(new PlaceFilter(filterDto));
+        List<Place> list =
+            ArrayUtils.isNotEmpty(filterDto.getCategories()) ? placeRepo.findPlaceByCategory(filterDto.getCategories())
+                : placeRepo.findAll(new PlaceFilter(filterDto));
         list = getPlacesByDistanceFromUser(filterDto, list);
         return list.stream()
             .map(place -> modelMapper.map(place, PlaceByBoundsDto.class))
@@ -561,5 +546,41 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public List<PlaceStatus> getStatuses() {
         return Arrays.asList(PlaceStatus.class.getEnumConstants());
+    }
+
+    @Override
+    public List<FilterPlaceCategory> getAllPlaceCategories() {
+        return modelMapper.map(categoryRepo.findAll(), new TypeToken<List<FilterPlaceCategory>>() {
+        }.getType());
+    }
+
+    @Override
+    public PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email) {
+        PlaceResponse placeResponse = modelMapper.map(dto, PlaceResponse.class);
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException("User with email " + email + " doesn't exist"));
+        if (user.getUserStatus().equals(UserStatus.BLOCKED)) {
+            throw new UserBlockedException(ErrorMessage.USER_HAS_BLOCKED_STATUS);
+        }
+        List<GeocodingResult> geocodingResults = googleApiService.getResultFromGeoCode(dto.getLocationName());
+        placeResponse.setLocationAddressAndGeoDto(initializeGeoCodingResults(geocodingResults));
+        Place place = modelMapper.map(placeResponse, Place.class);
+        place.setCategory(categoryRepo.findCategoryByName(dto.getCategoryName()));
+        place.setAuthor(user);
+        place.setLocation(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class));
+
+        return modelMapper.map(placeRepo.save(place), PlaceResponse.class);
+    }
+
+    private AddPlaceLocation initializeGeoCodingResults(
+        List<GeocodingResult> geocodingResults) {
+        GeocodingResult ukrLang = geocodingResults.get(0);
+        GeocodingResult engLang = geocodingResults.get(1);
+        return AddPlaceLocation.builder()
+            .address(ukrLang.formattedAddress)
+            .addressEng(engLang.formattedAddress)
+            .lat(ukrLang.geometry.location.lat)
+            .lng(ukrLang.geometry.location.lng)
+            .build();
     }
 }

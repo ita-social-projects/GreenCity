@@ -2,8 +2,8 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,9 +12,9 @@ public interface EventService {
      * Method for saving Event instance.
      *
      * @param addEventDtoRequest - dto.
-     * @return {@link AddEventDtoResponse} instance.
+     * @return {@link EventDto} instance.
      */
-    AddEventDtoResponse save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
+    EventDto save(AddEventDtoRequest addEventDtoRequest, String email, MultipartFile[] images);
 
     /**
      * Method for deleting Event instance.
@@ -53,4 +53,23 @@ public interface EventService {
      * @param email   - user email.
      */
     void removeAttender(Long eventId, String email);
+
+    /**
+     * Return Events searched by some query.
+     *
+     * @param paging - pagination params.
+     * @param query  - query to search by.
+     */
+    PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query);
+
+    /**
+     * Update Event.
+     *
+     * @param email    - user that edits event
+     *
+     * @param eventDto - new event information
+     * @param images   - new images of event
+     * @return EventDto
+     */
+    EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
 }

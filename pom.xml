@@ -51,6 +51,9 @@
                  <configuration>
                     <excludes>
                         <exclude>**/config/*</exclude>
+                        <exclude>**/enums/*</exclude>
+                        <exclude>**/exceptions/*</exclude>
+                        <exclude>**/entity/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
