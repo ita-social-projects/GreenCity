@@ -25,7 +25,7 @@ public class FilterServiceImpl implements FilterService {
     public UserFilterDtoResponse save(Long userId, UserFilterDtoRequest dto) {
         List<Filter> filters = filterRepo.getAllFilters(userId);
         if (filters.size() == 3) {
-           return modelMapper.map(filters.get(0), UserFilterDtoResponse.class);
+            return modelMapper.map(filters.get(0), UserFilterDtoResponse.class);
         }
         Filter filter = modelMapper.map(dto, Filter.class);
         User user = userRepo.findById(userId)
@@ -53,7 +53,6 @@ public class FilterServiceImpl implements FilterService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.FILTER_NOT_FOUND_BY_ID + filterId));
 
         return modelMapper.map(filter, UserFilterDtoResponse.class);
-
     }
 
     @Override

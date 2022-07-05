@@ -246,7 +246,7 @@ public class ManagementUserController {
      * Method for creating new filter.
      *
      * @param currentUser current user.
-     * @param dto filter's dto.
+     * @param dto         filter's dto.
      */
     @PostMapping(value = "/filter-save")
     public String saveUserFilter(@CurrentUser UserVO currentUser, UserFilterDtoRequest dto) {
@@ -277,5 +277,4 @@ public class ManagementUserController {
         filterService.deleteFilterById(id);
         return "redirect:/management/users?size=20&sort=id,DESC";
     }
-
 }
