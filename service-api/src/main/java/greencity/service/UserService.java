@@ -105,7 +105,6 @@ public interface UserService {
      * Method that returns list of users filtered by criteria.
      * 
      * @param criteria value which we used to filter users.
-     * @return PageableAdvancedDto<UserManagementVO>
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
 }

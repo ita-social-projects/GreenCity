@@ -10,8 +10,11 @@ import java.util.List;
 
 @Repository
 public interface FilterRepo extends JpaRepository<Filter, Long> {
-
+    /**
+     * Method that return user's filter.
+     * 
+     * @param userId user's id.
+     */
     @Query(nativeQuery = true, value = "SELECT * FROM filters f WHERE f.user_id =:userId")
     List<Filter> getAllFilters(@Param("userId") Long userId);
-
 }

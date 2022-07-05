@@ -31,5 +31,4 @@ public class Filter {
 
     @Column(columnDefinition = "text")
     private String values;
-
 }

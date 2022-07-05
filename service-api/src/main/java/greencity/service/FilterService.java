@@ -24,15 +24,16 @@ public interface FilterService {
 
     /**
      * return filter by id.
+     * 
      * @param filterId filter's id.
      * @return UserFilterDtoResponse.
      */
     UserFilterDtoResponse getFilterById(Long filterId);
 
     /**
-     *  Method delete filter.
+     * Method delete filter.
+     * 
      * @param filterId filter's id which we have to delete.
      */
     void deleteFilterById(Long filterId);
-
 }

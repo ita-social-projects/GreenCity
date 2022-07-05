@@ -1,6 +1,5 @@
 package greencity.service;
 
-
 import greencity.ModelUtils;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class FilterServiceImplTest {
@@ -74,6 +72,5 @@ class FilterServiceImplTest {
 
         verify(filterRepo, times(1)).findById(1L);
     }
-
 
 }
