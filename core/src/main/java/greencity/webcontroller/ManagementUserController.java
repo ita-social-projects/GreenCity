@@ -242,29 +242,40 @@ public class ManagementUserController {
         habitAssignService.updateShoppingItem(habitId, itemId);
     }
 
+    /**
+     * Method for creating new filter.
+     *
+     * @param currentUser current user.
+     * @param dto filter's dto.
+     */
     @PostMapping(value = "/filter-save")
     public String saveUserFilter(@CurrentUser UserVO currentUser, UserFilterDtoRequest dto) {
         filterService.save(currentUser.getId(), dto);
         return "redirect:/management/users";
     }
 
+    /**
+     * Method for selecting current filter.
+     *
+     * @param id filter's id.
+     * @return return page with filtered users.
+     */
     @GetMapping(value = "/select-filter/{id}")
     public String selectFilter(@PathVariable("id") Long id) {
         UserFilterDtoResponse dto = filterService.getFilterById(id);
         return "redirect:/management/users?role=" + dto.getUserRole() + "&query=" + dto.getSearchCriteria() + "&status="
-            + dto.getUserStatus();
+            + dto.getUserStatus() + "&size=20&sort=id,DESC";
     }
 
     /**
      * Method for deleting filters.
      * 
      * @param id user filter {@link Long} filter's id.
-     * @return
      */
     @GetMapping(value = "{id}/delete-filter")
     public String deleteUserFilter(@PathVariable("id") Long id) {
         filterService.deleteFilterById(id);
-        return "redirect:/management/users";
+        return "redirect:/management/users?size=20&sort=id,DESC";
     }
 
 }
