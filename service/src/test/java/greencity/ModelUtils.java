@@ -215,6 +215,19 @@ public class ModelUtils {
             .build();
     }
 
+    public static User getAttenderUser() {
+        return User.builder()
+            .id(2L)
+            .email("danylo@gmail.com")
+            .name("Danylo")
+            .role(Role.ROLE_USER)
+            .userStatus(UserStatus.ACTIVATED)
+            .lastActivityTime(localDateTime)
+            .verifyEmail(new VerifyEmail())
+            .dateOfRegistration(localDateTime)
+            .build();
+    }
+
     public static RecommendedFriendDto getRecommendedFriendDto() {
         return new RecommendedFriendDto(1L, TestConst.NAME, "profile");
     }
