@@ -160,7 +160,6 @@ public final class ErrorMessage {
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
 
-
     private ErrorMessage() {
     }
 }

@@ -94,7 +94,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto getEvent(Long eventId) {
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return modelMapper.map(event, EventDto.class);
     }
 
@@ -123,10 +124,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void addAttender(Long eventId, String email) {
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        if(Objects.equals(event.getOrganizer().getId(), currentUser.getId())) {
+        if (Objects.equals(event.getOrganizer().getId(), currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
         } else if (event.getAttenders().stream().noneMatch(a -> a.getId().equals(currentUser.getId()))) {
             event.getAttenders().add(currentUser);
@@ -138,7 +140,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void removeAttender(Long eventId, String email) {
-        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
@@ -161,7 +164,8 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
-        Event toUpdate = eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event toUpdate =
+            eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
