@@ -15,6 +15,7 @@ import greencity.entity.event.EventImages;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,7 +94,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto getEvent(Long eventId) {
-        Event event = eventRepo.getOne(eventId);
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return modelMapper.map(event, EventDto.class);
     }
 
@@ -121,20 +124,24 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void addAttender(Long eventId, String email) {
-        Event event = eventRepo.getOne(eventId);
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        if (event.getAttenders().stream().noneMatch(attender -> attender.getId().equals(currentUser.getId()))) {
+        if (Objects.equals(event.getOrganizer().getId(), currentUser.getId())) {
+            throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
+        } else if (event.getAttenders().stream().noneMatch(a -> a.getId().equals(currentUser.getId()))) {
             event.getAttenders().add(currentUser);
             eventRepo.save(event);
         } else {
-            throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
+            throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
         }
     }
 
     @Override
     public void removeAttender(Long eventId, String email) {
-        Event event = eventRepo.getOne(eventId);
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
@@ -157,7 +164,8 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
-        Event toUpdate = eventRepo.getOne(eventDto.getId());
+        Event toUpdate =
+            eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {

@@ -98,7 +98,7 @@ class EventServiceImplTest {
         Event expectedEvent = ModelUtils.getEvent();
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
 
-        when(eventRepo.getOne(1L)).thenReturn(expectedEvent);
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
         when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
@@ -218,7 +218,7 @@ class EventServiceImplTest {
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
         Event event = ModelUtils.getEvent();
 
-        when(eventRepo.getOne(1L)).thenReturn(event);
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
 
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
@@ -293,7 +293,7 @@ class EventServiceImplTest {
     void getEvent() {
         Event event = ModelUtils.getEvent();
         EventDto eventDto = ModelUtils.getEventDto();
-        when(eventRepo.getOne(anyLong())).thenReturn(event);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         EventDto actual = eventService.getEvent(1L);
         assertEquals(eventDto.getId(), actual.getId());
@@ -304,15 +304,11 @@ class EventServiceImplTest {
     @Test
     void addAttender() {
         Event event = ModelUtils.getEvent();
-        Set<User> userSet = new HashSet();
-        User organizer = ModelUtils.getUser();
-        User user = ModelUtils.getUser();
-        user.setId(22L);
-        userSet.add(user);
-        event.setAttenders(userSet);
-        when(eventRepo.getOne(any())).thenReturn(event);
+        User user = ModelUtils.getAttenderUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
-            .thenReturn(organizer);
+            .thenReturn(user);
 
         eventService.addAttender(event.getId(), user.getEmail());
 
@@ -346,7 +342,7 @@ class EventServiceImplTest {
         user.setId(22L);
         userSet.add(user);
         event.setAttenders(userSet);
-        when(eventRepo.getOne(any())).thenReturn(event);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
 
         eventService.removeAttender(event.getId(), user.getEmail());
