@@ -1,3 +1,5 @@
+environment: prod
+
 deployment:
   replicas: 1
   image: skyere/greencity:latest
@@ -7,6 +9,9 @@ deployment:
   limits:
     cpu: 2
     memory: 1024Mi
+
+externalSecret:
+  secretName: greencity-secret
 
 service:
   type: ClusterIP
