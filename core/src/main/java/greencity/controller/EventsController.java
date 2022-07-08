@@ -1,6 +1,6 @@
 package greencity.controller;
 
-import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
@@ -66,7 +66,8 @@ public class EventsController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/delete/{eventId}")
     public ResponseEntity<Object> delete(@PathVariable Long eventId, @ApiIgnore Principal principal) {
@@ -79,12 +80,13 @@ public class EventsController {
      *
      * @author Danylo Hlynskyi
      */
-    @ApiOperation(value = "Update eco news")
+    @ApiOperation(value = "Update event")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EventDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping(value = "/update",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
@@ -106,7 +108,7 @@ public class EventsController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/event/{eventId}")
     public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId) {
@@ -122,11 +124,9 @@ public class EventsController {
     @ApiOperation(value = "Get all events")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
-
-    @ApiPageable
+    @ApiPageableWithoutSort
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable));
@@ -141,7 +141,8 @@ public class EventsController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/addAttender/{eventId}")
     public void addAttender(@PathVariable Long eventId, @ApiIgnore Principal principal) {
