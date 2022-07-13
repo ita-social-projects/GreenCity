@@ -1,3 +1,5 @@
+environment: dev
+
 deployment:
   replicas: 1
   image: skyere/greencity:latest
