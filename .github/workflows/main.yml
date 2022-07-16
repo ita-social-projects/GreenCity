@@ -77,10 +77,17 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
       
+      - name: Set up Postgres
+        run: kubectl scale deploy postgres --replicas=1 -n test
+      
       - name: Kubernetes tests
         run: |
           cd chart-test
           go test -v ./...
+      
+      - name: Post Set up Postgres
+        if: success() || failure()
+        run: kubectl scale deploy postgres --replicas=0 -n test
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Deploy 🚀
