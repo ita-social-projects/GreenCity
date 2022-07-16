@@ -23,6 +23,7 @@ var options *helm.Options = &helm.Options{
 	ValuesFiles:    []string{"valuesTest.yaml"},
 	SetValues: map[string]string{
 		"deployment.image": image,
+		"environment": "test",
 	},
 }
 
