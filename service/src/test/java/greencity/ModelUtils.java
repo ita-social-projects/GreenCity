@@ -1760,9 +1760,9 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-                ZonedDateTime.now().plusDays(1),
-                ZonedDateTime.now().plusDays(1).plusSeconds(1),
-                new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            ZonedDateTime.now().plusDays(1),
+            ZonedDateTime.now().plusDays(1).plusSeconds(1),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
