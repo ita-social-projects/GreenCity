@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import greencity.dto.event.*;
+import greencity.entity.event.EventGrade;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1752,6 +1753,23 @@ public class ModelUtils {
         return event;
     }
 
+    public static Event getUnfinishedEvent() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.now().plusDays(1),
+            ZonedDateTime.now().plusDays(1).plusSeconds(1),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
     public static Event getEventWithoutCoordinates() {
         Event event = new Event();
 
@@ -2038,4 +2056,25 @@ public class ModelUtils {
             .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
     }
 
+    public static Event getEventWithGrades() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        dates.add(new EventDateLocation(2L, event,
+            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        event.setEventGrades(List.of(EventGrade.builder().grade(2).event(event).build()));
+        return event;
+    }
 }

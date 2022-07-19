@@ -211,6 +211,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/like",
                 EVENTS + "/addAttender/{eventId}",
                 EVENTS + "/create",
+                EVENTS + "/rateEvent/{eventId}/{rate}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 "/files/image",
                 "/files/convert",
