@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Danylo Hlynskyi" id="event-add-event-organizer-rating-Hlynskyi">
+        <createTable tableName="events_grades">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="event_id" type="BIGINT">
+                <constraints foreignKeyName="FK_rate_event_id" references="events (id)"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="FK_rate_event_user_id" references="users (id)"/>
+            </column>
+            <column name="grade" type="INT"/>
+        </createTable>
+        <addColumn tableName="users">
+            <column name="event_organizer_rating" type="DOUBLE"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
