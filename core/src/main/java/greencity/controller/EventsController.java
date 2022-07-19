@@ -166,7 +166,6 @@ public class EventsController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-
     /**
      * Method for rating event by user.
      *
@@ -174,12 +173,13 @@ public class EventsController {
      */
     @ApiOperation(value = "Rate event")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/rateEvent/{eventId}/{grade}")
-    public ResponseEntity<Object> rateEvent(@PathVariable Long eventId, @PathVariable int grade, @ApiIgnore Principal principal) {
+    public ResponseEntity<Object> rateEvent(@PathVariable Long eventId, @PathVariable int grade,
+        @ApiIgnore Principal principal) {
         eventService.rateEvent(eventId, principal.getName(), grade);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -101,7 +101,7 @@ public interface UserService {
      * Method for updating user event organizer rating.
      *
      * @param userId - {@link UserVO}'s id
-     * @param rate - new user event organizer rating
+     * @param rate   - new user event organizer rating
      *
      */
     void updateEventOrganizerRating(Long userId, Double rate);

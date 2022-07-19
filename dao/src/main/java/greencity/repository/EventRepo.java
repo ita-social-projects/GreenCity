@@ -57,5 +57,10 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     @Query(value = "DELETE FROM events_images WHERE event_id = :eventId", nativeQuery = true)
     void deleteEventAdditionalImagesByEventId(Long eventId);
 
+    /**
+     * Get all events by event organizer.
+     *
+     * @param organizer {@link User}.
+     */
     List<Event> getAllByOrganizer(User organizer);
 }

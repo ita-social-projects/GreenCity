@@ -107,12 +107,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "ORDER BY users.rating DESC LIMIT 6;")
     List<User> getSixFriendsWithTheHighestRating(Long userId);
 
-
     /**
      * Updates user rating as event organizer.
      *
      * @param userId {@link User}'s id
-     * @param rate new {@link User}'s rating as event organizer
+     * @param rate   new {@link User}'s rating as event organizer
      * @author Danylo Hlynskyi
      */
     @Modifying

@@ -179,25 +179,33 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(eventRepo.save(toUpdate), EventDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
     public void rateEvent(Long eventId, String email, int grade) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
-        if(findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
+        if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException("Event isn`t done");
         }
-        if(!event.getAttenders().stream().map(User::getId).collect(Collectors.toList()).contains(currentUser.getId())) {
+        if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+            .contains(currentUser.getId())) {
             throw new BadRequestException("You are not a event subscriber");
         }
-        if(event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList()).contains(currentUser.getId())) {
+        if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
+            .contains(currentUser.getId())) {
             throw new BadRequestException("You have already rated this event");
         }
 
         event.getEventGrades().add(EventGrade.builder().event(event).grade(grade).user(currentUser).build());
         eventRepo.save(event);
 
-        userService.updateEventOrganizerRating(event.getOrganizer().getId(), calculateUserEventOrganizerRating(event.getOrganizer()));
+        userService.updateEventOrganizerRating(event.getOrganizer().getId(),
+            calculateUserEventOrganizerRating(event.getOrganizer()));
     }
 
     private Double calculateUserEventOrganizerRating(User user) {
@@ -336,6 +344,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {
-        return Collections.max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
+        return Collections
+            .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 }
