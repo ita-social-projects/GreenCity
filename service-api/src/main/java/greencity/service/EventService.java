@@ -72,4 +72,14 @@ public interface EventService {
      * @return EventDto
      */
     EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
+
+
+    /**
+     * Rate Event.
+     *
+     * @param email    - user that rates event
+     * @param eventId - id of rated event
+     * @param grade - grade of event
+     */
+    void rateEvent(Long eventId, String email, int grade);
 }
