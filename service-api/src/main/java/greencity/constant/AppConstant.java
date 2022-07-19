@@ -7,6 +7,7 @@ public final class AppConstant {
     public static final Integer CONSTANT_OF_FORMULA_HAVERSINE_KM = 6371;
     public static final String GOOGLE_PICTURE = "picture";
     public static final String ADMIN = "ADMIN";
+    public static final String UBS_EMPLOYEE = "UBS_EMPLOYEE";
     public static final String MODERATOR = "MODERATOR";
     public static final String USER = "USER";
     public static final String AUTHORIZATION = "Authorization";
