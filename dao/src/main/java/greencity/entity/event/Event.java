@@ -61,5 +61,5 @@ public class Event {
     private List<Tag> tags;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-    private List<EventGrade> eventGrades;
+    private List<EventGrade> eventGrades = new ArrayList<>();
 }
