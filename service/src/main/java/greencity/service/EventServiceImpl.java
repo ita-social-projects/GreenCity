@@ -11,6 +11,7 @@ import greencity.dto.tag.TagVO;
 import greencity.entity.*;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -27,7 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +44,7 @@ public class EventServiceImpl implements EventService {
     private final FileService fileService;
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
+    private final UserService userService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     @Override
@@ -175,6 +179,52 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(eventRepo.save(toUpdate), EventDto.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     */
+    @Override
+    public void rateEvent(Long eventId, String email, int grade) {
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+
+        if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
+        }
+        if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+            .contains(currentUser.getId())) {
+            throw new BadRequestException(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
+        }
+        if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
+            .contains(currentUser.getId())) {
+            throw new BadRequestException(ErrorMessage.HAVE_ALREADY_RATED);
+        }
+
+        event.getEventGrades().add(EventGrade.builder().event(event).grade(grade).user(currentUser).build());
+        eventRepo.save(event);
+
+        userService.updateEventOrganizerRating(event.getOrganizer().getId(),
+            calculateUserEventOrganizerRating(event.getOrganizer()));
+    }
+
+    private Double calculateUserEventOrganizerRating(User user) {
+        List<Event> events = eventRepo.getAllByOrganizer(user);
+        int summaryGrade = 0;
+        int reviewsAmount = 0;
+        for (var event : events) {
+            for (var grade : event.getEventGrades()) {
+                summaryGrade += grade.getGrade();
+                reviewsAmount++;
+            }
+        }
+        double finalRating = 0;
+        if (reviewsAmount != 0) {
+            finalRating = ((double) summaryGrade) / reviewsAmount;
+        }
+        return finalRating;
+    }
+
     private void enhanceWithNewData(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         if (updateEventDto.getTitle() != null) {
             toUpdate.setTitle(updateEventDto.getTitle());
@@ -291,5 +341,10 @@ public class EventServiceImpl implements EventService {
                 date.setCoordinates(coordinatesDto);
             }
         }
+    }
+
+    private ZonedDateTime findLastEventDateTime(Event event) {
+        return Collections
+            .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 }

@@ -50,6 +50,9 @@ class EventServiceImplTest {
     TagsService tagService;
 
     @Mock
+    UserService userService;
+
+    @Mock
     FileService fileService;
 
     @Mock
@@ -378,5 +381,19 @@ class EventServiceImplTest {
         PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
             0, false, false, true, true);
         assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
+    }
+
+    @Test
+    void rateEvent() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getAttenderUser();
+        event.setAttenders(Set.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+        doNothing().when(userService).updateEventOrganizerRating(event.getOrganizer().getId(), 2.0);
+        List<Event> events = List.of(event, ModelUtils.getExpectedEvent(), ModelUtils.getEventWithGrades());
+        when(eventRepo.getAllByOrganizer(event.getOrganizer())).thenReturn(events);
+        eventService.rateEvent(event.getId(), user.getEmail(), 2);
+        verify(eventRepo).save(event);
     }
 }

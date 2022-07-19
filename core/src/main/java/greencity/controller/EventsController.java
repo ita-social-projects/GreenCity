@@ -165,4 +165,22 @@ public class EventsController {
         eventService.removeAttender(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    /**
+     * Method for rating event by user.
+     *
+     * @author Danylo Hlynskyi.
+     */
+    @ApiOperation(value = "Rate event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/rateEvent/{eventId}/{grade}")
+    public ResponseEntity<Object> rateEvent(@PathVariable Long eventId, @PathVariable int grade,
+        @ApiIgnore Principal principal) {
+        eventService.rateEvent(eventId, principal.getName(), grade);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

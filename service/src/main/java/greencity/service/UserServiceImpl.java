@@ -6,6 +6,7 @@ import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.entity.event.Event;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
@@ -18,10 +19,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -191,5 +192,13 @@ public class UserServiceImpl implements UserService {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateEventOrganizerRating(Long eventOrganizerId, Double rate) {
+        userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
     }
 }
