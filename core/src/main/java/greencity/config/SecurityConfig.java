@@ -94,13 +94,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/", "/management/login").permitAll()
             .antMatchers("/management/**",
                 "/econews/comments/replies/{parentCommentId}")
-            .hasRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers("/css/**",
                 "/img/**")
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 ECONEWS_COMMENTS)
-            .hasRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
                 "/ownSecurity/updateAccessToken",
@@ -202,7 +202,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/factoftheday/all",
                 "/chat",
                 "/achievements/notification/{userId}")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
                 "/econews",
@@ -230,7 +230,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/declineFriend/{friendId}",
                 "/user/{userId}/acceptFriend/{friendId}",
                 "/achievements/calculate-achievement")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/habit/statistic/{id}",
                 "/econews/update",
@@ -239,7 +239,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/profile",
                 EVENTS + "/update",
                 HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
                 CUSTOM_SHOPPING_LIST_ITEMS,
@@ -253,7 +253,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
                 "/econews/{econewsId}",
@@ -268,49 +268,49 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/removeAttender/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitId}")
-            .hasAnyRole(USER, ADMIN, MODERATOR)
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
                 "/comments",
                 "/comments/{id}",
                 "/user/all",
                 "/user/roles")
-            .hasAnyRole(ADMIN, MODERATOR)
+            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/place/filter/predicate")
-            .hasAnyRole(ADMIN, MODERATOR)
+            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/place/update/")
-            .hasAnyRole(ADMIN, MODERATOR)
+            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status",
                 "/place/statuses")
-            .hasAnyRole(ADMIN, MODERATOR)
+            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}",
                 "/place")
-            .hasAnyRole(ADMIN, MODERATOR)
+            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/advices",
                 "/facts",
                 "/user/filter")
-            .hasRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/advices/{adviceId}",
                 "/facts/{factId}")
-            .hasRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 "/user",
                 "/user/status",
                 "/user/role",
                 "/user/update/role")
-            .hasRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 "/advices/{adviceId}",
                 "/facts/{factId}",
                 "/comments")
-            .hasRole(ADMIN)
-            .anyRequest().hasAnyRole(ADMIN)
+            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .anyRequest().hasAnyRole(ADMIN, UBS_EMPLOYEE)
             .and()
             .logout()
             .logoutUrl("/logout")
