@@ -96,4 +96,13 @@ public interface UserService {
      * @return {@link List} of {@link UserVO} instances
      */
     List<UserVO> getSixFriendsWithTheHighestRating(Long userId);
+
+    /**
+     * Method for updating user event organizer rating.
+     *
+     * @param userId - {@link UserVO}'s id
+     * @param rate - new user event organizer rating
+     *
+     */
+    void updateEventOrganizerRating(Long userId, Double rate);
 }
