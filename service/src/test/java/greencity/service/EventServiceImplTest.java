@@ -391,6 +391,8 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
         doNothing().when(userService).updateEventOrganizerRating(event.getOrganizer().getId(), 2.0);
+        List<Event> events = List.of(event, ModelUtils.getExpectedEvent(), ModelUtils.getEventWithGrades());
+        when(eventRepo.getAllByOrganizer(event.getOrganizer())).thenReturn(events);
         eventService.rateEvent(event.getId(), user.getEmail(), 2);
         verify(eventRepo).save(event);
     }
