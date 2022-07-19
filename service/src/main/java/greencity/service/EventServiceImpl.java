@@ -190,15 +190,15 @@ public class EventServiceImpl implements EventService {
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
-            throw new BadRequestException("Event isn`t done");
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
         if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
             .contains(currentUser.getId())) {
-            throw new BadRequestException("You are not a event subscriber");
+            throw new BadRequestException(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
         }
         if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
             .contains(currentUser.getId())) {
-            throw new BadRequestException("You have already rated this event");
+            throw new BadRequestException(ErrorMessage.HAVE_ALREADY_RATED);
         }
 
         event.getEventGrades().add(EventGrade.builder().event(event).grade(grade).user(currentUser).build());

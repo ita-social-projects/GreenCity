@@ -150,6 +150,7 @@ public final class ErrorMessage {
     public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS = "Habit assign status is not INPROGRESS.";
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
+
     public static final String NOT_EVENT_ORGANIZER = "You're not the organizer of this event";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
@@ -159,6 +160,9 @@ public final class ErrorMessage {
         "Start date must be in future and before finish date";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
+    public static final String YOU_ARE_NOT_EVENT_SUBSCRIBER = "You are not event subscriber";
+    public static final String HAVE_ALREADY_RATED = "You have already rated this event";
+    public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
 
     private ErrorMessage() {
     }
