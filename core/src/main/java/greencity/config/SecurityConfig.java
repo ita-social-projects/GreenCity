@@ -184,6 +184,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/dayFact/{languageId}",
                 "/newsSubscriber/unsubscribe",
                 "/place/{status}",
+                "/place/v2/filteredPlacesCategories",
                 "/social-networks/image",
                 "/user",
                 "/user/shopping-list-items/habits/{habitId}/shopping-list",
