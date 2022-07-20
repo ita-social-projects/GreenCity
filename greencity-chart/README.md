@@ -1,0 +1,58 @@
+# Helm Chart for Greencity
+
+## Prerequisites
+
+- Kubernetes cluster 1.20+
+- Helm v3.2.0+
+- External Secrets Operator [https://external-secrets.io]
+- Reloader [https://github.com/stakater/Reloader]
+
+## Installation
+
+### In project folder
+```bash
+helm install my-release greencity-chart
+```
+### Configure the chart
+
+The following items can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
+
+### External Secret 
+To connect Secret Store to azure key vault(Or others providers see https://external-secrets.io/v0.5.7/) you need Managed Identity authentication. Also you can user others methods(see https://external-secrets.io/v0.5.7/provider-azure-key-vault/). 
+
+### Managed Identity authentication Secret
+Here you can see example of secret to Secret store
+```yml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-secret-sp
+type: Opaque
+data:
+  ClientID: bXktc2VydmljZS1wcmluY2lwbGUtY2xpZW50LWlkCg==  #service-principal-ID
+  ClientSecret: bXktc2VydmljZS1wcmluY2lwbGUtY2xpZW50LXNlY3JldAo= #service-principal-secret
+```
+### Secret Store 
+```yml
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: example-secret-store
+spec:
+  provider:
+    # provider type: azure keyvault
+    azurekv:
+      # azure tenant ID, see: https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-to-find-tenant
+      tenantId: "d3bc2180-xxxx-xxxx-xxxx-154105743342"
+      # URL of your vault instance, see: https://docs.microsoft.com/en-us/azure/key-vault/general/about-keys-secrets-certificates
+      vaultUrl: "https://my-keyvault-name.vault.azure.net"
+      authSecretRef:
+        # points to the secret that contains
+        # the azure service principal credentials
+        clientId:
+          name: azure-secret-sp
+          key: ClientID
+        clientSecret:
+          name: azure-secret-sp
+          key: ClientSecret
+```
