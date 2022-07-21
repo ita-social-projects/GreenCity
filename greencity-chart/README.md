@@ -13,15 +13,23 @@
 ```bash
 helm install my-release greencity-chart
 ```
+
+## Uninstallation
+
+To uninstall/delete the `my-release` deployment:
+```bash
+helm uninstall my-release
+```
+
 ### Configure the chart
 
 The following items can be set via `--set` flag during installation or configured by editing the `values.yaml` directly.
-
+### If you want to use local secret you can skip step External Secret
 ### External Secret 
-To connect Secret Store to azure key vault(Or others providers see https://external-secrets.io/v0.5.7/) you need Managed Identity authentication. Also you can user others methods(see https://external-secrets.io/v0.5.7/provider-azure-key-vault/). 
+To connect Secret Store to azure key vault(Or others providers see https://external-secrets.io/v0.5.7/) you need Managed Identity authentication. Also you can use others methods (see https://external-secrets.io/v0.5.7/provider-azure-key-vault/). 
 
 ### Managed Identity authentication Secret
-Here you can see example of secret to Secret store
+Here you can see example of secret to Secret store 
 ```yml
 apiVersion: v1
 kind: Secret
@@ -56,3 +64,4 @@ spec:
           name: azure-secret-sp
           key: ClientSecret
 ```
+
