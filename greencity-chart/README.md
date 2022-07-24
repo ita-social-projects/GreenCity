@@ -69,11 +69,11 @@
 
 | Name | Value |
 | ------ | ------ |
-| API_KEY | your_API_KEY |
-| API_SECRET | your_API_SECRET |
+| API_KEY | "your_API_KEY" |
+| API_SECRET | "your_API_SECRET" |
 | APPLICATIONINSIGHTS_CONNECTION_STRING | "InstrumentationKey=KEY;IngestionEndpoint=Endpoint" |
 | AZURE_CONNECTION_STRING | "DefaultEndpointsProtocol=https;AccountName=your_account_name;AccountKey=your_account_key;EndpointSuffix=core.windows.net" |
-| AZURE_CONTAINER_NAME | your_AZURE_CONTAINER_NAME |
+| AZURE_CONTAINER_NAME | "your_AZURE_CONTAINER_NAME" |
 | BUCKET_NAME |  |
 | CACHE_SPEC |  |
 | CLIENT_ADDRESS |  |
