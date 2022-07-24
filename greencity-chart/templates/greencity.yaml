@@ -28,6 +28,12 @@ spec:
           limits:
             cpu: {{ .Values.deployment.limits.cpu }}
             memory: {{ .Values.deployment.limits.memory }}
+        startupProbe:
+          httpGet:
+              path: /swagger-ui.html
+              port: 8080
+          periodSeconds: 10
+          failureThreshold: 20
         env:
 
         - name: API_KEY
