@@ -254,8 +254,8 @@
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content role">
 
-                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_ADMIN\');'"
-                                               th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
+                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_UBS_EMPLOYEE\');'"
+                                               th:if="${!user.role.name().equals('ROLE_UBS_EMPLOYEE')}">admin</a>
                                             <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_USER\');'" th:if="${!user.role.name().equals('ROLE_USER')}">user</a>
                                             <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_MODERATOR\');'" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
                                         </div>
@@ -378,7 +378,7 @@
                                 <label>[[#{greenCity.pages.table.credo}]]</label>
                                 <select class="form-control" name="role">
                                     <option selected="selected">ROLE_USER</option>
-                                    <option>ROLE_ADMIN</option>
+                                    <option>ROLE_UBS_EMPLOYEE</option>
                                     <option>ROLE_MODERATOR</option>
                                 </select>
                                 <span th:id="errorModalSaverole" class="errorSpan"></span>
