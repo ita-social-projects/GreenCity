@@ -94,13 +94,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/", "/management/login").permitAll()
             .antMatchers("/management/**",
                 "/econews/comments/replies/{parentCommentId}")
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**")
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 ECONEWS_COMMENTS)
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.GET,
                 "/ownSecurity/verifyEmail",
                 "/ownSecurity/updateAccessToken",
@@ -277,42 +277,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments/{id}",
                 "/user/all",
                 "/user/roles")
-            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/place/filter/predicate")
-            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PUT,
                 "/place/update/")
-            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.PATCH,
                 "/place/status",
                 "/place/statuses")
-            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.DELETE,
                 "/place/{id}",
                 "/place")
-            .hasAnyRole(ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/advices",
                 "/facts",
                 "/user/filter")
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PUT,
                 "/advices/{adviceId}",
                 "/facts/{factId}")
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PATCH,
                 "/user",
                 "/user/status",
                 "/user/role",
                 "/user/update/role")
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.DELETE,
                 "/advices/{adviceId}",
                 "/facts/{factId}",
                 "/comments")
-            .hasAnyRole(ADMIN, UBS_EMPLOYEE)
-            .anyRequest().hasAnyRole(ADMIN, UBS_EMPLOYEE)
+            .hasAnyRole(ADMIN)
+            .anyRequest().hasAnyRole(ADMIN)
             .and()
             .logout()
             .logoutUrl("/logout")
