@@ -394,7 +394,7 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
 
         when(eventRepo.findAllByOrderByIdDesc(pageRequest))
-                .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
