@@ -109,15 +109,18 @@ public class EventServiceImpl implements EventService {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
         PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
         if (principal != null) {
-            User user =  modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             setSubscribes(events, eventDtos, user);
         }
         return eventDtos;
     }
 
     private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
-        List<Long> eventIds = events.stream().filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList()).contains(user.getId())).map(Event::getId)
-                .collect(Collectors.toList());
+        List<Long> eventIds = events.stream()
+            .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+                .contains(user.getId()))
+            .map(Event::getId)
+            .collect(Collectors.toList());
         eventDtos.getPage().forEach(eventDto -> eventDto.setIsSubscribed(eventIds.contains(eventDto.getId())));
     }
 
