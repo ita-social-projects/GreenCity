@@ -298,7 +298,7 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-        EventDto actual = eventService.getEvent(1L);
+        EventDto actual = eventService.getEvent(1L, null);
         assertEquals(eventDto.getId(), actual.getId());
         assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
         assertEquals(eventDto.getTitleImage(), actual.getTitleImage());

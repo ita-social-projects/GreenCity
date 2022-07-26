@@ -98,10 +98,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDto getEvent(Long eventId) {
-        Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        return modelMapper.map(event, EventDto.class);
+    public EventDto getEvent(Long eventId, Principal principal) {
+        Event event = eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        EventDto eventDto = modelMapper.map(event, EventDto.class);
+        if (principal != null) {
+            User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            eventDto.setIsSubscribed(event.getAttenders().stream().map(User::getId).collect(Collectors.toList()).contains(currentUser.getId()));
+        }
+        return eventDto;
     }
 
     @Override

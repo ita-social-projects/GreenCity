@@ -32,7 +32,7 @@ public interface EventService {
      * @param eventId - event id.
      * @return {@link EventDto} instance.
      */
-    EventDto getEvent(Long eventId);
+    EventDto getEvent(Long eventId, Principal principal);
 
     /**
      * Method for getting all Event instances.
