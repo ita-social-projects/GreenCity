@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -2076,5 +2077,9 @@ public class ModelUtils {
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
         event.setEventGrades(List.of(EventGrade.builder().grade(2).event(event).build()));
         return event;
+    }
+
+    public static Principal getPrincipal() {
+        return () -> "danylo@gmail.com";
     }
 }
