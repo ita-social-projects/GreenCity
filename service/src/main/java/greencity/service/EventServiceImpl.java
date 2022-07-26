@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,9 +105,20 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAll(Pageable page) {
-        Page<Event> pages = eventRepo.findAllByOrderByIdDesc(page);
-        return buildPageableAdvancedDto(pages);
+    public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
+        Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
+        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
+        if (principal != null) {
+            User user =  modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            setSubscribes(events, eventDtos, user);
+        }
+        return eventDtos;
+    }
+
+    private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
+        List<Long> eventIds = events.stream().filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList()).contains(user.getId())).map(Event::getId)
+                .collect(Collectors.toList());
+        eventDtos.getPage().forEach(eventDto -> eventDto.setIsSubscribed(eventIds.contains(eventDto.getId())));
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
