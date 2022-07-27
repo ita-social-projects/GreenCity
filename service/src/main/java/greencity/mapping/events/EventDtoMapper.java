@@ -40,7 +40,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
         User organizer = event.getOrganizer();
-        eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName()).build());
+        eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName())
+            .organizerRating(organizer.getEventOrganizerRating()).build());
         eventDto.setDates(event.getDates().stream().map(this::convertEventDateLocation).collect(Collectors.toList()));
 
         List<TagUaEnDto> tagUaEnDtos = new ArrayList<>();
