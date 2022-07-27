@@ -104,8 +104,8 @@ public class EventServiceImpl implements EventService {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            eventDto.setIsSubscribed(event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
-                .contains(currentUser.getId()));
+            eventDto.setIsSubscribed(event.getAttenders().stream()
+                .anyMatch(attender -> attender.getId().equals(currentUser.getId())));
         }
         return eventDto;
     }
