@@ -111,8 +111,8 @@ public class EventsController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvent(eventId));
+    public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvent(eventId, principal));
     }
 
     /**
@@ -128,8 +128,9 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable, principal));
     }
 
     /**
