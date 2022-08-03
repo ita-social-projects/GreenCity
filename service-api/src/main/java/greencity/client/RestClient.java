@@ -498,7 +498,6 @@ public class RestClient {
             accessToken = getTokenFromCookies(cookies);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         return headers;
     }
