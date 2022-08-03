@@ -22,7 +22,7 @@ public class FilterDtoResponseMapperTest {
         String[] criteria = values.split(";");
 
         UserFilterDtoResponse expected = new UserFilterDtoResponse(filter.getId(), filter.getName(),
-                criteria[0], criteria[2], criteria[1]);
+            criteria[0], criteria[2], criteria[1]);
 
         assertEquals(expected, filterDtoResponseMapper.convert(filter));
     }

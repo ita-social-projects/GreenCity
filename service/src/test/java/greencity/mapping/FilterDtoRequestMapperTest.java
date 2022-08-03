@@ -21,14 +21,14 @@ public class FilterDtoRequestMapperTest {
         String values = filter.getValues();
         String[] criteria = values.split(";");
 
-        UserFilterDtoRequest userFilterDtoRequest = new UserFilterDtoRequest(filter.getName(),  criteria[0],
-                criteria[2], criteria[1]);
+        UserFilterDtoRequest userFilterDtoRequest = new UserFilterDtoRequest(filter.getName(), criteria[0],
+            criteria[2], criteria[1]);
 
         Filter expected = Filter.builder()
-                .name(filter.getName())
-                .type(filter.getType())
-                .values(filter.getValues())
-                .build();
+            .name(filter.getName())
+            .type(filter.getType())
+            .values(filter.getValues())
+            .build();
 
         assertEquals(expected, filterDtoRequestMapper.convert(userFilterDtoRequest));
     }
