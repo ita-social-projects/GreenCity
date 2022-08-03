@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -13,6 +14,7 @@ import greencity.exception.exceptions.WrongIdException;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
+import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +22,10 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -272,5 +278,28 @@ class UserServiceImplTest {
 
         assertThrows(LowRoleLevelException.class,
             () -> userService.updateStatus(2L, CREATED, TEST_EMAIL));
+    }
+
+    @Test
+    void getAllUsersByCriteriaTest() {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<User> users = new ArrayList<>();
+        User user1 = ModelUtils.getUser();
+        UserManagementVO userManagementVO = UserManagementVO.builder()
+            .id(1L)
+            .userStatus(ACTIVATED)
+            .email("Test@gmail.com")
+            .role(Role.ROLE_ADMIN).build();
+
+        users.add(user1);
+        Page<User> page = new PageImpl<>(users, pageable, 1);
+
+        when(userRepo.findAll(any(UserFilter.class), eq(pageable))).thenReturn(page);
+        when(modelMapper.map(user1, UserManagementVO.class)).thenReturn(userManagementVO);
+
+        userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
+
+        verify(userRepo, times(1)).findAll(any(UserFilter.class), eq(pageable));
+        verify(modelMapper, times(1)).map(user1, UserManagementVO.class);
     }
 }

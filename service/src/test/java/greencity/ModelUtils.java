@@ -1,37 +1,10 @@
 package greencity;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.Principal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import greencity.dto.event.*;
-import greencity.entity.event.EventGrade;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.google.maps.model.AddressComponent;
 import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
-
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
@@ -65,6 +38,13 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddEventDtoResponse;
+import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -122,6 +102,8 @@ import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
 import greencity.dto.user.RecommendedFriendDto;
+import greencity.dto.user.UserFilterDtoRequest;
+import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
@@ -136,16 +118,14 @@ import greencity.entity.Advice;
 import greencity.entity.BreakTime;
 import greencity.entity.Category;
 import greencity.entity.Comment;
-import greencity.entity.event.Coordinates;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.DiscountValue;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
-import greencity.entity.event.Event;
-import greencity.entity.event.EventDateLocation;
 import greencity.entity.FactOfTheDay;
 import greencity.entity.FactOfTheDayTranslation;
 import greencity.entity.FavoritePlace;
+import greencity.entity.Filter;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitFact;
@@ -166,6 +146,10 @@ import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.VerifyEmail;
+import greencity.entity.event.Coordinates;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -181,7 +165,8 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
-import greencity.enums.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -189,11 +174,20 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.*;
-import java.util.*;
-
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ModelUtils {
     public static User TEST_USER = createUser();
@@ -2081,5 +2075,34 @@ public class ModelUtils {
 
     public static Principal getPrincipal() {
         return () -> "danylo@gmail.com";
+    }
+
+    public static UserFilterDtoRequest getUserFilterDtoRequest() {
+        return UserFilterDtoRequest.builder()
+            .userRole("USER")
+            .name("Test_Filter")
+            .searchCriteria("Test")
+            .userStatus("ACTIVATED")
+            .build();
+    }
+
+    public static UserFilterDtoResponse getUserFilterDtoResponse() {
+        return UserFilterDtoResponse.builder()
+            .id(1L)
+            .userRole("ADMIN")
+            .searchCriteria("Test")
+            .userStatus("ACTIVATED")
+            .name("Test")
+            .build();
+    }
+
+    public static Filter getFilter() {
+        return Filter.builder()
+            .id(1L)
+            .name("Test")
+            .user(new User())
+            .type("USERS")
+            .values("Test;ADMIN;ACTIVATED")
+            .build();
     }
 }
