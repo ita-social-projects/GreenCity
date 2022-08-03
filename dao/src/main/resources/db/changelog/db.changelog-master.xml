@@ -126,4 +126,5 @@
     <include file="db/changelog/logs/ch-add-places-tags.xml"/>
     <include file="db/changelog/logs/ch-change-events-location-add-addresses-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-event-organizer-raring-Hlynskyi.xml"/>
+    <include file="db/changelog/logs/ch-add-name-unique-constraint-Sakhno.xml"/>
 </databaseChangeLog>
