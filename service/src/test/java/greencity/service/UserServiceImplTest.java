@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
-import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
@@ -284,7 +283,6 @@ class UserServiceImplTest {
     @Test
     void getAllUsersByCriteriaTest() {
         Pageable pageable = PageRequest.of(0, 10);
-        UserFilterDto dto = new UserFilterDto("Test", "ROLE_ADMIN", "ACTIVATED");
         List<User> users = new ArrayList<>();
         User user1 = ModelUtils.getUser();
         UserManagementVO userManagementVO = UserManagementVO.builder()
@@ -296,7 +294,12 @@ class UserServiceImplTest {
         users.add(user1);
         Page<User> page = new PageImpl<>(users, pageable, 1);
 
-        when(userRepo.findAll(new UserFilter(dto), pageable)).thenReturn(page);
+        when(userRepo.findAll(any(UserFilter.class), eq(pageable))).thenReturn(page);
         when(modelMapper.map(user1, UserManagementVO.class)).thenReturn(userManagementVO);
+
+        userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
+
+        verify(userRepo, times(1)).findAll(any(UserFilter.class), eq(pageable));
+        verify(modelMapper, times(1)).map(user1, UserManagementVO.class);
     }
 }

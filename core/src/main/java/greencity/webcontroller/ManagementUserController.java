@@ -1,7 +1,6 @@
 package greencity.webcontroller;
 
 import greencity.annotations.CurrentUser;
-import greencity.annotations.CurrentUserId;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;

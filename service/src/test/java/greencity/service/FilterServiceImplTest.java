@@ -61,6 +61,8 @@ class FilterServiceImplTest {
         when(modelMapper.map(filter, UserFilterDtoResponse.class)).thenReturn(ModelUtils.getUserFilterDtoResponse());
 
         filterServiceImpl.getFilterById(filter.getId());
+        verify(filterRepo, times(1)).findById(1L);
+        verify(modelMapper, times(1)).map(filter, UserFilterDtoResponse.class);
     }
 
     @Test
@@ -69,7 +71,6 @@ class FilterServiceImplTest {
         when(filterRepo.findById(1L)).thenReturn(Optional.of(filter));
 
         filterServiceImpl.deleteFilterById(filter.getId());
-
         verify(filterRepo, times(1)).findById(1L);
     }
 
