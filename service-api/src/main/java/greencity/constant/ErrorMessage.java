@@ -158,6 +158,7 @@ public final class ErrorMessage {
     public static final String NO_EVENT_LINK_OR_COORDINATES = "Invalid online-link or coordinates";
     public static final String EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST =
         "Start date must be in future and before finish date";
+    public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
     public static final String YOU_ARE_NOT_EVENT_SUBSCRIBER = "You are not event subscriber";

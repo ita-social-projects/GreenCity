@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -28,6 +29,8 @@
     <script th:src="@{/management/user/jquery.liTextLength.js}"></script>
     <script th:src="@{/management/user/paginationAndSort.js}"></script>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
+    <link rel="stylesheet" th:href="@{/management/css/slider.css}">
+    <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
 </head>
 <body onload="chageIcons()">
 <script>
@@ -58,15 +61,105 @@
                             <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
                                 <div>[[#{greenCity.user.page.add.user}]]</div>
                             </a>
+                            <div id="addUserModal" class="modal fade">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form th:action="@{/management/users/register}" method="post" id="addUserForm">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" class="form-control" name="id" value="-1" readonly required>
+                                                <div class="form-group">
+                                                    <label>[[#{greenCity.pages.table.userName}]]</label>
+                                                    <input type="text" class="form-control" name="name" required>
+                                                    <span th:id="errorModalSavename" class="errorSpan"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>[[#{greenCity.pages.table.email}]]</label>
+                                                    <input type="text" class="form-control" name="email" required>
+                                                    <span th:id="errorModalSaveemail" class="errorSpan"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>[[#{greenCity.pages.table.role}]]</label>
+                                                    <select class="form-control" name="role">
+                                                        <option selected="selected">ROLE_USER</option>
+                                                        <option>ROLE_ADMIN</option>
+                                                        <option>ROLE_MODERATOR</option>
+                                                    </select>
+                                                    <span th:id="errorModalSaverole" class="errorSpan"></span>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>[[#{greenCity.pages.table.status}]]</label>
+                                                    <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
+                                                           required>
+                                                    <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                                       th:value="#{greenCity.pages.popup.cancel.}">
+                                                <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row-box-and-sort">
                         <div class="main-search">
-                            <form class="form-inline searching" action="#" method="get">
-                                <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}">
+                            <form class="form-inline searching" method="get" th:action="@{/management/users}">
+                                <input type="search" class="form-search" th:placeholder="#{greenCity.pages.search}" name="query">
                             </form>
-                            <button class="filter-button">
-                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]</button>
+                            <div>
+                            <button class="filter-button" id="filter-button" onclick="openForm()">
+                                <img src="/img/filter-icon.svg" alt="Filter icon">[[#{greenCity.pages.filter}]]
+                            </button>
+                            <div class="form-popup" id="filter">
+                                <form class="form-container"
+                                      style="width: 280px" method="post" th:action="@{/management/users/filter-save}">
+                                   <label>[[#{greenCity.pages.table.filtername}]]</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                    <label>[[#{greenCity.pages.table.search}]]</label>
+                                    <input type="text" name="searchCriteria" class="form-control" required>
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.table.role}]]</label>
+                                        <select class="form-control" name="userRole">
+                                            <option selected="selected" value="all">All types</option>
+                                            <option value="0">ROLE_USER</option>
+                                            <option value="1">ROLE_ADMIN</option>
+                                            <option value="2">ROLE_MODERATOR</option>
+                                        </select>
+                                        <span th:id="errorModalSaverole" class="errorSpan"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>[[#{greenCity.pages.table.status}]]</label>
+                                        <select class="form-control" name="userStatus">
+                                            <option selected="selected" value="all">All types</option>
+                                            <option value="2">ACTIVATED</option>
+                                            <option value="1">DEACTIVATED</option>
+                                            <option value="0">BLOCKED</option>
+                                            <option value="3">CREATED</option>
+                                        </select>
+                                        <span th:id="errorModalSaverole" class="errorSpan"></span>
+                                    </div>
+                                    <table class="table">
+                                        <tr th:each="filter: ${filters}" class="filter-table">
+                                            <td><a th:href="@{|/management/users/select-filter/${filter.getId()}|}" th:text="${filter.getName()}"></a></td>
+                                            <td><a th:href="@{|/management/users/${filter.getId()}/delete-filter|}">&#215;</a></td>
+                                        </tr>
+                                    </table>
+                                    <span th:if="${filters.size() == 3}" style="color: red;">[[#{greenCity.pages.table.filtermessage}]]</span>
+                                    <div style="float: right;margin-top: 30px; margin-bottom: 18px; ">
+                                        <button type="submit" class="filter-btn" style="float: right" th:if="${filters.size() <= 3}">
+                                            <b>[[#{greenCity.pages.popup.save.}]]</b>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            </div>
                         </div>
                         <div class="filter-list-grid">
                             <div class="dropdown size">

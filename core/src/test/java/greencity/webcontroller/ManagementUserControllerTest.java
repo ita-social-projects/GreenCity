@@ -5,10 +5,15 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.user.*;
+import greencity.entity.Filter;
+import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.UserStatus;
+import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +34,11 @@ import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
+import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,6 +60,10 @@ class ManagementUserControllerTest {
     private UserService userService;
     @Mock
     HabitAssignService habitAssignService;
+    @Mock
+    private FilterService filterService;
+
+    private Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
@@ -75,15 +86,27 @@ class ManagementUserControllerTest {
     void getAllUsers() throws Exception {
         Pageable pageable = PageRequest.of(0, 20, Sort.by("id").descending());
         List<UserManagementVO> userManagementVO = Collections.singletonList(new UserManagementVO());
-        PageableAdvancedDto<UserManagementVO> userAdvancedDto =
-            new PageableAdvancedDto<>(userManagementVO, 20, 0, 0, 0,
-                true, true, true, true);
+        List<UserFilterDtoResponse> filterDtoResponses = Collections.singletonList(new UserFilterDtoResponse());
+        PageableDto<UserManagementVO> userAdvancedDto =
+            new PageableDto<>(userManagementVO, 20, 0, 0);
         UserManagementViewDto userManagementViewDto = new UserManagementViewDto();
-        when(restClient.search(pageable, userManagementViewDto)).thenReturn(userAdvancedDto);
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable))
+            .thenReturn(userAdvancedDto);
+        when(filterService.getAllFilters(1L)).thenReturn(filterDtoResponses);
+
         mockMvc.perform(get(managementUserLink +
-            "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")).andExpect(model()
+            "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
+                .principal(principal)
+                .param("status", "ACTIVATED")
+                .param("role", "ROLE_ADMIN")
+                .param("query", "Test"))
+            .andExpect(model()
                 .attribute("users", userAdvancedDto));
-        verify(restClient).search(pageable, userManagementViewDto);
     }
 
     @Test
@@ -216,5 +239,54 @@ class ManagementUserControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateShoppingItem(1L, 1L);
+    }
+
+    @Test
+    void saveUserFilterTest() throws Exception {
+        UserFilterDtoRequest dto = UserFilterDtoRequest.builder()
+            .name("Test")
+            .userRole("ADMIN")
+            .userStatus("ACTIVATED")
+            .searchCriteria("Test")
+            .build();
+        UserVO userVO = ModelUtils.getUserVO();
+        User user = ModelUtils.getUser();
+
+        String content = objectMapper.writeValueAsString(dto);
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        mockMvc.perform(post(managementUserLink + "/filter-save")
+            .content(content)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isFound());
+    }
+
+    @Test
+    void selectFilterTest() throws Exception {
+        Long id = 1L;
+        UserFilterDtoResponse dto = UserFilterDtoResponse.builder()
+            .id(1L)
+            .name("Test")
+            .userRole("ROLE_ADMIN").userStatus("ACTIVATED")
+            .searchCriteria("Test")
+            .build();
+        when(filterService.getFilterById(id)).thenReturn(dto);
+        mockMvc.perform(get(managementUserLink + "/select-filter/" + id)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isFound());
+
+        verify(filterService).getFilterById(id);
+    }
+
+    @Test
+    void deleteUserFilterTest() throws Exception {
+        Long id = 1L;
+        mockMvc.perform(get(managementUserLink + "/" + id + "/delete-filter")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isFound());
+
+        verify(filterService).deleteFilterById(id);
     }
 }
