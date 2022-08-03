@@ -1,7 +1,10 @@
 # This is a basic workflow to help you get started with Actions
 
 name: CI/CD GreenCity
-# Controls when the action will run. 
+# Controls when the action will run.
+
+concurrency: Testing
+
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
