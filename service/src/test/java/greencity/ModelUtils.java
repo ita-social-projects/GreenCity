@@ -2076,6 +2076,7 @@ public class ModelUtils {
     public static Principal getPrincipal() {
         return () -> "danylo@gmail.com";
     }
+
     public static UserFilterDtoRequest getUserFilterDtoRequest() {
         return UserFilterDtoRequest.builder()
             .userRole("USER")
