@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,6 +53,20 @@ class FilterServiceImplTest {
         verify(modelMapper).map(dto, Filter.class);
         verify(userRepo).findById(1L);
         verify(filterRepo).save(filter);
+        verify(modelMapper).map(filter, UserFilterDtoResponse.class);
+    }
+
+    @Test
+    void getAllFiltersTest() {
+        Filter filter = ModelUtils.getFilter();
+        List<Filter> filters = new ArrayList<>();
+        filters.add(filter);
+
+        when(filterRepo.getAllFilters(anyLong())).thenReturn(filters);
+        when(modelMapper.map(filter, UserFilterDtoResponse.class)).thenReturn(ModelUtils.getUserFilterDtoResponse());
+
+        filterServiceImpl.getAllFilters(anyLong());
+        verify(filterRepo).getAllFilters(anyLong());
         verify(modelMapper).map(filter, UserFilterDtoResponse.class);
     }
 

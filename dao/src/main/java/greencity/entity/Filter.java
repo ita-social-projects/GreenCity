@@ -10,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Getter
 @Setter
 @Builder
