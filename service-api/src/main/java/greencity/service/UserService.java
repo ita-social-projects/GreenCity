@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
@@ -102,8 +101,17 @@ public interface UserService {
     List<UserVO> getSixFriendsWithTheHighestRating(Long userId);
 
     /**
+     * Method for updating user event organizer rating.
+     *
+     * @param userId - {@link UserVO}'s id
+     * @param rate   - new user event organizer rating
+     *
+     */
+    void updateEventOrganizerRating(Long userId, Double rate);
+
+    /**
      * Method that returns list of users filtered by criteria.
-     * 
+     *
      * @param criteria value which we used to filter users.
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);

@@ -59,4 +59,7 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<EventGrade> eventGrades = new ArrayList<>();
 }

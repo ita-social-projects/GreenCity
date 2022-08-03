@@ -7,6 +7,8 @@ import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 public interface EventService {
     /**
      * Method for saving Event instance.
@@ -30,14 +32,14 @@ public interface EventService {
      * @param eventId - event id.
      * @return {@link EventDto} instance.
      */
-    EventDto getEvent(Long eventId);
+    EventDto getEvent(Long eventId, Principal principal);
 
     /**
      * Method for getting all Event instances.
      *
-     * @return List of{@link EventDto} instance.
+     * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getAll(Pageable page);
+    PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
 
     /**
      * Add an attender to the Event by id.
@@ -72,4 +74,13 @@ public interface EventService {
      * @return EventDto
      */
     EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images);
+
+    /**
+     * Rate Event.
+     *
+     * @param email   - user that rates event
+     * @param eventId - id of rated event
+     * @param grade   - grade of event
+     */
+    void rateEvent(Long eventId, String email, int grade);
 }

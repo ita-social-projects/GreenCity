@@ -1,4 +1,4 @@
-environment: prod
+environment: dev
 
 deployment:
   replicas: 1
@@ -30,5 +30,5 @@ ingress:
   # Only when cors_allow_origin is not "*"
   cors_allow_credentials: "true"
 
-  hostname: greencity.testgreencity.ga
+  hostname: greencity-test.testgreencity.ga
   

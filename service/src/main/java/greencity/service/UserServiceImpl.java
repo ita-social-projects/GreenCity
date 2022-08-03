@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.filter.FilterUserDto;
 import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
@@ -197,6 +196,14 @@ public class UserServiceImpl implements UserService {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateEventOrganizerRating(Long eventOrganizerId, Double rate) {
+        userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
     }
 
     @Override

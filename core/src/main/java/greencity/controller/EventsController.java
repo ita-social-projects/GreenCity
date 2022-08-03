@@ -111,8 +111,8 @@ public class EventsController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvent(eventId));
+    public ResponseEntity<EventDto> getEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvent(eventId, principal));
     }
 
     /**
@@ -128,8 +128,9 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable, principal));
     }
 
     /**
@@ -163,6 +164,24 @@ public class EventsController {
     @DeleteMapping("/removeAttender/{eventId}")
     public ResponseEntity<Object> removeAttender(@PathVariable Long eventId, @ApiIgnore Principal principal) {
         eventService.removeAttender(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for rating event by user.
+     *
+     * @author Danylo Hlynskyi.
+     */
+    @ApiOperation(value = "Rate event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/rateEvent/{eventId}/{grade}")
+    public ResponseEntity<Object> rateEvent(@PathVariable Long eventId, @PathVariable int grade,
+        @ApiIgnore Principal principal) {
+        eventService.rateEvent(eventId, principal.getName(), grade);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

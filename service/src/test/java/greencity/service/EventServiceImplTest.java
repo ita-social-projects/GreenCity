@@ -29,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
+import java.security.Principal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +49,9 @@ class EventServiceImplTest {
 
     @Mock
     TagsService tagService;
+
+    @Mock
+    UserService userService;
 
     @Mock
     FileService fileService;
@@ -295,10 +299,24 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-        EventDto actual = eventService.getEvent(1L);
+        EventDto actual = eventService.getEvent(1L, null);
         assertEquals(eventDto.getId(), actual.getId());
         assertEquals(eventDto.getAdditionalImages(), actual.getAdditionalImages());
         assertEquals(eventDto.getTitleImage(), actual.getTitleImage());
+        assertNull(eventDto.getIsSubscribed());
+    }
+
+    @Test
+    void getEventWithCurrentUser() {
+        Event event = ModelUtils.getEvent();
+        EventDto eventDto = ModelUtils.getEventDto();
+        Principal principal = ModelUtils.getPrincipal();
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
+        when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
+        EventDto actual = eventService.getEvent(1L, principal);
+        assertEquals(false, actual.getIsSubscribed());
     }
 
     @Test
@@ -361,11 +379,32 @@ class EventServiceImplTest {
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest);
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, null);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
+    }
+
+    @Test
+    void getAllWithCurrentUser() {
+        List<Event> events = List.of(ModelUtils.getEvent());
+        EventDto expected = ModelUtils.getEventDto();
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getDescription(), actual.getDescription());
+        assertEquals(false, actual.getIsSubscribed());
     }
 
     @Test
@@ -378,5 +417,19 @@ class EventServiceImplTest {
         PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
             0, false, false, true, true);
         assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
+    }
+
+    @Test
+    void rateEvent() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getAttenderUser();
+        event.setAttenders(Set.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+        doNothing().when(userService).updateEventOrganizerRating(event.getOrganizer().getId(), 2.0);
+        List<Event> events = List.of(event, ModelUtils.getExpectedEvent(), ModelUtils.getEventWithGrades());
+        when(eventRepo.getAllByOrganizer(event.getOrganizer())).thenReturn(events);
+        eventService.rateEvent(event.getId(), user.getEmail(), 2);
+        verify(eventRepo).save(event);
     }
 }

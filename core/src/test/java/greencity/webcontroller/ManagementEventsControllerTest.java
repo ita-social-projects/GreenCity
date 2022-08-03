@@ -66,7 +66,7 @@ class ManagementEventsControllerTest {
             .id(1L)
             .name("Social").build());
         when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.getAll(pageable)).thenReturn(eventsDtoPageableDto);
+        when(eventService.getAll(pageable, null)).thenReturn(eventsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEventsLink)
             .param("page", "0")
@@ -75,7 +75,7 @@ class ManagementEventsControllerTest {
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(eventService).getAll(pageable);
+        verify(eventService).getAll(pageable, null);
     }
 
     @Test
@@ -113,7 +113,7 @@ class ManagementEventsControllerTest {
             .id(1L)
             .name("Social").build());
         when(tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en")).thenReturn(tagDtoList);
-        when(eventService.getAll(pageable)).thenReturn(eventsDtoPageableDto);
+        when(eventService.getAll(pageable, null)).thenReturn(eventsDtoPageableDto);
 
         this.mockMvc.perform(get(managementEventsLink)
             .param("page", "0")
@@ -124,6 +124,6 @@ class ManagementEventsControllerTest {
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(eventService).getAll(pageable);
+        verify(eventService).getAll(pageable, null);
     }
 }
