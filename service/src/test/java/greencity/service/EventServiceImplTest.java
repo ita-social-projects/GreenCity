@@ -5,6 +5,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.tag.TagVO;
@@ -431,5 +432,16 @@ class EventServiceImplTest {
         when(eventRepo.getAllByOrganizer(event.getOrganizer())).thenReturn(events);
         eventService.rateEvent(event.getId(), user.getEmail(), 2);
         verify(eventRepo).save(event);
+    }
+
+    @Test
+    void getAllEventAttenders() {
+        Event event = ModelUtils.getEvent();
+        Set<EventAttenderDto> eventAttenderDtos = Set.of(ModelUtils.getEventAttenderDto());
+        User user = ModelUtils.getAttenderUser();
+        event.setAttenders(Set.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(user, EventAttenderDto.class)).thenReturn(ModelUtils.getEventAttenderDto());
+        assertEquals(eventService.getAllEventAttenders(event.getId()), eventAttenderDtos);
     }
 }
