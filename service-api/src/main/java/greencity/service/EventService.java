@@ -86,7 +86,6 @@ public interface EventService {
      */
     void rateEvent(Long eventId, String email, int grade);
 
-
     /**
      * Get all event attenders.
      *

@@ -229,9 +229,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return event.getAttenders().stream().map(attender -> modelMapper.map(attender, EventAttenderDto.class))
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
     }
 
     private Double calculateUserEventOrganizerRating(User user) {

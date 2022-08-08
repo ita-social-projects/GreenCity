@@ -15,6 +15,6 @@ public class EventAttenderMapper extends AbstractConverter<User, EventAttenderDt
     @Override
     protected EventAttenderDto convert(User user) {
         return EventAttenderDto.builder().id(user.getId()).imagePath(user.getProfilePicturePath())
-                .name(user.getName()).build();
+            .name(user.getName()).build();
     }
 }

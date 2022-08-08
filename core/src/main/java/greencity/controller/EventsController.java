@@ -187,7 +187,6 @@ public class EventsController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-
     /**
      * Method for getting all event attenders.
      *
@@ -196,8 +195,8 @@ public class EventsController {
      */
     @ApiOperation(value = "Get all events")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/getAllSubscribers/{eventId}")
     public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
