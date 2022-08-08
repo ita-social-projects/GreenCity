@@ -440,8 +440,12 @@ class EventServiceImplTest {
         Set<EventAttenderDto> eventAttenderDtos = Set.of(ModelUtils.getEventAttenderDto());
         User user = ModelUtils.getAttenderUser();
         event.setAttenders(Set.of(user));
+
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(user, EventAttenderDto.class)).thenReturn(ModelUtils.getEventAttenderDto());
+
         assertEquals(eventService.getAllEventAttenders(event.getId()), eventAttenderDtos);
+
+        verify(modelMapper).map(user, EventAttenderDto.class);
     }
 }

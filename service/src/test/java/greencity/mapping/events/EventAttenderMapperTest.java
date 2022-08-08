@@ -20,6 +20,6 @@ class EventAttenderMapperTest {
         User user = ModelUtils.getUser();
         EventAttenderDto expected = ModelUtils.getEventAttenderDto();
 
-        assertEquals(expected.getName(), mapper.convert(user).getName());
+        assertEquals(expected, mapper.convert(user));
     }
 }
