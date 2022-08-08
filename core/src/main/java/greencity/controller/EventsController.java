@@ -193,10 +193,11 @@ public class EventsController {
      * @return a page of {@link EventAttenderDto} instance.
      * @author Danylo Hlynskyi.
      */
-    @ApiOperation(value = "Get all events")
+    @ApiOperation(value = "Get all event attenders")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/getAllSubscribers/{eventId}")
     public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
