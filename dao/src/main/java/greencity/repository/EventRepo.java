@@ -20,6 +20,14 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> findAllByOrderByIdDesc(Pageable page);
 
     /**
+     * Method for getting all events by user.
+     *
+     * @return list of {@link Event} instances.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS att WHERE att.id = :userId ORDER BY e.id DESC")
+    Page<Event> findAllByAttender(Pageable page, Long userId);
+
+    /**
      * Method returns {@link Event} by search query and page.
      *
      * @param paging {@link Pageable}.

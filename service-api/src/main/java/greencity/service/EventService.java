@@ -42,6 +42,13 @@ public interface EventService {
     PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
 
     /**
+     * Method for getting all Event instances that user attended.
+     *
+     * @return List of {@link EventDto} instance.
+     */
+    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email);
+
+    /**
      * Add an attender to the Event by id.
      *
      * @param eventId - event id.

@@ -134,6 +134,25 @@ public class EventsController {
     }
 
     /**
+     * Method for getting pages of users events.
+     *
+     * @return a page of {@link EventDto} instance.
+     * @author Danylo Hlysnkyi.
+     */
+    @ApiOperation(value = "Get all users events")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/myEvents")
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(@ApiIgnore Pageable pageable,
+        @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(pageable, principal.getName()));
+    }
+
+    /**
      * Method for adding an attender to the event.
      *
      * @author Max Bohonko.
