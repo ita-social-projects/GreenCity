@@ -320,6 +320,27 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getAllUserEvents() {
+        List<Event> events = List.of(ModelUtils.getEvent());
+        EventDto expected = ModelUtils.getEventDto();
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+
+        when(eventRepo.findAllByAttender(pageRequest, ModelUtils.TEST_USER_VO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(pageRequest, principal.getName());
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void addAttender() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getAttenderUser();
