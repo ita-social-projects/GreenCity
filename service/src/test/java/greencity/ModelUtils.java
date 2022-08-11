@@ -38,13 +38,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.CoordinatesDto;
-import greencity.dto.event.EventAuthorDto;
-import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.*;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -200,6 +194,10 @@ public class ModelUtils {
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
+
+    public static EventAttenderDto getEventAttenderDto() {
+        return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
+    }
 
     public static Tag getTag() {
         return new Tag(1L, TagType.ECO_NEWS, getTagTranslations(), Collections.emptyList(),

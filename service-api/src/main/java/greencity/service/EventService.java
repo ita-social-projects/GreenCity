@@ -2,12 +2,14 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.Set;
 
 public interface EventService {
     /**
@@ -90,4 +92,11 @@ public interface EventService {
      * @param grade   - grade of event
      */
     void rateEvent(Long eventId, String email, int grade);
+
+    /**
+     * Get all event attenders.
+     *
+     * @param eventId - id of event
+     */
+    Set<EventAttenderDto> getAllEventAttenders(Long eventId);
 }

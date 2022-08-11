@@ -6,6 +6,7 @@ import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.service.EventService;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
+import java.util.Set;
 
 @Validated
 @RestController
@@ -202,5 +204,22 @@ public class EventsController {
         @ApiIgnore Principal principal) {
         eventService.rateEvent(eventId, principal.getName(), grade);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting all event attenders.
+     *
+     * @return a page of {@link EventAttenderDto} instance.
+     * @author Danylo Hlynskyi.
+     */
+    @ApiOperation(value = "Get all event attenders")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/getAllSubscribers/{eventId}")
+    public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventAttenders(eventId));
     }
 }
