@@ -278,7 +278,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param language    code of {@link Language}.
      * @return {@link HabitAssign} instance.
      */
-    private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
+    public HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));

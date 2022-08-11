@@ -10,6 +10,7 @@ import javax.persistence.*;
 @EqualsAndHashCode
 @SuperBuilder
 @NoArgsConstructor
+@ToString
 public class Translation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

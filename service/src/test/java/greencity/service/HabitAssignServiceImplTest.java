@@ -13,6 +13,8 @@ import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -26,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.getHabitAssign;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -625,5 +628,80 @@ class HabitAssignServiceImplTest {
         habitAssignService.updateShoppingItem(1L, 1L);
         assertEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
 
+    }
+
+    @Test
+    void saveUserShoppingListItems() {
+        List<ShoppingListItem> shoppingList = new ArrayList<>();
+        try {
+            Method method = habitAssignService
+                .getClass().getDeclaredMethod("saveUserShoppingListItems", List.class, HabitAssign.class);
+            method.setAccessible(true);
+            method.invoke(habitAssignService, shoppingList, habitAssign);
+            verify(userShoppingListItemRepo, times(1)).saveAll(any());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void getAllCustomHabitAssignsByUserId() {
+        ZonedDateTime time = ZonedDateTime.now();
+        habitAssign.setCreateDate(time);
+        HabitAssignDto hd = getHabitAssignDto();
+        hd.setUserShoppingListItems(Collections.emptyList());
+        hd.getHabit().setShoppingListItems(Collections.emptyList());
+        hd.setCreateDateTime(time);
+        List<HabitAssignDto> expectedList = List.of(hd);
+        habitAssign.setUserShoppingListItems(Collections.singletonList(getUserShoppingListItem()));
+        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(Collections.singletonList(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(hd);
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(hd);
+        when(modelMapper.map(HabitTranslation.builder().id(1L).name("").description("").habitItem("")
+            .language(Language.builder().code("en").id(1L)
+                .build())
+            .build(), HabitDto.class)).thenReturn(habitDto);
+        System.out.println();
+        assertEquals(expectedList, habitAssignService.getAllCustomHabitAssignsByUserId(1L, language));
+    }
+
+    @Test
+    void changeStatuses() {
+        try {
+            Method method =
+                habitAssignService.getClass().getDeclaredMethod("changeStatuses", String.class, Long.class, List.class);
+            method.setAccessible(true);
+            when(userShoppingListItemRepo
+                .getShoppingListItemsByHabitAssignIdAndStatus(anyLong(), anyString()))
+                    .thenReturn(Collections.singletonList(1L));
+            List<ShoppingListItemDto> shoppingListItemDtoList = List.of(ShoppingListItemDto.builder()
+                .id(1L)
+                .status("TEST_STATUS")
+                .text("any_text").build());
+            method.invoke(habitAssignService, "DONE", 1L, shoppingListItemDtoList);
+            assertEquals("DONE", shoppingListItemDtoList.get(0).getStatus());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    void findHabitByUserIdAndHabitId() {
+        HabitDto hd = getHabitDto();
+        hd.setDefaultDuration(null);
+        hd.setShoppingListItems(Collections.emptyList());
+        ZonedDateTime time = ZonedDateTime.now();
+        habitAssign.setCreateDate(time);
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(ModelUtils.getHabitAssignDto());
+        when(modelMapper.map(HabitTranslation.builder().id(1L).name("").description("").habitItem("")
+            .language(Language.builder().code("en").id(1L)
+                .build())
+            .build(), HabitDto.class)).thenReturn(habitDto);
+        when(modelMapper.map(habitAssign.getHabit().getHabitTranslations().get(0), HabitDto.class))
+            .thenReturn(ModelUtils.getHabitDto());
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssign.getId()))
+            .thenReturn(List.of(ModelUtils.getUserShoppingListItem()));
+        assertEquals(hd, habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, "en"));
     }
 }

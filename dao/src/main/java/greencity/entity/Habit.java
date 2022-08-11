@@ -31,8 +31,7 @@ import lombok.ToString;
 @Table(name = "habits")
 @EqualsAndHashCode(
     exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
-@ToString(
-    exclude = {"habitAssigns", "habitTranslations", "tags", "shoppingListItems"})
+@ToString
 public class Habit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
