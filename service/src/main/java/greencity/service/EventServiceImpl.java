@@ -30,10 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -234,6 +231,14 @@ public class EventServiceImpl implements EventService {
 
         userService.updateEventOrganizerRating(event.getOrganizer().getId(),
             calculateUserEventOrganizerRating(event.getOrganizer()));
+    }
+
+    @Override
+    public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
+        Event event =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        return event.getAttenders().stream().map(attender -> modelMapper.map(attender, EventAttenderDto.class))
+            .collect(Collectors.toSet());
     }
 
     private Double calculateUserEventOrganizerRating(User user) {
