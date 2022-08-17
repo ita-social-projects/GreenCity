@@ -140,7 +140,6 @@
                             <div class="form-group">
                                 <label for="tagsEdit">[[#{greenCity.pages.table.tags}]]</label>
                                 <div id="tagsEdit" style="width: 100%; display: inline-block;">
-
                                     <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
                                         <div style="margin-right: 5%" class="custom-checkbox">
                                             <span class="modal-checkbox">
@@ -153,23 +152,13 @@
                                             </span>
                                         </div>
                                     </th:block>
-
-
                                 </div>
-
                             </div>
                             <div class="form-group">
                                 <label for="source">[[#{greenCity.pages.table.source}]]</label>
                                 <textarea type="text" class="form-control" id="source" name="source">[[${econew.shortInfo}]]</textarea>
                                 <span th:id="errorModalUpdatesource" class="errorSpan"></span>
                             </div>
-                            <!--                            <div class="form-group">-->
-                            <!--                                <label for="imagePath">[[#{greenCity.pages.table.image}]]</label>-->
-                            <!--                                <input type="file" class="form-control" id="imagePath" name="file">-->
-                            <!--                                <span th:id="errorModalUpdatefile" class="errorSpan"></span>-->
-                            <!--                            </div>           hidden   -->
-
-
                             <div class="form-group" style="justify-content: center">
                                 <img id="upload_image">
                                 <label for="fileUpdate">[[#{greenCity.pages.table.image}]]</label>
