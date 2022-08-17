@@ -13,12 +13,10 @@ import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.AddEcoNewsDtoRequest;
-import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -28,24 +26,15 @@ import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.HabitFactPostDto;
-import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
-import greencity.dto.habitfact.HabitFactTranslationVO;
-import greencity.dto.habitfact.HabitFactUpdateDto;
-import greencity.dto.habitfact.HabitFactVO;
+import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.language.LanguageDTO;
-import greencity.dto.language.LanguageTranslationDTO;
-import greencity.dto.language.LanguageVO;
+import greencity.dto.language.*;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tag.TagPostDto;
-import greencity.dto.tag.TagTranslationVO;
-import greencity.dto.tag.TagVO;
-import greencity.dto.tag.TagViewDto;
+import greencity.dto.tag.*;
 import greencity.dto.user.*;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
@@ -132,6 +121,11 @@ public class ModelUtils {
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text", null, Collections.singletonList(getTag()), null);
+    }
+
+    public static EcoNewsDto getEcoNewsDto() {
+        return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {

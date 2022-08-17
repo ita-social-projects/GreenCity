@@ -1,5 +1,6 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
@@ -9,10 +10,8 @@ import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitManagementDto;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
-import greencity.enums.HabitAssignStatus;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -120,8 +119,9 @@ public class ManagementEcoNewsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ApiLocale
     @GetMapping("/find/{id}")
-    public ResponseEntity<EcoNewsDto> getEcoNewsById(@RequestParam("id") Long id,
+    public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()));
@@ -133,18 +133,19 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @ApiOperation(value = "Find econews by id.")
+    @ApiOperation(value = "Find econew's page by id.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
     })
+    @ApiLocale
     @GetMapping("/{id}")
     public String getEcoNewsPage(@PathVariable("id") Long id,
-        @ApiIgnore Pageable pageable,
         @ApiIgnore Locale locale, Model model) {
-        model.addAttribute("econew", ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()));
-        ZonedDateTime time = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()).getCreationDate();
+        EcoNewsDto econew = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
+        model.addAttribute("econew", econew);
+        ZonedDateTime time = econew.getCreationDate();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd , yyyy");
         model.addAttribute("time", time.format(format));
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
