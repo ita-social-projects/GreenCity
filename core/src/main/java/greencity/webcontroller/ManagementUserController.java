@@ -3,12 +3,11 @@ package greencity.webcontroller;
 import greencity.annotations.CurrentUser;
 import greencity.client.RestClient;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.enums.Role;
+import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import lombok.AllArgsConstructor;
@@ -39,6 +38,7 @@ public class ManagementUserController {
     private final RestClient restClient;
     private final UserService userService;
     private final HabitAssignService habitAssignService;
+    private final FilterService filterService;
 
     /**
      * Method that returns management page with all {@link UserVO}.
@@ -50,11 +50,15 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @GetMapping
-    public String getAllUsers(@RequestParam(required = false, name = "query") String query, Model model,
-        UserManagementViewDto userViewDto,
-        @ApiIgnore Pageable pageable) {
-        PageableAdvancedDto<UserManagementVO> found = restClient.search(pageable, userViewDto);
+    public String getAllUsers(
+        @RequestParam(required = false, name = "status") String status,
+        @RequestParam(required = false, name = "role") String role,
+        @RequestParam(required = false, name = "query") String query,
+        @CurrentUser UserVO currentUser,
+        Model model, @ApiIgnore Pageable pageable) {
+        PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(query, role, status, pageable);
         model.addAttribute("paging", pageable);
+        model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
         model.addAttribute("users", found);
 
         return "core/management_user";
@@ -235,5 +239,41 @@ public class ManagementUserController {
     public void updateShoppingItem(@PathVariable("itemId") Long itemId,
         @PathVariable("habitId") Long habitId) {
         habitAssignService.updateShoppingItem(habitId, itemId);
+    }
+
+    /**
+     * Method for creating new filter.
+     *
+     * @param currentUser current user.
+     * @param dto         filter's dto.
+     */
+    @PostMapping(value = "/filter-save")
+    public String saveUserFilter(@CurrentUser UserVO currentUser, UserFilterDtoRequest dto) {
+        filterService.save(currentUser.getId(), dto);
+        return "redirect:/management/users";
+    }
+
+    /**
+     * Method for selecting current filter.
+     *
+     * @param id filter's id.
+     * @return return page with filtered users.
+     */
+    @GetMapping(value = "/select-filter/{id}")
+    public String selectFilter(@PathVariable("id") Long id) {
+        UserFilterDtoResponse dto = filterService.getFilterById(id);
+        return "redirect:/management/users?role=" + dto.getUserRole() + "&query=" + dto.getSearchCriteria() + "&status="
+            + dto.getUserStatus() + "&size=20&sort=id,DESC";
+    }
+
+    /**
+     * Method for deleting filters.
+     * 
+     * @param id user filter {@link Long} filter's id.
+     */
+    @GetMapping(value = "{id}/delete-filter")
+    public String deleteUserFilter(@PathVariable("id") Long id) {
+        filterService.deleteFilterById(id);
+        return "redirect:/management/users?size=20&sort=id,DESC";
     }
 }

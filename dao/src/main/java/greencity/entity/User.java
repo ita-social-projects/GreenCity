@@ -35,10 +35,11 @@ import lombok.*;
 @Table(name = "users")
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems"})
+        "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems",
+        "eventOrganizerRating"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -126,6 +127,12 @@ public class User {
     @Column(name = "last_activity_time")
     private LocalDateTime lastActivityTime;
 
+    @Column(name = "event_organizer_rating")
+    private Double eventOrganizerRating;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAction> userActions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Filter> filters = new ArrayList<>();
 }

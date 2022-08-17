@@ -47,30 +47,30 @@ stages:
         KeyVaultName: '$(azKeyVault)'
         SecretsFilter: 'ftpHost, ftpUser, ftpPass'
         
-    - task: FtpUpload@2
-      displayName: Upload json to app service via FTP
-      inputs:
-        credentialsOption: 'inputs'
-        serverUrl: '$(ftpHost)'
-        username: '$(ftpUser)'
-        password: '$(ftpPass)'
-        filePatterns: '$(jsonFile)'
-        remoteDirectory: '$(jsonLocation)'
+#     - task: FtpUpload@2
+#       displayName: Upload json to app service via FTP
+#       inputs:
+#         credentialsOption: 'inputs'
+#         serverUrl: '$(ftpHost)'
+#         username: '$(ftpUser)'
+#         password: '$(ftpPass)'
+#         filePatterns: '$(jsonFile)'
+#         remoteDirectory: '$(jsonLocation)'
 
-    - task: AzureAppServiceSettings@1
-      displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-      inputs:
-        azureSubscription: '$(azureSub)'
-        appName: '$(coreServiceName)'
-        resourceGroupName: '$(resourceGroup)'
-        appSettings: |
-          [
-            {
-              "name": "GOOGLE_APPLICATION_CREDENTIALS",
-              "value": "/home$(jsonLocation)/$(jsonFile)", 
-              "slotSetting": false
-            }
-          ]
+#     - task: AzureAppServiceSettings@1
+#       displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
+#       inputs:
+#         azureSubscription: '$(azureSub)'
+#         appName: '$(coreServiceName)'
+#         resourceGroupName: '$(resourceGroup)'
+#         appSettings: |
+#           [
+#             {
+#               "name": "GOOGLE_APPLICATION_CREDENTIALS",
+#               "value": "/home$(jsonLocation)/$(jsonFile)", 
+#               "slotSetting": false
+#             }
+#           ]
      
     - task: Maven@3
       displayName: Maven package
@@ -91,13 +91,20 @@ stages:
         SourceFolder: '$(system.defaultworkingdirectory)'
         Contents: '**/target/*.jar'
         TargetFolder: '$(build.artifactstagingdirectory)'
+    
+    - task: CopyFiles@2
+      displayName: Copy Files
+      inputs:
+        SourceFolder: '$(system.defaultworkingdirectory)/greencity-chart'
+        Contents: '**'
+        TargetFolder: '$(build.artifactstagingdirectory)/greencity-chart'
 
     - task: PublishBuildArtifacts@1
       displayName: Publish Artifact
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
         artifactName: '$(artifactName)'
-    
+        
     - task: Docker@2
       displayName: Build image
       inputs:
@@ -128,12 +135,29 @@ stages:
                 downloadType: 'single'
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
-                
-            - task: AzureRmWebAppDeployment@4
+
+#             - task: AzureRmWebAppDeployment@4
+#               inputs:
+#                 azureSubscription: '$(azureSub)'
+#                 appType: 'webAppLinux'
+#                 WebAppName: '$(coreServiceName)'
+#                 deployToSlotOrASE: true
+#                 ResourceGroupName: '$(resourceGroup)'
+#                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+
+            - task: HelmInstaller@0
               inputs:
-                azureSubscription: '$(azureSub)'
-                appType: 'webAppLinux'
-                WebAppName: '$(coreServiceName)'
-                deployToSlotOrASE: true
-                ResourceGroupName: '$(resourceGroup)'
-                packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
+                helmVersion: '3.9.0'
+                installKubectl: true
+                
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'k8s-stage'
+                namespace: 'default'
+                command: 'upgrade'
+                chartType: 'FilePath'
+                chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
+                releaseName: 'greencity'
+                overrideValues: 'deployment.image=skyere/greencity:$(Build.BuildId)'
+                arguments: '--debug'

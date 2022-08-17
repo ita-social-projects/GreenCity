@@ -21,11 +21,14 @@ import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.openhours.OpeningHoursVO;
 import greencity.dto.photo.PhotoAddDto;
+import greencity.dto.place.AddPlaceDto;
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.BulkUpdatePlaceStatusDto;
+import greencity.dto.place.FilterPlaceCategory;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceInfoDto;
+import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
@@ -36,8 +39,10 @@ import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
+import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
 import greencity.repository.PlaceRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -163,13 +168,17 @@ class PlaceServiceImplTest {
     private CategoryRepo categoryRepo;
     private ZoneId zoneId = ZoneId.of("Europe/Kiev");
     private PlaceService placeService;
+    @Mock
+    private GoogleApiService googleApiService;
+    @Mock
+    UserRepo userRepo;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
         placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
             locationService, specificationService, restClient, openingHoursService, discountService,
-            notificationService, zoneId, proposePlaceMapper, categoryRepo);
+            notificationService, zoneId, proposePlaceMapper, categoryRepo, googleApiService, userRepo);
     }
 
     @Test
@@ -566,5 +575,61 @@ class PlaceServiceImplTest {
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
         assertEquals(result, placeService.searchBy(pageable, searchQuery));
         verify(placeRepo).searchBy(pageable, searchQuery);
+    }
+
+    @Test
+    void getAllPlaceCategories() {
+        List<Category> categoryList = List.of(ModelUtils.getCategory());
+        when(categoryRepo.findAll()).thenReturn(categoryList);
+        when(modelMapper.map(categoryList, new TypeToken<List<FilterPlaceCategory>>() {
+        }.getType())).thenReturn(List.of(ModelUtils.getFilterPlaceCategory()));
+
+        assertEquals(List.of(ModelUtils.getFilterPlaceCategory()), placeService.getAllPlaceCategories());
+
+        verify(categoryRepo).findAll();
+        verify(modelMapper).map(categoryRepo.findAll(), new TypeToken<List<FilterPlaceCategory>>() {
+        }.getType());
+    }
+
+    @Test
+    void addPlaceFromUi() {
+        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
+        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
+        Place place = ModelUtils.getPlace();
+
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
+        when(userRepo.findByEmail("test@mail.com")).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(googleApiService.getResultFromGeoCode(dto.getLocationName())).thenReturn(ModelUtils.getGeocodingResult());
+        when(modelMapper.map(placeResponse, Place.class)).thenReturn(place);
+        when(modelMapper.map(placeResponse.getLocationAddressAndGeoDto(), Location.class))
+            .thenReturn(ModelUtils.getLocation());
+        when(placeRepo.save(place)).thenReturn(place);
+        when(modelMapper.map(place, PlaceResponse.class)).thenReturn(placeResponse);
+
+        assertEquals(placeResponse, placeService.addPlaceFromUi(dto, "test@mail.com"));
+
+        verify(modelMapper).map(dto, PlaceResponse.class);
+        verify(userRepo).findByEmail("test@mail.com");
+        verify(googleApiService).getResultFromGeoCode(dto.getLocationName());
+        verify(modelMapper).map(placeResponse, Place.class);
+        verify(modelMapper).map(placeResponse.getLocationAddressAndGeoDto(), Location.class);
+        verify(placeRepo).save(place);
+        verify(modelMapper).map(place, PlaceResponse.class);
+    }
+
+    @Test
+    void addPlaceFromUiThrowsException() {
+        AddPlaceDto dto = ModelUtils.getAddPlaceDto();
+        PlaceResponse placeResponse = ModelUtils.getPlaceResponse();
+        User user = ModelUtils.getUser();
+        user.setUserStatus(UserStatus.BLOCKED);
+
+        when(modelMapper.map(dto, PlaceResponse.class)).thenReturn(placeResponse);
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+
+        assertThrows(UserBlockedException.class, () -> placeService.addPlaceFromUi(dto, user.getEmail()));
+
+        verify(modelMapper).map(dto, PlaceResponse.class);
+        verify(userRepo).findByEmail(user.getEmail());
     }
 }

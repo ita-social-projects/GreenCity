@@ -1,13 +1,22 @@
 # This is a basic workflow to help you get started with Actions
 
 name: CI/CD GreenCity
-# Controls when the action will run. 
+# Controls when the action will run.
+
+concurrency: Testing
+
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
+
+env:
+  repository: greencity
+  userRepoName: core
+  onbootJarName: app.jar
+  dockerRepoName: skyere/greencity
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -19,10 +28,17 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
+
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+
       - name: Run a multi-line script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -30,6 +46,52 @@ jobs:
         run: |
           git fetch --unshallow
           mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
+
+      - name: Test Reporter
+        uses: dorny/test-reporter@v1.5.0
+        if: success() || failure()
+        with:
+          name: Tests Report
+          path: ${{ env.userRepoName }}/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Rename user jar to app
+        run: mv $userRepoName/target/*.jar $userRepoName/target/$onbootJarName
+
+      - name: Set outputs
+        run: echo "GITHUB_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Docker Login
+        uses: docker/login-action@v2.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3.0.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ env.dockerRepoName }}:test-${{ env.GITHUB_SHA_SHORT }}
+
+      - name: Kubernetes Set Context
+        uses: Azure/k8s-set-context@v3.0
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      
+      - name: Set up Postgres
+        run: kubectl scale deploy postgres --replicas=1 -n test
+      
+      - name: Kubernetes tests
+        run: |
+          cd chart-test
+          go test -v ./...
+      
+      - name: Post Set up Postgres
+        if: success() || failure()
+        run: kubectl scale deploy postgres --replicas=0 -n test
+
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Deploy 🚀
         if: ${{ github.event_name == 'push' }}

@@ -2,6 +2,9 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.filter.UserFilterDto;
+import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -18,16 +21,18 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -191,5 +196,37 @@ public class UserServiceImpl implements UserService {
         return userRepo.getSixFriendsWithTheHighestRating(userId).stream()
             .map(user -> modelMapper.map(user, UserVO.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateEventOrganizerRating(Long eventOrganizerId, Double rate) {
+        userRepo.updateUserEventOrganizerRating(eventOrganizerId, rate);
+    }
+
+    @Override
+    public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
+        Pageable pageable) {
+        if (status != null) {
+            status = status.equals("all") ? null : status;
+        }
+        if (role != null) {
+            role = role.equals("all") ? null : role;
+        }
+        UserFilterDto filterUserDto = new UserFilterDto(criteria, role, status);
+        Page<User> users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
+        List<UserManagementVO> listOfUsers = users
+            .getContent()
+            .stream()
+            .map(user -> modelMapper.map(user, UserManagementVO.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            listOfUsers,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 }

@@ -32,7 +32,7 @@ table th, table td {
 /* Add styles to the form container */
 .form-container {
     max-width: 280px;
-    height: 428px;
+    height: 600px;
     border-top: none;
     border-left: 1px solid #9CA7B0;
     border-right: 1px solid #9CA7B0;
@@ -79,12 +79,16 @@ table th, table td {
     opacity: 1;
 }
 
+
+
 .filter-btn{
-    height: 35px;
-    width: 120px;
+    height: 40px;
+    width: 240px;
     border: 1px solid #13AA57;
     border-radius: 4px;
-    color: #13AA57;
+    background-color: #13AA57;
+    color: white;
+    margin-bottom: 30px;
 }
 .apply-btn{
     height: 40px;
