@@ -93,7 +93,7 @@ public interface EcoNewsService {
      * @param id {@link EcoNewsDto} instance id.
      * @return {@link EcoNewsDto} instance.
      */
-    EcoNewsDto findDtoById(Long id);
+    EcoNewsDto getById(Long id);
 
     /**
      * Method for getting the{@link EcoNewsDto} instance by its id and language of

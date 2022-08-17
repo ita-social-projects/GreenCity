@@ -313,7 +313,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(ecoNewsDto);
 
-        EcoNewsDto actual = ecoNewsService.findDtoById(1L);
+        EcoNewsDto actual = ecoNewsService.getById(1L);
 
         assertEquals(ecoNewsDto, actual);
     }
