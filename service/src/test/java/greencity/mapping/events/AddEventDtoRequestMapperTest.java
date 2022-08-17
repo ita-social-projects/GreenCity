@@ -2,13 +2,10 @@ package greencity.mapping.events;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.entity.Event;
-import greencity.mapping.events.AddEventDtoRequestMapper;
+import greencity.entity.event.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

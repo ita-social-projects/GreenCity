@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -64,7 +65,8 @@ class ManagementPlacesControllerTest {
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
         when(placeService.findAll(pageable)).thenReturn(adminPlaceDtoPageableDto);
-        when(categoryService.findAllCategoryDto()).thenReturn(Collections.singletonList(new CategoryDto("test", null)));
+        when(categoryService.findAllCategoryDto())
+            .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
         when(specificationService.findAllSpecificationDto())
             .thenReturn(Collections.singletonList(new SpecificationNameDto()));
 
@@ -113,19 +115,10 @@ class ManagementPlacesControllerTest {
     @Test
     void updatePlaceTest() throws Exception {
         PlaceUpdateDto placeUpdateDto = getPlaceUpdateDto();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(placeUpdateDto);
         mockMvc.perform(put("/management/places/")
-            .content("{\n" +
-                "  \"id\": \"1\",\n" +
-                "  \"name\":\"test\",\n" +
-                "  \"category\": {\n" +
-                "   \"name\": \"Food\"\n" +
-                "  },\n" +
-                "  \"discountValues\": null,\n" +
-                "  \"location\": {\n" +
-                "    \"address\": \"address\",\n" +
-                "    \"lat\": 111.1,\n" +
-                "    \"lng\": 111.1\n" +
-                "}}")
+            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(placeService).update(placeUpdateDto);
@@ -156,7 +149,7 @@ class ManagementPlacesControllerTest {
         PlaceUpdateDto placeUpdateDto = new PlaceUpdateDto();
         placeUpdateDto.setId(1L);
         placeUpdateDto.setName("test");
-        placeUpdateDto.setCategory(new CategoryDto("Food", null));
+        placeUpdateDto.setCategory(new CategoryDto("Food", "test", null));
         placeUpdateDto.setLocation(new LocationAddressAndGeoForUpdateDto("address", 111.1, 111.1));
 
         return placeUpdateDto;

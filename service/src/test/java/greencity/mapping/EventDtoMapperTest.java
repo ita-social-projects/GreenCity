@@ -2,7 +2,7 @@ package greencity.mapping;
 
 import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
-import greencity.entity.Event;
+import greencity.entity.event.Event;
 import greencity.mapping.events.EventDtoMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -2,14 +2,13 @@ package greencity.repository.options;
 
 import greencity.constant.RepoConstants;
 import greencity.dto.filter.FilterUserDto;
+import greencity.dto.filter.UserFilterDto;
 import greencity.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -20,14 +19,14 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Rostyslav Khasanov
  */
 public class UserFilter implements Specification<User> {
-    private final transient FilterUserDto filterUserDto;
+    private final transient UserFilterDto filterUserDto;
 
     /**
      * The constructor takes {@link FilterUserDto} object.
      *
      * @param filterUserDto object contains fields to filter by.
      */
-    public UserFilter(FilterUserDto filterUserDto) {
+    public UserFilter(UserFilterDto filterUserDto) {
         this.filterUserDto = filterUserDto;
     }
 
@@ -39,9 +38,17 @@ public class UserFilter implements Specification<User> {
     public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchReg()));
+        if (filterUserDto != null) {
+            predicates.add(hasFieldsLike(root, criteriaBuilder, filterUserDto.getSearchCriteria()));
+        }
+        if (filterUserDto != null && filterUserDto.getStatus() != null) {
+            predicates.add(hasStatusLike(root, criteriaBuilder, filterUserDto.getStatus()));
+        }
+        if (filterUserDto != null && filterUserDto.getRole() != null) {
+            predicates.add(hasRoleLike(root, criteriaBuilder, filterUserDto.getRole()));
+        }
 
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        return criteriaBuilder.and(predicates.toArray(new Predicate[] {}));
     }
 
     /**
@@ -58,6 +65,34 @@ public class UserFilter implements Specification<User> {
             cb.like(r.get(RepoConstants.NAME), reg),
             cb.like(r.get(RepoConstants.EMAIL), reg),
             cb.like(r.get(RepoConstants.REGISTRATION_DATE).as(String.class), reg));
+    }
+
+    /**
+     * return a predicate where {@link User} has status defined in the incoming
+     * object.
+     * 
+     * @param r      must not be {@literal null}.
+     * @param cb     must not be {@literal null}.
+     * @param status status which defiend in object.
+     * @return a {@link Predicate}, may be {@literal null}.
+     */
+    private Predicate hasStatusLike(Root<User> r, CriteriaBuilder cb, String status) {
+        status = replaceCriteria(status);
+        return cb.or(cb.like(r.get(RepoConstants.STATUS).as(String.class), status));
+    }
+
+    /**
+     * return a predicate where {@link User} has status defined in the incoming
+     * object.
+     * 
+     * @param r    must not be {@literal null}.
+     * @param cb   must not be {@literal null}.
+     * @param role role which defiend in object.
+     * @return a {@link Predicate}, may be {@literal null}.
+     */
+    private Predicate hasRoleLike(Root<User> r, CriteriaBuilder cb, String role) {
+        role = replaceCriteria(role);
+        return cb.like(r.get(RepoConstants.ROLE).as(String.class), role);
     }
 
     /**

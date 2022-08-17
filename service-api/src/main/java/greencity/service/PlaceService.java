@@ -204,4 +204,14 @@ public interface PlaceService {
      * @author Olena Petryshak
      */
     PageableDto<AdminPlaceDto> searchBy(Pageable pageable, String searchQuery);
+
+    /**
+     * Method to get all Place Filter Categories.
+     */
+    List<FilterPlaceCategory> getAllPlaceCategories();
+
+    /**
+     * Method for create new place From UI.
+     */
+    PlaceResponse addPlaceFromUi(AddPlaceDto dto, String email);
 }

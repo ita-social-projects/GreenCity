@@ -1,21 +1,31 @@
 package greencity.repository;
 
-import greencity.entity.EcoNews;
-import greencity.entity.Event;
+import greencity.entity.User;
+import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
-     * Method for getting three last eco news.
+     * Method for getting all events.
      *
-     * @return list of {@link EcoNews} instances.
+     * @return list of {@link Event} instances.
      */
-    @Query(value = "SELECT * FROM events ORDER BY title", nativeQuery = true)
-    Page<Event> getAll(Pageable page);
+    Page<Event> findAllByOrderByIdDesc(Pageable page);
+
+    /**
+     * Method for getting all events by user.
+     *
+     * @return list of {@link Event} instances.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS att WHERE att.id = :userId ORDER BY e.id DESC")
+    Page<Event> findAllByAttender(Pageable page, Long userId);
 
     /**
      * Method returns {@link Event} by search query and page.
@@ -36,4 +46,29 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
             + "    lower(u.name) like lower(concat('%', :query, '%')) or "
             + "    lower(tt.name) like lower(concat('%', :query, '%'))")
     Page<Event> searchEventsBy(Pageable paging, String query);
+
+    /**
+     * Remove event datesLocations.
+     *
+     * @param eventId {@link Long}.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM events_dates_locations WHERE event_id = :eventId", nativeQuery = true)
+    void deleteEventDateLocationsByEventId(Long eventId);
+
+    /**
+     * Remove event additional images.
+     *
+     * @param eventId {@link Long}.
+     */
+    @Modifying
+    @Query(value = "DELETE FROM events_images WHERE event_id = :eventId", nativeQuery = true)
+    void deleteEventAdditionalImagesByEventId(Long eventId);
+
+    /**
+     * Get all events by event organizer.
+     *
+     * @param organizer {@link User}.
+     */
+    List<Event> getAllByOrganizer(User organizer);
 }

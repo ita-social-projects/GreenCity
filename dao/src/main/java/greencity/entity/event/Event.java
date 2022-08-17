@@ -1,5 +1,7 @@
-package greencity.entity;
+package greencity.entity.event;
 
+import greencity.entity.Tag;
+import greencity.entity.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -57,4 +59,7 @@ public class Event {
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<EventGrade> eventGrades = new ArrayList<>();
 }
