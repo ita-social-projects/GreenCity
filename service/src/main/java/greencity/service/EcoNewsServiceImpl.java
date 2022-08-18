@@ -295,10 +295,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Kovaliv Taras.
      */
     @Override
-    public EcoNewsDto findDtoById(Long id) {
+    public EcoNewsDto getById(Long id) {
         EcoNews ecoNews = ecoNewsRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
-
         return modelMapper.map(ecoNews, EcoNewsDto.class);
     }
 
