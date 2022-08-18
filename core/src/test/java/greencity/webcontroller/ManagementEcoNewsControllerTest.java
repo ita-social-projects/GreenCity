@@ -14,6 +14,8 @@ import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.security.Principal;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,11 +31,8 @@ import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -41,14 +40,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserVO;
+import static greencity.ModelUtils.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -133,10 +128,23 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getEcoNewsById() throws Exception {
-        this.mockMvc.perform(get(managementEcoNewsLink + "/find?id=1"))
+        mockMvc.perform(get(managementEcoNewsLink + "/find/{id}", 1))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findDtoById(1L);
+        verify(ecoNewsService).findDtoByIdAndLanguage(1L, "en");
+    }
+
+    @Test
+    void getEcoNewsPage() throws Exception {
+        ZonedDateTime time = getEcoNewsDto().getCreationDate();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd , yyyy");
+        when(ecoNewsService.findDtoByIdAndLanguage(1L, "en")).thenReturn(getEcoNewsDto());
+        this.mockMvc.perform(get(managementEcoNewsLink + "/1"))
+            .andExpect(view().name("core/management_eco_new"))
+            .andExpect(model().attribute("econew", getEcoNewsDto()))
+            .andExpect(model().attribute("time", time.format(format)))
+            .andExpect(model().attribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en")))
+            .andExpect(status().isOk());
     }
 
     @Test

@@ -142,14 +142,17 @@
                                            <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
                                        </span>
                                     </td>
-
-                                    <td class="text" th:text="${econew.id}"></td>
+                                    <td ><a class="id-link" th:text="${econew.id}"
+                                            th:href="@{/management/eco-news/{id} (id=${econew.id})}"/></td>
                                     <td class="text" th:text="${econew.author.getName()}"></td>
                                     <td class="text" th:text="${econew.title}"></td>
                                     <td class="text" th:text="${econew.content}"></td>
                                     <td style="width: 95px">
-                                        <div>
+                                        <div th:if="${econew.imagePath ne null}">
                                             <img th:src="${econew.imagePath}" style="height:inherit; max-width: 51px">
+                                        </div>
+                                        <div th:if="${econew.imagePath eq null}">
+                                            <img src="/img/eco-news-default-large.png" style="height:inherit; max-width: 51px">
                                         </div>
                                     </td>
                                     <td style = "width: 173px">
@@ -258,7 +261,6 @@
                                                        th:text="${allTags.getName()}" for="checkboxTag1"></label>
                                             </span>
                                             </div>
-                                            <span th:id="errorModalAddTags" class="errorSpan"></span>
                                         </th:block>
                                     </div>
                                     <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
