@@ -28,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import static greencity.ModelUtils.*;
-import static greencity.ModelUtils.getHabitAssign;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -632,16 +631,11 @@ class HabitAssignServiceImplTest {
 
     @Test
     void saveUserShoppingListItems() {
-        List<ShoppingListItem> shoppingList = new ArrayList<>();
-        try {
-            Method method = habitAssignService
-                .getClass().getDeclaredMethod("saveUserShoppingListItems", List.class, HabitAssign.class);
-            method.setAccessible(true);
-            method.invoke(habitAssignService, shoppingList, habitAssign);
-            verify(userShoppingListItemRepo, times(1)).saveAll(any());
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+
+        assignCustomHabitForUser();
+        verify(userShoppingListItemRepo, times(1)).saveAll(any());
+
+
     }
 
     @Test
@@ -661,30 +655,33 @@ class HabitAssignServiceImplTest {
             .language(Language.builder().code("en").id(1L)
                 .build())
             .build(), HabitDto.class)).thenReturn(habitDto);
-        System.out.println();
         assertEquals(expectedList, habitAssignService.getAllCustomHabitAssignsByUserId(1L, language));
     }
 
     @Test
     void changeStatuses() {
-        try {
-            Method method =
-                habitAssignService.getClass().getDeclaredMethod("changeStatuses", String.class, Long.class, List.class);
-            method.setAccessible(true);
-            when(userShoppingListItemRepo
+        findHabitByUserIdAndHabitId();
+//        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+//        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(ModelUtils.getHabitAssignDto());
+//        when(modelMapper.map(HabitTranslation.builder().id(1L).name("").description("").habitItem("")
+//                .language(Language.builder().code("en").id(1L)
+//                        .build())
+//                .build(), HabitDto.class)).thenReturn(habitDto);
+//        when(modelMapper.map(habitAssign.getHabit().getHabitTranslations().get(0), HabitDto.class))
+//                .thenReturn(ModelUtils.getHabitDto());
+//        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssign.getId()))
+//                .thenReturn(List.of(ModelUtils.getUserShoppingListItem()));
+        when( shoppingListItemTranslationRepo
+                .findShoppingListByHabitIdAndByLanguageCode("en", 1L))
+                .thenReturn(getShoppingListItemTranslationList());
+        when(modelMapper.map(getShoppingListItemTranslations1(), ShoppingListItemDto.class))
+                .thenReturn(getShoppingListItemDto());
+        when(userShoppingListItemRepo
                 .getShoppingListItemsByHabitAssignIdAndStatus(anyLong(), anyString()))
                     .thenReturn(Collections.singletonList(1L));
-            List<ShoppingListItemDto> shoppingListItemDtoList = List.of(ShoppingListItemDto.builder()
-                .id(1L)
-                .status("TEST_STATUS")
-                .text("any_text").build());
-            method.invoke(habitAssignService, "DONE", 1L, shoppingListItemDtoList);
-            assertEquals("DONE", shoppingListItemDtoList.get(0).getStatus());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        HabitDto expectedHabit =habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, "en");
+        assertEquals(expectedHabit.getShoppingListItems().get(0).getStatus(),"DONE");
     }
-
     @Test
     void findHabitByUserIdAndHabitId() {
         HabitDto hd = getHabitDto();

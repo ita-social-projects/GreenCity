@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @Builder
 @EqualsAndHashCode
+@ToString
 public class ShoppingListItemDto {
     @NotNull
     @Min(value = 1)

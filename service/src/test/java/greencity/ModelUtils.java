@@ -88,6 +88,7 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -2105,5 +2106,12 @@ public class ModelUtils {
             .type("USERS")
             .values("Test;ADMIN;ACTIVATED")
             .build();
+    }
+    public static ShoppingListItemDto getShoppingListItemDto(){
+        return ShoppingListItemDto.builder()
+                .id(1L)
+                .text("")
+                .status("testStatus")
+                .build();
     }
 }
