@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class EventCommentServiceImplTest {
+class EventCommentServiceImplTest {
     @Mock
     private EventCommentRepo eventCommentRepo;
     @Mock

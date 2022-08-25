@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ContextConfiguration
 @Import(SecurityConfig.class)
-public class EventCommentControllerTest {
+class EventCommentControllerTest {
     private static final String eventCommentControllerLink = "/events/comments";
     private MockMvc mockMvc;
     @InjectMocks
