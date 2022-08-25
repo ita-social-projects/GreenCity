@@ -1,12 +1,15 @@
 package greencity.webcontroller;
 
+import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
+import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
@@ -28,7 +31,10 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -77,7 +83,7 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which deteles {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
+     * Method which detele {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
      * by given id.
      *
      * @param id of Eco New
@@ -102,14 +108,48 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method for getting econews by id.
+     * Method finds {@link EcoNewsVO} with all translations by given id.
      *
-     * @param id of Eco New
-     * @return {@link EcoNewsDto} instance.
+     * @param id of {@link EcoNewsVO}.
+     * @return {@link EcoNewsDto}.
      */
-    @GetMapping("/find")
-    public ResponseEntity<EcoNewsDto> getEcoNewsById(@RequestParam("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findDtoById(id));
+    @ApiOperation(value = "Find econews by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @ApiLocale
+    @GetMapping("/find/{id}")
+    public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()));
+    }
+
+    /**
+     * Returns management page with single {@link EcoNewsVO}.
+     *
+     * @param id of {@link EcoNewsVO}.
+     * @return {@link EcoNewsDto}.
+     */
+    @ApiOperation(value = "Find econew's page by id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsDto.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
+    @ApiLocale
+    @GetMapping("/{id}")
+    public String getEcoNewsPage(@PathVariable("id") Long id,
+        @ApiIgnore Locale locale, Model model) {
+        EcoNewsDto econew = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
+        model.addAttribute("econew", econew);
+        ZonedDateTime time = econew.getCreationDate();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("MMM dd , yyyy");
+        model.addAttribute("time", time.format(format));
+        model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
+        return "core/management_eco_new";
     }
 
     /**
