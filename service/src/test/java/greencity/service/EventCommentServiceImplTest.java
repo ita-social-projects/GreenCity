@@ -66,9 +66,9 @@ public class EventCommentServiceImplTest {
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
-                .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+            .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
 
-       eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
+        eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 

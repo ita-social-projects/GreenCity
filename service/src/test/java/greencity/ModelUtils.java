@@ -2112,44 +2112,44 @@ public class ModelUtils {
 
     public static AddEventCommentDtoResponse getAddEventCommentDtoResponse() {
         return AddEventCommentDtoResponse.builder()
-                .id(getEventComment().getId())
-                .author(getEventCommentAuthorDto())
-                .text(getEcoNewsComment().getText())
-                .build();
+            .id(getEventComment().getId())
+            .author(getEventCommentAuthorDto())
+            .text(getEcoNewsComment().getText())
+            .build();
     }
 
     public static EventComment getEventComment() {
         return EventComment.builder()
-                .id(1L)
-                .text("text")
-                .createdDate(LocalDateTime.now())
-                .user(getUser())
-                .event(getEvent())
-                .build();
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .event(getEvent())
+            .build();
     }
 
     public static EventCommentVO getEventCommentVO() {
         return EventCommentVO.builder()
-                .id(278L)
-                .user(UserVO.builder()
-                        .id(13L)
-                        .role(Role.ROLE_ADMIN)
-                        .name("name")
-                        .build())
-                .text("I find this topic very useful!")
-                .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
-                .event(EventVO.builder()
-                        .id(32L)
-                        .build())
-                .build();
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .text("I find this topic very useful!")
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .event(EventVO.builder()
+                .id(32L)
+                .build())
+            .build();
     }
 
     public static EventCommentAuthorDto getEventCommentAuthorDto() {
         return EventCommentAuthorDto.builder()
-                .id(getUser().getId())
-                .name(getUser().getName().trim())
-                .userProfilePicturePath(getUser().getProfilePicturePath())
-                .build();
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .userProfilePicturePath(getUser().getProfilePicturePath())
+            .build();
     }
 
     public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
@@ -2158,19 +2158,19 @@ public class ModelUtils {
 
     public static EventCommentDto getEventCommentDto() {
         return EventCommentDto.builder()
-                .id(1L)
-                .author(getEventCommentAuthorDto())
-                .text("text")
-                .build();
+            .id(1L)
+            .author(getEventCommentAuthorDto())
+            .text("text")
+            .build();
     }
 
     public static EventVO getEventVO() {
         return EventVO.builder()
-                .id(1L)
-                .description("description")
-                .organizer(getUserVO())
-                .title("title")
-                .titleImage("title image")
-                .build();
+            .id(1L)
+            .description("description")
+            .organizer(getUserVO())
+            .title("title")
+            .titleImage("title image")
+            .build();
     }
 }

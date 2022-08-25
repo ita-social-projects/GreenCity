@@ -15,15 +15,15 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * @return count of comments, specified by {@link Event}
      */
     @Query(value = "select count(ec.id) from events_comment ec"
-            + " join events event on event.id = ec.event_id"
-            + " where event.id = :event", nativeQuery = true)
+        + " join events event on event.id = ec.event_id"
+        + " where event.id = :event", nativeQuery = true)
     int countEventCommentsByEvent(Event event);
 
     /**
      * Method returns all {@link EventComment} by page.
      *
-     * @param pageable  page of news.
-     * @param eventId id of {@link Event} for which comments we search.
+     * @param pageable page of news.
+     * @param eventId  id of {@link Event} for which comments we search.
      * @return all active {@link EventComment} by page.
      */
     Page<EventComment> findAllByEventIdOrderByCreatedDateDesc(Pageable pageable, Long eventId);

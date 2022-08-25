@@ -244,7 +244,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventVO findById(Long eventId) {
         Event event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
         return modelMapper.map(event, EventVO.class);
     }
 

@@ -39,37 +39,39 @@ public class EventCommentController {
      * Method for creating {@link greencity.dto.eventcomment.EventCommentVO}.
      *
      * @param eventId id of {@link greencity.dto.event.EventVO} to add comment to.
-     * @param request   - dto for {@link greencity.dto.eventcomment.EventCommentVO} entity.
+     * @param request - dto for {@link greencity.dto.eventcomment.EventCommentVO}
+     *                entity.
      * @return dto {@link greencity.dto.eventcomment.AddEventCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEventCommentDtoRequest.class),
-            @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEventCommentDtoRequest.class),
+        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @PostMapping("{eventId}")
     public ResponseEntity<AddEventCommentDtoResponse> save(@PathVariable Long eventId,
-                                                           @Valid @RequestBody AddEventCommentDtoRequest request,
-                                                           @ApiIgnore @CurrentUser UserVO user) {
+        @Valid @RequestBody AddEventCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(eventCommentService.save(eventId, request, user));
+            .status(HttpStatus.CREATED)
+            .body(eventCommentService.save(eventId, request, user));
     }
 
     /**
-     * Method to count active comments to certain {@link greencity.dto.event.EventVO}.
+     * Method to count active comments to certain
+     * {@link greencity.dto.event.EventVO}.
      *
      * @param eventId to specify {@link greencity.dto.event.EventVO}
      * @return amount of comments
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/count/comments/{eventId}")
     public int getCountOfComments(@PathVariable Long eventId) {
@@ -77,22 +79,23 @@ public class EventCommentController {
     }
 
     /**
-     * Method to get all active comments to {@link greencity.dto.event.EventVO} specified by eventId.
+     * Method to get all active comments to {@link greencity.dto.event.EventVO}
+     * specified by eventId.
      *
      * @param eventId id of {@link greencity.dto.event.EventVO}
      * @return Pageable of {@link greencity.dto.eventcomment.EventCommentDto}
      */
     @ApiOperation(value = "Get all active comments.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/active")
     @ApiPageableWithoutSort
     public ResponseEntity<PageableDto<EventCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
-                                                                             Long eventId,
-                                                                             @ApiIgnore @CurrentUser UserVO user) {
+        Long eventId,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(eventCommentService.getAllActiveComments(pageable, user, eventId));
+            .body(eventCommentService.getAllActiveComments(pageable, user, eventId));
     }
 }

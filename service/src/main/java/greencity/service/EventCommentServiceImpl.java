@@ -30,21 +30,21 @@ public class EventCommentServiceImpl implements EventCommentService {
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
 
-
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
      *
-     * @param eventId                   id of {@link greencity.entity.event.Event} to which we save comment.
+     * @param eventId                   id of {@link greencity.entity.event.Event}
+     *                                  to which we save comment.
      * @param addEventCommentDtoRequest dto with
      *                                  {@link greencity.entity.event.EventComment}
-     *                                   text, parentCommentId.
+     *                                  text, parentCommentId.
      * @param userVO                    {@link User} that saves the comment.
      * @return {@link AddEventCommentDtoResponse} instance.
      */
 
     @Override
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
-                                             UserVO userVO) {
+        UserVO userVO) {
         EventVO eventVO = eventService.findById(eventId);
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
         eventComment.setUser(modelMapper.map(userVO, User.class));
@@ -61,31 +61,31 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public int countComments(Long eventId) {
         return eventCommentRepo.countEventCommentsByEvent(eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId)));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId)));
     }
 
     /**
      * Method to get all active comments to {@link Event} specified by eventId.
      *
-     * @param pageable  page of event.
-     * @param eventId specifies {@link Event} to which we search for comments
+     * @param pageable page of event.
+     * @param eventId  specifies {@link Event} to which we search for comments
      * @return all active comments to certain event specified by eventId.
      */
     @Override
     public PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long eventId) {
         eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
         Page<EventComment> pages = eventCommentRepo.findAllByEventIdOrderByCreatedDateDesc(pageable, eventId);
         List<EventCommentDto> eventCommentDto = pages
-                .stream()
-                .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
-                .collect(Collectors.toList());
+            .stream()
+            .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
+            .collect(Collectors.toList());
 
         return new PageableDto<>(
-                eventCommentDto,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages());
+            eventCommentDto,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
     }
 }
