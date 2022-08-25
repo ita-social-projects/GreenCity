@@ -658,16 +658,6 @@ class HabitAssignServiceImplTest {
     @Test
     void changeStatuses() {
         findHabitByUserIdAndHabitId();
-//        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
-//        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(ModelUtils.getHabitAssignDto());
-//        when(modelMapper.map(HabitTranslation.builder().id(1L).name("").description("").habitItem("")
-//                .language(Language.builder().code("en").id(1L)
-//                        .build())
-//                .build(), HabitDto.class)).thenReturn(habitDto);
-//        when(modelMapper.map(habitAssign.getHabit().getHabitTranslations().get(0), HabitDto.class))
-//                .thenReturn(ModelUtils.getHabitDto());
-//        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssign.getId()))
-//                .thenReturn(List.of(ModelUtils.getUserShoppingListItem()));
         when(shoppingListItemTranslationRepo
             .findShoppingListByHabitIdAndByLanguageCode("en", 1L))
                 .thenReturn(getShoppingListItemTranslationList());
@@ -677,7 +667,7 @@ class HabitAssignServiceImplTest {
             .getShoppingListItemsByHabitAssignIdAndStatus(anyLong(), anyString()))
                 .thenReturn(Collections.singletonList(1L));
         HabitDto expectedHabit = habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, "en");
-        assertEquals(expectedHabit.getShoppingListItems().get(0).getStatus(), "DONE");
+        assertEquals("DONE", expectedHabit.getShoppingListItems().get(0).getStatus());
     }
 
     @Test
