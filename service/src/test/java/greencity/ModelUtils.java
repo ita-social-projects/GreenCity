@@ -2107,11 +2107,12 @@ public class ModelUtils {
             .values("Test;ADMIN;ACTIVATED")
             .build();
     }
-    public static ShoppingListItemDto getShoppingListItemDto(){
+
+    public static ShoppingListItemDto getShoppingListItemDto() {
         return ShoppingListItemDto.builder()
-                .id(1L)
-                .text("")
-                .status("testStatus")
-                .build();
+            .id(1L)
+            .text("")
+            .status("testStatus")
+            .build();
     }
 }

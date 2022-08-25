@@ -635,7 +635,6 @@ class HabitAssignServiceImplTest {
         assignCustomHabitForUser();
         verify(userShoppingListItemRepo, times(1)).saveAll(any());
 
-
     }
 
     @Test
@@ -671,17 +670,18 @@ class HabitAssignServiceImplTest {
 //                .thenReturn(ModelUtils.getHabitDto());
 //        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssign.getId()))
 //                .thenReturn(List.of(ModelUtils.getUserShoppingListItem()));
-        when( shoppingListItemTranslationRepo
-                .findShoppingListByHabitIdAndByLanguageCode("en", 1L))
+        when(shoppingListItemTranslationRepo
+            .findShoppingListByHabitIdAndByLanguageCode("en", 1L))
                 .thenReturn(getShoppingListItemTranslationList());
         when(modelMapper.map(getShoppingListItemTranslations1(), ShoppingListItemDto.class))
-                .thenReturn(getShoppingListItemDto());
+            .thenReturn(getShoppingListItemDto());
         when(userShoppingListItemRepo
-                .getShoppingListItemsByHabitAssignIdAndStatus(anyLong(), anyString()))
-                    .thenReturn(Collections.singletonList(1L));
-        HabitDto expectedHabit =habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, "en");
-        assertEquals(expectedHabit.getShoppingListItems().get(0).getStatus(),"DONE");
+            .getShoppingListItemsByHabitAssignIdAndStatus(anyLong(), anyString()))
+                .thenReturn(Collections.singletonList(1L));
+        HabitDto expectedHabit = habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, "en");
+        assertEquals(expectedHabit.getShoppingListItems().get(0).getStatus(), "DONE");
     }
+
     @Test
     void findHabitByUserIdAndHabitId() {
         HabitDto hd = getHabitDto();
