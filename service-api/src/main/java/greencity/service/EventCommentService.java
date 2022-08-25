@@ -29,7 +29,7 @@ public interface EventCommentService {
      * @return amount of comments
      * @author Inna Yashna
      */
-    int countOfComments(Long eventId);
+    int countComments(Long eventId);
 
     /**
      * Method to get all active comments to {@link EventVO} specified by

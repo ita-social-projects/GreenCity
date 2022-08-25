@@ -53,14 +53,13 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method to count not deleted comments to certain
-     * {@link Event}.
+     * Method to count not deleted comments to certain {@link Event}.
      *
      * @param eventId to specify {@link Event}
      * @return amount of comments
      */
     @Override
-    public int countOfComments(Long eventId) {
+    public int countComments(Long eventId) {
         return eventCommentRepo.countEventCommentsByEvent(eventRepo.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId)));
     }
