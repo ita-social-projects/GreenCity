@@ -102,7 +102,7 @@ public interface EventService {
     Set<EventAttenderDto> getAllEventAttenders(Long eventId);
 
     /**
-     * Get event by id;
+     * Get event by id.
      *
      * @param eventId - id of event
      */
