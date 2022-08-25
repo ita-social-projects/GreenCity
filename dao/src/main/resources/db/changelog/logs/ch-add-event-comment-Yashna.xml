@@ -16,11 +16,6 @@
             <column name="created_date" type="timestamp with time zone">
                 <constraints nullable="false"/>
             </column>
-            <column name="modified_date" type="timestamp with time zone">
-                <constraints nullable="false"/>
-            </column>
-
-            <column name="parent_comment_id" type="BIGINT"/>
 
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false"/>
@@ -33,13 +28,6 @@
     </changeSet>
 
     <changeSet id="Yashna-2" author="Inna Yashna">
-        <addForeignKeyConstraint baseTableName="events_comment"
-                                 baseColumnNames="parent_comment_id"
-                                 constraintName="fk_comment_parent"
-                                 onDelete="CASCADE"
-                                 referencedTableName="events_comment"
-                                 referencedColumnNames="id"/>
-
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_comment_user"
@@ -56,16 +44,8 @@
 
     <changeSet id="Yashna-3" author="Inna Yashna">
         <dropForeignKeyConstraint baseTableName="events_comment"
-                                  constraintName="fk_comment_parent" />
-        <addForeignKeyConstraint baseTableName="events_comment"
-                                 baseColumnNames="parent_comment_id"
-                                 constraintName="fk_events_comment_parent"
-                                 onDelete="CASCADE"
-                                 referencedTableName="events_comment"
-                                 referencedColumnNames="id"/>
-
-        <dropForeignKeyConstraint baseTableName="events_comment"
                                   constraintName="fk_comment_user" />
+
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_events_comment_user"
@@ -74,64 +54,12 @@
 
         <dropForeignKeyConstraint baseTableName="events_comment"
                                   constraintName="fk_comment_events" />
+
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="event_id"
                                  constraintName="fk_events_comment_events"
                                  onDelete="CASCADE"
                                  referencedTableName="events"
                                  referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="Yashna-4" author="Inna Yashna">
-        <createTable tableName="events_comment_users_liked">
-            <column name="events_comment_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="users_liked_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="Yashna-5" author="Inna Yashna">
-        <addForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                 baseColumnNames="events_comment_id"
-                                 constraintName="fk_events_comment"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="events_comment"/>
-
-        <addForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                 baseColumnNames="users_liked_id"
-                                 constraintName="fk_users_liked"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="Yashna-6" author="Inna Yashna">
-        <dropForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                  constraintName="fk_events_comment" />
-        <addForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                 baseColumnNames="events_comment_id"
-                                 constraintName="fk_events_comment_users_liked_events_comment"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="events_comment"/>
-
-        <dropForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                  constraintName="fk_users_liked" />
-        <addForeignKeyConstraint baseTableName="events_comment_users_liked"
-                                 baseColumnNames="users_liked_id"
-                                 constraintName="fk_events_comment_users_liked_users"
-                                 onDelete="RESTRICT" onUpdate="RESTRICT"
-                                 referencedColumnNames="id"
-                                 referencedTableName="users"/>
-    </changeSet>
-
-    <changeSet id="Yashna-7" author="Inna Yashna">
-        <addColumn tableName="events_comment">
-            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
-        </addColumn>
     </changeSet>
 </databaseChangeLog>
