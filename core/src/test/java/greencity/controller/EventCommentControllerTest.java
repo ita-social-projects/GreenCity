@@ -115,7 +115,7 @@ class EventCommentControllerTest {
     @Test
     @SneakyThrows
     void countComments() {
-        mockMvc.perform(get(eventCommentControllerLink + "/count/comments/{eventId}", 1))
+        mockMvc.perform(get(eventCommentControllerLink + "/count/{eventId}", 1))
             .andExpect(status().isOk());
 
         verify(eventCommentService).countComments(1L);
