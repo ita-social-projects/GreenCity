@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +41,6 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param userVO                    {@link User} that saves the comment.
      * @return {@link AddEventCommentDtoResponse} instance.
      */
-
     @Override
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
         UserVO userVO) {
@@ -74,11 +72,8 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long eventId) {
-        Optional<Event> event = eventRepo.findById(eventId);
-
-        if (event.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId);
-        }
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
         Page<EventComment> pages = eventCommentRepo.findAllByEventIdOrderByCreatedDateDesc(pageable, eventId);
         List<EventCommentDto> eventCommentDto = pages

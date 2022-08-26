@@ -3,6 +3,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
     <changeSet id="Yashna-1" author="Inna Yashna">
         <createTable tableName="events_comment">
             <column name="id" autoIncrement="true" type="BIGINT">
@@ -25,9 +26,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
 
-    <changeSet id="Yashna-2" author="Inna Yashna">
         <addForeignKeyConstraint baseTableName="events_comment"
                                  baseColumnNames="user_id"
                                  constraintName="fk_comment_user"
@@ -40,9 +39,7 @@
                                  onDelete="CASCADE"
                                  referencedTableName="events"
                                  referencedColumnNames="id"/>
-    </changeSet>
 
-    <changeSet id="Yashna-3" author="Inna Yashna">
         <dropForeignKeyConstraint baseTableName="events_comment"
                                   constraintName="fk_comment_user" />
 

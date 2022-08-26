@@ -7,6 +7,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EventCommentService;
 import greencity.service.UserService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +63,8 @@ class EventCommentControllerTest {
     }
 
     @Test
-    void save() throws Exception {
+    @SneakyThrows
+    void save() {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
@@ -85,7 +87,8 @@ class EventCommentControllerTest {
     }
 
     @Test
-    void saveBadRequestTest() throws Exception {
+    @SneakyThrows
+    void saveBadRequestTest() {
         mockMvc.perform(post(eventCommentControllerLink + "/{eventId}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
@@ -93,7 +96,8 @@ class EventCommentControllerTest {
     }
 
     @Test
-    void getAllActiveComments() throws Exception {
+    @SneakyThrows
+    void getAllActiveComments() {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
@@ -109,7 +113,8 @@ class EventCommentControllerTest {
     }
 
     @Test
-    void countComments() throws Exception {
+    @SneakyThrows
+    void countComments() {
         mockMvc.perform(get(eventCommentControllerLink + "/count/comments/{eventId}", 1))
             .andExpect(status().isOk());
 

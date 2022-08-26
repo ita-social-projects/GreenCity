@@ -47,7 +47,6 @@ public class EventCommentController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEventCommentDtoRequest.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
@@ -73,7 +72,7 @@ public class EventCommentController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
-    @GetMapping("/count/comments/{eventId}")
+    @GetMapping("/count/{eventId}")
     public int getCountOfComments(@PathVariable Long eventId) {
         return eventCommentService.countComments(eventId);
     }
