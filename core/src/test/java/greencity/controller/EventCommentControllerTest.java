@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration
 @Import(SecurityConfig.class)
 class EventCommentControllerTest {
-    private static final String eventCommentControllerLink = "/events/comments";
+    private static final String EVENT_COMMENT_CONTROLLER_LINK = "/events/comments";
     private MockMvc mockMvc;
     @InjectMocks
     private EventCommentController eventCommentController;
@@ -72,7 +72,7 @@ class EventCommentControllerTest {
             + "  \"text\": \"string\"\n"
             + "}";
 
-        mockMvc.perform(post(eventCommentControllerLink + "/{eventId}", 1)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{eventId}", 1)
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
@@ -89,7 +89,7 @@ class EventCommentControllerTest {
     @Test
     @SneakyThrows
     void saveBadRequestTest() {
-        mockMvc.perform(post(eventCommentControllerLink + "/{eventId}", 1)
+        mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{eventId}", 1)
             .contentType(MediaType.APPLICATION_JSON)
             .content("{}"))
             .andExpect(status().isBadRequest());
@@ -104,7 +104,7 @@ class EventCommentControllerTest {
         int pageNumber = 5;
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        mockMvc.perform(get(eventCommentControllerLink + "/active?eventId=1&page=5")
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/active?eventId=1&page=5")
             .principal(principal))
             .andExpect(status().isOk());
 
@@ -115,7 +115,7 @@ class EventCommentControllerTest {
     @Test
     @SneakyThrows
     void countComments() {
-        mockMvc.perform(get(eventCommentControllerLink + "/count/{eventId}", 1))
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/count/{eventId}", 1))
             .andExpect(status().isOk());
 
         verify(eventCommentService).countComments(1L);

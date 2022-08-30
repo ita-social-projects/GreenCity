@@ -61,11 +61,12 @@ public class EventCommentController {
     }
 
     /**
-     * Method to count active comments to certain
+     * Method to count all active comments for certain
      * {@link greencity.dto.event.EventVO}.
      *
      * @param eventId to specify {@link greencity.dto.event.EventVO}
-     * @return amount of comments
+     * @return amount of all active comments for certain
+     *         {@link greencity.dto.event.EventVO}
      */
     @ApiOperation(value = "Count comments.")
     @ApiResponses(value = {
