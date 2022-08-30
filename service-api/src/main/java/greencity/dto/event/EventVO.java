@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @EqualsAndHashCode
 public class EventVO {
     private Long id;
