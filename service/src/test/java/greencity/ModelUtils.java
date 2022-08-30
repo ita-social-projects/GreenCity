@@ -39,6 +39,11 @@ import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.*;
+import greencity.dto.eventcomment.AddEventCommentDtoRequest;
+import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EventCommentAuthorDto;
+import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationDTO;
@@ -142,6 +147,7 @@ import greencity.entity.UserShoppingListItem;
 import greencity.entity.VerifyEmail;
 import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
+import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.localization.AchievementTranslation;
@@ -2101,6 +2107,70 @@ public class ModelUtils {
             .user(new User())
             .type("USERS")
             .values("Test;ADMIN;ACTIVATED")
+            .build();
+    }
+
+    public static AddEventCommentDtoResponse getAddEventCommentDtoResponse() {
+        return AddEventCommentDtoResponse.builder()
+            .id(getEventComment().getId())
+            .author(getEventCommentAuthorDto())
+            .text(getEcoNewsComment().getText())
+            .build();
+    }
+
+    public static EventComment getEventComment() {
+        return EventComment.builder()
+            .id(1L)
+            .text("text")
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .event(getEvent())
+            .build();
+    }
+
+    public static EventCommentVO getEventCommentVO() {
+        return EventCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .text("I find this topic very useful!")
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .event(EventVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
+    public static EventCommentAuthorDto getEventCommentAuthorDto() {
+        return EventCommentAuthorDto.builder()
+            .id(getUser().getId())
+            .name(getUser().getName().trim())
+            .userProfilePicturePath(getUser().getProfilePicturePath())
+            .build();
+    }
+
+    public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
+        return new AddEventCommentDtoRequest("text");
+    }
+
+    public static EventCommentDto getEventCommentDto() {
+        return EventCommentDto.builder()
+            .id(1L)
+            .author(getEventCommentAuthorDto())
+            .text("text")
+            .build();
+    }
+
+    public static EventVO getEventVO() {
+        return EventVO.builder()
+            .id(1L)
+            .description("description")
+            .organizer(getUserVO())
+            .title("title")
+            .titleImage("title image")
             .build();
     }
 }
