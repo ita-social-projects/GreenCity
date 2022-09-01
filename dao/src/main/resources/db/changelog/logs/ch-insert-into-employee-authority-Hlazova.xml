@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Hlazova-1" author="Hlazova Nataliia">
+        <insert tableName="employee_authorities">
+            <column name="id">1</column>
+            <column name="name">SEE_CLIENTS_PAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">2</column>
+            <column name="name">SEE_EMPLOYEES_PAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">3</column>
+            <column name="name">REGISTER_A_NEW_EMPLOYEE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">4</column>
+            <column name="name">EDIT_EMPLOYEES_AUTHORITIES</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">5</column>
+            <column name="name">EDIT_EMPLOYEE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">6</column>
+            <column name="name">DEACTIVATE_EMPLOYEE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">7</column>
+            <column name="name">SEE_CERTIFICATES</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">8</column>
+            <column name="name">CREATE_NEW_CERTIFICATE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">9</column>
+            <column name="name">EDIT_CERTIFICATE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">10</column>
+            <column name="name">SEE_BIG_ORDER_TABLE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">11</column>
+            <column name="name">EDIT_ORDER</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">12</column>
+            <column name="name">SEE_MESSAGES_PAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">13</column>
+            <column name="name">CREATE_NEW_MESSAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">14</column>
+            <column name="name">EDIT_MESSAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">15</column>
+            <column name="name">DELETE_MESSAGE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">16</column>
+            <column name="name">SEE_TARIFFS</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">17</column>
+            <column name="name">CREATE_NEW_LOCATION</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">18</column>
+            <column name="name">CREATE_NEW_COURIER</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">19</column>
+            <column name="name">CREATE_NEW_RECEIVING_STATION</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">20</column>
+            <column name="name">EDIT_LOCATION</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">21</column>
+            <column name="name">EDIT_COURIER</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">22</column>
+            <column name="name">EDIT_RECEIVING_STATION</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">23</column>
+            <column name="name">CREATE_NEW_LOCATION_CARD</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">24</column>
+            <column name="name">EDIT_LOCATION_CARD</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">25</column>
+            <column name="name">SEE_PRICING_CARD</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">26</column>
+            <column name="name">CONTROL_SERVICE</column>
+        </insert>
+        <insert tableName="employee_authorities">
+            <column name="id">27</column>
+            <column name="name">EDIT_PRICING_CARD</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
