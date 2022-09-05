@@ -373,7 +373,7 @@ public class RestClient {
     }
 
     /**
-     * send notification to the event organizer about the EventComment addition
+     * send notification to the event organizer about the EventComment addition.
      *
      * @param message with information for sending email about adding new
      *                EventComment.
