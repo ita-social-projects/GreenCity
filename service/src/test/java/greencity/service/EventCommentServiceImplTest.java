@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -37,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -63,14 +65,19 @@ class EventCommentServiceImplTest {
         Event event = ModelUtils.getEvent();
         AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
         EventComment eventComment = ModelUtils.getEventComment();
+        EventAuthorDto eventAuthorDto = ModelUtils.getEventAuthorDto();
+        EventCommentForSendEmailDto dto = ModelUtils.getEventCommentForSendEmailDto();
 
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
+        when(modelMapper.map(user, EventAuthorDto.class)).thenReturn(eventAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         verify(eventCommentRepo).save(any(EventComment.class));

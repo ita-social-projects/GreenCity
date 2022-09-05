@@ -2185,7 +2185,7 @@ public class ModelUtils {
             .build();
     }
 
-    private static EventAuthorDto getEventAuthorDto() {
+    public static EventAuthorDto getEventAuthorDto() {
         return EventAuthorDto.builder()
             .id(1L)
             .name("Inna")
