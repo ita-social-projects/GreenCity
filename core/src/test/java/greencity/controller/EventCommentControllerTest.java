@@ -99,12 +99,12 @@ class EventCommentControllerTest {
     @SneakyThrows
     void getEventCommentById() {
         String content = "{\n"
-                + "  \"text\": \"string\"\n"
-                + "}";
+            + "  \"text\": \"string\"\n"
+            + "}";
         mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(status().isOk());
     }
 
     @Test

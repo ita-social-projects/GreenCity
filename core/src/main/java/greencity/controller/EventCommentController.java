@@ -64,13 +64,13 @@ public class EventCommentController {
     /**
      * Method to get certain comment to {@link EventVO} specified by commentId.
      *
-     * @param id  specifies {@link EventCommentDto} to which we search for comments
+     * @param id specifies {@link EventCommentDto} to which we search for comments
      * @return comment to certain event specified by commentId.
      */
     @GetMapping("{id}")
     public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(eventCommentService.getEventCommentById(id));
+            .body(eventCommentService.getEventCommentById(id));
     }
 
     /**

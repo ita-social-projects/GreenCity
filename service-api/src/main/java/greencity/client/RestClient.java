@@ -375,7 +375,8 @@ public class RestClient {
     /**
      * send notification to the event organizer about the EventComment addition
      *
-     * @param message with information for sending email about adding new EventComment.
+     * @param message with information for sending email about adding new
+     *                EventComment.
      * @author Inna Yashna
      */
     public void sendNewEventComment(EventCommentForSendEmailDto message) {
@@ -383,7 +384,7 @@ public class RestClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
     }
 
     /**

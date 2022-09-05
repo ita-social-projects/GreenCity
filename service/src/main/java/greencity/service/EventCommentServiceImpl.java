@@ -53,53 +53,55 @@ public class EventCommentServiceImpl implements EventCommentService {
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
-        AddEventCommentDtoResponse addEventCommentDtoResponse =  modelMapper.map(
-                eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
+        AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
+            eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
         sendEmailDto(addEventCommentDtoResponse);
         return addEventCommentDtoResponse;
     }
 
     /**
-     * Method to send {@link greencity.dto.eventcomment.EventCommentForSendEmailDto} for sending notification
-     * to the event organizer about the EventComment addition.
+     * Method to send {@link greencity.dto.eventcomment.EventCommentForSendEmailDto}
+     * for sending notification to the event organizer about the EventComment
+     * addition.
      *
-     * @param addEventCommentDtoResponse to get all needed information about EventComment addition.
+     * @param addEventCommentDtoResponse to get all needed information about
+     *                                   EventComment addition.
      */
     @Override
     public void sendEmailDto(AddEventCommentDtoResponse addEventCommentDtoResponse) {
         Long id = addEventCommentDtoResponse.getId();
-        EventComment eventComment = eventCommentRepo.findById(id).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + id));
+        EventComment eventComment = eventCommentRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + id));
         Event event = eventComment.getEvent();
         User organizer = event.getOrganizer();
         EventAuthorDto eventAuthorDto = modelMapper.map(organizer, EventAuthorDto.class);
 
         EventCommentForSendEmailDto dto = EventCommentForSendEmailDto.builder()
-                .id(addEventCommentDtoResponse.getId())
-                .author(addEventCommentDtoResponse.getAuthor())
-                .text(addEventCommentDtoResponse.getText())
-                .createdDate(addEventCommentDtoResponse.getCreatedDate())
-                .organizer(eventAuthorDto)
-                .email(organizer.getEmail())
-                .build();
+            .id(addEventCommentDtoResponse.getId())
+            .author(addEventCommentDtoResponse.getAuthor())
+            .text(addEventCommentDtoResponse.getText())
+            .createdDate(addEventCommentDtoResponse.getCreatedDate())
+            .organizer(eventAuthorDto)
+            .email(organizer.getEmail())
+            .build();
         restClient.sendNewEventComment(dto);
     }
 
     /**
      * Method to get certain comment to {@link EventVO} specified by commentId.
      *
-     * @param id  specifies {@link EventCommentDto} to which we search for comments
+     * @param id specifies {@link EventCommentDto} to which we search for comments
      * @return comment to certain event specified by commentId.
      */
     @Override
     public EventCommentDto getEventCommentById(Long id) {
-        EventComment eventComment = eventCommentRepo.findById(id).orElseThrow(() ->
-                new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + id));
+        EventComment eventComment = eventCommentRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + id));
 
         return modelMapper.map(eventComment, EventCommentDto.class);
     }
 
-     /**
+    /**
      * Method to count not deleted comments to certain {@link Event}.
      *
      * @param eventId to specify {@link Event}

@@ -340,12 +340,12 @@ class RestClientTest {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
         when(restTemplate.exchange(greenCityUserServerAddress
-                + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
+            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
         restClient.sendNewEventComment(message);
 
         verify(restTemplate).exchange(greenCityUserServerAddress
-                + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
     }
 
     @Test

@@ -120,28 +120,28 @@ public class ModelUtils {
 
     public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {
         return EventCommentForSendEmailDto.builder()
-                .id(1L)
-                .organizer(ModelUtils.getEventAuthorDto())
-                .createdDate(LocalDateTime.now())
-                .author(ModelUtils.getEventCommentAuthorDto())
-                .text("text")
-                .build();
+            .id(1L)
+            .organizer(ModelUtils.getEventAuthorDto())
+            .createdDate(LocalDateTime.now())
+            .author(ModelUtils.getEventCommentAuthorDto())
+            .text("text")
+            .build();
     }
 
     public static EventAuthorDto getEventAuthorDto() {
         return EventAuthorDto.builder()
-                .id(1L)
-                .name("Inna")
-                .organizerRating(1.0)
-                .build();
+            .id(1L)
+            .name("Inna")
+            .organizerRating(1.0)
+            .build();
     }
 
     public static EventCommentAuthorDto getEventCommentAuthorDto() {
         return EventCommentAuthorDto.builder()
-                .id(ModelUtils.getUserVO().getId())
-                .name(ModelUtils.getUserVO().getName().trim())
-                .userProfilePicturePath(ModelUtils.getUserVO().getProfilePicturePath())
-                .build();
+            .id(ModelUtils.getUserVO().getId())
+            .name(ModelUtils.getUserVO().getName().trim())
+            .userProfilePicturePath(ModelUtils.getUserVO().getProfilePicturePath())
+            .build();
     }
 
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
