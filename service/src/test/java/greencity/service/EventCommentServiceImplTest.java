@@ -77,6 +77,14 @@ class EventCommentServiceImplTest {
     }
 
     @Test
+    void getEventCommentById() {
+        EventComment eventComment = ModelUtils.getEventComment();
+        EventCommentDto eventCommentDto = modelMapper.map(eventComment, EventCommentDto.class);
+        when(eventCommentRepo.findById(1L)).thenReturn(Optional.of(eventComment));
+        assertEquals(eventCommentDto, eventCommentService.getEventCommentById(1L));
+    }
+
+    @Test
     void countComments() {
         Event event = ModelUtils.getEvent();
         Long eventId = 1L;

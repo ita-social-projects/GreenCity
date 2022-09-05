@@ -97,6 +97,18 @@ class EventCommentControllerTest {
 
     @Test
     @SneakyThrows
+    void getEventCommentById() {
+        String content = "{\n"
+                + "  \"text\": \"string\"\n"
+                + "}";
+        mockMvc.perform(get(EVENT_COMMENT_CONTROLLER_LINK + "/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(content))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @SneakyThrows
     void getAllActiveComments() {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);

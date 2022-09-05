@@ -22,4 +22,6 @@ public class EventCommentForSendEmailDto {
     private LocalDateTime createdDate;
 
     private EventAuthorDto organizer;
+
+    private String email;
 }
