@@ -102,13 +102,11 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public void delete(Long eventCommentId, UserVO user) {
-        Optional<EventComment> eventComment = eventCommentRepo.findById(eventCommentId);
+        EventComment eventComment = eventCommentRepo
+            .findById(eventCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId));
 
-        if (eventComment.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId);
-        }
-
-        if (!user.getId().equals(eventComment.get().getUser().getId())) {
+        if (!user.getId().equals(eventComment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
