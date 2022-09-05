@@ -1,11 +1,13 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -48,6 +50,8 @@ class EventCommentServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     EventRepo eventRepo;
+    @Mock
+    RestClient restClient;
     @InjectMocks
     private EventCommentServiceImpl eventCommentService;
 

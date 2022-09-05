@@ -43,6 +43,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
@@ -2172,5 +2173,23 @@ public class ModelUtils {
             .title("title")
             .titleImage("title image")
             .build();
+    }
+
+    public static EventCommentForSendEmailDto getEventCommentForSendEmailDto() {
+        return EventCommentForSendEmailDto.builder()
+                .id(1L)
+                .organizer(ModelUtils.getEventAuthorDto())
+                .createdDate(LocalDateTime.now())
+                .author(ModelUtils.getEventCommentAuthorDto())
+                .text("text")
+                .build();
+    }
+
+    private static EventAuthorDto getEventAuthorDto() {
+        return EventAuthorDto.builder()
+                .id(1L)
+                .name("Inna")
+                .organizerRating(1.0)
+                .build();
     }
 }
