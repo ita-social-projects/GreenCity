@@ -10,6 +10,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,5 +92,27 @@ public class EventCommentServiceImpl implements EventCommentService {
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
+    }
+
+    /**
+     * Method to delete comment {@link EventComment} by Id.
+     *
+     * @param eventCommentId specifies {@link EventComment} to which we search for
+     *                       comments.
+     */
+    @Override
+    public void delete(Long eventCommentId, UserVO user) {
+        Optional<EventComment> eventComment = eventCommentRepo.findById(eventCommentId);
+
+        if (eventComment.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId);
+        }
+
+        if (!user.getId().equals(eventComment.get().getUser().getId())) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        CompletableFuture.runAsync(
+            () -> eventCommentRepo.deleteById(eventCommentId));
     }
 }
