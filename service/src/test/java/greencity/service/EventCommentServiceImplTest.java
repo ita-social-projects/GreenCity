@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
@@ -11,6 +12,7 @@ import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import org.junit.jupiter.api.Test;
@@ -25,6 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -32,9 +35,7 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -118,5 +119,36 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
         when(eventRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> eventCommentService.countComments(eventId));
+    }
+
+    @Test
+    void delete() {
+        UserVO userVO = getUserVO();
+        Long commentId = 1L;
+
+        when(eventCommentRepo.findById(commentId))
+            .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+
+        eventCommentService.delete(commentId, userVO);
+    }
+
+    @Test
+    void deleteCommentUserHasNoPermissionThrowException() {
+        Long commentId = 1L;
+
+        User user = getUser();
+        user.setId(2L);
+
+        UserVO userToDeleteVO = getUserVO();
+
+        EventComment eventComment = ModelUtils.getEventComment();
+        eventComment.setUser(user);
+
+        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.of(eventComment));
+
+        UserHasNoPermissionToAccessException noPermissionToAccessException =
+            assertThrows(UserHasNoPermissionToAccessException.class,
+                () -> eventCommentService.delete(commentId, userToDeleteVO));
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
     }
 }
