@@ -26,8 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -150,5 +148,17 @@ class EventCommentServiceImplTest {
             assertThrows(UserHasNoPermissionToAccessException.class,
                 () -> eventCommentService.delete(commentId, userToDeleteVO));
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, noPermissionToAccessException.getMessage());
+    }
+
+    @Test
+    void deleteCommentThatDoesntExistsThrowException() {
+        UserVO userVO = getUserVO();
+        Long commentId = 1L;
+
+        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException =
+            assertThrows(NotFoundException.class, () -> eventCommentService.delete(commentId, userVO));
+        assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
 }

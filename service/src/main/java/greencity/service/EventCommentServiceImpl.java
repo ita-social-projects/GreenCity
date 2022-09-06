@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,7 +94,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method to delete comment {@link EventComment} by Id.
+     * Method to delete comment {@link EventComment} by id.
      *
      * @param eventCommentId specifies {@link EventComment} to which we search for
      *                       comments.
@@ -110,7 +109,6 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        CompletableFuture.runAsync(
-            () -> eventCommentRepo.deleteById(eventCommentId));
+        eventCommentRepo.deleteById(eventCommentId);
     }
 }
