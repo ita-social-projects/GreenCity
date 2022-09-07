@@ -8,6 +8,7 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -34,8 +35,7 @@ import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventCommentServiceImplTest {
@@ -128,6 +128,8 @@ class EventCommentServiceImplTest {
             .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
         eventCommentService.delete(commentId, userVO);
+
+        verify(eventCommentRepo, times(1)).deleteById(any(Long.class));
     }
 
     @Test
