@@ -42,4 +42,13 @@ public interface EventCommentService {
      * @author Inna Yashna
      */
     PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long eventId);
+
+    /**
+     * Method for deleting the {@link EventCommentVO} instance by its id.
+     *
+     * @param eventCommentId - {@link EventCommentVO} instance id which will be
+     *                       deleted.
+     * @param user           current {@link EventCommentVO} that wants to delete.
+     */
+    void delete(Long eventCommentId, UserVO user);
 }

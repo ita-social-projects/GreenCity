@@ -11,6 +11,7 @@ import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import lombok.AllArgsConstructor;
@@ -90,5 +91,24 @@ public class EventCommentServiceImpl implements EventCommentService {
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
+    }
+
+    /**
+     * Method to delete comment {@link EventComment} by id.
+     *
+     * @param eventCommentId specifies {@link EventComment} to which we search for
+     *                       comments.
+     */
+    @Override
+    public void delete(Long eventCommentId, UserVO user) {
+        EventComment eventComment = eventCommentRepo
+            .findById(eventCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId));
+
+        if (!user.getId().equals(eventComment.getUser().getId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        eventCommentRepo.deleteById(eventCommentId);
     }
 }
