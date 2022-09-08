@@ -91,7 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities."))
             .and()
             .authorizeRequests()
-            .antMatchers("/", "/management/login").permitAll()
+            .antMatchers("/", "/management/", "/management/login").permitAll()
             .antMatchers("/management/**",
                 "/econews/comments/replies/{parentCommentId}")
             .hasAnyRole(ADMIN)
