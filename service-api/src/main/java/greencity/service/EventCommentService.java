@@ -25,6 +25,25 @@ public interface EventCommentService {
         UserVO user);
 
     /**
+     * Method to send {@link greencity.dto.eventcomment.EventCommentForSendEmailDto}
+     * for sending notification to the event organizer about the EventComment
+     * addition.
+     *
+     * @param addEventCommentDtoResponse to get all needed information about
+     *                                   EventComment addition.
+     */
+    void sendEmailDto(AddEventCommentDtoResponse addEventCommentDtoResponse);
+
+    /**
+     * Method to get certain comment to {@link EventVO} specified by commentId.
+     *
+     * @param id specifies {@link EventCommentDto} to which we search for comments
+     * @return comment to certain event specified by commentId.
+     * @author Inna Yashna
+     */
+    EventCommentDto getEventCommentById(Long id);
+
+    /**
      * Method to count not deleted event comments to certain {@link EventVO}.
      *
      * @param eventId to specify {@link EventVO}
