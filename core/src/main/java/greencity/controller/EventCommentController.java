@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
@@ -59,6 +60,18 @@ public class EventCommentController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(eventCommentService.save(eventId, request, user));
+    }
+
+    /**
+     * Method to get certain comment to {@link EventVO} specified by commentId.
+     *
+     * @param id specifies {@link EventCommentDto} to which we search for comments
+     * @return comment to certain event specified by commentId.
+     */
+    @GetMapping("{id}")
+    public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventCommentService.getEventCommentById(id));
     }
 
     /**

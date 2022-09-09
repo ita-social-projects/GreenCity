@@ -1,14 +1,15 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
@@ -34,7 +35,12 @@ import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +53,8 @@ class EventCommentServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     EventRepo eventRepo;
+    @Mock
+    RestClient restClient;
     @InjectMocks
     private EventCommentServiceImpl eventCommentService;
 
@@ -58,17 +66,29 @@ class EventCommentServiceImplTest {
         Event event = ModelUtils.getEvent();
         AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
         EventComment eventComment = ModelUtils.getEventComment();
+        EventAuthorDto eventAuthorDto = ModelUtils.getEventAuthorDto();
 
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
+        when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
+        when(modelMapper.map(user, EventAuthorDto.class)).thenReturn(eventAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         verify(eventCommentRepo).save(any(EventComment.class));
+    }
+
+    @Test
+    void getEventCommentById() {
+        EventComment eventComment = ModelUtils.getEventComment();
+        EventCommentDto eventCommentDto = modelMapper.map(eventComment, EventCommentDto.class);
+        when(eventCommentRepo.findById(1L)).thenReturn(Optional.of(eventComment));
+        assertEquals(eventCommentDto, eventCommentService.getEventCommentById(1L));
     }
 
     @Test
