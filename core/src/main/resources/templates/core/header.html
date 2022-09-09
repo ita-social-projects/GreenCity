@@ -9,20 +9,7 @@
                         <img alt="logo" th:src="@{/img/logo_M.png}">
                     </a>
                 </div>
-<!--                <div class="main-search">-->
-<!--                                <span class="search-box-right">-->
-<!--                                    <form class="form-inline searching" action="/management/users" method="get">-->
-<!--                                        <img alt="search" id="btnSearchImage"-->
-<!--                                             src="/img/search.png">-->
-<!--                                        <input type="search" name="query" id="inputSearch" class="form-control"-->
-<!--                                               th:placeholder="#{greenCity.pages.search}">-->
-
-<!--                                    </form>-->
-<!--                                </span>-->
-
-<!--                </div>-->
-
-                <div class="dropdown" style="position: relative; right: 105px;">
+                <div class="dropdown" style="position: relative; left: 500px">
                     <button class="dropbtn header">[[#{greenCity.current.language}]]
                         <i class="fas fa-caret-down"></i>
                     </button>
@@ -31,11 +18,10 @@
                         <a onclick="setLanguageEn()">En</a>
                     </div>
                 </div>
-                <div class="logo-admin">
-                    <img class="rounded-circle" th:src="@{/img/icon_user.png}">
+                <div class="login">
+                    <button formaction="/management/login">Login</button>
                 </div>
             </div>
-            </ul>
         </div>
     </div>
 </header>
