@@ -10,6 +10,7 @@ import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserManagementViewDto;
@@ -330,6 +331,21 @@ class RestClientTest {
 
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class);
+    }
+
+    @Test
+    void sendNewEventComment() {
+        EventCommentForSendEmailDto message = ModelUtils.getEventCommentForSendEmailDto();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendNewEventComment(message);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class);
     }
 
     @Test

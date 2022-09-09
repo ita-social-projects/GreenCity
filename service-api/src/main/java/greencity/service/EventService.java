@@ -4,6 +4,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -99,4 +100,11 @@ public interface EventService {
      * @param eventId - id of event
      */
     Set<EventAttenderDto> getAllEventAttenders(Long eventId);
+
+    /**
+     * Get event by id.
+     *
+     * @param eventId - id of event
+     */
+    EventVO findById(Long eventId);
 }

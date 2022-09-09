@@ -164,6 +164,8 @@ public final class ErrorMessage {
     public static final String YOU_ARE_NOT_EVENT_SUBSCRIBER = "You are not event subscriber";
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
+    public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
+    public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
 
     private ErrorMessage() {
     }

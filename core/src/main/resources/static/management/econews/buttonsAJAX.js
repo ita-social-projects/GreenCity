@@ -1,23 +1,9 @@
 function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
-function clearAllTagsInTagList(){
-    document.getElementById("tagsEdit").innerHTML='';
-}
 
-function saveItemsOnPage(itemsOnPage) {
-    var allParam = window.location.search;
-    var urlSearch = new URLSearchParams(allParam);
-    localStorage.setItem("size", itemsOnPage);
-    let url = "/management/eco-news?";
-    urlSearch.set("size", itemsOnPage);
-    $.ajax({
-        url: url + urlSearch.toString(),
-        type: 'GET',
-        success: function (res) {
-            window.location.href = url + urlSearch.toString();
-        }
-    });
+function clearAllTagsInTagList() {
+    document.getElementById("tagsEdit").innerHTML = '';
 }
 
 function searchTableFunction() {
@@ -28,11 +14,11 @@ function searchTableFunction() {
     tr = table.getElementsByTagName("tr");
     for (i = 0; i < tr.length; i++) {
         id = tr[i].getElementsByTagName("td")[1];
-        author =tr[i].getElementsByTagName("td")[2];
+        author = tr[i].getElementsByTagName("td")[2];
         title = tr[i].getElementsByTagName("td")[3];
         content = tr[i].getElementsByTagName("td")[4];
         if (id || author || title || content) {
-            idValue= id.textContent || id.innerText;
+            idValue = id.textContent || id.innerText;
             authorValue = author.textContent || author.innerText;
             titleValue = title.textContent || title.innerText;
             contentValue = content.textContent || content.innerText;
@@ -51,163 +37,146 @@ function searchTableFunction() {
 function toggle(source) {
     var checkboxes = document.querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
-        if (checkboxes[i] != source)
+        if (checkboxes[i] !== source)
             checkboxes[i].checked = source.checked;
     }
 }
 
 let checkedCh = 0;
-function updateCheckBoxCount(chInt){
+
+function updateCheckBoxCount(chInt) {
     let chBox = $('#checkbox' + chInt);
     let deleteBtn = $("#btnDelete");
     chBox.is(":checked") ? checkedCh++ : checkedCh--;
-    if(checkedCh === 0) {
+    if (checkedCh === 0) {
         deleteBtn.addClass("disabled");
     } else deleteBtn.removeClass("disabled");
 }
-function addBtnDisabled(){
-    document.getElementById('submitAddBtn').disabled=true;
+
+function addBtnDisabled() {
+    document.getElementById('submitAddBtn').disabled = true;
 }
+
 let formAddValid = false;
-function addFormInputValidate(){
+
+function addFormInputValidate() {
     var titleValid;
     var formData = $('#addEcoNewsForm').serializeArray().reduce(function (obj, item) {
         obj[item.name] = item.value;
         return obj;
     }, {});
-    if(!(formData.title.length>1&&formData.title.length<170)){
+    if (!(formData.title.length > 1 && formData.title.length < 170)) {
         document.getElementById("errorModalSavetitle").innerText = "Size must be between 1 and 170";
         titleValid = false;
-    }else{
+    } else {
         titleValid = true;
     }
     var textValid;
-    if (!(formData.text.length>20 && formData.text.length<63206)){
+    if (!(formData.text.length > 20 && formData.text.length < 63206)) {
         document.getElementById("errorModalSavetext").innerText = "Size must be between 20 and 63206";
         textValid = false;
-    }else {
+    } else {
         textValid = true;
     }
     var textValid;
-        if (formData.source.length>0 && !(formData.source.startsWith("http://")) && !(formData.source.startsWith("https://"))){
-            document.getElementById("errorModalSavesource").innerText = "Must start with http(s)://";
-            textValid = false;
-        }else {
-            textValid = true;
-        }
-    if((textValid==true)&&(titleValid==true)){
+    if (formData.source.length > 0 && !(formData.source.startsWith("http://")) && !(formData.source.startsWith("https://"))) {
+        document.getElementById("errorModalSavesource").innerText = "Must start with http(s)://";
+        textValid = false;
+    } else {
+        textValid = true;
+    }
+    if ((textValid === true) && (titleValid === true)) {
         formAddValid = true;
-    }else{
-        formAddValid = false;
     }
 }
+
 //count tags for add
-function tagClick(){
-    var  tagsCheckBoxes = document.getElementsByClassName("tag-checkbox");
+function tagClick() {
+    var tagsCheckBoxes = document.getElementsByClassName("tag-checkbox");
     let count = 0;
-    for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-        if (tagsCheckBoxes.item(i).checked){
-            count = count+1;
+    for (var i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+        if (tagsCheckBoxes.item(i).checked) {
+            count = count + 1;
         }
     }
-    var submitBtn =  document.getElementById("submitAddBtn");
-    if (count==0||count>3){
-        submitBtn.disabled = true;
-    }else {
-        submitBtn.disabled = false;
-    }
-    if(count===3){
-        for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-            if (!tagsCheckBoxes.item(i).checked){
+    var submitBtn = document.getElementById("submitAddBtn");
+    submitBtn.disabled = (count === 0 || count > 3);
+    if (count === 3) {
+        for (var i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+            if (!tagsCheckBoxes.item(i).checked) {
                 tagsCheckBoxes.item(i).disabled = true;
             }
         }
-    }else if (count<3){
-        for (var i=0;i<tagsCheckBoxes.length;i = i+1){
-            if (tagsCheckBoxes.item(i).disabled){
+    } else if (count < 3) {
+        for (var i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+            if (tagsCheckBoxes.item(i).disabled) {
                 tagsCheckBoxes.item(i).disabled = false;
             }
         }
     }
 }
+
+function editBtnDisabled() {
+    document.getElementById('submitEditBtn').disabled = true;
+}
+
 //count tags for edit
-function countOfCheckedItem() {
-    var  tagsCheckBoxes = document.getElementsByName('EditTags[]');
+function tagEditClick() {
+    var tagsCheckBoxes = document.getElementsByClassName("tag-checkbox");
     let count = 0;
-    for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-        if (tagsCheckBoxes.item(i).checked){
-            count = count+1;
+    for (var i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+        if (tagsCheckBoxes.item(i).checked) {
+            count = count + 1;
         }
     }
-    if(count===3){
-        for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-            if (!tagsCheckBoxes.item(i).checked){
+    var submitBtn = document.getElementById("submitEditBtn");
+    submitBtn.disabled = (count === 0 || count > 3);
+    if (count === 3) {
+        for (let i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+            if (!tagsCheckBoxes.item(i).checked) {
                 tagsCheckBoxes.item(i).disabled = true;
             }
         }
-    }else if (count<3){
-        for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-            if (tagsCheckBoxes.item(i).disabled){
+    } else if (count < 3) {
+        for (let i = 0; i < tagsCheckBoxes.length; i = i + 1) {
+            if (tagsCheckBoxes.item(i).disabled) {
                 tagsCheckBoxes.item(i).disabled = false;
             }
         }
     }
 }
 
-function tagEditModalClick(){
-    var  tagsCheckBoxes = document.getElementsByName('EditTags[]');
-    let count = 0;
-    for (var i=0;i<tagsCheckBoxes.length;i= i+1){
-        if (tagsCheckBoxes.item(i).checked){
-            count = count+1;
-        }
-    }
-    var submitBtn =  document.getElementById("submitEditBtn");
-    if (count==0||count>3){
-        submitBtn.disabled = true;
-    }else {
-        submitBtn.disabled = false;
-    }
-    if(count===3){
-        for (let i=0;i<tagsCheckBoxes.length;i= i+1){
-            if (!tagsCheckBoxes.item(i).checked){
-                tagsCheckBoxes.item(i).disabled = true;
-            }
-        }
-    }else if (count<3){
-        for (let i=0;i<tagsCheckBoxes.length;i= i+1){
-            if (tagsCheckBoxes.item(i).disabled){
-                tagsCheckBoxes.item(i).disabled = false;
-            }
-        }
-    }
-
-}
 
 let formEditValid = false;
-function editFormInputValidate(){
+
+function editFormInputValidate() {
     var titleValid;
     var formData = $('#editEcoNewsForm').serializeArray().reduce(function (obj, item) {
         obj[item.name] = item.value;
         return obj;
     }, {});
-    if(!(formData.title.length>1&&formData.title.length<170)){
+    if (!(formData.title.length > 1 && formData.title.length < 170)) {
         document.getElementById("errorModalUpdatetitle").innerText = "Size must be between 1 and 170";
         titleValid = false;
-    }else{
+    } else {
         titleValid = true;
     }
     var textValid;
-    if (!(formData.text.length>20 && formData.text.length<63206)){
+    if (!(formData.text.length > 20 && formData.text.length < 63206)) {
         document.getElementById("errorModalUpdatetext").innerText = "Size must be between 20 and 63206";
         textValid = false;
-    }else {
+    } else {
         textValid = true;
     }
-    if((textValid==true)&&(titleValid==true)){
+    var textValid;
+    if (formData.source.length > 0 && !(formData.source.startsWith("http://")) && !(formData.source.startsWith("https://"))) {
+        document.getElementById("errorModalUpdatesource").innerText = "Must start with http(s)://";
+        textValid = false;
+    } else {
+        textValid = true;
+    }
+    if ((textValid === true) && (titleValid === true) && (titleValid === true)) {
         formEditValid = true;
-    }else{
-        formEditValid = false;
     }
 }
 
@@ -220,36 +189,36 @@ $(document).ready(function () {
 
     // Select/Deselect checkboxes
     var checkbox = $('table tbody input[type="checkbox"]');
-    $("#selectAll").click(function(){
-        if(this.checked){
+    $("#selectAll").click(function () {
+        if (this.checked) {
             checkedCh = 0;
-            checkbox.each(function(){
+            checkbox.each(function () {
                 this.checked = true;
                 checkedCh++;
             });
             deleteBtn.removeClass("disabled");
-        } else{
-            checkbox.each(function(){
+        } else {
+            checkbox.each(function () {
                 checkedCh--;
                 this.checked = false;
             });
             deleteBtn.addClass("disabled");
         }
     });
-    checkbox.click(function(){
-        if(!this.checked){
+    checkbox.click(function () {
+        if (!this.checked) {
             $("#selectAll").prop("checked", false);
         }
     });
 
-    $('#btnSearchImage').click(function (){
+    $('#btnSearchImage').click(function () {
         let url = "/management/eco-news?query=";
         let query = $('#inputSearch').val();
         $.ajax({
             url: url + query,
             type: 'GET',
-            success: function(res) {
-                window.location.href= url + query;
+            success: function (res) {
+                window.location.href = url + query;
             }
         });
     });
@@ -321,7 +290,7 @@ $(document).ready(function () {
             "tags": []
         };
         console.log(payload);
-        $("input:checked").each(function() {
+        $("input:checked").each(function () {
             payload.tags.push($(this).val());
         });
 
@@ -330,9 +299,9 @@ $(document).ready(function () {
         var file = document.getElementById("creationFile").files[0];
         result.append("imagePath", file);
         addFormInputValidate()
-        if(formAddValid==true){
+        if (formAddValid === true) {
             //save request in addEcoNewsModal
-            document.getElementById("submitAddBtn").disabled=true;
+            document.getElementById("submitAddBtn").disabled = true;
             $.ajax({
                 url: '/management/eco-news/save',
                 type: 'post',
@@ -375,28 +344,27 @@ $(document).ready(function () {
             $('#tags').val(econews.tags);
             $('#file').val(econews.file);
 
-            $.get("/management/eco-news/tags",function (allTags,status){
+            $.get("/management/eco-news/tags", function (allTags, status) {
                 let tagsContainer = document.createElement('div');
 
                 var tags = econews.tags;
 
-                allTags.forEach(item=>{
+                allTags.forEach(item => {
                     var box = document.createElement('div');
                     box.classList.add("custom-checkbox");
                     var checkBoxstatus = '';
-                    tags.forEach(t=>{
-                        if (t===item.name){
+                    tags.forEach(t => {
+                        if (t === item.name) {
                             checkBoxstatus = "checked";
                         }
                     })
-                    box.innerHTML=`<span class="modal-checkbox">
-                <input onclick="tagEditModalClick()" type="checkbox" value="${item.name}"  id="checkboxEditTag1" name="EditTags[]" ${checkBoxstatus}>
+                    box.innerHTML = `<span class="modal-checkbox">
+                <input onclick="tagEditClick()" type="checkbox" value="${item.name}"  id="checkboxEditTag1" name="EditTags[]" ${checkBoxstatus}>
                 <label for="checkboxTag1">${item.name}</label>
                 <span>
                 `;
                     document.querySelector('#tagsEdit').appendChild(box);
                 });
-                countOfCheckedItem();
             });
         });
     });
@@ -417,18 +385,20 @@ $(document).ready(function () {
             "tags": []
         };
         var tagList = document.getElementsByName("EditTags[]");
-        tagList.forEach(i=>{
-            if (i.checked){
+        tagList.forEach(i => {
+            if (i.checked) {
                 returnData.tags.push(i.value);
             }
         });
         var result = new FormData();
         result.append("ecoNewsDtoManagement", new Blob([JSON.stringify(returnData)], {type: "application/json"}));
-        var file = document.getElementById("file").files[0];
-        result.append("file", file);
+        var file = document.getElementById("fileUpdate").files[0];
+        if (file) {
+            result.append("file", file)
+        }
         //save request in editEcoNewsModal
         editFormInputValidate();
-        if (formEditValid ==true){
+        if (formEditValid) {
             $.ajax({
                 url: '/management/eco-news/',
                 type: 'put',
@@ -461,89 +431,101 @@ $(document).ready(function () {
     });
 });
 
-function markCurentPageOnNav(){
+// edit econew image
+const loadFile = function (event) {
+    const image = document.querySelector("#upload_image");
+    const file = document.querySelector('#fileUpdate').files[0];
+    let reader = new FileReader();
+    reader.onloadend = () => {
+        image.src = reader.result
+    };
+    if (file) {
+        reader.readAsDataURL(file);
+    }
+};
+
+function markCurentPageOnNav() {
     document.getElementById("eco-news-nav").classList.add("eco-news-active-link");
 }
 
-function orderByNameField(nameField){
+function orderByNameField(nameField) {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
     var page = urlSearch.get("page");
-    if (page!==null){
-        urlSearch.set("page","0");
+    if (page !== null) {
+        urlSearch.set("page", "0");
     }
-    if (sort==null){
-        urlSearch.set("sort",nameField+",ASC");
-    }
-    else if (sort.includes(nameField)) {
+    if (sort == null) {
+        urlSearch.set("sort", nameField + ",ASC");
+    } else if (sort.includes(nameField)) {
         sort = sort.toUpperCase();
-        if (sort.includes("ASC")){
-            urlSearch.set("sort",nameField+",DESC");
+        if (sort.includes("ASC")) {
+            urlSearch.set("sort", nameField + ",DESC");
+        } else if (sort.includes("DESC")) {
+            urlSearch.set("sort", nameField + ',ASC');
         }
-        else if(sort.includes("DESC")) {
-            urlSearch.set("sort",nameField+',ASC');
-        }
-    }else {
-        urlSearch.set("sort",nameField+",ASC");
+    } else {
+        urlSearch.set("sort", nameField + ",ASC");
     }
 
     let url = "/management/eco-news?";
     $.ajax({
         url: url + urlSearch.toString(),
         type: 'GET',
-        success: function(res) {
-            window.location.href= url + urlSearch.toString();
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
         }
     });
 }
+
 // mark order
-function markOrder(){
+function markOrder() {
     var allParam = window.location.search;
     var urlSearch = new URLSearchParams(allParam);
     var sort = urlSearch.get("sort");
-    if (sort!==null){
-        if(sort.includes('id')){
-            if (sort.includes('ASC')){
-                document.getElementById("id-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("id-icon").className="fas fa-chevron-down";
+    if (sort !== null) {
+        if (sort.includes('id')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("id-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("id-icon").className = "fas fa-chevron-down";
             }
-        }else if(sort.includes('author.name')){
-            if (sort.includes('ASC')){
-                document.getElementById("author-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("author-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('author.name')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("author-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("author-icon").className = "fas fa-chevron-down";
             }
-        }else if(sort.includes('title')){
-            if (sort.includes('ASC')){
-                document.getElementById("title-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("title-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('title')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("title-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("title-icon").className = "fas fa-chevron-down";
             }
-        }else if (sort.includes('text')){
-            if (sort.includes('ASC')){
-                document.getElementById("text-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("text-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('text')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("text-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("text-icon").className = "fas fa-chevron-down";
             }
-        }else if(sort.includes('creationDate')){
-            if (sort.includes('ASC')){
-                document.getElementById("date-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("date-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('creationDate')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("date-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("date-icon").className = "fas fa-chevron-down";
             }
-        }else if(sort.includes('tags')){
-            if (sort.includes('ASC')){
-                document.getElementById("tags-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("tags-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('tags')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("tags-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("tags-icon").className = "fas fa-chevron-down";
             }
-        }else if(sort.includes('usersLikedNews')){
-            if (sort.includes('ASC')){
-                document.getElementById("likes-icon").className='fas fa-chevron-up';
-            }else {
-                document.getElementById("likes-icon").className="fas fa-chevron-down";
+        } else if (sort.includes('usersLikedNews')) {
+            if (sort.includes('ASC')) {
+                document.getElementById("likes-icon").className = 'fas fa-chevron-up';
+            } else {
+                document.getElementById("likes-icon").className = "fas fa-chevron-down";
             }
         }
     }
@@ -553,13 +535,13 @@ function markOrder(){
 function openNav() {
     document.getElementById("mySidepanel").style.width = "250px";
     document.getElementById("openbtnId").hidden = true;
-    document.getElementById("tab-content").style.marginLeft="15%";
+    document.getElementById("tab-content").style.marginLeft = "15%";
     // document.getElementById("eco-news-content").style.marginRight="15%";
 }
 
 function closeNav() {
     document.getElementById("mySidepanel").style.width = "0";
     document.getElementById("openbtnId").hidden = false;
-    document.getElementById("tab-content").style.marginLeft="0";
+    document.getElementById("tab-content").style.marginLeft = "0";
     // document.getElementById("eco-news-content").style.marginRight="0";
 }
