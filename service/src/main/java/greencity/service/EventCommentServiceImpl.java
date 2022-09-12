@@ -149,15 +149,15 @@ public class EventCommentServiceImpl implements EventCommentService {
      * Method to change the existing {@link greencity.entity.EcoNewsComment}.
      *
      * @param commentText new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id     to specify {@link greencity.entity.EcoNewsComment} that user
-     *               wants to change.
-     * @param userVO current {@link User} that wants to change.
+     * @param id          to specify {@link greencity.entity.EcoNewsComment} that
+     *                    user wants to change.
+     * @param userVO      current {@link User} that wants to change.
      */
     @Override
     @Transactional
     public void update(String commentText, Long id, UserVO userVO) {
         EventComment eventComment = eventCommentRepo.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(eventComment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);

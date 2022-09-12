@@ -108,17 +108,20 @@ public class EventCommentController {
     }
 
     /**
-     * Method to update certain {@link greencity.dto.eventcomment.EventCommentVO} specified by id.
+     * Method to update certain {@link greencity.dto.eventcomment.EventCommentVO}
+     * specified by id.
      *
-     * @param id of {@link greencity.dto.eventcomment.EventCommentVO} to update
-     * @param commentText edited text of {@link greencity.dto.eventcomment.EventCommentVO}
+     * @param id          of {@link greencity.dto.eventcomment.EventCommentVO} to
+     *                    update
+     * @param commentText edited text of
+     *                    {@link greencity.dto.eventcomment.EventCommentVO}
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping()
     public void update(Long id, @RequestParam @NotBlank String commentText, @ApiIgnore @CurrentUser UserVO user) {

@@ -162,7 +162,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-                assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
+            assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -179,8 +179,8 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findById(commentId)).thenReturn(Optional.of(eventComment));
 
         BadRequestException badRequestException =
-                assertThrows(BadRequestException.class,
-                        () -> eventCommentService.update(editedText, commentId, userVO));
+            assertThrows(BadRequestException.class,
+                () -> eventCommentService.update(editedText, commentId, userVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 

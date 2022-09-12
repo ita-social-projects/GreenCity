@@ -67,8 +67,9 @@ public interface EventCommentService {
      * Method to change the existing {@link EventCommentVO}.
      *
      * @param commentText new text of {@link EventCommentVO}.
-     * @param id   to specify {@link EventCommentVO} that user wants to change.
-     * @param user current {@link UserVO} that wants to change.
+     * @param id          to specify {@link EventCommentVO} that user wants to
+     *                    change.
+     * @param user        current {@link UserVO} that wants to change.
      */
     void update(String commentText, Long id, UserVO user);
 
