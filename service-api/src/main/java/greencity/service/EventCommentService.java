@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;

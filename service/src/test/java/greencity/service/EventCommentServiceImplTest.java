@@ -10,7 +10,6 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
