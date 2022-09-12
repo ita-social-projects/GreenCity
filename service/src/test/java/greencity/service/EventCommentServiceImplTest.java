@@ -10,9 +10,11 @@ import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventCommentRepo;
@@ -137,6 +139,49 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
         when(eventRepo.findById(1L)).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> eventCommentService.countComments(eventId));
+    }
+
+    @Test
+    void update() {
+        UserVO userVO = getUserVO();
+        Long commentId = 1L;
+        String editedText = "edited text";
+
+        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+
+        eventCommentService.update(editedText, commentId, userVO);
+        verify(eventCommentRepo, times(1)).save(any(EventComment.class));
+    }
+
+    @Test
+    void updateCommentThatDoesntExistsThrowException() {
+        UserVO userVO = getUserVO();
+        Long commentId = 1L;
+        String editedText = "edited text";
+
+        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.empty());
+
+        NotFoundException notFoundException =
+                assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
+    }
+
+    @Test
+    void updateCommentThatDoesntBelongsToUserThrowException() {
+        User user = ModelUtils.getUser();
+        UserVO userVO = getUserVO();
+        user.setId(2L);
+        Long commentId = 1L;
+        EventComment eventComment = ModelUtils.getEventComment();
+        eventComment.setUser(user);
+        String editedText = "edited text";
+
+        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.of(eventComment));
+
+        BadRequestException badRequestException =
+                assertThrows(BadRequestException.class,
+                        () -> eventCommentService.update(editedText, commentId, userVO));
+        assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 
     @Test

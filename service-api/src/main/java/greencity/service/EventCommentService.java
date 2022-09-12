@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -61,6 +62,15 @@ public interface EventCommentService {
      * @author Inna Yashna
      */
     PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long eventId);
+
+    /**
+     * Method to change the existing {@link EventCommentVO}.
+     *
+     * @param commentText new text of {@link EventCommentVO}.
+     * @param id   to specify {@link EventCommentVO} that user wants to change.
+     * @param user current {@link UserVO} that wants to change.
+     */
+    void update(String commentText, Long id, UserVO user);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
