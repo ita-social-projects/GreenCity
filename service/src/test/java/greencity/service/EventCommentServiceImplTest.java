@@ -170,6 +170,7 @@ class EventCommentServiceImplTest {
         User user = ModelUtils.getUser();
         UserVO userVO = getUserVO();
         user.setId(2L);
+
         Long commentId = 1L;
         EventComment eventComment = ModelUtils.getEventComment();
         eventComment.setUser(user);
