@@ -63,6 +63,16 @@ public interface EventCommentService {
     PageableDto<EventCommentDto> getAllActiveComments(Pageable pageable, UserVO user, Long eventId);
 
     /**
+     * Method to change the existing {@link EventCommentVO}.
+     *
+     * @param commentText new text of {@link EventCommentVO}.
+     * @param id          to specify {@link EventCommentVO} that user wants to
+     *                    change.
+     * @param user        current {@link UserVO} that wants to change.
+     */
+    void update(String commentText, Long id, UserVO user);
+
+    /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
      *
      * @param eventCommentId - {@link EventCommentVO} instance id which will be

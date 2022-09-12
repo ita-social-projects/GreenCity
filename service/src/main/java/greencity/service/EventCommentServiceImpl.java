@@ -13,6 +13,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventCommentRepo;
@@ -22,6 +23,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -140,6 +142,28 @@ public class EventCommentServiceImpl implements EventCommentService {
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
+    }
+
+    /**
+     * Method to change the existing {@link greencity.entity.EcoNewsComment}.
+     *
+     * @param commentText new text of {@link greencity.entity.EcoNewsComment}.
+     * @param id          to specify {@link greencity.entity.EcoNewsComment} that
+     *                    user wants to change.
+     * @param userVO      current {@link User} that wants to change.
+     */
+    @Override
+    @Transactional
+    public void update(String commentText, Long id, UserVO userVO) {
+        EventComment eventComment = eventCommentRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+
+        if (!userVO.getId().equals(eventComment.getUser().getId())) {
+            throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
+        }
+
+        eventComment.setText(commentText);
+        eventCommentRepo.save(eventComment);
     }
 
     /**
