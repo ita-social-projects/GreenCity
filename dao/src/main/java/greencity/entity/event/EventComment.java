@@ -1,6 +1,5 @@
 package greencity.entity.event;
 
-import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
