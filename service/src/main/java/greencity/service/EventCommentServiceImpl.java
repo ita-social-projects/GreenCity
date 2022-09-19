@@ -184,4 +184,16 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         eventCommentRepo.deleteById(eventCommentId);
     }
+
+    public void saveReply(Long eventId, String replyText,
+        UserVO userVO, Long parentCommentId) {
+
+        EventComment eventParentComment = eventCommentRepo.findById(parentCommentId)
+            .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+
+        eventCommentRepo.save(EventComment.builder().text(replyText).parentComment(eventParentComment).build()
+                .setUser(modelMapper.map(userVO, User.class))
+                .setEvent(eventParentComment.getEvent())
+        );
+    }
 }

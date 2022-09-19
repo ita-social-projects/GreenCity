@@ -148,4 +148,30 @@ public class EventCommentController {
         eventCommentService.delete(eventCommentId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    /**
+     * Method for creating {@link greencity.dto.eventcomment.EventCommentVO}.
+     *
+     * @param eventId                   id of {@link greencity.dto.event.EventVO} to
+     *                                  add comment to.
+     * @param replyText                 text of
+     *                                  {@link greencity.dto.eventcomment.EventCommentVO}
+     *                                  reply.
+     * @param user                      - {@link UserVO} user who replied.
+     * @param parentCommentId           {@link greencity.dto.event.EventVO} comment
+     *                                  on which replied.
+     */
+    @ApiOperation(value = "Add reply.")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEventCommentDtoRequest.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @PostMapping("{eventId}/saveReply/{parentCommentId}")
+    public void saveReply(@PathVariable Long eventId, @RequestParam String replyText,
+        @ApiIgnore @CurrentUser UserVO user, @PathVariable Long parentCommentId) {
+        eventCommentService.saveReply(eventId, replyText, user, parentCommentId);
+    }
 }

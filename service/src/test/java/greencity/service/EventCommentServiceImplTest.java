@@ -228,4 +228,36 @@ class EventCommentServiceImplTest {
             assertThrows(NotFoundException.class, () -> eventCommentService.delete(commentId, userVO));
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
     }
+
+    @Test
+    void saveReply() {
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+        Long eventId = 1L;
+
+        when(eventCommentRepo.findById(parentCommentId))
+                .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+
+        eventCommentService.saveReply(eventId,"text", userVO, parentCommentId);
+
+        verify(eventCommentRepo).save(any(EventComment.class));
+    }
+
+    @Test
+    void saveCommentWithWrongParentIdThrowException() {
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+        Long eventId = 1L;
+
+        when(eventCommentRepo.findById(parentCommentId))
+                .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+
+        eventCommentService.saveReply(eventId,"text", userVO, parentCommentId);
+
+        verify(eventCommentRepo).save(any(EventComment.class));
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> eventCommentService.saveReply(eventId,"text", userVO, 2L));
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
+    }
 }
