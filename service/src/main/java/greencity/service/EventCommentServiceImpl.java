@@ -185,9 +185,20 @@ public class EventCommentServiceImpl implements EventCommentService {
         eventCommentRepo.deleteById(eventCommentId);
     }
 
+    /**
+     * Method to add reply on {@link EventComment}.
+     *
+     * @param eventId         id of {@link greencity.dto.event.EventVO} to add
+     *                        comment to.
+     * @param replyText       text of
+     *                        {@link greencity.dto.eventcomment.EventCommentVO}
+     *                        reply.
+     * @param userVO          - {@link UserVO} user who replied.
+     * @param parentCommentId {@link greencity.dto.event.EventVO} comment on which
+     *                        replied.
+     */
     public void saveReply(Long eventId, String replyText,
         UserVO userVO, Long parentCommentId) {
-
         EventComment eventParentComment = eventCommentRepo.findById(parentCommentId)
             .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
