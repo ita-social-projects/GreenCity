@@ -192,8 +192,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         eventCommentRepo.save(EventComment.builder().text(replyText).parentComment(eventParentComment).build()
-                .setUser(modelMapper.map(userVO, User.class))
-                .setEvent(eventParentComment.getEvent())
-        );
+            .setUser(modelMapper.map(userVO, User.class))
+            .setEvent(eventParentComment.getEvent()));
     }
 }

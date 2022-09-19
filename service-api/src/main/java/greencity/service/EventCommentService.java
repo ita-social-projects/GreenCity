@@ -84,14 +84,12 @@ public interface EventCommentService {
     /**
      * Method to saveReply {@link EventCommentVO}.
      *
-     * @param eventId                   id of {@link EventVO} to which we save
-     *                                  comment.
-     * @param replyText                 text of {@link EventCommentVO} reply.
-     * @param user                      {@link UserVO} that saves the comment.
-     * @param parentCommentId           {@link EventCommentVO} id of comment which
-     *                                  is replied to.
+     * @param eventId         id of {@link EventVO} to which we save comment.
+     * @param replyText       text of {@link EventCommentVO} reply.
+     * @param user            {@link UserVO} that saves the comment.
+     * @param parentCommentId {@link EventCommentVO} id of comment which is replied
+     *                        to.
      */
-    void
-    saveReply(Long eventId, String replyText,
+    void saveReply(Long eventId, String replyText,
         UserVO user, Long parentCommentId);
 }

@@ -152,14 +152,14 @@ public class EventCommentController {
     /**
      * Method for creating {@link greencity.dto.eventcomment.EventCommentVO}.
      *
-     * @param eventId                   id of {@link greencity.dto.event.EventVO} to
-     *                                  add comment to.
-     * @param replyText                 text of
-     *                                  {@link greencity.dto.eventcomment.EventCommentVO}
-     *                                  reply.
-     * @param user                      - {@link UserVO} user who replied.
-     * @param parentCommentId           {@link greencity.dto.event.EventVO} comment
-     *                                  on which replied.
+     * @param eventId         id of {@link greencity.dto.event.EventVO} to add
+     *                        comment to.
+     * @param replyText       text of
+     *                        {@link greencity.dto.eventcomment.EventCommentVO}
+     *                        reply.
+     * @param user            - {@link UserVO} user who replied.
+     * @param parentCommentId {@link greencity.dto.event.EventVO} comment on which
+     *                        replied.
      */
     @ApiOperation(value = "Add reply.")
     @ResponseStatus(value = HttpStatus.CREATED)

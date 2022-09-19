@@ -236,9 +236,9 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
 
         when(eventCommentRepo.findById(parentCommentId))
-                .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+            .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
-        eventCommentService.saveReply(eventId,"text", userVO, parentCommentId);
+        eventCommentService.saveReply(eventId, "text", userVO, parentCommentId);
 
         verify(eventCommentRepo).save(any(EventComment.class));
     }
@@ -250,14 +250,14 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
 
         when(eventCommentRepo.findById(parentCommentId))
-                .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+            .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
-        eventCommentService.saveReply(eventId,"text", userVO, parentCommentId);
+        eventCommentService.saveReply(eventId, "text", userVO, parentCommentId);
 
         verify(eventCommentRepo).save(any(EventComment.class));
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class,
-                () -> eventCommentService.saveReply(eventId,"text", userVO, 2L));
+            () -> eventCommentService.saveReply(eventId, "text", userVO, 2L));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
     }
 }
