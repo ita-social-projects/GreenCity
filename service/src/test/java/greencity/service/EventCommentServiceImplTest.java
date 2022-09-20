@@ -233,12 +233,11 @@ class EventCommentServiceImplTest {
     void saveReply() {
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
-        Long eventId = 1L;
 
         when(eventCommentRepo.findById(parentCommentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
-        eventCommentService.saveReply(eventId, "text", userVO, parentCommentId);
+        eventCommentService.saveReply("text", userVO, parentCommentId);
 
         verify(eventCommentRepo).save(any(EventComment.class));
     }
@@ -247,17 +246,10 @@ class EventCommentServiceImplTest {
     void saveCommentWithWrongParentIdThrowException() {
         UserVO userVO = getUserVO();
         Long parentCommentId = 1L;
-        Long eventId = 1L;
 
         when(eventCommentRepo.findById(parentCommentId))
-            .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+            .thenThrow(new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
-        eventCommentService.saveReply(eventId, "text", userVO, parentCommentId);
-
-        verify(eventCommentRepo).save(any(EventComment.class));
-
-        BadRequestException badRequestException = assertThrows(BadRequestException.class,
-            () -> eventCommentService.saveReply(eventId, "text", userVO, 2L));
-        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
+        assertThrows(BadRequestException.class, () -> eventCommentService.saveReply("text", userVO, parentCommentId));
     }
 }
