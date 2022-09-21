@@ -80,4 +80,15 @@ public interface EventCommentService {
      * @param user           current {@link EventCommentVO} that wants to delete.
      */
     void delete(Long eventCommentId, UserVO user);
+
+    /**
+     * Method to saveReply {@link EventCommentVO}.
+     *
+     * @param replyText       text of {@link EventCommentVO} reply.
+     * @param user            {@link UserVO} that saves the comment.
+     * @param parentCommentId {@link EventCommentVO} id of comment which is replied
+     *                        to.
+     */
+    void saveReply(String replyText,
+        UserVO user, Long parentCommentId);
 }
