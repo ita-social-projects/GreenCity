@@ -130,6 +130,7 @@
     <include file="db/changelog/logs/ch-add-name-unique-constraint-Sakhno.xml"/>
     <include file="db/changelog/logs/ch-add-event-comment-Yashna.xml"/>
     <include file="db/changelog/logs/ch-insert-into-employee-authority-Hlazova.xml"/>
+    <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
 
 </databaseChangeLog>
