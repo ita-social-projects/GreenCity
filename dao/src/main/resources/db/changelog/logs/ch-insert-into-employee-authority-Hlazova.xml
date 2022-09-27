@@ -3,113 +3,114 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Hlazova-1" author="Hlazova Nataliia">
-        <insert tableName="employee_authorities">
-            <column name="id">1</column>
+
+        <update tableName="employee_authorities">
             <column name="name">SEE_CLIENTS_PAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">2</column>
+            <where>id=1</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_EMPLOYEES_PAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">3</column>
+            <where>id=2</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">REGISTER_A_NEW_EMPLOYEE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">4</column>
+            <where>id=3</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_EMPLOYEES_AUTHORITIES</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">5</column>
+            <where>id=4</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_EMPLOYEE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">6</column>
+            <where>id=5</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">DEACTIVATE_EMPLOYEE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">7</column>
+            <where>id=6</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_CERTIFICATES</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">8</column>
+            <where>id=7</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_CERTIFICATE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">9</column>
+            <where>id=8</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_CERTIFICATE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">10</column>
+            <where>id=9</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_BIG_ORDER_TABLE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">11</column>
+            <where>id=10</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_ORDER</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">12</column>
+            <where>id=11</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_MESSAGES_PAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">13</column>
+            <where>id=12</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_MESSAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">14</column>
+            <where>id=13</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_MESSAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">15</column>
+            <where>id=14</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">DELETE_MESSAGE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">16</column>
+            <where>id=15</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_TARIFFS</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">17</column>
+            <where>id=16</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_LOCATION</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">18</column>
+            <where>id=17</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_COURIER</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">19</column>
+            <where>id=18</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_RECEIVING_STATION</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">20</column>
+            <where>id=19</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_LOCATION</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">21</column>
+            <where>id=20</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_COURIER</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">22</column>
+            <where>id=21</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_RECEIVING_STATION</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">23</column>
+            <where>id=22</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CREATE_NEW_LOCATION_CARD</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">24</column>
+            <where>id=23</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_LOCATION_CARD</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">25</column>
+            <where>id=24</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">SEE_PRICING_CARD</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">26</column>
+            <where>id=25</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">CONTROL_SERVICE</column>
-        </insert>
-        <insert tableName="employee_authorities">
-            <column name="id">27</column>
+            <where>id=26</where>
+        </update>
+        <update tableName="employee_authorities">
             <column name="name">EDIT_PRICING_CARD</column>
-        </insert>
+            <where>id=27</where>
+        </update>
     </changeSet>
 </databaseChangeLog>
