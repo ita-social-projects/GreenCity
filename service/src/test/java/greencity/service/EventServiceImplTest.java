@@ -116,13 +116,14 @@ class EventServiceImplTest {
         Event actualEvent = ModelUtils.getEvent();
         actualEvent.setOpen(false);
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        String userEmail = ModelUtils.getUser().getEmail();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
         when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
 
         assertThrows(BadRequestException.class,
-            () -> eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null));
+            () -> eventService.update(eventToUpdateDto, userEmail, null));
     }
 
     @Test
