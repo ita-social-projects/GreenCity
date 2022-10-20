@@ -196,10 +196,16 @@ public class EventServiceImpl implements EventService {
         Event toUpdate =
             eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+
+        if (!toUpdate.isOpen()) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
+        }
+
         enhanceWithNewData(toUpdate, eventDto, images);
         return modelMapper.map(eventRepo.save(toUpdate), EventDto.class);
     }

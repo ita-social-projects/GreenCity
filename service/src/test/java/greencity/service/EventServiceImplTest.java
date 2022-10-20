@@ -20,7 +20,6 @@ import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -110,6 +109,21 @@ class EventServiceImplTest {
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
         assertEquals(eventDto, actualEvent);
+    }
+
+    @Test
+    void updateFinishedEvent() {
+        Event actualEvent = ModelUtils.getEvent();
+        actualEvent.setOpen(false);
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        String userEmail = ModelUtils.getUser().getEmail();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.update(eventToUpdateDto, userEmail, null));
     }
 
     @Test
