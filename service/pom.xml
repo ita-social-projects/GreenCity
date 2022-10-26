@@ -22,6 +22,7 @@
         <!-- check actual version on git account google-maps api for java -->
         <google.maps.version>2.0.0</google.maps.version>
         <slf4.version>1.7.25</slf4.version>
+        <apache.http.client.version>4.5.12</apache.http.client.version>
     </properties>
 
     <dependencies>
@@ -134,6 +135,11 @@
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
             <version>${google.maps.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.http.client.version}</version>
         </dependency>
     </dependencies>
 

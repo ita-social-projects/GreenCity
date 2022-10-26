@@ -7,15 +7,13 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.user.*;
-import greencity.entity.Filter;
 import greencity.entity.User;
-import greencity.entity.UserShoppingListItem;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,10 +73,10 @@ class ManagementUserControllerTest {
 
     @Test
     void changeRoleTest() {
-        UserVO userVO = new UserVO();
-        userVO.setEmail("test@mail.com");
-        managementUserController.changeRole(5L, "ROLE_ADMIN", userVO);
-        verify(userService, times(1)).updateRole(5L, Role.ROLE_ADMIN, userVO.getEmail());
+        Map<String, String> body = new HashMap<>();
+        body.put("role", "ROLE_ADMIN");
+        managementUserController.changeRole(5L, body);
+        verify(restClient, times(1)).updateRole(5L, Role.ROLE_ADMIN);
     }
 
     @Test

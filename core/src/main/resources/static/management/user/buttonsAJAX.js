@@ -106,14 +106,53 @@ function otherCheck() {
     }
 }
 
-function changeRole(userId, role) {
-    var href = "/management/users/" + userId + "/" + role;
+// Save button in editUserModal
+function updateUser(userId) {
+    let formData = $('#editUserForm' + userId).serializeArray().reduce(function (obj, item) {
+        obj[item.name] = item.value;
+        return obj;
+    }, {});
+    let returnData = {
+        "id": formData.id,
+        "name": formData.name,
+        "email": formData.email,
+        "role": formData.role,
+        "userCredo": formData.userCredo,
+        "userStatus": formData.userStatus
+    }
     $.ajax({
-        url: href,
-        type: 'get',
-        success: function (data) {
-            location.reload();
+        url: '/management/users/',
+        type: 'PUT',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(returnData),
+        success: function () {
+            history.go();
         },
+        error: function(responseData) { //ToDo
+            console.log(responseData);
+            if (Array.isArray(responseData.errors) && responseData.errors.length) {
+                responseData.errors.forEach(function (el) {
+                    console.log(el);
+                    $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
+                })
+            }
+        }
+    });
+}
+
+
+function changeRole(userId, role) {
+    let href = '/management/users/' + userId + '/role';
+    let payload = { 'role': role };
+    $.ajax({
+        type: 'PATCH',
+        url: href,
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function(){
+            history.go();
+        }
     });
 }
 
@@ -234,41 +273,6 @@ $(document).ready(function () {
             $('#userStatus').val(user.userStatus);
         });
     });
-    // Save editing button in editUserModal
-    $('#submitEditBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#editUserForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var returnData = {
-            "id": formData.id,
-            "name": formData.name,
-            "email": formData.email,
-            "role": formData.role,
-            "userCredo": formData.userCredo,
-            "userStatus": formData.userStatus
-        }
-        // put request when 'Save' button in editUserModal clicked
-        $.ajax({
-            url: '/management/users/',
-            type: 'put',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: JSON.stringify(returnData)
-        });
-    })
-
     // Deactivate user button (popup)
     $('td .deactivate-user.eDeactBtn').on('click', function (event) {
         event.preventDefault();
@@ -356,6 +360,7 @@ $(document).ready(function () {
             elements[0].parentNode.removeChild(elements[0]);
         }
     });
+
     // Confirm deactivation button in activateUserModal
     $('#activateOneSubmit').on('click', function (event) {
         event.preventDefault();

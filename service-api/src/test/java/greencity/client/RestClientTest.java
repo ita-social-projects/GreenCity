@@ -1,6 +1,7 @@
 package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
+import greencity.dto.user.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -11,10 +12,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -131,6 +128,26 @@ class RestClientTest {
         restClient.updateUser(userManagementDto);
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
+    }
+
+    @Test
+    void updateRole() {
+        //given
+        UserRoleDto userRoleDto = new UserRoleDto();
+        String url = greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/1/role";
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+
+        //when
+        restClient.updateRole(1L, any());
+
+        //then
+        verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
     @Test
@@ -303,17 +320,22 @@ class RestClientTest {
 
     @Test
     void managementRegisterUser() {
+        //given
         UserManagementDto userManagementDto = new UserManagementDto();
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+
+        //when
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
         restClient.managementRegisterUser(userManagementDto);
 
+        //then
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }
