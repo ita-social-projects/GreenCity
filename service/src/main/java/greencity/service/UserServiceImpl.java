@@ -112,6 +112,7 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @Deprecated
     @Override
     public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);

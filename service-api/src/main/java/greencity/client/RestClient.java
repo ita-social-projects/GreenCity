@@ -1,5 +1,7 @@
 package greencity.client;
 
+import greencity.dto.user.*;
+import greencity.enums.Role;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +31,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -198,6 +196,22 @@ public class RestClient {
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)
             .getBody();
+    }
+
+    /**
+     * Method for sending change role request.
+     *
+     * @param id of user whose role is being changed
+     * @param role new role
+     */
+    public void updateRole(Long id, Role role) {
+        String url = greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/" + id + "/role";
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UserRoleDto userRoleDto = new UserRoleDto(role);
+        HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
+        restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
     /**

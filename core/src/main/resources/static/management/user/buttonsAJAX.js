@@ -107,11 +107,16 @@ function otherCheck() {
 }
 
 function changeRole(userId, role) {
-    var href = "/management/users/" + userId + "/" + role;
+    let href = "/management/users/" + userId + "/role";
+    let payload = { "role": role };
     $.ajax({
+        type: 'PATCH',
         url: href,
-        type: 'get',
-        success: function (data) {
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function () {
+            console.log('now in success callback function');
             location.reload();
         },
     });

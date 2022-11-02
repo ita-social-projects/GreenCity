@@ -10,6 +10,7 @@ import greencity.enums.Role;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -126,18 +127,17 @@ public class ManagementUserController {
     /**
      * Method that change user's Role {@link Role} by given id.
      *
-     * @param id          {@link Long} - user's id.
-     * @param userRole    {@link String} - new user's Role.
-     * @param currentUser {@link UserVO} - admin profile.
+     * @param id   {@link Long} - user's id.
+     * @param body map with new user's Role.
      * @author Stepan Tehlivets.
      */
-    @GetMapping("/{id}/{role}")
-    public String changeRole(@PathVariable Long id,
-        @PathVariable(name = "role") String userRole,
-        @CurrentUser UserVO currentUser) {
-        Role role = Role.valueOf(userRole);
-        userService.updateRole(id, role, currentUser.getEmail());
-        return "redirect:/management/users";
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<?> changeRole(@PathVariable Long id,
+                                        @RequestBody Map<String, String> body) {
+        String stringRole = body.get("role");
+        Role role = Role.valueOf(stringRole);
+        restClient.updateRole(id, role);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -187,7 +187,7 @@ public class ManagementUserController {
      * @param id        {@link Long} - user's id.
      * @param adminLang {@link String} - current administrator language.
      * @return {@link List} of {@link String} - reasons for deactivation of the
-     *         current user.
+     *      current user.
      * @author Vlad Pikhotskyi
      */
     @GetMapping("/reasons")
@@ -237,7 +237,7 @@ public class ManagementUserController {
     @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
     public void updateShoppingItem(@PathVariable("itemId") Long itemId,
-        @PathVariable("habitId") Long habitId) {
+                                   @PathVariable("habitId") Long habitId) {
         habitAssignService.updateShoppingItem(habitId, itemId);
     }
 
@@ -268,7 +268,7 @@ public class ManagementUserController {
 
     /**
      * Method for deleting filters.
-     * 
+     *
      * @param id user filter {@link Long} filter's id.
      */
     @GetMapping(value = "{id}/delete-filter")

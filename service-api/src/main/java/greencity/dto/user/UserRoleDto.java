@@ -15,8 +15,5 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UserRoleDto {
     @NotNull
-    private Long id;
-
-    @NotNull
     private Role role;
 }
