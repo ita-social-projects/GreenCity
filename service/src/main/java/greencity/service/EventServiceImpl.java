@@ -8,7 +8,8 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
 import greencity.dto.tag.TagVO;
-import greencity.entity.*;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
@@ -122,7 +123,9 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findAllByAttender(page, attender.getId());
-        return buildPageableAdvancedDto(events);
+        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
+        setSubscribes(events, eventDtos, attender);
+        return eventDtos;
     }
 
     private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
@@ -212,7 +215,6 @@ public class EventServiceImpl implements EventService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public void rateEvent(Long eventId, String email, int grade) {
