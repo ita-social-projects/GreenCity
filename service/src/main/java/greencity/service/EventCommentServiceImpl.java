@@ -5,10 +5,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.dto.eventcomment.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -58,6 +55,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
+        addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
         return addEventCommentDtoResponse;
     }

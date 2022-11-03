@@ -379,7 +379,7 @@ public class RestClient {
      * @author Inna Yashna
      */
     public void sendNewEventComment(EventCommentForSendEmailDto message) {
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
