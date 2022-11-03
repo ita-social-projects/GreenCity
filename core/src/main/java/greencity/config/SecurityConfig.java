@@ -160,9 +160,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
                 "/place/filter",
-                    "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items"
-                //CUSTOM_SHOPPING_LIST_URL
-            )
+                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
@@ -222,7 +220,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/create",
                 EVENTS + "/rateEvent/{eventId}/{rate}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
-                //"/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                 "/files/image",
                 "/files/convert",
                 HABIT_ASSIGN_ID,
