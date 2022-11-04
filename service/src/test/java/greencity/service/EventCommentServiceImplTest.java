@@ -8,6 +8,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -69,9 +70,15 @@ class EventCommentServiceImplTest {
         EventComment eventComment = ModelUtils.getEventComment();
         EventAuthorDto eventAuthorDto = ModelUtils.getEventAuthorDto();
 
+        //добавил
+        EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
+
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
+
+        //добавил
+        when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
         when(modelMapper.map(user, EventAuthorDto.class)).thenReturn(eventAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
