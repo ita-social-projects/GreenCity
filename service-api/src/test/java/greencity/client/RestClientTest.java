@@ -337,8 +337,11 @@ class RestClientTest {
     void sendNewEventComment() {
         EventCommentForSendEmailDto message = ModelUtils.getEventCommentForSendEmailDto();
         HttpHeaders httpHeaders = new HttpHeaders();
+        String accessToken = "accessToken";
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set(AUTHORIZATION, accessToken);
         HttpEntity<EventCommentForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
