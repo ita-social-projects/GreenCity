@@ -69,15 +69,11 @@ class EventCommentServiceImplTest {
         AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
         EventComment eventComment = ModelUtils.getEventComment();
         EventAuthorDto eventAuthorDto = ModelUtils.getEventAuthorDto();
-
-        //добавил
         EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
 
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
-
-        //добавил
         when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
         when(modelMapper.map(user, EventAuthorDto.class)).thenReturn(eventAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
