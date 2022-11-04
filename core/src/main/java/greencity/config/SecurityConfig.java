@@ -160,7 +160,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
                 "/place/filter",
-                CUSTOM_SHOPPING_LIST_URL)
+                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
@@ -169,6 +169,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 CUSTOM_SHOPPING_LIST,
                 CUSTOM_SHOPPING_LIST_URL,
+                "/custom/shopping-list-items/{userId}/{habitId}",
                 "/econews/count",
                 "/econews/isLikedByUser",
                 "/favorite_place/",
