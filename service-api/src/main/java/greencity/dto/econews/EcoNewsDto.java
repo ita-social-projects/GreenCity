@@ -1,6 +1,7 @@
 package greencity.dto.econews;
 
 import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.UserVO;
 import java.time.ZonedDateTime;
 import java.util.List;
 import javax.validation.constraints.Min;
@@ -43,6 +44,8 @@ public class EcoNewsDto {
     private List<String> tagsUa;
 
     private int likes;
+
+    private int dislikes;
 
     private int countComments;
 }

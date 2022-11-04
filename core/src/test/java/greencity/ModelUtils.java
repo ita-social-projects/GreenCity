@@ -120,12 +120,12 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), null);
+            "title", "text", null, Collections.singletonList(getTag()), null, null);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
-            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12);
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
