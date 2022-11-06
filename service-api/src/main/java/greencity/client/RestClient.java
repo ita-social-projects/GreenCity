@@ -192,10 +192,11 @@ public class RestClient {
      * @author Orest Mamchuk
      */
     public void updateUser(UserManagementDto userDto) {
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, setHeader());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
     }
 
     /**

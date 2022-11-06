@@ -51,8 +51,9 @@
         <div class="table-responsive">
             <div class="table-wrapper">
                 <div class="table-title">
+                    <!--Header-->
                     <div class="row manager-user">
-                        <h2 class="text-describe">[[#{greenCity.user.page.h}]]</h2>
+                        <h2 class="text-describe" th:text="#{greenCity.user.page.h}"></h2>
                         <div class="buttons">
                             <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
                                data-toggle="modal">
@@ -61,7 +62,8 @@
                             <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
                                 <div>[[#{greenCity.user.page.add.user}]]</div>
                             </a>
-                            <div id="addUserModal" class="modal fade">
+                            <!--    Add user modal-->
+                            <div th:id="addUserModal" class="modal fade">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <form th:action="@{/management/users/register}" method="post" id="addUserForm">
@@ -108,6 +110,7 @@
                             </div>
                         </div>
                     </div>
+<!--                    Search, sort and pagination-->
                     <div class="row-box-and-sort">
                         <div class="main-search">
                             <form class="form-inline searching" method="get" th:action="@{/management/users}">
@@ -174,6 +177,7 @@
                             </div>
                         </div>
                     </div>
+<!--                    Table header-->
                     <table class="table table-bordered">
                         <thead>
                         <tr class="table-primary ">
@@ -323,6 +327,7 @@
 <!--           п'яте                     </div>-->
                             </th>
                         </tr>
+<!--                        Table content-->
                         </thead>
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
@@ -336,6 +341,66 @@
                                 </td>
                                 <td style="width: 50px;">
                                     <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
+                                    <a th:href="'#editUserModal'+${user.getId()}" id="editUserModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                        <div>[[#{greenCity.user.page.edit.user}]]</div>
+                                    </a>
+                                    <!--Edit user Modal HTML -->
+                                    <div th:id="'editUserModal'+${user.getId()}" class="modal fade">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form th:id="'editUserForm'+${user.getId()}">
+                                                    <div class="modal-header">
+                                                        <h4 class="modal-title">Edit User</h4>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label>ID
+                                                                <input th:value="${user.getId()}" type="text" class="form-control" id="id" name="id" readonly required>
+                                                            </label>
+                                                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>User name
+                                                                <input th:value="${user.getName()}" type="text" class="form-control" id="name" name="name" required>
+                                                            </label>
+                                                            <span th:id="errorModalUpdatename" class="errorSpan"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Email
+                                                                <input th:value="${user.getEmail()}" type="text" class="form-control" id="email" name="email" required>
+                                                            </label>
+                                                            <span th:id="errorModalUpdateemail" class="errorSpan"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Credo
+                                                                <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
+                                                            </label>
+                                                            <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Role
+                                                                <input th:value="${user.getRole().name()}" type="text" class="form-control" id="role" name="role" required>
+                                                            </label>
+                                                            <span th:id="errorModalUpdaterole" class="errorSpan"></span>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="userStatus">Status
+                                                                <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required
+                                                                   readonly>
+                                                            </label>
+                                                            <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                                               value="Cancel">
+                                                        <input type="button" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" th:onclick="'updateUser(' + ${user.getId()} + ');'" id="submitEditBtn">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
@@ -347,10 +412,10 @@
                                         <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
                                         <div class="dropdown-content role">
 
-                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_ADMIN\');'"
+                                            <a class="role-update" th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_ADMIN\');'"
                                                th:if="${!user.role.name().equals('ROLE_ADMIN')}">admin</a>
-                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_USER\');'" th:if="${!user.role.name().equals('ROLE_USER')}">user</a>
-                                            <a th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_MODERATOR\');'" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
+                                            <a class="role-update" th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_USER\');'" th:if="${!user.role.name().equals('ROLE_USER')}">user</a>
+                                            <a class="role-update" th:onclick="'changeRole(\'' + ${user.id} + '\',\'ROLE_MODERATOR\');'" th:if="${!user.role.name().equals('ROLE_MODERATOR')}">moderator</a>
                                         </div>
                                     </div>
                                 </td>
@@ -443,212 +508,115 @@
                         </ul>
                     </div>
                     <!-- End of Paging -->
-                </div>
-            </div>
-        </div>
-        <!--&lt;!&ndash; Add Modal HTML &ndash;&gt;
-        <div id="addUserModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form th:action="@{#}" method="post" id="addUserForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" class="form-control" name="id" value="-1" readonly required>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.userName}]]</label>
-                                <input type="text" class="form-control" name="name" required>
-                                <span th:id="errorModalSavename" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.email}]]</label>
-                                <input type="text" class="form-control" name="email" required>
-                                <span th:id="errorModalSaveemail" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.credo}]]</label>
-                                <select class="form-control" name="role">
-                                    <option selected="selected">ROLE_USER</option>
-                                    <option>ROLE_ADMIN</option>
-                                    <option>ROLE_MODERATOR</option>
-                                </select>
-                                <span th:id="errorModalSaverole" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>[[#{greenCity.pages.table.role}]]</label>
-                                <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
-                                       required>
-                                <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                    <!-- Deactivate user Modal HTML -->
+                    <div id="deactivateUserModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form id="deactivateUserForm">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title-deac">[[#{greenCity.user.page.popup.deactivated.h}]]</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p class="deactivate-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
+                                        <div class="modal-reasons">
+                                            <input type="checkbox" id="first-click" class="deactivate-checkbox">
+                                            <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input}]]</p><br>
+                                        </div>
+                                        <div class="modal-reasons">
+                                            <input type="checkbox" id="second-click" class="deactivate-checkbox">
+                                            <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]</p><br>
+                                        </div>
+                                        <div class="modal-reasons">
+                                            <input type="checkbox" id="other" onclick="otherCheck()" class="deactivate-checkbox">
+                                            <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
+                                        </div>
+                                        <div id="user-lang" style="display: none">
+                                        </div>
+                                        <input type="text" id="othertext" style="display: none" class="custom-reason">
+                                        <span th:id="errorDeactivateUser" class="errorSpan"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                               th:value="#{greenCity.pages.popup.cancel.}">
+                                        <a href="" id="deactivateOneSubmit" class="btn btn-remove" disabled="true">
+                                            <div>[[#{greenCity.user.page.deactivated}]]</div>
+                                        </a>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.add.}"  id="submitAddBtn">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>-->
-        <!--&lt;!&ndash; Edit user Modal HTML &ndash;&gt;
-        <div id="editUserModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="editUserForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Edit User</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>ID</label>
-                                <input type="text" class="form-control" id="id" name="id" readonly required>
-                                <span th:id="errorModalUpdateid" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>User name</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
-                                <span th:id="errorModalUpdatename" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="text" class="form-control" id="email" name="email" required>
-                                <span th:id="errorModalUpdateemail" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Credo</label>
-                                <input type="text" class="form-control" id="userCredo" name="userCredo" required>
-                                <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Role</label>
-                                <input type="text" class="form-control" id="role" name="role" required>
-                                <span th:id="errorModalUpdaterole" class="errorSpan"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="userStatus">Status</label>
-                                <input type="text" class="form-control" id="userStatus" name="userStatus" required
-                                       readonly>
-                                <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   value="Cancel">
-                            <input type="submit" class="btn btn-success btn-primary" th:value="#{greenCity.pages.popup.save.}" id="submitEditBtn">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>-->
-        <!-- Deactivate user Modal HTML -->
-        <div id="deactivateUserModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="deactivateUserForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title-deac">[[#{greenCity.user.page.popup.deactivated.h}]]</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p class="deactivate-warning">[[#{greenCity.user.page.popup.deactivated.p1}]]</p>
-                            <div class="modal-reasons">
-                                <input type="checkbox" id="first-click" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input}]]</p><br>
-                            </div>
-                            <div class="modal-reasons">
-                                <input type="checkbox" id="second-click" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input1}]]</p><br>
-                            </div>
-                            <div class="modal-reasons">
-                                <input type="checkbox" id="other" onclick="otherCheck()" class="deactivate-checkbox">
-                                <p class="deactivation-reasons">[[#{greenCity.user.page.popup.deactivated.fieldset.input2}]]</p><br>
-                            </div>
-                            <div id="user-lang" style="display: none">
-                            </div>
-                            <input type="text" id="othertext" style="display: none" class="custom-reason">
-                            <span th:id="errorDeactivateUser" class="errorSpan"></span>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="deactivateOneSubmit" class="btn btn-remove" disabled="true">
-                                <div>[[#{greenCity.user.page.deactivated}]]</div>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- Activate user Modal HTML -->
-        <div id="activateUserModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <!--<form id="activateUserForm">-->
-                    <div class="modal-header">
-                        <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
                     </div>
-                    <div class="modal-body">
-                        <p class="modal-body-act">[[#{greenCity.user.page.popup.activated.p1}]]</p>
-                        <p class="modal-body-act1">[[#{greenCity.user.page.popup.activated.p1.was}]]</p>
-                    </div>
-                    <div id="reasons">
-                    </div>
-                    <div class="modal-footer">
-                        <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                               th:value="#{greenCity.pages.popup.cancel.}">
-                        <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
-                            <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
-                        </a>
-                    </div>
-                    <!--</form>-->
-                </div>
-            </div>
-        </div>
-        <!-- Deactivate all selected users Modal HTML -->
-        <div id="deactivateAllSelectedModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="">
-                        <div class="modal-header">
-                            <h4 class="modal-title-deac">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <!-- Activate user Modal HTML -->
+                    <div id="activateUserModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!--<form id="activateUserForm">-->
+                                <div class="modal-header">
+                                    <h4 class="modal-title-act">[[#{greenCity.user.page.popup.activated.h}]]</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="modal-body-act">[[#{greenCity.user.page.popup.activated.p1}]]</p>
+                                    <p class="modal-body-act1">[[#{greenCity.user.page.popup.activated.p1.was}]]</p>
+                                </div>
+                                <div id="reasons">
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                           th:value="#{greenCity.pages.popup.cancel.}">
+                                    <a href="" id="activateOneSubmit" class="btn btn-success btn-primary">
+                                        <div>[[#{greenCity.user.page.popup.activated.div}]]</div>
+                                    </a>
+                                </div>
+                                <!--</form>-->
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                    </div>
+                    <!-- Deactivate all selected users Modal HTML -->
+                    <div id="deactivateAllSelectedModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form id="">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title-deac">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
+                                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
+                                               th:value="#{greenCity.pages.popup.cancel.}">
+                                        <a href="" id="deactivateAllSubmit" class="btn btn-remove" style="margin-top: 25px;">
+                                            <div>[[#{greenCity.user.page.deactivated}]]</div>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                        <div class="modal-footer">
-                            <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="deactivateAllSubmit" class="btn btn-remove" style="margin-top: 25px;">
-                                <div>[[#{greenCity.user.page.deactivated}]]</div>
-                            </a>
+                    </div>
+                    <!-- User's friends Modal HTML -->
+                    <div id="userFriendsModal" class="modal fade">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <h4 class="modal-title">User's Friends</h4>
+                                <div class="modal-body">
+                                    <table class="table table-hover" id="friendsTable">
+                                        <thead>
+                                        <tr class="table-primary">
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Credo</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- User's friends Modal HTML -->
-        <div id="userFriendsModal" class="modal fade">
-            <div class="modal-dialog modal-dialog-scrollable">
-                <div class="modal-content">
-                    <h4 class="modal-title">User's Friends</h4>
-                    <div class="modal-body">
-                        <table class="table table-hover" id="friendsTable">
-                            <thead>
-                            <tr class="table-primary">
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Credo</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                            </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
                     </div>
                 </div>
             </div>

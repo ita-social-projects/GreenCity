@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import greencity.repository.options.UserFilter;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -114,12 +115,14 @@ public class UserServiceImpl implements UserService {
      */
     @Deprecated
     @Override
+    @Transactional
     public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);
-        UserVO userVO = findById(id);
-        userVO.setRole(role);
-        userRepo.updateUserRole(id, String.valueOf(role));
-        return modelMapper.map(userVO, UserRoleDto.class);
+        User user = userRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        user.setRole(role);
+        userRepo.save(user);
+        return modelMapper.map(user, UserRoleDto.class);
     }
 
     /**
@@ -209,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
-        Pageable pageable) {
+                                                               Pageable pageable) {
         if (status != null) {
             status = status.equals("all") ? null : status;
         }

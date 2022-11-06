@@ -132,12 +132,13 @@ public class ManagementUserController {
      * @author Stepan Tehlivets.
      */
     @PatchMapping("/{id}/role")
-    public ResponseEntity<?> changeRole(@PathVariable Long id,
-                                        @RequestBody Map<String, String> body) {
-        String stringRole = body.get("role");
-        Role role = Role.valueOf(stringRole);
+    @ResponseStatus(HttpStatus.OK)
+    public void changeRole(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body
+    ) {
+        Role role = Role.valueOf(body.get("role"));
         restClient.updateRole(id, role);
-        return ResponseEntity.ok().build();
     }
 
     /**

@@ -1,6 +1,7 @@
 package greencity.exception.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorAttributes errorAttributes;
+    private final ObjectMapper objectMapper;
 
     /**
      * ExceptionHandler for intercepting errors from GreenCityUser.
@@ -52,35 +54,26 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.class)
     public final ResponseEntity<Object> handleHttpClientErrorException(
         HttpClientErrorException ex, WebRequest request) {
-        log.info(ex.getMessage());
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, String> responseBodyFromException = jsonHttpClientErrorExceptionToMap(ex, objectMapper);
-        String message = responseBodyFromException.get("message");
+        Map<String, String> httpClientResponseBody = jsonHttpClientErrorExceptionToMap(ex);
+        String message = httpClientResponseBody.get("message");
+        log.info(ex.getStatusCode() + " " + message);
         HttpClientErrorExceptionResponse responseBody =
             new HttpClientErrorExceptionResponse(getErrorAttributes(request), message);
         return ResponseEntity.status(ex.getStatusCode()).body(responseBody);
     }
 
-    private static Map<String, String> jsonHttpClientErrorExceptionToMap(
-        HttpClientErrorException ex, ObjectMapper objectMapper) {
-        Map<String, String> responseBodyFromException;
+    private Map<String, String> jsonHttpClientErrorExceptionToMap(
+        HttpClientErrorException ex) {
+        TypeReference<Map<String, String>> responseType = new TypeReference<>() {};
+        Map<String, String> httpClientResponseBody;
         try {
-            responseBodyFromException = objectMapper.readValue(ex.getResponseBodyAsString(), Map.class);
+            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return responseBodyFromException;
+        return httpClientResponseBody;
     }
 
-    private Map<String, Object> assembleErrorMessage(HttpClientErrorException ex, WebRequest request) {
-
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("path", getErrorAttributes(request).get("path"));
-        responseBody.put("message", responseBody.get("message"));
-        responseBody.put("timestamp", getErrorAttributes(request).get("timestamp"));
-        responseBody.put("trace", getErrorAttributes(request).get("trace"));
-        return responseBody;
-    }
     /**
      * Method intercept exception {@link MultipartException}.
      *
