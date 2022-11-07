@@ -184,17 +184,46 @@
                                         </td>
                                         <td th:text="${allEvents.tagsToStringEn()}">
                                         </td>
-                                        <td>
+                                        <td style="display: flex; justify-content: center; align-items: center">
                                             <a th:href="@{/management/events/find/(id=${allEvents.getId()})}"
-                                            class="edit eBtn">
+                                            class="edit eBtn"
+                                            style="flex: 1;">
                                                 <i class="material-icons" data-toggle="tooltip"
                                                    th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                             </a>
-                                            <a th:href="@{/management/events/delete/(id=${allEvents.getId()})}"
-                                                class="delete eDelBtn" data-toggle="modal">
-                                                <i class="material-icons" data-toggle="tooltip"
-                                                    th:title="#{greenCity.pages.delete}">&#xE872;</i>
-                                            </a>
+                                            <form style="flex: 1" method="post" th:action="@{/management/events/delete/(id=${allEvents.getId()})}">
+                                                <button type="button" style="background-color: transparent; border: none" th:attr="data-target='#deleteEventsModal'+${allEvents.getId()}" data-toggle="modal" th:id="${allEvents.getId()}">
+                                                    <span  th:id="${allEvents.getId()}"
+                                                            class="delete eDelBtn" data-toggle="modal">
+                                                        <i  th:id="${allEvents.getId()}" class="material-icons" data-toggle="tooltip"
+                                                           th:title="#{greenCity.pages.delete}">&#xE872;</i>
+                                                    </span>
+                                                </button>
+                                                <div th:id="deleteEventsModal+${allEvents.getId()}" class="modal fade">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <form id="deleteEventsForm">
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title">[[#{greenCity.events.page.delete.event}]]</h4>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
+                                                                    <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
+                                                                           th:value="#{greenCity.pages.popup.cancel.}"
+                                                                    style="margin: auto 0">
+                                                                    <button class="btn btn-remove">
+                                                                        <div>[[#{greenCity.pages.delete}]]</div>
+                                                                    </button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
                                         </td>
                                     </tr>
                                 </th:block>
@@ -355,29 +384,29 @@
             </div>
         </div>
         <!-- Delete Modal HTML -->
-        <div id="deleteEventsModal" class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="deleteEventsForm">
-                        <div class="modal-header">
-                            <h4 class="modal-title">[[#{greenCity.events.page.delete.events}]]</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p>[[#{greenCity.pages.popup.delete.h2}]]</p>
-                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
-                                   th:value="#{greenCity.pages.popup.cancel.}">
-                            <a href="" id="deleteOneSubmit" class="btn btn-remove">
-                                <div>[[#{greenCity.pages.delete}]]</div>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<!--        <div id="deleteEventsModal" class="modal fade">-->
+<!--            <div class="modal-dialog">-->
+<!--                <div class="modal-content">-->
+<!--                    <form id="deleteEventsForm">-->
+<!--                        <div class="modal-header">-->
+<!--                            <h4 class="modal-title">[[#{greenCity.events.page.delete.events}]]</h4>-->
+<!--                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+<!--                        </div>-->
+<!--                        <div class="modal-body">-->
+<!--                            <p>[[#{greenCity.pages.popup.delete.h2}]]</p>-->
+<!--                            <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>-->
+<!--                        </div>-->
+<!--                        <div class="modal-footer">-->
+<!--                            <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"-->
+<!--                                   th:value="#{greenCity.pages.popup.cancel.}">-->
+<!--                            <a href="" id="deleteOneSubmit" class="btn btn-remove">-->
+<!--                                <div>[[#{greenCity.pages.delete}]]</div>-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <!-- Delete all selected Modal HTML -->
         <div id="deleteAllSelectedModal" class="modal fade">
             <div class="modal-dialog">

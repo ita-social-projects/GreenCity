@@ -54,7 +54,7 @@ public class Event {
     private boolean isOpen = true;
 
     @Column
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
     @ManyToMany
     @JoinTable(

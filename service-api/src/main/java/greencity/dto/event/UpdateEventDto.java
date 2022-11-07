@@ -36,4 +36,7 @@ public class UpdateEventDto {
 
     @JsonProperty(value = "open")
     private Boolean isOpen;
+
+    @JsonProperty(value = "active")
+    private Boolean isActive;
 }

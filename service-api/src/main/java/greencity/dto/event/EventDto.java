@@ -39,6 +39,8 @@ public class EventDto {
 
     private boolean isOpen;
 
+    private boolean isActive;
+
     private Boolean isSubscribed;
 
     /**

@@ -410,7 +410,7 @@ table.table td a.edit {
     color: #FF9310;
 }
 
-table.table td a.delete {
+table.table td a.delete, p.delete, span.delete{
     color: #E02116;
 }
 

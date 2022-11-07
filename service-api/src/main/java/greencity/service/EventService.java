@@ -107,4 +107,5 @@ public interface EventService {
      * @param eventId - id of event
      */
     EventVO findById(Long eventId);
+    void disableEvent(Long eventId);
 }

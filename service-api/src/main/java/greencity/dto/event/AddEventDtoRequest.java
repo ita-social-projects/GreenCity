@@ -29,4 +29,7 @@ public class AddEventDtoRequest {
 
     @JsonProperty(value = "open")
     private boolean isOpen;
+
+    @JsonProperty(value = "active")
+    private boolean isActive;
 }

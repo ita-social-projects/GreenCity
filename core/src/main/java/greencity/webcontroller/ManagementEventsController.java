@@ -30,7 +30,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore Pageable pageable, EventViewDto eventViewDto) {
+        @ApiIgnore Pageable pageable, EventViewDto eventViewDto, @RequestParam(required = false, name = "active", defaultValue = "false") boolean active) {
         PageableAdvancedDto<EventDto> allEvents;
         if (!eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -56,5 +56,11 @@ public class ManagementEventsController {
         model.addAttribute("eventsTag", tagsService.findByTypeAndLanguageCode(TagType.EVENT, "en"));
         model.addAttribute("pageSize", pageable.getPageSize());
         return "core/management_events";
+    }
+
+    @PostMapping("/delete")
+    public String deleteEvent(@RequestParam Long id){
+        eventService.disableEvent(id);
+        return "redirect:/management/events";
     }
 }

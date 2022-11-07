@@ -32,6 +32,7 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
         event.setTitle(addEventDtoRequest.getTitle());
         event.setDescription(addEventDtoRequest.getDescription());
         event.setOpen(addEventDtoRequest.isOpen());
+        event.setIsActive(true);
 
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
         for (var date : addEventDtoRequest.getDatesLocations()) {
