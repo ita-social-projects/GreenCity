@@ -47,7 +47,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * ExceptionHandler for intercepting errors from GreenCityUser.
      *
-     * @param ex exception thrown by RestTemplate
+     * @param ex      exception thrown by RestTemplate
      * @param request request with details
      * @return response entity similar to one that came from GreenCityUser
      */
@@ -64,7 +64,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Map<String, String> jsonHttpClientErrorExceptionToMap(
         HttpClientErrorException ex) {
-        TypeReference<Map<String, String>> responseType = new TypeReference<>() {};
+        TypeReference<Map<String, String>> responseType = new TypeReference<>() {
+        };
         Map<String, String> httpClientResponseBody;
         try {
             httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
@@ -567,7 +568,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
-
 
     /**
      * Customize the response for InvalidStatusException.

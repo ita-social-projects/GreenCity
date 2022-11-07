@@ -136,8 +136,7 @@ public class ManagementUserController {
     @ResponseStatus(HttpStatus.OK)
     public void changeRole(
         @PathVariable Long id,
-        @RequestBody Map<String, String> body
-    ) {
+        @RequestBody Map<String, String> body) {
         Role role = Role.valueOf(body.get("role"));
         restClient.updateRole(id, role);
     }
@@ -189,7 +188,7 @@ public class ManagementUserController {
      * @param id        {@link Long} - user's id.
      * @param adminLang {@link String} - current administrator language.
      * @return {@link List} of {@link String} - reasons for deactivation of the
-     *      current user.
+     *         current user.
      * @author Vlad Pikhotskyi
      */
     @GetMapping("/reasons")
@@ -208,9 +207,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")
-    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(restClient.deactivateAllUsers(listId));
+    @ResponseStatus(HttpStatus.OK)
+    public void deactivateAll(@RequestBody List<Long> listId) {
+        restClient.deactivateAllUsers(listId);
     }
 
     /**
@@ -239,7 +238,7 @@ public class ManagementUserController {
     @PutMapping(value = "/updateShoppingItem/{habitId}/{itemId}")
     @ResponseStatus(value = HttpStatus.OK)
     public void updateShoppingItem(@PathVariable("itemId") Long itemId,
-                                   @PathVariable("habitId") Long habitId) {
+        @PathVariable("habitId") Long habitId) {
         habitAssignService.updateShoppingItem(habitId, itemId);
     }
 

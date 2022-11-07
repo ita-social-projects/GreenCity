@@ -213,7 +213,7 @@ public class RestClient {
     /**
      * Method for sending change role request.
      *
-     * @param id of user whose role is being changed
+     * @param id   of user whose role is being changed
      * @param role new role
      */
     public void updateRole(Long id, Role role) {
@@ -357,16 +357,15 @@ public class RestClient {
      *               deleted.
      * @author Orest Mamchuk
      */
-    public List<Long> deactivateAllUsers(List<Long> listId) {
+    public void deactivateAllUsers(List<Long> listId) {
         Gson gson = new Gson();
         String json = gson.toJson(listId);
-        HttpEntity<String> entity = new HttpEntity<>(json, setHeader());
-        ResponseEntity<Long[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(json, headers);
+        restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
-        Long[] responseDtos = exchange.getBody();
-        assert responseDtos != null;
-        return Arrays.asList(responseDtos);
     }
 
     /**

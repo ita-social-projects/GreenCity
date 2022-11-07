@@ -188,6 +188,9 @@
                                 </span>
                             </th>
                             <th style="width: 120px;">
+                                <span>[[#{greenCity.pages.table.edit}]]</span>
+                            </th>
+                            <th style="width: 120px;">
                                 <span>[[#{greenCity.pages.table.id}]]</span>
                                 <img id="id-icon" class="sorting" style="left: 50%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
                                 <span class="table-filter-icon"></span>
@@ -333,14 +336,13 @@
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                                 <td>
                                     <span class="custom-checkbox">
-                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}" id="checkbox1"
+                                        <input type="checkbox" th:id="checkbox+${iterStatus.count}"
                                                name="options[]" th:value="${user.id}"
                                                th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
-                                        <label th:for="checkbox+${iterStatus.count}" for="checkbox1"></label>
+                                        <label th:for="checkbox+${iterStatus.count}"></label>
                                     </span>
                                 </td>
                                 <td style="width: 50px;">
-                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
                                     <a th:if="${user.getId()} != ${currentUser.getId()}" th:href="'#editUserModal'+${user.getId()}" id="editUserModalBtn" class="btn btn-secondary" data-toggle="modal">
                                         <div>[[#{greenCity.user.page.edit.user}]]</div>
                                     </a>
@@ -357,22 +359,22 @@
                                                         <div class="form-group">
                                                             <label>ID</label>
                                                             <input th:value="${user.getId()}" type="text" class="form-control" id="id" name="id" readonly required>
-                                                            <span th:id="errorModalUpdateid" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdateid+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>User name</label>
                                                             <input th:value="${user.getName()}" type="text" class="form-control" id="name" name="name" required>
-                                                            <span th:id="errorModalUpdateName" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdateName+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Email</label>
                                                             <input th:value="${user.getEmail()}" type="text" class="form-control" id="email" name="email" required>
-                                                            <span th:id="errorModalUpdateEmail" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdateEmail+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Credo</label>
                                                             <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
-                                                            <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdateuserCredo+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Role</label>
@@ -381,12 +383,12 @@
                                                                 <option th:selected="${user.getRole().toString() == 'ROLE_MODERATOR'}">ROLE_MODERATOR</option>
                                                                 <option th:selected="${user.getRole().toString() == 'ROLE_ADMIN'}">ROLE_ADMIN</option>
                                                             </select>
-                                                            <span th:id="errorModalUpdaterole" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdaterole+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="userStatus">Status</label>
                                                             <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required readonly>
-                                                            <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
+                                                            <span th:id="errorModalUpdateuserStatus+${user.getId()}" class="errorSpan"></span>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
@@ -398,6 +400,9 @@
                                             </div>
                                         </div>
                                     </div>
+                                </td>
+                                <td style="width: 50px;">
+                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
                                 </td>
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>

@@ -113,7 +113,7 @@ function updateUser(userId) {
         obj[item.name] = item.value;
         return obj;
     }, {});
-    validateForUpdate(formData);
+    validateForUpdate(formData, userId);
     let returnData = {
         "id": formData.id,
         "name": formData.name,
@@ -134,14 +134,14 @@ function updateUser(userId) {
     });
 }
 
-function validateForUpdate(formData) {
+function validateForUpdate(formData, userId) {
     let errorCounter = 0;
     if(formData.name.length < 6 || formData.name.length > 30){
-        document.getElementById("errorModalUpdateName").innerText += "Name must contain between 6 and 30 characters";
+        document.getElementById("errorModalUpdateName" + userId).innerText += "Name must contain between 6 and 30 characters";
         errorCounter++;
     }
     if(formData.email === null || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email))){
-        document.getElementById("errorModalUpdateEmail").innerText += "Entered e-mail is incorrect";
+        document.getElementById("errorModalUpdateEmail" + userId).innerText += "Entered e-mail is incorrect";
         errorCounter++;
     }
     if(errorCounter>0) throw "Invalid name or email";

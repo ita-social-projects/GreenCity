@@ -117,7 +117,7 @@ class RestClientTest {
 
     @Test
     void updateUser() {
-        //given
+        // given
         UserManagementDto userManagementDto = new UserManagementDto();
         UserManagementUpdateDto userManagementUpdateDto = new UserManagementUpdateDto();
         userManagementDto.setId(1L);
@@ -128,17 +128,18 @@ class RestClientTest {
         HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(userManagementUpdateDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-        //when
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        // when
         restClient.updateUser(userManagementDto);
-        //then
+        // then
         assertEquals(ResponseEntity.ok(Object), restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
     }
 
     @Test
     void updateRole() {
-        //given
+        // given
         UserRoleDto userRoleDto = new UserRoleDto();
         String url = greenCityUserServerAddress
             + RestTemplateLinks.USER + "/1/role";
@@ -149,10 +150,10 @@ class RestClientTest {
         HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
 
-        //when
+        // when
         restClient.updateRole(1L, any());
 
-        //then
+        // then
         verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
@@ -310,6 +311,7 @@ class RestClientTest {
     void deactivateAllUsers() {
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         Long[] longs = new Long[] {1L, 2L};
         List<Long> listId = Arrays.asList(longs);
@@ -317,16 +319,17 @@ class RestClientTest {
         String json = gson.toJson(listId);
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        restClient.deactivateAllUsers(listId);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class))
-                .thenReturn(ResponseEntity.ok(longs));
-        assertEquals(listId, restClient.deactivateAllUsers(listId));
+            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
+
     }
 
     @Test
     void managementRegisterUser() {
-        //given
+        // given
         UserManagementDto userManagementDto = new UserManagementDto();
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
@@ -335,13 +338,13 @@ class RestClientTest {
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
 
-        //when
+        // when
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
         restClient.managementRegisterUser(userManagementDto);
 
-        //then
+        // then
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }

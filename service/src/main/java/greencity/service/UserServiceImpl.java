@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
-                                                               Pageable pageable) {
+        Pageable pageable) {
         if (status != null) {
             status = status.equals("all") ? null : status;
         }
