@@ -108,10 +108,12 @@ function otherCheck() {
 
 // Save button in editUserModal
 function updateUser(userId) {
+    clearAllErrorsSpan();
     let formData = $('#editUserForm' + userId).serializeArray().reduce(function (obj, item) {
         obj[item.name] = item.value;
         return obj;
     }, {});
+    validateForUpdate(formData);
     let returnData = {
         "id": formData.id,
         "name": formData.name,
@@ -128,19 +130,22 @@ function updateUser(userId) {
         data: JSON.stringify(returnData),
         success: function () {
             history.go();
-        },
-        error: function(responseData) { //ToDo
-            console.log(responseData);
-            if (Array.isArray(responseData.errors) && responseData.errors.length) {
-                responseData.errors.forEach(function (el) {
-                    console.log(el);
-                    $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
-                })
-            }
         }
     });
 }
 
+function validateForUpdate(formData) {
+    let errorCounter = 0;
+    if(formData.name.length < 6 || formData.name.length > 30){
+        document.getElementById("errorModalUpdateName").innerText += "Name must contain between 6 and 30 characters";
+        errorCounter++;
+    }
+    if(formData.email === null || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email))){
+        document.getElementById("errorModalUpdateEmail").innerText += "Entered e-mail is incorrect";
+        errorCounter++;
+    }
+    if(errorCounter>0) throw "Invalid name or email";
+}
 
 function changeRole(userId, role) {
     let href = '/management/users/' + userId + '/role';
@@ -170,6 +175,19 @@ function updateCheckBoxCount(chInt) {
     if (checkedCh === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
+}
+
+function validateForAdd(formData) {
+    let errorCounter = 0;
+    if(formData.name.length < 6 || formData.name.length > 30){
+        document.getElementById("errorModalSaveName").innerText += "Name must contain between 6 and 30 characters";
+        errorCounter++;
+    }
+    if(formData.email === null || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email))){
+        document.getElementById("errorModalSaveEmail").innerText += "Entered e-mail is incorrect";
+        errorCounter++;
+    }
+    if(errorCounter>0) throw "Invalid name or email";
 }
 
 $(document).ready(function () {
@@ -228,6 +246,7 @@ $(document).ready(function () {
             obj[item.name] = item.value;
             return obj;
         }, {});
+        validateForAdd(formData);
         var payload = {
             "id": formData.id,
             "name": formData.name,
@@ -242,16 +261,10 @@ $(document).ready(function () {
             type: 'post',
             dataType: 'json',
             contentType: 'application/json',
+            data: JSON.stringify(payload),
             success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: JSON.stringify(payload)
+                location.reload();
+            }
         });
     })
 

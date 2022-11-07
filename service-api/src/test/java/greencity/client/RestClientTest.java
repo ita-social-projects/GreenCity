@@ -117,17 +117,23 @@ class RestClientTest {
 
     @Test
     void updateUser() {
+        //given
         UserManagementDto userManagementDto = new UserManagementDto();
+        UserManagementUpdateDto userManagementUpdateDto = new UserManagementUpdateDto();
+        userManagementDto.setId(1L);
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(userManagementUpdateDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
+        //when
         restClient.updateUser(userManagementDto);
-        verify(restTemplate).exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
+        //then
+        assertEquals(ResponseEntity.ok(Object), restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
     }
 
     @Test

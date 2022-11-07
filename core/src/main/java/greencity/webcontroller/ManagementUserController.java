@@ -61,6 +61,7 @@ public class ManagementUserController {
         model.addAttribute("paging", pageable);
         model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
         model.addAttribute("users", found);
+        model.addAttribute("currentUser", currentUser);
 
         return "core/management_user";
     }

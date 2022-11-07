@@ -71,17 +71,17 @@
                                                 <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body" id="addModalBody">
                                                 <input type="hidden" class="form-control" name="id" value="-1" readonly required>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.userName}]]</label>
                                                     <input type="text" class="form-control" name="name" required>
-                                                    <span th:id="errorModalSavename" class="errorSpan"></span>
+                                                    <span id="errorModalSaveName" class="errorSpan"></span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.email}]]</label>
                                                     <input type="text" class="form-control" name="email" required>
-                                                    <span th:id="errorModalSaveemail" class="errorSpan"></span>
+                                                    <span id="errorModalSaveEmail" class="errorSpan"></span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.role}]]</label>
@@ -90,13 +90,13 @@
                                                         <option>ROLE_ADMIN</option>
                                                         <option>ROLE_MODERATOR</option>
                                                     </select>
-                                                    <span th:id="errorModalSaverole" class="errorSpan"></span>
+                                                    <span id="errorModalSaveRole" class="errorSpan"></span>
                                                 </div>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.status}]]</label>
                                                     <input type="text" class="form-control" name="userStatus" value="CREATED" readonly
                                                            required>
-                                                    <span th:id="errorModalSaveuserStatus" class="errorSpan"></span>
+                                                    <span id="errorModalSaveUserStatus" class="errorSpan"></span>
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
@@ -341,7 +341,7 @@
                                 </td>
                                 <td style="width: 50px;">
                                     <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
-                                    <a th:href="'#editUserModal'+${user.getId()}" id="editUserModalBtn" class="btn btn-secondary" data-toggle="modal">
+                                    <a th:if="${user.getId()} != ${currentUser.getId()}" th:href="'#editUserModal'+${user.getId()}" id="editUserModalBtn" class="btn btn-secondary" data-toggle="modal">
                                         <div>[[#{greenCity.user.page.edit.user}]]</div>
                                     </a>
                                     <!--Edit user Modal HTML -->
@@ -353,42 +353,39 @@
                                                         <h4 class="modal-title">Edit User</h4>
                                                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                                     </div>
-                                                    <div class="modal-body">
+                                                    <div class="modal-body" th:id="'editModalBody'+${user.getId()}">
                                                         <div class="form-group">
-                                                            <label>ID
-                                                                <input th:value="${user.getId()}" type="text" class="form-control" id="id" name="id" readonly required>
-                                                            </label>
+                                                            <label>ID</label>
+                                                            <input th:value="${user.getId()}" type="text" class="form-control" id="id" name="id" readonly required>
                                                             <span th:id="errorModalUpdateid" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label>User name
-                                                                <input th:value="${user.getName()}" type="text" class="form-control" id="name" name="name" required>
-                                                            </label>
-                                                            <span th:id="errorModalUpdatename" class="errorSpan"></span>
+                                                            <label>User name</label>
+                                                            <input th:value="${user.getName()}" type="text" class="form-control" id="name" name="name" required>
+                                                            <span th:id="errorModalUpdateName" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label>Email
-                                                                <input th:value="${user.getEmail()}" type="text" class="form-control" id="email" name="email" required>
-                                                            </label>
-                                                            <span th:id="errorModalUpdateemail" class="errorSpan"></span>
+                                                            <label>Email</label>
+                                                            <input th:value="${user.getEmail()}" type="text" class="form-control" id="email" name="email" required>
+                                                            <span th:id="errorModalUpdateEmail" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label>Credo
-                                                                <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
-                                                            </label>
+                                                            <label>Credo</label>
+                                                            <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
                                                             <span th:id="errorModalUpdateuserCredo" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label>Role
-                                                                <input th:value="${user.getRole().name()}" type="text" class="form-control" id="role" name="role" required>
-                                                            </label>
+                                                            <label>Role</label>
+                                                            <select class="form-control" name="role" id="role">
+                                                                <option th:selected="${user.getRole().toString() == 'ROLE_USER'}">ROLE_USER</option>
+                                                                <option th:selected="${user.getRole().toString() == 'ROLE_MODERATOR'}">ROLE_MODERATOR</option>
+                                                                <option th:selected="${user.getRole().toString() == 'ROLE_ADMIN'}">ROLE_ADMIN</option>
+                                                            </select>
                                                             <span th:id="errorModalUpdaterole" class="errorSpan"></span>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="userStatus">Status
-                                                                <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required
-                                                                   readonly>
-                                                            </label>
+                                                            <label for="userStatus">Status</label>
+                                                            <input th:value="${user.getUserStatus().name()}" type="text" class="form-control" id="userStatus" name="userStatus" required readonly>
                                                             <span th:id="errorModalUpdateuserStatus" class="errorSpan"></span>
                                                         </div>
                                                     </div>
@@ -477,36 +474,36 @@
                         </th:block>
                     </table>
                     <!-- Start of Paging -->
-                    <div class="clearfix" th:if="${users.getPage().size() ne 0}">
-                        <ul class="pagination">
-                            <li class="page-item"
-                                th:classappend="${!users.isFirst()} ? '' : 'disabled'">
-                                <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"
-                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i
-                                        class="arrow fas fa-chevron-left"></i></a>
-                                <a class="page-link" rel="tooltip" th:if="${users.isFirst()}">
-                                    <i
-                                        class="arrow fas fa-chevron-left"></i></a>
-                            </li>
+<!--                    <div class="clearfix" th:if="${users.getPage().size() ne 0}">-->
+<!--                        <ul class="pagination">-->
+<!--                            <li class="page-item"-->
+<!--                                th:classappend="${!users.isFirst()} ? '' : 'disabled'">-->
+<!--                                <a class="page-link" rel="tooltip" th:if="${!users.isFirst()}"-->
+<!--                                   th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${0}, sort=${sortModel}, pageSize=${pageSize})}"><i-->
+<!--                                        class="arrow fas fa-chevron-left"></i></a>-->
+<!--                                <a class="page-link" rel="tooltip" th:if="${users.isFirst()}">-->
+<!--                                    <i-->
+<!--                                        class="arrow fas fa-chevron-left"></i></a>-->
+<!--                            </li>-->
 
-                            <li class="page-item"
-                                th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"
-                                th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"
-                                th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">
-                                <a class="page-link"
-                           th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>
-                            </li>
+<!--                            <li class="page-item"-->
+<!--                                th:if="${pageNumber > -1 && pageNumber < users.getTotalPages()}"-->
+<!--                                th:classappend="${pageNumber == users.getNumber()} ? 'active' : ''"-->
+<!--                                th:each="pageNumber : ${#numbers.sequence(users.getNumber()-3, users.getNumber()+3)}">-->
+<!--                                <a class="page-link"-->
+<!--                           th:href="@{/management/users?page={id}&size={pageSize}&sort={sort}(id=${pageNumber},sort=${sortModel}, pageSize=${pageSize})}">[[${pageNumber}+1]]</a>-->
+<!--                            </li>-->
 
-                            <li class="page-item"
-                                th:classappend="${!users.isLast()} ? '' : 'disabled'">
-                                <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"
-                                   th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i
-                                        class="arrow fas fa-chevron-right"></i></a>
-                                <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i
-                                        class="arrow fas fa-chevron-right"></i></a>
-                            </li>
-                        </ul>
-                    </div>
+<!--                            <li class="page-item"-->
+<!--                                th:classappend="${!users.isLast()} ? '' : 'disabled'">-->
+<!--                                <a class="page-link" rel="tooltip" th:if="${!users.isLast()}"-->
+<!--                                   th:href="@{/management/users?page={id}(id=${users.getTotalPages()-1})}"><i-->
+<!--                                        class="arrow fas fa-chevron-right"></i></a>-->
+<!--                                <a class="page-link" rel="tooltip" th:if="${users.isLast()}"><i-->
+<!--                                        class="arrow fas fa-chevron-right"></i></a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
                     <!-- End of Paging -->
                     <!-- Deactivate user Modal HTML -->
                     <div id="deactivateUserModal" class="modal fade">
