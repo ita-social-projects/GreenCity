@@ -22,6 +22,8 @@ function initMap() {
     addMarker(mapCenter);
 }
 
+
+
 // Adds a marker to the map and push to the array.
 function addMarker(location) {
     let marker = new google.maps.Marker({
@@ -29,6 +31,9 @@ function addMarker(location) {
         map: map,
     });
     markers.push(marker);
+    var requestOptions = {
+        method: 'GET',
+    };
 }
 
 // Deletes all markers in the array by removing references to them.

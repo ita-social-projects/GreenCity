@@ -160,7 +160,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
                 "/place/filter",
-                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
+                CUSTOM_SHOPPING_LIST_URL)
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
@@ -207,9 +207,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/factoftheday/all",
                 "/chat",
                 "/achievements/notification/{userId}",
-                EVENTS + "/myEvents",
-                EVENTS + "/myEvents/createdEvents",
-                "/user/shopping-list-items/{userId}/get-all-inprogress")
+                EVENTS + "/myEvents")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -320,6 +318,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/{factId}",
                 "/comments")
             .hasAnyRole(ADMIN)
+            .antMatchers(HttpMethod.POST, "/events/create").hasRole(ADMIN)
             .anyRequest().hasAnyRole(ADMIN)
             .and()
             .logout()

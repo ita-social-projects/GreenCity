@@ -1735,3 +1735,7 @@ a.lightgrey {
     margin-top: 11px;
     margin-right: 5px;
 }
+
+[data-mce-bogus="1"] {
+    display:none;
+}

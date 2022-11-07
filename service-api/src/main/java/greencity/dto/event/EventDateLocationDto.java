@@ -23,6 +23,7 @@ public class EventDateLocationDto {
     @NotEmpty
     private ZonedDateTime finishDate;
 
+    @NotEmpty
     private String onlineLink;
 
     private CoordinatesDto coordinates;
