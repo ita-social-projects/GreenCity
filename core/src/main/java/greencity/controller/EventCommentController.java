@@ -47,7 +47,7 @@ public class EventCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
-    @PostMapping("{eventId}")
+    @PostMapping("/{eventId}")
     public ResponseEntity<AddEventCommentDtoResponse> save(@PathVariable Long eventId,
         @Valid @RequestBody AddEventCommentDtoRequest request,
         @ApiIgnore @CurrentUser UserVO user) {
