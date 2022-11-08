@@ -132,5 +132,8 @@
     <include file="db/changelog/logs/ch-insert-into-employee-authority-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-econews-testdata-Uzarski.xml"/>
+
+    <!-- dev -->
 
 </databaseChangeLog>

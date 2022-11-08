@@ -125,19 +125,18 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @param query  query to search.
      * @return list of {@link EcoNews}.
      */
+
+    /** Tag translations not included until language support is provided */
     @Query(nativeQuery = true,
-        value = "Select e.id, e.title, e.author_id, e.text, u.name, e.creation_date, e.source, tt.name, e.image_path "
+        value = "Select e.id, e.title, e.author_id, e.text, author.name, e.creation_date, e.source, e.image_path, e.short_info "
             + "FROM eco_news e "
-            + "JOIN users u on u.id = e.author_id "
-            + "JOIN eco_news_tags ent on e.id = ent.eco_news_id "
-            + "JOIN tag_translations tt on tt.tag_id = ent.tags_id "
+            + "JOIN users author on author.id = e.author_id "
             + "WHERE concat(e.id,'') like :query or "
             + "    lower(e.title) like lower(concat('%', :query, '%')) or "
             + "    lower(e.text) like lower(concat('%', :query, '%')) or "
-            + "    lower(u.name) like lower(concat('%', :query, '%')) or "
+            + "    lower(author.name) like lower(concat('%', :query, '%')) or "
             + "    lower(concat(e.creation_date,'')) like lower(concat('%', :query, '%')) or "
-            + "    lower(e.source) like lower(concat('%', :query, '%')) or "
-            + "    lower(tt.name) like lower(concat('%', :query, '%'))")
+            + "    lower(e.source) like lower(concat('%', :query, '%'))")
     Page<EcoNews> searchEcoNewsBy(Pageable paging, String query);
 
     /**

@@ -11,6 +11,7 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
@@ -33,8 +34,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -61,11 +64,11 @@ public class ManagementEcoNewsController {
             model.addAttribute("fields", ecoNewsViewDto);
             model.addAttribute("query", "");
         } else {
+            model.addAttribute("query", query);
             allEcoNews = query == null || query.isEmpty()
                 ? ecoNewsService.findAll(pageable)
                 : ecoNewsService.searchEcoNewsBy(pageable, query);
             model.addAttribute("fields", new EcoNewsViewDto());
-            model.addAttribute("query", query);
         }
 
         model.addAttribute("pageable", allEcoNews);
@@ -79,6 +82,13 @@ public class ManagementEcoNewsController {
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
         model.addAttribute("pageSize", pageable.getPageSize());
+
+        Set<EcoNewsAuthorDto> authors = new HashSet<>();
+        for (EcoNewsDto ecoNewsDto : allEcoNews.getPage()) {
+            authors.add(ecoNewsDto.getAuthor());
+        }
+        model.addAttribute("authors", authors);
+
         return "core/management_eco_news";
     }
 
