@@ -108,13 +108,13 @@ function otherCheck() {
 
 // Save button in editUserModal
 function updateUser(userId) {
-    clearAllErrorsSpan();
+    let form = document.getElementById("editUserForm" + userId);
+    validateForUpdate(form);
     let formData = $('#editUserForm' + userId).serializeArray().reduce(function (obj, item) {
         obj[item.name] = item.value;
         return obj;
     }, {});
-    validateForUpdate(formData, userId);
-    let returnData = {
+    let payload = {
         "id": formData.id,
         "name": formData.name,
         "email": formData.email,
@@ -127,32 +127,33 @@ function updateUser(userId) {
         type: 'PUT',
         contentType: 'application/json',
         dataType: 'json',
-        data: JSON.stringify(returnData),
+        data: JSON.stringify(payload),
         success: function () {
             history.go();
+        },
+        error: function (){
+            let sp = document.getElementById("serverErrorEditModal" + userId);
+            sp.innerText = "Server error";
         }
     });
 }
 
-function validateForUpdate(formData, userId) {
-    let errorCounter = 0;
-    if(formData.name.length < 6 || formData.name.length > 30){
-        document.getElementById("errorModalUpdateName" + userId).innerText += "Name must contain between 6 and 30 characters";
-        errorCounter++;
+function validateForUpdate(form) {
+    if (form.checkValidity() === false) {
+        form.classList.add("was-validated");
+        throw "validation error";
     }
-    if(formData.email === null || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email))){
-        document.getElementById("errorModalUpdateEmail" + userId).innerText += "Entered e-mail is incorrect";
-        errorCounter++;
-    }
-    if(errorCounter>0) throw "Invalid name or email";
+    form.classList.add("was-validated");
 }
 
-function changeRole(userId, role) {
+function changeRole(userId) {
+    let selector = document.querySelector('#roleSelector' + userId);
     let href = '/management/users/' + userId + '/role';
-    let payload = { 'role': role };
+    let payload = { 'role': selector.value };
+    console.log("Change role my man "  + selector.value);
     $.ajax({
-        type: 'PATCH',
         url: href,
+        type: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify(payload),
         success: function(){
@@ -175,19 +176,6 @@ function updateCheckBoxCount(chInt) {
     if (checkedCh === 0) {
         deactivateButton.addClass("disabled");
     } else deactivateButton.removeClass("disabled");
-}
-
-function validateForAdd(formData) {
-    let errorCounter = 0;
-    if(formData.name.length < 6 || formData.name.length > 30){
-        document.getElementById("errorModalSaveName").innerText += "Name must contain between 6 and 30 characters";
-        errorCounter++;
-    }
-    if(formData.email === null || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(formData.email))){
-        document.getElementById("errorModalSaveEmail").innerText += "Entered e-mail is incorrect";
-        errorCounter++;
-    }
-    if(errorCounter>0) throw "Invalid name or email";
 }
 
 $(document).ready(function () {
@@ -240,32 +228,12 @@ $(document).ready(function () {
 
     // Submit button in addUserModal
     $('#submitAddBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addUserForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        validateForAdd(formData);
-        var payload = {
-            "id": formData.id,
-            "name": formData.name,
-            "email": formData.email,
-            "role": formData.role,
-            "userStatus": formData.userStatus
+        let form = document.getElementById("addUserForm");
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
         }
-
-        // Ajax request
-        $.ajax({
-            url: '/management/users/register',
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            data: JSON.stringify(payload),
-            success: function (data) {
-                location.reload();
-            }
-        });
+        form.classList.add("was-validated");
     })
 
     // Edit user button (popup)

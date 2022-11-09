@@ -53,7 +53,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(HttpClientErrorException.class)
     public final ResponseEntity<Object> handleHttpClientErrorException(
-        HttpClientErrorException ex, WebRequest request) {
+        HttpClientErrorException ex, WebRequest request) throws JsonProcessingException {
         Map<String, String> httpClientResponseBody = jsonHttpClientErrorExceptionToMap(ex);
         String message = httpClientResponseBody.get("message");
         log.info(ex.getStatusCode() + " " + message);
@@ -63,15 +63,12 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private Map<String, String> jsonHttpClientErrorExceptionToMap(
-        HttpClientErrorException ex) {
+        HttpClientErrorException ex) throws JsonProcessingException {
         TypeReference<Map<String, String>> responseType = new TypeReference<>() {
         };
         Map<String, String> httpClientResponseBody;
-        try {
-            httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        httpClientResponseBody = objectMapper.readValue(ex.getResponseBodyAsString(), responseType);
+
         return httpClientResponseBody;
     }
 

@@ -10,7 +10,11 @@ import greencity.enums.Role;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
+import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +26,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -74,12 +73,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    @ResponseBody
-    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (!bindingResult.hasErrors()) {
-            restClient.managementRegisterUser(userDto);
-        }
-        return buildGenericResponseDto(bindingResult);
+    public String saveUser(@Valid UserManagementDto userDto, BindingResult bindingResult) {
+        restClient.managementRegisterUser(userDto);
+        return "redirect:/management/users";
     }
 
     /**
@@ -133,7 +129,7 @@ public class ManagementUserController {
      * @author Stepan Tehlivets.
      */
     @PatchMapping("/{id}/role")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
     public void changeRole(
         @PathVariable Long id,
         @RequestBody Map<String, String> body) {
@@ -207,7 +203,6 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")
-    @ResponseStatus(HttpStatus.OK)
     public void deactivateAll(@RequestBody List<Long> listId) {
         restClient.deactivateAllUsers(listId);
     }
