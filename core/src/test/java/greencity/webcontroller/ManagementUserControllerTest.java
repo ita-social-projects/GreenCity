@@ -14,6 +14,7 @@ import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.*;
 
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
@@ -169,17 +171,17 @@ class ManagementUserControllerTest {
 
     @Test
     void saveUserTest() throws Exception {
-
         UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
         String content = objectMapper.writeValueAsString(userManagementDto);
 
-        mockMvc.perform(post(managementUserLink + "/register")
+        MvcResult mvcResult = mockMvc.perform(post(managementUserLink + "/register")
             .content(content)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().is3xxRedirection())
+            .andReturn();
 
-        verify(restClient).managementRegisterUser(userManagementDto);
+        Assertions.assertEquals(302, mvcResult.getResponse().getStatus());
     }
 
     @Test
