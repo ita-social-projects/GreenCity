@@ -10,5 +10,14 @@
                  splitStatements="true"
                  stripComments="true"/>
     </changeSet>
+    <changeSet id="muz#4685-2" author="Maciej Uzarski">
+        <sqlFile dbms="postgresql"
+                 encoding="UTF-8"
+                 endDelimiter="\nGO"
+                 path="../../samplesqldata/eco-news-tags.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"/>
+    </changeSet>
 </databaseChangeLog>
 

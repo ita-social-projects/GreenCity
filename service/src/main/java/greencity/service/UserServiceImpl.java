@@ -229,4 +229,11 @@ public class UserServiceImpl implements UserService {
             users.getPageable().getPageNumber(),
             users.getTotalPages());
     }
+
+    @Override
+    public List<UserVO> getAllUsers() {
+        return userRepo.findAll().stream()
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
+    }
 }

@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.EcoNews;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -126,22 +127,24 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * @return list of {@link EcoNews}.
      */
 
-    /** Tag translations not included until language support is provided */
-    @Query(nativeQuery = true,
-        value = "Select e.id, e.title, e.author_id, e.text, author.name, e.creation_date, e.source, e.image_path, e.short_info "
-            + "FROM eco_news e "
-            + "JOIN users author on author.id = e.author_id "
-            + "WHERE concat(e.id,'') like :query or "
-            + "    lower(e.title) like lower(concat('%', :query, '%')) or "
-            + "    lower(e.text) like lower(concat('%', :query, '%')) or "
-            + "    lower(author.name) like lower(concat('%', :query, '%')) or "
-            + "    lower(concat(e.creation_date,'')) like lower(concat('%', :query, '%')) or "
-            + "    lower(e.source) like lower(concat('%', :query, '%'))")
+    @Query("SELECT DISTINCT e "
+        + " FROM EcoNews e "
+        + " JOIN e.author a"
+        + " JOIN e.tags t"
+        + " JOIN t.tagTranslations tt"
+        + " WHERE "
+        + " concat(e.id,'') like lower(concat('%', :query, '%'))"
+        + " or lower(a.name) like lower(concat('%', :query, '%'))"
+        + " or lower(e.title) like lower(concat('%', :query, '%'))"
+        + " or lower(e.text) like lower(concat('%', :query, '%'))"
+        + " or lower(concat(e.creationDate,'')) like lower(concat('%', :query, '%'))"
+        + " or lower(tt.name) like lower(concat('%', :query, '%'))"
+        + " or lower(e.source) like lower(concat('%', :query, '%'))")
     Page<EcoNews> searchEcoNewsBy(Pageable paging, String query);
 
     /**
      * Method for get total Eco News count.
-     * 
+     *
      * @return {@link int} total count of Eco News
      */
     @Query(nativeQuery = true,

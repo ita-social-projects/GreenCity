@@ -14,7 +14,9 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
+import greencity.service.FilterService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -38,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -47,6 +50,8 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 public class ManagementEcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagsService;
+    private final UserService userService;
+    private final FilterService filterService;
 
     /**
      * Method that returns management page with all {@link EcoNewsVO}.
@@ -82,12 +87,7 @@ public class ManagementEcoNewsController {
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
         model.addAttribute("pageSize", pageable.getPageSize());
-
-        Set<EcoNewsAuthorDto> authors = new HashSet<>();
-        for (EcoNewsDto ecoNewsDto : allEcoNews.getPage()) {
-            authors.add(ecoNewsDto.getAuthor());
-        }
-        model.addAttribute("authors", authors);
+        model.addAttribute("authors", userService.getAllUsers());
 
         return "core/management_eco_news";
     }

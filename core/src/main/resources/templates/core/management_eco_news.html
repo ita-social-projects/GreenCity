@@ -59,7 +59,8 @@
                                     <div>[[#{greenCity.pages.delete}]]</div>
                                 </a>
                                 <a href="#addEcoNewsModal" addEcoNewsForm id="addEcoNewsModalBtn"
-                                   class="btn btn-secondary" data-toggle="modal" th:onclick="addBtnDisabled()">
+                                   class="btn btn-secondary" data-toggle="modal" >
+<!--                                    th:onclick="addBtnDisabled()"-->
                                     <div>[[#{greenCity.econews.page.add.eco.news}]]</div>
                                 </a>
                             </div>
@@ -69,8 +70,7 @@
                             <div class="main-search">
                                 <!-- Search Form  -->
                                 <form th:action="@{eco-news}" class="form-inline searching">
-                                    <input id="search" type="text" class="form-search" th:name="query"
-                                           onkeyup="searchTableFunction()">
+                                    <input id="search" type="text" class="form-search" th:name="query">
                                     <input class="search-submit-btn" type="submit">
                                 </form>
                                 <button id="econews-filter-button" class="filter-button"
