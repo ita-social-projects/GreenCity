@@ -30,7 +30,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore Pageable pageable, EventViewDto eventViewDto, @RequestParam(required = false, name = "active", defaultValue = "false") boolean active) {
+        @ApiIgnore Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (!eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -58,8 +58,14 @@ public class ManagementEventsController {
         return "core/management_events";
     }
 
+    /**
+     * Method that perform soft or hard delete of the event.
+     * If no attenders are signed to an event then hard delete, if they are, then soft delete.
+     *
+     * @return View template path {@link String}.
+     */
     @PostMapping("/delete")
-    public String deleteEvent(@RequestParam Long id){
+    public String deleteEvent(@RequestParam Long id) {
         eventService.disableEvent(id);
         return "redirect:/management/events";
     }

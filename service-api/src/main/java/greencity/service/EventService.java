@@ -107,5 +107,11 @@ public interface EventService {
      * @param eventId - id of event
      */
     EventVO findById(Long eventId);
+
+    /**
+     * Disable event by id (or delete, if no attenders).
+     *
+     * @param eventId - id of event
+     */
     void disableEvent(Long eventId);
 }

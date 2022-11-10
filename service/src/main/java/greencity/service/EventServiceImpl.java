@@ -261,7 +261,7 @@ public class EventServiceImpl implements EventService {
     public void disableEvent(Long eventId) {
         String principal = userService.getCurrentUserEmail();
         Set<EventAttenderDto> allEventAttenders = getAllEventAttenders(eventId);
-        if(allEventAttenders.isEmpty()){
+        if (allEventAttenders.isEmpty()) {
             delete(eventId, principal);
         } else {
             UpdateEventDto eventUpdates = new UpdateEventDto();
@@ -298,10 +298,9 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getIsOpen() != null) {
             toUpdate.setOpen(updateEventDto.getIsOpen());
         }
-        if(updateEventDto.getIsActive() != null){
+        if (updateEventDto.getIsActive() != null) {
             toUpdate.setIsActive(updateEventDto.getIsActive());
         }
-
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
                 .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),

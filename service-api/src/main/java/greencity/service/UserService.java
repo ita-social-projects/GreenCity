@@ -116,5 +116,9 @@ public interface UserService {
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
 
+    /**
+     * Method that returns email currently logged user.
+     *
+     */
     String getCurrentUserEmail();
 }
