@@ -111,7 +111,13 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * {@inheritDoc}
+     * Update {@code ROLE} of user.
+     *
+     * @deprecated updates like this on User entity should be handled in
+     *             GreenCityUser via RestClient.
+     * @param id   {@link UserVO} id.
+     * @param role {@link Role} for user.
+     * @return {@link UserRoleDto}
      */
     @Deprecated
     @Override

@@ -12,9 +12,7 @@ import greencity.enums.Role;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.jupiter.api.Assertions;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,12 +29,9 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.*;
 
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.*;
@@ -171,17 +166,19 @@ class ManagementUserControllerTest {
 
     @Test
     void saveUserTest() throws Exception {
-        UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
-        String content = objectMapper.writeValueAsString(userManagementDto);
+        UserManagementDto dto = ModelUtils.getUserManagementDto();
 
-        MvcResult mvcResult = mockMvc.perform(post(managementUserLink + "/register")
-            .content(content)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().is3xxRedirection())
-            .andReturn();
+        mockMvc.perform(post(managementUserLink + "/register")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("id", dto.getId().toString())
+            .param("name", dto.getName())
+            .param("email", dto.getEmail())
+            .param("userCredo", dto.getUserCredo())
+            .param("role", dto.getRole().toString())
+            .param("userStatus", dto.getUserStatus().toString()))
+            .andExpect(status().is3xxRedirection());
 
-        Assertions.assertEquals(302, mvcResult.getResponse().getStatus());
+        verify(restClient).managementRegisterUser(dto);
     }
 
     @Test
