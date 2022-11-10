@@ -53,6 +53,9 @@ public class Event {
     @Column
     private boolean isOpen = true;
 
+    @Column
+    private Boolean isActive = true;
+
     @ManyToMany
     @JoinTable(
         name = "events_tags",

@@ -57,4 +57,16 @@ public class ManagementEventsController {
         model.addAttribute("pageSize", pageable.getPageSize());
         return "core/management_events";
     }
+
+    /**
+     * Method that perform soft or hard delete of the event. If no attenders are
+     * signed to an event then hard delete, if they are, then soft delete.
+     *
+     * @return View template path {@link String}.
+     */
+    @PostMapping("/delete")
+    public String deleteEvent(@RequestParam Long id) {
+        eventService.disableEvent(id);
+        return "redirect:/management/events";
+    }
 }

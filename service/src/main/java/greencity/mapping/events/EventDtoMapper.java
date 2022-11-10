@@ -39,6 +39,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setDescription(event.getDescription());
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
+        eventDto.setActive(event.getIsActive());
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName())
             .organizerRating(organizer.getEventOrganizerRating()).build());

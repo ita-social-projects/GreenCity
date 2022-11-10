@@ -115,4 +115,10 @@ public interface UserService {
      * @param criteria value which we used to filter users.
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
+
+    /**
+     * Method that returns email currently logged user.
+     *
+     */
+    String getCurrentUserEmail();
 }

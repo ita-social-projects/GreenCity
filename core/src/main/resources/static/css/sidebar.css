@@ -199,7 +199,18 @@ block:hover img{
     color: white;
 }
 
+button.close {
+    padding: 2rem 1rem !IMPORTANT;
+}
 
+button.close:active {
+    border: none !important;
+    outline: 0;
+}
+
+button.close:focus {
+    outline: 0;
+}
 
 
 

@@ -25,6 +25,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -139,6 +140,7 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
+            .filter(Event::getIsActive)
             .map(event -> modelMapper.map(event, EventDto.class))
             .collect(Collectors.toList());
 
@@ -256,6 +258,21 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(event, EventVO.class);
     }
 
+    @Override
+    @Transactional
+    public void disableEvent(Long eventId) {
+        String principal = userService.getCurrentUserEmail();
+        Set<EventAttenderDto> allEventAttenders = getAllEventAttenders(eventId);
+        if (allEventAttenders.isEmpty()) {
+            delete(eventId, principal);
+        } else {
+            UpdateEventDto eventUpdates = new UpdateEventDto();
+            eventUpdates.setId(eventId);
+            eventUpdates.setIsActive(false);
+            update(eventUpdates, principal, null);
+        }
+    }
+
     private Double calculateUserEventOrganizerRating(User user) {
         List<Event> events = eventRepo.getAllByOrganizer(user);
         int summaryGrade = 0;
@@ -283,7 +300,9 @@ public class EventServiceImpl implements EventService {
         if (updateEventDto.getIsOpen() != null) {
             toUpdate.setOpen(updateEventDto.getIsOpen());
         }
-
+        if (updateEventDto.getIsActive() != null) {
+            toUpdate.setIsActive(updateEventDto.getIsActive());
+        }
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
                 .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
