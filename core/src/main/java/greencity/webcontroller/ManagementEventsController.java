@@ -59,8 +59,8 @@ public class ManagementEventsController {
     }
 
     /**
-     * Method that perform soft or hard delete of the event.
-     * If no attenders are signed to an event then hard delete, if they are, then soft delete.
+     * Method that perform soft or hard delete of the event. If no attenders are
+     * signed to an event then hard delete, if they are, then soft delete.
      *
      * @return View template path {@link String}.
      */

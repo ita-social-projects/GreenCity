@@ -137,7 +137,7 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-                .filter(Event::getIsActive)
+            .filter(Event::getIsActive)
             .map(event -> modelMapper.map(event, EventDto.class))
             .collect(Collectors.toList());
 

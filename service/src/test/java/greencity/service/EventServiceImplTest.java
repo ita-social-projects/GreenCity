@@ -489,7 +489,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void shouldDisableEventIfAttendersAreSigned(){
+    void shouldDisableEventIfAttendersAreSigned() {
         Event event = ModelUtils.getActiveEvent();
         User user = ModelUtils.getAttenderUser();
         event.setAttenders(Set.of(user));
@@ -509,7 +509,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void shouldRemoveEventIfNoAttendersAreSigned(){
+    void shouldRemoveEventIfNoAttendersAreSigned() {
         Event event = ModelUtils.getActiveEvent();
         User user = ModelUtils.getAttenderUser();
         event.setOrganizer(user);
@@ -527,7 +527,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void shouldNotRemoveEventIfUserIsNotOrganizer(){
+    void shouldNotRemoveEventIfUserIsNotOrganizer() {
         Event event = ModelUtils.getActiveEvent();
         User user = ModelUtils.getAttenderUser();
 
@@ -537,10 +537,10 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
 
         assertThatThrownBy(() -> {
-            //when
+            // when
             eventService.disableEvent(event.getId());
             // then
         }).isInstanceOf(BadRequestException.class)
-                .hasMessageContaining(ErrorMessage.NOT_EVENT_ORGANIZER);
+            .hasMessageContaining(ErrorMessage.NOT_EVENT_ORGANIZER);
     }
 }
