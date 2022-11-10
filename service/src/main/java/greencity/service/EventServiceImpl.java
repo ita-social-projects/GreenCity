@@ -77,7 +77,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public void delete(Long eventId, String email) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Event toDelete = eventRepo.getOne(eventId);
@@ -260,15 +259,15 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void disableEvent(Long eventId) {
-        //TODO: remove duplicated code
+        String principal = userService.getCurrentUserEmail();
         Set<EventAttenderDto> allEventAttenders = getAllEventAttenders(eventId);
-        UpdateEventDto eventUpdates = new UpdateEventDto();
-        eventUpdates.setId(eventId);
-        eventUpdates.setIsActive(false);
         if(allEventAttenders.isEmpty()){
-            delete(eventId, (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+            delete(eventId, principal);
         } else {
-            update(eventUpdates, (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), null);
+            UpdateEventDto eventUpdates = new UpdateEventDto();
+            eventUpdates.setId(eventId);
+            eventUpdates.setIsActive(false);
+            update(eventUpdates, principal, null);
         }
     }
 

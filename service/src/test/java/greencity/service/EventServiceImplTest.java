@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
@@ -18,6 +19,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +34,8 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.*;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -479,8 +483,65 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(user, EventAttenderDto.class)).thenReturn(ModelUtils.getEventAttenderDto());
 
-        assertEquals(eventService.getAllEventAttenders(event.getId()), eventAttenderDtos);
+        Set<EventAttenderDto> allEventAttenders = eventService.getAllEventAttenders(event.getId());
 
+        assertEquals(allEventAttenders, eventAttenderDtos);
         verify(modelMapper).map(user, EventAttenderDto.class);
+    }
+
+    @Test
+    void shouldDisableEventIfAttendersAreSigned(){
+        Event event = ModelUtils.getActiveEvent();
+        User user = ModelUtils.getAttenderUser();
+        event.setAttenders(Set.of(user));
+        event.setOrganizer(user);
+
+        when(userService.getCurrentUserEmail()).thenReturn(user.getEmail());
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(eventRepo.getOne(event.getId())).thenReturn(event);
+        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+
+        // when
+        eventService.disableEvent(event.getId());
+
+        // then
+        assertThat(event.getIsActive()).isFalse();
+        verify(eventRepo, never()).delete(event);
+    }
+
+    @Test
+    void shouldRemoveEventIfNoAttendersAreSigned(){
+        Event event = ModelUtils.getActiveEvent();
+        User user = ModelUtils.getAttenderUser();
+        event.setOrganizer(user);
+
+        when(userService.getCurrentUserEmail()).thenReturn(user.getEmail());
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(eventRepo.getOne(event.getId())).thenReturn(event);
+        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+
+        // when
+        eventService.disableEvent(event.getId());
+
+        // then
+        verify(eventRepo).delete(event);
+    }
+
+    @Test
+    void shouldNotRemoveEventIfUserIsNotOrganizer(){
+        Event event = ModelUtils.getActiveEvent();
+        User user = ModelUtils.getAttenderUser();
+
+        when(userService.getCurrentUserEmail()).thenReturn(user.getEmail());
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(eventRepo.getOne(event.getId())).thenReturn(event);
+        when(modelMapper.map(restClient.findByEmail(user.getEmail()), User.class)).thenReturn(user);
+
+        assertThatThrownBy(() -> {
+            //when
+            eventService.disableEvent(event.getId());
+            // then
+        }).isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ErrorMessage.NOT_EVENT_ORGANIZER);
     }
 }

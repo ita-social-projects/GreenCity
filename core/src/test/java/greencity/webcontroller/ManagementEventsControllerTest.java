@@ -126,4 +126,16 @@ class ManagementEventsControllerTest {
 
         verify(eventService).getAll(pageable, null);
     }
+
+    @Test
+    @SneakyThrows
+    void shouldDisableEventBeCalledTest() {
+        long eventId = 2L;
+
+        this.mockMvc.perform(post(managementEventsLink + "/delete").param("id", String.valueOf(eventId)))
+                .andExpect(view().name("redirect:/management/events"))
+                .andExpect(status().is3xxRedirection());
+
+        verify(eventService).disableEvent(eventId);
+    }
 }
