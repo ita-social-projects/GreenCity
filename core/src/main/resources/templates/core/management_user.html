@@ -66,7 +66,8 @@
                             <div th:id="addUserModal" class="modal fade">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form action="#" th:action="@{/management/users/register}" class="needs-validation" method="post" id="addUserForm" novalidate>
+                                        <form th:action="@{/management/users/register}"
+                                              class="needs-validation" method="post" id="addUserForm" novalidate>
                                             <div class="modal-header">
                                                 <h4 class="modal-title-act">[[#{greenCity.user.page.add.user}]]</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -75,7 +76,8 @@
                                                 <input type="hidden" class="form-control" name="id" th:value="-1"  readonly required>
                                                 <div class="form-group">
                                                     <label>[[#{greenCity.pages.table.userName}]]</label>
-                                                    <input type="text" class="form-control" name="name"  minlength="6" maxlength="30" required>
+                                                    <input type="text" class="form-control" name="name"
+                                                           minlength="6" maxlength="30" required>
                                                     <div class="invalid-feedback">
                                                         [[#{greenCity.user.page.name.validation.error}]]
                                                     </div>
@@ -194,9 +196,6 @@
                                 </span>
                             </th>
                             <th style="width: 120px;">
-                                <span>[[#{greenCity.pages.table.edit}]]</span>
-                            </th>
-                            <th style="width: 120px;">
                                 <span>[[#{greenCity.pages.table.id}]]</span>
                                 <img id="id-icon" class="sorting" style="left: 50%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
                                 <span class="table-filter-icon"></span>
@@ -310,6 +309,9 @@
                                 <img id="tags-icon" class="sorting" style="left: 50%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userStatus')">
                                 <span class="table-filter-icon"></span>
                             </th>
+                            <th>
+                                <span>[[#{greenCity.pages.table.actions}]]</span>
+                            </th>
                         </tr>
 <!--                        Table content-->
                         </thead>
@@ -324,8 +326,47 @@
                                     </span>
                                 </td>
                                 <td style="width: 50px;">
-                                    <a th:if="${user.getId()} != ${currentUser.getId()}" th:href="'#editUserModal'+${user.getId()}" id="editUserModalBtn" class="btn btn-secondary" data-toggle="modal">
-                                        <div>[[#{greenCity.user.page.edit.user}]]</div>
+                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
+                                </td>
+                                <td th:text="${user.name}"></td>
+                                <td th:text="${user.email}"></td>
+                                <td class="column-credo-text" th:text="${user.userCredo}"></td>
+                                <td>
+                                    <select th:id="roleSelector + ${user.id}" th:if="${user.getId()} != ${currentUser.getId()}" class="form-control" name="role" th:onchange="'changeRole(' + ${user.id} + ')'">
+                                        <option class="role-update"
+                                                th:each="role : ${T(greencity.enums.Role).values()}"
+                                                th:text="${role}"
+                                                th:value="${role}"
+                                                th:selected="${role} == ${user.getRole()}">
+                                        </option>
+                                    </select>
+                                </td>
+                                <td
+                                    th:class="|${user.userStatus.name().equals('PENDING') ? 'whiteHover cyan':''}
+                                    ${user.userStatus.name().equals('ACTIVATED') ? 'whiteHover lightgreen':''}
+                                    ${user.userStatus.name().equals('WARNED') ? 'whiteHover lightmustard':''}
+                                    ${user.userStatus.name().equals('PENDING') ? 'whiteHover lightpink':''}
+                                    ${user.userStatus.name().equals('DEACTIVATED') ? 'whiteHover lightpink':''}|"
+                                >
+                                    <div class="dropdown status" >
+                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
+                                        </button>
+                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content status">
+                                            <a
+                                               th:each="status : ${T(greencity.enums.UserStatus).values()}"
+                                               th:text="${status}"
+                                               th:value="${status}"
+                                               th:selected="${status} == ${user.getUserStatus()}"
+                                            ></a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a th:if="${user.getId()} != ${currentUser.getId()}"
+                                       th:href="'#editUserModal'+${user.getId()}"
+                                       id="editUserModalBtn" class="edit eBtn" data-toggle="modal">
+                                        <i class="material-icons" data-toggle="tooltip" th:title="#{greenCity.pages.edit}">&#xE254;</i>
                                     </a>
                                     <!--Edit user Modal HTML -->
                                     <div th:id="'editUserModal'+${user.getId()}" class="modal fade">
@@ -387,76 +428,6 @@
                                                     </div>
                                                 </form>
                                             </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="width: 50px;">
-                                    <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
-                                </td>
-                                <td th:text="${user.name}"></td>
-                                <td th:text="${user.email}"></td>
-                                <td class="column-credo-text" th:text="${user.userCredo}"></td>
-                                <td>
-                                    <select th:id="roleSelector + ${user.id}" th:if="${user.getId()} != ${currentUser.getId()}" class="form-control" name="role" th:onchange="'changeRole(' + ${user.id} + ')'">
-                                        <option class="role-update"
-                                                th:each="role : ${T(greencity.enums.Role).values()}"
-                                                th:text="${role}"
-                                                th:value="${role}"
-                                                th:selected="${role} == ${user.getRole()}">
-                                        </option>
-                                    </select>
-                                </td>
-                                <td th:if="${user.userStatus.name().equals('PENDING')}" class="whiteHover cyan">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
-                                        </button>
-                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                        <div class="dropdown-content status">
-                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
-                                               class="deactivate-user eDeactBtn" data-toggle="modal">deactivated
-                                            </a>
-                                            <a href="#">warned</a>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td th:if="${user.userStatus.name().equals('ACTIVATED')}"  class="whiteHover lightgreen">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="active">
-                                        </button>
-                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                        <div class="dropdown-content status">
-                                            <a href="#">warned</a>
-                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
-                                               class="deactivate-user eDeactBtn" data-toggle="modal">deactivated
-                                            </a>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td th:if="${user.userStatus.name().equals('WARNED')}"  class="whiteHover lightmustard">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
-                                        </button>
-                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                        <div class="dropdown-content status">
-                                            <a th:href="@{/management/users/reasons/(id=${user.id})}"
-                                               class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">active</a>
-                                            <a th:href="@{/management/users/lang/(id=${user.id})}"
-                                               class="deactivate-user eDeactBtn" data-toggle="modal">deactivated
-                                            </a>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td th:if="${user.userStatus.name().equals('DEACTIVATED')}"  class="whiteHover lightpink">
-                                    <div class="dropdown status" >
-                                        <button class="dropbtn status"  th:text="${user.userStatus.name().toLowerCase()}">
-                                        </button>
-                                        <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                        <div class="dropdown-content status">
-                                            <a th:href="@{/management/users/reasons/(id=${user.id})}"
-                                               class="activate-user eActBtn" disabled="true"
-                                               data-toggle="modal">active</a>
-                                            <a href="#">warned</a>
                                         </div>
                                     </div>
                                 </td>

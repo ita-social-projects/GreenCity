@@ -57,9 +57,9 @@ public class ManagementUserController {
         @CurrentUser UserVO currentUser,
         Model model, @ApiIgnore Pageable pageable) {
         PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(query, role, status, pageable);
+        model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
         model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
-        model.addAttribute("users", found);
         model.addAttribute("currentUser", currentUser);
 
         return "core/management_user";
@@ -73,7 +73,7 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    public String saveUser(@Valid UserManagementDto userDto, BindingResult bindingResult) {
+    public String saveUser(@Valid UserManagementDto userDto) {
         restClient.managementRegisterUser(userDto);
         return "redirect:/management/users";
     }
