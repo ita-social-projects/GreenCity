@@ -20,6 +20,7 @@ import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -346,12 +347,35 @@ class EventServiceImplTest {
 
         when(eventRepo.findAllByAttender(pageRequest, ModelUtils.TEST_USER_VO.getId()))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(pageRequest, principal.getName());
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
 
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getEventsCreatedByUser() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        EventDto expected = ModelUtils.getEventDto();
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+
+        when(eventRepo.findEventsByOrganizer(pageRequest, ModelUtils.TEST_USER_VO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
+        when(modelMapper.map(events.get(1), EventDto.class)).thenReturn(ModelUtils.getSecondEventDto());
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getEventsCreatedByUser(pageRequest, principal.getName());
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
         assertEquals(expected, actual);
     }
 

@@ -1753,6 +1753,27 @@ public class ModelUtils {
         return event;
     }
 
+    public static Event getSecondEvent() {
+        Event event = new Event();
+        event.setDescription("Description2");
+        event.setId(2L);
+        event.setOrganizer(getAttenderUser());
+        event.setTitle("Title2");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        dates.add(new EventDateLocation(2L, event,
+            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
     public static Event getUnfinishedEvent() {
         Event event = new Event();
         event.setDescription("Description");
@@ -1855,6 +1876,25 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                "/url",
+                CoordinatesDto.builder().build())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static EventDto getSecondEventDto() {
+        return EventDto.builder()
+            .id(2L)
+            .description("Description2")
+            .organizer(EventAuthorDto.builder()
+                .name("User2")
+                .id(2L)
+                .build())
+            .title("Title2")
             .dates(List.of(new EventDateLocationDto(1L, null,
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),

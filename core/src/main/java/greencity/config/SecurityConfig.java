@@ -207,7 +207,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/factoftheday/all",
                 "/chat",
                 "/achievements/notification/{userId}",
-                EVENTS + "/myEvents")
+                EVENTS + "/myEvents",
+                EVENTS + "/myEvents/createdEvents")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -233,6 +234,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/save/favorite/",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST,
+                USER_SHOPPING_LIST + "/{userId}/get-all-inprogress",
                 "/user/{userId}/habit",
                 "/user/{userId}/userFriend/{friendId}",
                 "/user/{userId}/declineFriend/{friendId}",

@@ -38,7 +38,7 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
      */
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "DELETE FROM user_shopping_list_item ug "
+    @Query(nativeQuery = true, value = "DELETE FROM user_shopping_list ug "
         + "WHERE ug.shopping_list_item_id =:shoppingListItemId AND ug.habit_assign_id =:habitAssignId ")
     void deleteByShoppingListItemIdAndHabitAssignId(Long shoppingListItemId, Long habitAssignId);
 
