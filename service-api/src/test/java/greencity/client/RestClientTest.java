@@ -1,6 +1,7 @@
 package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
+import greencity.dto.user.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -11,10 +12,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -120,17 +117,44 @@ class RestClientTest {
 
     @Test
     void updateUser() {
+        // given
         UserManagementDto userManagementDto = new UserManagementDto();
+        UserManagementUpdateDto userManagementUpdateDto = new UserManagementUpdateDto();
+        userManagementDto.setId(1L);
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(userManagementUpdateDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        // when
         restClient.updateUser(userManagementDto);
-        verify(restTemplate).exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class);
+        // then
+        assertEquals(ResponseEntity.ok(Object), restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class));
+    }
+
+    @Test
+    void updateRole() {
+        // given
+        UserRoleDto userRoleDto = new UserRoleDto();
+        String url = greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/1/role";
+        String accessToken = "accessToken";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
+
+        // when
+        restClient.updateRole(1L, any());
+
+        // then
+        verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
     @Test
@@ -287,6 +311,7 @@ class RestClientTest {
     void deactivateAllUsers() {
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
         Long[] longs = new Long[] {1L, 2L};
         List<Long> listId = Arrays.asList(longs);
@@ -294,26 +319,32 @@ class RestClientTest {
         String json = gson.toJson(listId);
         HttpEntity<String> entity = new HttpEntity<>(json, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(greenCityUserServerAddress
+        restClient.deactivateAllUsers(listId);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class))
-                .thenReturn(ResponseEntity.ok(longs));
-        assertEquals(listId, restClient.deactivateAllUsers(listId));
+            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
+
     }
 
     @Test
     void managementRegisterUser() {
+        // given
         UserManagementDto userManagementDto = new UserManagementDto();
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
+
+        // when
         restClient.managementRegisterUser(userManagementDto);
 
+        // then
         verify(restTemplate).exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }

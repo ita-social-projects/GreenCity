@@ -10,6 +10,11 @@ import greencity.enums.Role;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +26,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-import java.util.List;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -57,9 +57,10 @@ public class ManagementUserController {
         @CurrentUser UserVO currentUser,
         Model model, @ApiIgnore Pageable pageable) {
         PageableDto<UserManagementVO> found = userService.getAllUsersByCriteria(query, role, status, pageable);
+        model.addAttribute("users", found);
         model.addAttribute("paging", pageable);
         model.addAttribute("filters", filterService.getAllFilters(currentUser.getId()));
-        model.addAttribute("users", found);
+        model.addAttribute("currentUser", currentUser);
 
         return "core/management_user";
     }
@@ -72,12 +73,9 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/register")
-    @ResponseBody
-    public GenericResponseDto saveUser(@Valid @RequestBody UserManagementDto userDto, BindingResult bindingResult) {
-        if (!bindingResult.hasErrors()) {
-            restClient.managementRegisterUser(userDto);
-        }
-        return buildGenericResponseDto(bindingResult);
+    public String saveUser(@Valid UserManagementDto userDto) {
+        restClient.managementRegisterUser(userDto);
+        return "redirect:/management/users";
     }
 
     /**
@@ -126,18 +124,17 @@ public class ManagementUserController {
     /**
      * Method that change user's Role {@link Role} by given id.
      *
-     * @param id          {@link Long} - user's id.
-     * @param userRole    {@link String} - new user's Role.
-     * @param currentUser {@link UserVO} - admin profile.
+     * @param id   {@link Long} - user's id.
+     * @param body map with new user's Role.
      * @author Stepan Tehlivets.
      */
-    @GetMapping("/{id}/{role}")
-    public String changeRole(@PathVariable Long id,
-        @PathVariable(name = "role") String userRole,
-        @CurrentUser UserVO currentUser) {
-        Role role = Role.valueOf(userRole);
-        userService.updateRole(id, role, currentUser.getEmail());
-        return "redirect:/management/users";
+    @PatchMapping("/{id}/role")
+    @ResponseBody
+    public void changeRole(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body) {
+        Role role = Role.valueOf(body.get("role"));
+        restClient.updateRole(id, role);
     }
 
     /**
@@ -206,9 +203,8 @@ public class ManagementUserController {
      * @author Vasyl Zhovnir
      */
     @PostMapping("/deactivateAll")
-    public ResponseEntity<List<Long>> deactivateAll(@RequestBody List<Long> listId) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(restClient.deactivateAllUsers(listId));
+    public void deactivateAll(@RequestBody List<Long> listId) {
+        restClient.deactivateAllUsers(listId);
     }
 
     /**
@@ -268,7 +264,7 @@ public class ManagementUserController {
 
     /**
      * Method for deleting filters.
-     * 
+     *
      * @param id user filter {@link Long} filter's id.
      */
     @GetMapping(value = "{id}/delete-filter")

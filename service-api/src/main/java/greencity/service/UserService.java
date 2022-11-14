@@ -69,10 +69,13 @@ public interface UserService {
     /**
      * Update {@code ROLE} of user.
      *
+     * @deprecated updates like this on User entity should be handled in
+     *             GreenCityUser via RestClient.
      * @param id   {@link UserVO} id.
      * @param role {@link Role} for user.
      * @return {@link UserRoleDto}
      */
+    @Deprecated
     UserRoleDto updateRole(Long id, Role role, String email);
 
     /**

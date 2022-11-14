@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
@@ -19,8 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -129,32 +126,6 @@ class UserServiceImplTest {
 
         assertEquals(userVO.getUserFriends().subList(2, 8),
             userService.getSixFriendsWithTheHighestRating(user.getId()));
-    }
-
-    @Test
-    void updateRoleTest() {
-        UserRoleDto userRoleDto = new UserRoleDto();
-        userRoleDto.setRole(Role.ROLE_ADMIN);
-        userRoleDto.setId(12L);
-        doNothing().when(userRepo).updateUserRole(anyLong(), anyString());
-        when(userRepo.findById(any())).thenReturn(Optional.of(ModelUtils.getUser()));
-        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(ModelUtils.getUser()));
-        when(modelMapper.map(any(), any())).thenAnswer(new Answer() {
-            private int count = 0;
-
-            public Object answer(InvocationOnMock invocation) {
-                if (count == 0) {
-                    count++;
-                    return ModelUtils.getUserVO();
-                }
-                if (count == 1) {
-                    count++;
-                    return ModelUtils.getUserVO();
-                }
-                return userRoleDto;
-            }
-        });
-        assertEquals(userService.updateRole(12L, Role.ROLE_ADMIN, "email"), userRoleDto);
     }
 
     @Test
