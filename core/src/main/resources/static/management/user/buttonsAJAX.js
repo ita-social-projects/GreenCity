@@ -106,14 +106,57 @@ function otherCheck() {
     }
 }
 
+// Save button in editUserModal
+function updateUser(userId) {
+    let form = document.getElementById("editUserForm" + userId);
+    validateForUpdate(form);
+    let formData = $('#editUserForm' + userId).serializeArray().reduce(function (obj, item) {
+        obj[item.name] = item.value;
+        return obj;
+    }, {});
+    let payload = {
+        "id": formData.id,
+        "name": formData.name,
+        "email": formData.email,
+        "role": formData.role,
+        "userCredo": formData.userCredo,
+        "userStatus": formData.userStatus
+    }
+    $.ajax({
+        url: '/management/users/',
+        type: 'PUT',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(payload),
+        success: function () {
+            history.go();
+        },
+        error: function (){
+            let sp = document.getElementById("serverErrorEditModal" + userId);
+            sp.innerText = "Server error";
+        }
+    });
+}
+
+function validateForUpdate(form) {
+    if (form.checkValidity() === false) {
+        form.classList.add("was-validated");
+        throw "validation error";
+    }
+    form.classList.add("was-validated");
+}
+
 function changeRole(userId, role) {
-    var href = "/management/users/" + userId + "/" + role;
+    let href = '/management/users/' + userId + '/role';
+    let payload = { 'role': role };
     $.ajax({
         url: href,
-        type: 'get',
-        success: function (data) {
-            location.reload();
-        },
+        type: 'PATCH',
+        contentType: 'application/json',
+        data: JSON.stringify(payload),
+        success: function(){
+            history.go();
+        }
     });
 }
 
@@ -183,37 +226,12 @@ $(document).ready(function () {
 
     // Submit button in addUserModal
     $('#submitAddBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addUserForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var payload = {
-            "id": formData.id,
-            "name": formData.name,
-            "email": formData.email,
-            "role": formData.role,
-            "userStatus": formData.userStatus
+        let form = document.getElementById("addUserForm");
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
         }
-
-        // Ajax request
-        $.ajax({
-            url: '/management/users/register',
-            type: 'post',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: JSON.stringify(payload)
-        });
+        form.classList.add("was-validated");
     })
 
     // Edit user button (popup)
@@ -234,41 +252,6 @@ $(document).ready(function () {
             $('#userStatus').val(user.userStatus);
         });
     });
-    // Save editing button in editUserModal
-    $('#submitEditBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#editUserForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var returnData = {
-            "id": formData.id,
-            "name": formData.name,
-            "email": formData.email,
-            "role": formData.role,
-            "userCredo": formData.userCredo,
-            "userStatus": formData.userStatus
-        }
-        // put request when 'Save' button in editUserModal clicked
-        $.ajax({
-            url: '/management/users/',
-            type: 'put',
-            dataType: 'json',
-            contentType: 'application/json',
-            success: function (data) {
-                if (Array.isArray(data.errors) && data.errors.length) {
-                    data.errors.forEach(function (el) {
-                        $(document.getElementById('errorModalUpdate' + el.fieldName)).text(el.fieldError);
-                    })
-                } else {
-                    location.reload();
-                }
-            },
-            data: JSON.stringify(returnData)
-        });
-    })
-
     // Deactivate user button (popup)
     $('td .deactivate-user.eDeactBtn').on('click', function (event) {
         event.preventDefault();
@@ -356,6 +339,7 @@ $(document).ready(function () {
             elements[0].parentNode.removeChild(elements[0]);
         }
     });
+
     // Confirm deactivation button in activateUserModal
     $('#activateOneSubmit').on('click', function (event) {
         event.preventDefault();
