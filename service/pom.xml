@@ -22,7 +22,7 @@
         <!-- check actual version on git account google-maps api for java -->
         <google.maps.version>2.0.0</google.maps.version>
         <slf4.version>1.7.25</slf4.version>
-        <apache.http.client.version>4.5.12</apache.http.client.version>
+        <apache.http.client.version>4.5.13</apache.http.client.version>
     </properties>
 
     <dependencies>
