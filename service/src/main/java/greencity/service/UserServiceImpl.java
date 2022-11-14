@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import greencity.repository.options.UserFilter;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -110,15 +111,24 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * {@inheritDoc}
+     * Update {@code ROLE} of user.
+     *
+     * @deprecated updates like this on User entity should be handled in
+     *             GreenCityUser via RestClient.
+     * @param id   {@link UserVO} id.
+     * @param role {@link Role} for user.
+     * @return {@link UserRoleDto}
      */
+    @Deprecated
     @Override
+    @Transactional
     public UserRoleDto updateRole(Long id, Role role, String email) {
         checkUpdatableUser(id, email);
-        UserVO userVO = findById(id);
-        userVO.setRole(role);
-        userRepo.updateUserRole(id, String.valueOf(role));
-        return modelMapper.map(userVO, UserRoleDto.class);
+        User user = userRepo.findById(id)
+            .orElseThrow(() -> new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + id));
+        user.setRole(role);
+        userRepo.save(user);
+        return modelMapper.map(user, UserRoleDto.class);
     }
 
     /**

@@ -1,5 +1,7 @@
 package greencity.client;
 
+import greencity.dto.user.*;
+import greencity.enums.Role;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +31,6 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserManagementViewDto;
-import greencity.dto.user.UserVO;
 import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -194,10 +192,38 @@ public class RestClient {
      * @author Orest Mamchuk
      */
     public void updateUser(UserManagementDto userDto) {
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, setHeader());
+        UserManagementUpdateDto updateDto = managementDtoToUpdateDto(userDto);
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementUpdateDto> entity = new HttpEntity<>(updateDto, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER, HttpMethod.PUT, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.USER + "/" + userDto.getId(), HttpMethod.PUT, entity, Object.class);
+    }
+
+    private UserManagementUpdateDto managementDtoToUpdateDto(UserManagementDto userDto) {
+        return UserManagementUpdateDto.builder()
+            .name(userDto.getName())
+            .email(userDto.getEmail())
+            .userCredo(userDto.getUserCredo())
+            .role(userDto.getRole())
+            .userStatus(userDto.getUserStatus())
+            .build();
+    }
+
+    /**
+     * Method for sending change role request.
+     *
+     * @param id   of user whose role is being changed
+     * @param role new role
+     */
+    public void updateRole(Long id, Role role) {
+        String url = greenCityUserServerAddress
+            + RestTemplateLinks.USER + "/" + id + "/role";
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        UserRoleDto userRoleDto = new UserRoleDto(role);
+        HttpEntity<UserRoleDto> entity = new HttpEntity<>(userRoleDto, headers);
+        restTemplate.exchange(url, HttpMethod.PATCH, entity, Object.class);
     }
 
     /**
@@ -331,16 +357,15 @@ public class RestClient {
      *               deleted.
      * @author Orest Mamchuk
      */
-    public List<Long> deactivateAllUsers(List<Long> listId) {
+    public void deactivateAllUsers(List<Long> listId) {
         Gson gson = new Gson();
         String json = gson.toJson(listId);
-        HttpEntity<String> entity = new HttpEntity<>(json, setHeader());
-        ResponseEntity<Long[]> exchange = restTemplate.exchange(greenCityUserServerAddress
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(json, headers);
+        restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
-        Long[] responseDtos = exchange.getBody();
-        assert responseDtos != null;
-        return Arrays.asList(responseDtos);
     }
 
     /**
@@ -350,10 +375,11 @@ public class RestClient {
      * @author Orest Mamchuk
      */
     public void managementRegisterUser(UserManagementDto userDto) {
-        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, setHeader());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserManagementDto> entity = new HttpEntity<>(userDto, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class);
     }
 
     /**
