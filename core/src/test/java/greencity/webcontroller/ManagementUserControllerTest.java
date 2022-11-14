@@ -7,15 +7,12 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.user.*;
-import greencity.entity.Filter;
 import greencity.entity.User;
-import greencity.entity.UserShoppingListItem;
 import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.enums.UserStatus;
 import greencity.service.FilterService;
 import greencity.service.HabitAssignService;
 import greencity.service.UserService;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,11 +32,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
 
 import static greencity.ModelUtils.getPrincipal;
-import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,10 +70,10 @@ class ManagementUserControllerTest {
 
     @Test
     void changeRoleTest() {
-        UserVO userVO = new UserVO();
-        userVO.setEmail("test@mail.com");
-        managementUserController.changeRole(5L, "ROLE_ADMIN", userVO);
-        verify(userService, times(1)).updateRole(5L, Role.ROLE_ADMIN, userVO.getEmail());
+        Map<String, String> body = new HashMap<>();
+        body.put("role", "ROLE_ADMIN");
+        managementUserController.changeRole(5L, body);
+        verify(restClient, times(1)).updateRole(5L, Role.ROLE_ADMIN);
     }
 
     @Test
@@ -172,17 +166,19 @@ class ManagementUserControllerTest {
 
     @Test
     void saveUserTest() throws Exception {
-
-        UserManagementDto userManagementDto = ModelUtils.getUserManagementDto();
-        String content = objectMapper.writeValueAsString(userManagementDto);
+        UserManagementDto dto = ModelUtils.getUserManagementDto();
 
         mockMvc.perform(post(managementUserLink + "/register")
-            .content(content)
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("id", dto.getId().toString())
+            .param("name", dto.getName())
+            .param("email", dto.getEmail())
+            .param("userCredo", dto.getUserCredo())
+            .param("role", dto.getRole().toString())
+            .param("userStatus", dto.getUserStatus().toString()))
+            .andExpect(status().is3xxRedirection());
 
-        verify(restClient).managementRegisterUser(userManagementDto);
+        verify(restClient).managementRegisterUser(dto);
     }
 
     @Test

@@ -609,8 +609,12 @@ table.table .avatar {
     background: #13AA57;
 }
 
+.column-role{
+    vertical-align: middle;
+}
+
 .dropbtn.role {
-    width: 120px;
+    width: auto;
     height: 25px;
     background-color: #ffffff;
     text-align: center;
@@ -620,14 +624,20 @@ table.table .avatar {
 
 .dropdown-content.role {
     display: none;
-    width: 173px;
-    height: 60px;
+    width: auto;
+    height: auto;
     position: absolute;
     margin-top: 25px;
     margin-left: -10px;
     border: 1px solid #CACFD3;
     border-top: none;
     border-radius: 0;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    margin-top: 10px;
+    right: 20px;
 }
 
 .dropdown:hover .dropdown-content.role {
@@ -648,10 +658,9 @@ table.table .avatar {
 }
 
 .dropdown.role {
-    position: relative;
+    vertical-align: middle;
     display: flex;
-    padding-right: 20px;
-    margin-left: 0 !important;
+    align-items: stretch;
 }
 
 .dropdown-content.role a:hover {
@@ -770,10 +779,13 @@ table.table .avatar {
 
 .dropdown-content.status {
     display: none;
-    width: 131px;
-    height: 56px;
+    width: auto;
+    height: auto;
     position: absolute;
-    margin-top: 30px;
+    margin-top: 25px;
+    margin-left: -10px;
+    border: 1px solid #CACFD3;
+    border-top: none;
     border-radius: 0;
 }
 
@@ -817,6 +829,7 @@ table.table .avatar {
     float: right;
     margin-top: 7px;
     margin-left: 3px;
+    margin-right: 5px;
 }
 
 .table-download-icon {
@@ -1704,27 +1717,21 @@ a.lightgrey {
     background: white;
 }
 
-.sorting {
-    right: 15px;
-}
-
-
 .fas.fa-chevron-up {
-    position: relative;
-    left: 70%;
+    float: right;
+    margin-top: 11px;
     filter: invert(66%) sepia(47%) saturate(7431%) hue-rotate(117deg) brightness(93%) contrast(85%);
-
 }
 
 .fas.fa-chevron-down {
-    position: relative;
-    left: 70%;
+    float: right;
+    margin-top: 11px;
     filter: invert(66%) sepia(47%) saturate(7431%) hue-rotate(117deg) brightness(93%) contrast(85%);
     transform: rotateX(180deg);
 }
 
 .sorting {
-    position: relative;
-    left: 60%;
-    filter: invert(44%) sepia(8%) saturate(692%) hue-rotate(164deg) brightness(96%) contrast(93%);
+    float: right;
+    margin-top: 11px;
+    margin-right: 5px;
 }

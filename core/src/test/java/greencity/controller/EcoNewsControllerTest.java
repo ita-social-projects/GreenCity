@@ -65,6 +65,8 @@ class EcoNewsControllerTest {
     private UserService userService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private ObjectMapper objectMapper;
 
     private Principal principal = getPrincipal();
 
@@ -76,7 +78,7 @@ class EcoNewsControllerTest {
             .standaloneSetup(ecoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
-            .setControllerAdvice(new CustomExceptionHandler(errorAttributes))
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
             .build();
     }
 
