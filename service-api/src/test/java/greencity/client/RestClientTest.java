@@ -339,7 +339,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
-            .thenReturn(ResponseEntity.ok(Object));
+                .thenReturn(ResponseEntity.ok(Object));
 
         // when
         restClient.managementRegisterUser(userManagementDto);
