@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class EventsControllerTest {
@@ -50,9 +49,9 @@ public class EventsControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventsController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper))
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .build();
     }
 
     @Test
@@ -63,11 +62,9 @@ public class EventsControllerTest {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/createdEvents").principal(principal))
-                .andExpect(status().isOk());
-
+            .andExpect(status().isOk());
         verify(eventService).getEventsCreatedByUser(pageable, "test@gmail.com");
 
     }
-
 
 }
