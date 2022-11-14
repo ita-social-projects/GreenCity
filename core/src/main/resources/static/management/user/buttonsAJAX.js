@@ -146,11 +146,9 @@ function validateForUpdate(form) {
     form.classList.add("was-validated");
 }
 
-function changeRole(userId) {
-    let selector = document.querySelector('#roleSelector' + userId);
+function changeRole(userId, role) {
     let href = '/management/users/' + userId + '/role';
-    let payload = { 'role': selector.value };
-    console.log("Change role my man "  + selector.value);
+    let payload = { 'role': role };
     $.ajax({
         url: href,
         type: 'PATCH',

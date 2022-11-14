@@ -197,13 +197,14 @@
                             </th>
                             <th style="width: 120px;">
                                 <span>[[#{greenCity.pages.table.id}]]</span>
-                                <img id="id-icon" class="sorting" style="left: 50%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
+                                <img id="id-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('id')">
                                 <span class="table-filter-icon"></span>
                             </th>
                             <th class="username" style="width: 180px">
                                 [[#{greenCity.pages.table.userName}]]
-                                <img id="user-icon" class="sorting " style="left: 30%" src="/img/arrow-up.svg" alt="arrow-icon"onclick="sortByFieldName('name')">
+                                <img id="user-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon"onclick="sortByFieldName('name')">
                                 <span class="table-filter-icon"></span>
+
 <!--                                <div class="name-filter-form" style="display: block;">-->
 <!--                                    <div class="filter-sorting-buttons">-->
 <!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('name')">Ascending</button>-->
@@ -251,9 +252,11 @@
 <!--           друга прихована таблиця                     </div>-->
                             </th>
                             <th>  <!--style="width: 288px;"-->
-                                [[#{greenCity.pages.table.credo}]]
-                                <img id="credo-icon" class="sorting" style="left: 82%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
-                                <span class="table-filter-icon"></span>
+
+                                    [[#{greenCity.pages.table.credo}]]
+                                    <img id="credo-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userCredo')">
+                                    <span class="table-filter-icon"></span>
+
 <!--                                <div class="name-filter-form">-->
 <!--                                    <div class="filter-sorting-buttons">-->
 <!--                                        <button class="sort-buttons asc" onclick="byNameFieldAsc('userCredo')">Ascending</button>-->
@@ -275,9 +278,9 @@
 <!--                                    </form>-->
 <!--         третя таблиця                       </div>-->
                             </th>
-                            <th style="width: 240px;">
+                            <th style="width: 235px;">
                                 [[#{greenCity.pages.table.role}]]
-                                <img id="role-icon" class="sorting" style="left: 55%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('role')">
+                                <img id="role-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('role')">
                                 <span class="table-filter-icon"></span>
 <!--                                <div class="name-filter-form"    style="display: block;">-->
 <!--                                    <div class="filter-sorting-buttons">-->
@@ -306,7 +309,7 @@
                             </th>
                             <th style="width: 131px;">
                                 [[#{greenCity.pages.table.status}]]
-                                <img id="tags-icon" class="sorting" style="left: 50%" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userStatus')">
+                                <img id="tags-icon" class="sorting" src="/img/arrow-up.svg" alt="arrow-icon" onclick="sortByFieldName('userStatus')">
                                 <span class="table-filter-icon"></span>
                             </th>
                             <th>
@@ -331,15 +334,24 @@
                                 <td th:text="${user.name}"></td>
                                 <td th:text="${user.email}"></td>
                                 <td class="column-credo-text" th:text="${user.userCredo}"></td>
-                                <td>
-                                    <select th:id="roleSelector + ${user.id}" th:if="${user.getId()} != ${currentUser.getId()}" class="form-control" name="role" th:onchange="'changeRole(' + ${user.id} + ')'">
-                                        <option class="role-update"
-                                                th:each="role : ${T(greencity.enums.Role).values()}"
-                                                th:text="${role}"
-                                                th:value="${role}"
-                                                th:selected="${role} == ${user.getRole()}">
-                                        </option>
-                                    </select>
+                                <td class="column-role">
+                                    <div class="dropdown role" >
+                                        <button class="dropbtn role"  th:text="${user.getRole().toString()}">
+                                        </button>
+                                        <img class="rotate dropdown-arrow" src="/img/arrow-down.svg" alt="arrow-icon">
+                                        <div class="dropdown-content role">
+                                            <a
+                                                    th:each="role : ${T(greencity.enums.Role).values()}"
+                                                    th:if="${!role.equals(user.getRole())}"
+                                                    th:text="${role}"
+                                                    th:value="${role}"
+                                                    th:selected="${role} == ${user.getRole()}"
+                                                    th:data-role="${role}"
+                                                    th:data-userId="${user.id}"
+                                                    onclick="changeRole(this.getAttribute('data-userId'), this.getAttribute('data-role'));"
+                                            ></a>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td
                                     th:class="|${user.userStatus.name().equals('PENDING') ? 'whiteHover cyan':''}

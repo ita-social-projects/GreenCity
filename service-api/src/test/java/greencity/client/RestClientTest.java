@@ -337,11 +337,11 @@ class RestClientTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<UserManagementDto> entity = new HttpEntity<>(userManagementDto, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-
-        // when
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
+
+        // when
         restClient.managementRegisterUser(userManagementDto);
 
         // then
