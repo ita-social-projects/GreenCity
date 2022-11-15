@@ -28,6 +28,14 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> findAllByAttender(Pageable page, Long userId);
 
     /**
+     * Method for getting events created by User.
+     *
+     * @return list of {@link Event} instances.
+     */
+    @Query(value = "select e from Event e where e.organizer.id =:userId")
+    Page<Event> findEventsByOrganizer(Pageable page, Long userId);
+
+    /**
      * Method returns {@link Event} by search query and page.
      *
      * @param paging {@link Pageable}.

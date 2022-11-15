@@ -155,6 +155,26 @@ public class EventsController {
     }
 
     /**
+     * Method for getting page of events which were created user.
+     *
+     * @return a page of{@link EventDto} instance.
+     * @author Nikita Korzh.
+     */
+    @ApiOperation(value = "Get events created by user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/myEvents/createdEvents")
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEventsCreatedByUser(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService
+            .getEventsCreatedByUser(pageable, principal.getName()));
+    }
+
+    /**
      * Method for adding an attender to the event.
      *
      * @author Max Bohonko.
