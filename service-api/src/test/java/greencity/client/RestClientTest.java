@@ -309,21 +309,21 @@ class RestClientTest {
 
     @Test
     void deactivateAllUsers() {
+        // given
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(AUTHORIZATION, accessToken);
-        Long[] longs = new Long[] {1L, 2L};
-        List<Long> listId = Arrays.asList(longs);
-        Gson gson = new Gson();
-        String json = gson.toJson(listId);
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
+        List<Long> listId = List.of(1L, 2L);
+        HttpEntity<List<Long>> entity = new HttpEntity<>(listId, headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        restClient.deactivateAllUsers(listId);
 
+        // when
+        restClient.deactivateListedUsers(listId);
+
+        // then
         verify(restTemplate).exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
+            + RestTemplateLinks.USER_DEACTIVATE_LISTED, HttpMethod.PATCH, entity, Long[].class);
 
     }
 
@@ -340,7 +340,6 @@ class RestClientTest {
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
-
         // when
         restClient.managementRegisterUser(userManagementDto);
 

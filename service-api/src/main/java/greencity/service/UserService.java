@@ -11,17 +11,15 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
     /**
-     * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
+     * Method that returns true if user exists in database and is not 'DEACTIVATED'.
      *
      * @param email - {@link UserVO}'s email
-     * @return {@link Optional} of found {@link UserVO}.
-     * @author Vasyl Zhovnir
+     * @return boolean of activation status of {@link UserVO}.
      */
-    Optional<UserVO> findNotDeactivatedByEmail(String email);
+    boolean isNotDeactivatedByEmail(String email);
 
     /**
      * Find UserVO's id by UserVO email.

@@ -212,21 +212,15 @@ class ManagementUserControllerTest {
     }
 
     @Test
-    void deactivateAllTest() throws Exception {
+    void deactivateListedUsersTest() throws Exception {
         List<Long> list = List.of(1L, 2L);
-        String context = objectMapper.writeValueAsString(list);
-        mockMvc.perform(post(managementUserLink + "/deactivateAll")
-            .content(context)
+        String content = objectMapper.writeValueAsString(list);
+
+        mockMvc.perform(patch(managementUserLink + "/deactivateListed")
+            .content(content)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        context = objectMapper.writeValueAsString(null);
-
-        mockMvc.perform(post(managementUserLink + "/deactivateAll")
-            .content(context)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-
-        verify(restClient).deactivateAllUsers(list);
+        verify(restClient).deactivateListedUsers(list);
     }
 
     @Test

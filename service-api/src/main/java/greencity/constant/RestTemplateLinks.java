@@ -25,6 +25,7 @@ public class RestTemplateLinks {
     public static final String USER_FIND_ID_BY_EMAIL = "/user/findIdByEmail";
     public static final String UPDATE_USER_LAST_ACTIVITY_TIME = "/updateUserLastActivityTime/";
     public static final String USER_DEACTIVATE = "user/deactivate";
+    public static final String USER_DEACTIVATE_LISTED = "user/deactivateListed";
     public static final String USER_ACTIVATE = "user/activate";
     public static final String OWN_SECURITY_REGISTER = "ownSecurity/register";
     public static final String USER_SEARCH = "/user/search";

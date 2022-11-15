@@ -9,9 +9,10 @@ import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.UserDeactivatedException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.LowRoleLevelException;
 import greencity.repository.UserRepo;
 
 import java.sql.Timestamp;
@@ -65,9 +66,11 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public Optional<UserVO> findNotDeactivatedByEmail(String email) {
-        Optional<User> notDeactivatedByEmail = userRepo.findNotDeactivatedByEmail(email);
-        return Optional.of(modelMapper.map(notDeactivatedByEmail, UserVO.class));
+    @Transactional(readOnly = true)
+    public boolean isNotDeactivatedByEmail(String email) {
+        userRepo.checkIfNotDeactivated(email)
+            .orElseThrow(() -> new UserDeactivatedException(ErrorMessage.USER_DEACTIVATED));
+        return true;
     }
 
     /**
