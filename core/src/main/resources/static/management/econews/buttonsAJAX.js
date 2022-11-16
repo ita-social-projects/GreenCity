@@ -479,6 +479,31 @@ function orderByNameField(nameField) {
     });
 }
 
+function sortByFieldName(nameField) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    var sort = urlSearch.get("sort");
+    var page = urlSearch.get("page");
+    if (page !== null) {
+        urlSearch.set("page", "0");
+    }
+    if (sort == nameField + ",ASC") {
+        urlSearch.set("sort", nameField + ",DESC");
+        localStorage.setItem("sort", nameField + ",DESC");
+    } else {
+        urlSearch.set("sort", nameField + ",ASC");
+        localStorage.setItem("sort", nameField + ",ASC");
+    }
+    let url = "/management/eco-news?";
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
+
 // mark order
 function markOrder() {
     var allParam = window.location.search;
@@ -530,7 +555,29 @@ function markOrder() {
         }
     }
 }
-
+function openEcoNewsFilterForm() {
+    if (document.getElementById("filter").style.display === "block") {
+        document.getElementById("filter").style.display = "none";
+        document.getElementById("filter-button").style.width = "113px";
+    } else {
+        document.getElementById("filter").style.display = "block";
+        document.getElementById("filter-button").style.width = "280px";
+    }
+}
+function saveItemsOnPage(itemsOnPage) {
+    var allParam = window.location.search;
+    var urlSearch = new URLSearchParams(allParam);
+    localStorage.setItem("size", itemsOnPage);
+    let url = "/management/eco-news?";
+    urlSearch.set("size", itemsOnPage);
+    $.ajax({
+        url: url + urlSearch.toString(),
+        type: 'GET',
+        success: function (res) {
+            window.location.href = url + urlSearch.toString();
+        }
+    });
+}
 //sidebar
 function openNav() {
     document.getElementById("mySidepanel").style.width = "250px";

@@ -11,9 +11,12 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.tag.TagDto;
+import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
+import greencity.service.FilterService;
 import greencity.service.TagsService;
+import greencity.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -33,8 +36,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
@@ -44,6 +50,8 @@ import static greencity.dto.genericresponse.GenericResponseDto.buildGenericRespo
 public class ManagementEcoNewsController {
     private final EcoNewsService ecoNewsService;
     private final TagsService tagsService;
+    private final UserService userService;
+    private final FilterService filterService;
 
     /**
      * Method that returns management page with all {@link EcoNewsVO}.
@@ -61,11 +69,11 @@ public class ManagementEcoNewsController {
             model.addAttribute("fields", ecoNewsViewDto);
             model.addAttribute("query", "");
         } else {
+            model.addAttribute("query", query);
             allEcoNews = query == null || query.isEmpty()
                 ? ecoNewsService.findAll(pageable)
                 : ecoNewsService.searchEcoNewsBy(pageable, query);
             model.addAttribute("fields", new EcoNewsViewDto());
-            model.addAttribute("query", query);
         }
 
         model.addAttribute("pageable", allEcoNews);
@@ -79,6 +87,8 @@ public class ManagementEcoNewsController {
         }
         model.addAttribute("ecoNewsTag", tagsService.findAllEcoNewsTags("en"));
         model.addAttribute("pageSize", pageable.getPageSize());
+        model.addAttribute("authors", userService.getAllUsers());
+
         return "core/management_eco_news";
     }
 
