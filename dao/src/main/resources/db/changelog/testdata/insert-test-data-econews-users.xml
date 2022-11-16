@@ -5,7 +5,7 @@
         <sqlFile dbms="postgresql"
                  encoding="UTF-8"
                  endDelimiter="\nGO"
-                 path="../../samplesqldata/eco-news-data.sql"
+                 path="./samplesqldata/users.sql"
                  relativeToChangelogFile="true"
                  splitStatements="true"
                  stripComments="true"/>
@@ -14,7 +14,16 @@
         <sqlFile dbms="postgresql"
                  encoding="UTF-8"
                  endDelimiter="\nGO"
-                 path="../../samplesqldata/eco-news-tags.sql"
+                 path="./samplesqldata/eco-news-data.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"/>
+    </changeSet>
+    <changeSet id="muz#4685-3" author="Maciej Uzarski" context="dev">
+        <sqlFile dbms="postgresql"
+                 encoding="UTF-8"
+                 endDelimiter="\nGO"
+                 path="./samplesqldata/eco-news-tags.sql"
                  relativeToChangelogFile="true"
                  splitStatements="true"
                  stripComments="true"/>

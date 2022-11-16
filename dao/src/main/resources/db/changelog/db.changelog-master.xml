@@ -131,10 +131,10 @@
     <include file="db/changelog/logs/ch-add-event-comment-Yashna.xml"/>
     <include file="db/changelog/logs/ch-insert-into-employee-authority-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
+    <include file="db/changelog/logs/ch-migrate-passowrds-with-delegation.xml"/>
 
     <!-- testdata -->
     <include file="db/changelog/testdata/insert-test-data-econews-users.xml"/>
-    <include file="db/changelog/logs/ch-migrate-passowrds-with-delegation.xml"/>
 
 
 </databaseChangeLog>

@@ -13,3 +13,9 @@ VALUES (2, '2022-10-25 16:40:06.209394', 'muzgcity@gmail.com', 0, 'Maciej', 'ROL
        (5, '2022-11-05 22:30:12.144632', 'zet123@test.com', 0, 'Zoldyck123', 'ROLE_USER', 2,
         'c8e13ed1-42c8-4a43-854e-5d15c16ea18c', null, 0, '2022-11-05 21:30:12.144632 +00:00', 'Zoldyck123', null, null,
         true, true, true, 2, '93b55cb4-5939-42c0-bf31-067b5dd19bf5', null, null);
+
+INSERT INTO own_security (id, password, user_id) VALUES
+                                                     (1, '{noop}GreenCity123!', 2),
+                                                     (2, '{noop}GreenCity124!', 3),
+                                                     (3, '{noop}GreenCity125!', 4),
+                                                     (4, '{noop}GreenCity126!', 5);
