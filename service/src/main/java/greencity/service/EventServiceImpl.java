@@ -48,7 +48,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
-                         MultipartFile[] images) {
+        MultipartFile[] images) {
         addAddressesToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -67,11 +67,11 @@ public class EventServiceImpl implements EventService {
         }
 
         List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
-                addEventDtoRequest.getTags(), TagType.EVENT);
+            addEventDtoRequest.getTags(), TagType.EVENT);
 
         toSave.setTags(modelMapper.map(tagVOs,
-                new TypeToken<List<Tag>>() {
-                }.getType()));
+            new TypeToken<List<Tag>>() {
+            }.getType()));
 
         return modelMapper.map(eventRepo.save(toSave), EventDto.class);
     }
@@ -84,7 +84,7 @@ public class EventServiceImpl implements EventService {
         eventImages.add(toDelete.getTitleImage());
         if (toDelete.getAdditionalImages() != null) {
             eventImages
-                    .addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink).collect(Collectors.toList()));
+                .addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink).collect(Collectors.toList()));
         }
 
         if (toDelete.getOrganizer().getId().equals(user.getId())) {
@@ -98,12 +98,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         EventDto eventDto = modelMapper.map(event, EventDto.class);
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             eventDto.setIsSubscribed(event.getAttenders().stream()
-                    .anyMatch(attender -> attender.getId().equals(currentUser.getId())));
+                .anyMatch(attender -> attender.getId().equals(currentUser.getId())));
         }
         return eventDto;
     }
@@ -139,34 +139,34 @@ public class EventServiceImpl implements EventService {
 
     private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
         List<Long> eventIds = events.stream()
-                .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
-                        .contains(user.getId()))
-                .map(Event::getId)
-                .collect(Collectors.toList());
+            .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+                .contains(user.getId()))
+            .map(Event::getId)
+            .collect(Collectors.toList());
         eventDtos.getPage().forEach(eventDto -> eventDto.setIsSubscribed(eventIds.contains(eventDto.getId())));
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-                .map(event -> modelMapper.map(event, EventDto.class))
-                .collect(Collectors.toList());
+            .map(event -> modelMapper.map(event, EventDto.class))
+            .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
-                eventDtos,
-                eventsPage.getTotalElements(),
-                eventsPage.getPageable().getPageNumber(),
-                eventsPage.getTotalPages(),
-                eventsPage.getNumber(),
-                eventsPage.hasPrevious(),
-                eventsPage.hasNext(),
-                eventsPage.isFirst(),
-                eventsPage.isLast());
+            eventDtos,
+            eventsPage.getTotalElements(),
+            eventsPage.getPageable().getPageNumber(),
+            eventsPage.getTotalPages(),
+            eventsPage.getNumber(),
+            eventsPage.hasPrevious(),
+            eventsPage.hasNext(),
+            eventsPage.isFirst(),
+            eventsPage.isLast());
     }
 
     @Override
     public void addAttender(Long eventId, String email) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (Objects.equals(event.getOrganizer().getId(), currentUser.getId())) {
@@ -182,11 +182,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public void removeAttender(Long eventId, String email) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
-                .collect(Collectors.toSet()));
+            .collect(Collectors.toSet()));
 
         eventRepo.save(event);
     }
@@ -206,11 +206,11 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
         Event toUpdate =
-                eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
-                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
@@ -228,18 +228,18 @@ public class EventServiceImpl implements EventService {
     @Override
     public void rateEvent(Long eventId, String email, int grade) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
         if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
-                .contains(currentUser.getId())) {
+            .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
         }
         if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
-                .contains(currentUser.getId())) {
+            .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_RATED);
         }
 
@@ -247,21 +247,21 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
 
         userService.updateEventOrganizerRating(event.getOrganizer().getId(),
-                calculateUserEventOrganizerRating(event.getOrganizer()));
+            calculateUserEventOrganizerRating(event.getOrganizer()));
     }
 
     @Override
     public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
         Event event =
-                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return event.getAttenders().stream().map(attender -> modelMapper.map(attender, EventAttenderDto.class))
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
     }
 
     @Override
     public EventVO findById(Long eventId) {
         Event event = eventRepo.findById(eventId)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
         return modelMapper.map(event, EventVO.class);
     }
 
@@ -295,9 +295,9 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
-                            .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
-                    new TypeToken<List<Tag>>() {
-                    }.getType()));
+                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                new TypeToken<List<Tag>>() {
+                }.getType()));
         }
 
         updateImages(toUpdate, updateEventDto, images);
@@ -306,12 +306,12 @@ public class EventServiceImpl implements EventService {
             addAddressesToLocation(updateEventDto.getDatesLocations());
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
-                    .map(d -> modelMapper.map(d, EventDateLocation.class))
-                    .map(d -> {
-                        d.setEvent(toUpdate);
-                        return d;
-                    })
-                    .collect(Collectors.toList()));
+                .map(d -> modelMapper.map(d, EventDateLocation.class))
+                .map(d -> {
+                    d.setEvent(toUpdate);
+                    return d;
+                })
+                .collect(Collectors.toList()));
         }
     }
 
@@ -337,7 +337,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventDto.getAdditionalImages() != null) {
             updateEventDto.getAdditionalImages().forEach(img -> toUpdate
-                    .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+                .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
         } else {
             toUpdate.setAdditionalImages(null);
         }
@@ -349,8 +349,8 @@ public class EventServiceImpl implements EventService {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
             if (updateEventDto.getAdditionalImages() != null) {
                 toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
-                        .map(url -> EventImages.builder().event(toUpdate).link(url).build())
-                        .collect(Collectors.toList()));
+                    .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                    .collect(Collectors.toList()));
             } else {
                 toUpdate.setAdditionalImages(null);
             }
@@ -379,7 +379,7 @@ public class EventServiceImpl implements EventService {
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                .event(toUpdate).link(url).build()).collect(Collectors.toList()));
         } else {
             toUpdate.setAdditionalImages(null);
         }
@@ -408,6 +408,6 @@ public class EventServiceImpl implements EventService {
 
     private ZonedDateTime findLastEventDateTime(Event event) {
         return Collections
-                .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
+            .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 }

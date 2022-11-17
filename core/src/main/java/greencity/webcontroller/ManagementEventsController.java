@@ -39,7 +39,7 @@ public class ManagementEventsController {
      */
     @GetMapping
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
-                               @ApiIgnore Pageable pageable, EventViewDto eventViewDto) {
+        @ApiIgnore Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
         if (!eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
@@ -47,8 +47,8 @@ public class ManagementEventsController {
             model.addAttribute("query", "");
         } else {
             allEvents = query == null || query.isEmpty()
-                    ? eventService.getAll(pageable, null)
-                    : eventService.searchEventsBy(pageable, query);
+                ? eventService.getAll(pageable, null)
+                : eventService.searchEventsBy(pageable, query);
             model.addAttribute("fields", new EventViewDto());
             model.addAttribute("query", query);
         }
@@ -70,9 +70,8 @@ public class ManagementEventsController {
     @ResponseBody
     @PostMapping(value = "/create")
     public AddEventDtoRequest postEvent(@RequestBody @Valid AddEventDtoRequest addEventDtoRequest,
-                                        @ImageValidation MultipartFile[] files,
-                                        Principal principal) {
-
+        @ImageValidation MultipartFile[] files,
+        Principal principal) {
 
         eventService.save(addEventDtoRequest, principal.getName(), files);
         return addEventDtoRequest;
