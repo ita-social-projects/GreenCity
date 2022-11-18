@@ -1,6 +1,11 @@
 package greencity.repository;
 
+import greencity.dto.user.UserManagementVO;
 import greencity.entity.User;
+import greencity.repository.options.UserFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,6 +27,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link User}
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Find all {@link UserManagementVO}.
+     *
+     * @param filter   filter parameters
+     * @param pageable pagination
+     * @return list of all {@link UserManagementVO}
+     */
+    @Query(" SELECT new greencity.dto.user.UserManagementVO(u.id, u.name, u.email, u.userCredo, u.role, u.userStatus) "
+        + " FROM User u ")
+    Page<UserManagementVO> findAllManagementVo(Specification<User> filter, Pageable pageable);
 
     /**
      * Find not 'DEACTIVATED' {@link User} by email.

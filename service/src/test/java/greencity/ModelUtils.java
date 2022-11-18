@@ -98,18 +98,7 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.AuthorDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.RecommendedFriendDto;
-import greencity.dto.user.UserFilterDtoRequest;
-import greencity.dto.user.UserFilterDtoResponse;
-import greencity.dto.user.UserProfilePictureDto;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.dto.user.UserShoppingListItemVO;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -189,6 +178,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
     public static User TEST_USER = createUser();
@@ -320,6 +311,14 @@ public class ModelUtils {
             .verifyEmail(new VerifyEmailVO())
             .dateOfRegistration(localDateTime)
             .build();
+    }
+
+    public static UserManagementVO getUserManagementVO() {
+        return UserManagementVO.builder()
+            .id(1L)
+            .userStatus(ACTIVATED)
+            .email("Test@gmail.com")
+            .role(Role.ROLE_ADMIN).build();
     }
 
     public static UserVOAchievement getUserVOAchievement() {
