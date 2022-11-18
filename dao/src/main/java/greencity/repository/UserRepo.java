@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.dto.user.UserManagementVO;
 import greencity.entity.User;
-import greencity.repository.options.UserFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
