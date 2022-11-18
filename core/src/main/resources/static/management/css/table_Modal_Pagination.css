@@ -1206,10 +1206,16 @@ table.table .avatar {
     display: inline-block;
 }
 
-.modal .form-control {
+.modal {
     border-radius: 3px;
     box-shadow: none;
     border: 1px solid #878787;
+}
+
+.form-control {
+    border-radius: 3px;
+    box-shadow: none;
+    border: 1px solid #ced4da;
 }
 
 .form-search {

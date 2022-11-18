@@ -29,10 +29,11 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
 
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
+    <script th:src="@{/management/tinymce/tinymce.min.js}" referrerpolicy="origin"></script>
     <style>
         .text{
             white-space: nowrap;
@@ -230,7 +231,7 @@
             <div id="addEcoNewsModal" class="modal fade">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form th:action="@{management/eco-news/save}" method="post" id="addEcoNewsForm" enctype="multipart/form-data">
+                        <form id="addEcoNewsForm" enctype="multipart/form-data">
                             <div class="modal-header">
                                 <h4 class="modal-title">[[#{greenCity.econews.page.add.eco.news}]]</h4>
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -239,17 +240,25 @@
                                 <input type="hidden" class="form-control" name="id" value="0" readonly required>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.title}]]</label>
-                                    <textarea type="text" class="form-control" name="title" required></textarea>
+                                    <input type="text" class="form-control" name="title" id="inputTitle" required>
                                     <span th:id="errorModalSavetitle" id="errorModalSavetitle" class="errorSpan"></span>
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.text}]]</label>
-                                    <textarea type="text" class="form-control" name="text" required></textarea>
+                                    <textarea id="ecoNewsContent" type="text" class="form-control" name="text" required></textarea>
                                     <span th:id="errorModalSavetext" id="errorModalSavetext" class="errorSpan"></span>
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.tags}]]</label>
-                                    <div style="width: 100%; display: inline-block;">
+                                    <div class="form-check" th:each="allTags, iterStatus: ${ecoNewsTag}" name="tags">
+                                        <span class="modal-checkbox">
+                                            <input class="form-check-input cb-tags" type="checkbox" th:value="${allTags.name}" th:id="${allTags.name}">
+                                            <label class="form-check-label" th:for="${allTags.name}" th:text="${allTags.name}">
+                                                Default checkbox
+                                            </label>
+                                        </span>
+                                    </div>
+                                    <!--<div style="width: 100%; display: inline-block;">
                                         <th:block th:each="allTags, iterStatus :${ecoNewsTag}">
                                             <div style="margin-right: 5%" class="custom-checkbox">
                                             <span class="modal-checkbox">
@@ -262,13 +271,13 @@
                                             </span>
                                             </div>
                                         </th:block>
-                                    </div>
+                                    </div>-->
                                     <span th:id="errorModalSavetags" id="errorModalSavetags" class="errorSpan"></span>
 
                                 </div>
                                 <div class="form-group">
                                     <label>[[#{greenCity.pages.table.source}]]</label>
-                                    <textarea type="text" class="form-control" name="source"></textarea>
+                                    <input type="text" class="form-control" name="source">
                                     <span th:id="errorModalSavesource" id="errorModalSavesource" class="errorSpan"></span>
                                 </div>
                                 <div class="form-group">
@@ -281,7 +290,7 @@
                             <div class="modal-footer">
                                 <input type="button" class="btn btn-default btn-tertiary" data-dismiss="modal"
                                        th:value="#{greenCity.pages.popup.cancel.}">
-                                <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn">
+                                <input type="submit" class="btn btn-success btn-primary" value="Add" id="submitAddBtn" onclick="tinymce.triggerSave()">
                             </div>
                         </form>
                     </div>
@@ -316,5 +325,10 @@
     </div>
     <div id="footer" th:insert="core/footer"></div>
 </div>
+<script>
+    tinymce.init({
+        selector: '#ecoNewsContent'
+    });
+</script>
 </body>
 </html>
