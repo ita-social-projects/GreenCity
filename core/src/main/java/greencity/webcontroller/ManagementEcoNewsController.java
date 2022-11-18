@@ -17,6 +17,11 @@ import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.io.IOException;
+import java.util.Collection;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,6 +32,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -177,16 +183,18 @@ public class ManagementEcoNewsController {
     @ResponseBody
     @PostMapping("/save")
     public GenericResponseDto saveEcoNews(@Valid @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-        BindingResult bindingResult,
-        @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
-        @ApiIgnore Principal principal) {
+                                          BindingResult bindingResult,
+                                          @ImageValidation @RequestParam(required = false, name = "imagePath") MultipartFile file,
+                                          @ApiIgnore Principal principal, MultipartHttpServletRequest servletRequest)
+        throws ServletException, IOException {
         if (!bindingResult.hasErrors()) {
-            ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
+            MultipartFile img = servletRequest.getFile("image");
+            ecoNewsService.save(addEcoNewsDtoRequest, img, principal.getName());
         }
         return buildGenericResponseDto(bindingResult);
     }
 
-    /**
+    /**multipartParameterNames = {LinkedHashSet@17744}  size = 1
      * Method which updates {@link EcoNewsVO}.
      *
      * @param ecoNewsDtoManagement of {@link EcoNewsDtoManagement}.

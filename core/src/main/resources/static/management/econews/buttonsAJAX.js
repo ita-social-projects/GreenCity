@@ -274,58 +274,60 @@ $(document).ready(function () {
         clearAllErrorsSpan();
     });
     //submit button in addEcoNewsModal
-    $('#submitAddBtn').on('click', function (event) {
-        event.preventDefault();
-        clearAllErrorsSpan();
-        var formData = $('#addEcoNewsForm').serializeArray().reduce(function (obj, item) {
-            obj[item.name] = item.value;
-            return obj;
-        }, {});
-        var payload = {
-            "id": formData.id,
-            "title": formData.title,
-            "text": formData.text,
-            "image": formData.imagePath,
-            "source": formData.source,
-            "tags": []
-        };
-        console.log(payload);
-        $("input:checked").each(function () {
-            payload.tags.push($(this).val());
-        });
-
-        var result = new FormData();
-        result.append("addEcoNewsDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
-        var file = document.getElementById("creationFile").files[0];
-        console.log(file);
-        result.append("image", file);
-        addFormInputValidate()
-        if (formAddValid === true) {
-            //save request in addEcoNewsModal
-            document.getElementById("submitAddBtn").disabled = false;
-            $.ajax({
-                url: '/management/eco-news/save',
-                type: 'post',
-                contentType: false,
-                processData: false,
-                dataType: "json",
-                cache: false,
-                success: function (data) {
-                    if (Array.isArray(data.errors) && data.errors.length) {
-                        data.errors.forEach(function (el) {
-                            $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
-                        })
-                    } else {
-                        // location.reload();
-                        window.location.href = "/management/eco-news";
-
-                    }
-                },
-                data: result
+    $('#submitAddBtn').on('click',
+        function (event) {
+            event.preventDefault();
+            clearAllErrorsSpan();
+            var formData = $('#addEcoNewsForm').serializeArray().reduce(function (obj, item) {
+                obj[item.name] = item.value;
+                return obj;
+            }, {});
+            var payload = {
+                "id": formData.id,
+                "title": formData.title,
+                "text": formData.text,
+                "image": formData.imagePath,
+                "source": formData.source,
+                "tags": []
+            };
+            console.log(payload);
+            $("input:checked").each(function () {
+                payload.tags.push($(this).val());
             });
-        }
 
-    });
+            var result = new FormData();
+            result.append("addEcoNewsDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
+            var file = document.getElementById("creationFile").files[0];
+            console.log(file);
+            result.append("image", file);
+            console.log(result);
+            addFormInputValidate()
+            if (formAddValid === true) {
+                //save request in addEcoNewsModal
+                document.getElementById("submitAddBtn").disabled = false;
+                $.ajax({
+                    url: '/management/eco-news/save',
+                    type: 'post',
+                    contentType: false,
+                    processData: false,
+                    dataType: "json",
+                    cache: false,
+                    success: function (data) {
+                        if (Array.isArray(data.errors) && data.errors.length) {
+                            data.errors.forEach(function (el) {
+                                $(document.getElementById('errorModalSave' + el.fieldName)).text(el.fieldError);
+                            })
+                        } else {
+                            // location.reload();
+                            window.location.href = "/management/eco-news";
+
+                        }
+                    },
+                    data: result,
+                });
+            }
+
+        });
 
     //edit button on the right in the table
     $('.edit.eBtn').on('click', function (event) {
