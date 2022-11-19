@@ -247,8 +247,8 @@ class EcoNewsControllerTest {
     void dislikeTest() throws Exception {
         // given
         UserVO userVO = getUserVO();
-        // when
         when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when
         mockMvc.perform(post(ecoNewsLink + "/dislike?id=1")
             .principal(principal))
             .andExpect(status().isOk());
