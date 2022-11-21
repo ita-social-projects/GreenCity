@@ -6,6 +6,7 @@ import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.user.UserVO;
+import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -212,8 +213,8 @@ public interface EcoNewsService {
      * @return a dto of {@link PageableDto}.
      * @author Dovganyuk Taras
      */
-    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(
-        Pageable pageable, EcoNewsViewDto ecoNewsViewDto);
+    PageableAdvancedDto<EcoNewsDto> getFilteredDataForManagementByPage(Pageable pageable,
+        EcoNewsViewDto ecoNewsViewDto);
 
     /**
      * Method to mark news as liked by User.
@@ -224,6 +225,14 @@ public interface EcoNewsService {
     void like(UserVO user, Long id);
 
     /**
+     * Method to mark news as disliked by User.
+     *
+     * @param user - instance of {@link UserVO}
+     * @param id   - {@link Long} eco news id.
+     */
+    void dislike(UserVO user, Long id);
+
+    /**
      * Method to get amount of likes by eco news id.
      *
      * @param id - {@link Integer} eco news id.
@@ -232,12 +241,21 @@ public interface EcoNewsService {
     Integer countLikesForEcoNews(Long id);
 
     /**
+     * Method to get amount of dislikes by eco news id.
+     *
+     * @param id - {@link Integer} eco news id.
+     * @return amount of dislikes by eco news id.
+     */
+    Integer countDislikesForEcoNews(Long id);
+
+    /**
      * Method to check if user liked news.
      *
      * @param id   - id of {@link EcoNewsVO} to check liked or not.
      * @param user - current {@link UserVO}.
      * @return user liked news or not.
      */
+
     Boolean checkNewsIsLikedByUser(Long id, UserVO user);
 
     /**
@@ -263,4 +281,20 @@ public interface EcoNewsService {
      * @return dto {@link EcoNewContentSourceDto}.
      */
     EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id);
+
+    /**
+     * Method for getting list of users who liked post by post id.
+     *
+     * @param id - {@link Long} eco news id.
+     * @return list of {@link UserVO} instances.
+     */
+    Set<UserVO> findUsersWhoLikedPost(Long id);
+
+    /**
+     * Method for getting list of users who disliked post by post id.
+     *
+     * @param id - {@link Long} eco news id.
+     * @return list of {@link UserVO} instances.
+     */
+    Set<UserVO> findUsersWhoDislikedPost(Long id);
 }

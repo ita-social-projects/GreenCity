@@ -526,10 +526,33 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public void like(UserVO userVO, Long id) {
         EcoNewsVO ecoNewsVO = findById(id);
+        if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+            ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        }
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
             ecoNewsVO.getUsersLikedNews().add(userVO);
+        }
+        ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+    }
+
+    /**
+     * Method to like or dislike {@link EcoNews} by id.
+     *
+     * @param userVO - current {@link User} that like/dislike news.
+     * @param id     - @{@link Long} eco news id.
+     */
+    @Override
+    public void dislike(UserVO userVO, Long id) {
+        EcoNewsVO ecoNewsVO = findById(id);
+        if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        }
+        if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
+        } else {
+            ecoNewsVO.getUsersDislikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
     }
@@ -547,12 +570,25 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method to get amount of dislikes by eco news id.
+     *
+     * @param id - @{@link Integer} eco news id.
+     * @return amount of dislikes by eco news id.
+     */
+    @Override
+    public Integer countDislikesForEcoNews(Long id) {
+        EcoNewsVO ecoNewsV0 = findById(id);
+        return ecoNewsV0.getUsersDislikedNews().size();
+    }
+
+    /**
      * Method to check if user liked news.
      *
      * @param id     - id of {@link EcoNewsVO} to check liked or not.
      * @param userVO - current {@link UserVO}.
      * @return user liked news or not.
      */
+
     @Override
     public Boolean checkNewsIsLikedByUser(Long id, UserVO userVO) {
         EcoNewsVO ecoNewsVO = findById(id);
@@ -758,5 +794,23 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }
         return toSave;
+    }
+
+    @Override
+    public Set<UserVO> findUsersWhoLikedPost(Long id) {
+        EcoNews ecoNews = ecoNewsRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        Set<User> usersLikedNews = ecoNews.getUsersLikedNews();
+        return usersLikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<UserVO> findUsersWhoDislikedPost(Long id) {
+        EcoNews ecoNews = ecoNewsRepo
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
+        Set<User> usersDislikedNews = ecoNews.getUsersDislikedNews();
+        return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
     }
 }
