@@ -205,7 +205,6 @@
             <div id="addEventsModal" class="modal fade">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <!--                        <form th:action="@{management/events/create}" method="post" id="addEventsForm" class="needs-validation"-->
                         <form id="addEventsForm" class="needs-validation" novalidate>
                             <div class="modal-header">
                                 <h4 class="modal-title">[[#{greenCity.events.page.add.event}]]</h4>
@@ -218,68 +217,78 @@
                                     <input type="text" class="form-control" name="title" id="addTitle"
                                            minlength="1" maxlength="70" required>
                                     <div class="invalid-feedback">
-                                        Enter min 1 character, max 70.
+                                        Enter minimum 1 character, max 70.
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>[[#{greenCity.pages.table.description}]]</label>
+                                <div class="form-group" id="description-form-group">
+                                    <label for="description">[[#{greenCity.pages.table.description}]]</label>
                                     <textarea type="text" class="form-control" name="description" id="description"
                                     ></textarea>
-                                    <div class="invalid-feedback">
+                                    <div class="invalid-feedback" id="description-invalid-feedback">
                                         Enter min 20 characters, max 63206.
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" id="tags-form-group">
                                     <div class="form-check">
-                                        <label>Initiative type</label><br><br>
+                                        <label for="checkboxTag1">Initiative type</label><br><br>
                                         <div style="width: 100%; display: inline-block;">
                                             <th:block th:each="allTags, iterStatus :${eventsTag}">
                                                 <div style="margin-right: 5%" class="custom-checkbox">
-                                            <span class="modal-checkbox">
-                                                <input class="tag-checkbox"
-                                                       type="checkbox"
-                                                       th:id="checkboxTag+${iterStatus.count}"
-                                                       id="checkboxTag1"
-                                                       name="tags[]"
-                                                       th:value="${allTags.getName()}"
-                                                       onclick='deRequireCb("modal-checkbox")'>
-                                                <label th:for="checkboxTag+${iterStatus.count}"
-                                                       th:text="${ allTags.getName()}"
-                                                       for="checkboxTag1"></label>
-                                            </span>
+                                                        <span class="modal-checkbox">
+                                                            <input class="tag-checkbox"
+                                                                   type="checkbox"
+                                                                   th:id="checkboxTag+${iterStatus.count}"
+                                                                   id="checkboxTag1"
+                                                                   name="tags[]"
+                                                                   onclick="validateTags()"
+                                                                   th:value="${allTags.getName()}">
+                                                            <label th:for="checkboxTag+${iterStatus.count}"
+                                                                   th:text="${ allTags.getName()}"
+                                                                   for="checkboxTag1"></label>
+                                                        </span>
                                                 </div>
                                             </th:block>
                                         </div>
-                                        <div class="invalid-feedback" id="tags-invalid-feedback">at least 1 is required</div>
+                                        <div class="invalid-feedback" id="tags-invalid-feedback">Choose at least one
+                                            initiative type.
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" id="map-form-group">
+                                    <div class="form-group">
+                                        <input type="hidden" name="latitude" value="2.5" id="latitude"/>
+                                        <input type="hidden" name="longitude" value="2.5" id="longitude"/>
+                                    </div>
                                     <label>Choose a place</label>
                                     <div name="map" id="map"></div>
-                                </div>
-                                <div class="form-group">
-                                    <input type="hidden" name="latitude" value="2.5" id="latitude"/>
-                                    <input type="hidden" name="longitude" value="2.5" id="longitude"/>
                                 </div>
 
                                 <div>
                                     <label for="onlineLink">Online link</label>
                                     <input class="form-control" type="text" id="onlineLink" name="onlineLink"
-                                           value="sample link"
                                            placeholder="Provide link to the event" required>
+                                    <div class="invalid-feedback">
+                                        Provide link to the event.
+                                    </div>
                                 </div>
 
                                 <div>
                                     <label for="startDate" class="form-group">Start Date</label>
                                     <input class="form-control" type="datetime-local" id="startDate" name="startDate"
                                            required>
+                                    <div class="invalid-feedback">
+                                        Provide event start date and time.
+                                    </div>
                                 </div>
 
                                 <label for="finishDate" class="form-group">Finish Date</label>
                                 <input class="form-control" type="datetime-local" id="finishDate" name="finishDate"
                                        required>
+                                <div class="invalid-feedback">
+                                    Provide event finish date and time.
+                                </div>
                             </div>
 
 
@@ -406,9 +415,6 @@
 <div id="footer" th:insert="core/footer"></div>
 <script>
     tinymce.init({
-        setup: function (editor) {
-
-        },
         selector: 'textarea#description',
         height: 300,
         plugins: [

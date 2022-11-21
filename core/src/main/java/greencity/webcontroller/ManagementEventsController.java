@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import greencity.annotations.ImageValidation;
+import greencity.annotations.ValidEventDtoRequest;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
@@ -12,15 +13,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
 import java.security.Principal;
-import java.time.ZoneId;
+import java.util.function.Function;
 
 @Slf4j
 @Controller
@@ -69,11 +73,11 @@ public class ManagementEventsController {
 
     @ResponseBody
     @PostMapping(value = "/create")
-    public AddEventDtoRequest postEvent(@RequestBody @Valid AddEventDtoRequest addEventDtoRequest,
-        @ImageValidation MultipartFile[] files,
-        Principal principal) {
+    public ResponseEntity<EventDto> postEvent(@RequestBody @ValidEventDtoRequest AddEventDtoRequest addEventDtoRequest,
+        @ImageValidation @RequestPart @Nullable MultipartFile[] files,
+        @ApiIgnore Principal principal) {
 
-        eventService.save(addEventDtoRequest, principal.getName(), files);
-        return addEventDtoRequest;
+        return new ResponseEntity<>(eventService.save(addEventDtoRequest, principal.getName(), files),
+            HttpStatus.CREATED);
     }
 }

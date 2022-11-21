@@ -2,58 +2,47 @@ function clearAllErrorsSpan() {
     $('.errorSpan').text('');
 }
 
+function validateTags() {
+    const checkedCount = $("input[name='tags[]']:checked").get().length;
 
-function deRequireCb(elClass) {
-    el = document.getElementsByClassName(elClass);
-
-    var atLeastOneChecked = false; //at least one cb is checked
-    for (i = 0; i < el.length; i++) {
-        if (el[i].checked === true) {
-            atLeastOneChecked = true;
-        }
-    }
-
-    if (atLeastOneChecked === true) {
-        for (i = 0; i < el.length; i++) {
-            el[i].required = false;
-        }
+    const tagsValid = checkedCount > 0;
+    if (!tagsValid) {
+        $("#tags-invalid-feedback").css("display", "block");
+        $('#tags-form-group').css("border", "1px solid red");
     } else {
-        for (i = 0; i < el.length; i++) {
-            el[i].required = true;
-        }
+        $("#tags-invalid-feedback").css("display", "none");
+        $('#tags-form-group').css("border", "none");
     }
+    return tagsValid;
+}
+
+function validateDescription() {
+    const max = 63206;
+    const min = 20;
+    const numChars = tinymce.activeEditor.plugins.wordcount.body.getCharacterCount();
+    const isDescValid = numChars >= min && numChars < max;
+
+    if (!isDescValid) {
+        $("#description-invalid-feedback").css("display", "block");
+        $('#description-form-group').css("border", "1px solid red");
+    } else {
+        $("#description-invalid-feedback").css("display", "none");
+        $('#description-form-group').css("border", "none");
+    }
+    return isDescValid;
 }
 
 function postEvent(event) {
     clearAllErrorsSpan();
 
-    const max = 63206;
-    const min = 20;
-    const numChars = tinymce.activeEditor.plugins.wordcount.body.getCharacterCount();
-
     let form = document.getElementById("addEventsForm")
-    console.log(form)
 
-    const checkedCount = $("input[name='tags[]']:checked").get().length;
-    const tagsValid = checkedCount > 0;
-    if (!tagsValid) {
-        $("#tags-invalid-feedback").css("display", "block");
-    } else {
-        $("#tags-invalid-feedback").css("display", "none");
-    }
+    const tagsValid = validateTags();
+    const descriptionValid = validateDescription();
 
-    const descriptionValid = numChars > max || numChars < min;
-
-    if (!form.checkValidity() || !descriptionValid || !tagsValid) {
+    if (!form.checkValidity() || !tagsValid || !descriptionValid) {
         form.classList.add('was-validated')
-        if (numChars > max) {
-            alert("Maximum " + max + " characters allowed.");
-            // event.preventDefault();
-        } else if (numChars < min) {
-            alert("You have to enter at least " + min + " characters.")
-            // event.preventDefault();
-        }
-        return;
+        return false;
     }
     form.classList.add('was-validated')
 
@@ -65,9 +54,8 @@ function postEvent(event) {
 
     const payload = {
         "title": document.getElementById("addTitle").value,
-        "description": tinyMCE.activeEditor.getContent({format: "raw"}),
+        "description": tinyMCE.activeEditor.getContent(),
         "open": true,
-        "isSubscribed": true,
         "tags": $('.tag-checkbox:checkbox:checked').get().map(checkbox => checkbox.value),
         "datesLocations": [{
             "startDate": new Date(formData.startDate).toJSON(),
@@ -79,9 +67,6 @@ function postEvent(event) {
             "onlineLink": formData.onlineLink,
         }],
     };
-
-    console.table(formData)
-    console.log(payload)
 
 // Ajax request
     $.ajax({
@@ -97,7 +82,6 @@ function postEvent(event) {
                 } else {
                     location.reload();
                 }
-                console.log(payload)
             },
             data: JSON.stringify(payload)
         }
