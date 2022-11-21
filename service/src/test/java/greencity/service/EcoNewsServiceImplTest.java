@@ -39,6 +39,7 @@ import lombok.SneakyThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -50,6 +51,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
+
     @Mock
     EcoNewsRepo ecoNewsRepo;
 
@@ -564,6 +566,64 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void givenEcoNewsLikedByUser_whenLikedByUser_shouldRemoveLike() {
+        // given
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        // when
+        ecoNewsService.like(userVO, 1L);
+        ecoNewsService.like(userVO, 1L);
+
+        // then
+        assertEquals(0, ecoNewsVO.getUsersLikedNews().size());
+    }
+
+    @Test
+    void dislikeTest() {
+        // given
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersDislikedNews(new HashSet<>());
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        // when
+        ecoNewsService.dislike(userVO, 1L);
+        // then
+        assertTrue(ecoNewsVO.getUsersDislikedNews().contains(userVO));
+        assertEquals(1, ecoNewsVO.getUsersDislikedNews().size());
+        verify(ecoNewsRepo).save(ecoNews);
+    }
+
+    @Test
+    void givenEcoNewsLikedByUser_whenDislikedByUser_shouldRemoveLikeAndAddDislike() {
+        // given
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>(Set.of(userVO)));
+        ecoNewsVO.setUsersDislikedNews(new HashSet<>());
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+        // when
+        ecoNewsService.dislike(userVO, 1L);
+        // then
+        assertTrue(ecoNewsVO.getUsersDislikedNews().contains(userVO));
+        assertTrue(ecoNewsVO.getUsersLikedNews().isEmpty());
+        assertEquals(1, ecoNewsVO.getUsersDislikedNews().size());
+        assertEquals(0, ecoNewsVO.getUsersLikedNews().size());
+    }
+
+    @Test
     void countLikesForEcoNews() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
@@ -578,6 +638,24 @@ class EcoNewsServiceImplTest {
         int actualAmountOfLikes = ecoNewsService.countLikesForEcoNews(1L);
 
         assertEquals(2, actualAmountOfLikes);
+    }
+
+    @Test
+    void countDislikesForEcoNews() {
+        // given
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        UserVO user1 = ModelUtils.getUserVO();
+        UserVO user2 = UserVO.builder().id(2L).name("User2").build();
+        ecoNewsVO.setUsersDislikedNews(Set.of(user1, user2));
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+
+        // when
+        Integer actual = ecoNewsService.countDislikesForEcoNews(1L);
+
+        // then
+        assertEquals(2, actual);
     }
 
     @Test
@@ -634,4 +712,35 @@ class EcoNewsServiceImplTest {
         assertThrows(NotFoundException.class, () -> ecoNewsService.getContentAndSourceForEcoNewsById(1L));
     }
 
+    @Test
+    void findUsersWhoLikedPost() {
+        // given
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        User user1 = ModelUtils.getUser();
+        UserVO user1VO = ModelUtils.getUserVO();
+        ecoNews.setUsersLikedNews(Set.of(user1));
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(user1, UserVO.class)).thenReturn(user1VO);
+        // when
+        Set<UserVO> usersWhoLikedPost = ecoNewsService.findUsersWhoLikedPost(1L);
+        // then
+        assertEquals(1, usersWhoLikedPost.size());
+        assertTrue(usersWhoLikedPost.contains(user1VO));
+    }
+
+    @Test
+    void findUsersWhoDislikedPost() {
+        // given
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        User user1 = ModelUtils.getUser();
+        UserVO user1VO = ModelUtils.getUserVO();
+        ecoNews.setUsersDislikedNews(Set.of(user1));
+        when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(user1, UserVO.class)).thenReturn(user1VO);
+        // when
+        Set<UserVO> usersWhoDislikedPost = ecoNewsService.findUsersWhoDislikedPost(1L);
+        // then
+        assertEquals(1, usersWhoDislikedPost.size());
+        assertTrue(usersWhoDislikedPost.contains(user1VO));
+    }
 }

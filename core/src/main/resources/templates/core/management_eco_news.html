@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 
 <head>
     <meta charset="utf-8"/>
@@ -29,7 +29,7 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
     <link rel="stylesheet" th:href="@{/management/css/table_Modal_Pagination.css}">
     <link rel="stylesheet" th:href="@{/management/css/slider.css}">
-    <link rel="stylesheet" th:href="@{/management/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
 
     <script th:src="@{/management/localization/buttonsAJAX.js}"></script>
     <script th:src="@{/management/econews/buttonsAJAX.js}"></script>
@@ -40,6 +40,10 @@
             max-width: 150px;
             text-overflow: ellipsis;
         }
+        .modal-element {
+            padding: 0px 1px;
+        }
+
     </style>
 </head>
 <body>
@@ -68,8 +72,8 @@
                             <div class="main-search">
                                 <!-- Search Form  -->
                                 <form class="form-inline searching" action="#">
-                                    <input id="search" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}"
-                                           onkeyup="searchTableFunction()" style="margin-left: -82px;">
+                                    <input id="habitSearch" type="text"  class="form-search" name="searchReg" th:placeholder="#{greenCity.pages.search}"
+                                           onkeyup="searchTableFunction()">
                                     <input class="search-submit-btn" type="submit">
                                 </form>
                                     <button id="econews-filter-button" class="filter-button">  <!--onclick="openForm()"  -->
@@ -124,10 +128,13 @@
                                 <th>[[#{greenCity.pages.table.tags}]]
                                     <span class="table-filter-icon filter"></span>
                                 </th>
-                                <th>
-                                    [[#{greenCity.sidebar.ratings}]]
+                                <th>[[#{greenCity.pages.table.likes}]]
                                     <span class="table-filter-icon filter"></span>
                                 </th>
+                                <th>[[#{greenCity.pages.table.dislikes}]]
+                                    <span class="table-filter-icon filter"></span>
+                                </th>
+
                             </tr>
                             </thead>
 
@@ -156,16 +163,43 @@
                                         </div>
                                     </td>
                                     <td style = "width: 173px">
-                                        <div class="dropdown role">
-                                            <button class="dropbtn role" th:text="${econew.tags.get(0)}">
-                                            </button>
-                                            <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
-                                            <div class="dropdown-content role" style="width:173px; height: auto;">
-                                                <a th:each="tag, iterStatus :${econew.tags}" th:text="${tag}"></a>                                            </div>
+                                        <div th:switch="${econew.tags.isEmpty()}">
+                                            <div th:case="false">
+                                                <div class="dropdown role">
+                                                    <button class="dropbtn role" th:text="${econew.tags.get(0)}">
+                                                    </button>
+                                                    <img class="rotate" src="/img/arrow-down.svg" alt="arrow-icon">
+                                                    <div class="dropdown-content role" style="width:173px; height: auto;">
+                                                        <a th:each="tag, iterStatus :${econew.tags.subList(1, econew.tags.size())}" th:text="${tag}"></a>
+                                                    </div>
+                                                </div>
+                                                <!--<div th:each="tag, iterStatus : ${econew.tags}">
+                                                    <span class="text" th:text="${tag}"></span>&nbsp;
+                                                </div>-->
+                                            </div>
+                                            <div class="text" th:case="true">
+                                                <span class="text">No tags</span>
+                                            </div>
                                         </div>
                                     </td>
-                                    <!--todo-->
-                                    <td th:if="${econew.likes < 100}">
+                                    <td class="text">
+                                        <span>
+                                            <a data-toggle="modal" th:data-id="${econew.id} + '/likes'" href="#userLikesModal"
+                                               class="open-likesButton id-link">
+                                                <span th:text="${econew.likes}"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td class="text">
+                                        <span>
+                                            <a data-toggle="modal" th:data-id="${econew.id} + '/dislikes'" href="#userDislikesModal"
+                                               class="open-likesButton id-link">
+                                                <span th:text="${econew.dislikes}"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+
+<!--                                    <td th:if="${econew.likes < 100}">
                                         <i class="fal fa-star"></i>
                                         <i class="fal fa-star"></i>
                                         <i class="fal fa-star"></i>
@@ -184,7 +218,7 @@
                                         <i class="fas fa-star"></i>
                                         <i class="fas fa-star"></i>
                                         <i class="fas fa-star"></i>
-                                    </td>
+                                    </td>-->
                                 </tr>
                                 </tbody>
                             </th:block>
@@ -222,6 +256,42 @@
                             </div>
                         </div>
                         <!-- End of Paging -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- View user likes modal -->
+            <div id="userLikesModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">[[#{greenCity.econews.page.view.userLikes}]]</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="text">&nbsp;</div>
+                        <div class="modal-body likes">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View user dislikes modal -->
+            <div id="userDislikesModal" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">[[#{greenCity.econews.page.view.userDislikes}]]</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="text">&nbsp;</div>
+                        <div class="modal-body dislikes">
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -316,5 +386,6 @@
     </div>
     <div id="footer" th:insert="core/footer"></div>
 </div>
+
 </body>
 </html>

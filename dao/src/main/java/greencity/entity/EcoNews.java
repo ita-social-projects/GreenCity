@@ -54,4 +54,11 @@ public class EcoNews {
         joinColumns = @JoinColumn(name = "eco_news_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedNews = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "eco_news_users_dislikes",
+        joinColumns = @JoinColumn(name = "eco_news_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> usersDislikedNews = new HashSet<>();
 }

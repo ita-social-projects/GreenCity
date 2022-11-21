@@ -36,6 +36,7 @@ import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.tag.*;
 import greencity.dto.user.*;
+import greencity.dto.user.UserVO.UserVOBuilder;
 import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -48,10 +49,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,12 +118,12 @@ public class ModelUtils {
 
     public static EcoNews getEcoNews() {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", null, Collections.singletonList(getTag()), null);
+            "title", "text", null, Collections.singletonList(getTag()), null, null);
     }
 
     public static EcoNewsDto getEcoNewsDto() {
         return new EcoNewsDto(ZonedDateTime.of(2022, 12, 12, 12, 12, 12, 12, ZoneId.systemDefault()), null, 1L,
-            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12);
+            "title", "text", "shortInfo", getEcoNewsAuthorDto(), null, null, 12, 12, 12);
     }
 
     public static AddEcoNewsDtoRequest getAddEcoNewsDtoRequest() {
