@@ -17,6 +17,7 @@ import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -209,5 +210,43 @@ public class ManagementEcoNewsController {
             ecoNewsService.update(ecoNewsDtoManagement, file);
         }
         return buildGenericResponseDto(bindingResult);
+    }
+
+    /**
+     * Method for getting list of users who liked post by post id.
+     *
+     * @return list of {@link UserVO} instances.
+     */
+    @ApiOperation(value = "Get list of users who liked the post by post id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/{id}/likes")
+    @ResponseBody
+    public Set<UserVO> getLikesByEcoNewsId(@PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ecoNewsService.findUsersWhoLikedPost(id);
+    }
+
+    /**
+     * Method for getting list of users who disliked post by post id.
+     *
+     * @return list of {@link UserVO} instances.
+     */
+    @ApiOperation(value = "Get list of users who disliked the post by post id.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @GetMapping("/{id}/dislikes")
+    @ResponseBody
+    public Set<UserVO> getDislikesByEcoNewsId(@PathVariable Long id,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ecoNewsService.findUsersWhoDislikedPost(id);
     }
 }

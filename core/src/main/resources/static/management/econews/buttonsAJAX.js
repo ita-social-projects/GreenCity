@@ -273,6 +273,7 @@ $(document).ready(function () {
     $('#addEcoNewsModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
     });
+
     //submit button in addEcoNewsModal
     $('#submitAddBtn').on('click',
         function (event) {
@@ -328,6 +329,43 @@ $(document).ready(function () {
             }
 
         });
+
+    //view users who liked/disliked modal
+    $('.open-likesButton').on("click", function () {
+        let newsId = $(this).data('id');
+        $.ajax({
+            type: 'GET',
+            url: '/management/eco-news/' + newsId,
+            dataType: 'json',
+            success: function(data) {
+                let parent = null;
+                if(newsId.includes('dislikes')) {
+                    parent = '.dislikes';
+                } else {
+                    parent = '.likes';
+                }
+                for (let i = 0; i < data.length; i++) {
+                    let obj = data[i];
+                    let newNode = $('<p></p>').addClass('modal-element').html(obj.name);
+                    $(parent).append(newNode);
+                }
+            }
+        });
+    });
+
+    // remove user likes data after closing modal
+    $('#userLikesModal').on('hide.bs.modal', function () {
+        let modalElements = document.querySelectorAll('.modal-element');
+        modalElements.forEach(element => element.remove());
+    });
+
+    // remove user dislikes data after closing modal
+    $('#userDislikesModal').on('hide.bs.modal', function () {
+        let modalElements = document.querySelectorAll('.modal-element');
+        modalElements.forEach(element => element.remove());
+    });
+
+
 
     //edit button on the right in the table
     $('.edit.eBtn').on('click', function (event) {
