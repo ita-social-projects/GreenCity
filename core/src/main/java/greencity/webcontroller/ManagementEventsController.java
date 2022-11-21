@@ -2,29 +2,32 @@ package greencity.webcontroller;
 
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEventDtoRequest;
+import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventViewDto;
+import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.enums.TagType;
 import greencity.service.EventService;
 import greencity.service.TagsService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
-import java.util.function.Function;
 
 @Slf4j
 @Controller
@@ -71,13 +74,27 @@ public class ManagementEventsController {
         return "core/management_events";
     }
 
+    /**
+     * Method for creating {@link EventDto}.
+     *
+     * @param addEventDtoRequest dto for {@link EventDto} entity.
+     * @param files              of {@link MultipartFile []}
+     * @return {@link GenericResponseDto} with of operation and errors fields.
+     */
+    @ApiOperation(value = "Save Event.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+    })
     @ResponseBody
     @PostMapping(value = "/create")
-    public ResponseEntity<EventDto> postEvent(@RequestBody @ValidEventDtoRequest AddEventDtoRequest addEventDtoRequest,
+    public GenericResponseDto postEvent(@RequestBody @ValidEventDtoRequest AddEventDtoRequest addEventDtoRequest,
+        BindingResult bindingResult,
         @ImageValidation @RequestPart @Nullable MultipartFile[] files,
         @ApiIgnore Principal principal) {
-
-        return new ResponseEntity<>(eventService.save(addEventDtoRequest, principal.getName(), files),
-            HttpStatus.CREATED);
+        if (!bindingResult.hasErrors()) {
+            eventService.save(addEventDtoRequest, principal.getName(), files);
+        }
+        return GenericResponseDto.buildGenericResponseDto(bindingResult);
     }
 }
