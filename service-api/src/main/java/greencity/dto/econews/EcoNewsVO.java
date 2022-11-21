@@ -3,13 +3,12 @@ package greencity.dto.econews;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import java.util.HashSet;
-import java.util.Set;
+
+import java.util.*;
+
 import lombok.*;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,4 +36,6 @@ public class EcoNewsVO {
     private Set<UserVO> usersLikedNews = new HashSet<>();
 
     private List<TagVO> tags;
+
+    private Set<UserVO> usersDislikedNews = new HashSet<>();
 }

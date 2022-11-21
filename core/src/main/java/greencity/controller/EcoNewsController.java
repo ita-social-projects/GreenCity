@@ -325,7 +325,7 @@ public class EcoNewsController {
     }
 
     /**
-     * Method to like/dislike EcoNews.
+     * Method to like EcoNews.
      */
     @ApiOperation(value = "Like eco news")
     @ApiResponses(value = {
@@ -337,6 +337,20 @@ public class EcoNewsController {
     @PostMapping("/like")
     public void like(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
         ecoNewsService.like(user, id);
+    }
+
+    /**
+     * Method to dislike EcoNews.
+     */
+    @ApiOperation(value = "Dislike eco news")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/dislike")
+    public void dislike(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
+        ecoNewsService.dislike(user, id);
     }
 
     /**

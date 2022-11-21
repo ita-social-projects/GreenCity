@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -12,7 +11,6 @@ import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -245,6 +243,20 @@ class EcoNewsControllerTest {
             .andExpect(status().isOk());
 
         verify(ecoNewsService).like(userVO, 1L);
+    }
+
+    @Test
+    void dislikeTest() throws Exception {
+        // given
+        UserVO userVO = getUserVO();
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        // when
+        mockMvc.perform(post(ecoNewsLink + "/dislike?id=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+        // then
+        verify(ecoNewsService).dislike(userVO, 1L);
+
     }
 
     @Test
