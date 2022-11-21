@@ -4,7 +4,6 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventViewDto;
