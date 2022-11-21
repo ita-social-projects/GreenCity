@@ -17,11 +17,6 @@ import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.io.IOException;
-import java.util.Collection;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -172,7 +167,6 @@ public class ManagementEcoNewsController {
      * Method for creating {@link EcoNewsVO}.
      *
      * @param addEcoNewsDtoRequest dto for {@link EcoNewsVO} entity.
-     * @param file                 of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
     @ApiOperation(value = "Save EcoNews.")
@@ -183,10 +177,9 @@ public class ManagementEcoNewsController {
     @ResponseBody
     @PostMapping("/save")
     public GenericResponseDto saveEcoNews(@Valid @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
-                                          BindingResult bindingResult,
-                                          @ImageValidation @RequestParam(required = false, name = "imagePath") MultipartFile file,
-                                          @ApiIgnore Principal principal, MultipartHttpServletRequest servletRequest)
-        throws ServletException, IOException {
+        BindingResult bindingResult,
+        @ApiIgnore Principal principal,
+        MultipartHttpServletRequest servletRequest) {
         if (!bindingResult.hasErrors()) {
             MultipartFile img = servletRequest.getFile("image");
             ecoNewsService.save(addEcoNewsDtoRequest, img, principal.getName());
@@ -194,8 +187,9 @@ public class ManagementEcoNewsController {
         return buildGenericResponseDto(bindingResult);
     }
 
-    /**multipartParameterNames = {LinkedHashSet@17744}  size = 1
-     * Method which updates {@link EcoNewsVO}.
+    /**
+     * multipartParameterNames = {LinkedHashSet@17744} size = 1 Method which updates
+     * {@link EcoNewsVO}.
      *
      * @param ecoNewsDtoManagement of {@link EcoNewsDtoManagement}.
      * @param file                 of {@link MultipartFile}.
