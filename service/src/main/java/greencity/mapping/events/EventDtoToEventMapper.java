@@ -2,7 +2,7 @@ package greencity.mapping.events;
 
 import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.*;
+import greencity.entity.User;
 import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -11,10 +11,6 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,7 +1,5 @@
 package greencity.service;
 
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -42,7 +40,6 @@ public class EventServiceImpl implements EventService {
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
-    private final GoogleApiService googleApiService;
     private final UserService userService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
