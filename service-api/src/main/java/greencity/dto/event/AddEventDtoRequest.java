@@ -31,5 +31,4 @@ public class AddEventDtoRequest {
     private boolean isOpen;
 
     private Long id;
-
 }
