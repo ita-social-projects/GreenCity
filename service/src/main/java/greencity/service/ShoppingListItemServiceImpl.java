@@ -252,11 +252,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     private HabitAssign getHabitAssignIfExist(Long userId, Long habitId) {
         Optional<HabitAssign> habitAssignOptional =
             habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
-        if (habitAssignOptional.isPresent()) {
-            return habitAssignOptional.get();
-        } else {
-            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID);
-        }
+        return habitAssignOptional.orElseGet(HabitAssign::new);
     }
 
     /**
@@ -309,9 +305,6 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     public List<UserShoppingListItemResponseDto> getUserShoppingList(Long userId, Long habitId, String language) {
         List<UserShoppingListItemResponseDto> itemsDtos =
             getAllUserShoppingListItems(getHabitAssignIfExist(userId, habitId));
-        if (itemsDtos.isEmpty()) {
-            throw new UserHasNoShoppingListItemsException(ErrorMessage.USER_HAS_NO_SHOPPING_LIST_ITEMS);
-        }
         itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
         return itemsDtos;
     }

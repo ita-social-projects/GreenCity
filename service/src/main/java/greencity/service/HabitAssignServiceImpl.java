@@ -45,6 +45,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    private final ShoppingListItemService shoppingListItemService;
+    private final CustomShoppingListItemService customShoppingListItemService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
@@ -491,6 +493,23 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return habitAssignRepo.findAllByUserIdAndStatusAcquired(userId)
             .stream().map(habitAssign -> buildHabitAssignDtoContent(habitAssign, language))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Method that return list of fuser shopping list and custom shopping list for
+     * habit.
+     *
+     * @return @{link HabitAssignUserAndUserCustomShoppingListDto} instance.
+     */
+
+    @Override
+    public HabitAssignUserAndUserCustomShoppingListDto getUserAndUserCustomShoppingList(Long userId, Long habitId,
+        String language) {
+        HabitAssignUserAndUserCustomShoppingListDto habitDtos = new HabitAssignUserAndUserCustomShoppingListDto();
+        habitDtos.setUserShoppingListItemsDto(shoppingListItemService.getUserShoppingList(userId, habitId, language));
+        habitDtos.setCustomShoppingListItemDto(
+            customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId));
+        return habitDtos;
     }
 
     /**

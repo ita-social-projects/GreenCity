@@ -35,7 +35,7 @@ public interface HabitAssignService {
      * @return {@link HabitAssignManagementDto}.
      */
     HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+                                                      HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
      * Method updates {@code HabitAssign} shopping list with custom properties.
@@ -46,7 +46,8 @@ public interface HabitAssignService {
      * @return {@link HabitAssignUserShoppingListItemDto}.
      */
     HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+                                                                             HabitAssignPropertiesDto
+                                                                                     habitAssignPropertiesDto);
 
     /**
      * Method to find all custom habit assigns by {@code User} id.
@@ -76,7 +77,6 @@ public interface HabitAssignService {
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
      *
-     *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
@@ -86,7 +86,6 @@ public interface HabitAssignService {
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
-     *
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
@@ -106,6 +105,18 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
+     * Method that finds userShoppingListItems and userCustomShoppingListItems for
+     * habitId.
+     *
+     * @param habitId {@code Habit} id.
+     * @param userId {@code User} id.
+     * @param language {@link String} of language code value.
+     * @return {@link HabitAssignUserAndUserCustomShoppingListDto}.
+     */
+    HabitAssignUserAndUserCustomShoppingListDto getUserAndUserCustomShoppingList(Long userId, Long habitId,
+                                                                                 String language);
+
+    /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
      * and acquired status.
      *
@@ -117,7 +128,7 @@ public interface HabitAssignService {
 
     /**
      * Method to find number of {@code HabitAssign}'s by id and status.
-     * 
+     *
      * @param habitId {@code Habit} id.
      * @param status  {@code HabitAssignStatus} status.
      * @return Long number of Acquired.
@@ -216,7 +227,7 @@ public interface HabitAssignService {
      * @return list of {@link HabitAssignDto} instances.
      */
     List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId,
-        LocalDate from, LocalDate to, String language);
+                                                               LocalDate from, LocalDate to, String language);
 
     /**
      * Method add default habit.
