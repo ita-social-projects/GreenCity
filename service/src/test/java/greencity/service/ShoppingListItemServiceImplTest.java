@@ -415,16 +415,6 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
-    void getUserShoppingListItemsTestTrows() {
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
-        assertThrows(
-            UserHasNoShoppingListItemsException.class,
-            () -> shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
-    }
-
-    @Test
     void deleteUserShoppingListItemByItemIdAndUserIdAndHabitIdTest() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
             .thenReturn(Optional.of(habitAssign));
@@ -436,18 +426,6 @@ class ShoppingListItemServiceImplTest {
     void deleteUserShollingListItemByItemIdAndUserIdAndHabitIdTestThorows() {
         assertThrows(NotFoundException.class,
             () -> shoppingListItemService.deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, userId, 1L));
-    }
-
-    @Test
-    void getUserShoppingListtemsIfThereAreNoItems() {
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
-            .thenReturn(Optional.of(habitAssign));
-        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
-
-        assertThrows(
-            UserHasNoShoppingListItemsException.class,
-            () -> shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
     }
 
     @Test
