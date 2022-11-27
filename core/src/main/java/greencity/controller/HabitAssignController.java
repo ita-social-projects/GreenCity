@@ -155,7 +155,7 @@ public class HabitAssignController {
      * @param locale needed language code.
      * @return User Shopping List and Custom Shopping List.
      */
-    @ApiOperation(value = "Get all user shopping and user custom shopping lists")
+    @ApiOperation(value = "Get user shopping and user custom shopping lists")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
             responseContainer = "List"),
