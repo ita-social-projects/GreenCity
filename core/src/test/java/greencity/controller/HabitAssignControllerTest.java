@@ -211,7 +211,7 @@ class HabitAssignControllerTest {
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
         mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
-                .andExpect(status().isOk());
-        verify(habitAssignService).getUserAndUserCustomShoppingList(null,1L,"en");
+            .andExpect(status().isOk());
+        verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "en");
     }
 }

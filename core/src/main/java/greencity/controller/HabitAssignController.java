@@ -147,12 +147,12 @@ public class HabitAssignController {
                 .getAllHabitAssignsByUserIdAndStatusNotCancelled(userVO.getId(), locale.getLanguage()));
     }
 
-
-    /** Method that return UserShoppingList and CustomShoppingList.
+    /**
+     * Method that return UserShoppingList and CustomShoppingList.
      *
      * @param habitId @link HabitVO} id.
-     * @param userVO {@link UserVO} instance.
-     * @param locale needed language code.
+     * @param userVO  {@link UserVO} instance.
+     * @param locale  needed language code.
      * @return User Shopping List and Custom Shopping List.
      */
     @ApiOperation(value = "Get user shopping and user custom shopping lists")
