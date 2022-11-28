@@ -29,6 +29,4 @@ public class AddEventDtoRequest {
 
     @JsonProperty(value = "open")
     private boolean isOpen;
-
-    private Long id;
 }

@@ -1,0 +1,18 @@
+{
+  "title": "sample title",
+  "isOpen": true,
+  "datesLocations": [
+    {
+      "startDate": "2023-05-27T12:00:00Z",
+      "finishDate": "2023-05-27T19:00:00Z",
+      "coordinates": {
+        "latitude": 49.43134,
+        "longitude": 21.53134
+      },
+      "onlineLink": "https://www.google.com"
+    }
+  ],
+  "tags": [
+    "Social"
+  ]
+}

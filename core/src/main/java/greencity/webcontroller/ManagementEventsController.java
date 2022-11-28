@@ -1,7 +1,5 @@
 package greencity.webcontroller;
 
-import greencity.annotations.ImageValidation;
-import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
@@ -18,14 +16,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @Slf4j
@@ -80,20 +80,20 @@ public class ManagementEventsController {
      * @param files              of {@link MultipartFile []}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @ApiOperation(value = "Save Event.")
+    @ApiOperation( "Save Event.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+            @ApiResponse(code = 201, message = HttpStatuses.CREATED),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
-    @PostMapping(value = "/create")
-    public GenericResponseDto postEvent(@RequestBody @ValidEventDtoRequest AddEventDtoRequest addEventDtoRequest,
-        BindingResult bindingResult,
-        @ImageValidation @RequestPart @Nullable MultipartFile[] files,
-        @ApiIgnore Principal principal) {
-        if (!bindingResult.hasErrors()) {
-            eventService.save(addEventDtoRequest, principal.getName(), files);
-        }
-        return GenericResponseDto.buildGenericResponseDto(bindingResult);
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EventDto postEvent(@RequestBody @Valid AddEventDtoRequest addEventDtoRequest,
+                              @Valid @RequestPart @Nullable MultipartFile[] files,
+                              @ApiIgnore Principal principal) {
+
+        return eventService.save(addEventDtoRequest, principal.getName(), files);
     }
 }
