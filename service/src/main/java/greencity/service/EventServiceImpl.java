@@ -1,7 +1,5 @@
 package greencity.service;
 
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -42,7 +40,6 @@ public class EventServiceImpl implements EventService {
     private final RestClient restClient;
     private final FileService fileService;
     private final TagsService tagService;
-    private final GoogleApiService googleApiService;
     private final UserService userService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
@@ -389,12 +386,16 @@ public class EventServiceImpl implements EventService {
         for (var date : eventDateLocationDtos) {
             if (date.getCoordinates() != null) {
                 CoordinatesDto coordinatesDto = date.getCoordinates();
-                List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
-                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-                GeocodingResult resultUa = address.get(0);
-                GeocodingResult resultEn = address.get(1);
-                coordinatesDto.setAddressUa(resultUa.formattedAddress);
-                coordinatesDto.setAddressEn(resultEn.formattedAddress);
+                // TODO: 11/8/2022 remove after implementation (problem with google api key)
+                // List<GeocodingResult> address =
+                // googleApiService.getResultFromGeoCodeByCoordinates(
+                // new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+                // GeocodingResult resultUa = address.get(0);
+                // GeocodingResult resultEn = address.get(1);
+                // coordinatesDto.setAddressUa(resultUa.formattedAddress);
+                // coordinatesDto.setAddressEn(resultEn.formattedAddress);
+                coordinatesDto.setAddressUa("ukrainian address temp");
+                coordinatesDto.setAddressEn("english address temp");
                 date.setCoordinates(coordinatesDto);
             }
         }

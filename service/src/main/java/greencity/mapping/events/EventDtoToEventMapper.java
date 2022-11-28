@@ -2,7 +2,7 @@ package greencity.mapping.events;
 
 import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.*;
+import greencity.entity.User;
 import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;

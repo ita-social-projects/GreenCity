@@ -1,11 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventVO;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,7 +82,6 @@ public interface EventService {
      * Update Event.
      *
      * @param email    - user that edits event
-     *
      * @param eventDto - new event information
      * @param images   - new images of event
      * @return EventDto
