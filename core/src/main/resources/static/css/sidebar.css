@@ -200,7 +200,7 @@ block:hover img{
 }
 
 button.close {
-    padding: 2rem 1rem !IMPORTANT;
+    padding: 2rem 1rem !important;
 }
 
 button.close:active {
@@ -210,6 +210,10 @@ button.close:active {
 
 button.close:focus {
     outline: 0;
+}
+
+.cb-tags {
+    accent-color: #13AA57
 }
 
 

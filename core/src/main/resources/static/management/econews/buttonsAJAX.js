@@ -54,7 +54,7 @@ function updateCheckBoxCount(chInt) {
 }
 
 function addBtnDisabled() {
-    document.getElementById('submitAddBtn').disabled = true;
+    document.getElementById('submitAddBtn').disabled = false;
 }
 
 let formAddValid = false;
@@ -286,7 +286,7 @@ $(document).ready(function () {
             "id": formData.id,
             "title": formData.title,
             "text": formData.text,
-            "imagePath": formData.imagePath,
+            "image": formData.imagePath,
             "source": formData.source,
             "tags": []
         };
@@ -298,11 +298,12 @@ $(document).ready(function () {
         var result = new FormData();
         result.append("addEcoNewsDtoRequest", new Blob([JSON.stringify(payload)], {type: "application/json"}));
         var file = document.getElementById("creationFile").files[0];
-        result.append("imagePath", file);
+        console.log(file);
+        result.append("image", file);
         addFormInputValidate()
         if (formAddValid === true) {
             //save request in addEcoNewsModal
-            document.getElementById("submitAddBtn").disabled = true;
+            document.getElementById("submitAddBtn").disabled = false;
             $.ajax({
                 url: '/management/eco-news/save',
                 type: 'post',
@@ -317,7 +318,8 @@ $(document).ready(function () {
                         })
                     } else {
                         // location.reload();
-                        window.location.href = "/management/eco-news"
+                        window.location.href = "/management/eco-news";
+
                     }
                 },
                 data: result
