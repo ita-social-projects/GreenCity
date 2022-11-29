@@ -4,10 +4,7 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.UserFilterDto;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserRoleDto;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -27,7 +24,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import greencity.repository.options.UserFilter;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -35,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -217,26 +214,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status,
         Pageable pageable) {
+        UserFilterDto filterUserDto = createUserFilterDto(criteria, role, status);
+        Page<UserManagementVO> listOfUsers = userRepo.findAllManagementVo(new UserFilter(filterUserDto), pageable);
+
+        return new PageableDto<>(
+            listOfUsers.getContent(),
+            listOfUsers.getTotalElements(),
+            listOfUsers.getPageable().getPageNumber(),
+            listOfUsers.getTotalPages());
+    }
+
+    private UserFilterDto createUserFilterDto(String criteria, String role, String status) {
         if (status != null) {
             status = status.equals("all") ? null : status;
         }
         if (role != null) {
             role = role.equals("all") ? null : role;
         }
-        UserFilterDto filterUserDto = new UserFilterDto(criteria, role, status);
-        Page<User> users = userRepo.findAll(new UserFilter(filterUserDto), pageable);
-        List<UserManagementVO> listOfUsers = users
-            .getContent()
-            .stream()
-            .map(user -> modelMapper.map(user, UserManagementVO.class))
-            .collect(Collectors.toList());
-
-        return new PageableDto<>(
-            listOfUsers,
-            users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            users.getTotalPages());
+        return new UserFilterDto(criteria, role, status);
     }
 }

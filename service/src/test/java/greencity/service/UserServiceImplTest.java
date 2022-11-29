@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -253,24 +254,20 @@ class UserServiceImplTest {
 
     @Test
     void getAllUsersByCriteriaTest() {
+        // given
         Pageable pageable = PageRequest.of(0, 10);
-        List<User> users = new ArrayList<>();
-        User user1 = ModelUtils.getUser();
-        UserManagementVO userManagementVO = UserManagementVO.builder()
-            .id(1L)
-            .userStatus(ACTIVATED)
-            .email("Test@gmail.com")
-            .role(Role.ROLE_ADMIN).build();
+        List<UserManagementVO> managementVOsList = new ArrayList<>();
+        UserManagementVO userManagementVO = ModelUtils.getUserManagementVO();
+        managementVOsList.add(userManagementVO);
+        Page<UserManagementVO> page = new PageImpl<>(managementVOsList, pageable, 1);
+        when(userRepo.findAllManagementVo(any(UserFilter.class), eq(pageable))).thenReturn(page);
 
-        users.add(user1);
-        Page<User> page = new PageImpl<>(users, pageable, 1);
+        // when
+        PageableDto<UserManagementVO> allUsersByCriteria =
+            userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
 
-        when(userRepo.findAll(any(UserFilter.class), eq(pageable))).thenReturn(page);
-        when(modelMapper.map(user1, UserManagementVO.class)).thenReturn(userManagementVO);
-
-        userService.getAllUsersByCriteria("Test", "ROLE_ADMIN", "ACTIVATED", pageable);
-
-        verify(userRepo, times(1)).findAll(any(UserFilter.class), eq(pageable));
-        verify(modelMapper, times(1)).map(user1, UserManagementVO.class);
+        // then
+        assertTrue(allUsersByCriteria.getPage().contains(userManagementVO));
+        verify(userRepo, times(1)).findAllManagementVo(any(UserFilter.class), eq(pageable));
     }
 }
