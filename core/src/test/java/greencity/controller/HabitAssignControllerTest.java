@@ -214,4 +214,12 @@ class HabitAssignControllerTest {
             .andExpect(status().isOk());
         verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "en");
     }
+
+    @Test
+    void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
+        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+            .locale(Locale.forLanguageTag("ua")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "ua");
+    }
 }

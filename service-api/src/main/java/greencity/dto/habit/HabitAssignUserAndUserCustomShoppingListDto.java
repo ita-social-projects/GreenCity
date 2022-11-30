@@ -2,16 +2,16 @@ package greencity.dto.habit;
 
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
-@Getter
-@Setter
 @Builder
 public class HabitAssignUserAndUserCustomShoppingListDto {
     List<UserShoppingListItemResponseDto> userShoppingListItemsDto;

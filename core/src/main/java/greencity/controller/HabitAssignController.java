@@ -150,15 +150,15 @@ public class HabitAssignController {
     /**
      * Method that return UserShoppingList and CustomShoppingList.
      *
-     * @param habitId @link HabitVO} id.
+     * @param habitId {@link HabitVO} id.
      * @param userVO  {@link UserVO} instance.
      * @param locale  needed language code.
      * @return User Shopping List and Custom Shopping List.
      */
     @ApiOperation(value = "Get user shopping and user custom shopping lists")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class,
-            responseContainer = "List"),
+        @ApiResponse(code = 200, message = HttpStatuses.OK,
+            response = HabitAssignUserAndUserCustomShoppingListDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })

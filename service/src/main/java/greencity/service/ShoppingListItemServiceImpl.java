@@ -17,10 +17,10 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.UserShoppingListItemRepo;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -239,20 +238,14 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
         List<ShoppingListItemRequestDto> dtoList,
         String language) {
         if (dtoList != null) {
-            saveShoppingListItemsForHabitAssign(getHabitAssignIfExist(userId, habitId), dtoList);
+            Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
+            if (habitAssign.isPresent()) {
+                saveShoppingListItemsForHabitAssign(habitAssign.get(), dtoList);
+            } else {
+                throw new UserHasNoShoppingListItemsException(ErrorMessage.USER_HAS_NO_SHOPPING_LIST_ITEMS);
+            }
         }
         return getUserShoppingList(userId, habitId, language);
-    }
-
-    /**
-     * Method return habit assign if it exist.
-     *
-     * @author Dmytro Khonko
-     */
-    private HabitAssign getHabitAssignIfExist(Long userId, Long habitId) {
-        Optional<HabitAssign> habitAssignOptional =
-            habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
-        return habitAssignOptional.orElseGet(HabitAssign::new);
     }
 
     /**
@@ -303,10 +296,14 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Transactional
     @Override
     public List<UserShoppingListItemResponseDto> getUserShoppingList(Long userId, Long habitId, String language) {
-        List<UserShoppingListItemResponseDto> itemsDtos =
-            getAllUserShoppingListItems(getHabitAssignIfExist(userId, habitId));
-        itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
-        return itemsDtos;
+        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId);
+        if (habitAssign.isPresent()) {
+            List<UserShoppingListItemResponseDto> itemsDtos = getAllUserShoppingListItems(habitAssign.get());
+            itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
+            return itemsDtos;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private List<UserShoppingListItemResponseDto> getAllUserShoppingListItems(HabitAssign habitAssign) {

@@ -24,7 +24,11 @@ import org.modelmapper.ModelMapper;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,8 +41,6 @@ class HabitAssignServiceImplTest {
     HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
-    @Mock
-    HabitAssignService mock;
     @Mock
     ShoppingListItemRepo shoppingListItemRepo;
     @Mock
@@ -53,12 +55,10 @@ class HabitAssignServiceImplTest {
     ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @InjectMocks
     HabitAssignServiceImpl habitAssignService;
-
     @Mock
-    ShoppingListItemService shoppingListItemService;
-
+    private ShoppingListItemService shoppingListItemService;
     @Mock
-    CustomShoppingListItemService customShoppingListItemService;
+    private CustomShoppingListItemService customShoppingListItemService;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -397,6 +397,10 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getUserAndUserCustomShoppingList() {
+        Long userId = 1L;
+        Long habitId = 2L;
+        String language = "en";
+
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
             Collections.singletonList(customShoppingListItemResponseDto());
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
@@ -407,13 +411,13 @@ class HabitAssignServiceImplTest {
             .userShoppingListItemsDto(userShoppingListItemResponseDtos)
             .build();
 
-        when(shoppingListItemService.getUserShoppingList(anyLong(), eq(1L), eq("en")))
+        when(shoppingListItemService.getUserShoppingList(userId, habitId, language))
             .thenReturn(userShoppingListItemResponseDtos);
-        when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(anyLong(), eq(1L)))
+        when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId))
             .thenReturn(customShoppingListItemResponseDtos);
 
         HabitAssignUserAndUserCustomShoppingListDto actual =
-            habitAssignService.getUserAndUserCustomShoppingList(2L, 1L, "en");
+            habitAssignService.getUserAndUserCustomShoppingList(userId, habitId, language);
         assertEquals(expected, actual);
     }
 

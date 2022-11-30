@@ -19,10 +19,7 @@ import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.Role;
 import static greencity.enums.UserStatus.ACTIVATED;
 import greencity.exception.exceptions.*;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
-import greencity.repository.HabitAssignRepo;
-import greencity.repository.UserShoppingListItemRepo;
+import greencity.repository.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -159,6 +156,16 @@ class ShoppingListItemServiceImplTest {
         List<ShoppingListItemRequestDto> shoppingListItemRequestDto =
             Collections.singletonList(shoppingListItemRequestDtos.get(0));
         assertThrows(WrongIdException.class, () -> shoppingListItemService
+            .saveUserShoppingListItems(userId, 1L, shoppingListItemRequestDto, "en"));
+    }
+
+    @Test
+    void saveUserShoppingListItemThrowException() {
+
+        List<ShoppingListItemRequestDto> shoppingListItemRequestDto =
+            Collections.singletonList(shoppingListItemRequestDtos.get(0));
+
+        assertThrows(UserHasNoShoppingListItemsException.class, () -> shoppingListItemService
             .saveUserShoppingListItems(userId, 1L, shoppingListItemRequestDto, "en"));
     }
 
@@ -415,6 +422,15 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
+    void getEmptyUserShoppingListItemsTestT() {
+        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
+
+        assertEquals(Collections.emptyList(), shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
+    }
+
+    @Test
     void deleteUserShoppingListItemByItemIdAndUserIdAndHabitIdTest() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
             .thenReturn(Optional.of(habitAssign));
@@ -426,6 +442,17 @@ class ShoppingListItemServiceImplTest {
     void deleteUserShollingListItemByItemIdAndUserIdAndHabitIdTestThorows() {
         assertThrows(NotFoundException.class,
             () -> shoppingListItemService.deleteUserShoppingListItemByItemIdAndUserIdAndHabitId(1L, userId, 1L));
+    }
+
+    @Test
+    void getUserShoppingListItemIfThereAreNoItems() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+            .thenReturn(Optional.of(habitAssign));
+        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
+
+        assertEquals(Collections.emptyList(),
+            shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
     }
 
     @Test

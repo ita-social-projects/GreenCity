@@ -496,20 +496,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that return list of fuser shopping list and custom shopping list for
+     * Method that return list of user shopping list and custom shopping list for
      * habit.
      *
      * @return @{link HabitAssignUserAndUserCustomShoppingListDto} instance.
      */
-
     @Override
-    public HabitAssignUserAndUserCustomShoppingListDto getUserAndUserCustomShoppingList(Long userId, Long habitId,
-        String language) {
-        HabitAssignUserAndUserCustomShoppingListDto habitDtos = new HabitAssignUserAndUserCustomShoppingListDto();
-        habitDtos.setUserShoppingListItemsDto(shoppingListItemService.getUserShoppingList(userId, habitId, language));
-        habitDtos.setCustomShoppingListItemDto(
-            customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId));
-        return habitDtos;
+    public HabitAssignUserAndUserCustomShoppingListDto getUserAndUserCustomShoppingList(
+        Long userId, Long habitId, String language) {
+        return HabitAssignUserAndUserCustomShoppingListDto
+            .builder()
+            .userShoppingListItemsDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .customShoppingListItemDto(customShoppingListItemService
+                .findAllAvailableCustomShoppingListItems(userId, habitId))
+            .build();
     }
 
     /**
@@ -749,7 +749,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
         String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
