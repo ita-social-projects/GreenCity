@@ -2,9 +2,6 @@ package greencity.controller;
 
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-
-import static greencity.ModelUtils.getPrincipal;
-
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
@@ -12,27 +9,27 @@ import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
-
-import java.security.Principal;
-import java.time.LocalDate;
-import java.util.Locale;
-
+import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.Mockito.*;
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.Locale;
+
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignControllerTest {
@@ -210,7 +207,15 @@ class HabitAssignControllerTest {
 
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
+        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+            .principal(principal)
+            .with(request -> {
+                request.addUserRole("ADMIN");
+                request.addUserRole("USER");
+                request.addUserRole("UBS_EMPLOYEE");
+                request.addUserRole("MODERATOR");
+                return request;
+            }))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "en");
     }
@@ -218,7 +223,15 @@ class HabitAssignControllerTest {
     @Test
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
         mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
-            .locale(Locale.forLanguageTag("ua")))
+            .locale(Locale.forLanguageTag("ua"))
+            .principal(principal)
+            .with(request -> {
+                request.addUserRole("ADMIN");
+                request.addUserRole("USER");
+                request.addUserRole("UBS_EMPLOYEE");
+                request.addUserRole("MODERATOR");
+                return request;
+            }))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "ua");
     }

@@ -499,6 +499,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method that return list of user shopping list and custom shopping list for
      * habit.
      *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param language {@link String} of language code value.
      * @return @{link HabitAssignUserAndUserCustomShoppingListDto} instance.
      */
     @Override
