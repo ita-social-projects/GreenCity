@@ -107,8 +107,8 @@ public interface HabitAssignService {
      * Method that finds userShoppingListItems and userCustomShoppingListItems for
      * habitId.
      *
-     * @param habitId  {@code Habit} id.
      * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
      * @return {@link HabitAssignUserAndUserCustomShoppingListDto}.
      */

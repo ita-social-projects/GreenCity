@@ -9,7 +9,6 @@ import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
-import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -207,15 +206,7 @@ class HabitAssignControllerTest {
 
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
-            .principal(principal)
-            .with(request -> {
-                request.addUserRole("ADMIN");
-                request.addUserRole("USER");
-                request.addUserRole("UBS_EMPLOYEE");
-                request.addUserRole("MODERATOR");
-                return request;
-            }))
+        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "en");
     }
@@ -223,15 +214,7 @@ class HabitAssignControllerTest {
     @Test
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
         mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
-            .locale(Locale.forLanguageTag("ua"))
-            .principal(principal)
-            .with(request -> {
-                request.addUserRole("ADMIN");
-                request.addUserRole("USER");
-                request.addUserRole("UBS_EMPLOYEE");
-                request.addUserRole("MODERATOR");
-                return request;
-            }))
+            .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "ua");
     }
