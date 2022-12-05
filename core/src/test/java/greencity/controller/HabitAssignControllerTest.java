@@ -1,41 +1,34 @@
 package greencity.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-
-import static greencity.ModelUtils.getPrincipal;
-
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
-
-import java.security.Principal;
-import java.time.LocalDate;
-import java.util.Locale;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.mockito.Mockito.*;
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.Locale;
+
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignControllerTest {
@@ -209,5 +202,20 @@ class HabitAssignControllerTest {
             .andExpect(status().isOk());
 
         verify(habitAssignService).findHabitByUserIdAndHabitId(null, 1L, "en");
+    }
+
+    @Test
+    void getUserAndCustomListByUserIdAndHabitId() throws Exception {
+        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "en");
+    }
+
+    @Test
+    void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
+        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+            .locale(Locale.forLanguageTag("ua")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "ua");
     }
 }

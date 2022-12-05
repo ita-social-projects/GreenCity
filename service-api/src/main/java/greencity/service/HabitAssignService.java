@@ -76,7 +76,6 @@ public interface HabitAssignService {
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
      *
-     *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
@@ -86,7 +85,6 @@ public interface HabitAssignService {
 
     /**
      * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
-     *
      *
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
@@ -106,6 +104,18 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
+     * Method that finds userShoppingListItems and userCustomShoppingListItems for
+     * habitId.
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param language {@link String} of language code value.
+     * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     */
+    UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
+        Long userId, Long habitId, String language);
+
+    /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
      * and acquired status.
      *
@@ -117,7 +127,7 @@ public interface HabitAssignService {
 
     /**
      * Method to find number of {@code HabitAssign}'s by id and status.
-     * 
+     *
      * @param habitId {@code Habit} id.
      * @param status  {@code HabitAssignStatus} status.
      * @return Long number of Acquired.
