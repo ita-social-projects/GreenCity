@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto {
+public class UserShoppingAndCustomShoppingListsDto {
     List<UserShoppingListItemResponseDto> userShoppingListItemDto;
     List<CustomShoppingListItemResponseDto> customShoppingListItemDto;
 }

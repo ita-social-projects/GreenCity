@@ -110,9 +110,9 @@ public interface HabitAssignService {
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
-     * @return {@link HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto}.
+     * @return {@link UserShoppingAndCustomShoppingListsDto}.
      */
-    HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto getUserShoppingListItemAndUserCustomShoppingList(
+    UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
         Long userId, Long habitId, String language);
 
     /**

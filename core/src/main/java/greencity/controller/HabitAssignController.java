@@ -158,13 +158,13 @@ public class HabitAssignController {
     @ApiOperation(value = "Get user shopping and user custom shopping lists")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK,
-            response = HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto.class),
+            response = UserShoppingAndCustomShoppingListsDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiLocale
     @GetMapping("/allUserAndCustomList/{habitId}")
-    public ResponseEntity<HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto> getUserShoppingListItemAndUserCustomShoppingList(
+    public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingListItemAndUserCustomShoppingList(
         @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale) {

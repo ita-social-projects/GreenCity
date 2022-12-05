@@ -505,9 +505,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return @{link HabitAssignUserAndUserCustomShoppingListDto} instance.
      */
     @Override
-    public HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto getUserShoppingListItemAndUserCustomShoppingList(
+    public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
         Long userId, Long habitId, String language) {
-        return HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto
+        return UserShoppingAndCustomShoppingListsDto
             .builder()
             .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
             .customShoppingListItemDto(customShoppingListItemService
