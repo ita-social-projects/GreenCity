@@ -502,7 +502,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
-     * @return @{link UserAndUserCustomShoppingListDto} instance.
+     * @return @{link UserShoppingAndCustomShoppingListsDto} instance.
      */
     @Override
     public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
