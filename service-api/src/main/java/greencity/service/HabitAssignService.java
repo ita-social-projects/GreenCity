@@ -110,10 +110,10 @@ public interface HabitAssignService {
      * @param userId   {@code User} id.
      * @param habitId  {@code Habit} id.
      * @param language {@link String} of language code value.
-     * @return {@link HabitAssignUserAndUserCustomShoppingListDto}.
+     * @return {@link HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto}.
      */
-    HabitAssignUserAndUserCustomShoppingListDto getUserAndUserCustomShoppingList(Long userId, Long habitId,
-        String language);
+    HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto getUserShoppingListItemAndUserCustomShoppingList(
+        Long userId, Long habitId, String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id

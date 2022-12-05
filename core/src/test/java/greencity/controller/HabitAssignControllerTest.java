@@ -208,7 +208,7 @@ class HabitAssignControllerTest {
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
         mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "en");
+        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "en");
     }
 
     @Test
@@ -216,6 +216,6 @@ class HabitAssignControllerTest {
         mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserAndUserCustomShoppingList(null, 1L, "ua");
+        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "ua");
     }
 }

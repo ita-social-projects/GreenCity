@@ -405,19 +405,20 @@ class HabitAssignServiceImplTest {
             List.of(ModelUtils.customShoppingListItemResponseDto());
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
             List.of(ModelUtils.getCustomUserShoppingListItemDto());
-        HabitAssignUserAndUserCustomShoppingListDto expected = HabitAssignUserAndUserCustomShoppingListDto
-            .builder()
-            .customShoppingListItemDto(customShoppingListItemResponseDtos)
-            .userShoppingListItemDto(userShoppingListItemResponseDtos)
-            .build();
+        HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto expected =
+            HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto
+                .builder()
+                .customShoppingListItemDto(customShoppingListItemResponseDtos)
+                .userShoppingListItemDto(userShoppingListItemResponseDtos)
+                .build();
 
         when(shoppingListItemService.getUserShoppingList(userId, habitId, language))
             .thenReturn(userShoppingListItemResponseDtos);
         when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId))
             .thenReturn(customShoppingListItemResponseDtos);
 
-        HabitAssignUserAndUserCustomShoppingListDto actual =
-            habitAssignService.getUserAndUserCustomShoppingList(userId, habitId, language);
+        HabitAssignUserShoppingListItemDtoAndUserCustomShoppingListDto actual =
+            habitAssignService.getUserShoppingListItemAndUserCustomShoppingList(userId, habitId, language);
         assertEquals(expected, actual);
     }
 
