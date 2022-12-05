@@ -509,7 +509,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Long userId, Long habitId, String language) {
         return HabitAssignUserAndUserCustomShoppingListDto
             .builder()
-            .userShoppingListItemsDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
             .customShoppingListItemDto(customShoppingListItemService
                 .findAllAvailableCustomShoppingListItems(userId, habitId))
             .build();

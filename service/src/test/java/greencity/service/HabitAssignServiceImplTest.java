@@ -408,7 +408,7 @@ class HabitAssignServiceImplTest {
         HabitAssignUserAndUserCustomShoppingListDto expected = HabitAssignUserAndUserCustomShoppingListDto
             .builder()
             .customShoppingListItemDto(customShoppingListItemResponseDtos)
-            .userShoppingListItemsDto(userShoppingListItemResponseDtos)
+            .userShoppingListItemDto(userShoppingListItemResponseDtos)
             .build();
 
         when(shoppingListItemService.getUserShoppingList(userId, habitId, language))
