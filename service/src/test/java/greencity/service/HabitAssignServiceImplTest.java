@@ -402,9 +402,9 @@ class HabitAssignServiceImplTest {
         String language = "en";
 
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
-            Collections.singletonList(customShoppingListItemResponseDto());
+            List.of(ModelUtils.customShoppingListItemResponseDto());
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
-            Collections.singletonList(getCustomUserShoppingListItemDto());
+            List.of(ModelUtils.getCustomUserShoppingListItemDto());
         HabitAssignUserAndUserCustomShoppingListDto expected = HabitAssignUserAndUserCustomShoppingListDto
             .builder()
             .customShoppingListItemDto(customShoppingListItemResponseDtos)

@@ -174,6 +174,34 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
+    void saveUserShoppingListItemWithEmptyList() {
+        List<ShoppingListItemRequestDto> dtoList = null;
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "en";
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        UserShoppingListItem userShoppingListItem =
+            UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
+
+        List<UserShoppingListItemResponseDto> expected =
+            List.of(ModelUtils.getCustomUserShoppingListItemDto());
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
+            userShoppingListItem));
+        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
+            .thenReturn(expected.get(0));
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, 1L))
+            .thenReturn(ShoppingListItemTranslation.builder().id(1L).build());
+
+        List<UserShoppingListItemResponseDto> actual = shoppingListItemService
+            .saveUserShoppingListItems(userId, habitId, dtoList, language);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void findAllTest() {
         List<ShoppingListItemTranslation> shoppingListItemTranslations = ModelUtils.getShoppingListItemTranslations();
         List<ShoppingListItemDto> shoppingListItemDto = shoppingListItemTranslations
@@ -426,12 +454,27 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
-    void getEmptyUserShoppingListItemsTestT() {
+    void getEmptyUserShoppingListItemsTest() {
         when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.emptyList());
 
         assertEquals(Collections.emptyList(), shoppingListItemService.getUserShoppingList(userId, 1L, "en"));
+    }
+
+    @Test
+    void getUserShoppingListItemWithNullTest() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "en";
+        List<UserShoppingListItemResponseDto> expected = Collections.emptyList();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(userId, 1L))
+            .thenReturn(Optional.empty());
+
+        List<UserShoppingListItemResponseDto> actual = shoppingListItemService
+            .getUserShoppingList(userId, habitId, language);
+        assertEquals(expected, actual);
     }
 
     @Test
