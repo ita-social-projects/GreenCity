@@ -4,7 +4,9 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -12,12 +14,6 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,8 +21,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,8 +41,6 @@ class HabitAssignServiceImplTest {
     HabitRepo habitRepo;
     @Mock
     HabitAssignRepo habitAssignRepo;
-    @Mock
-    HabitAssignService mock;
     @Mock
     ShoppingListItemRepo shoppingListItemRepo;
     @Mock
@@ -51,6 +55,10 @@ class HabitAssignServiceImplTest {
     ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @InjectMocks
     HabitAssignServiceImpl habitAssignService;
+    @Mock
+    private ShoppingListItemService shoppingListItemService;
+    @Mock
+    private CustomShoppingListItemService customShoppingListItemService;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -388,6 +396,33 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void getUserAndUserCustomShoppingList() {
+        Long userId = 1L;
+        Long habitId = 2L;
+        String language = "en";
+
+        List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
+            List.of(ModelUtils.customShoppingListItemResponseDto());
+        List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
+            List.of(ModelUtils.getCustomUserShoppingListItemDto());
+        UserShoppingAndCustomShoppingListsDto expected =
+            UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .customShoppingListItemDto(customShoppingListItemResponseDtos)
+                .userShoppingListItemDto(userShoppingListItemResponseDtos)
+                .build();
+
+        when(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .thenReturn(userShoppingListItemResponseDtos);
+        when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId))
+            .thenReturn(customShoppingListItemResponseDtos);
+
+        UserShoppingAndCustomShoppingListsDto actual =
+            habitAssignService.getUserShoppingListItemAndUserCustomShoppingList(userId, habitId, language);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void getAllHabitAssignsByUserIdAndStatusAcquired() {
         List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
@@ -626,4 +661,5 @@ class HabitAssignServiceImplTest {
         assertEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
 
     }
+
 }
