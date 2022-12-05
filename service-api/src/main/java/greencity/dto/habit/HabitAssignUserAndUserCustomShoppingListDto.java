@@ -14,6 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class HabitAssignUserAndUserCustomShoppingListDto {
-    List<UserShoppingListItemResponseDto> userShoppingListItemsDto;
+    List<UserShoppingListItemResponseDto> userShoppingListItemDto;
     List<CustomShoppingListItemResponseDto> customShoppingListItemDto;
 }
