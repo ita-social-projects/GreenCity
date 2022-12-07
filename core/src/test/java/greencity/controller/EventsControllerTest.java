@@ -58,9 +58,9 @@ class EventsControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventsController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper))
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .build();
     }
 
     @Test
@@ -71,7 +71,7 @@ class EventsControllerTest {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/createdEvents").principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(eventService).getEventsCreatedByUser(pageable, "test@gmail.com");
 
     }
@@ -82,32 +82,32 @@ class EventsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String json = "{\n" +
-                "    \"title\":\"string\",\n" +
-                "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-                "    \"open\":true,\n" +
-                "    \"datesLocations\":[\n" +
-                "        {\n" +
-                "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-                "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-                "            \"coordinates\":{\n" +
-                "                \"latitude\":1,\n" +
-                "                \"longitude\":1\n" +
-                "            },\n" +
-                "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"tags\":[\"Social\"]\n" +
-                "}   ";
+            "    \"title\":\"string\",\n" +
+            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
+            "    \"open\":true,\n" +
+            "    \"datesLocations\":[\n" +
+            "        {\n" +
+            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
+            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
+            "            \"coordinates\":{\n" +
+            "                \"latitude\":1,\n" +
+            "                \"longitude\":1\n" +
+            "            },\n" +
+            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
+            "        }\n" +
+            "    ],\n" +
+            "    \"tags\":[\"Social\"]\n" +
+            "}   ";
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
 
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK + "/create")
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
 
         AddEventDtoRequest addEventDtoRequest = objectMapper.readValue(json, AddEventDtoRequest.class);
 
@@ -119,24 +119,22 @@ class EventsControllerTest {
     void saveBadRequestTest() {
         String json = "{}";
         MockMultipartFile jsonFile =
-                new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK + "/create")
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
-
-
 
     @Test
     @SneakyThrows
     void deleteTest() {
 
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/delete/{eventId}", 1)
-                .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(eventService).delete(1L, "test@gmail.com");
     }
@@ -145,8 +143,8 @@ class EventsControllerTest {
     @SneakyThrows
     void deleteFailedTest() {
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/delete/{eventId}", "not_number")
-                .principal(principal))
-                .andExpect(status().isBadRequest());
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -155,39 +153,39 @@ class EventsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String json = "{\n" +
-                "    \"title\":\"string\",\n" +
-                "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-                "    \"open\":true,\n" +
-                "    \"datesLocations\":[\n" +
-                "        {\n" +
-                "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-                "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-                "            \"coordinates\":{\n" +
-                "                \"latitude\":1,\n" +
-                "                \"longitude\":1\n" +
-                "            },\n" +
-                "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"tags\":[\"Social\"]\n" +
-                "}   ";
+            "    \"title\":\"string\",\n" +
+            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
+            "    \"open\":true,\n" +
+            "    \"datesLocations\":[\n" +
+            "        {\n" +
+            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
+            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
+            "            \"coordinates\":{\n" +
+            "                \"latitude\":1,\n" +
+            "                \"longitude\":1\n" +
+            "            },\n" +
+            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
+            "        }\n" +
+            "    ],\n" +
+            "    \"tags\":[\"Social\"]\n" +
+            "}   ";
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+            new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
 
         mockMvc.perform(builder
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         UpdateEventDto eventDto = objectMapper.readValue(json, UpdateEventDto.class);
 
@@ -200,41 +198,41 @@ class EventsControllerTest {
         String json = "";
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+            new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
         mockMvc.perform(builder
-                .file(jsonFile)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     @SneakyThrows
     void getEventTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/event/{eventId}", 1L).principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(eventService)
-                .getEvent(1L, principal);
+            .getEvent(1L, principal);
     }
 
     @Test
     @SneakyThrows
     void getEventFailedTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/event/{eventId}", "not_number").principal(principal))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
         verify(eventService, times(0))
-                .getEvent(1L, principal);
+            .getEvent(1L, principal);
     }
 
 }
