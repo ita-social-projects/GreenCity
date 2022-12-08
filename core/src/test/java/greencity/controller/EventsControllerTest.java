@@ -22,9 +22,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 
 import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,8 +79,7 @@ class EventsControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents").principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService, times(1))
-            .getAllUserEvents(pageable, "test@gmail.com");
+        verify(eventService).getAllUserEvents(pageable, "test@gmail.com");
     }
 
     @Test
@@ -89,8 +89,7 @@ class EventsControllerTest {
 
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal));
 
-        verify(eventService, times(1))
-            .addAttender(eventId, "test@gmail.com");
+        verify(eventService).addAttender(eventId, "test@gmail.com");
     }
 
     @Test
@@ -101,22 +100,20 @@ class EventsControllerTest {
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", eventId).principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService, times(1))
-            .removeAttender(eventId, "test@gmail.com");
+        verify(eventService).removeAttender(eventId, "test@gmail.com");
     }
 
     @Test
     @SneakyThrows
     void rateEventTest() {
         Long eventId = 1L;
-        int grade = 1;
+        int grade = 2;
 
         mockMvc
             .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService, times(1))
-            .rateEvent(eventId, "test@gmail.com", grade);
+        verify(eventService).rateEvent(eventId, "test@gmail.com", grade);
     }
 
     @Test
@@ -127,6 +124,6 @@ class EventsControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", eventId))
             .andExpect(status().isOk());
 
-        verify(eventService, times(1)).getAllEventAttenders(eventId);
+        verify(eventService).getAllEventAttenders(eventId);
     }
 }
