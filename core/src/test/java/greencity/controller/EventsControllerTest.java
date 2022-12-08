@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.security.Principal;
 
 import static greencity.ModelUtils.getPrincipal;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -80,9 +79,7 @@ class EventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService, times(1))
-            .getAllUserEvents(
-                eq(pageable),
-                eq("test@gmail.com"));
+            .getAllUserEvents(pageable, "test@gmail.com");
     }
 
     @Test
@@ -93,9 +90,7 @@ class EventsControllerTest {
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal));
 
         verify(eventService, times(1))
-            .addAttender(
-                eq(eventId),
-                eq("test@gmail.com"));
+            .addAttender(eventId, "test@gmail.com");
     }
 
     @Test
@@ -107,9 +102,7 @@ class EventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService, times(1))
-            .removeAttender(
-                eq(eventId),
-                eq("test@gmail.com"));
+            .removeAttender(eventId, "test@gmail.com");
     }
 
     @Test
@@ -123,10 +116,7 @@ class EventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService, times(1))
-            .rateEvent(
-                eq(eventId),
-                eq("test@gmail.com"),
-                eq(grade));
+            .rateEvent(eventId, "test@gmail.com", grade);
     }
 
     @Test
@@ -137,8 +127,6 @@ class EventsControllerTest {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", eventId))
             .andExpect(status().isOk());
 
-        verify(eventService, times(1))
-            .getAllEventAttenders(
-                eq(eventId));
+        verify(eventService, times(1)).getAllEventAttenders(eventId);
     }
 }
