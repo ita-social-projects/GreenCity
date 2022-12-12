@@ -60,6 +60,14 @@ public interface EventService {
     PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable pageable, String email);
 
     /**
+     * Method for getting pages of users events and events which were created by this user.
+     *
+     * @return a page of{@link EventDto} instance.
+     */
+    PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable pageable, String name);
+
+
+    /**
      * Add an attender to the Event by id.
      *
      * @param eventId - event id.
@@ -115,4 +123,5 @@ public interface EventService {
      * @param eventId - id of event
      */
     EventVO findById(Long eventId);
+
 }

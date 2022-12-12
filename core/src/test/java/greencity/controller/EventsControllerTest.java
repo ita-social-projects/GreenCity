@@ -67,4 +67,16 @@ class EventsControllerTest {
 
     }
 
+    @Test
+    @SneakyThrows
+    void getRelatedToUserEvents() {
+        int pageNumber = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/relatedEvents").principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).getRelatedToUserEvents(pageable, principal.getName());
+
+    }
+
 }
