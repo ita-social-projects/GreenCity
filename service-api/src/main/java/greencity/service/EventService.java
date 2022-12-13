@@ -60,7 +60,8 @@ public interface EventService {
     PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable pageable, String email);
 
     /**
-     * Method for getting pages of users events and events which were created by this user.
+     * Method for getting pages of users events and events which were created
+     * by this user.
      *
      * @return a page of{@link EventDto} instance.
      */
