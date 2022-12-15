@@ -137,6 +137,15 @@ public class EventServiceImpl implements EventService {
         return eventDtos;
     }
 
+    @Override
+    public PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable page, String email) {
+        User attender = modelMapper.map(restClient.findByEmail(email), User.class);
+        Page<Event> events = eventRepo.findRelatedEventsByUser(page, attender.getId());
+        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
+        setSubscribes(events, eventDtos, attender);
+        return eventDtos;
+    }
+
     private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
         List<Long> eventIds = events.stream()
             .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())

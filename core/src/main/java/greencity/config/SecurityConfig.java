@@ -213,6 +213,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements/notification/{userId}",
                 EVENTS + "/myEvents",
                 EVENTS + "/myEvents/createdEvents",
+                EVENTS + "/myEvents/relatedEvents",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
                 "/habit/assign/allUserAndCustomList/{habitId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
