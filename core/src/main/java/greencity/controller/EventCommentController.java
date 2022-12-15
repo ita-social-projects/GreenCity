@@ -1,9 +1,11 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -171,5 +173,22 @@ public class EventCommentController {
     public void saveReply(@RequestParam String replyText,
         @ApiIgnore @CurrentUser UserVO user, @PathVariable Long parentCommentId) {
         eventCommentService.saveReply(replyText, user, parentCommentId);
+    }
+
+    @ApiOperation(value = "Get all active replies to comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @GetMapping("replies/active/{parentCommentId}")
+    @ApiPageable
+    public ResponseEntity<PageableDto<EventCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
+        @PathVariable Long parentCommentId,
+        @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(eventCommentService.findAllActiveReplies(pageable, parentCommentId, user));
     }
 }

@@ -202,4 +202,9 @@ public class EventCommentServiceImpl implements EventCommentService {
             .setUser(modelMapper.map(userVO, User.class))
             .setEvent(eventParentComment.getEvent()));
     }
+
+    @Override
+    public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user) {
+        return null;
+    }
 }

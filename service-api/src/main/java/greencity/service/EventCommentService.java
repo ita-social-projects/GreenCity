@@ -91,4 +91,6 @@ public interface EventCommentService {
      */
     void saveReply(String replyText,
         UserVO user, Long parentCommentId);
+
+    PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
 }

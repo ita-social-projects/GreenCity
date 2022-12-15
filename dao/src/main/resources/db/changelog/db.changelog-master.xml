@@ -133,5 +133,6 @@
     <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
+    <include file="db/changelog/logs/ch-add-column-deleted-to-events-comment-Lenets-1.xml"/>
 
 </databaseChangeLog>
