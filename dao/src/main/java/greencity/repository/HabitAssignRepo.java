@@ -206,7 +206,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param userId  {@link Long} id.
      */
     @Query(value = "FROM HabitAssign h WHERE h.habit.id = :habitId AND h.user.id = :userId")
-    Optional<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
+    List<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
 
     /**
      * Method to find all inprogress, habit assigns.

@@ -20,10 +20,7 @@ import greencity.repository.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -871,11 +868,20 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
+        List<HabitAssign> habitAssigns = Optional.of(habitAssignRepo.findByUserIdAndHabitId(habitId, userId))
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
-        userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
-        habitAssignRepo.delete(habitAssign);
+
+        List<HabitAssign> habitAssignFilter = habitAssigns.stream()
+            .filter(Objects::nonNull)
+            .filter(habitAssign -> HabitAssignStatus.INPROGRESS == habitAssign.getStatus())
+            .collect(Collectors.toList());
+
+        for (HabitAssign habitAssign : habitAssignFilter) {
+            userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
+            habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+            habitAssignRepo.save(habitAssign);
+        }
     }
 
     /**

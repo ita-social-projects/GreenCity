@@ -289,10 +289,24 @@ class HabitAssignServiceImplTest {
     @Test
     void deleteHabitAssign() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
+        habitAssign.getHabit().setHabitAssigns(generateHabitAssignList());
+        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(habitAssign.getHabit().getHabitAssigns());
         assert habitAssign != null;
         habitAssignService.deleteHabitAssign(1L, 1L);
-        verify(habitAssignRepo).delete(habitAssign);
+        assert HabitAssignStatus.INPROGRESS != habitAssign.getHabit().getHabitAssigns().get(0).getStatus();
+        verify(habitAssignRepo, times(1)).save(any());
+    }
+
+    private List<HabitAssign> generateHabitAssignList() {
+        HabitAssign habitAssign1 = new HabitAssign();
+        habitAssign1.setId(1L);
+        habitAssign1.setStatus(HabitAssignStatus.INPROGRESS);
+
+        HabitAssign habitAssign2 = new HabitAssign();
+        habitAssign2.setId(2L);
+        habitAssign2.setStatus(HabitAssignStatus.ACQUIRED);
+
+        return List.of(habitAssign1, habitAssign2);
     }
 
     @Test
