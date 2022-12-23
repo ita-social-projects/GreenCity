@@ -37,4 +37,6 @@ public class EventCommentVO {
     private UserVO user;
 
     private EventVO event;
+
+    private boolean deleted;
 }

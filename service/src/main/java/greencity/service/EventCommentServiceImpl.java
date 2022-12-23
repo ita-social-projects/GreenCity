@@ -204,7 +204,12 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     @Override
-    public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user) {
+    public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+     Page<EventComment> page = eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+     UserVO user = userVO == null ? UserVO.builder().build() : userVO;
+
+     //USERVO NO NEEDED RIGHT NOW
+
         return null;
     }
 }
