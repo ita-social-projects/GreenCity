@@ -27,7 +27,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static greencity.constant.AppConstant.*;
+import static greencity.constant.AppConstant.ADMIN;
+import static greencity.constant.AppConstant.USER;
+import static greencity.constant.AppConstant.MODERATOR;
+import static greencity.constant.AppConstant.UBS_EMPLOYEE;
+
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
@@ -209,7 +213,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/achievements/notification/{userId}",
                 EVENTS + "/myEvents",
                 EVENTS + "/myEvents/createdEvents",
-                "/user/shopping-list-items/{userId}/get-all-inprogress")
+                EVENTS + "/myEvents/relatedEvents",
+                "/user/shopping-list-items/{userId}/get-all-inprogress",
+                "/habit/assign/allUserAndCustomList/{habitId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",

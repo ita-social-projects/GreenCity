@@ -45,6 +45,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    private final ShoppingListItemService shoppingListItemService;
+    private final CustomShoppingListItemService customShoppingListItemService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
@@ -494,6 +496,26 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
+     * Method that return list of user shopping list and custom shopping list for
+     * habit.
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param language {@link String} of language code value.
+     * @return @{link UserShoppingAndCustomShoppingListsDto} instance.
+     */
+    @Override
+    public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
+        Long userId, Long habitId, String language) {
+        return UserShoppingAndCustomShoppingListsDto
+            .builder()
+            .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .customShoppingListItemDto(customShoppingListItemService
+                .findAllAvailableCustomShoppingListItems(userId, habitId))
+            .build();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -730,7 +752,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
         String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
