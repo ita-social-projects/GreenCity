@@ -121,8 +121,8 @@ class EventsControllerTest {
             .andExpect(content().json(expectedJson));
 
         verify(eventService).getAllUserEvents(pageable, principal.getName());
-     }
-     
+    }
+
     @Test
     @SneakyThrows
     void getRelatedToUserEvents() {
@@ -165,8 +165,8 @@ class EventsControllerTest {
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException("ErrorMessage"));
-      }  
-      
+    }
+
     @Test
     @SneakyThrows
     void addAttenderBadRequestTest() {
@@ -180,7 +180,7 @@ class EventsControllerTest {
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
                 .andExpect(status().isBadRequest()))
             .hasCause(new BadRequestException("ErrorMessage"));
-    }  
+    }
 
     @Test
     @SneakyThrows
@@ -228,7 +228,7 @@ class EventsControllerTest {
 
         verify(eventService).removeAttender(eventId, principal.getName());
     }
-        
+
     @Test
     @SneakyThrows
     void removeAttenderBadRequestTest() {
@@ -237,7 +237,7 @@ class EventsControllerTest {
             .principal(principal))
             .andExpect(status().isBadRequest());
     }
-    
+
     @Test
     @SneakyThrows
     void removeAttenderNotFoundTest() {
@@ -250,7 +250,7 @@ class EventsControllerTest {
             .perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", eventId).principal(principal))
             .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
     }
-    
+
     @Test
     @SneakyThrows
     void deleteTest() {
@@ -261,7 +261,7 @@ class EventsControllerTest {
 
         verify(eventService).delete(1L, "test@gmail.com");
     }
-    
+
     @Test
     @SneakyThrows
     void deleteFailedTest() {
@@ -269,7 +269,7 @@ class EventsControllerTest {
             .principal(principal))
             .andExpect(status().isBadRequest());
     }
-         
+
     @Test
     @SneakyThrows
     void updateTest() {
@@ -298,8 +298,7 @@ class EventsControllerTest {
 
         verify(eventService).update(updateEventDto, principal.getName(), new MultipartFile[0]);
     }
-    
-    
+
     @Test
     @SneakyThrows
     void rateEventTest() {
@@ -335,7 +334,7 @@ class EventsControllerTest {
             .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, notValidGrade)
                 .principal(principal))
             .andExpect(status().isBadRequest());
-    }   
+    }
 
     @Test
     @SneakyThrows
@@ -399,7 +398,7 @@ class EventsControllerTest {
         verify(eventService)
             .getEvent(1L, principal);
     }
-    
+
     @Test
     @SneakyThrows
     void getEventFailedTest() {
@@ -409,7 +408,7 @@ class EventsControllerTest {
         verify(eventService, times(0))
             .getEvent(1L, principal);
     }
-    
+
     @Test
     @SneakyThrows
     void getEventResponseTest() {
@@ -465,7 +464,7 @@ class EventsControllerTest {
                 .andExpect(status().isNotFound()))
             .hasCause(new NotFoundException("ErrorMessage"));
     }
-    
+
     private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
         EventDto eventDto = EventDto.builder()
             .id(11L)
