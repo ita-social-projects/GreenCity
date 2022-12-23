@@ -28,7 +28,7 @@ public class ExceptionResponse {
     public ExceptionResponse(Map<String, Object> errorAttributes) {
         this.setPath((String) errorAttributes.get("path"));
         this.setMessage((String) errorAttributes.get("message"));
-        this.setTimeStamp((String) errorAttributes.get("timestamp"));
+        this.setTimeStamp(errorAttributes.get("timestamp").toString());
         this.setTrace((String) errorAttributes.get("trace"));
     }
 }
