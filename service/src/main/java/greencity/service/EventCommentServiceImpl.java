@@ -203,13 +203,24 @@ public class EventCommentServiceImpl implements EventCommentService {
             .setEvent(eventParentComment.getEvent()));
     }
 
+    /**
+     * Method returns all replies to certain comment specified by parentCommentId.
+     *
+     * @param parentCommentId specifies {@link EventComment} to which we search for replies
+     * @param userVO current {@link User}
+     * @return all replies to certain comment specified by parentCommentId.
+     */
     @Override
     public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
-     Page<EventComment> page = eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
-     UserVO user = userVO == null ? UserVO.builder().build() : userVO;
-
-     //USERVO NO NEEDED RIGHT NOW
-
-        return null;
+        Page<EventComment> pages =
+            eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+        List<EventCommentDto> eventCommentDtos = pages.stream()
+            .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
+            .collect(Collectors.toList());
+        return new PageableDto<>(
+                eventCommentDtos,
+                pages.getTotalElements(),
+                pages.getPageable().getPageNumber(),
+                pages.getTotalPages());
     }
 }

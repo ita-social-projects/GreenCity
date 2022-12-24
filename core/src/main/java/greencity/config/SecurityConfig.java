@@ -146,6 +146,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/active",
                 "/events/comments/active",
                 "/events/comments/count/{eventId}",
+                "/events/comments/replies/active/{parentCommentId}",
                 EVENTS,
                 EVENTS + "/event/{eventId}",
                 EVENTS + "/getAllSubscribers/{eventId}",

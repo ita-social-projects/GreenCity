@@ -29,11 +29,13 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
     Page<EventComment> findAllByEventIdOrderByCreatedDateDesc(Pageable pageable, Long eventId);
 
     /**
-     * Method returns all {@link EventComment} not deleted replies to the comment by page.
+     * Method returns all {@link EventComment} not deleted replies to the comment by
+     * page.
      *
-     * @param pageable page of news.
+     * @param pageable        page of news.
      * @param parentCommentId id of {@link EventComment} parent comment
      * @return all replies to comment, specified by parentCommentId and page.
      */
-    Page<EventComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable, Long parentCommentId);
+    Page<EventComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
+        Long parentCommentId);
 }
