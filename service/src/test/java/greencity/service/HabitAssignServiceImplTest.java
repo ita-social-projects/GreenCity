@@ -317,8 +317,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(1L, 1L))
             .thenReturn(Collections.emptyList());
         Exception thrown = assertThrows(NotFoundException.class, () -> habitAssignService.cancelAllHabitAssign(1L, 1L));
-        assertEquals(thrown.getMessage(),
-            ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS);
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS,
+            thrown.getMessage());
     }
 
     @Test
