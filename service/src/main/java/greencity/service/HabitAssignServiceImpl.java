@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -869,19 +870,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
+     * Method to set {@link HabitAssign} status from inprogress to cancelled.
      * {@inheritDoc}
      */
-    public void deleteHabitAssign(Long habitId, Long userId) {
-        List<HabitAssign> habitAssigns = Optional.of(habitAssignRepo.findByUserIdAndHabitId(habitId, userId))
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
+    public void cancelAllHabitAssign(Long habitId, Long userId) {
+        List<HabitAssign> habitAssigns =
+            habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(habitId, userId);
+        if (null == habitAssigns || habitAssigns.isEmpty()) {
+            throw new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS);
+        }
 
-        List<HabitAssign> habitAssignFilter = habitAssigns.stream()
-            .filter(Objects::nonNull)
-            .filter(habitAssign -> HabitAssignStatus.INPROGRESS == habitAssign.getStatus())
-            .collect(Collectors.toList());
-
-        for (HabitAssign habitAssign : habitAssignFilter) {
+        for (HabitAssign habitAssign : habitAssigns) {
             userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
             habitAssign.setStatus(HabitAssignStatus.CANCELLED);
             habitAssignRepo.save(habitAssign);
