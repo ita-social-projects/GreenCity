@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.UserDeactivatedException;
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -24,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+import static greencity.TestConst.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,12 +37,6 @@ class CustomExceptionHandlerTest {
     private ObjectMapper objectMapper;
     @InjectMocks
     private CustomExceptionHandler exceptionHandler;
-    private static final String EXCEPTION_MESSAGE = "Example failure";
-    private static final String MESSAGE_JSON = "{ \"message\":\"" + EXCEPTION_MESSAGE + "\" }";
-    private static final String INCORRECT_MESSAGE_JSON = "Not a json";
-    private static final String REQUEST_URI = "api/example";
-    private static final String TRACE = "example trace";
-    private static final String TIME_STAMP = LocalDateTime.of(2022, 12, 23, 13, 52).toString();
 
     @Test
     void testHandleHttpClientErrorException() throws JsonProcessingException {

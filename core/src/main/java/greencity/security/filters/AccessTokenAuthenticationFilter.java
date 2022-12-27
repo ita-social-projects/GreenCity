@@ -82,7 +82,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 log.info("Token has expired: " + token);
             } catch (Exception e) {
-                log.info("Access denied with token: " + e.getMessage());
+                log.info("Access denied with token: " + token);
             }
         }
         chain.doFilter(request, response);
