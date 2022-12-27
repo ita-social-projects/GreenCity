@@ -43,7 +43,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventCommentServiceImplTest {
@@ -149,10 +148,10 @@ class EventCommentServiceImplTest {
         Long commentId = 1L;
         String editedText = "edited text";
 
-        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
         eventCommentService.update(editedText, commentId, userVO);
-        verify(eventCommentRepo, times(1)).save(any(EventComment.class));
+        verify(eventCommentRepo).save(any(EventComment.class));
     }
 
     @Test
@@ -161,7 +160,7 @@ class EventCommentServiceImplTest {
         Long commentId = 1L;
         String editedText = "edited text";
 
-        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.empty());
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
@@ -179,7 +178,7 @@ class EventCommentServiceImplTest {
         eventComment.setUser(user);
         String editedText = "edited text";
 
-        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.of(eventComment));
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(eventComment));
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
@@ -192,12 +191,12 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
 
-        when(eventCommentRepo.findById(commentId))
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
         eventCommentService.delete(commentId, userVO);
 
-        verify(eventCommentRepo, times(1)).deleteById(any(Long.class));
+        verify(eventCommentRepo).findByIdAndDeletedFalse(any(Long.class));
     }
 
     @Test
@@ -212,7 +211,7 @@ class EventCommentServiceImplTest {
         EventComment eventComment = ModelUtils.getEventComment();
         eventComment.setUser(user);
 
-        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.of(eventComment));
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.of(eventComment));
 
         UserHasNoPermissionToAccessException noPermissionToAccessException =
             assertThrows(UserHasNoPermissionToAccessException.class,
@@ -225,7 +224,7 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
 
-        when(eventCommentRepo.findById(commentId)).thenReturn(Optional.empty());
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class, () -> eventCommentService.delete(commentId, userVO));
