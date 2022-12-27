@@ -126,7 +126,7 @@ class EventCommentServiceImplTest {
         EventCommentDto eventCommentDto = ModelUtils.getEventCommentDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.findAllByEventIdOrderByCreatedDateDesc(pageable, eventId)).thenReturn(pages);
+        when(eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId)).thenReturn(pages);
         when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
 
         PageableDto<EventCommentDto> allComments = eventCommentService.getAllActiveComments(pageable, userVO, eventId);

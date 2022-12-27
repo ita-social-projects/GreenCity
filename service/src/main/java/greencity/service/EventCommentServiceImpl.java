@@ -129,7 +129,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId);
         }
 
-        Page<EventComment> pages = eventCommentRepo.findAllByEventIdOrderByCreatedDateDesc(pageable, eventId);
+        Page<EventComment> pages = eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId);
         List<EventCommentDto> eventCommentDto = pages
             .stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
@@ -153,7 +153,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     @Transactional
     public void update(String commentText, Long id, UserVO userVO) {
-        EventComment eventComment = eventCommentRepo.findById(id)
+        EventComment eventComment = eventCommentRepo.findByIdAndDeletedFalse(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(eventComment.getUser().getId())) {
@@ -165,7 +165,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method to delete comment {@link EventComment} by id.
+     * Method set true for field 'deleted' of the comment {@link EventComment} by id.
      *
      * @param eventCommentId specifies {@link EventComment} to which we search for
      *                       comments.
@@ -173,14 +173,15 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public void delete(Long eventCommentId, UserVO user) {
         EventComment eventComment = eventCommentRepo
-            .findById(eventCommentId)
+            .findByIdAndDeletedFalse(eventCommentId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId));
 
         if (!user.getId().equals(eventComment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        eventCommentRepo.deleteById(eventCommentId);
+        eventComment.setDeleted(true);
+        eventCommentRepo.save(eventComment);
     }
 
     /**
