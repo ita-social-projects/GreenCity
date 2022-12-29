@@ -129,7 +129,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId);
         }
 
-        Page<EventComment> pages = eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId);
+        Page<EventComment> pages =
+            eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId);
         List<EventCommentDto> eventCommentDto = pages
             .stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
@@ -165,7 +166,8 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method set true for field 'deleted' of the comment {@link EventComment} by id.
+     * Method set true for field 'deleted' of the comment {@link EventComment} by
+     * id.
      *
      * @param eventCommentId specifies {@link EventComment} to which we search for
      *                       comments.
@@ -207,8 +209,10 @@ public class EventCommentServiceImpl implements EventCommentService {
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link EventComment} to which we search for replies
-     * @param userVO current {@link User}
+     * @param pageable        page of replies.
+     * @param parentCommentId specifies {@link EventComment} to which we search for
+     *                        replies
+     * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
     @Override
@@ -219,9 +223,23 @@ public class EventCommentServiceImpl implements EventCommentService {
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
             .collect(Collectors.toList());
         return new PageableDto<>(
-                eventCommentDtos,
-                pages.getTotalElements(),
-                pages.getPageable().getPageNumber(),
-                pages.getTotalPages());
+            eventCommentDtos,
+            pages.getTotalElements(),
+            pages.getPageable().getPageNumber(),
+            pages.getTotalPages());
+    }
+
+    /**
+     * Method to count not deleted replies to the certain {@link EventComment}.
+     *
+     * @param parentCommentId to specify parent comment {@link EventComment}
+     * @return amount of replies
+     */
+    @Override
+    public int countAllActiveReplies(Long parentCommentId) {
+        eventCommentRepo.findByIdAndDeletedFalse(parentCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_MESSAGE_NOT_FOUND_BY_ID + parentCommentId));
+
+        return eventCommentRepo.countByParentCommentIdAndDeletedFalse(parentCommentId);
     }
 }

@@ -23,6 +23,7 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
 
     /**
      * The method returns not deleted comment {@link EventComment}, specified by id
+     * 
      * @param id id of {@link EventComment} parent comment
      * @return not deleted comment by it id
      */
@@ -47,4 +48,13 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      */
     Page<EventComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
         Long parentCommentId);
+
+    /**
+     * The method returns the count of not deleted replies to the comment, specified
+     * by parent comment {@link EventComment} id.
+     *
+     * @param parentCommentId id of {@link EventComment} parent comment
+     * @return count of comments, specified by {@link EventComment}
+     */
+    int countByParentCommentIdAndDeletedFalse(Long parentCommentId);
 }

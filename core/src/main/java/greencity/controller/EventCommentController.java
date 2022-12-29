@@ -5,7 +5,6 @@ import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -179,7 +178,7 @@ public class EventCommentController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("replies/active/{parentCommentId}")
     @ApiPageable
@@ -190,4 +189,22 @@ public class EventCommentController {
             .status(HttpStatus.OK)
             .body(eventCommentService.findAllActiveReplies(pageable, parentCommentId, user));
     }
+
+    /**
+     * Method to count all active replies for comment
+     *
+     * @param parentCommentId to specify {@link EventCommentDto}
+     * @return amount of all active comments for certain {@link EventCommentDto}
+     */
+    @ApiOperation(value = "Count replies for comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/count/replies/active/{parentCommentId}")
+    public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
+        return eventCommentService.countAllActiveReplies(parentCommentId);
+    }
+
 }

@@ -125,7 +125,8 @@ class EventCommentServiceImplTest {
         EventCommentDto eventCommentDto = ModelUtils.getEventCommentDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId)).thenReturn(pages);
+        when(eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId))
+            .thenReturn(pages);
         when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
 
         PageableDto<EventCommentDto> allComments = eventCommentService.getAllActiveComments(pageable, userVO, eventId);
@@ -148,7 +149,8 @@ class EventCommentServiceImplTest {
         Long commentId = 1L;
         String editedText = "edited text";
 
-        when(eventCommentRepo.findByIdAndDeletedFalse(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
+        when(eventCommentRepo.findByIdAndDeletedFalse(commentId))
+            .thenReturn(Optional.ofNullable(ModelUtils.getEventComment()));
 
         eventCommentService.update(editedText, commentId, userVO);
         verify(eventCommentRepo).save(any(EventComment.class));

@@ -93,4 +93,6 @@ public interface EventCommentService {
         UserVO user, Long parentCommentId);
 
     PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
+
+    int countAllActiveReplies(Long parentCommentId);
 }
