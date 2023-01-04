@@ -33,6 +33,7 @@ import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -874,7 +875,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public void cancelAllHabitAssign(Long habitId, Long userId) {
         List<HabitAssign> habitAssigns =
             habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(habitId, userId);
-        if (null == habitAssigns || habitAssigns.isEmpty()) {
+        if (CollectionUtils.isEmpty(habitAssigns)) {
             throw new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS);
         }
