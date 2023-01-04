@@ -174,6 +174,14 @@ public class EventCommentController {
         eventCommentService.saveReply(replyText, user, parentCommentId);
     }
 
+    /**
+     * Method to get all active replies to {@link EventCommentDto} specified by
+     * eventId.
+     *
+     * @param parentCommentId id of parent comment {@link EventCommentDto}
+     * @param user            {@link UserVO} user who want to get replies.
+     * @return Pageable of {@link EventCommentDto}
+     */
     @ApiOperation(value = "Get all active replies to comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
@@ -191,7 +199,7 @@ public class EventCommentController {
     }
 
     /**
-     * Method to count all active replies for comment
+     * Method to count all active replies for comment.
      *
      * @param parentCommentId to specify {@link EventCommentDto}
      * @return amount of all active comments for certain {@link EventCommentDto}
@@ -207,4 +215,38 @@ public class EventCommentController {
         return eventCommentService.countAllActiveReplies(parentCommentId);
     }
 
+    /**
+     * Method to like/dislike certain {@link EventCommentDto} specified by id.
+     *
+     * @param commentId of {@link EventCommentDto} to like/dislike
+     */
+    @ApiOperation(value = "Like/dislike comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/like")
+    public void like(@RequestParam("commentId") Long commentId, @ApiIgnore @CurrentUser UserVO user) {
+        eventCommentService.like(commentId, user);
+    }
+
+    /**
+     * Method to count likes for comment.
+     *
+     * @param commentId id of {@link EventCommentDto} comment whose likes must be
+     *                  counted
+     * @return amount of likes certain {@link EventCommentDto}
+     */
+    @ApiOperation(value = "Count likes for comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("countLikes/{commentId}")
+    public int countLikes(@PathVariable("commentId") Long commentId) {
+        return eventCommentService.countLikes(commentId);
+    }
 }

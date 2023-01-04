@@ -92,7 +92,39 @@ public interface EventCommentService {
     void saveReply(String replyText,
         UserVO user, Long parentCommentId);
 
+    /**
+     * Method to get all not deleted replies for to certain {@link EventCommentVO}
+     * specified by id.
+     *
+     * @param parentCommentId to specify {@link EventCommentVO}.
+     * @param user            {@link UserVO} that want to get replies.
+     * @return replies for comment
+     */
     PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
 
+    /**
+     * Method to count not deleted replies for to certain {@link EventCommentVO}
+     * specified by id.
+     *
+     * @param parentCommentId to specify {@link EventCommentVO}.
+     * @return amount of replies.
+     */
     int countAllActiveReplies(Long parentCommentId);
+
+    /**
+     * Method to like or dislike {@link EventCommentVO} specified by id.
+     *
+     * @param commentId id of {@link EventCommentVO} to like/dislike.
+     * @param userVO    current {@link UserVO} that wants to like/dislike.
+     */
+    void like(Long commentId, UserVO userVO);
+
+    /**
+     * Method returns count of likes to certain {@link EventCommentVO} specified by
+     * id.
+     *
+     * @param commentId id of {@link EventCommentVO} must be counted.
+     * @return amount of likes.
+     */
+    int countLikes(Long commentId);
 }

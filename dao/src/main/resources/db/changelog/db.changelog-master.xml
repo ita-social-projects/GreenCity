@@ -134,5 +134,6 @@
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
     <include file="db/changelog/logs/ch-add-column-deleted-to-events-comment-Lenets-1.xml"/>
+    <include file="db/changelog/logs/ch-add-tables-events-comment-user-likes-dislikes-Lenets.xml"/>
 
 </databaseChangeLog>

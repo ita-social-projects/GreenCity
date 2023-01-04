@@ -242,4 +242,36 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         return eventCommentRepo.countByParentCommentIdAndDeletedFalse(parentCommentId);
     }
+
+    /**
+     * Method to like or dislike {@link EventComment} specified by id.
+     *
+     * @param commentId id of {@link EventComment} to like/dislike.
+     * @param userVO    current {@link User} that wants to like/dislike.
+     */
+    @Override
+    public void like(Long commentId, UserVO userVO) {
+        EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + commentId));
+
+        if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+        } else {
+            comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+        }
+
+        eventCommentRepo.save(comment);
+    }
+
+    /**
+     * Method returns count of likes to certain {@link EventComment} specified by
+     * id.
+     *
+     * @param commentId id of {@link EventComment} must be counted.
+     * @return amount of likes
+     */
+    @Override
+    public int countLikes(Long commentId) {
+        return eventCommentRepo.countLikes(commentId);
+    }
 }
