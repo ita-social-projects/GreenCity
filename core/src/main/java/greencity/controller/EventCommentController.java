@@ -64,9 +64,10 @@ public class EventCommentController {
      * @return comment to certain event specified by commentId.
      */
     @GetMapping("{id}")
-    public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id) {
+    public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventCommentService.getEventCommentById(id));
+            .body(eventCommentService.getEventCommentById(id, userVO));
     }
 
     /**
@@ -199,7 +200,7 @@ public class EventCommentController {
     }
 
     /**
-     * Method to count all active replies for comment.
+     * Method to count all active replies for {@link EventCommentDto} comment.
      *
      * @param parentCommentId to specify {@link EventCommentDto}
      * @return amount of all active comments for certain {@link EventCommentDto}
@@ -216,7 +217,8 @@ public class EventCommentController {
     }
 
     /**
-     * Method to like/dislike certain {@link EventCommentDto} specified by id.
+     * Method to like/dislike certain {@link EventCommentDto} comment specified by
+     * id.
      *
      * @param commentId of {@link EventCommentDto} to like/dislike
      */

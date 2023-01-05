@@ -41,7 +41,7 @@ public interface EventCommentService {
      * @return comment to certain event specified by commentId.
      * @author Inna Yashna
      */
-    EventCommentDto getEventCommentById(Long id);
+    EventCommentDto getEventCommentById(Long id, UserVO userVO);
 
     /**
      * Method to count not deleted event comments to certain {@link EventVO}.

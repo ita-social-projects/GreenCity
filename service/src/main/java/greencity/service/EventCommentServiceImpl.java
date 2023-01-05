@@ -5,7 +5,11 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.*;
+import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.AddEventCommentDtoRequest;
+import greencity.dto.eventcomment.EventCommentAuthorDto;
+import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -95,9 +99,12 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return comment to certain event specified by commentId.
      */
     @Override
-    public EventCommentDto getEventCommentById(Long id) {
+    public EventCommentDto getEventCommentById(Long id, UserVO userVO) {
         EventComment eventComment = eventCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + id));
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
+        eventComment.setCurrentUserLiked(eventComment.getUsersLiked().stream()
+            .anyMatch(u -> u.getId().equals(user.getId())));
 
         return modelMapper.map(eventComment, EventCommentDto.class);
     }
@@ -135,6 +142,10 @@ public class EventCommentServiceImpl implements EventCommentService {
             .stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
             .collect(Collectors.toList());
+
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
+        eventCommentDto.forEach((ec) -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
+            .anyMatch(u -> u.getId().equals(user.getId()))));
 
         return new PageableDto<>(
             eventCommentDto,
@@ -222,6 +233,11 @@ public class EventCommentServiceImpl implements EventCommentService {
         List<EventCommentDto> eventCommentDtos = pages.stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
             .collect(Collectors.toList());
+
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
+        eventCommentDtos.forEach((ec) -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
+            .anyMatch(u -> u.getId().equals(user.getId()))));
+
         return new PageableDto<>(
             eventCommentDtos,
             pages.getTotalElements(),
