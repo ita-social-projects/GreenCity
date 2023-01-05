@@ -23,7 +23,7 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
      * @return list of {@link CustomShoppingListItem}
      */
     @Query("SELECT cg FROM CustomShoppingListItem cg WHERE "
-        + " cg.status='ACTIVE' OR cg.status='INPROGRESS' "
+        + "NOT cg.status='DISABLE' "
         + "AND cg.user.id=:userId "
         + "AND cg.habit.id=:habitId "
         + "ORDER BY cg.id")
