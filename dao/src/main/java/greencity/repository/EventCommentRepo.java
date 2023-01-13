@@ -50,21 +50,11 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
         Long parentCommentId);
 
     /**
-     * The method returns the count of not deleted replies to the comment, specified
-     * by parent comment {@link EventComment} id.
+     * Method returns the count of not deleted replies to the comment, specified by
+     * parent comment {@link EventComment} id.
      *
      * @param parentCommentId id of {@link EventComment} parent comment
      * @return count of comments, specified by {@link EventComment}
      */
     int countByParentCommentIdAndDeletedFalse(Long parentCommentId);
-
-    /**
-     * The method returns the count of likes, specified by {@link EventComment} id.
-     *
-     * @param commentId {@link EventComment} id
-     * @return count of likes, specified by {@link EventComment} id
-     */
-    @Query(value = "select count(ec.users_id) from events_comment_users_likes ec"
-        + " where ec.event_comment_id = :commentId", nativeQuery = true)
-    int countLikes(Long commentId);
 }

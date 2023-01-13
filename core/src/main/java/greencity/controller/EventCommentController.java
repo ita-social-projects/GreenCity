@@ -5,6 +5,7 @@ import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -239,7 +240,9 @@ public class EventCommentController {
      *
      * @param commentId id of {@link EventCommentDto} comment whose likes must be
      *                  counted
-     * @return amount of likes certain {@link EventCommentDto}
+     * @param user      {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     * @return amountCommentLikesDto dto with id and count likes for comments.
      */
     @ApiOperation(value = "Count likes for comment.")
     @ApiResponses(value = {
@@ -248,7 +251,10 @@ public class EventCommentController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("countLikes/{commentId}")
-    public int countLikes(@PathVariable("commentId") Long commentId) {
-        return eventCommentService.countLikes(commentId);
+    public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
+        @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(eventCommentService.countLikes(commentId, user));
     }
 }

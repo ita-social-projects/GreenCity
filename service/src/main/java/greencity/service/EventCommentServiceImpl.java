@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -268,7 +269,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public void like(Long commentId, UserVO userVO) {
         EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + commentId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
@@ -284,10 +285,23 @@ public class EventCommentServiceImpl implements EventCommentService {
      * id.
      *
      * @param commentId id of {@link EventComment} must be counted.
-     * @return amount of likes
+     * @param userVO    {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     *
+     * @return amountCommentLikesDto dto with id and count likes for comments.
      */
     @Override
-    public int countLikes(Long commentId) {
-        return eventCommentRepo.countLikes(commentId);
+    public AmountCommentLikesDto countLikes(Long commentId, UserVO userVO) {
+        EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId).orElseThrow(
+            () -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
+        boolean isLiked = comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(user.getId()));
+        return AmountCommentLikesDto.builder()
+            .id(comment.getId())
+            .userId(user.getId())
+            .isLiked(isLiked)
+            .amountLikes(comment.getUsersLiked().size())
+            .build();
     }
 }

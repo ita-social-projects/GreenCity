@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -124,7 +125,10 @@ public interface EventCommentService {
      * id.
      *
      * @param commentId id of {@link EventCommentVO} must be counted.
-     * @return amount of likes.
+     * @param userVO    {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     *
+     * @return amountCommentLikesDto dto with id and count likes for comments.
      */
-    int countLikes(Long commentId);
+    AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
 }
