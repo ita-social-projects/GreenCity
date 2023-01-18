@@ -1,7 +1,6 @@
 package greencity.dto.shoppinglistitem;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import greencity.enums.ShoppingListItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,14 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.validation.constraints.NotNull;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class ShoppingListItemRequestDto {
+public class ShoppingListItemWithStatusRequestDto extends ShoppingListItemRequestDto {
     @NotNull
-    @Min(1)
-    private Long id = 0L;
+    private ShoppingListItemStatus status;
 }
