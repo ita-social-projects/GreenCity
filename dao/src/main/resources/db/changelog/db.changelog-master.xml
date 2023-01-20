@@ -133,5 +133,8 @@
     <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
-
+    <include file="db/changelog/logs/ch-insert-into-employees-authorities-Korzh.xml"/>
+    <include file="db/changelog/logs/ch-add-table-positions-Korzh.xml"/>
+    <include file="db/changelog/logs/ch-add-table-positions-authorities-mapping-Korzh.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Korzh.xml"/>
 </databaseChangeLog>
