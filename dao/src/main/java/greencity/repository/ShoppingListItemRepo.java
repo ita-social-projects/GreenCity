@@ -87,4 +87,20 @@ public interface ShoppingListItemRepo
         + "and lang.code = :code")
     List<ShoppingListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
         @Param("code") String code);
+
+    /**
+     * Method returns {@link ShoppingListItem} by habitId, list of name and language
+     * code.
+     *
+     * @param habitId      habit id
+     * @param itemNames    list of shopping items name
+     * @param languageCode language code
+     * @return list of {@link ShoppingListItem}
+     */
+    @Query("SELECT g FROM ShoppingListItem g "
+        + "JOIN ShoppingListItemTranslation gt ON g.id = gt.shoppingListItem.id "
+        + "JOIN g.habits h ON h.id = :habitId"
+        + " WHERE gt.language.code = :languageCode AND gt.content in :listOfName")
+    List<ShoppingListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
+        String languageCode);
 }

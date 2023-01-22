@@ -6,6 +6,8 @@ import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
@@ -662,4 +664,94 @@ class HabitAssignServiceImplTest {
 
     }
 
+    @Test
+    void saveUserShoppingListWithStatuses() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        Long shoppingId = 1L;
+        String language = "ua";
+        ShoppingListItemStatus status = ShoppingListItemStatus.DONE;
+        String name = "текст";
+        UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
+            .id(-1L)
+            .status(status)
+            .text(name)
+            .build();
+        List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
+        List<String> listOfName = List.of(name);
+
+        ShoppingListItem shoppingListItem = ShoppingListItem.builder()
+            .id(shoppingId)
+            .translations(List.of(ShoppingListItemTranslation.builder()
+                .language(Language.builder()
+                    .code(language)
+                    .build())
+                .content(name)
+                .build()))
+            .build();
+
+        ShoppingListItemWithStatusRequestDto requestDto = ShoppingListItemWithStatusRequestDto.builder()
+            .id(shoppingId)
+            .status(status)
+            .build();
+        List<ShoppingListItemRequestDto> userRequestShoppingList = List.of(requestDto);
+
+        when(shoppingListItemRepo.findByNames(userId, listOfName, language)).thenReturn(List.of(shoppingListItem));
+
+        habitAssignService.saveUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList, language);
+
+        verify(shoppingListItemRepo).findByNames(habitId, listOfName, language);
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, userRequestShoppingList, language);
+
+    }
+
+    @Test
+    void saveUserShoppingListWithStatusesWithNonExistentItemThrowNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "ua";
+        ShoppingListItemStatus status = ShoppingListItemStatus.DONE;
+        String name = "текст";
+        UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
+            .id(-1L)
+            .status(status)
+            .text(name)
+            .build();
+        List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
+        List<String> listOfName = List.of(name);
+
+        when(shoppingListItemRepo.findByNames(userId, listOfName, language)).thenReturn(List.of());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService
+                .saveUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList, language));
+
+        verify(shoppingListItemRepo).findByNames(habitId, listOfName, language);
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+    }
+
+    @Test
+    void saveUserShoppingListWithStatusesWithNonItemToSave() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "ua";
+        ShoppingListItemStatus status = ShoppingListItemStatus.DONE;
+        String name = "текст";
+        UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
+            .id(0L)
+            .status(status)
+            .text(name)
+            .build();
+        List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
+
+        habitAssignService
+            .saveUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList, language);
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+    }
 }

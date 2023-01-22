@@ -5,8 +5,12 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -23,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -896,6 +901,55 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 usli.setStatus(ShoppingListItemStatus.INPROGRESS);
             }
             userShoppingListItemRepo.save(usli);
+        }
+    }
+
+    /**
+     * Method that save {@link UserShoppingListItemResponseDto} for item with id =
+     * -1.
+     *
+     * @param userId           {@code User} id.
+     * @param habitId          {@code Habit} id.
+     * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
+     *                         lists.
+     * @param language         {@link String} of language code value.
+     */
+    public void saveUserShoppingListWithStatuses(Long userId, Long habitId,
+        List<UserShoppingListItemResponseDto> userShoppingList,
+        String language) {
+        List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
+            .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
+            .collect(Collectors.toList());
+        if (listToSave.size() != 0) {
+            List<String> listOfName = listToSave.stream()
+                .map(UserShoppingListItemResponseDto::getText)
+                .collect(Collectors.toList());
+
+            List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.findByNames(habitId, listOfName, language);
+            if (listToSave.size() != shoppingListItems.size()) {
+                throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES);
+            }
+
+            Map<String, ShoppingListItemStatus> mapNameToStatus =
+                listToSave.stream()
+                    .collect(Collectors.toMap(
+                        UserShoppingListItemResponseDto::getText,
+                        UserShoppingListItemResponseDto::getStatus));
+
+            List<ShoppingListItemRequestDto> listToSaveParam = shoppingListItems.stream()
+                .map(shoppingItem -> ShoppingListItemWithStatusRequestDto.builder()
+                    .id(shoppingItem.getId())
+                    .status(mapNameToStatus.getOrDefault(
+                        shoppingItem.getTranslations()
+                            .stream()
+                            .filter(x -> x.getLanguage().getCode().equals(language))
+                            .findFirst()
+                            .orElseThrow()
+                            .getContent(),
+                        ShoppingListItemStatus.DISABLED))
+                    .build())
+                .collect(Collectors.toList());
+            shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
         }
     }
 }
