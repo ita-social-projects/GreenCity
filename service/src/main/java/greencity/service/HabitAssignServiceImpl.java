@@ -952,4 +952,48 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
         }
     }
+
+    /**
+     * Method that update {@link UserShoppingListItem} status. Item from db is found
+     * by dto's id and only with not disabled status initially.
+     *
+     * @param userId           {@code User} id.
+     * @param habitId          {@code Habit} id.
+     * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
+     *                         lists.
+     */
+    public void updateUserShoppingListWithStatuses(Long userId, Long habitId,
+        List<UserShoppingListItemResponseDto> userShoppingList) {
+        List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
+            .filter(item -> !item.getId().equals(-1L))
+            .collect(Collectors.toList());
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+
+        List<UserShoppingListItem> currentList =
+            userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId());
+
+        List<Long> currentIdsList = currentList.stream().map(UserShoppingListItem::getId).collect(Collectors.toList());
+
+        String notFoundId = listToUpdate.stream()
+            .filter(updateItem -> !currentIdsList.contains(updateItem.getId()))
+            .map(updateItem -> updateItem.getId().toString())
+            .collect(Collectors.joining(", "));
+
+        if (!notFoundId.equals("")) {
+            throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + notFoundId);
+        }
+
+        Map<Long, ShoppingListItemStatus> mapIdToStatus =
+            listToUpdate.stream()
+                .collect(Collectors.toMap(
+                    UserShoppingListItemResponseDto::getId,
+                    UserShoppingListItemResponseDto::getStatus));
+
+        currentList.forEach(currentItem -> currentItem.setStatus(
+            mapIdToStatus.getOrDefault(currentItem.getId(), currentItem.getStatus())));
+
+        userShoppingListItemRepo.saveAll(currentList);
+    }
 }

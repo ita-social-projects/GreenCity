@@ -754,4 +754,89 @@ class HabitAssignServiceImplTest {
             .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
 
     }
+
+    @Test
+    void updateUserShoppingListWithStatuses() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        Long itemId = 1L;
+        Long habitAssignId = 1L;
+        ShoppingListItemStatus oldStatus = ShoppingListItemStatus.ACTIVE;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
+            .id(itemId)
+            .status(newStatus)
+            .build();
+        List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
+
+        HabitAssign habitAssign = HabitAssign
+            .builder()
+            .id(habitAssignId)
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        UserShoppingListItem userShoppingListItem = UserShoppingListItem.builder()
+            .id(itemId)
+            .status(oldStatus)
+            .build();
+
+        when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssignId))
+            .thenReturn(List.of(userShoppingListItem));
+
+        habitAssignService
+            .updateUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo)
+            .findNonDisabledByHabitAssignId(habitAssignId);
+
+        UserShoppingListItem userShoppingListItemToSave = UserShoppingListItem.builder()
+            .id(itemId)
+            .status(newStatus)
+            .build();
+
+        verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
+    }
+
+    @Test
+    void updateUserShoppingListWithStatusesWithNonExistentItemThrowNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        Long itemId = 1L;
+        Long habitAssignId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
+            .id(itemId)
+            .status(newStatus)
+            .build();
+        List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
+
+        HabitAssign habitAssign = HabitAssign
+            .builder()
+            .id(habitAssignId)
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        UserShoppingListItem userShoppingListItem = UserShoppingListItem.builder()
+            .id(itemId + 1)
+            .build();
+
+        when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssignId))
+            .thenReturn(List.of(userShoppingListItem));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
+            .updateUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList));
+
+        assertEquals(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + itemId, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo)
+            .findNonDisabledByHabitAssignId(habitAssignId);
+
+        verify(userShoppingListItemRepo, times(0)).saveAll(anyList());
+    }
 }
