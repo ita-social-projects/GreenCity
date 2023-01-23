@@ -904,6 +904,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
+    private void fullUpdateUserShoppingListWithStatuses(Long userId, Long habitId,
+        List<UserShoppingListItemResponseDto> list,
+        String language) {
+        saveUserShoppingListWithStatuses(userId, habitId, list, language);
+        updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
+    }
+
     /**
      * Method that save {@link UserShoppingListItemResponseDto} for item with id =
      * -1.
@@ -921,6 +928,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
             .collect(Collectors.toList());
         if (listToSave.size() != 0) {
+            long countOdUniq = listToSave.stream()
+                    .map(UserShoppingListItemResponseDto::getText)
+                    .distinct()
+                    .count();
+            if(userShoppingList.size() != countOdUniq){
+                throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+            }
+
             List<String> listOfName = listToSave.stream()
                 .map(UserShoppingListItemResponseDto::getText)
                 .collect(Collectors.toList());
@@ -954,19 +969,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that update {@link UserShoppingListItem} status. Item from db is found
-     * by dto's id and only with not disabled status initially.
+     * Method that update or delete {@link UserShoppingListItem}. Item from db is found
+     * by dto's id and only with not DISABLED status initially. Not found items, except DISABLED, will be deleted.
      *
      * @param userId           {@code User} id.
      * @param habitId          {@code Habit} id.
      * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
      *                         lists.
      */
-    public void updateUserShoppingListWithStatuses(Long userId, Long habitId,
-        List<UserShoppingListItemResponseDto> userShoppingList) {
+    public void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
+                                                            List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
             .filter(item -> !item.getId().equals(-1L))
             .collect(Collectors.toList());
+
+        long countOdUniq = listToUpdate.stream()
+                .map(UserShoppingListItemResponseDto::getId)
+                .distinct()
+                .count();
+        if(userShoppingList.size() != countOdUniq){
+            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+        }
+
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
@@ -991,9 +1015,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     UserShoppingListItemResponseDto::getId,
                     UserShoppingListItemResponseDto::getStatus));
 
-        currentList.forEach(currentItem -> currentItem.setStatus(
-            mapIdToStatus.getOrDefault(currentItem.getId(), currentItem.getStatus())));
+        List<UserShoppingListItem> listToSave = new ArrayList<>();
+        List<UserShoppingListItem> listToDelete = new ArrayList<>();
+        for(var currentItem : currentList){
+            ShoppingListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            if(newStatus != null){
+                currentItem.setStatus(newStatus);
+                listToSave.add(currentItem);
+            } else {
+                listToDelete.add(currentItem);
+            }
+        }
+        userShoppingListItemRepo.saveAll(listToSave);
+        userShoppingListItemRepo.deleteAll(listToDelete);
 
-        userShoppingListItemRepo.saveAll(currentList);
     }
 }
