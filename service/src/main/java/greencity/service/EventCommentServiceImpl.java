@@ -229,6 +229,8 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+        eventCommentRepo.findByIdAndDeletedFalse(parentCommentId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
         Page<EventComment> pages =
             eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
         List<EventCommentDto> eventCommentDtos = pages.stream()
@@ -255,7 +257,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public int countAllActiveReplies(Long parentCommentId) {
         eventCommentRepo.findByIdAndDeletedFalse(parentCommentId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_MESSAGE_NOT_FOUND_BY_ID + parentCommentId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
 
         return eventCommentRepo.countByParentCommentIdAndDeletedFalse(parentCommentId);
     }

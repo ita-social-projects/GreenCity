@@ -212,7 +212,7 @@ public class EventCommentController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/count/replies/active/{parentCommentId}")
+    @GetMapping("/replies/active/count/{parentCommentId}")
     public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
         return eventCommentService.countAllActiveReplies(parentCommentId);
     }
@@ -250,7 +250,7 @@ public class EventCommentController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("countLikes/{commentId}")
+    @GetMapping("/likes/count/{commentId}")
     public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
         @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity
