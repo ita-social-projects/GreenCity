@@ -3,6 +3,7 @@ package greencity.constant;
 public final class ErrorMessage {
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom shopping list item with such id does not exist.";
+    public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";
     public static final String SHOPPING_LIST_ITEM_NOT_DELETED = "Advice not deleted ";
     public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID = "Shopping list item with such id does not exist ";
     public static final String SHOPPING_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =

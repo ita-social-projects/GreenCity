@@ -5,7 +5,10 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
@@ -929,10 +932,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
         if (listToSave.size() != 0) {
             long countOdUniq = listToSave.stream()
-                    .map(UserShoppingListItemResponseDto::getText)
-                    .distinct()
-                    .count();
-            if(userShoppingList.size() != countOdUniq){
+                .map(UserShoppingListItemResponseDto::getText)
+                .distinct()
+                .count();
+            if (listToSave.size() != countOdUniq) {
                 throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
             }
 
@@ -969,8 +972,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that update or delete {@link UserShoppingListItem}. Item from db is found
-     * by dto's id and only with not DISABLED status initially. Not found items, except DISABLED, will be deleted.
+     * Method that update or delete {@link UserShoppingListItem}. Item from db is
+     * found by dto's id and only with not DISABLED status initially. Not found
+     * items, except DISABLED, will be deleted.
      *
      * @param userId           {@code User} id.
      * @param habitId          {@code Habit} id.
@@ -978,16 +982,16 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *                         lists.
      */
     public void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
-                                                            List<UserShoppingListItemResponseDto> userShoppingList) {
+        List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
             .filter(item -> !item.getId().equals(-1L))
             .collect(Collectors.toList());
 
         long countOdUniq = listToUpdate.stream()
-                .map(UserShoppingListItemResponseDto::getId)
-                .distinct()
-                .count();
-        if(userShoppingList.size() != countOdUniq){
+            .map(UserShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOdUniq) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
         }
 
@@ -1017,9 +1021,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         List<UserShoppingListItem> listToSave = new ArrayList<>();
         List<UserShoppingListItem> listToDelete = new ArrayList<>();
-        for(var currentItem : currentList){
+        for (var currentItem : currentList) {
             ShoppingListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
-            if(newStatus != null){
+            if (newStatus != null) {
                 currentItem.setStatus(newStatus);
                 listToSave.add(currentItem);
             } else {
@@ -1028,6 +1032,38 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
         userShoppingListItemRepo.saveAll(listToSave);
         userShoppingListItemRepo.deleteAll(listToDelete);
+    }
 
+    /**
+     * Method that save {@link CustomShoppingListItemResponseDto} for item with id =
+     * -1.
+     *
+     * @param userId             {@code User} id.
+     * @param habitId            {@code Habit} id.
+     * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
+     *                           shopping lists.
+     */
+    public void saveCustomShoppingListWithStatuses(Long userId, Long habitId,
+        List<CustomShoppingListItemResponseDto> customShoppingList) {
+        List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
+            .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
+            .collect(Collectors.toList());
+
+        long countOdUniq = listToSave.stream()
+            .map(CustomShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToSave.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+
+        List<CustomShoppingListItemSaveRequestDto> listToSaveParam = customShoppingList.stream()
+            .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
+                .text(item.getText())
+                .status(item.getStatus())
+                .build())
+            .collect(Collectors.toList());
+
+        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
     }
 }

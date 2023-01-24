@@ -4,10 +4,15 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemRequestDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
+import greencity.dto.user.BulkSaveUserShoppingListItemDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
@@ -762,30 +767,30 @@ class HabitAssignServiceImplTest {
         String language = "ua";
         String name = "текст";
         UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
-                .id(-1L)
-                .text(name)
-                .build();
+            .id(-1L)
+            .text(name)
+            .build();
 
         UserShoppingListItemResponseDto sameResponse = UserShoppingListItemResponseDto.builder()
-                .id(-1L)
-                .text(name)
-                .build();
+            .id(-1L)
+            .text(name)
+            .build();
 
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto, sameResponse);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-                .saveUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList, language));
+            .saveUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList, language));
 
         assertEquals(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM, exception.getMessage());
 
         verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
         verify(shoppingListItemService, times(0))
-                .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
 
     }
 
     @Test
-    void  updateAndDeleteUserShoppingListWithStatusesUpdateItem() {
+    void updateAndDeleteUserShoppingListWithStatusesUpdateItem() {
         Long userId = 1L;
         Long habitId = 1L;
         Long itemId = 1L;
@@ -879,26 +884,26 @@ class HabitAssignServiceImplTest {
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of();
 
         HabitAssign habitAssign = HabitAssign
-                .builder()
-                .id(habitAssignId)
-                .build();
+            .builder()
+            .id(habitAssignId)
+            .build();
 
         when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
 
         UserShoppingListItem userShoppingListItem = UserShoppingListItem.builder()
-                .id(itemId)
-                .build();
+            .id(itemId)
+            .build();
 
         when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssignId))
-                .thenReturn(List.of(userShoppingListItem));
+            .thenReturn(List.of(userShoppingListItem));
 
         habitAssignService
-                .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList);
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList);
 
         verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
         verify(userShoppingListItemRepo)
-                .findNonDisabledByHabitAssignId(habitAssignId);
+            .findNonDisabledByHabitAssignId(habitAssignId);
 
         verify(userShoppingListItemRepo).saveAll(List.of());
         verify(userShoppingListItemRepo).deleteAll(List.of(userShoppingListItem));
@@ -913,44 +918,44 @@ class HabitAssignServiceImplTest {
         ShoppingListItemStatus oldStatus = ShoppingListItemStatus.ACTIVE;
         ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
         UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
-                .id(itemId)
-                .status(newStatus)
-                .build();
+            .id(itemId)
+            .status(newStatus)
+            .build();
 
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
 
         HabitAssign habitAssign = HabitAssign
-                .builder()
-                .id(habitAssignId)
-                .build();
+            .builder()
+            .id(habitAssignId)
+            .build();
 
         when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
-                .thenReturn(Optional.of(habitAssign));
+            .thenReturn(Optional.of(habitAssign));
 
         UserShoppingListItem firstUserShoppingListItem = UserShoppingListItem.builder()
-                .id(itemId)
-                .status(oldStatus)
-                .build();
+            .id(itemId)
+            .status(oldStatus)
+            .build();
 
         UserShoppingListItem secondUserShoppingListItem = UserShoppingListItem.builder()
-                .id(itemId + 1)
-                .status(oldStatus)
-                .build();
+            .id(itemId + 1)
+            .status(oldStatus)
+            .build();
 
         when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssignId))
-                .thenReturn(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
+            .thenReturn(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
 
         habitAssignService
-                .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList);
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList);
 
         verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
         verify(userShoppingListItemRepo)
-                .findNonDisabledByHabitAssignId(habitAssignId);
+            .findNonDisabledByHabitAssignId(habitAssignId);
 
         UserShoppingListItem userShoppingListItemToSave = UserShoppingListItem.builder()
-                .id(itemId)
-                .status(newStatus)
-                .build();
+            .id(itemId)
+            .status(newStatus)
+            .build();
 
         verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
         verify(userShoppingListItemRepo).deleteAll(List.of(secondUserShoppingListItem));
@@ -962,23 +967,77 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long itemId = 1L;
         UserShoppingListItemResponseDto responseDto = UserShoppingListItemResponseDto.builder()
-                .id(itemId)
-                .build();
+            .id(itemId)
+            .build();
 
         UserShoppingListItemResponseDto sameResponseDto = UserShoppingListItemResponseDto.builder()
-                .id(itemId)
-                .build();
+            .id(itemId)
+            .build();
 
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto, sameResponseDto);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-                .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList));
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userResponseShoppingList));
 
         assertEquals(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM, exception.getMessage());
 
         verify(habitAssignRepo, times(0)).findByHabitIdAndUserId(anyLong(), anyLong());
         verify(userShoppingListItemRepo, times(0))
-                .findNonDisabledByHabitAssignId(anyLong());
+            .findNonDisabledByHabitAssignId(anyLong());
         verify(userShoppingListItemRepo, times(0)).saveAll(anyList());
+    }
+
+    @Test
+    void saveCustomShoppingListWithStatuses() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus status = ShoppingListItemStatus.INPROGRESS;
+        String name = "text";
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
+            CustomShoppingListItemResponseDto.builder()
+                .id(-1L)
+                .status(status)
+                .text(name)
+                .build();
+        List<CustomShoppingListItemResponseDto> list = List.of(customShoppingListItemResponseDto);
+
+        habitAssignService.saveCustomShoppingListWithStatuses(userId, habitId, list);
+
+        CustomShoppingListItemSaveRequestDto customShoppingListItemWithStatusSaveRequestDto =
+            CustomShoppingListItemWithStatusSaveRequestDto.builder()
+                .status(status)
+                .text(name)
+                .build();
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of(customShoppingListItemWithStatusSaveRequestDto));
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void saveCustomShoppingListWithStatusesWithDuplicateThrowBadRequestException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String name = "text";
+        CustomShoppingListItemResponseDto firstDto =
+            CustomShoppingListItemResponseDto.builder()
+                .id(-1L)
+                .status(ShoppingListItemStatus.INPROGRESS)
+                .text(name)
+                .build();
+        CustomShoppingListItemResponseDto secondDto =
+            CustomShoppingListItemResponseDto.builder()
+                .id(-1L)
+                .status(ShoppingListItemStatus.DONE)
+                .text(name)
+                .build();
+        List<CustomShoppingListItemResponseDto> list = List.of(firstDto, secondDto);
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitAssignService.saveCustomShoppingListWithStatuses(userId, habitId, list));
+
+        assertEquals(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM, exception.getMessage());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
     }
 }
