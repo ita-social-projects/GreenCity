@@ -174,6 +174,33 @@ public class HabitAssignController {
     }
 
     /**
+     * Method that update UserShoppingList and CustomShopping List.
+     *
+     * @param habitId  {@link HabitVO} id.
+     * @param userVO   {@link UserVO} instance.
+     * @param locale   needed language code.
+     * @param listsDto {@link UserShoppingAndCustomShoppingListsDto} instance.
+     */
+    @ApiOperation(value = "Update user and custom shopping lists")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @PutMapping("/allUserAndCustomList/{habitId}")
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
+        @PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitId, listsDto,
+            locale.getLanguage());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
      * Method to return all inprogress, acquired {@link HabitAssignDto} by it's
      * {@link HabitVO} id.
      *

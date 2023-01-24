@@ -52,6 +52,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
+    private final CustomShoppingListItemRepo customShoppingListItemRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final ShoppingListItemService shoppingListItemService;
     private final CustomShoppingListItemService customShoppingListItemService;
@@ -907,6 +908,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId,
+        UserShoppingAndCustomShoppingListsDto listsDto, String language) {
+        fullUpdateUserShoppingListWithStatuses(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
+        fullUpdateCustomShoppingList(userId, habitId, listsDto.getCustomShoppingListItemDto());
+    }
+
     private void fullUpdateUserShoppingListWithStatuses(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
@@ -1034,6 +1046,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.deleteAll(listToDelete);
     }
 
+    private void fullUpdateCustomShoppingList(Long userId, Long habitId,
+        List<CustomShoppingListItemResponseDto> customShoppingList) {
+        saveCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
+        updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
+    }
+
     /**
      * Method that save {@link CustomShoppingListItemResponseDto} for item with id =
      * -1.
@@ -1050,14 +1068,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         long countOdUniq = listToSave.stream()
-            .map(CustomShoppingListItemResponseDto::getId)
+            .map(CustomShoppingListItemResponseDto::getText)
             .distinct()
             .count();
         if (listToSave.size() != countOdUniq) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
         }
 
-        List<CustomShoppingListItemSaveRequestDto> listToSaveParam = customShoppingList.stream()
+        List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
                 .text(item.getText())
                 .status(item.getStatus())
@@ -1065,5 +1083,64 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
+    }
+
+    /**
+     * Method that update or delete {@link CustomShoppingListItem}. Item from db is
+     * found by dto's id and only with not DISABLED status initially. Not found
+     * items, except DISABLED, will be deleted.
+     *
+     * @param userId             {@code User} id.
+     * @param habitId            {@code Habit} id.
+     * @param customShoppingList {@link CustomShoppingListItemResponseDto} User
+     *                           shopping lists.
+     */
+    public void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
+        List<CustomShoppingListItemResponseDto> customShoppingList) {
+        List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
+            .filter(shoppingItem -> !shoppingItem.getId().equals(-1L))
+            .collect(Collectors.toList());
+
+        long countOdUniq = listToUpdate.stream()
+            .map(CustomShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+        List<CustomShoppingListItem> currentList = customShoppingListItemRepo
+            .findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+
+        List<Long> currentIdsList =
+            currentList.stream().map(CustomShoppingListItem::getId).collect(Collectors.toList());
+
+        String notFoundId = listToUpdate.stream()
+            .filter(updateItem -> !currentIdsList.contains(updateItem.getId()))
+            .map(updateItem -> updateItem.getId().toString())
+            .collect(Collectors.joining(", "));
+
+        if (!notFoundId.equals("")) {
+            throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundId);
+        }
+
+        Map<Long, ShoppingListItemStatus> mapIdToStatus =
+            listToUpdate.stream()
+                .collect(Collectors.toMap(
+                    CustomShoppingListItemResponseDto::getId,
+                    CustomShoppingListItemResponseDto::getStatus));
+
+        List<CustomShoppingListItem> listToSave = new ArrayList<>();
+        List<CustomShoppingListItem> listToDelete = new ArrayList<>();
+        for (var currentItem : currentList) {
+            ShoppingListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            if (newStatus != null) {
+                currentItem.setStatus(newStatus);
+                listToSave.add(currentItem);
+            } else {
+                listToDelete.add(currentItem);
+            }
+        }
+        customShoppingListItemRepo.saveAll(listToSave);
+        customShoppingListItemRepo.deleteAll(listToDelete);
     }
 }

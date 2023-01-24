@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.habit.*;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 
@@ -267,4 +268,24 @@ public interface HabitAssignService {
      * @param itemId  {@link Long} item id.
      */
     void updateShoppingItem(Long habitId, Long itemId);
+
+    /**
+     * Method that update UserShoppingList and CustomShopping List.
+     *
+     * <ul>
+     * <li>If items are present in the db, method update them;</li>
+     * <li>If items don't present in the db and id is -1, method try to add it to
+     * user;</li>
+     * <li>If some items from db don't present in the lists, method delete
+     * them(Except items with DISABLED status).</li>
+     * </ul>
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param listDto  {@link UserShoppingAndCustomShoppingListsDto} User and Custom
+     *                 Shopping lists.
+     * @param language {@link String} of language code value.
+     */
+    void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId, UserShoppingAndCustomShoppingListsDto listDto,
+        String language);
 }

@@ -255,7 +255,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity",
                 "/user/profile",
                 EVENTS + "/update",
-                HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
+                HABIT_ASSIGN_ID + "/update-user-shopping-item-list",
+                "/habit/assign/allUserAndCustomList/{habitId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
