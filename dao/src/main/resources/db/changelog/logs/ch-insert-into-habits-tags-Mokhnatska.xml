@@ -127,6 +127,5 @@
             <column name="habit_id">31</column>
             <column name="tag_id">20</column>
         </insert>
-
     </changeSet>
 </databaseChangeLog>

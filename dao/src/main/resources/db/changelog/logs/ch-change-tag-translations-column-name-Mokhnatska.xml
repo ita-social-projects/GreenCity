@@ -5,6 +5,3 @@
         <modifyDataType tableName="tag_translations" columnName="name" newDataType="varchar(30)"/>
     </changeSet>
 </databaseChangeLog>
-
-
-

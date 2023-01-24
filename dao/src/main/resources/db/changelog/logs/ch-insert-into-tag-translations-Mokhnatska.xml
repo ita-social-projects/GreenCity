@@ -29,7 +29,7 @@
         </insert>
         <insert tableName="tag_translations">
             <column name="id">62</column>
-            <column name="name">Розумне споживання </column>
+            <column name="name">Розумне споживання</column>
             <column name="tag_id">22</column>
             <column name="language_id">1</column>
         </insert>
@@ -59,7 +59,7 @@
         </insert>
         <insert tableName="tag_translations">
             <column name="id">67</column>
-            <column name="name">Recycling / Waste sorting</column>
+            <column name="name">Recycling/Waste sorting</column>
             <column name="tag_id">24</column>
             <column name="language_id">2</column>
         </insert>
