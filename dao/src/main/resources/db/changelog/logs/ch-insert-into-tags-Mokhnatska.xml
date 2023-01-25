@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="AddNewTags" author="Lilia Mokhnatska">
+        <insert tableName="tags">
+            <column name="id">20</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">21</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">22</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">23</column>
+            <column name="type">HABIT</column>
+        </insert>
+        <insert tableName="tags">
+            <column name="id">24</column>
+            <column name="type">HABIT</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
