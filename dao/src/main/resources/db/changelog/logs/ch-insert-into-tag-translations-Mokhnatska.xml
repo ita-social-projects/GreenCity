@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="NewTagsForHabits_1" author="Lilia Mokhnatska">
+        <insert tableName="tag_translations">
+            <column name="id">58</column>
+            <column name="name">Багаторазове використання</column>
+            <column name="tag_id">20</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">59</column>
+            <column name="name">Reusable</column>
+            <column name="tag_id">20</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">60</column>
+            <column name="name">Економія ресурсів</column>
+            <column name="tag_id">21</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">61</column>
+            <column name="name">Resource saving</column>
+            <column name="tag_id">21</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">62</column>
+            <column name="name">Розумне споживання</column>
+            <column name="tag_id">22</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">63</column>
+            <column name="name">Smart consuming</column>
+            <column name="tag_id">22</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">64</column>
+            <column name="name">Транспорт</column>
+            <column name="tag_id">23</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">65</column>
+            <column name="name">Transportation</column>
+            <column name="tag_id">23</column>
+            <column name="language_id">2</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">66</column>
+            <column name="name">Переробити/сортувати відходи</column>
+            <column name="tag_id">24</column>
+            <column name="language_id">1</column>
+        </insert>
+        <insert tableName="tag_translations">
+            <column name="id">67</column>
+            <column name="name">Recycling/Waste sorting</column>
+            <column name="tag_id">24</column>
+            <column name="language_id">2</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

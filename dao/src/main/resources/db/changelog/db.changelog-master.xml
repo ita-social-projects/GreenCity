@@ -133,5 +133,8 @@
     <include file="db/changelog/logs/ch-update-into-tag-translations-Hlazova.xml"/>
     <include file="db/changelog/logs/ch-add-column-parentComment-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-change-eco-news-create-user-dislikes.xml"/>
-
+    <include file="db/changelog/logs/ch-insert-into-tags-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-change-tag-translations-column-name-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-tag-translations-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
 </databaseChangeLog>
