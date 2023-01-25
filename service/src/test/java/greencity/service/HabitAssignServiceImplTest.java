@@ -763,7 +763,7 @@ class HabitAssignServiceImplTest {
         String language = "en";
         String name = "Buy a bamboo toothbrush";
         UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(0L);
         responseDto.setText(name);
 
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto);
@@ -811,6 +811,7 @@ class HabitAssignServiceImplTest {
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
+        userShoppingListItem.setHabitAssign(null);
 
         when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId()))
             .thenReturn(List.of(userShoppingListItem));
@@ -823,7 +824,9 @@ class HabitAssignServiceImplTest {
             .findNonDisabledByHabitAssignId(habitAssign.getId());
 
         UserShoppingListItem userShoppingListItemToSave = ModelUtils.getUserShoppingListItem();
-        userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItemToSave.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItemToSave.setHabitAssign(null);
+        ;
 
         verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
         verify(userShoppingListItemRepo).deleteAll(List.of());
@@ -833,9 +836,7 @@ class HabitAssignServiceImplTest {
     void updateAndDeleteUserShoppingListWithStatusesWithNonExistentItemThrowNotFoundException() {
         Long userId = 1L;
         Long habitId = 1L;
-        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
         UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
-        responseDto.setStatus(newStatus);
 
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
 
@@ -843,7 +844,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
-        userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
+        userShoppingListItem.setId(responseDto.getId() + 1);
 
         when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId()))
             .thenReturn(List.of(userShoppingListItem));
@@ -1086,7 +1087,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(List.of(customShoppingListItem));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .updateAndDeleteCustomShoppingListWithStatuses(anyLong(), anyLong(), List.of(responseDto)));
+            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto)));
 
         assertEquals(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + responseDto.getId(),
             exception.getMessage());
