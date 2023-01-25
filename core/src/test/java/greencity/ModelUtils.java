@@ -13,8 +13,13 @@ import greencity.dto.advice.AdvicePostDto;
 import greencity.dto.breaktime.BreakTimeDto;
 import greencity.dto.category.CategoryVO;
 import greencity.dto.discount.DiscountValueDto;
-import greencity.dto.econews.*;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
@@ -22,25 +27,75 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habitfact.*;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habitfact.HabitFactPostDto;
+import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
+import greencity.dto.habitfact.HabitFactTranslationVO;
+import greencity.dto.habitfact.HabitFactUpdateDto;
+import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.language.*;
+import greencity.dto.language.LanguageDTO;
+import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.language.LanguageVO;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.tag.*;
-import greencity.dto.user.*;
-import greencity.dto.user.UserVO.UserVOBuilder;
-import greencity.entity.*;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.tag.TagPostDto;
+import greencity.dto.tag.TagTranslationVO;
+import greencity.dto.tag.TagVO;
+import greencity.dto.tag.TagViewDto;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.Advice;
+import greencity.entity.BreakTime;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.FactOfTheDay;
+import greencity.entity.FavoritePlace;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitFact;
+import greencity.entity.HabitFactTranslation;
+import greencity.entity.HabitStatistic;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Photo;
+import greencity.entity.Place;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.Specification;
+import greencity.entity.Tag;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.*;
+import greencity.enums.CommentStatus;
+import greencity.enums.FactOfDayStatus;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.HabitRate;
+import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.TagType;
+import greencity.enums.UserStatus;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,10 +103,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
-import java.time.*;
-import java.util.*;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -581,6 +642,29 @@ public class ModelUtils {
                 .shoppingListItemId(1L)
                 .status(ShoppingListItemStatus.INPROGRESS)
                 .build()))
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text("text")
+            .build();
+    }
+
+    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
+        return UserShoppingListItemResponseDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text("text")
+            .build();
+    }
+
+    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
+        return UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
+            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
             .build();
     }
 
