@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.habit.*;
-import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 

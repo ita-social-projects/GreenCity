@@ -747,9 +747,11 @@ class HabitAssignServiceImplTest {
 
         when(shoppingListItemRepo.findByNames(userId, listOfName, language)).thenReturn(List.of());
 
+        List<UserShoppingListItemResponseDto> listToSave = List.of(responseDto);
+
         assertThrows(NotFoundException.class,
             () -> habitAssignService
-                .saveUserShoppingListWithStatuses(userId, habitId, List.of(responseDto), language));
+                .saveUserShoppingListWithStatuses(userId, habitId, listToSave, language));
 
         verify(shoppingListItemRepo).findByNames(habitId, listOfName, language);
         verify(shoppingListItemService, times(0))
@@ -849,8 +851,10 @@ class HabitAssignServiceImplTest {
         when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId()))
             .thenReturn(List.of(userShoppingListItem));
 
+        List<UserShoppingListItemResponseDto> listToUpdate = List.of(responseDto);
+
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, List.of(responseDto)));
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, listToUpdate));
 
         assertEquals(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + responseDto.getId(), exception.getMessage());
 
@@ -974,9 +978,11 @@ class HabitAssignServiceImplTest {
         CustomShoppingListItemResponseDto sameResponseDto = ModelUtils.getCustomShoppingListItemResponseDto();
         sameResponseDto.setId(-1L);
 
+        List<CustomShoppingListItemResponseDto> listToSave = List.of(responseDto, sameResponseDto);
+
         BadRequestException exception = assertThrows(BadRequestException.class,
             () -> habitAssignService.saveCustomShoppingListWithStatuses(userId, habitId,
-                List.of(responseDto, sameResponseDto)));
+                listToSave));
 
         assertEquals(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM, exception.getMessage());
 
@@ -1064,8 +1070,10 @@ class HabitAssignServiceImplTest {
         CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
         CustomShoppingListItemResponseDto sameResponseDto = ModelUtils.getCustomShoppingListItemResponseDto();
 
+        List<CustomShoppingListItemResponseDto> listToUpdate = List.of(responseDto, sameResponseDto);
+
         BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
-            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto, sameResponseDto)));
+            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, listToUpdate));
         assertEquals(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM, exception.getMessage());
 
         verify(customShoppingListItemRepo, times(0))
@@ -1086,8 +1094,10 @@ class HabitAssignServiceImplTest {
         when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
             .thenReturn(List.of(customShoppingListItem));
 
+        List<CustomShoppingListItemResponseDto> listToUpdate = List.of(responseDto);
+
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto)));
+            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, listToUpdate));
 
         assertEquals(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + responseDto.getId(),
             exception.getMessage());

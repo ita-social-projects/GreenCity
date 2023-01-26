@@ -942,7 +942,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
             .collect(Collectors.toList());
-        if (listToSave.size() != 0) {
+        if (!listToSave.isEmpty()) {
             long countOdUniq = listToSave.stream()
                 .map(UserShoppingListItemResponseDto::getText)
                 .distinct()
