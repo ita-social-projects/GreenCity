@@ -181,7 +181,11 @@ public class HabitAssignController {
      * @param locale   needed language code.
      * @param listsDto {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
-    @ApiOperation(value = "Update user and custom shopping lists")
+    @ApiOperation(value = "Update user and custom shopping lists",
+            notes = "If item are present in the db, method update it\n" +
+                    "If item doesn't present in the db and id is -1, method try to add it to user\n" +
+                    "If some items from db don't present in the lists, method delete " +
+                    "them(Except items with DISABLED status).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

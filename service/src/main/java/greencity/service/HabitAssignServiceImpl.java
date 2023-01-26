@@ -922,8 +922,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private void fullUpdateUserShoppingListWithStatuses(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
-        saveUserShoppingListWithStatuses(userId, habitId, list, language);
         updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
+        saveUserShoppingListWithStatuses(userId, habitId, list, language);
     }
 
     /**
@@ -1048,8 +1048,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     private void fullUpdateCustomShoppingList(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
-        saveCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
         updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
+        saveCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
     }
 
     /**
