@@ -31,47 +31,22 @@ stages:
     pool:
       vmImage: $(agentOS)
     steps:
-    - task: AzureCLI@2
-      displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
-      inputs:
-        azureSubscription: '$(azureSub)'
-        scriptType: 'bash'
-        scriptLocation: inlineScript
-        inlineScript: |
-          az keyvault secret download --name $(jsonSecret) --vault-name $(azKeyVault) --file $(jsonFile)
+    # - task: AzureCLI@2
+    #   displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
+    #   inputs:
+    #     azureSubscription: '$(azureSub)'
+    #     scriptType: 'bash'
+    #     scriptLocation: inlineScript
+    #     inlineScript: |
+    #       az keyvault secret download --name $(jsonSecret) --vault-name $(azKeyVault) --file $(jsonFile)
           
-    - task: AzureKeyVault@1
-      displayName: Get FTP credentials from Azure Key Vault
-      inputs:
-        azureSubscription: '$(azureSub)'
-        KeyVaultName: '$(azKeyVault)'
-        SecretsFilter: 'ftpHost, ftpUser, ftpPass'
-        
-#     - task: FtpUpload@2
-#       displayName: Upload json to app service via FTP
-#       inputs:
-#         credentialsOption: 'inputs'
-#         serverUrl: '$(ftpHost)'
-#         username: '$(ftpUser)'
-#         password: '$(ftpPass)'
-#         filePatterns: '$(jsonFile)'
-#         remoteDirectory: '$(jsonLocation)'
+    # - task: AzureKeyVault@1
+    #   displayName: Get FTP credentials from Azure Key Vault
+    #   inputs:
+    #     azureSubscription: '$(azureSub)'
+    #     KeyVaultName: '$(azKeyVault)'
+    #     SecretsFilter: 'ftpHost, ftpUser, ftpPass'
 
-#     - task: AzureAppServiceSettings@1
-#       displayName: Set GOOGLE_APPLICATION_CREDENTIALS config in Azure Portal
-#       inputs:
-#         azureSubscription: '$(azureSub)'
-#         appName: '$(coreServiceName)'
-#         resourceGroupName: '$(resourceGroup)'
-#         appSettings: |
-#           [
-#             {
-#               "name": "GOOGLE_APPLICATION_CREDENTIALS",
-#               "value": "/home$(jsonLocation)/$(jsonFile)", 
-#               "slotSetting": false
-#             }
-#           ]
-     
     - task: Maven@3
       displayName: Maven package
       inputs:
@@ -135,15 +110,6 @@ stages:
                 downloadType: 'single'
                 artifactName: '$(artifactName)'
                 downloadPath: '$(System.ArtifactsDirectory)'
-
-#             - task: AzureRmWebAppDeployment@4
-#               inputs:
-#                 azureSubscription: '$(azureSub)'
-#                 appType: 'webAppLinux'
-#                 WebAppName: '$(coreServiceName)'
-#                 deployToSlotOrASE: true
-#                 ResourceGroupName: '$(resourceGroup)'
-#                 packageForLinux: '$(System.ArtifactsDirectory)/$(artifactName)/$(coreRepoName)/target/$(onbootJarName)'
 
             - task: HelmInstaller@0
               inputs:
