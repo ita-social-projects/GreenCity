@@ -47,7 +47,8 @@ class SocialNetworkImageServiceImplTest {
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost()))
             .thenReturn(socialNetworkImage);
-        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class))).thenReturn(socialNetworkImageVO);
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
 
         when(modelMapper.map(socialNetworkImageVO, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
 
@@ -79,7 +80,8 @@ class SocialNetworkImageServiceImplTest {
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost()))
             .thenReturn(socialNetworkImage);
 
-        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class))).thenReturn(socialNetworkImageVO);
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
 
         assertEquals(Optional.of(socialNetworkImageVO), socialNetworkImageService.findByHostPath(checkUrl.getHost()));
     }
@@ -95,7 +97,8 @@ class SocialNetworkImageServiceImplTest {
         when(socialNetworkImageRepo.findByHostPath(socialNetworkImageVO.getHostPath()))
             .thenReturn(socialNetworkImage);
 
-        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class))).thenReturn(socialNetworkImageVO);
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
         assertEquals(socialNetworkImageVO, socialNetworkImageService.getDefaultSocialNetworkImage());
     }
 }
