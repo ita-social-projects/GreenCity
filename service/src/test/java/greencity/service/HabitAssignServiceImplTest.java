@@ -718,7 +718,7 @@ class HabitAssignServiceImplTest {
         String language = "en";
         String name = "Buy a bamboo toothbrush";
         UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(null);
         responseDto.setText(name);
 
         List<String> listOfName = List.of(name);
@@ -740,7 +740,7 @@ class HabitAssignServiceImplTest {
         String language = "en";
         String name = "Buy a bamboo toothbrush";
         UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(null);
         responseDto.setText(name);
 
         List<String> listOfName = List.of(name);
@@ -784,9 +784,9 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         String language = "en";
         UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(null);
         UserShoppingListItemResponseDto sameResponse = ModelUtils.getUserShoppingListItemResponseDto();
-        sameResponse.setId(-1L);
+        sameResponse.setId(null);
         List<UserShoppingListItemResponseDto> userResponseShoppingList = List.of(responseDto, sameResponse);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
@@ -956,7 +956,7 @@ class HabitAssignServiceImplTest {
         Long userId = 1L;
         Long habitId = 1L;
         CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(null);
 
         habitAssignService.saveCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto));
 
@@ -974,9 +974,9 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
 
         CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
-        responseDto.setId(-1L);
+        responseDto.setId(null);
         CustomShoppingListItemResponseDto sameResponseDto = ModelUtils.getCustomShoppingListItemResponseDto();
-        sameResponseDto.setId(-1L);
+        sameResponseDto.setId(null);
 
         List<CustomShoppingListItemResponseDto> listToSave = List.of(responseDto, sameResponseDto);
 

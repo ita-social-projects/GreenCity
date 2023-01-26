@@ -128,7 +128,8 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
      * @param habitAssignId - id of habit assign.
      * @return list of {@link UserShoppingListItem}
      */
-    @Query("SELECT ug FROM UserShoppingListItem ug where ug.habitAssign.id = :habitId AND NOT ug.status = 'DISABLED'")
+    @Query("SELECT usli FROM UserShoppingListItem usli where usli.habitAssign.id = :habitId "
+        + "AND NOT usli.status = 'DISABLED'")
     List<UserShoppingListItem> findNonDisabledByHabitAssignId(@Param(value = "habitId") Long habitAssignId);
 
     /*

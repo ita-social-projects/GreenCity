@@ -97,10 +97,10 @@ public interface ShoppingListItemRepo
      * @param languageCode language code
      * @return list of {@link ShoppingListItem}
      */
-    @Query("SELECT g FROM ShoppingListItem g "
-        + "JOIN ShoppingListItemTranslation gt ON g.id = gt.shoppingListItem.id "
-        + "JOIN g.habits h ON h.id = :habitId"
-        + " WHERE gt.language.code = :languageCode AND gt.content in :listOfName")
+    @Query("SELECT sli FROM ShoppingListItem sli "
+        + "JOIN ShoppingListItemTranslation slt ON sli.id = slt.shoppingListItem.id "
+        + "JOIN sli.habits h ON h.id = :habitId"
+        + " WHERE slt.language.code = :languageCode AND slt.content in :listOfName")
     List<ShoppingListItem> findByNames(@Param("habitId") Long habitId, @Param("listOfName") List<String> itemNames,
         String languageCode);
 }

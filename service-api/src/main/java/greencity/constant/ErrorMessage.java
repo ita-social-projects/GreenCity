@@ -9,7 +9,7 @@ public final class ErrorMessage {
     public static final String SHOPPING_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =
         "Shopping list item with such id does not assigned fot this habit ";
     public static final String SHOPPING_LIST_ITEM_ALREADY_SELECTED =
-        "Shopping list item with such id already selected by user ";
+        "Shopping list item with such id is already selected ";
     public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES =
         "Shopping list item with such name(s) does not exist ";
     public static final String PARSING_URL_FAILED = "Can't parse image's url: ";

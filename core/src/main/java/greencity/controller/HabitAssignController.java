@@ -183,7 +183,7 @@ public class HabitAssignController {
      */
     @ApiOperation(value = "Update user and custom shopping lists",
         notes = "If item are present in the db, method update it\n"
-            + "If item doesn't present in the db and id is -1, method try to add it to user\n"
+            + "If item doesn't present in the db and id is null, method try to add it to user\n"
             + "If some items from db don't present in the lists, method delete "
             + "them(Except items with DISABLED status).")
     @ApiResponses(value = {
@@ -198,7 +198,7 @@ public class HabitAssignController {
         @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
-        @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
+        @Valid @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
         habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitId, listsDto,
             locale.getLanguage());
         return ResponseEntity.status(HttpStatus.OK).build();

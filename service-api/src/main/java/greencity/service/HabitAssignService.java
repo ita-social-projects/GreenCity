@@ -273,7 +273,7 @@ public interface HabitAssignService {
      *
      * <ul>
      * <li>If items are present in the db, method update them;</li>
-     * <li>If items don't present in the db and id is -1, method try to add it to
+     * <li>If items don't present in the db and id is null, method try to add it to
      * user;</li>
      * <li>If some items from db don't present in the lists, method delete
      * them(Except items with DISABLED status).</li>

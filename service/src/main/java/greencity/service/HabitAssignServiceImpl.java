@@ -928,7 +928,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     /**
      * Method that save {@link UserShoppingListItemResponseDto} for item with id =
-     * -1.
+     * null.
      *
      * @param userId           {@code User} id.
      * @param habitId          {@code Habit} id.
@@ -940,7 +940,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<UserShoppingListItemResponseDto> userShoppingList,
         String language) {
         List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
-            .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
+            .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
         if (!listToSave.isEmpty()) {
             long countOdUniq = listToSave.stream()
@@ -996,7 +996,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
-            .filter(item -> !item.getId().equals(-1L))
+            .filter(item -> item.getId() != null)
             .collect(Collectors.toList());
 
         long countOdUniq = listToUpdate.stream()
@@ -1054,7 +1054,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     /**
      * Method that save {@link CustomShoppingListItemResponseDto} for item with id =
-     * -1.
+     * null.
      *
      * @param userId             {@code User} id.
      * @param habitId            {@code Habit} id.
@@ -1064,7 +1064,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public void saveCustomShoppingListWithStatuses(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
-            .filter(shoppingItem -> shoppingItem.getId().equals(-1L))
+            .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
 
         long countOdUniq = listToSave.stream()
@@ -1098,7 +1098,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
-            .filter(shoppingItem -> !shoppingItem.getId().equals(-1L))
+            .filter(shoppingItem -> shoppingItem.getId() != null)
             .collect(Collectors.toList());
 
         long countOdUniq = listToUpdate.stream()
