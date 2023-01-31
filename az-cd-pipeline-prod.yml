@@ -31,22 +31,6 @@ stages:
     pool:
       vmImage: $(agentOS)
     steps:
-    # - task: AzureCLI@2
-    #   displayName: Get GOOGLE_APPLICATION_CREDENTIALS from Azure Key Vault
-    #   inputs:
-    #     azureSubscription: '$(azureSub)'
-    #     scriptType: 'bash'
-    #     scriptLocation: inlineScript
-    #     inlineScript: |
-    #       az keyvault secret download --name $(jsonSecret) --vault-name $(azKeyVault) --file $(jsonFile)
-          
-    # - task: AzureKeyVault@1
-    #   displayName: Get FTP credentials from Azure Key Vault
-    #   inputs:
-    #     azureSubscription: '$(azureSub)'
-    #     KeyVaultName: '$(azKeyVault)'
-    #     SecretsFilter: 'ftpHost, ftpUser, ftpPass'
-
     - task: Maven@3
       displayName: Maven package
       inputs:
@@ -88,7 +72,7 @@ stages:
         command: 'buildAndPush'
         Dockerfile: 'Dockerfile'
         tags: |
-          $(Build.BuildId)
+          prod-$(Build.BuildId)
           latest
 
 - stage: Deploy
@@ -125,5 +109,5 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'ingress.hostname=greencity.pick-up.city,deployment.image=skyere/greencity:$(Build.BuildId),externalSecret.tenantId=20002ba7-39e2-4b00-adc3-3926758f2008,externalSecret.vaultUrl=https://greencity-values.vault.azure.net/'
+                overrideValues: 'ingress.hostname=greencity.pick-up.city,deployment.image=skyere/greencity:prod-$(Build.BuildId),externalSecret.tenantId=20002ba7-39e2-4b00-adc3-3926758f2008,externalSecret.vaultUrl=https://greencity-values.vault.azure.net/'
                 arguments: '--debug'
