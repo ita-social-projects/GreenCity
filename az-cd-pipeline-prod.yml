@@ -88,7 +88,7 @@ stages:
         command: 'buildAndPush'
         Dockerfile: 'Dockerfile'
         tags: |
-          $(Build.BuildId)
+          prod-$(Build.BuildId)
           latest
 
 - stage: Deploy
@@ -125,5 +125,5 @@ stages:
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'ingress.hostname=greencity.pick-up.city,deployment.image=skyere/greencity:$(Build.BuildId),externalSecret.tenantId=20002ba7-39e2-4b00-adc3-3926758f2008,externalSecret.vaultUrl=https://greencity-values.vault.azure.net/'
+                overrideValues: 'ingress.hostname=greencity.pick-up.city,deployment.image=skyere/greencity:prod-$(Build.BuildId),externalSecret.tenantId=20002ba7-39e2-4b00-adc3-3926758f2008,externalSecret.vaultUrl=https://greencity-values.vault.azure.net/'
                 arguments: '--debug'
