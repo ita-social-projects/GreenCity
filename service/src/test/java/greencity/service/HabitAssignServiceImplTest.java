@@ -828,9 +828,35 @@ class HabitAssignServiceImplTest {
         UserShoppingListItem userShoppingListItemToSave = ModelUtils.getUserShoppingListItem();
         userShoppingListItemToSave.setStatus(ShoppingListItemStatus.DONE);
         userShoppingListItemToSave.setHabitAssign(null);
-        ;
 
         verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesWithNonItemToUpdate() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setId(null);
+        responseDto.setStatus(newStatus);
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId()))
+            .thenReturn(List.of());
+
+        habitAssignService
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, List.of(responseDto));
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo)
+            .findNonDisabledByHabitAssignId(habitAssign.getId());
+
+        verify(userShoppingListItemRepo).saveAll(List.of());
         verify(userShoppingListItemRepo).deleteAll(List.of());
     }
 
@@ -969,6 +995,20 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void saveCustomShoppingListWithStatusesWithNonItemToSave() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+
+        habitAssignService.saveCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto));
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
     void saveCustomShoppingListWithStatusesWithDuplicateThrowBadRequestException() {
         Long userId = 1L;
         Long habitId = 1L;
@@ -1012,6 +1052,28 @@ class HabitAssignServiceImplTest {
         customShoppingListItemToSave.setStatus(newStatus);
 
         verify(customShoppingListItemRepo).saveAll(List.of(customShoppingListItemToSave));
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesUpdateItemWithNonItemToUpdate() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setId(null);
+        responseDto.setStatus(newStatus);
+
+        when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
+            .thenReturn(List.of());
+
+        habitAssignService
+            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, List.of(responseDto));
+
+        verify(customShoppingListItemRepo)
+            .findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+
+        verify(customShoppingListItemRepo).saveAll(List.of());
         verify(customShoppingListItemRepo).deleteAll(List.of());
     }
 
