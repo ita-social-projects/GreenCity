@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -78,7 +77,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -814,6 +815,64 @@ class HabitAssignServiceImplTest {
         userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
         habitAssignService.updateShoppingItem(1L, 1L);
         assertEquals(ShoppingListItemStatus.DISABLED, userShoppingListItem.getStatus());
+    }
+
+    @Test
+    void fullUpdateUserAndCustomShoppingLists() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "en";
+        HabitAssignServiceImpl spyHabitAssignService = spy(habitAssignService);
+        UserShoppingListItemResponseDto userDto = ModelUtils.getUserShoppingListItemResponseDto();
+        CustomShoppingListItemResponseDto customDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        UserShoppingAndCustomShoppingListsDto userAndCustomDto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
+
+        doNothing().when(spyHabitAssignService).fullUpdateUserShoppingList(userId, habitId, List.of(userDto), language);
+        doNothing().when(spyHabitAssignService).fullUpdateCustomShoppingList(userId, habitId, List.of(customDto));
+
+        spyHabitAssignService.fullUpdateUserAndCustomShoppingLists(userId, habitId, userAndCustomDto, language);
+
+        verify(spyHabitAssignService).fullUpdateUserShoppingList(userId, habitId, List.of(userDto), language);
+        verify(spyHabitAssignService).fullUpdateCustomShoppingList(userId, habitId, List.of(customDto));
+    }
+
+    @Test
+    void fullUpdateUserShoppingList() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String language = "en";
+        HabitAssignServiceImpl spyHabitAssignService = spy(habitAssignService);
+        UserShoppingListItemResponseDto userDto = ModelUtils.getUserShoppingListItemResponseDto();
+        List<UserShoppingListItemResponseDto> userDtoList = List.of(userDto);
+
+        doNothing().when(spyHabitAssignService)
+            .saveUserShoppingListWithStatuses(userId, habitId, userDtoList, language);
+        doNothing().when(spyHabitAssignService)
+            .updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userDtoList);
+
+        spyHabitAssignService.fullUpdateUserShoppingList(userId, habitId, userDtoList, language);
+
+        verify(spyHabitAssignService).saveUserShoppingListWithStatuses(userId, habitId, userDtoList, language);
+        verify(spyHabitAssignService).updateAndDeleteUserShoppingListWithStatuses(userId, habitId, userDtoList);
+    }
+
+    @Test
+    void fullUpdateCustomShoppingList() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        HabitAssignServiceImpl spyHabitAssignService = spy(habitAssignService);
+        CustomShoppingListItemResponseDto customDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        List<CustomShoppingListItemResponseDto> customDtoList = List.of(customDto);
+
+        doNothing().when(spyHabitAssignService)
+            .saveCustomShoppingListWithStatuses(userId, habitId, customDtoList);
+        doNothing().when(spyHabitAssignService)
+            .updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, customDtoList);
+
+        spyHabitAssignService.fullUpdateCustomShoppingList(userId, habitId, customDtoList);
+
+        verify(spyHabitAssignService).saveCustomShoppingListWithStatuses(userId, habitId, customDtoList);
+        verify(spyHabitAssignService).updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, customDtoList);
     }
 
     @Test

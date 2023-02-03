@@ -69,6 +69,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -97,6 +98,7 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -2266,6 +2268,13 @@ public class ModelUtils {
             .id(1L)
             .name("Inna")
             .organizerRating(1.0)
+            .build();
+    }
+
+    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
+        return UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
+            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
             .build();
     }
 }

@@ -915,11 +915,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     public void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId,
         UserShoppingAndCustomShoppingListsDto listsDto, String language) {
-        fullUpdateUserShoppingListWithStatuses(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
+        fullUpdateUserShoppingList(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
         fullUpdateCustomShoppingList(userId, habitId, listsDto.getCustomShoppingListItemDto());
     }
 
-    private void fullUpdateUserShoppingListWithStatuses(Long userId, Long habitId,
+    /**
+     * Method that update UserShoppingList.
+     *
+     * <ul>
+     * <li>If items are present in the db, method update them;</li>
+     * <li>If items don't present in the db and id is null, method try to add it to
+     * user;</li>
+     * <li>If some items from db don't present in the lists, method delete
+     * them(Except items with DISABLED status).</li>
+     * </ul>
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param list     {@link UserShoppingListItemResponseDto} User Shopping lists.
+     * @param language {@link String} of language code value.
+     */
+    public void fullUpdateUserShoppingList(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
         updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
@@ -1046,10 +1062,26 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.deleteAll(listToDelete);
     }
 
-    private void fullUpdateCustomShoppingList(Long userId, Long habitId,
-        List<CustomShoppingListItemResponseDto> customShoppingList) {
-        updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
-        saveCustomShoppingListWithStatuses(userId, habitId, customShoppingList);
+    /**
+     * Method that update CustomShopping List.
+     *
+     * <ul>
+     * <li>If items are present in the db, method update them;</li>
+     * <li>If items don't present in the db and id is null, method try to add it to
+     * user;</li>
+     * <li>If some items from db don't present in the lists, method delete
+     * them(Except items with DISABLED status).</li>
+     * </ul>
+     *
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
+     * @param list    {@link CustomShoppingListItemResponseDto} Custom Shopping
+     *                lists.
+     */
+    public void fullUpdateCustomShoppingList(Long userId, Long habitId,
+        List<CustomShoppingListItemResponseDto> list) {
+        updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, list);
+        saveCustomShoppingListWithStatuses(userId, habitId, list);
     }
 
     /**
