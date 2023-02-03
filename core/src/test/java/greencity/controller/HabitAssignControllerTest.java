@@ -152,7 +152,7 @@ class HabitAssignControllerTest {
         Principal principal = () -> "xd87@ukr.net";
         mockMvc.perform(delete(habitLink + "/delete/{habitId}", 1L)
             .principal(principal)).andExpect(status().isOk());
-        verify(habitAssignService).deleteHabitAssign(1L, null);
+        verify(habitAssignService).cancelAllHabitAssign(1L, null);
     }
 
     @Test

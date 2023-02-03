@@ -407,7 +407,7 @@ public class HabitAssignController {
      * @param habitId - id of {@link HabitVO}.
      * @param userVO  - {@link UserVO} user.
      */
-    @ApiOperation(value = "Delete assigned habit for current user.")
+    @ApiOperation(value = "Cancel assigned habit for current user and delete it from the Shopping List.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
@@ -416,7 +416,7 @@ public class HabitAssignController {
     @DeleteMapping("/delete/{habitId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO) {
-        habitAssignService.deleteHabitAssign(habitId, userVO.getId());
+        habitAssignService.cancelAllHabitAssign(habitId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

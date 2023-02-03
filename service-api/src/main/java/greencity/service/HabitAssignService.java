@@ -250,7 +250,7 @@ public interface HabitAssignService {
      * @param habitId {@link Long} id.
      * @param userId  {@link Long} id.
      */
-    void deleteHabitAssign(Long habitId, Long userId);
+    void cancelAllHabitAssign(Long habitId, Long userId);
 
     /**
      * Method save HabitAssign.

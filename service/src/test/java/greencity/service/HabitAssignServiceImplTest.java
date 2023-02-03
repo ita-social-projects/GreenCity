@@ -14,10 +14,12 @@ import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.*;
 import greencity.repository.*;
+import org.hibernate.hql.internal.ast.tree.ExpectedTypeAwareNode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
@@ -287,12 +289,36 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void deleteHabitAssign() {
+    void changeStatusHabitAssign() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
-        assert habitAssign != null;
-        habitAssignService.deleteHabitAssign(1L, 1L);
-        verify(habitAssignRepo).delete(habitAssign);
+        habitAssign.getHabit().setHabitAssigns(generateHabitAssignList());
+        when(habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(1L, 1L))
+            .thenReturn(habitAssign.getHabit().getHabitAssigns());
+        habitAssignService.cancelAllHabitAssign(1L, 1L);
+        Mockito.verify(userShoppingListItemRepo).deleteByShoppingListItemsByHabitAssignId(1L);
+        assert HabitAssignStatus.INPROGRESS != habitAssign.getHabit().getHabitAssigns().get(0).getStatus();
+        verify(habitAssignRepo, times(2)).save(any());
+    }
+
+    private List<HabitAssign> generateHabitAssignList() {
+        HabitAssign habitAssign1 = new HabitAssign();
+        habitAssign1.setId(1L);
+        habitAssign1.setStatus(HabitAssignStatus.INPROGRESS);
+
+        HabitAssign habitAssign2 = new HabitAssign();
+        habitAssign2.setId(2L);
+        habitAssign2.setStatus(HabitAssignStatus.ACQUIRED);
+
+        return List.of(habitAssign1, habitAssign2);
+    }
+
+    @Test
+    void habitsNotFoundException() {
+        when(habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(1L, 1L))
+            .thenReturn(Collections.emptyList());
+        Exception thrown = assertThrows(NotFoundException.class, () -> habitAssignService.cancelAllHabitAssign(1L, 1L));
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS,
+            thrown.getMessage());
     }
 
     @Test

@@ -33,6 +33,7 @@ import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -868,14 +869,22 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
+     * Method to set {@link HabitAssign} status from inprogress to cancelled.
      * {@inheritDoc}
      */
-    public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
-        userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
-        habitAssignRepo.delete(habitAssign);
+    public void cancelAllHabitAssign(Long habitId, Long userId) {
+        List<HabitAssign> habitAssigns =
+            habitAssignRepo.findListByUserIdAndHabitIdAndStatusIsInProgress(habitId, userId);
+        if (CollectionUtils.isEmpty(habitAssigns)) {
+            throw new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS);
+        }
+
+        for (HabitAssign habitAssign : habitAssigns) {
+            userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
+            habitAssign.setStatus(HabitAssignStatus.CANCELLED);
+            habitAssignRepo.save(habitAssign);
+        }
     }
 
     /**
