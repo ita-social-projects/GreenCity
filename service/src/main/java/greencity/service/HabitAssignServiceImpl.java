@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -959,49 +960,75 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
         if (!listToSave.isEmpty()) {
-            long countOdUniq = listToSave.stream()
-                .map(UserShoppingListItemResponseDto::getText)
-                .distinct()
-                .count();
-            if (listToSave.size() != countOdUniq) {
-                throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
-            }
+            checkDuplicationForUserShoppingListByName(listToSave);
 
-            List<String> listOfName = listToSave.stream()
-                .map(UserShoppingListItemResponseDto::getText)
-                .collect(Collectors.toList());
+            List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
 
-            List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.findByNames(habitId, listOfName, language);
-            if (listToSave.size() != shoppingListItems.size()) {
-                throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES);
-            }
-
-            Map<String, ShoppingListItemStatus> mapNameToStatus =
-                listToSave.stream()
-                    .collect(Collectors.toMap(
-                        UserShoppingListItemResponseDto::getText,
-                        UserShoppingListItemResponseDto::getStatus));
+            Map<Long, ShoppingListItemStatus> shoppingItemIdToStatusMap =
+                getShoppingItemIdToStatusMap(shoppingListItems, listToSave, language);
 
             List<ShoppingListItemRequestDto> listToSaveParam = shoppingListItems.stream()
                 .map(shoppingItem -> ShoppingListItemWithStatusRequestDto.builder()
                     .id(shoppingItem.getId())
-                    .status(mapNameToStatus.getOrDefault(
-                        shoppingItem.getTranslations()
-                            .stream()
-                            .filter(x -> x.getLanguage().getCode().equals(language))
-                            .findFirst()
-                            .orElseThrow()
-                            .getContent(),
-                        ShoppingListItemStatus.DISABLED))
+                    .status(shoppingItemIdToStatusMap.get(shoppingItem.getId()))
                     .build())
                 .collect(Collectors.toList());
+
             shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
         }
     }
 
+    private void checkDuplicationForUserShoppingListByName(List<UserShoppingListItemResponseDto> listToSave) {
+        long countOdUniq = listToSave.stream()
+            .map(UserShoppingListItemResponseDto::getText)
+            .distinct()
+            .count();
+        if (listToSave.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    @NotNull
+    private List<ShoppingListItem> findRelatedShoppingListItem(Long habitId, String language,
+        List<UserShoppingListItemResponseDto> listToSave) {
+        List<String> listOfName = listToSave.stream()
+            .map(UserShoppingListItemResponseDto::getText)
+            .collect(Collectors.toList());
+
+        List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.findByNames(habitId, listOfName, language);
+        if (listToSave.size() != shoppingListItems.size()) {
+            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES);
+        }
+        return shoppingListItems;
+    }
+
+    @NotNull
+    private Map<Long, ShoppingListItemStatus> getShoppingItemIdToStatusMap(List<ShoppingListItem> shoppingListItems,
+        List<UserShoppingListItemResponseDto> listToSave, String language) {
+        Map<String, ShoppingListItemStatus> shoppingItemNameToStatusMap =
+            listToSave.stream()
+                .collect(Collectors.toMap(
+                    UserShoppingListItemResponseDto::getText,
+                    UserShoppingListItemResponseDto::getStatus));
+
+        return shoppingListItems.stream()
+            .collect(Collectors.toMap(
+                ShoppingListItem::getId,
+                shoppingListItem -> shoppingItemNameToStatusMap
+                    .get(getShoppingItemNameByLanguageCode(shoppingListItem, language))));
+    }
+
+    private String getShoppingItemNameByLanguageCode(ShoppingListItem shoppingItem, String language) {
+        return shoppingItem.getTranslations()
+            .stream()
+            .filter(x -> x.getLanguage().getCode().equals(language))
+            .findFirst()
+            .orElseThrow()
+            .getContent();
+    }
+
     /**
-     * Method that update or delete {@link UserShoppingListItem}. Item from db is
-     * found by dto's id and only with not DISABLED status initially. Not found
+     * Method that update or delete {@link UserShoppingListItem}. Not founded
      * items, except DISABLED, will be deleted.
      *
      * @param userId           {@code User} id.
@@ -1015,31 +1042,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .filter(item -> item.getId() != null)
             .collect(Collectors.toList());
 
-        long countOdUniq = listToUpdate.stream()
-            .map(UserShoppingListItemResponseDto::getId)
-            .distinct()
-            .count();
-        if (listToUpdate.size() != countOdUniq) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
-        }
+        checkDuplicationForUserShoppingListById(listToUpdate);
 
         HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
 
-        List<UserShoppingListItem> currentList =
-            userShoppingListItemRepo.findNonDisabledByHabitAssignId(habitAssign.getId());
+        List<UserShoppingListItem> currentList = habitAssign.getUserShoppingListItems();
 
-        List<Long> currentIdsList = currentList.stream().map(UserShoppingListItem::getId).collect(Collectors.toList());
-
-        String notFoundId = listToUpdate.stream()
-            .filter(updateItem -> !currentIdsList.contains(updateItem.getId()))
-            .map(updateItem -> updateItem.getId().toString())
-            .collect(Collectors.joining(", "));
-
-        if (!notFoundId.equals("")) {
-            throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + notFoundId);
-        }
+        checkIfUserShoppingItemsExist(listToUpdate, currentList);
 
         Map<Long, ShoppingListItemStatus> mapIdToStatus =
             listToUpdate.stream()
@@ -1055,11 +1066,39 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 currentItem.setStatus(newStatus);
                 listToSave.add(currentItem);
             } else {
-                listToDelete.add(currentItem);
+                if (!currentItem.getStatus().equals(ShoppingListItemStatus.DISABLED)) {
+                    listToDelete.add(currentItem);
+                }
             }
         }
         userShoppingListItemRepo.saveAll(listToSave);
         userShoppingListItemRepo.deleteAll(listToDelete);
+    }
+
+    private void checkDuplicationForUserShoppingListById(List<UserShoppingListItemResponseDto> listToUpdate) {
+        long countOdUniq = listToUpdate.stream()
+            .map(UserShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    private void checkIfUserShoppingItemsExist(List<UserShoppingListItemResponseDto> listToUpdate,
+        List<UserShoppingListItem> currentList) {
+        List<Long> updateIds =
+            listToUpdate.stream().map(UserShoppingListItemResponseDto::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(UserShoppingListItem::getId).collect(Collectors.toList());
+
+        updateIds.removeAll(currentIds);
+
+        if (!updateIds.isEmpty()) {
+            String notFoundedIds = updateIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + notFoundedIds);
+        }
     }
 
     /**
@@ -1099,13 +1138,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
 
-        long countOdUniq = listToSave.stream()
-            .map(CustomShoppingListItemResponseDto::getText)
-            .distinct()
-            .count();
-        if (listToSave.size() != countOdUniq) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
-        }
+        checkDuplicationForCustomShoppingListByName(listToSave);
 
         List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
@@ -1117,14 +1150,22 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
     }
 
+    private void checkDuplicationForCustomShoppingListByName(List<CustomShoppingListItemResponseDto> listToSave) {
+        long countOdUniq = listToSave.stream()
+            .map(CustomShoppingListItemResponseDto::getText)
+            .distinct()
+            .count();
+        if (listToSave.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+    }
+
     /**
-     * Method that update or delete {@link CustomShoppingListItem}. Item from db is
-     * found by dto's id and only with not DISABLED status initially. Not found
-     * items, except DISABLED, will be deleted.
+     * Method that update or delete {@link CustomShoppingListItem}. Not founded items, except DISABLED, will be deleted.
      *
      * @param userId             {@code User} id.
      * @param habitId            {@code Habit} id.
-     * @param customShoppingList {@link CustomShoppingListItemResponseDto} User
+     * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
     public void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
@@ -1133,27 +1174,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .filter(shoppingItem -> shoppingItem.getId() != null)
             .collect(Collectors.toList());
 
-        long countOdUniq = listToUpdate.stream()
-            .map(CustomShoppingListItemResponseDto::getId)
-            .distinct()
-            .count();
-        if (listToUpdate.size() != countOdUniq) {
-            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
-        }
-        List<CustomShoppingListItem> currentList = customShoppingListItemRepo
-            .findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+        checkDuplicationForCustomShoppingListById(listToUpdate);
 
-        List<Long> currentIdsList =
-            currentList.stream().map(CustomShoppingListItem::getId).collect(Collectors.toList());
+        List<CustomShoppingListItem> currentList =
+            customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId);
 
-        String notFoundId = listToUpdate.stream()
-            .filter(updateItem -> !currentIdsList.contains(updateItem.getId()))
-            .map(updateItem -> updateItem.getId().toString())
-            .collect(Collectors.joining(", "));
+        customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
 
-        if (!notFoundId.equals("")) {
-            throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundId);
-        }
+        checkIfCustomShoppingItemsExist(listToUpdate, currentList);
 
         Map<Long, ShoppingListItemStatus> mapIdToStatus =
             listToUpdate.stream()
@@ -1169,10 +1197,38 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 currentItem.setStatus(newStatus);
                 listToSave.add(currentItem);
             } else {
-                listToDelete.add(currentItem);
+                if (!currentItem.getStatus().equals(ShoppingListItemStatus.DISABLED)) {
+                    listToDelete.add(currentItem);
+                }
             }
         }
         customShoppingListItemRepo.saveAll(listToSave);
         customShoppingListItemRepo.deleteAll(listToDelete);
+    }
+
+    private void checkDuplicationForCustomShoppingListById(List<CustomShoppingListItemResponseDto> listToUpdate) {
+        long countOdUniq = listToUpdate.stream()
+            .map(CustomShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOdUniq) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    private void checkIfCustomShoppingItemsExist(List<CustomShoppingListItemResponseDto> listToUpdate,
+        List<CustomShoppingListItem> currentList) {
+        List<Long> updateIds =
+            listToUpdate.stream().map(CustomShoppingListItemResponseDto::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(CustomShoppingListItem::getId).collect(Collectors.toList());
+
+        updateIds.removeAll(currentIds);
+
+        if (!updateIds.isEmpty()) {
+            String notFoundedIds = updateIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundedIds);
+        }
     }
 }
