@@ -1028,8 +1028,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that update or delete {@link UserShoppingListItem}. Not founded
-     * items, except DISABLED, will be deleted.
+     * Method that update or delete {@link UserShoppingListItem}. Not founded items,
+     * except DISABLED, will be deleted.
      *
      * @param userId           {@code User} id.
      * @param habitId          {@code Habit} id.
@@ -1161,7 +1161,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that update or delete {@link CustomShoppingListItem}. Not founded items, except DISABLED, will be deleted.
+     * Method that update or delete {@link CustomShoppingListItem}. Not founded
+     * items, except DISABLED, will be deleted.
      *
      * @param userId             {@code User} id.
      * @param habitId            {@code Habit} id.
