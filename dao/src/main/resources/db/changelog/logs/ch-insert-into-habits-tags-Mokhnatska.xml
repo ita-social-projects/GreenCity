@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="AddNewDataIntoHabits_Tags" author="Lilia Mokhnatska">
+        <insert tableName="habits_tags">
+            <column name="habit_id">1</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">2</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">3</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">4</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">5</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">6</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">7</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">8</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">9</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">10</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">11</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">12</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">13</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">14</column>
+            <column name="tag_id">23</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">15</column>
+            <column name="tag_id">23</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">16</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">17</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">18</column>
+            <column name="tag_id">24</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">19</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">20</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">21</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">22</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+        <column name="habit_id">23</column>
+        <column name="tag_id">20</column>
+    </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">24</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">25</column>
+            <column name="tag_id">24</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">26</column>
+            <column name="tag_id">21</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">27</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">28</column>
+            <column name="tag_id">22</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">29</column>
+            <column name="tag_id">24</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">30</column>
+            <column name="tag_id">20</column>
+        </insert>
+        <insert tableName="habits_tags">
+            <column name="habit_id">31</column>
+            <column name="tag_id">20</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
