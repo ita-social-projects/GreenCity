@@ -137,4 +137,6 @@
     <include file="db/changelog/logs/ch-add-table-positions-Korzh.xml"/>
     <include file="db/changelog/logs/ch-add-table-positions-authorities-mapping-Korzh.xml"/>
     <include file="db/changelog/logs/ch-insert-into-positions-authorities-mapping-Korzh.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-users-Korzh.xml"/>
+    <include file="db/changelog/logs/ch-insert-into-employee-authority-mapping-Korzh.xml"/>
 </databaseChangeLog>
