@@ -223,7 +223,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        if (!toUpdate.isOpen()) {
+        if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
 
