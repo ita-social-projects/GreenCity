@@ -21,7 +21,6 @@ import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -115,8 +114,7 @@ class EventServiceImplTest {
 
     @Test
     void updateFinishedEvent() {
-        Event actualEvent = ModelUtils.getEvent();
-        actualEvent.setOpen(false);
+        Event actualEvent = ModelUtils.getEventWithFinishedDate();
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
 
@@ -589,7 +587,7 @@ class EventServiceImplTest {
 
     @Test
     void rateEvent() {
-        Event event = ModelUtils.getEvent();
+        Event event = ModelUtils.getEventWithFinishedDate();
         User user = ModelUtils.getAttenderUser();
         event.setAttenders(Set.of(user));
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
