@@ -2,11 +2,12 @@ trigger:
   batch: true
   branches:
     include:
-    - dev
+    - prod
   paths:
     exclude:
     - README.md
 
+pr: none
 
 variables:
   agentOS: ubuntu-latest
