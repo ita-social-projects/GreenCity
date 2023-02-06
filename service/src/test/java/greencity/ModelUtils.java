@@ -2163,6 +2163,7 @@ public class ModelUtils {
         return EventComment.builder()
             .id(1L)
             .text("text")
+            .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
@@ -2179,6 +2180,7 @@ public class ModelUtils {
                 .build())
             .text("I find this topic very useful!")
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<>())
             .event(EventVO.builder()
                 .id(32L)
                 .build())
@@ -2202,6 +2204,7 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
+            .usersLiked(new HashSet<>())
             .build();
     }
 
