@@ -936,7 +936,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param list     {@link UserShoppingListItemResponseDto} User Shopping lists.
      * @param language {@link String} of language code value.
      */
-    public void fullUpdateUserShoppingList(Long userId, Long habitId,
+    private void fullUpdateUserShoppingList(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
         updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
@@ -953,29 +953,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *                         lists.
      * @param language         {@link String} of language code value.
      */
-    public void saveUserShoppingListWithStatuses(Long userId, Long habitId,
+    private void saveUserShoppingListWithStatuses(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> userShoppingList,
         String language) {
         List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
-        if (!listToSave.isEmpty()) {
-            checkDuplicationForUserShoppingListByName(listToSave);
+        checkDuplicationForUserShoppingListByName(listToSave);
 
-            List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
+        List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
 
-            Map<Long, ShoppingListItemStatus> shoppingItemIdToStatusMap =
-                getShoppingItemIdToStatusMap(shoppingListItems, listToSave, language);
+        Map<Long, ShoppingListItemStatus> shoppingItemIdToStatusMap =
+            getShoppingItemIdToStatusMap(shoppingListItems, listToSave, language);
 
-            List<ShoppingListItemRequestDto> listToSaveParam = shoppingListItems.stream()
-                .map(shoppingItem -> ShoppingListItemWithStatusRequestDto.builder()
-                    .id(shoppingItem.getId())
-                    .status(shoppingItemIdToStatusMap.get(shoppingItem.getId()))
-                    .build())
-                .collect(Collectors.toList());
+        List<ShoppingListItemRequestDto> listToSaveParam = shoppingListItems.stream()
+            .map(shoppingItem -> ShoppingListItemWithStatusRequestDto.builder()
+                .id(shoppingItem.getId())
+                .status(shoppingItemIdToStatusMap.get(shoppingItem.getId()))
+                .build())
+            .collect(Collectors.toList());
 
-            shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
-        }
+        shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
     }
 
     private void checkDuplicationForUserShoppingListByName(List<UserShoppingListItemResponseDto> listToSave) {
@@ -991,15 +989,29 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @NotNull
     private List<ShoppingListItem> findRelatedShoppingListItem(Long habitId, String language,
         List<UserShoppingListItemResponseDto> listToSave) {
-        List<String> listOfName = listToSave.stream()
+        if (listToSave.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> listToSaveNames = listToSave.stream()
             .map(UserShoppingListItemResponseDto::getText)
             .collect(Collectors.toList());
 
-        List<ShoppingListItem> shoppingListItems = shoppingListItemRepo.findByNames(habitId, listOfName, language);
-        if (listToSave.size() != shoppingListItems.size()) {
-            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES);
+        List<ShoppingListItem> relatedShoppingListItems =
+            shoppingListItemRepo.findByNames(habitId, listToSaveNames, language);
+
+        if (listToSaveNames.size() != relatedShoppingListItems.size()) {
+            List<String> relatedShoppingListItemNames = relatedShoppingListItems.stream()
+                .map(x -> getShoppingItemNameByLanguageCode(x, language))
+                .collect(Collectors.toList());
+
+            listToSaveNames.removeAll(relatedShoppingListItemNames);
+
+            String notFoundItems = String.join(", ", listToSaveNames);
+
+            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES + notFoundItems);
         }
-        return shoppingListItems;
+        return relatedShoppingListItems;
     }
 
     @NotNull
@@ -1036,7 +1048,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
      *                         lists.
      */
-    public void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
+    private void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
         List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
             .filter(item -> item.getId() != null)
@@ -1117,7 +1129,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param list    {@link CustomShoppingListItemResponseDto} Custom Shopping
      *                lists.
      */
-    public void fullUpdateCustomShoppingList(Long userId, Long habitId,
+    private void fullUpdateCustomShoppingList(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> list) {
         updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, list);
         saveCustomShoppingListWithStatuses(userId, habitId, list);
@@ -1132,7 +1144,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
-    public void saveCustomShoppingListWithStatuses(Long userId, Long habitId,
+    private void saveCustomShoppingListWithStatuses(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() == null)
@@ -1169,7 +1181,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
-    public void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
+    private void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() != null)
@@ -1179,8 +1191,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         List<CustomShoppingListItem> currentList =
             customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId);
-
-        customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
 
         checkIfCustomShoppingItemsExist(listToUpdate, currentList);
 
