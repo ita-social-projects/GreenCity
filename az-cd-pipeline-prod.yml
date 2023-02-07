@@ -2,11 +2,12 @@ trigger:
   batch: true
   branches:
     include:
-    - dev
+    - prod
   paths:
     exclude:
     - README.md
 
+pr: none
 
 variables:
   agentOS: ubuntu-latest
@@ -40,6 +41,7 @@ stages:
         mavenVersionOption: 'Default'
         options: '-Dmaven.test.skip=true'
 
+        
     - script: mv $(coreRepoName)/target/*.jar $(coreRepoName)/target/$(onbootJarName)
       displayName: Rename core jar to app
 
@@ -71,7 +73,8 @@ stages:
         command: 'buildAndPush'
         Dockerfile: 'Dockerfile'
         tags: |
-          $(Build.BuildId)
+          prod-$(Build.BuildId)
+          latest
 
 - stage: Deploy
   jobs:
@@ -79,7 +82,7 @@ stages:
       displayName: Deploy core app service
       pool:
         vmImage: $(agentOS)
-      environment: 'prod'
+      environment: 'production'
       strategy:
         runOnce:
           deploy:
@@ -101,11 +104,11 @@ stages:
             - task: HelmDeploy@0
               inputs:
                 connectionType: 'Kubernetes Service Connection'
-                kubernetesServiceConnection: 'k8s-stage'
+                kubernetesServiceConnection: 'production'
                 namespace: 'default'
                 command: 'upgrade'
                 chartType: 'FilePath'
                 chartPath: '$(System.ArtifactsDirectory)/drop/greencity-chart'
                 releaseName: 'greencity'
-                overrideValues: 'deployment.image=skyere/greencity:$(Build.BuildId)'
+                overrideValues: 'ingress.hostname=greencity.pick-up.city,deployment.image=skyere/greencity:prod-$(Build.BuildId),externalSecret.tenantId=20002ba7-39e2-4b00-adc3-3926758f2008,externalSecret.vaultUrl=https://greencity-values.vault.azure.net/'
                 arguments: '--debug'
