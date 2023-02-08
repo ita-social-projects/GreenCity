@@ -211,14 +211,14 @@ class HabitAssignControllerTest {
 
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
+        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "en");
     }
 
     @Test
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "ua");
@@ -229,7 +229,7 @@ class HabitAssignControllerTest {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
