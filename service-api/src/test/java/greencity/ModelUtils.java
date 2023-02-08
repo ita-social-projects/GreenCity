@@ -18,6 +18,7 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
+import greencity.enums.ShoppingListItemStatus;
 import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -161,6 +162,7 @@ public class ModelUtils {
         return UserShoppingListItemResponseDto.builder()
             .id(1L)
             .text("text")
+            .status(ShoppingListItemStatus.ACTIVE)
             .build();
     }
 
@@ -168,6 +170,7 @@ public class ModelUtils {
         return CustomShoppingListItemResponseDto.builder()
             .id(1L)
             .text("text")
+            .status(ShoppingListItemStatus.ACTIVE)
             .build();
     }
 
