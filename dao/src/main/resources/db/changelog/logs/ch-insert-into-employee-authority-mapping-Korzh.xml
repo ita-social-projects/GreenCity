@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Korzh-6" author="Nikita Korzh">
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="1"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="2"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="3"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="4"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="5"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="6"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="7"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="8"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="9"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="10"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="11"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="12"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="13"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="14"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="15"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="16"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="17"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="18"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="19"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="20"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="21"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="22"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="23"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="24"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="25"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="26"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="27"/>
+            <column name="user_id" value="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id" value="28"/>
+            <column name="user_id" value="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
