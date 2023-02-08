@@ -36,24 +36,6 @@ spec:
           failureThreshold: 20
         env:
 
-        - name: API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: API-KEY
-
-        - name: API_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: API-SECRET
-
-        - name: APPLICATIONINSIGHTS_CONNECTION_STRING
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: APPLICATIONINSIGHTS-CONNECTION-STRING
-
         - name: AZURE_CONNECTION_STRING
           valueFrom:
             secretKeyRef:
@@ -71,12 +53,6 @@ spec:
             secretKeyRef:
               name: {{ .Values.externalSecret.secretName }}
               key: BACKEND-ADDRESS
-
-        - name: BUCKET_NAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: BUCKET-NAME
 
         - name: CACHE_SPEC
           valueFrom:
@@ -102,12 +78,6 @@ spec:
               name: {{ .Values.externalSecret.secretName }}
               key: DATABASE-USER
 
-        # - name: DATASOURCE_URL
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.externalSecret.secretName }}
-        #       key: API-KEY
-
         - name: DIALECT
           valueFrom:
             secretKeyRef:
@@ -125,12 +95,6 @@ spec:
             secretKeyRef:
               name: {{ .Values.externalSecret.secretName }}
               key: ECO-NEWS-ADDRESS
-
-        # - name: EMAIL_TOPIC
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.externalSecret.secretName }}
-        #       key: EMAIL-TOPIC
 
         - name: FACEBOOK_APP_ID
           valueFrom:
@@ -233,12 +197,6 @@ spec:
             secretKeyRef:
               name: {{ .Values.externalSecret.secretName }}
               key: MAIL-USER
-
-        # - name: MAX_FILE_SIZE
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: {{ .Values.externalSecret.secretName }}
-        #       key: API-KEY
 
         - name: POOL_SIZE
           valueFrom:

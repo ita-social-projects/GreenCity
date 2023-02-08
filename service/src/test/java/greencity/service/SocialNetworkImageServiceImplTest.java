@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -19,7 +20,9 @@ import org.modelmapper.TypeToken;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
 
 @ExtendWith(MockitoExtension.class)
 class SocialNetworkImageServiceImplTest {
@@ -44,9 +47,9 @@ class SocialNetworkImageServiceImplTest {
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost()))
             .thenReturn(socialNetworkImage);
-        when(modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
-        }.getType()))
-            .thenReturn(Optional.of(socialNetworkImageVO));
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
+
         when(modelMapper.map(socialNetworkImageVO, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
 
         assertEquals(socialNetworkImageVO, socialNetworkImageService.getSocialNetworkImageByUrl("http:"));
@@ -76,9 +79,9 @@ class SocialNetworkImageServiceImplTest {
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost()))
             .thenReturn(socialNetworkImage);
-        when(modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
-        }.getType()))
-            .thenReturn(Optional.of(socialNetworkImageVO));
+
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
 
         assertEquals(Optional.of(socialNetworkImageVO), socialNetworkImageService.findByHostPath(checkUrl.getHost()));
     }
@@ -93,10 +96,9 @@ class SocialNetworkImageServiceImplTest {
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
         when(socialNetworkImageRepo.findByHostPath(socialNetworkImageVO.getHostPath()))
             .thenReturn(socialNetworkImage);
-        when(modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
-        }.getType()))
-            .thenReturn(Optional.of(socialNetworkImageVO));
 
+        when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
+            .thenReturn(socialNetworkImageVO);
         assertEquals(socialNetworkImageVO, socialNetworkImageService.getDefaultSocialNetworkImage());
     }
 }
