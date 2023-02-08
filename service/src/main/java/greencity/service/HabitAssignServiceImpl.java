@@ -914,8 +914,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     @Transactional
-    public void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId,
-        UserShoppingAndCustomShoppingListsDto listsDto, String language) {
+    public void fullUpdateUserAndCustomShoppingLists(
+        Long userId,
+        Long habitId,
+        UserShoppingAndCustomShoppingListsDto listsDto,
+        String language) {
         fullUpdateUserShoppingList(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
         fullUpdateCustomShoppingList(userId, habitId, listsDto.getCustomShoppingListItemDto());
     }
@@ -936,7 +939,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param list     {@link UserShoppingListItemResponseDto} User Shopping lists.
      * @param language {@link String} of language code value.
      */
-    private void fullUpdateUserShoppingList(Long userId, Long habitId,
+    private void fullUpdateUserShoppingList(
+        Long userId,
+        Long habitId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
         updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
@@ -953,7 +958,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      *                         lists.
      * @param language         {@link String} of language code value.
      */
-    private void saveUserShoppingListWithStatuses(Long userId, Long habitId,
+    private void saveUserShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
         List<UserShoppingListItemResponseDto> userShoppingList,
         String language) {
         List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
@@ -977,17 +984,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkDuplicationForUserShoppingListByName(List<UserShoppingListItemResponseDto> listToSave) {
-        long countOdUniq = listToSave.stream()
+        long countOfUnique = listToSave.stream()
             .map(UserShoppingListItemResponseDto::getText)
             .distinct()
             .count();
-        if (listToSave.size() != countOdUniq) {
+        if (listToSave.size() != countOfUnique) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
         }
     }
 
-    @NotNull
-    private List<ShoppingListItem> findRelatedShoppingListItem(Long habitId, String language,
+    private List<ShoppingListItem> findRelatedShoppingListItem(
+        Long habitId,
+        String language,
         List<UserShoppingListItemResponseDto> listToSave) {
         if (listToSave.isEmpty()) {
             return List.of();
@@ -1014,9 +1022,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return relatedShoppingListItems;
     }
 
-    @NotNull
-    private Map<Long, ShoppingListItemStatus> getShoppingItemIdToStatusMap(List<ShoppingListItem> shoppingListItems,
-        List<UserShoppingListItemResponseDto> listToSave, String language) {
+    private Map<Long, ShoppingListItemStatus> getShoppingItemIdToStatusMap(
+        List<ShoppingListItem> shoppingListItems,
+        List<UserShoppingListItemResponseDto> listToSave,
+        String language) {
         Map<String, ShoppingListItemStatus> shoppingItemNameToStatusMap =
             listToSave.stream()
                 .collect(Collectors.toMap(
@@ -1048,7 +1057,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
      *                         lists.
      */
-    private void updateAndDeleteUserShoppingListWithStatuses(Long userId, Long habitId,
+    private void updateAndDeleteUserShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
         List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
             .filter(item -> item.getId() != null)
@@ -1088,16 +1099,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkDuplicationForUserShoppingListById(List<UserShoppingListItemResponseDto> listToUpdate) {
-        long countOdUniq = listToUpdate.stream()
+        long countOfUnique = listToUpdate.stream()
             .map(UserShoppingListItemResponseDto::getId)
             .distinct()
             .count();
-        if (listToUpdate.size() != countOdUniq) {
+        if (listToUpdate.size() != countOfUnique) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
         }
     }
 
-    private void checkIfUserShoppingItemsExist(List<UserShoppingListItemResponseDto> listToUpdate,
+    private void checkIfUserShoppingItemsExist(
+        List<UserShoppingListItemResponseDto> listToUpdate,
         List<UserShoppingListItem> currentList) {
         List<Long> updateIds =
             listToUpdate.stream().map(UserShoppingListItemResponseDto::getId).collect(Collectors.toList());
@@ -1129,7 +1141,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param list    {@link CustomShoppingListItemResponseDto} Custom Shopping
      *                lists.
      */
-    private void fullUpdateCustomShoppingList(Long userId, Long habitId,
+    private void fullUpdateCustomShoppingList(
+        Long userId,
+        Long habitId,
         List<CustomShoppingListItemResponseDto> list) {
         updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, list);
         saveCustomShoppingListWithStatuses(userId, habitId, list);
@@ -1144,7 +1158,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
-    private void saveCustomShoppingListWithStatuses(Long userId, Long habitId,
+    private void saveCustomShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() == null)
@@ -1163,11 +1179,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkDuplicationForCustomShoppingListByName(List<CustomShoppingListItemResponseDto> listToSave) {
-        long countOdUniq = listToSave.stream()
+        long countOfUnique = listToSave.stream()
             .map(CustomShoppingListItemResponseDto::getText)
             .distinct()
             .count();
-        if (listToSave.size() != countOdUniq) {
+        if (listToSave.size() != countOfUnique) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
         }
     }
@@ -1181,7 +1197,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
-    private void updateAndDeleteCustomShoppingListWithStatuses(Long userId, Long habitId,
+    private void updateAndDeleteCustomShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() != null)
@@ -1218,16 +1236,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void checkDuplicationForCustomShoppingListById(List<CustomShoppingListItemResponseDto> listToUpdate) {
-        long countOdUniq = listToUpdate.stream()
+        long countOfUnique = listToUpdate.stream()
             .map(CustomShoppingListItemResponseDto::getId)
             .distinct()
             .count();
-        if (listToUpdate.size() != countOdUniq) {
+        if (listToUpdate.size() != countOfUnique) {
             throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
         }
     }
 
-    private void checkIfCustomShoppingItemsExist(List<CustomShoppingListItemResponseDto> listToUpdate,
+    private void checkIfCustomShoppingItemsExist(
+        List<CustomShoppingListItemResponseDto> listToUpdate,
         List<CustomShoppingListItem> currentList) {
         List<Long> updateIds =
             listToUpdate.stream().map(CustomShoppingListItemResponseDto::getId).collect(Collectors.toList());

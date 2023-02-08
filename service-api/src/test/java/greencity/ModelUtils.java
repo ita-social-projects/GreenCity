@@ -7,11 +7,14 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
@@ -152,5 +155,26 @@ public class ModelUtils {
 
     public static EventDto getEventDtoWithoutTag() {
         return EventDto.builder().id(1L).build();
+    }
+
+    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
+        return UserShoppingListItemResponseDto.builder()
+            .id(1L)
+            .text("text")
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .text("text")
+            .build();
+    }
+
+    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
+        return UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
+            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+            .build();
     }
 }

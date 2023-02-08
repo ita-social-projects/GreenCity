@@ -163,7 +163,7 @@ public class HabitAssignController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiLocale
-    @GetMapping("/allUserAndCustomList/{habitId}")
+    @GetMapping("{habitId}/allUserAndCustomList")
     public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingListItemAndUserCustomShoppingList(
         @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
@@ -193,7 +193,7 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @PutMapping("/allUserAndCustomList/{habitId}")
+    @PutMapping("{habitId}/allUserAndCustomList")
     public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
         @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
