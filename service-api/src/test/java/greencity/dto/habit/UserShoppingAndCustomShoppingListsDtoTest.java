@@ -1,14 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.ModelUtils;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.enums.ShoppingListItemStatus;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -20,7 +13,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserShoppingAndCustomShoppingListsDtoTest {
+class UserShoppingAndCustomShoppingListsDtoTest {
 
     void testValid(UserShoppingAndCustomShoppingListsDto dto) {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
