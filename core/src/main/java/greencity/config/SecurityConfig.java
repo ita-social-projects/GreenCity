@@ -215,7 +215,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/myEvents/createdEvents",
                 EVENTS + "/myEvents/relatedEvents",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
-                "/habit/assign/allUserAndCustomList/{habitId}")
+                HABIT_ASSIGN_ID + "/allUserAndCustomList")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -255,7 +255,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity",
                 "/user/profile",
                 EVENTS + "/update",
-                HABIT_ASSIGN_ID + "/update-user-shopping-item-list")
+                HABIT_ASSIGN_ID + "/update-user-shopping-item-list",
+                HABIT_ASSIGN_ID + "/allUserAndCustomList")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,

@@ -1,6 +1,6 @@
 package greencity.dto.shoppinglistitem;
 
-import javax.validation.constraints.NotBlank;
+import greencity.enums.ShoppingListItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,9 +12,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-public class CustomShoppingListItemSaveRequestDto {
-    @NotBlank
-    private String text;
+public class CustomShoppingListItemWithStatusSaveRequestDto extends CustomShoppingListItemSaveRequestDto {
+    ShoppingListItemStatus status;
 }
