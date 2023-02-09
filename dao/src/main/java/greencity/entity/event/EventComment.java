@@ -48,7 +48,7 @@ public class EventComment {
     @JoinColumn(name = "parent_comment_id")
     private EventComment parentComment;
 
-    @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<EventComment> comments = new ArrayList<>();
 
     @Transient

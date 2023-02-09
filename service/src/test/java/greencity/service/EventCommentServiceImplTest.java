@@ -310,7 +310,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(page);
 
-            eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
+        eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
 
         assertTrue(childComment.isCurrentUserLiked());
     }

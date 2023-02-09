@@ -200,6 +200,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         eventComment.setDeleted(true);
+        eventComment.getComments().forEach(comment -> comment.setDeleted(true));
         eventCommentRepo.save(eventComment);
     }
 
