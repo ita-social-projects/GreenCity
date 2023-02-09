@@ -103,9 +103,11 @@ public class EventCommentServiceImpl implements EventCommentService {
     public EventCommentDto getEventCommentById(Long id, UserVO userVO) {
         EventComment eventComment = eventCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + id));
-        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
-        eventComment.setCurrentUserLiked(eventComment.getUsersLiked().stream()
-            .anyMatch(u -> u.getId().equals(user.getId())));
+
+        if (userVO != null) {
+            eventComment.setCurrentUserLiked(eventComment.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId())));
+        }
 
         return modelMapper.map(eventComment, EventCommentDto.class);
     }
@@ -139,14 +141,17 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         Page<EventComment> pages =
             eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId);
+
+        if (userVO != null) {
+            pages.forEach(eventComment -> eventComment.setCurrentUserLiked(eventComment.getUsersLiked()
+                .stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId()))));
+        }
+
         List<EventCommentDto> eventCommentDto = pages
             .stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
             .collect(Collectors.toList());
-
-        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
-        eventCommentDto.forEach((ec) -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
-            .anyMatch(u -> u.getId().equals(user.getId()))));
 
         return new PageableDto<>(
             eventCommentDto,
@@ -233,13 +238,15 @@ public class EventCommentServiceImpl implements EventCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
         Page<EventComment> pages =
             eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+
+        if (userVO != null) {
+            pages.forEach((ec) -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
+                .anyMatch(u -> u.getId().equals(userVO.getId()))));
+        }
+
         List<EventCommentDto> eventCommentDtos = pages.stream()
             .map(eventComment -> modelMapper.map(eventComment, EventCommentDto.class))
             .collect(Collectors.toList());
-
-        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
-        eventCommentDtos.forEach((ec) -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
-            .anyMatch(u -> u.getId().equals(user.getId()))));
 
         return new PageableDto<>(
             eventCommentDtos,

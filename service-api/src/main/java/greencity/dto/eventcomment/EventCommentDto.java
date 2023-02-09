@@ -1,6 +1,5 @@
 package greencity.dto.eventcomment;
 
-import greencity.dto.user.UserVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,8 +12,6 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -35,7 +32,9 @@ public class EventCommentDto {
 
     private String text;
 
-    private boolean currentUserLiked;
+    private int replies;
 
-    private Set<UserVO> usersLiked = new HashSet<>();
+    private int likes;
+
+    private boolean currentUserLiked = false;
 }

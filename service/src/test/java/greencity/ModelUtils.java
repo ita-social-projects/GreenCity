@@ -2196,7 +2196,7 @@ public class ModelUtils {
     }
 
     public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text");
+        return new AddEventCommentDtoRequest("text", 100L);
     }
 
     public static EventCommentDto getEventCommentDto() {
@@ -2204,7 +2204,9 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
-            .usersLiked(new HashSet<>())
+            .likes(0)
+            .replies(0)
+            .currentUserLiked(false)
             .build();
     }
 

@@ -82,6 +82,7 @@ class EventCommentControllerTest {
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "{\n"
             + "  \"text\": \"string\"\n"
+            + "  \"parentCommentId\": \"100\"\n"
             + "}";
 
         mockMvc.perform(post(EVENT_COMMENT_CONTROLLER_LINK + "/{eventId}", 1)

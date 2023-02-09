@@ -34,6 +34,8 @@ public class EventCommentVO {
     @CreatedDate
     private LocalDateTime createdDate;
 
+    private EventCommentVO parentComment;
+
     private List<EventCommentVO> comments = new ArrayList<>();
 
     private UserVO user;

@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -43,7 +45,11 @@ public class EventComment {
     private Event event;
 
     @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
     private EventComment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
+    private List<EventComment> comments = new ArrayList<>();
 
     @Transient
     private boolean currentUserLiked = false;
