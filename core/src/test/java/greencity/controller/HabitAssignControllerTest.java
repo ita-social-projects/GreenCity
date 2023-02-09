@@ -6,6 +6,7 @@ import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
@@ -27,7 +28,11 @@ import java.util.Locale;
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -206,16 +211,29 @@ class HabitAssignControllerTest {
 
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L))
+        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "en");
     }
 
     @Test
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomList/{habitId}", 1L)
+        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
         verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "ua");
+    }
+
+    @Test
+    void updateUserAndCustomShoppingLists() throws Exception {
+        UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+            .locale(Locale.forLanguageTag("ua"))
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).fullUpdateUserAndCustomShoppingLists(null, 1L, dto, "ua");
     }
 }

@@ -61,7 +61,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
                 findByHostPath(checkUrl.getHost());
             return modelMapper.map(optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
                 : saveSocialNetworkImage(checkUrl), SocialNetworkImageVO.class);
-        } catch (IOException e) {
+        } catch (IOException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
         }
@@ -190,8 +190,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     @Cacheable(value = CacheConstants.SOCIAL_NETWORK_IMAGE_CACHE_NAME)
     public Optional<SocialNetworkImageVO> findByHostPath(String hostPath) {
         Optional<SocialNetworkImage> socialNetworkImage = socialNetworkImageRepo.findByHostPath(hostPath);
-        return modelMapper.map(socialNetworkImage, new TypeToken<Optional<SocialNetworkImageVO>>() {
-        }.getType());
+        return socialNetworkImage.map(i -> modelMapper.map(i, SocialNetworkImageVO.class));
     }
 
     /**

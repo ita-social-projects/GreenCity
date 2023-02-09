@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Korzh-3" author="Nikita Korzh">
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">4</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">4</column>
+            <column name="authorities_id">10</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">4</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">4</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">10</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">2</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">3</column>
+            <column name="authorities_id">7</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">2</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">7</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">10</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">11</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">12</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">2</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">2</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">7</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">8</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">9</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">10</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">11</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">12</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">13</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">14</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">15</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">26</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">27</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">1</column>
+            <column name="authorities_id">28</column>
+        </insert>
+
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">2</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">3</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">4</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">5</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">6</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">7</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">8</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">9</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">10</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">11</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">12</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">13</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">14</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">15</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">20</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">21</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">22</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">24</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">26</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">27</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">6</column>
+            <column name="authorities_id">28</column>
+        </insert>
+
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">1</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">2</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">3</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">4</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">5</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">6</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">7</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">8</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">9</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">10</column>
+        </insert>
+
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">11</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">12</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">13</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">14</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">15</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">16</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">17</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">18</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">19</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">20</column>
+        </insert>
+
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">21</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">22</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">23</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">24</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">25</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">26</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">27</column>
+        </insert>
+        <insert tableName="positions_authorities_mapping">
+            <column name="position_id">7</column>
+            <column name="authorities_id">28</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

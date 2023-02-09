@@ -9,6 +9,7 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.event.Event;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -20,7 +21,6 @@ import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -114,8 +114,7 @@ class EventServiceImplTest {
 
     @Test
     void updateFinishedEvent() {
-        Event actualEvent = ModelUtils.getEvent();
-        actualEvent.setOpen(false);
+        Event actualEvent = ModelUtils.getEventWithFinishedDate();
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
         String userEmail = ModelUtils.getUser().getEmail();
 
@@ -380,6 +379,113 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getRelatedToUserEvents() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, events.size());
+        UserVO userVO = ModelUtils.TEST_USER_VO;
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        when(eventRepo.findRelatedEventsByUser(pageRequest, userVO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
+        for (int i = 0; i < events.size(); i++) {
+            when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(expected.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getRelatedToUserEvents(pageRequest, principal.getName());
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+
+        assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void getRelatedToUserEventsWhereOnlyOrganizer() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        List<EventDto> eventDtos = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, events.size());
+        UserVO userVO = ModelUtils.TEST_USER_VO;
+        User user = ModelUtils.getUser();
+
+        events.forEach(event -> {
+            User someUser = ModelUtils.getUser();
+            someUser.setId(user.getId() + 1);
+            event.getAttenders().add(someUser);
+        });
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        when(eventRepo.findRelatedEventsByUser(pageRequest, userVO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
+        for (int i = 0; i < events.size(); i++) {
+            when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(eventDtos.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getRelatedToUserEvents(pageRequest, principal.getName());
+        List<EventDto> result = eventDtoPageableAdvancedDto.getPage();
+
+        result.forEach(eventDto -> assertFalse(eventDto.getIsSubscribed()));
+    }
+
+    @Test
+    void getRelatedToUserEventsWhereAttender() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        List<EventDto> eventDtos = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, events.size());
+        UserVO userVO = ModelUtils.TEST_USER_VO;
+        User user = ModelUtils.getUser();
+
+        events.forEach(event -> event.getAttenders().add(user));
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        when(eventRepo.findRelatedEventsByUser(pageRequest, userVO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
+        for (int i = 0; i < events.size(); i++) {
+            when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(eventDtos.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getRelatedToUserEvents(pageRequest, principal.getName());
+        List<EventDto> result = eventDtoPageableAdvancedDto.getPage();
+
+        result.forEach(eventDto -> assertTrue(eventDto.getIsSubscribed()));
+    }
+
+    @Test
+    void getRelatedToUserEventsWithEmptyResult() {
+        List<Event> events = new ArrayList<>();
+        int eventSize = events.size();
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, eventSize + 2);
+        UserVO userVO = ModelUtils.TEST_USER_VO;
+        User user = ModelUtils.getUser();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+
+        when(eventRepo.findRelatedEventsByUser(pageRequest, userVO.getId()))
+            .thenReturn(new PageImpl<>(events, pageRequest, eventSize));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getRelatedToUserEvents(pageRequest, principal.getName());
+        int actual = eventDtoPageableAdvancedDto.getPage().size();
+        assertEquals(eventSize, actual);
+    }
+
+    @Test
     void addAttender() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getAttenderUser();
@@ -481,7 +587,7 @@ class EventServiceImplTest {
 
     @Test
     void rateEvent() {
-        Event event = ModelUtils.getEvent();
+        Event event = ModelUtils.getEventWithFinishedDate();
         User user = ModelUtils.getAttenderUser();
         event.setAttenders(Set.of(user));
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));

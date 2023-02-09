@@ -5,32 +5,29 @@ import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
-import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.entity.*;
+import greencity.entity.HabitAssign;
+import greencity.entity.Language;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.EmailNotification;
-import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.Role;
-import static greencity.enums.UserStatus.ACTIVATED;
-import greencity.exception.exceptions.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
+import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -39,13 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -54,6 +44,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static greencity.enums.UserStatus.ACTIVATED;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingListItemServiceImplTest {
@@ -184,7 +195,7 @@ class ShoppingListItemServiceImplTest {
             UserShoppingListItem.builder().id(1L).status(ShoppingListItemStatus.ACTIVE).build();
 
         List<UserShoppingListItemResponseDto> expected =
-            List.of(ModelUtils.getCustomUserShoppingListItemDto());
+            List.of(ModelUtils.getUserShoppingListItemResponseDto());
 
         when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
             .thenReturn(Optional.of(habitAssign));

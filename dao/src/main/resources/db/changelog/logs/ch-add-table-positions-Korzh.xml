@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Korzh-1" author="Nikita Korzh">
+        <createTable tableName="positions">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(60)"/>
+        </createTable>
+
+        <insert tableName="positions">
+            <column name="name" value="Менеджер послуги"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Менеджер обдзвону"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Логіст"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Штурман"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Водій"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Супер адмін"/>
+        </insert>
+        <insert tableName="positions">
+            <column name="name" value="Адмін"/>
+        </insert>
+
+
+    </changeSet>
+</databaseChangeLog>

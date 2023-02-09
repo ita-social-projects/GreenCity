@@ -12,6 +12,8 @@ deployment:
 
 externalSecret:
   secretName: greencity-secret
+  tenantId: 6c51c659-9d52-41af-81f7-dde16380e813
+  vaultUrl: https://greencity-app.vault.azure.net
 
 service:
   type: ClusterIP
