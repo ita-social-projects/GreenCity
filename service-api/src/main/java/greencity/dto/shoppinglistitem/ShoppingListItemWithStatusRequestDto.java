@@ -1,28 +1,22 @@
-package greencity.dto.user;
+package greencity.dto.shoppinglistitem;
 
 import greencity.enums.ShoppingListItemStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
-@Builder
-public class UserShoppingListItemResponseDto {
-    @Min(1L)
-    private Long id;
-    @NotEmpty
-    private String text;
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
+public class ShoppingListItemWithStatusRequestDto extends ShoppingListItemRequestDto {
     @NotNull
     private ShoppingListItemStatus status;
 }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Data
@@ -14,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class UserShoppingAndCustomShoppingListsDto {
-    List<UserShoppingListItemResponseDto> userShoppingListItemDto;
-    List<CustomShoppingListItemResponseDto> customShoppingListItemDto;
+    @Valid
+    List<@Valid UserShoppingListItemResponseDto> userShoppingListItemDto;
+    @Valid
+    List<@Valid CustomShoppingListItemResponseDto> customShoppingListItemDto;
 }

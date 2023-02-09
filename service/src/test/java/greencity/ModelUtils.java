@@ -38,7 +38,15 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.event.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddEventDtoResponse;
+import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventAuthorDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
@@ -61,6 +69,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -88,6 +97,9 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -98,7 +110,19 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.*;
+import greencity.dto.user.AuthorDto;
+import greencity.dto.user.EcoNewsAuthorDto;
+import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.RecommendedFriendDto;
+import greencity.dto.user.UserFilterDtoRequest;
+import greencity.dto.user.UserFilterDtoResponse;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
+import greencity.dto.user.UserShoppingListItemVO;
+import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -481,6 +505,20 @@ public class ModelUtils {
             .build();
     }
 
+    public static ShoppingListItemWithStatusRequestDto getShoppingListItemWithStatusRequestDto() {
+        return ShoppingListItemWithStatusRequestDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .build();
+    }
+
+    public static CustomShoppingListItemWithStatusSaveRequestDto getCustomShoppingListItemWithStatusSaveRequestDto() {
+        return CustomShoppingListItemWithStatusSaveRequestDto.builder()
+            .text("TEXT")
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
+    }
+
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
         return HabitStatusCalendarDto.builder()
             .enrollDate(LocalDate.now()).id(1L).build();
@@ -621,7 +659,7 @@ public class ModelUtils {
         return list;
     }
 
-    public static UserShoppingListItemResponseDto getCustomUserShoppingListItemDto() {
+    public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
         return UserShoppingListItemResponseDto.builder()
             .id(1L)
             .text("Buy electric car")
@@ -1716,7 +1754,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomShoppingListItemResponseDto customShoppingListItemResponseDto() {
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDto() {
         return CustomShoppingListItemResponseDto.builder()
             .id(1L)
             .status(ShoppingListItemStatus.INPROGRESS)
@@ -1724,7 +1762,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomShoppingListItem customShoppingListItem() {
+    public static CustomShoppingListItem getCustomShoppingListItem() {
         return CustomShoppingListItem.builder()
             .id(1L)
             .status(ShoppingListItemStatus.INPROGRESS)
@@ -2247,6 +2285,13 @@ public class ModelUtils {
             .id(1L)
             .name("Inna")
             .organizerRating(1.0)
+            .build();
+    }
+
+    public static UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingListsDto() {
+        return UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
+            .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
             .build();
     }
 }
