@@ -58,8 +58,21 @@ public class EventCommentServiceImpl implements EventCommentService {
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
+
+        if (addEventCommentDtoRequest.getParentCommentId() != 0) {
+            Long parentCommentId = addEventCommentDtoRequest.getParentCommentId();
+            EventComment parentEventComment = eventCommentRepo.findById(parentCommentId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
+
+            if (!parentEventComment.getEvent().getId().equals(eventId)) {
+                throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId);
+            }
+            eventComment.setParentComment(parentEventComment);
+        }
+
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
+
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
         return addEventCommentDtoResponse;
@@ -140,7 +153,8 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         Page<EventComment> pages =
-            eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId);
+            eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable,
+                eventId);
 
         if (userVO != null) {
             pages.forEach(eventComment -> eventComment.setCurrentUserLiked(eventComment.getUsersLiked()
@@ -183,8 +197,8 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     /**
-     * Method set true for field 'deleted' of the comment {@link EventComment} by
-     * id.
+     * Method set true for field 'deleted' of the comment {@link EventComment} and
+     * its replies by id.
      *
      * @param eventCommentId specifies {@link EventComment} to which we search for
      *                       comments.
@@ -200,28 +214,11 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         eventComment.setDeleted(true);
-        eventComment.getComments().forEach(comment -> comment.setDeleted(true));
+        if (eventComment.getComments() != null) {
+            eventComment.getComments().forEach(comment -> comment.setDeleted(true));
+        }
+
         eventCommentRepo.save(eventComment);
-    }
-
-    /**
-     * Method to add reply on {@link EventComment}.
-     *
-     * @param replyText       text of
-     *                        {@link greencity.dto.eventcomment.EventCommentVO}
-     *                        reply.
-     * @param userVO          - {@link UserVO} user who replied.
-     * @param parentCommentId {@link greencity.dto.event.EventVO} comment on which
-     *                        replied.
-     */
-    public void saveReply(String replyText,
-        UserVO userVO, Long parentCommentId) {
-        EventComment eventParentComment = eventCommentRepo.findById(parentCommentId)
-            .orElseThrow(() -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-
-        eventCommentRepo.save(EventComment.builder().text(replyText).parentComment(eventParentComment).build()
-            .setUser(modelMapper.map(userVO, User.class))
-            .setEvent(eventParentComment.getEvent()));
     }
 
     /**

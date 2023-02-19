@@ -93,6 +93,61 @@ class EventCommentServiceImplTest {
     }
 
     @Test
+    void saveReplyWithWrongParentIdThrowException() {
+        Long parentCommentId = 123L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        EventVO eventVO = ModelUtils.getEventVO();
+        Event event = ModelUtils.getEvent();
+        AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
+        addEventCommentDtoRequest.setParentCommentId(parentCommentId);
+        EventComment eventComment = getEventComment();
+
+        when(eventService.findById(anyLong())).thenReturn(eventVO);
+        when(eventCommentRepo.findById(parentCommentId)).thenReturn(Optional.empty());
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
+        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
+
+        NotFoundException notFoundException =
+            assertThrows(NotFoundException.class,
+                () -> eventCommentService.save(1L, addEventCommentDtoRequest, userVO));
+
+        assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
+    }
+
+    @Test
+    void saveReplyWithWrongEventIdThrowException() {
+        Long parentCommentId = 123L;
+        Long replyEventId = 1L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
+        addEventCommentDtoRequest.setParentCommentId(parentCommentId);
+        EventComment eventComment = getEventComment();
+        EventVO eventVO = ModelUtils.getEventVO();
+        Event event = ModelUtils.getEvent();
+        event.setId(replyEventId);
+        Event parentCommentEvent = ModelUtils.getEvent();
+        parentCommentEvent.setId(2L);
+        EventComment parentEventComment = getEventComment();
+        parentEventComment.setId(parentCommentId);
+        parentEventComment.setEvent(parentCommentEvent);
+
+        when(eventService.findById(anyLong())).thenReturn(eventVO);
+        when(eventCommentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentEventComment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
+        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
+
+        NotFoundException notFoundException =
+            assertThrows(NotFoundException.class,
+                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
+
+        assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
+    }
+
+    @Test
     void getEventCommentById() {
         EventComment eventComment = getEventComment();
         EventCommentDto eventCommentDto = modelMapper.map(eventComment, EventCommentDto.class);
@@ -131,8 +186,9 @@ class EventCommentServiceImplTest {
         EventCommentDto eventCommentDto = ModelUtils.getEventCommentDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.findAllByEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable, eventId))
-            .thenReturn(pages);
+        when(eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable,
+            eventId))
+                .thenReturn(pages);
         when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
 
         PageableDto<EventCommentDto> allComments = eventCommentService.getAllActiveComments(pageable, userVO, eventId);
@@ -237,30 +293,6 @@ class EventCommentServiceImplTest {
         NotFoundException notFoundException =
             assertThrows(NotFoundException.class, () -> eventCommentService.delete(commentId, userVO));
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
-    }
-
-    @Test
-    void saveReply() {
-        UserVO userVO = getUserVO();
-        Long parentCommentId = 1L;
-
-        when(eventCommentRepo.findById(parentCommentId))
-            .thenReturn(Optional.ofNullable(getEventComment()));
-
-        eventCommentService.saveReply("text", userVO, parentCommentId);
-
-        verify(eventCommentRepo).save(any(EventComment.class));
-    }
-
-    @Test
-    void saveCommentWithWrongParentIdThrowException() {
-        UserVO userVO = getUserVO();
-        Long parentCommentId = 1L;
-
-        when(eventCommentRepo.findById(parentCommentId))
-            .thenThrow(new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
-
-        assertThrows(BadRequestException.class, () -> eventCommentService.saveReply("text", userVO, parentCommentId));
     }
 
     @Test
