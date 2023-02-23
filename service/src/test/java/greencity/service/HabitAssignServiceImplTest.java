@@ -2,18 +2,50 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.Language;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,10 +62,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
+import static greencity.ModelUtils.getFullHabitAssign;
+import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getHabitAssignPropertiesDto;
+import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
+import static greencity.ModelUtils.getShoppingListItem;
+import static greencity.ModelUtils.getShoppingListItemTranslationList;
+import static greencity.ModelUtils.getUpdateUserShoppingListDto;
+import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -45,6 +94,8 @@ class HabitAssignServiceImplTest {
     ShoppingListItemRepo shoppingListItemRepo;
     @Mock
     UserShoppingListItemRepo userShoppingListItemRepo;
+    @Mock
+    CustomShoppingListItemRepo customShoppingListItemRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
@@ -175,6 +226,14 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void getEndDate() {
+        HabitAssignDto habitAssign = ModelUtils.getHabitAssignDto();
+        habitAssign.setDuration(2);
+        ZonedDateTime expected = habitAssign.getCreateDateTime().plusDays(habitAssign.getDuration());
+        assertEquals(expected, habitAssignService.getEndDate(habitAssign));
+    }
+
+    @Test
     void findHabitAssignsBetweenDates() {
         HabitAssign habit1 = ModelUtils.getHabitAssign();
         HabitAssign habit2 = ModelUtils.getHabitAssign();
@@ -289,10 +348,28 @@ class HabitAssignServiceImplTest {
     @Test
     void deleteHabitAssign() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
-        assert habitAssign != null;
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
+
         habitAssignService.deleteHabitAssign(1L, 1L);
+
+        verify(userShoppingListItemRepo).deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
         verify(habitAssignRepo).delete(habitAssign);
+    }
+
+    @Test
+    void deleteHabitAssignWithNoHabitAssign() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitAssignService.deleteHabitAssign(1L, 1L));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+            + 1L,
+            exception.getMessage());
+
+        verify(userShoppingListItemRepo, times(0)).deleteByShoppingListItemsByHabitAssignId(anyLong());
+        verify(habitAssignRepo, times(0)).delete(any());
     }
 
     @Test
@@ -402,9 +479,9 @@ class HabitAssignServiceImplTest {
         String language = "en";
 
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
-            List.of(ModelUtils.customShoppingListItemResponseDto());
+            List.of(ModelUtils.getCustomShoppingListItemResponseDto());
         List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
-            List.of(ModelUtils.getCustomUserShoppingListItemDto());
+            List.of(ModelUtils.getUserShoppingListItemResponseDto());
         UserShoppingAndCustomShoppingListsDto expected =
             UserShoppingAndCustomShoppingListsDto
                 .builder()
@@ -583,6 +660,22 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void addDefaultHabitWithNotEmptyUsersHabitAssign() {
+        UserVO userVo = ModelUtils.createUserVO2();
+
+        when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
+
+        habitAssignService.addDefaultHabit(userVo, "eu");
+
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(habitRepo, times(0)).findById(anyLong());
+        verify(habitAssignRepo, times(0)).findByHabitIdAndUserIdAndStatusIsCancelled(anyLong(), anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
+    }
+
+    @Test
     void updateUserShoppingList() {
         HabitAssign habitAssign = getHabitAssign();
         habitAssign.setDuration(20);
@@ -622,6 +715,46 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void updateUserShoppingListWithNullValueOfPropertiesDtoDefaultList() {
+        HabitAssign habitAssign = getHabitAssign();
+        habitAssign.setDuration(20);
+        HabitAssignPropertiesDto propertiesDto = getHabitAssignPropertiesDto();
+        propertiesDto.setDefaultShoppingListItems(null);
+        when(habitRepo.existsById(anyLong())).thenReturn(true);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+            .thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
+
+        HabitAssignUserShoppingListItemDto result =
+            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, propertiesDto);
+        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(anyList());
+        verify(userShoppingListItemRepo, times(0)).deleteAll();
+        assertEquals(20, result.getDuration());
+        assertEquals(1, result.getUserShoppingListItemsDto().size());
+    }
+
+    @Test
+    void updateUserShoppingListWithNullEmptyPropertiesDtoDefaultList() {
+        HabitAssign habitAssign = getHabitAssign();
+        habitAssign.setDuration(20);
+        HabitAssignPropertiesDto propertiesDto = getHabitAssignPropertiesDto();
+        propertiesDto.setDefaultShoppingListItems(List.of());
+        when(habitRepo.existsById(anyLong())).thenReturn(true);
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+            .thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
+
+        HabitAssignUserShoppingListItemDto result =
+            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, propertiesDto);
+        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(anyList());
+        verify(userShoppingListItemRepo, times(0)).deleteAll();
+        assertEquals(20, result.getDuration());
+        assertEquals(1, result.getUserShoppingListItemsDto().size());
+    }
+
+    @Test
     void updateUserShoppingListItem() {
         UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
         when(userShoppingListItemRepo.saveAll(any())).thenReturn(List.of(userShoppingListItem));
@@ -637,6 +770,19 @@ class HabitAssignServiceImplTest {
         UpdateUserShoppingListDto updateUserShoppingListDto = getUpdateUserShoppingListDto();
         assertThrows(ShoppingListItemNotFoundException.class,
             () -> habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto));
+    }
+
+    @Test
+    void findHabitByUserIdAndHabitIdWithNoHabitAssignThrowNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId)).thenReturn(Optional.empty());
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
+            .findHabitByUserIdAndHabitId(userId, habitId, "ua"));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+            + habitId,
+            exception.getMessage());
     }
 
     @Test
@@ -659,7 +805,910 @@ class HabitAssignServiceImplTest {
 
         habitAssignService.updateShoppingItem(1L, 1L);
         assertEquals(ShoppingListItemStatus.ACTIVE, userShoppingListItem.getStatus());
+    }
 
+    @Test
+    void updateShoppingItemWithNotPresentShoppingItem() {
+        ShoppingListItemStatus oldStatus = ShoppingListItemStatus.ACTIVE;
+        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
+        userShoppingListItem.setStatus(oldStatus);
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(any()))
+            .thenReturn(List.of(userShoppingListItem));
+
+        habitAssignService.updateShoppingItem(1L, 2L);
+        verify(userShoppingListItemRepo, times(0)).save(any());
+        assertEquals(oldStatus, userShoppingListItem.getStatus());
+    }
+
+    @Test
+    void updateShoppingItemWithNotActiveAndNotInprogressStatus() {
+        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(any()))
+            .thenReturn(List.of(userShoppingListItem));
+
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
+        habitAssignService.updateShoppingItem(1L, 1L);
+        assertEquals(ShoppingListItemStatus.DONE, userShoppingListItem.getStatus());
+
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+        habitAssignService.updateShoppingItem(1L, 1L);
+        assertEquals(ShoppingListItemStatus.DISABLED, userShoppingListItem.getStatus());
+    }
+
+    @Test
+    void fullUpdateUserAndCustomShoppingListsWithNonItem() {
+        Long userId = 1L;
+        Long habitId = 1L;
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(habitId, List.of(), language);
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void saveUserShoppingListWithStatuses() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String name = "Buy a bamboo toothbrush";
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setId(null);
+        responseDto.setText(name);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        List<String> listOfName = List.of(name);
+        ShoppingListItem shoppingListItem = ModelUtils.getShoppingListItem();
+        ShoppingListItemWithStatusRequestDto requestDto = ModelUtils.getShoppingListItemWithStatusRequestDto();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(shoppingListItemRepo.findByNames(habitId, listOfName, language)).thenReturn(List.of(shoppingListItem));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo).findByNames(habitId, listOfName, language);
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(requestDto), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void saveUserShoppingListWithStatusesWithNonExistentItemThrowsNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        String name = "Buy a bamboo toothbrush";
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setId(null);
+        responseDto.setText(name);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        List<String> listOfName = List.of(name);
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(shoppingListItemRepo.findByNames(habitId, listOfName, language)).thenReturn(List.of());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitAssignService
+                .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES + name, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo).findByNames(habitId, listOfName, language);
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+        verify(customShoppingListItemRepo, times(0)).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void saveUserShoppingListWithStatusesWithDuplicateThrowsBadRequestException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setId(null);
+        UserShoppingListItemResponseDto sameResponse = ModelUtils.getUserShoppingListItemResponseDto();
+        sameResponse.setId(null);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto, sameResponse))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+        verify(customShoppingListItemRepo, times(0))
+            .findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesUpdateItem() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
+        userShoppingListItem.setStatus(ShoppingListItemStatus.ACTIVE);
+        userShoppingListItem.setHabitAssign(null);
+
+        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+
+        UserShoppingListItem userShoppingListItemToSave = ModelUtils.getUserShoppingListItem();
+        userShoppingListItemToSave.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItemToSave.setHabitAssign(null);
+
+        verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesUpdateItemWithDisabledStatus() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+        userShoppingListItem.setHabitAssign(null);
+
+        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+
+        UserShoppingListItem userShoppingListItemToSave = ModelUtils.getUserShoppingListItem();
+        userShoppingListItemToSave.setStatus(ShoppingListItemStatus.DONE);
+        userShoppingListItemToSave.setHabitAssign(null);
+
+        verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesWithNonExistentItemThrowsNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
+        userShoppingListItem.setId(responseDto.getId() + 1);
+        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + responseDto.getId(), exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(userShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+        verify(customShoppingListItemRepo, times(0))
+            .findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesDeleteItem() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
+
+        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of(userShoppingListItem));
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesDeleteItemWithDisabledStatus() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
+        userShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+
+        habitAssign.setUserShoppingListItems(List.of(userShoppingListItem));
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesUpdateAndDeleteItems() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus oldStatus = ShoppingListItemStatus.ACTIVE;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+
+        UserShoppingListItem firstUserShoppingListItem = ModelUtils.getUserShoppingListItem();
+        firstUserShoppingListItem.setStatus(oldStatus);
+        firstUserShoppingListItem.setHabitAssign(null);
+
+        UserShoppingListItem secondUserShoppingListItem = ModelUtils.getUserShoppingListItem();
+        secondUserShoppingListItem.setId(firstUserShoppingListItem.getId() + 1);
+
+        habitAssign.setUserShoppingListItems(List.of(firstUserShoppingListItem, secondUserShoppingListItem));
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+
+        UserShoppingListItem userShoppingListItemToSave = ModelUtils.getUserShoppingListItem();
+        userShoppingListItemToSave.setStatus(newStatus);
+        userShoppingListItemToSave.setHabitAssign(null);
+
+        verify(userShoppingListItemRepo).saveAll(List.of(userShoppingListItemToSave));
+        verify(userShoppingListItemRepo).deleteAll(List.of(secondUserShoppingListItem));
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveCustomShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesWithDuplicateThrowsBadRequestException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        UserShoppingListItemResponseDto responseDto = ModelUtils.getUserShoppingListItemResponseDto();
+        UserShoppingListItemResponseDto sameResponseDto = ModelUtils.getUserShoppingListItemResponseDto();
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of(responseDto, sameResponseDto))
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM, exception.getMessage());
+
+        verify(habitAssignRepo, times(0)).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(userShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(userShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+        verify(customShoppingListItemRepo, times(0))
+            .findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateAndDeleteUserShoppingListWithStatusesWithNotFoundHabitAssignThrowsNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId,
+            exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(userShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService, times(0))
+            .saveUserShoppingListItems(anyLong(), anyLong(), anyList(), anyString());
+
+        verify(customShoppingListItemRepo, times(0))
+            .findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void saveCustomShoppingListWithStatuses() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setId(null);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto))
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId)).thenReturn(List.of());
+
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        CustomShoppingListItemSaveRequestDto requestDto =
+            ModelUtils.getCustomShoppingListItemWithStatusSaveRequestDto();
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of(requestDto));
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void saveCustomShoppingListWithStatusesWithDuplicateThrowsBadRequestException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setId(null);
+        CustomShoppingListItemResponseDto sameResponseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        sameResponseDto.setId(null);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto, sameResponseDto))
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitAssignService.fullUpdateUserAndCustomShoppingLists(userId, habitId,
+                dto, language));
+
+        assertEquals(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesUpdateItem() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto))
+            .build();
+
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItem();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(customShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+
+        CustomShoppingListItem customShoppingListItemToSave = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItemToSave.setStatus(newStatus);
+
+        verify(customShoppingListItemRepo).saveAll(List.of(customShoppingListItemToSave));
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesWithNonExistentItemThrowsNotFoundException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto))
+            .build();
+
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItem.setId(responseDto.getId() + 1);
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(customShoppingListItem));
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+
+        assertEquals(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + responseDto.getId(),
+            exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesUpdateItemWithDisabledStatus() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto))
+            .build();
+
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(customShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+
+        CustomShoppingListItem customShoppingListItemToSave = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItemToSave.setStatus(newStatus);
+
+        verify(customShoppingListItemRepo).saveAll(List.of(customShoppingListItemToSave));
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesDeleteItem() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItem();
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(customShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of(customShoppingListItem));
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesDeleteItemWithDisabledStatus() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItem.setStatus(ShoppingListItemStatus.DISABLED);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of())
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(customShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+        verify(customShoppingListItemRepo).saveAll(List.of());
+        verify(customShoppingListItemRepo).deleteAll(List.of());
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesUpdateAndDeleteItems() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        ShoppingListItemStatus newStatus = ShoppingListItemStatus.DONE;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        responseDto.setStatus(newStatus);
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto))
+            .build();
+
+        CustomShoppingListItem firstCustomShoppingListItem = ModelUtils.getCustomShoppingListItem();
+        firstCustomShoppingListItem.setStatus(newStatus);
+
+        CustomShoppingListItem secondCustomShoppingListItem = ModelUtils.getCustomShoppingListItem();
+        secondCustomShoppingListItem.setId(responseDto.getId() + 1);
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId))
+            .thenReturn(List.of(firstCustomShoppingListItem, secondCustomShoppingListItem));
+
+        habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language);
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo)
+            .findAllByUserIdAndHabitId(userId, habitId);
+
+        CustomShoppingListItem customShoppingListItemToSave = ModelUtils.getCustomShoppingListItem();
+        customShoppingListItemToSave.setStatus(newStatus);
+
+        verify(customShoppingListItemRepo).saveAll(List.of(customShoppingListItemToSave));
+        verify(customShoppingListItemRepo).deleteAll(List.of(secondCustomShoppingListItem));
+
+        BulkSaveCustomShoppingListItemDto bulkSaveUserShoppingListItemDto =
+            new BulkSaveCustomShoppingListItemDto(List.of());
+
+        verify(customShoppingListItemService).save(bulkSaveUserShoppingListItemDto, userId, habitId);
+    }
+
+    @Test
+    void updateAndDeleteCustomShoppingListWithStatusesWithDuplicateThrowsBadRequestException() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        CustomShoppingListItemResponseDto responseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        CustomShoppingListItemResponseDto sameResponseDto = ModelUtils.getCustomShoppingListItemResponseDto();
+
+        UserShoppingAndCustomShoppingListsDto dto = UserShoppingAndCustomShoppingListsDto.builder()
+            .userShoppingListItemDto(List.of())
+            .customShoppingListItemDto(List.of(responseDto, sameResponseDto))
+            .build();
+
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId))
+            .thenReturn(Optional.of(ModelUtils.getHabitAssign()));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> habitAssignService
+            .fullUpdateUserAndCustomShoppingLists(userId, habitId, dto, language));
+        assertEquals(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitIdAndUserId(habitId, userId);
+        verify(userShoppingListItemRepo).saveAll(List.of());
+        verify(userShoppingListItemRepo).deleteAll(List.of());
+
+        verify(shoppingListItemRepo, times(0)).findByNames(anyLong(), anyList(), anyString());
+        verify(shoppingListItemService).saveUserShoppingListItems(userId, habitId, List.of(), language);
+
+        verify(customShoppingListItemRepo, times(0))
+            .findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(0)).saveAll(anyList());
+        verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
+
+        verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
     }
 
 }

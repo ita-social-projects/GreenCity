@@ -7,7 +7,11 @@ import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Habit;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
@@ -16,31 +20,34 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.UserShoppingListItemRepo;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import greencity.repository.HabitRepo;
-import greencity.repository.UserShoppingListItemRepo;
-import org.junit.jupiter.api.Assertions;
-
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
-
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-
-import static org.mockito.Mockito.*;
-
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.dao.EmptyResultDataAccessException;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomShoppingListItemServiceImplTest {
@@ -325,23 +332,23 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void findAllUsersCustomShoppingListItemsByStatusWithStatus() {
         when(customShoppingListItemRepo.findAllByUserIdAndStatus(1L, "INPROGRESS"))
-            .thenReturn(List.of(ModelUtils.customShoppingListItem()));
-        when(modelMapper.map(ModelUtils.customShoppingListItem(), CustomShoppingListItemResponseDto.class))
-            .thenReturn(ModelUtils.customShoppingListItemResponseDto());
+            .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
+        when(modelMapper.map(ModelUtils.getCustomShoppingListItem(), CustomShoppingListItemResponseDto.class))
+            .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, "INPROGRESS")
-            .contains(ModelUtils.customShoppingListItemResponseDto()));
+            .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
         ;
     }
 
     @Test
     void findAllUsersCustomShoppingListItemsByStatusWithoutStatus() {
         when(customShoppingListItemRepo.findAllByUserId(1L))
-            .thenReturn(List.of(ModelUtils.customShoppingListItem()));
-        when(modelMapper.map(ModelUtils.customShoppingListItem(), CustomShoppingListItemResponseDto.class))
-            .thenReturn(ModelUtils.customShoppingListItemResponseDto());
+            .thenReturn(List.of(ModelUtils.getCustomShoppingListItem()));
+        when(modelMapper.map(ModelUtils.getCustomShoppingListItem(), CustomShoppingListItemResponseDto.class))
+            .thenReturn(ModelUtils.getCustomShoppingListItemResponseDto());
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, null)
-            .contains(ModelUtils.customShoppingListItemResponseDto()));
+            .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
     }
 }

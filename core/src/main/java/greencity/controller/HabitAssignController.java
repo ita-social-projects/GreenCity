@@ -163,7 +163,7 @@ public class HabitAssignController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiLocale
-    @GetMapping("/allUserAndCustomList/{habitId}")
+    @GetMapping("{habitId}/allUserAndCustomList")
     public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingListItemAndUserCustomShoppingList(
         @PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
@@ -171,6 +171,37 @@ public class HabitAssignController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
                 .getUserShoppingListItemAndUserCustomShoppingList(userVO.getId(), habitId, locale.getLanguage()));
+    }
+
+    /**
+     * Method that update UserShoppingList and CustomShopping List.
+     *
+     * @param habitId  {@link HabitVO} id.
+     * @param userVO   {@link UserVO} instance.
+     * @param locale   needed language code.
+     * @param listsDto {@link UserShoppingAndCustomShoppingListsDto} instance.
+     */
+    @ApiOperation(value = "Update user and custom shopping lists",
+        notes = "If item are present in the db, method update it\n"
+            + "If item doesn't present in the db and id is null, method try to add it to user\n"
+            + "If some items from db don't present in the lists, method delete "
+            + "them(Except items with DISABLED status).")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @PutMapping("{habitId}/allUserAndCustomList")
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
+        @PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @ApiIgnore @ValidLanguage Locale locale,
+        @Valid @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitId, listsDto,
+            locale.getLanguage());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
@@ -401,13 +432,13 @@ public class HabitAssignController {
     }
 
     /**
-     * Method delete assigned habit {@link HabitAssignVO} for current
-     * {@link UserVO}.
+     * Method delete assigned habit {@link HabitAssignVO} with inprogress status for
+     * current {@link UserVO}.
      *
      * @param habitId - id of {@link HabitVO}.
      * @param userVO  - {@link UserVO} user.
      */
-    @ApiOperation(value = "Delete assigned habit for current user.")
+    @ApiOperation(value = "Delete assigned habit with inprogress status for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),

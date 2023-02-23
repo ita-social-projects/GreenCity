@@ -5,8 +5,15 @@ import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.*;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
+import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
@@ -23,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -44,6 +52,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitRepo habitRepo;
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
+    private final CustomShoppingListItemRepo customShoppingListItemRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final ShoppingListItemService shoppingListItemService;
     private final CustomShoppingListItemService customShoppingListItemService;
@@ -871,9 +880,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
         userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
@@ -896,6 +905,359 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 usli.setStatus(ShoppingListItemStatus.INPROGRESS);
             }
             userShoppingListItemRepo.save(usli);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void fullUpdateUserAndCustomShoppingLists(
+        Long userId,
+        Long habitId,
+        UserShoppingAndCustomShoppingListsDto listsDto,
+        String language) {
+        fullUpdateUserShoppingList(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
+        fullUpdateCustomShoppingList(userId, habitId, listsDto.getCustomShoppingListItemDto());
+    }
+
+    /**
+     * Method that update UserShoppingList.
+     *
+     * <ul>
+     * <li>If items are present in the db, method update them;</li>
+     * <li>If items don't present in the db and id is null, method try to add it to
+     * user;</li>
+     * <li>If some items from db don't present in the lists, method delete
+     * them(Except items with DISABLED status).</li>
+     * </ul>
+     *
+     * @param userId   {@code User} id.
+     * @param habitId  {@code Habit} id.
+     * @param list     {@link UserShoppingListItemResponseDto} User Shopping lists.
+     * @param language {@link String} of language code value.
+     */
+    private void fullUpdateUserShoppingList(
+        Long userId,
+        Long habitId,
+        List<UserShoppingListItemResponseDto> list,
+        String language) {
+        updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
+        saveUserShoppingListWithStatuses(userId, habitId, list, language);
+    }
+
+    /**
+     * Method that save {@link UserShoppingListItemResponseDto} for item with id =
+     * null.
+     *
+     * @param userId           {@code User} id.
+     * @param habitId          {@code Habit} id.
+     * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
+     *                         lists.
+     * @param language         {@link String} of language code value.
+     */
+    private void saveUserShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
+        List<UserShoppingListItemResponseDto> userShoppingList,
+        String language) {
+        List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
+            .filter(shoppingItem -> shoppingItem.getId() == null)
+            .collect(Collectors.toList());
+        checkDuplicationForUserShoppingListByName(listToSave);
+
+        List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
+
+        Map<Long, ShoppingListItemStatus> shoppingItemIdToStatusMap =
+            getShoppingItemIdToStatusMap(shoppingListItems, listToSave, language);
+
+        List<ShoppingListItemRequestDto> listToSaveParam = shoppingListItems.stream()
+            .map(shoppingItem -> ShoppingListItemWithStatusRequestDto.builder()
+                .id(shoppingItem.getId())
+                .status(shoppingItemIdToStatusMap.get(shoppingItem.getId()))
+                .build())
+            .collect(Collectors.toList());
+
+        shoppingListItemService.saveUserShoppingListItems(userId, habitId, listToSaveParam, language);
+    }
+
+    private void checkDuplicationForUserShoppingListByName(List<UserShoppingListItemResponseDto> listToSave) {
+        long countOfUnique = listToSave.stream()
+            .map(UserShoppingListItemResponseDto::getText)
+            .distinct()
+            .count();
+        if (listToSave.size() != countOfUnique) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    private List<ShoppingListItem> findRelatedShoppingListItem(
+        Long habitId,
+        String language,
+        List<UserShoppingListItemResponseDto> listToSave) {
+        if (listToSave.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> listToSaveNames = listToSave.stream()
+            .map(UserShoppingListItemResponseDto::getText)
+            .collect(Collectors.toList());
+
+        List<ShoppingListItem> relatedShoppingListItems =
+            shoppingListItemRepo.findByNames(habitId, listToSaveNames, language);
+
+        if (listToSaveNames.size() != relatedShoppingListItems.size()) {
+            List<String> relatedShoppingListItemNames = relatedShoppingListItems.stream()
+                .map(x -> getShoppingItemNameByLanguageCode(x, language))
+                .collect(Collectors.toList());
+
+            listToSaveNames.removeAll(relatedShoppingListItemNames);
+
+            String notFoundItems = String.join(", ", listToSaveNames);
+
+            throw new NotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES + notFoundItems);
+        }
+        return relatedShoppingListItems;
+    }
+
+    private Map<Long, ShoppingListItemStatus> getShoppingItemIdToStatusMap(
+        List<ShoppingListItem> shoppingListItems,
+        List<UserShoppingListItemResponseDto> listToSave,
+        String language) {
+        Map<String, ShoppingListItemStatus> shoppingItemNameToStatusMap =
+            listToSave.stream()
+                .collect(Collectors.toMap(
+                    UserShoppingListItemResponseDto::getText,
+                    UserShoppingListItemResponseDto::getStatus));
+
+        return shoppingListItems.stream()
+            .collect(Collectors.toMap(
+                ShoppingListItem::getId,
+                shoppingListItem -> shoppingItemNameToStatusMap
+                    .get(getShoppingItemNameByLanguageCode(shoppingListItem, language))));
+    }
+
+    private String getShoppingItemNameByLanguageCode(ShoppingListItem shoppingItem, String language) {
+        return shoppingItem.getTranslations()
+            .stream()
+            .filter(x -> x.getLanguage().getCode().equals(language))
+            .findFirst()
+            .orElseThrow()
+            .getContent();
+    }
+
+    /**
+     * Method that update or delete {@link UserShoppingListItem}. Not founded items,
+     * except DISABLED, will be deleted.
+     *
+     * @param userId           {@code User} id.
+     * @param habitId          {@code Habit} id.
+     * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
+     *                         lists.
+     */
+    private void updateAndDeleteUserShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
+        List<UserShoppingListItemResponseDto> userShoppingList) {
+        List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
+            .filter(item -> item.getId() != null)
+            .collect(Collectors.toList());
+
+        checkDuplicationForUserShoppingListById(listToUpdate);
+
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+
+        List<UserShoppingListItem> currentList = habitAssign.getUserShoppingListItems();
+
+        checkIfUserShoppingItemsExist(listToUpdate, currentList);
+
+        Map<Long, ShoppingListItemStatus> mapIdToStatus =
+            listToUpdate.stream()
+                .collect(Collectors.toMap(
+                    UserShoppingListItemResponseDto::getId,
+                    UserShoppingListItemResponseDto::getStatus));
+
+        List<UserShoppingListItem> listToSave = new ArrayList<>();
+        List<UserShoppingListItem> listToDelete = new ArrayList<>();
+        for (var currentItem : currentList) {
+            ShoppingListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            if (newStatus != null) {
+                currentItem.setStatus(newStatus);
+                listToSave.add(currentItem);
+            } else {
+                if (!currentItem.getStatus().equals(ShoppingListItemStatus.DISABLED)) {
+                    listToDelete.add(currentItem);
+                }
+            }
+        }
+        userShoppingListItemRepo.saveAll(listToSave);
+        userShoppingListItemRepo.deleteAll(listToDelete);
+    }
+
+    private void checkDuplicationForUserShoppingListById(List<UserShoppingListItemResponseDto> listToUpdate) {
+        long countOfUnique = listToUpdate.stream()
+            .map(UserShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOfUnique) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_USER_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    private void checkIfUserShoppingItemsExist(
+        List<UserShoppingListItemResponseDto> listToUpdate,
+        List<UserShoppingListItem> currentList) {
+        List<Long> updateIds =
+            listToUpdate.stream().map(UserShoppingListItemResponseDto::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(UserShoppingListItem::getId).collect(Collectors.toList());
+
+        updateIds.removeAll(currentIds);
+
+        if (!updateIds.isEmpty()) {
+            String notFoundedIds = updateIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND + notFoundedIds);
+        }
+    }
+
+    /**
+     * Method that update CustomShopping List.
+     *
+     * <ul>
+     * <li>If items are present in the db, method update them;</li>
+     * <li>If items don't present in the db and id is null, method try to add it to
+     * user;</li>
+     * <li>If some items from db don't present in the lists, method delete
+     * them(Except items with DISABLED status).</li>
+     * </ul>
+     *
+     * @param userId  {@code User} id.
+     * @param habitId {@code Habit} id.
+     * @param list    {@link CustomShoppingListItemResponseDto} Custom Shopping
+     *                lists.
+     */
+    private void fullUpdateCustomShoppingList(
+        Long userId,
+        Long habitId,
+        List<CustomShoppingListItemResponseDto> list) {
+        updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, list);
+        saveCustomShoppingListWithStatuses(userId, habitId, list);
+    }
+
+    /**
+     * Method that save {@link CustomShoppingListItemResponseDto} for item with id =
+     * null.
+     *
+     * @param userId             {@code User} id.
+     * @param habitId            {@code Habit} id.
+     * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
+     *                           shopping lists.
+     */
+    private void saveCustomShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
+        List<CustomShoppingListItemResponseDto> customShoppingList) {
+        List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
+            .filter(shoppingItem -> shoppingItem.getId() == null)
+            .collect(Collectors.toList());
+
+        checkDuplicationForCustomShoppingListByName(listToSave);
+
+        List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
+            .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
+                .text(item.getText())
+                .status(item.getStatus())
+                .build())
+            .collect(Collectors.toList());
+
+        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
+    }
+
+    private void checkDuplicationForCustomShoppingListByName(List<CustomShoppingListItemResponseDto> listToSave) {
+        long countOfUnique = listToSave.stream()
+            .map(CustomShoppingListItemResponseDto::getText)
+            .distinct()
+            .count();
+        if (listToSave.size() != countOfUnique) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    /**
+     * Method that update or delete {@link CustomShoppingListItem}. Not founded
+     * items, except DISABLED, will be deleted.
+     *
+     * @param userId             {@code User} id.
+     * @param habitId            {@code Habit} id.
+     * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
+     *                           shopping lists.
+     */
+    private void updateAndDeleteCustomShoppingListWithStatuses(
+        Long userId,
+        Long habitId,
+        List<CustomShoppingListItemResponseDto> customShoppingList) {
+        List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
+            .filter(shoppingItem -> shoppingItem.getId() != null)
+            .collect(Collectors.toList());
+
+        checkDuplicationForCustomShoppingListById(listToUpdate);
+
+        List<CustomShoppingListItem> currentList =
+            customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId);
+
+        checkIfCustomShoppingItemsExist(listToUpdate, currentList);
+
+        Map<Long, ShoppingListItemStatus> mapIdToStatus =
+            listToUpdate.stream()
+                .collect(Collectors.toMap(
+                    CustomShoppingListItemResponseDto::getId,
+                    CustomShoppingListItemResponseDto::getStatus));
+
+        List<CustomShoppingListItem> listToSave = new ArrayList<>();
+        List<CustomShoppingListItem> listToDelete = new ArrayList<>();
+        for (var currentItem : currentList) {
+            ShoppingListItemStatus newStatus = mapIdToStatus.get(currentItem.getId());
+            if (newStatus != null) {
+                currentItem.setStatus(newStatus);
+                listToSave.add(currentItem);
+            } else {
+                if (!currentItem.getStatus().equals(ShoppingListItemStatus.DISABLED)) {
+                    listToDelete.add(currentItem);
+                }
+            }
+        }
+        customShoppingListItemRepo.saveAll(listToSave);
+        customShoppingListItemRepo.deleteAll(listToDelete);
+    }
+
+    private void checkDuplicationForCustomShoppingListById(List<CustomShoppingListItemResponseDto> listToUpdate) {
+        long countOfUnique = listToUpdate.stream()
+            .map(CustomShoppingListItemResponseDto::getId)
+            .distinct()
+            .count();
+        if (listToUpdate.size() != countOfUnique) {
+            throw new BadRequestException(ErrorMessage.DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM);
+        }
+    }
+
+    private void checkIfCustomShoppingItemsExist(
+        List<CustomShoppingListItemResponseDto> listToUpdate,
+        List<CustomShoppingListItem> currentList) {
+        List<Long> updateIds =
+            listToUpdate.stream().map(CustomShoppingListItemResponseDto::getId).collect(Collectors.toList());
+        List<Long> currentIds = currentList.stream().map(CustomShoppingListItem::getId).collect(Collectors.toList());
+
+        updateIds.removeAll(currentIds);
+
+        if (!updateIds.isEmpty()) {
+            String notFoundedIds = updateIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+            throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundedIds);
         }
     }
 }

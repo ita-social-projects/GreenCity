@@ -3,12 +3,15 @@ package greencity.constant;
 public final class ErrorMessage {
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom shopping list item with such id does not exist.";
+    public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";
     public static final String SHOPPING_LIST_ITEM_NOT_DELETED = "Advice not deleted ";
     public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID = "Shopping list item with such id does not exist ";
     public static final String SHOPPING_LIST_ITEM_NOT_ASSIGNED_FOR_THIS_HABIT =
         "Shopping list item with such id does not assigned fot this habit ";
     public static final String SHOPPING_LIST_ITEM_ALREADY_SELECTED =
-        "Shopping list item with such id already selected by user ";
+        "Shopping list item with such id is already selected ";
+    public static final String SHOPPING_LIST_ITEM_NOT_FOUND_BY_NAMES =
+        "Shopping list item with such name(s) does not exist: ";
     public static final String PARSING_URL_FAILED = "Can't parse image's url: ";
     public static final String HABIT_STATISTIC_ALREADY_EXISTS = "Habit statistic already exists with such date";
     public static final String HABIT_ASSIGN_NOT_FOUND_BY_ID = "Habit assign does not exist by this id : ";
@@ -82,6 +85,7 @@ public final class ErrorMessage {
     public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND = "UserShoppingListItem(s) with this id not found: ";
     public static final String USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID =
         "UserShoppingListItem(s) for this user not found";
+    public static final String DUPLICATED_USER_SHOPPING_LIST_ITEM = "UserShoppingListItems should be unique";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
     public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
@@ -93,6 +97,8 @@ public final class ErrorMessage {
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
         "This CustomShoppingListItem(s) already exist(s): ";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND =
+        "CustomShoppingListItem(s) with this id not found: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
         "The user doesn't have any custom shopping list item.";
     public static final String USER_HAS_NO_PERMISSION = "Current user has no permission for this action";
