@@ -348,10 +348,28 @@ class HabitAssignServiceImplTest {
     @Test
     void deleteHabitAssign() {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        when(habitAssignRepo.findByUserIdAndHabitId(1L, 1L)).thenReturn(Optional.ofNullable(habitAssign));
-        assert habitAssign != null;
+
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
+
         habitAssignService.deleteHabitAssign(1L, 1L);
+
+        verify(userShoppingListItemRepo).deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
         verify(habitAssignRepo).delete(habitAssign);
+    }
+
+    @Test
+    void deleteHabitAssignWithNoHabitAssign() {
+        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitAssignService.deleteHabitAssign(1L, 1L));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
+            + 1L,
+            exception.getMessage());
+
+        verify(userShoppingListItemRepo, times(0)).deleteByShoppingListItemsByHabitAssignId(anyLong());
+        verify(habitAssignRepo, times(0)).delete(any());
     }
 
     @Test

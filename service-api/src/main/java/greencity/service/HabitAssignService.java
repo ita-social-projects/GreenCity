@@ -245,7 +245,7 @@ public interface HabitAssignService {
     HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
 
     /**
-     * Method delete HabitAssign.
+     * Method delete HabitAssign with inprogress status.
      *
      * @param habitId {@link Long} id.
      * @param userId  {@link Long} id.

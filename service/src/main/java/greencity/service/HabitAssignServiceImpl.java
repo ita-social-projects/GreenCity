@@ -880,9 +880,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByUserIdAndHabitId(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
         userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
