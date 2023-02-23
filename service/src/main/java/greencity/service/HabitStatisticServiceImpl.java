@@ -138,9 +138,9 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
     public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {
         Habit habit = habitRepo.findById(habitId).orElseThrow(
             () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitStatisticRepo.findAllByHabitId(habit.getId()),
-            new TypeToken<List<HabitStatisticDto>>() {
-            }.getType());
+        return habitStatisticRepo.findAllByHabitId(habit.getId()).stream()
+            .map(o -> modelMapper.map(o, HabitStatisticDto.class))
+            .collect(Collectors.toList());
     }
 
     /**

@@ -175,8 +175,7 @@ class HabitStatisticServiceImplTest {
     void findAllStatsByHabitId() {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(habitStatistics);
-        when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
-        }.getType())).thenReturn(habitStatisticDtos);
+        when(modelMapper.map(any(HabitStatistic.class), eq(HabitStatisticDto.class))).thenReturn(habitStatisticDto);
         List<HabitStatisticDto> actual = habitStatisticService.findAllStatsByHabitId(1L);
         assertEquals(habitStatisticDtos, actual);
     }
