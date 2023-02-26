@@ -140,7 +140,8 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
             () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         return habitStatisticRepo.findAllByHabitId(habit.getId()).stream()
             .map(o -> modelMapper.map(o, HabitStatisticDto.class))
-            .collect(Collectors.toList());
+                .map(o -> o.setAmountOfUsersAcquired(habitAssignRepo.findAmountOfUsersAcquired(habitId)))
+                .collect(Collectors.toList());
     }
 
     /**

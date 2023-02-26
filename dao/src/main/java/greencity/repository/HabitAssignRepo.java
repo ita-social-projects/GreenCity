@@ -233,4 +233,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE (upper(ha.status) = :status) AND (ha.habit.id = :habitId)")
     List<HabitAssign> findAllHabitAssignsByStatusAndHabitId(@Param("status") HabitAssignStatus status,
         @Param("habitId") Long habitId);
+
+    @Query(value = "SELECT count(ha)"
+            + "FROM HabitAssign ha WHERE ha.habit.id = :habitId AND ha.status='ACQUIRED'")
+    Long findAmountOfUsersAcquired(@Param("habitId") Long habitId);
 }
