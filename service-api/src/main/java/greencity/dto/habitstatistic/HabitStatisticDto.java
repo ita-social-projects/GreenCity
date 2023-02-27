@@ -25,5 +25,4 @@ public class HabitStatisticDto {
     private Integer amountOfItems;
     @NotNull
     private Long habitAssignId;
-    private Long amountOfUsersAcquired;
 }
