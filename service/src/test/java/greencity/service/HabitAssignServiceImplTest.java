@@ -268,7 +268,7 @@ class HabitAssignServiceImplTest {
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
                 .thenReturn(habitAssignList);
 
-        assertNotEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
+        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }

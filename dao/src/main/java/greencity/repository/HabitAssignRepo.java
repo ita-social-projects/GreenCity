@@ -190,12 +190,12 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE upper(ha.status) NOT IN ('CANCELLED','EXPIRED')"
+        + "WHERE upper(ha.status) = 'INPROGRESS'"
         + "AND ha.user.id = :userId "
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
         + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
         + "AND ha.user.id = :userId "
-        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + "AND upper(ha.status) = 'INPROGRESS'")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
 
