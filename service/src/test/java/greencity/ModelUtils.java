@@ -68,6 +68,8 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
@@ -2291,6 +2293,85 @@ public class ModelUtils {
         return UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
             .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+            .build();
+    }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddCustomHabitDtoRequest.builder()
+            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .complexity(2)
+            .defaultDuration(7)
+            .build();
+
+    }
+
+    public static HabitTranslationDto getHabitTranslationDto() {
+        return HabitTranslationDto.builder()
+            .description("Description")
+            .habitItem("Item")
+            .name("використовувати бавовняну сумку")
+            .build();
+    }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return AddCustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text("buy a shopper")
+                    .build()))
+            .defaultDuration(7)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description("Description")
+                    .habitItem("Item")
+                    .languageCode("ua")
+                    .name("use shopper")
+                    .build()))
+            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .tags(Set.of("Reusable"))
+            .build();
+    }
+
+    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return AddCustomHabitDtoResponse.builder()
+            .id(1L)
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text("buy a shopper")
+                    .build()))
+            .defaultDuration(7)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description("Description")
+                    .habitItem("Item")
+                    .languageCode("ua")
+                    .name("use shopper")
+                    .build()))
+            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .tags(Set.of("Reusable"))
+            .build();
+    }
+
+    public static Tag getTagHabitForServiceTest() {
+        return Tag.builder().id(1L).type(TagType.HABIT)
+            .tagTranslations(List.of(TagTranslation.builder().id(2L).name("News")
+                .language(Language.builder().id(1L).code("en").build()).build()))
+            .build();
+    }
+
+    public static Habit getCustomHabitForServiceTest() {
+        return Habit.builder()
+            .id(1L)
+            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .complexity(2)
+            .defaultDuration(7)
+            .isCustomHabit(true)
             .build();
     }
 

@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import org.springframework.data.domain.Pageable;
@@ -83,4 +85,15 @@ public interface HabitService {
      * @author Marian Diakiv
      */
     List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
+
+    /**
+     * Method to save {@link AddCustomHabitDtoResponse}.
+     *
+     * @param userEmail                {@link String} - user email.
+     * @param addCustomHabitDtoRequest dto with {@link AddCustomHabitDtoRequest}
+     *                                 entered info about field that need to edit.
+     * @return {@link AddCustomHabitDtoResponse} instance.
+     * @author Lilia Mokhnatska
+     */
+    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, String userEmail);
 }
