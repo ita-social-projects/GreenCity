@@ -793,7 +793,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
 
         for (HabitsDateEnrollmentDto dto : list) {
-            if (checkIfHabitIsActiveOnDay(dto, habitAssign)) {
+            if (checkIfHabitIsActiveOnDay(dto, habitAssign) && !checkIfHabitIsEnrolledOnDay(dto, habitAssign)) {
                 markHabitOnHabitsEnrollmentDto(dto, checkIfHabitIsEnrolledOnDay(dto, habitAssign),
                     habitTranslation, habitAssign);
             }
