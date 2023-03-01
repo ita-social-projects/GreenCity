@@ -385,10 +385,8 @@ public class HabitAssignController {
      * {@link LocalDate}s.
      *
      * @param userVO {@link UserVO} user.
-     * @param from   {@link LocalDate} date to check if has inprogress, acquired
-     *               assigns.
-     * @param to     {@link LocalDate} date to check if has inprogress, acquired
-     *               assigns.
+     * @param from   {@link LocalDate} date to check if has inprogress assigns.
+     * @param to     {@link LocalDate} date to check if has inprogress assigns.
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */

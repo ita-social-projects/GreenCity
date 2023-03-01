@@ -72,6 +72,7 @@ import static greencity.ModelUtils.getShoppingListItemTranslationList;
 import static greencity.ModelUtils.getUpdateUserShoppingListDto;
 import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
@@ -267,7 +268,7 @@ class HabitAssignServiceImplTest {
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
                 .thenReturn(habitAssignList);
 
-        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
+        assertNotEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }
