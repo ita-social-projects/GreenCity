@@ -7,7 +7,10 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.*;
+import greencity.repository.HabitRepo;
+import greencity.repository.HabitTranslationRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.HabitAssignRepo;
 
 import java.util.ArrayList;
 import java.util.List;
