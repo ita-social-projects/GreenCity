@@ -124,7 +124,6 @@
     <include file="db/changelog/logs/ch-change-event-date-to-zoned-type-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-changed-user-role-to-varchar.xml"/>
     <include file="db/changelog/logs/ch-add-places-tags.xml"/>
-    <include file="db/changelog/logs/ch-change-events-location-add-addresses-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-table-filters-Hural.xml"/>
     <include file="db/changelog/logs/ch-add-event-organizer-raring-Hlynskyi.xml"/>
     <include file="db/changelog/logs/ch-add-name-unique-constraint-Sakhno.xml"/>
@@ -143,5 +142,6 @@
     <include file="db/changelog/logs/ch-change-tag-translations-column-name-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-change-table-events-dates-locations-Golik.xml"/>
 </databaseChangeLog>
 

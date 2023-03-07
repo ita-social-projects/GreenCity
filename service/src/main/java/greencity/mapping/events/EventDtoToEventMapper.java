@@ -52,10 +52,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
             eventDateLocationsDto.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
-                .coordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude())
-                    .addressEn(coordinatesDto.getAddressEn())
-                    .addressUa(coordinatesDto.getAddressUa()).build())
+                .coordinates(new CoordinatesDtoMapper().convert(coordinatesDto))
                 .onlineLink(date.getOnlineLink())
                 .event(event).build());
         }

@@ -1780,11 +1780,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2098, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2099, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2099, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2100, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1801,7 +1801,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2001, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1818,11 +1818,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1839,7 +1839,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.now().plusDays(1),
             ZonedDateTime.now().plusDays(1).plusSeconds(1),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1857,11 +1857,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -2116,11 +2116,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -2161,16 +2161,32 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+                getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            new Coordinates(45.45, 45.45, "Ua Address", "En Address"), null));
+            getCoordinates(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
         event.setEventGrades(List.of(EventGrade.builder().grade(2).event(event).build()));
         return event;
+    }
+
+    public static Coordinates getCoordinates(){
+        return Coordinates.builder()
+                .latitude(45.45)
+                .longitude(45.45)
+                .streetUa("Вулиця")
+                .streetEn("Street")
+                .houseNumber("1B")
+                .cityUa("Місто")
+                .cityEn("City")
+                .regionUa("Область")
+                .regionUa("Oblast")
+                .countryUa("Країна")
+                .countryEn("Country")
+                .build();
     }
 
     public static Principal getPrincipal() {

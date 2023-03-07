@@ -20,8 +20,29 @@ public final class Coordinates {
     private double longitude;
 
     @Column
-    private String addressUa;
+    private String streetEn;
 
     @Column
-    private String addressEn;
+    private String streetUa;
+
+    @Column
+    private String houseNumber;
+
+    @Column
+    private String cityEn;
+
+    @Column
+    private String cityUa;
+
+    @Column
+    private String regionEn;
+
+    @Column
+    private String regionUa;
+
+    @Column
+    private String countryEn;
+
+    @Column
+    private String countryUa;
 }

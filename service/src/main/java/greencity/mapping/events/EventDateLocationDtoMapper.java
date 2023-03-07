@@ -1,9 +1,7 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import org.modelmapper.AbstractConverter;
@@ -33,12 +31,7 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
             eventDateLocation.setOnlineLink(eventDateLocationDto.getOnlineLink());
         }
         if (eventDateLocationDto.getCoordinates() != null) {
-            CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
-            eventDateLocation.setCoordinates(Coordinates.builder()
-                .latitude(coordinatesDto.getLatitude())
-                .longitude(coordinatesDto.getLongitude())
-                .addressUa(coordinatesDto.getAddressUa())
-                .addressEn(coordinatesDto.getAddressEn()).build());
+            eventDateLocation.setCoordinates(new CoordinatesDtoMapper().convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
     }
