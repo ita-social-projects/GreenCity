@@ -16,6 +16,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class HabitDto {
     private Integer defaultDuration;
+    private Long amountAcquiredUsers;
     private HabitTranslationDto habitTranslation;
     private Long id;
     private String image;

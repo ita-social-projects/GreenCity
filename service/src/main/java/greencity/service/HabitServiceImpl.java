@@ -7,10 +7,8 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
-import greencity.repository.ShoppingListItemRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +28,7 @@ public class HabitServiceImpl implements HabitService {
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
-    private final ShoppingListItemRepo shoppingListItemRepo;
+    private final HabitAssignRepo habitAssignRepo;
 
     /**
      * Method returns Habit by its id.
@@ -89,6 +87,8 @@ public class HabitServiceImpl implements HabitService {
             habitTranslationsPage.stream()
                 .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
                 .collect(Collectors.toList());
+        habits.forEach(
+            habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
         return new PageableDto<>(habits, habitTranslationsPage.getTotalElements(),
             habitTranslationsPage.getPageable().getPageNumber(),
             habitTranslationsPage.getTotalPages());
