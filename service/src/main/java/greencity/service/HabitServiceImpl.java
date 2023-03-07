@@ -52,6 +52,7 @@ public class HabitServiceImpl implements HabitService {
             .findShoppingListByHabitIdAndByLanguageCode(languageCode, id)
             .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         habitDto.setShoppingListItems(shoppingListItems);
+        habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
         return habitDto;
     }
 

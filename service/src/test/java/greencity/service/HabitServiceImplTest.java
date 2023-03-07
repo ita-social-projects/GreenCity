@@ -55,6 +55,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, "en"))
             .thenReturn(Optional.of(habitTranslation));
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         assertEquals(habitDto, habitService.getByIdAndLanguageCode(1L, "en"));
     }
 
