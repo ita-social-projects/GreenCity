@@ -8,6 +8,7 @@ import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -40,6 +41,8 @@ class HabitServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
     @InjectMocks
     private HabitServiceImpl habitService;
 
@@ -52,6 +55,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, "en"))
             .thenReturn(Optional.of(habitTranslation));
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         assertEquals(habitDto, habitService.getByIdAndLanguageCode(1L, "en"));
     }
 
@@ -76,6 +80,7 @@ class HabitServiceImplTest {
         HabitDto habitDto = ModelUtils.getHabitDto();
         when(habitTranslationRepo.findAllByLanguageCode(pageable, "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
@@ -96,6 +101,7 @@ class HabitServiceImplTest {
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, "en"))
             .thenReturn(habitTranslationPage);
         assertEquals(pageableDto, habitService.getAllByTagsAndLanguageCode(pageable, tags, "en"));
