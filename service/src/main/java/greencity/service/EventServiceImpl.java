@@ -1,5 +1,7 @@
 package greencity.service;
 
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
@@ -20,6 +22,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventServiceImpl implements EventService {
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
@@ -49,7 +53,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        addAddressesToLocation(addEventDtoRequest.getDatesLocations());
+        for (EventDateLocationDto eventDateLocationDto : addEventDtoRequest.getDatesLocations()) {
+            if (eventDateLocationDto.getCoordinates() != null) {
+                addAddressToLocation(eventDateLocationDto);
+            }
+        }
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
@@ -312,7 +320,11 @@ public class EventServiceImpl implements EventService {
         updateImages(toUpdate, updateEventDto, images);
 
         if (updateEventDto.getDatesLocations() != null) {
-            addAddressesToLocation(updateEventDto.getDatesLocations());
+            for (EventDateLocationDto eventDateLocationDto : updateEventDto.getDatesLocations()) {
+                if (eventDateLocationDto.getCoordinates() != null) {
+                    addAddressToLocation(eventDateLocationDto);
+                }
+            }
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
@@ -394,19 +406,37 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
-        for (var date : eventDateLocationDtos) {
-            if (date.getCoordinates() != null) {
-                CoordinatesDto coordinatesDto = date.getCoordinates();
-                List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
-                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-                GeocodingResult resultUa = address.get(0);
-                GeocodingResult resultEn = address.get(1);
-                coordinatesDto.setAddressUa(resultUa.formattedAddress);
-                coordinatesDto.setAddressEn(resultEn.formattedAddress);
-                date.setCoordinates(coordinatesDto);
+    private void addAddressToLocation(EventDateLocationDto eventDateLocationDtos) {
+        CoordinatesDto coordinatesDto = eventDateLocationDtos.getCoordinates();
+        List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
+            new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+        AddressComponent[] componentsUa = address.get(0).addressComponents;
+        AddressComponent[] componentsEn = address.get(1).addressComponents;
+        for (int i = 0; i < componentsUa.length && i < componentsEn.length; i++) {
+            AddressComponent componentUa = componentsUa[i];
+            AddressComponent componentEn = componentsEn[i];
+            List<AddressComponentType> componentTypes = Arrays.asList(componentUa.types);
+            if (componentTypes.contains(AddressComponentType.STREET_NUMBER)) {
+                coordinatesDto.setHouseNumber(componentUa.longName);
+            }
+            if (componentTypes.contains(AddressComponentType.ROUTE)) {
+                coordinatesDto.setStreetUa(componentUa.longName);
+                coordinatesDto.setStreetEn(componentEn.longName);
+            }
+            if (componentTypes.contains(AddressComponentType.LOCALITY)) {
+                coordinatesDto.setCityUa(componentUa.longName);
+                coordinatesDto.setCityEn(componentEn.longName);
+            }
+            if (componentTypes.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
+                coordinatesDto.setRegionUa(componentUa.longName);
+                coordinatesDto.setRegionEn(componentEn.longName);
+            }
+            if (componentTypes.contains(AddressComponentType.COUNTRY)) {
+                coordinatesDto.setCountryUa(componentUa.longName);
+                coordinatesDto.setCountryEn(componentEn.longName);
             }
         }
+        eventDateLocationDtos.setCoordinates(coordinatesDto);
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {

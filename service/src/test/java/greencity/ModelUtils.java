@@ -2161,7 +2161,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                getCoordinates(), null));
+            getCoordinates(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
@@ -2173,20 +2173,20 @@ public class ModelUtils {
         return event;
     }
 
-    public static Coordinates getCoordinates(){
+    public static Coordinates getCoordinates() {
         return Coordinates.builder()
-                .latitude(45.45)
-                .longitude(45.45)
-                .streetUa("Вулиця")
-                .streetEn("Street")
-                .houseNumber("1B")
-                .cityUa("Місто")
-                .cityEn("City")
-                .regionUa("Область")
-                .regionUa("Oblast")
-                .countryUa("Країна")
-                .countryEn("Country")
-                .build();
+            .latitude(45.45)
+            .longitude(45.45)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionUa("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
     }
 
     public static Principal getPrincipal() {

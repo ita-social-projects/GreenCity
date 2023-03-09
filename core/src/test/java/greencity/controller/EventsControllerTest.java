@@ -481,8 +481,15 @@ class EventsControllerTest {
                 .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .onlineLink("some-link.com")
                 .coordinates(CoordinatesDto.builder()
-                    .addressEn("address-1")
-                    .addressUa("адреса-1")
+                    .streetUa("Вулиця")
+                    .streetEn("Street")
+                    .houseNumber("1B")
+                    .cityUa("Місто")
+                    .cityEn("City")
+                    .regionUa("Область")
+                    .regionUa("Oblast")
+                    .countryUa("Країна")
+                    .countryEn("Country")
                     .latitude(50.45594503475653d)
                     .longitude(30.5058935778292d).build())
                 .build()))
@@ -564,8 +571,15 @@ class EventsControllerTest {
             "  \"dates\": [\n" +
             "    {\n" +
             "      \"coordinates\": {\n" +
-            "        \"addressEn\": \"string\",\n" +
-            "        \"addressUa\": \"string\",\n" +
+            "        \"streetUa\": \"string\",\n" +
+            "        \"streetEn\": \"string\",\n" +
+            "        \"houseNumber\": \"string\",\n" +
+            "        \"cityUa\": \"string\",\n" +
+            "        \"cityEn\": \"string\",\n" +
+            "        \"regionUa\": \"string\",\n" +
+            "        \"regionEn\": \"string\",\n" +
+            "        \"countryUa\": \"string\",\n" +
+            "        \"countryEn\": \"string\",\n" +
             "        \"latitude\": 0,\n" +
             "        \"longitude\": 0\n" +
             "      },\n" +

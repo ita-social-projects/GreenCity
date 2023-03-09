@@ -8,15 +8,15 @@ public class CoordinatesDtoMapper extends AbstractConverter<CoordinatesDto, Coor
     @Override
     protected Coordinates convert(CoordinatesDto coordinatesDto) {
         return Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                .longitude(coordinatesDto.getLongitude())
-                .streetEn(coordinatesDto.getStreetEn())
-                .streetUa(coordinatesDto.getStreetUa())
-                .houseNumber(coordinatesDto.getHouseNumber())
-                .countryEn(coordinatesDto.getCountryEn())
-                .cityUa(coordinatesDto.getCityUa())
-                .regionEn(coordinatesDto.getRegionEn())
-                .regionUa(coordinatesDto.getRegionUa())
-                .countryEn(coordinatesDto.getCountryEn())
-                .countryUa(coordinatesDto.getCountryUa()).build();
+            .longitude(coordinatesDto.getLongitude())
+            .streetEn(coordinatesDto.getStreetEn())
+            .streetUa(coordinatesDto.getStreetUa())
+            .houseNumber(coordinatesDto.getHouseNumber())
+            .countryEn(coordinatesDto.getCountryEn())
+            .cityUa(coordinatesDto.getCityUa())
+            .regionEn(coordinatesDto.getRegionEn())
+            .regionUa(coordinatesDto.getRegionUa())
+            .countryEn(coordinatesDto.getCountryEn())
+            .countryUa(coordinatesDto.getCountryUa()).build();
     }
 }

@@ -22,7 +22,7 @@ public final class Coordinates {
     @Column
     private String streetEn;
 
-    @Column
+    @Column(nullable = false)
     private String streetUa;
 
     @Column
@@ -31,18 +31,18 @@ public final class Coordinates {
     @Column
     private String cityEn;
 
-    @Column
+    @Column(nullable = false)
     private String cityUa;
 
     @Column
     private String regionEn;
 
-    @Column
+    @Column(nullable = false)
     private String regionUa;
 
     @Column
     private String countryEn;
 
-    @Column
+    @Column(nullable = false)
     private String countryUa;
 }
