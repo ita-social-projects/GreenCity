@@ -24,4 +24,12 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet author="Maksym Golik" id="Golik-2">
+        <addColumn tableName="events">
+            <column name="creation_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

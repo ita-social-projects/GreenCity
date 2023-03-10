@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class EventServiceImpl implements EventService {
             }
         }
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
+        toSave.setCreationDate(LocalDate.now());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
         if (images != null && images.length > 0 && images[0] != null) {

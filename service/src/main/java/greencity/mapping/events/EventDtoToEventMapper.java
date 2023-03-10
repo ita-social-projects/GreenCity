@@ -30,6 +30,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
         Event event = new Event();
         event.setId(eventDto.getId());
         event.setTitle(eventDto.getTitle());
+        event.setCreationDate(eventDto.getCreationDate());
         event.setDescription(eventDto.getDescription());
         event.setOrganizer(User.builder()
             .name(eventDto.getOrganizer().getName())
