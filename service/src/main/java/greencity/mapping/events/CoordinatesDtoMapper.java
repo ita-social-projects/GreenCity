@@ -12,7 +12,7 @@ public class CoordinatesDtoMapper extends AbstractConverter<CoordinatesDto, Coor
             .streetEn(coordinatesDto.getStreetEn())
             .streetUa(coordinatesDto.getStreetUa())
             .houseNumber(coordinatesDto.getHouseNumber())
-            .countryEn(coordinatesDto.getCountryEn())
+            .cityEn(coordinatesDto.getCityEn())
             .cityUa(coordinatesDto.getCityUa())
             .regionEn(coordinatesDto.getRegionEn())
             .regionUa(coordinatesDto.getRegionUa())

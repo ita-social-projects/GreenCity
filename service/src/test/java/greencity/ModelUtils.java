@@ -2183,10 +2183,36 @@ public class ModelUtils {
             .cityUa("Місто")
             .cityEn("City")
             .regionUa("Область")
-            .regionUa("Oblast")
+            .regionEn("Oblast")
             .countryUa("Країна")
             .countryEn("Country")
             .build();
+    }
+
+    public static EventDateLocation getEventDateLocation(){
+        return EventDateLocation.builder()
+                .id(1L)
+                .startDate(ZonedDateTime.now())
+                .finishDate(ZonedDateTime.now().plusDays(2L))
+                .onlineLink("https://events.com/1")
+                .coordinates(getCoordinates())
+                .build();
+    }
+
+    public static CoordinatesDto getCoordinatesDto(){
+        return CoordinatesDto.builder()
+                .latitude(45.45)
+                .longitude(45.45)
+                .streetUa("Вулиця")
+                .streetEn("Street")
+                .houseNumber("1B")
+                .cityUa("Місто")
+                .cityEn("City")
+                .regionUa("Область")
+                .regionEn("Oblast")
+                .countryUa("Країна")
+                .countryEn("Country")
+                .build();
     }
 
     public static Principal getPrincipal() {
