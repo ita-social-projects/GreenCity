@@ -74,16 +74,16 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         Coordinates coordinates = eventDateLocation.getCoordinates();
         if (coordinates != null) {
             CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                    .longitude(coordinates.getLongitude())
-                    .streetEn(coordinates.getStreetEn())
-                    .streetUa(coordinates.getStreetUa())
-                    .houseNumber(coordinates.getHouseNumber())
-                    .cityEn(coordinates.getCityEn())
-                    .cityUa(coordinates.getCityUa())
-                    .regionEn(coordinates.getRegionEn())
-                    .regionUa(coordinates.getRegionUa())
-                    .countryEn(coordinates.getCountryEn())
-                    .countryUa(coordinates.getCountryUa()).build();
+                .longitude(coordinates.getLongitude())
+                .streetEn(coordinates.getStreetEn())
+                .streetUa(coordinates.getStreetUa())
+                .houseNumber(coordinates.getHouseNumber())
+                .cityEn(coordinates.getCityEn())
+                .cityUa(coordinates.getCityUa())
+                .regionEn(coordinates.getRegionEn())
+                .regionUa(coordinates.getRegionUa())
+                .countryEn(coordinates.getCountryEn())
+                .countryUa(coordinates.getCountryUa()).build();
             eventDateLocationDto.setCoordinates(coordinatesDto);
         }
         return eventDateLocationDto;

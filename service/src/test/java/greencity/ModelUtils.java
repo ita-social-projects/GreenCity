@@ -2189,30 +2189,30 @@ public class ModelUtils {
             .build();
     }
 
-    public static EventDateLocation getEventDateLocation(){
+    public static EventDateLocation getEventDateLocation() {
         return EventDateLocation.builder()
-                .id(1L)
-                .startDate(ZonedDateTime.now())
-                .finishDate(ZonedDateTime.now().plusDays(2L))
-                .onlineLink("https://events.com/1")
-                .coordinates(getCoordinates())
-                .build();
+            .id(1L)
+            .startDate(ZonedDateTime.now())
+            .finishDate(ZonedDateTime.now().plusDays(2L))
+            .onlineLink("https://events.com/1")
+            .coordinates(getCoordinates())
+            .build();
     }
 
-    public static CoordinatesDto getCoordinatesDto(){
+    public static CoordinatesDto getCoordinatesDto() {
         return CoordinatesDto.builder()
-                .latitude(45.45)
-                .longitude(45.45)
-                .streetUa("Вулиця")
-                .streetEn("Street")
-                .houseNumber("1B")
-                .cityUa("Місто")
-                .cityEn("City")
-                .regionUa("Область")
-                .regionEn("Oblast")
-                .countryUa("Країна")
-                .countryEn("Country")
-                .build();
+            .latitude(45.45)
+            .longitude(45.45)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
     }
 
     public static Principal getPrincipal() {

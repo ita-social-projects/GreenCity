@@ -17,14 +17,14 @@ class EventDateLocationDtoMapperTest {
     private EventDateLocationDtoMapper mapper;
 
     @Test
-    void convert(){
+    void convert() {
         EventDateLocation expected = getEventDateLocation();
         EventDateLocationDto dto = EventDateLocationDto.builder()
-                .id(expected.getId())
-                .startDate(expected.getStartDate())
-                .finishDate(expected.getFinishDate())
-                .coordinates(getCoordinatesDto())
-                .build();
+            .id(expected.getId())
+            .startDate(expected.getStartDate())
+            .finishDate(expected.getFinishDate())
+            .coordinates(getCoordinatesDto())
+            .build();
         EventDateLocation actual = mapper.convert(dto);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getStartDate(), actual.getStartDate());
