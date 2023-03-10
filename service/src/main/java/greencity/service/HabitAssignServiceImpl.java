@@ -440,6 +440,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         changeStatuses(ShoppingListItemStatus.DONE.toString(),
             habitAssign.getId(), shoppingListItems);
         habit.setShoppingListItems(shoppingListItems);
+        habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
         return habit;
     }
 
