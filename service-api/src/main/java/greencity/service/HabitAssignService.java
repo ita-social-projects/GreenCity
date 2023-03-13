@@ -31,11 +31,11 @@ public interface HabitAssignService {
      *
      * @param habitId                  {@code Habit} id.
      * @param user                     @link UserVO} id.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
-     * @return {@link HabitAssignManagementDto}.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto} instance.
+     * @return {@link List<HabitAssignManagementDto>}.
      */
-    HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+    List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO user,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto);
 
     /**
      * Method updates {@code HabitAssign} shopping list with custom properties.

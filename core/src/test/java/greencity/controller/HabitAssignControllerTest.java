@@ -3,10 +3,7 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+import greencity.dto.habit.*;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.HabitAssignService;
@@ -174,7 +171,7 @@ class HabitAssignControllerTest {
 
     @Test
     void assignCustom() throws Exception {
-        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
+        HabitAssignCustomPropertiesDto propertiesDto = ModelUtils.getHabitAssignCustomPropertiesDto();
         Gson gson = new Gson();
         String json = gson.toJson(propertiesDto);
         UserVO userVO = new UserVO();
