@@ -16,7 +16,6 @@ import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomShoppingListMapper;
 import greencity.mapping.HabitTranslationMapper;
-import greencity.repository.*;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -28,10 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import greencity.repository.CustomShoppingListItemRepo;
-import greencity.repository.HabitRepo;
-import greencity.repository.HabitTranslationRepo;
 import greencity.repository.LanguageRepo;
-import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
