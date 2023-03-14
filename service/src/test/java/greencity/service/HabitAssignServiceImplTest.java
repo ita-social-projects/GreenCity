@@ -62,10 +62,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static greencity.ModelUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
+import static greencity.ModelUtils.getFullHabitAssign;
+import static greencity.ModelUtils.getFullHabitAssignDto;
+import static greencity.ModelUtils.getHabitDto;
+import static greencity.ModelUtils.getHabitAssign;
+import static greencity.ModelUtils.getHabitAssignPropertiesDto;
+import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
+import static greencity.ModelUtils.getShoppingListItem;
+import static greencity.ModelUtils.getShoppingListItemTranslationList;
+import static greencity.ModelUtils.getUpdateUserShoppingListDto;
+import static greencity.ModelUtils.getUserShoppingListItem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
