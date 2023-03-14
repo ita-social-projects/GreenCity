@@ -89,9 +89,9 @@ public interface HabitService {
     /**
      * Method to save {@link AddCustomHabitDtoResponse}.
      *
-     * @param userEmail                {@link String} - user email.
      * @param addCustomHabitDtoRequest dto with {@link AddCustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
+     * @param userEmail                {@link String} - user email.
      * @return {@link AddCustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */

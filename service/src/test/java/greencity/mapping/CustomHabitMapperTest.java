@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class CustomHabitMapperTest {
     @InjectMocks
-    CustomHabitMapper customHabitMapper;
+    private CustomHabitMapper customHabitMapper;
 
     @Test
     void convertTest() {

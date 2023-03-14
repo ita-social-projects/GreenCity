@@ -217,6 +217,13 @@ public class ModelUtils {
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
+    public static String IMAGE_LINK =
+        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg";
+    public static String HABIT_TRANSLATION_NAME = "use shopper";
+    public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
+    public static String TAG_TRANSLATION_NAME = "Reusable";
+    public static String SHOPPING_LIST_TEXT = "buy a shopper";
+    public static String HABIT_ITEM = "Item";
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -2298,7 +2305,7 @@ public class ModelUtils {
 
     public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return AddCustomHabitDtoRequest.builder()
-            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2307,8 +2314,8 @@ public class ModelUtils {
 
     public static HabitTranslationDto getHabitTranslationDto() {
         return HabitTranslationDto.builder()
-            .description("Description")
-            .habitItem("Item")
+            .description(HABIT_TRANSLATION_DESCRIPTION)
+            .habitItem(HABIT_ITEM)
             .name("використовувати бавовняну сумку")
             .build();
     }
@@ -2320,18 +2327,18 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(1L)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text("buy a shopper")
+                    .text(SHOPPING_LIST_TEXT)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description("Description")
-                    .habitItem("Item")
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
                     .languageCode("ua")
-                    .name("use shopper")
+                    .name(HABIT_TRANSLATION_NAME)
                     .build()))
-            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
-            .tags(Set.of("Reusable"))
+            .image(IMAGE_LINK)
+            .tags(Set.of(TAG_TRANSLATION_NAME))
             .build();
     }
 
@@ -2343,18 +2350,18 @@ public class ModelUtils {
                 CustomShoppingListItemResponseDto.builder()
                     .id(1L)
                     .status(ShoppingListItemStatus.ACTIVE)
-                    .text("buy a shopper")
+                    .text(SHOPPING_LIST_TEXT)
                     .build()))
             .defaultDuration(7)
             .habitTranslations(
                 List.of(HabitTranslationDto.builder()
-                    .description("Description")
-                    .habitItem("Item")
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
                     .languageCode("ua")
-                    .name("use shopper")
+                    .name(HABIT_TRANSLATION_NAME)
                     .build()))
-            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
-            .tags(Set.of("Reusable"))
+            .image(IMAGE_LINK)
+            .tags(Set.of(TAG_TRANSLATION_NAME))
             .build();
     }
 
@@ -2368,7 +2375,7 @@ public class ModelUtils {
     public static Habit getCustomHabitForServiceTest() {
         return Habit.builder()
             .id(1L)
-            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .isCustomHabit(true)

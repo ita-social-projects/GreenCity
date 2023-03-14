@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class CustomShoppingListMapperTests {
     @InjectMocks
-    CustomShoppingListMapper customShoppingListMapper;
+    private CustomShoppingListMapper customShoppingListMapper;
 
     @Test
     void convertTest() {

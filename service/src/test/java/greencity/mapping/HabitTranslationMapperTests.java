@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class HabitTranslationMapperTests {
     @InjectMocks
-    HabitTranslationMapper habitTranslationMapper;
+    private HabitTranslationMapper habitTranslationMapper;
 
     @Test
     void convertTest() {
