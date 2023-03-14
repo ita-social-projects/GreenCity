@@ -66,6 +66,7 @@ import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitDto;
+import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitAssignPropertiesDto;
 import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
@@ -784,6 +785,30 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
             + habitId,
             exception.getMessage());
+    }
+
+    @Test
+    void findHabitWithHabitAssignStatus() {
+        Habit habit = ModelUtils.getHabit(1L, "image123");
+        HabitAssign habitAssign = ModelUtils.getHabitAssign(1L, habit, HabitAssignStatus.INPROGRESS);
+        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto(1L, habitAssign.getStatus(), habit.getImage());
+        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, 1L))
+            .thenReturn(new ArrayList<>());
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(1L)).thenReturn(new ArrayList<>());
+
+        var dto = habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, language);
+
+        assertNotNull(dto);
+        assertEquals(habit.getId(), dto.getId());
+        assertEquals(habit.getImage(), dto.getImage());
+        assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
+        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
+        verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
     }
 
     @Test

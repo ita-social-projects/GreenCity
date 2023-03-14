@@ -98,7 +98,6 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -2293,5 +2292,51 @@ public class ModelUtils {
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
             .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
             .build();
+    }
+
+    public static Habit getHabit(Long id, String image) {
+        return Habit.builder()
+            .id(id)
+            .image(image)
+            .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                .id(1L)
+                .name("name")
+                .description("")
+                .habitItem("")
+                .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList(), Collections.emptyList()))
+                .build()))
+            .build();
+    }
+
+    public static HabitAssign getHabitAssign(Long id, Habit habit, HabitAssignStatus status) {
+        return HabitAssign.builder()
+            .id(id)
+            .status(status)
+            .createDate(ZonedDateTime.now())
+            .habit(habit)
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(7)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(HabitStatistic.builder()
+                .id(1L).habitRate(HabitRate.GOOD).createDate(ZonedDateTime.now())
+                .amountOfItems(10).build()))
+            .habitStatusCalendars(Collections.singletonList(HabitStatusCalendar.builder()
+                .enrollDate(LocalDate.now()).id(1L).build()))
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitAssignDto getHabitAssignDto(Long id, HabitAssignStatus status, String image) {
+        return HabitAssignDto.builder()
+            .id(id)
+            .status(status)
+            .createDateTime(ZonedDateTime.now())
+            .habit(HabitDto.builder()
+                .id(1L)
+                .image(image).build())
+            .userId(1L).build();
     }
 }

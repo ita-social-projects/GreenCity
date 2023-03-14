@@ -6,7 +6,13 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import lombok.*;
+import greencity.enums.HabitAssignStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,4 +31,5 @@ public class HabitDto {
     private Integer complexity;
     private List<String> tags;
     private List<ShoppingListItemDto> shoppingListItems;
+    private HabitAssignStatus habitAssignStatus;
 }
