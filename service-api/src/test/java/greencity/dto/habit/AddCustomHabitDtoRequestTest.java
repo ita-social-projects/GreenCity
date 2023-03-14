@@ -13,7 +13,8 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AddCustomHabitDtoRequestTest {
 
