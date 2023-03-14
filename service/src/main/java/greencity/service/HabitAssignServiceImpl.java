@@ -441,6 +441,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign.getId(), shoppingListItems);
         habit.setShoppingListItems(shoppingListItems);
         habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
+        habit.setHabitAssignStatus(habitAssign.getStatus());
         return habit;
     }
 
