@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Table(name = "tags")
 @ToString(exclude = {"ecoNews", "habits", "events"})
 @EqualsAndHashCode(exclude = {"ecoNews", "habits", "events"})

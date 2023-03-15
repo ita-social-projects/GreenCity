@@ -2,11 +2,20 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
+import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.mapping.CustomHabitMapper;
+import greencity.mapping.CustomShoppingListMapper;
+import greencity.mapping.HabitTranslationMapper;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
@@ -14,12 +23,20 @@ import greencity.repository.HabitAssignRepo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.LanguageRepo;
+import greencity.repository.TagsRepo;
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 /**
  * Implementation of {@link HabitService}.
@@ -30,7 +47,15 @@ public class HabitServiceImpl implements HabitService {
     private final HabitRepo habitRepo;
     private final HabitTranslationRepo habitTranslationRepo;
     private final ModelMapper modelMapper;
+
+    private final CustomShoppingListMapper customShoppingListMapper;
+    private final HabitTranslationMapper habitTranslationMapper;
+    private final CustomHabitMapper customHabitMapper;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    private final CustomShoppingListItemRepo customShoppingListItemRepo;
+    private final LanguageRepo languageRepo;
+    private final UserRepo userRepo;
+    private final TagsRepo tagsRepo;
     private final HabitAssignRepo habitAssignRepo;
 
     /**
@@ -129,5 +154,33 @@ public class HabitServiceImpl implements HabitService {
     public List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId) {
         listId.forEach(id -> addShoppingListItemToHabit(habitId, id));
         return listId;
+    }
+
+    @Transactional
+    @Override
+    public AddCustomHabitDtoResponse addCustomHabit(
+        AddCustomHabitDtoRequest addCustomHabitDtoRequest, String userEmail) {
+        User user = userRepo.findByEmail(userEmail)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        habit.setTags(tagsRepo.findTagsByNames(addCustomHabitDtoRequest.getTags()));
+        habit.setUserId(user.getId());
+        List<HabitTranslation> habitTranslationList =
+            habitTranslationMapper.mapAllToList((addCustomHabitDtoRequest.getHabitTranslations()));
+        habitTranslationList.forEach(habitTranslation -> habitTranslation.setHabit(habit));
+        List<String> languageCodes = addCustomHabitDtoRequest.getHabitTranslations()
+            .stream().map(HabitTranslationDto::getLanguageCode).collect(Collectors.toList());
+        for (String languageCode : languageCodes) {
+            habitTranslationList
+                .forEach(habitTranslation -> habitTranslation.setLanguage(languageRepo.findByCode(languageCode)
+                    .orElseThrow(NoSuchElementException::new)));
+        }
+        habitTranslationRepo.saveAll(habitTranslationList);
+        List<CustomShoppingListItem> customShoppingListItems =
+            customShoppingListMapper.mapAllToList(addCustomHabitDtoRequest.getCustomShoppingListItemDto());
+        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setHabit(habit));
+        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setUser(user));
+        customShoppingListItemRepo.saveAll(customShoppingListItems);
+        return modelMapper.map(habit, AddCustomHabitDtoResponse.class);
     }
 }

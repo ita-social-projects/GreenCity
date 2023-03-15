@@ -143,5 +143,6 @@
     <include file="db/changelog/logs/ch-change-tag-translations-column-name-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-tag-translations-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/сh-add-new-columns-habit-Mokhnatska.xml"/>
 </databaseChangeLog>
 
