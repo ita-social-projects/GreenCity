@@ -6,6 +6,8 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet author="Maksym Golik" id="Golik-1">
+        <dropColumn tableName="events_dates_locations" columnName="address_ua"/>
+        <dropColumn tableName="events_dates_locations" columnName="address_en"/>
         <addColumn tableName="events_dates_locations">
             <column name="street_en" type="varchar"/>
             <column name="street_ua" type="varchar">
