@@ -68,6 +68,8 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
@@ -98,7 +100,6 @@ import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -216,6 +217,13 @@ public class ModelUtils {
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
+    public static String IMAGE_LINK =
+        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg";
+    public static String HABIT_TRANSLATION_NAME = "use shopper";
+    public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
+    public static String TAG_TRANSLATION_NAME = "Reusable";
+    public static String SHOPPING_LIST_TEXT = "buy a shopper";
+    public static String HABIT_ITEM = "Item";
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -2335,5 +2343,130 @@ public class ModelUtils {
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
             .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
             .build();
+    }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddCustomHabitDtoRequest.builder()
+            .image(IMAGE_LINK)
+            .complexity(2)
+            .defaultDuration(7)
+            .build();
+
+    }
+
+    public static HabitTranslationDto getHabitTranslationDto() {
+        return HabitTranslationDto.builder()
+            .description(HABIT_TRANSLATION_DESCRIPTION)
+            .habitItem(HABIT_ITEM)
+            .name("використовувати бавовняну сумку")
+            .build();
+    }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return AddCustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .defaultDuration(7)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
+                    .languageCode("ua")
+                    .name(HABIT_TRANSLATION_NAME)
+                    .build()))
+            .image(IMAGE_LINK)
+            .tags(Set.of(TAG_TRANSLATION_NAME))
+            .build();
+    }
+
+    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return AddCustomHabitDtoResponse.builder()
+            .id(1L)
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .defaultDuration(7)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
+                    .languageCode("ua")
+                    .name(HABIT_TRANSLATION_NAME)
+                    .build()))
+            .image(IMAGE_LINK)
+            .tags(Set.of(TAG_TRANSLATION_NAME))
+            .build();
+    }
+
+    public static Tag getTagHabitForServiceTest() {
+        return Tag.builder().id(1L).type(TagType.HABIT)
+            .tagTranslations(List.of(TagTranslation.builder().id(2L).name("News")
+                .language(Language.builder().id(1L).code("en").build()).build()))
+            .build();
+    }
+
+    public static Habit getCustomHabitForServiceTest() {
+        return Habit.builder()
+            .id(1L)
+            .image(IMAGE_LINK)
+            .complexity(2)
+            .defaultDuration(7)
+            .isCustomHabit(true)
+            .build();
+    }
+
+    public static Habit getHabit(Long id, String image) {
+        return Habit.builder()
+            .id(id)
+            .image(image)
+            .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                .id(1L)
+                .name("name")
+                .description("")
+                .habitItem("")
+                .language(new Language(1L, "en", Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList(), Collections.emptyList()))
+                .build()))
+            .build();
+    }
+
+    public static HabitAssign getHabitAssign(Long id, Habit habit, HabitAssignStatus status) {
+        return HabitAssign.builder()
+            .id(id)
+            .status(status)
+            .createDate(ZonedDateTime.now())
+            .habit(habit)
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(7)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(HabitStatistic.builder()
+                .id(1L).habitRate(HabitRate.GOOD).createDate(ZonedDateTime.now())
+                .amountOfItems(10).build()))
+            .habitStatusCalendars(Collections.singletonList(HabitStatusCalendar.builder()
+                .enrollDate(LocalDate.now()).id(1L).build()))
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitAssignDto getHabitAssignDto(Long id, HabitAssignStatus status, String image) {
+        return HabitAssignDto.builder()
+            .id(id)
+            .status(status)
+            .createDateTime(ZonedDateTime.now())
+            .habit(HabitDto.builder()
+                .id(1L)
+                .image(image).build())
+            .userId(1L).build();
     }
 }

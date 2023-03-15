@@ -64,6 +64,9 @@ import java.util.Optional;
 
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
+import static greencity.ModelUtils.getFullHabitAssignDto;
+import static greencity.ModelUtils.getHabitDto;
+import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitAssignPropertiesDto;
 import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
@@ -72,15 +75,13 @@ import static greencity.ModelUtils.getShoppingListItemTranslationList;
 import static greencity.ModelUtils.getUpdateUserShoppingListDto;
 import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -784,6 +785,48 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
             + habitId,
             exception.getMessage());
+    }
+
+    @Test
+    void findHabitWithHabitAssignStatus() {
+        Habit habit = ModelUtils.getHabit(1L, "image123");
+        HabitAssign habitAssign = ModelUtils.getHabitAssign(1L, habit, HabitAssignStatus.INPROGRESS);
+        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto(1L, habitAssign.getStatus(), habit.getImage());
+        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, 1L))
+            .thenReturn(new ArrayList<>());
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(1L)).thenReturn(new ArrayList<>());
+
+        var dto = habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, language);
+
+        assertNotNull(dto);
+        assertEquals(habit.getId(), dto.getId());
+        assertEquals(habit.getImage(), dto.getImage());
+        assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
+        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
+        verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void findHabitByUserIdAndHabitIdTest() {
+        Long userId = 1L;
+        Long habitId = 1L;
+        HabitAssign habitAssign = getFullHabitAssign();
+        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(getFullHabitAssignDto());
+        when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
+            .thenReturn(getShoppingListItemTranslationList());
+        when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(5L);
+        HabitDto actual = habitAssignService.findHabitByUserIdAndHabitId(userId, habitId, language);
+        assertNotNull(actual.getAmountAcquiredUsers());
+        verify(habitAssignRepo, times(1)).findByHabitIdAndUserId(habitId, userId);
+        verify(shoppingListItemTranslationRepo, times(1)).findShoppingListByHabitIdAndByLanguageCode(language, habitId);
+        verify(habitAssignRepo, times(1)).findAmountOfUsersAcquired(habitId);
     }
 
     @Test
