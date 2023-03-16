@@ -316,7 +316,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * Method builds {@link HabitAssignDto} with one habit translation.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param language    code of {@link Language}.
+     * @param language    code of {@link String}.
      * @return {@link HabitAssign} instance.
      */
     private HabitAssignDto buildHabitAssignDto(HabitAssign habitAssign, String language) {
@@ -645,22 +645,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
         HabitStatusCalendar habitCalendar, Long userId) {
-        habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
-        habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
+        if (habitAssign.getWorkingDays().equals(habitAssign.getDuration())) {
+            habitAssign.setWorkingDays(habitAssign.getWorkingDays());
+        } else {
+            habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
+            habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
-        List<HabitStatusCalendar> habitStatusCalendars =
-            new ArrayList<>(habitAssign.getHabitStatusCalendars());
-        habitStatusCalendars.add(habitCalendar);
-        habitAssign.setHabitStatusCalendars(habitStatusCalendars);
+            List<HabitStatusCalendar> habitStatusCalendars =
+                new ArrayList<>(habitAssign.getHabitStatusCalendars());
+            habitStatusCalendars.add(habitCalendar);
+            habitAssign.setHabitStatusCalendars(habitStatusCalendars);
 
-        int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
-        habitAssign.setHabitStreak(habitStreak);
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, AchievementType.COMPARISON,
-                AchievementCategoryType.HABIT_STREAK, habitStreak));
+            int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
+            habitAssign.setHabitStreak(habitStreak);
+            CompletableFuture.runAsync(() -> achievementCalculation
+                .calculateAchievement(userId, AchievementType.COMPARISON,
+                    AchievementCategoryType.HABIT_STREAK, habitStreak));
+        }
 
         if (isHabitAcquired(habitAssign)) {
-            habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
             CompletableFuture.runAsync(() -> achievementCalculation
                 .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT_STREAK, 0));
         }

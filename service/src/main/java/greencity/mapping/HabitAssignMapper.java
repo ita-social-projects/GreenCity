@@ -31,7 +31,7 @@ public class HabitAssignMapper extends AbstractConverter<HabitAssignDto, HabitAs
             .duration(dto.getDuration())
             .habitStreak(dto.getHabitStreak())
             .createDate(dto.getCreateDateTime())
-            .status(dto.getStatus())
+            .status(dto.getHabitAssignStatus())
             .workingDays(dto.getWorkingDays())
             .lastEnrollmentDate(dto.getLastEnrollmentDate())
             .habit(Habit.builder()

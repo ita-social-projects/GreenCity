@@ -23,7 +23,7 @@ public class HabitAssignDto {
     private Integer habitStreak;
     private Long id;
     private ZonedDateTime lastEnrollmentDate;
-    private HabitAssignStatus status;
+    private HabitAssignStatus habitAssignStatus;
     private Long userId;
     private Integer workingDays;
 }
