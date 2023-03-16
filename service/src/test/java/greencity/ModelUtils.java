@@ -2047,9 +2047,9 @@ public class ModelUtils {
         region.longName = "fake region";
         region.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
 
-        AddressComponent sublocality = new AddressComponent();
-        sublocality.longName = "fake district";
-        sublocality.types = new AddressComponentType[] {AddressComponentType.SUBLOCALITY};
+        AddressComponent country = new AddressComponent();
+        country.longName = "fake country";
+        country.types = new AddressComponentType[] {AddressComponentType.COUNTRY};
 
         AddressComponent route = new AddressComponent();
         route.longName = "fake street name";
@@ -2059,11 +2059,10 @@ public class ModelUtils {
             locality,
             streetNumber,
             region,
-            sublocality,
+            country,
             route
         };
 
-        geocodingResult1.formattedAddress = "fake address";
         geocodingResult1.geometry = geometry;
 
         GeocodingResult geocodingResult2 = new GeocodingResult();
@@ -2080,9 +2079,9 @@ public class ModelUtils {
         region2.longName = "fake region";
         region2.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
 
-        AddressComponent sublocality2 = new AddressComponent();
-        sublocality2.longName = "fake district";
-        sublocality2.types = new AddressComponentType[] {AddressComponentType.SUBLOCALITY};
+        AddressComponent country2 = new AddressComponent();
+        country2.longName = "fake country";
+        country2.types = new AddressComponentType[] {AddressComponentType.COUNTRY};
 
         AddressComponent route2 = new AddressComponent();
         route2.longName = "fake street name";
@@ -2092,11 +2091,10 @@ public class ModelUtils {
             locality2,
             streetNumber2,
             region2,
-            sublocality2,
+            country2,
             route2
         };
 
-        geocodingResult2.formattedAddress = "fake address 2";
         geocodingResult2.geometry = geometry;
 
         geocodingResults.add(geocodingResult1);
