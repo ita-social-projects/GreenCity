@@ -98,6 +98,28 @@ class EventServiceImplTest {
     }
 
     @Test
+    void saveEventWithoutCoordinates() {
+        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutCoordinates();
+        AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutCoordinatesRequest;
+        Event eventWithoutCoordinates = ModelUtils.getEventWithoutCoordinates();
+        List<Tag> tags = ModelUtils.getEventTags();
+        when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
+        when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+
+        assertEquals(eventDtoWithoutCoordinatesDto,
+            eventService.save(addEventDtoWithoutCoordinates, ModelUtils.getUser().getEmail(), null));
+    }
+
+    @Test
     void update() {
         EventDto eventDto = ModelUtils.getEventDto();
         Event expectedEvent = ModelUtils.getEvent();

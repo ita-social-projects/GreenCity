@@ -1869,7 +1869,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            null, null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1908,24 +1908,31 @@ public class ModelUtils {
         .tags(List.of("Social"))
         .build();
 
-    public static AddEventDtoResponse addEventDtoWithoutCoordinatesResponse = AddEventDtoResponse.builder()
-        .dates(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            "/url",
-            CoordinatesDto.builder().build()
-
-        )))
-        .description("Description")
-        .title("Title")
-        .build();
+    public static EventDto getEventDtoWithoutCoordinates() {
+        return EventDto.builder()
+            .id(1L)
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                "/url",
+                null)))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
 
     public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
-            CoordinatesDto.builder().build())))
+            null)))
         .description("Description")
         .title("Title")
         .build();
