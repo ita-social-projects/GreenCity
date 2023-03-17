@@ -66,7 +66,6 @@ import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitDto;
-import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitAssignPropertiesDto;
 import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
@@ -119,7 +118,7 @@ class HabitAssignServiceImplTest {
 
     private HabitAssignDto habitAssignDto = HabitAssignDto.builder().id(1L)
         .userId(1L)
-        .status(HabitAssignStatus.ACQUIRED)
+        .habitAssignStatus(HabitAssignStatus.ACQUIRED)
         .habit(ModelUtils.getHabitDto())
         .createDateTime(zonedDateTime).habit(habitDto).build();
 
@@ -540,7 +539,7 @@ class HabitAssignServiceImplTest {
     @Test
     void cancelHabitAssign() {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
+        habitAssignDto.setHabitAssignStatus(HabitAssignStatus.CANCELLED);
 
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
@@ -565,8 +564,14 @@ class HabitAssignServiceImplTest {
     @Test
     void enrollHabit() {
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        HabitStatusCalendarVO calendarVO = null;
         HabitTranslation translation = ModelUtils.getHabitTranslation();
+        HabitAssignDto habitAssignDto =
+            HabitAssignDto.builder().id(1L)
+                .userId(1L)
+                .habitAssignStatus(HabitAssignStatus.INPROGRESS)
+                .habit(ModelUtils.getHabitDto())
+                .createDateTime(zonedDateTime).habit(habitDto).build();
+        HabitAssign habitAssign = ModelUtils.getHabitAssignWithStatusInProgress();
 
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
@@ -583,7 +588,6 @@ class HabitAssignServiceImplTest {
         verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
 
         assertEquals(habitAssignDto, actualDto);
-
     }
 
     @Test

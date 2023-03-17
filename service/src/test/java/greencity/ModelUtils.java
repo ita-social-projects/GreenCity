@@ -545,7 +545,7 @@ public class ModelUtils {
     public static HabitAssignDto getHabitAssignDto() {
         return HabitAssignDto.builder()
             .id(1L)
-            .status(HabitAssignStatus.ACQUIRED)
+            .habitAssignStatus(HabitAssignStatus.ACQUIRED)
             .createDateTime(ZonedDateTime.now())
             .habit(HabitDto.builder().id(1L).build())
             .userId(1L).build();
@@ -1482,7 +1482,7 @@ public class ModelUtils {
     public static HabitAssignDto getFullHabitAssignDto() {
         return HabitAssignDto.builder()
             .id(1L)
-            .status(HabitAssignStatus.ACQUIRED)
+            .habitAssignStatus(HabitAssignStatus.ACQUIRED)
             .createDateTime(ZonedDateTime.of(1, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()))
             .habit(HabitDto.builder().id(1L).build())
             .userId(1L)
@@ -2417,10 +2417,37 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitAssign getHabitAssignWithStatusInProgress() {
+        return HabitAssign.builder()
+            .id(1L)
+            .status(HabitAssignStatus.INPROGRESS)
+            .createDate(ZonedDateTime.now())
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
     public static HabitAssignDto getHabitAssignDto(Long id, HabitAssignStatus status, String image) {
         return HabitAssignDto.builder()
             .id(id)
-            .status(status)
+            .habitAssignStatus(status)
             .createDateTime(ZonedDateTime.now())
             .habit(HabitDto.builder()
                 .id(1L)

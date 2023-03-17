@@ -21,7 +21,7 @@ class HabitAssignDtoMapperTest {
 
         HabitAssignDto expected = HabitAssignDto.builder()
             .id(habitAssign.getId())
-            .status(habitAssign.getStatus())
+            .habitAssignStatus(habitAssign.getStatus())
             .createDateTime(habitAssign.getCreateDate())
             .userId(habitAssign.getUser().getId())
             .habitStreak(habitAssign.getHabitStreak())
