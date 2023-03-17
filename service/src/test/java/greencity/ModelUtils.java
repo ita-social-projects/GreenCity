@@ -1935,6 +1935,7 @@ public class ModelUtils {
             null)))
         .description("Description")
         .title("Title")
+        .tags(List.of("Social"))
         .build();
 
     public static EventDto getEventDto() {

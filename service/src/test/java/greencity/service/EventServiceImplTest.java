@@ -99,24 +99,28 @@ class EventServiceImplTest {
 
     @Test
     void saveEventWithoutCoordinates() {
+        User user = ModelUtils.getUser();
         EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutCoordinates();
         AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutCoordinatesRequest;
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutCoordinates();
         List<Tag> tags = ModelUtils.getEventTags();
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(user);
         when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
         when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
-        when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        when(tagService.findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
+            TagType.EVENT)).thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(tags);
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
-
         assertEquals(eventDtoWithoutCoordinatesDto,
-            eventService.save(addEventDtoWithoutCoordinates, ModelUtils.getUser().getEmail(), null));
+            eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null));
+        verify(restClient, times(1)).findByEmail(user.getEmail());
+        verify(eventRepo, times(1)).save(eventWithoutCoordinates);
+        verify(tagService, times(1)).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
+            TagType.EVENT);
     }
 
     @Test
