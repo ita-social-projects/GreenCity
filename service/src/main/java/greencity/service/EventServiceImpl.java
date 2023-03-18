@@ -1,14 +1,12 @@
 package greencity.service;
 
-import com.google.maps.model.AddressComponent;
-import com.google.maps.model.AddressComponentType;
-import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
+import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -408,35 +406,9 @@ public class EventServiceImpl implements EventService {
 
     private void addAddressToLocation(EventDateLocationDto eventDateLocationDtos) {
         CoordinatesDto coordinatesDto = eventDateLocationDtos.getCoordinates();
-        List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
+        AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
             new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-        AddressComponent[] componentsUa = address.get(0).addressComponents;
-        AddressComponent[] componentsEn = address.get(1).addressComponents;
-        for (int i = 0; i < componentsUa.length && i < componentsEn.length; i++) {
-            AddressComponent componentUa = componentsUa[i];
-            AddressComponent componentEn = componentsEn[i];
-            List<AddressComponentType> componentTypes = Arrays.asList(componentUa.types);
-            if (componentTypes.contains(AddressComponentType.STREET_NUMBER)) {
-                coordinatesDto.setHouseNumber(componentUa.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.ROUTE)) {
-                coordinatesDto.setStreetUa(componentUa.longName);
-                coordinatesDto.setStreetEn(componentEn.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.LOCALITY)) {
-                coordinatesDto.setCityUa(componentUa.longName);
-                coordinatesDto.setCityEn(componentEn.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
-                coordinatesDto.setRegionUa(componentUa.longName);
-                coordinatesDto.setRegionEn(componentEn.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.COUNTRY)) {
-                coordinatesDto.setCountryUa(componentUa.longName);
-                coordinatesDto.setCountryEn(componentEn.longName);
-            }
-        }
-        eventDateLocationDtos.setCoordinates(coordinatesDto);
+        eventDateLocationDtos.setCoordinates(modelMapper.map(response, CoordinatesDto.class));
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {

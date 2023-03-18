@@ -80,7 +80,8 @@ class EventServiceImplTest {
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(tags);
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
 
@@ -185,7 +186,8 @@ class EventServiceImplTest {
         when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
@@ -295,7 +297,8 @@ class EventServiceImplTest {
         when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
 

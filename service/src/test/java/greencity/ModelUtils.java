@@ -61,6 +61,8 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
+import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
@@ -2044,7 +2046,7 @@ public class ModelUtils {
         geometry.location = new LatLng(50.5555555d, 50.5555555d);
 
         AddressComponent locality = new AddressComponent();
-        locality.longName = "fake street";
+        locality.longName = "fake city";
         locality.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
 
         AddressComponent streetNumber = new AddressComponent();
@@ -2076,7 +2078,7 @@ public class ModelUtils {
         GeocodingResult geocodingResult2 = new GeocodingResult();
 
         AddressComponent locality2 = new AddressComponent();
-        locality2.longName = "fake street";
+        locality2.longName = "fake city";
         locality2.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
 
         AddressComponent streetNumber2 = new AddressComponent();
@@ -2109,6 +2111,30 @@ public class ModelUtils {
         geocodingResults.add(geocodingResult2);
 
         return geocodingResults;
+    }
+
+    public static AddressLatLngResponse getAddressLatLngResponse() {
+        return AddressLatLngResponse
+            .builder()
+            .latitude(50.5555555)
+            .longitude(50.5555555)
+            .addressEn(AddressResponse
+                .builder()
+                .street("fake street name")
+                .houseNumber("13")
+                .city("fake city")
+                .region("fake region")
+                .country("fake country")
+                .build())
+            .addressUa(AddressResponse
+                .builder()
+                .street("вулиця")
+                .houseNumber("13")
+                .city("місто")
+                .region("область")
+                .country("країна")
+                .build())
+            .build();
     }
 
     public static AddPlaceLocation getAddPlaceLocation() {
