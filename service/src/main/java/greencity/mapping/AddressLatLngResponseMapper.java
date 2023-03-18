@@ -5,7 +5,6 @@ import greencity.dto.geocoding.AddressLatLngResponse;
 import org.modelmapper.AbstractConverter;
 
 public class AddressLatLngResponseMapper extends AbstractConverter<AddressLatLngResponse, CoordinatesDto> {
-
     @Override
     protected CoordinatesDto convert(AddressLatLngResponse addressLatLngResponse) {
         return CoordinatesDto
