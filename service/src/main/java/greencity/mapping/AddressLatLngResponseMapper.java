@@ -7,19 +7,24 @@ import org.modelmapper.AbstractConverter;
 public class AddressLatLngResponseMapper extends AbstractConverter<AddressLatLngResponse, CoordinatesDto> {
     @Override
     protected CoordinatesDto convert(AddressLatLngResponse addressLatLngResponse) {
-        return CoordinatesDto
-            .builder()
-            .latitude(addressLatLngResponse.getLatitude())
-            .longitude(addressLatLngResponse.getLongitude())
-            .streetEn(addressLatLngResponse.getAddressEn().getStreet())
-            .streetUa(addressLatLngResponse.getAddressUa().getStreet())
-            .houseNumber(addressLatLngResponse.getAddressUa().getHouseNumber())
-            .cityEn(addressLatLngResponse.getAddressEn().getCity())
-            .cityUa(addressLatLngResponse.getAddressUa().getCity())
-            .regionEn(addressLatLngResponse.getAddressEn().getRegion())
-            .regionUa(addressLatLngResponse.getAddressUa().getRegion())
-            .countryEn(addressLatLngResponse.getAddressEn().getCountry())
-            .countryUa(addressLatLngResponse.getAddressUa().getCountry())
-            .build();
+        CoordinatesDto coordinatesDto = CoordinatesDto
+                .builder()
+                .latitude(addressLatLngResponse.getLatitude())
+                .longitude(addressLatLngResponse.getLongitude())
+                .build();
+        if(addressLatLngResponse.getAddressUa()!=null){
+            coordinatesDto.setStreetUa(addressLatLngResponse.getAddressUa().getStreet());
+            coordinatesDto.setHouseNumber(addressLatLngResponse.getAddressUa().getHouseNumber());
+            coordinatesDto.setCityUa(addressLatLngResponse.getAddressUa().getCity());
+            coordinatesDto.setRegionUa(addressLatLngResponse.getAddressUa().getRegion());
+            coordinatesDto.setCountryUa(addressLatLngResponse.getAddressUa().getCountry());
+        }
+        if(addressLatLngResponse.getAddressEn()!=null){
+            coordinatesDto.setStreetEn(addressLatLngResponse.getAddressEn().getStreet());
+            coordinatesDto.setCityEn(addressLatLngResponse.getAddressEn().getCity());
+            coordinatesDto.setRegionEn(addressLatLngResponse.getAddressEn().getRegion());
+            coordinatesDto.setCountryEn(addressLatLngResponse.getAddressEn().getCountry());
+        }
+        return coordinatesDto;
     }
 }
