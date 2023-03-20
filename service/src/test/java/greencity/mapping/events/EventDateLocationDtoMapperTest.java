@@ -1,11 +1,11 @@
 package greencity.mapping.events;
 
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.event.EventDto;
 import greencity.entity.event.EventDateLocation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static greencity.ModelUtils.*;
@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class EventDateLocationDtoMapperTest {
+    @Spy
+    private CoordinatesDtoMapper coordinatesDtoMapper;
     @InjectMocks
     private EventDateLocationDtoMapper mapper;
 

@@ -7,7 +7,6 @@ import greencity.entity.event.EventDateLocation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**

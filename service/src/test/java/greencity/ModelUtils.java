@@ -1904,7 +1904,7 @@ public class ModelUtils {
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
-            CoordinatesDto.builder().build())))
+            getCoordinatesDto())))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))

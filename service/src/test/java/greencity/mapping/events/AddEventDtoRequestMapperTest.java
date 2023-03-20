@@ -6,14 +6,17 @@ import greencity.entity.event.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 class AddEventDtoRequestMapperTest {
+    @Mock
+    private CoordinatesDtoMapper coordinatesDtoMapper;
     @InjectMocks
-    AddEventDtoRequestMapper mapper;
+    private AddEventDtoRequestMapper mapper;
 
     @Test
     void convertTest() {
