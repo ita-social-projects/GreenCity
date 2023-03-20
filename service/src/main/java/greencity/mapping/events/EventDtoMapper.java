@@ -1,12 +1,12 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
-import greencity.entity.event.Coordinates;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
@@ -71,20 +71,20 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         if (eventDateLocation.getOnlineLink() != null) {
             eventDateLocationDto.setOnlineLink(eventDateLocation.getOnlineLink());
         }
-        Coordinates coordinates = eventDateLocation.getCoordinates();
-        if (coordinates != null) {
-            CoordinatesDto coordinatesDto = CoordinatesDto.builder().latitude(coordinates.getLatitude())
-                .longitude(coordinates.getLongitude())
-                .streetEn(coordinates.getStreetEn())
-                .streetUa(coordinates.getStreetUa())
-                .houseNumber(coordinates.getHouseNumber())
-                .cityEn(coordinates.getCityEn())
-                .cityUa(coordinates.getCityUa())
-                .regionEn(coordinates.getRegionEn())
-                .regionUa(coordinates.getRegionUa())
-                .countryEn(coordinates.getCountryEn())
-                .countryUa(coordinates.getCountryUa()).build();
-            eventDateLocationDto.setCoordinates(coordinatesDto);
+        Address address = eventDateLocation.getAddress();
+        if (address != null) {
+            AddressDto addressDto = AddressDto.builder().latitude(address.getLatitude())
+                .longitude(address.getLongitude())
+                .streetEn(address.getStreetEn())
+                .streetUa(address.getStreetUa())
+                .houseNumber(address.getHouseNumber())
+                .cityEn(address.getCityEn())
+                .cityUa(address.getCityUa())
+                .regionEn(address.getRegionEn())
+                .regionUa(address.getRegionUa())
+                .countryEn(address.getCountryEn())
+                .countryUa(address.getCountryUa()).build();
+            eventDateLocationDto.setCoordinates(addressDto);
         }
         return eventDateLocationDto;
     }

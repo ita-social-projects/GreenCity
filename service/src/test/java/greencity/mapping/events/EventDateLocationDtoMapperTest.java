@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 class EventDateLocationDtoMapperTest {
     @Spy
-    private CoordinatesDtoMapper coordinatesDtoMapper;
+    private AddressDtoMapper addressDtoMapper;
     @InjectMocks
     private EventDateLocationDtoMapper mapper;
 
@@ -25,11 +25,11 @@ class EventDateLocationDtoMapperTest {
             .id(expected.getId())
             .startDate(expected.getStartDate())
             .finishDate(expected.getFinishDate())
-            .coordinates(getCoordinatesDto())
+            .coordinates(getAddressDto())
             .build();
         EventDateLocation actual = mapper.convert(dto);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getStartDate(), actual.getStartDate());
-        assertEquals(expected.getCoordinates(), actual.getCoordinates());
+        assertEquals(expected.getAddress(), actual.getAddress());
     }
 }

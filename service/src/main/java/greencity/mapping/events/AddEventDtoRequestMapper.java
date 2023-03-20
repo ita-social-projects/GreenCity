@@ -19,7 +19,7 @@ import java.util.List;
 @Component(value = "eventDtoRequestMapper")
 @RequiredArgsConstructor
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
-    private final CoordinatesDtoMapper mapper;
+    private final AddressDtoMapper mapper;
 
     /**
      * Method for converting {@link greencity.dto.event.AddEventDtoRequest} into
@@ -44,7 +44,7 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
             eventDateLocation.setStartDate(date.getStartDate());
             eventDateLocation.setFinishDate(date.getFinishDate());
             if (date.getCoordinates() != null) {
-                eventDateLocation.setCoordinates(mapper.convert(date.getCoordinates()));
+                eventDateLocation.setAddress(mapper.convert(date.getCoordinates()));
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());

@@ -14,13 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 class AddEventDtoRequestMapperTest {
     @Mock
-    private CoordinatesDtoMapper coordinatesDtoMapper;
+    private AddressDtoMapper addressDtoMapper;
     @InjectMocks
     private AddEventDtoRequestMapper mapper;
 
     @Test
     void convertTest() {
-        Event expected = ModelUtils.getEventWithoutCoordinates();
+        Event expected = ModelUtils.getEventWithoutAddress();
 
         AddEventDtoRequest request = ModelUtils.addEventDtoRequest;
 
@@ -28,10 +28,10 @@ class AddEventDtoRequestMapperTest {
     }
 
     @Test
-    void convertTestWithoutCoordinates() {
-        Event expected = ModelUtils.getEventWithoutCoordinates();
+    void convertTestWithoutAddress() {
+        Event expected = ModelUtils.getEventWithoutAddress();
 
-        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutCoordinatesRequest;
+        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressRequest;
 
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
     }

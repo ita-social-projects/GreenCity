@@ -401,10 +401,10 @@ public class EventServiceImpl implements EventService {
             .stream()
             .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
             .forEach(eventDateLocationDto -> {
-                CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
+                AddressDto addressDto = eventDateLocationDto.getCoordinates();
                 AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
-                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-                eventDateLocationDto.setCoordinates(modelMapper.map(response, CoordinatesDto.class));
+                    new LatLng(addressDto.getLatitude(), addressDto.getLongitude()));
+                eventDateLocationDto.setCoordinates(modelMapper.map(response, AddressDto.class));
             });
     }
 

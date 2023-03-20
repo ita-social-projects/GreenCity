@@ -40,7 +40,7 @@ import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddEventDtoResponse;
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
@@ -162,7 +162,7 @@ import greencity.entity.UserAchievement;
 import greencity.entity.UserAction;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.VerifyEmail;
-import greencity.entity.event.Coordinates;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
@@ -1790,11 +1790,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2098, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2099, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2099, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2100, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1811,7 +1811,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2001, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1828,11 +1828,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1849,14 +1849,14 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.now().plusDays(1),
             ZonedDateTime.now().plusDays(1).plusSeconds(1),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
         return event;
     }
 
-    public static Event getEventWithoutCoordinates() {
+    public static Event getEventWithoutAddress() {
         Event event = new Event();
 
         event.setDescription("Description");
@@ -1867,7 +1867,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
@@ -1904,13 +1904,13 @@ public class ModelUtils {
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             "/url",
-            getCoordinatesDto())))
+            getAddressDto())))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
         .build();
 
-    public static EventDto getEventDtoWithoutCoordinates() {
+    public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
             .description("Description")
@@ -1929,7 +1929,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddEventDtoRequest addEventDtoWithoutCoordinatesRequest = AddEventDtoRequest.builder()
+    public static AddEventDtoRequest addEventDtoWithoutAddressRequest = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
@@ -1953,7 +1953,7 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                CoordinatesDto.builder().build())))
+                AddressDto.builder().build())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -1972,13 +1972,13 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                CoordinatesDto.builder().build())))
+                AddressDto.builder().build())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
     }
 
-    public static EventDto getEventWithoutCoordinatesDto() {
+    public static EventDto getEventWithoutAddressDto() {
         return EventDto.builder()
             .id(1L)
             .description("Description")
@@ -1991,7 +1991,7 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                CoordinatesDto.builder().build())))
+                AddressDto.builder().build())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2156,11 +2156,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -2183,12 +2183,12 @@ public class ModelUtils {
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
         return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .coordinates(CoordinatesDto.builder().latitude(1L).longitude(1L).build()).build());
+            .address(AddressDto.builder().latitude(1L).longitude(1L).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {
         return EventDateLocation.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .coordinates(Coordinates.builder().latitude(1L).longitude(1L).build()).build();
+            .address(Address.builder().latitude(1L).longitude(1L).build()).build();
     }
 
     public static Event getEventWithGrades() {
@@ -2201,11 +2201,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getCoordinates(), null));
+            getAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -2213,8 +2213,8 @@ public class ModelUtils {
         return event;
     }
 
-    public static Coordinates getCoordinates() {
-        return Coordinates.builder()
+    public static Address getAddress() {
+        return Address.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
             .streetUa("Вулиця")
@@ -2235,12 +2235,12 @@ public class ModelUtils {
             .startDate(ZonedDateTime.now())
             .finishDate(ZonedDateTime.now().plusDays(2L))
             .onlineLink("https://events.com/1")
-            .coordinates(getCoordinates())
+            .address(getAddress())
             .build();
     }
 
-    public static CoordinatesDto getCoordinatesDto() {
-        return CoordinatesDto.builder()
+    public static AddressDto getAddressDto() {
+        return AddressDto.builder()
             .latitude(13.4567236)
             .longitude(98.2354469)
             .streetUa("Вулиця")

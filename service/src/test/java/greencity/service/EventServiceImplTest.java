@@ -99,11 +99,11 @@ class EventServiceImplTest {
     }
 
     @Test
-    void saveEventWithoutCoordinates() {
+    void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
-        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutCoordinates();
-        AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutCoordinatesRequest;
-        Event eventWithoutCoordinates = ModelUtils.getEventWithoutCoordinates();
+        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
+        AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
+        Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
         List<Tag> tags = ModelUtils.getEventTags();
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
         when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.TEST_USER_VO);

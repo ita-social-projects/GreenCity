@@ -699,7 +699,7 @@ public class ModelUtils {
             .finishDate(ZonedDateTime.of(LocalDateTime.of(2019, 1, 1, 0, 0), ZoneId.systemDefault())).build())).build();
     }
 
-    public static AddEventDtoRequest getEventWithoutCoordinatesAndLink() {
+    public static AddEventDtoRequest getEventWithoutAddressAndLink() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();

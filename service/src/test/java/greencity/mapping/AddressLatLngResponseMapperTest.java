@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +17,7 @@ class AddressLatLngResponseMapperTest {
 
     @Test
     void convert() {
-        CoordinatesDto expected = ModelUtils.getCoordinatesDto();
+        AddressDto expected = ModelUtils.getAddressDto();
         AddressLatLngResponse response = AddressLatLngResponse
             .builder()
             .latitude(expected.getLatitude())

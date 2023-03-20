@@ -3,7 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -480,7 +480,7 @@ class EventsControllerTest {
                 .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .onlineLink("some-link.com")
-                .coordinates(CoordinatesDto.builder()
+                .coordinates(AddressDto.builder()
                     .streetUa("Вулиця")
                     .streetEn("Street")
                     .houseNumber("1B")

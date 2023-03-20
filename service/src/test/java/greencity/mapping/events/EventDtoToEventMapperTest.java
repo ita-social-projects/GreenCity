@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 class EventDtoToEventMapperTest {
     @Mock
-    private CoordinatesDtoMapper coordinatesDtoMapper;
+    private AddressDtoMapper addressDtoMapper;
     @InjectMocks
     private EventDtoToEventMapper mapper;
 
@@ -31,8 +31,8 @@ class EventDtoToEventMapperTest {
     }
 
     @Test
-    void convertTestWithoutCoordinates() {
-        EventDto event = ModelUtils.getEventWithoutCoordinatesDto();
+    void convertTestWithoutAddress() {
+        EventDto event = ModelUtils.getEventWithoutAddressDto();
         event.setAdditionalImages(new ArrayList<>());
 
         Event expected = ModelUtils.getEvent();

@@ -1,6 +1,6 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDto;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
-    private final CoordinatesDtoMapper mapper;
+    private final AddressDtoMapper mapper;
 
     /**
      * Method for converting {@link EventDto} into {@link Event}.
@@ -52,11 +52,11 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
 
         List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
         for (var date : eventDto.getDates()) {
-            CoordinatesDto coordinatesDto = date.getCoordinates();
+            AddressDto addressDto = date.getCoordinates();
             eventDateLocationsDto.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
-                .coordinates(mapper.convert(coordinatesDto))
+                .address(mapper.convert(addressDto))
                 .onlineLink(date.getOnlineLink())
                 .event(event).build());
         }

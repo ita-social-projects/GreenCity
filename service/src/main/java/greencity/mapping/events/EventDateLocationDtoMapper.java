@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocationDto, EventDateLocation> {
-    private final CoordinatesDtoMapper mapper;
+    private final AddressDtoMapper mapper;
 
     /**
      * Method for converting {@link EventDateLocationDto} into
@@ -35,7 +35,7 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
             eventDateLocation.setOnlineLink(eventDateLocationDto.getOnlineLink());
         }
         if (eventDateLocationDto.getCoordinates() != null) {
-            eventDateLocation.setCoordinates(mapper.convert(eventDateLocationDto.getCoordinates()));
+            eventDateLocation.setAddress(mapper.convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
     }
