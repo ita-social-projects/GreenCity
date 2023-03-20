@@ -27,9 +27,9 @@ import java.util.Locale;
 @Slf4j
 public class GoogleApiService {
     private final GeoApiContext context;
-    private static final Locale localeUk = new Locale("uk");
-    private static final Locale localeEn = new Locale("en");
-    private static final List<Locale> locales = List.of(localeUk, localeEn);
+    private static final Locale LOCALE_UKRAINIAN = new Locale("uk");
+    private static final Locale LOCALE_ENGLISH = new Locale("en");
+    private static final List<Locale> locales = List.of(LOCALE_UKRAINIAN, LOCALE_ENGLISH);
 
     /**
      * Send request to the Google and receive response with geocoding.
@@ -55,8 +55,8 @@ public class GoogleApiService {
     /**
      * Send request to the Google and receive response with geocoding.
      *
-     * @param searchCoordinates - coordinates to search
-     * @return GeocodingResults - return result from geocoding service
+     * @param searchCoordinates {@link LatLng} - coordinates to search
+     * @return {@link AddressLatLngResponse} - return result from geocoding service
      */
     public AddressLatLngResponse getResultFromGeoCodeByCoordinates(LatLng searchCoordinates) {
         AddressLatLngResponse addressLatLngResponse = AddressLatLngResponse
@@ -64,42 +64,38 @@ public class GoogleApiService {
             .latitude(searchCoordinates.lat)
             .longitude(searchCoordinates.lng)
             .build();
-
-        locales.forEach(locale -> {
-            try {
-                GeocodingResult[] results = GeocodingApi.newRequest(context)
-                    .latlng(searchCoordinates).language(locale.getLanguage()).await();
-                if (locale.equals(localeUk)) {
-                    addressLatLngResponse.setAddressUa(getAddressAddressComponents(results[0].addressComponents));
-                }
-                if (locale.equals(localeEn)) {
-                    addressLatLngResponse.setAddressEn(getAddressAddressComponents(results[0].addressComponents));
-                }
-            } catch (IOException | InterruptedException | ApiException e) {
-                log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
-                Thread.currentThread().interrupt();
-            }
-        });
+        try {
+            addressLatLngResponse
+                .setAddressUa(getAddressResponseByLocaleAndCoordinates(searchCoordinates, LOCALE_UKRAINIAN));
+            addressLatLngResponse
+                .setAddressEn(getAddressResponseByLocaleAndCoordinates(searchCoordinates, LOCALE_ENGLISH));
+        } catch (IOException | InterruptedException | ApiException e) {
+            log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
         return addressLatLngResponse;
     }
 
-    private AddressResponse getAddressAddressComponents(AddressComponent[] addressComponents) {
+    private AddressResponse getAddressResponseByLocaleAndCoordinates(LatLng latLng, Locale locale)
+        throws IOException, InterruptedException, ApiException {
+        GeocodingResult[] results = GeocodingApi.newRequest(context)
+            .latlng(latLng).language(locale.getLanguage()).await();
+        return getAddressResponse(results[0].addressComponents);
+    }
+
+    private AddressResponse getAddressResponse(AddressComponent[] addressComponents) {
         AddressResponse addressResponse = new AddressResponse();
         for (AddressComponent component : addressComponents) {
             List<AddressComponentType> componentTypes = Arrays.asList(component.types);
             if (componentTypes.contains(AddressComponentType.STREET_NUMBER)) {
                 addressResponse.setHouseNumber(component.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.ROUTE)) {
+            } else if (componentTypes.contains(AddressComponentType.ROUTE)) {
                 addressResponse.setStreet(component.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.LOCALITY)) {
+            } else if (componentTypes.contains(AddressComponentType.LOCALITY)) {
                 addressResponse.setCity(component.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
+            } else if (componentTypes.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1)) {
                 addressResponse.setRegion(component.longName);
-            }
-            if (componentTypes.contains(AddressComponentType.COUNTRY)) {
+            } else if (componentTypes.contains(AddressComponentType.COUNTRY)) {
                 addressResponse.setCountry(component.longName);
             }
         }

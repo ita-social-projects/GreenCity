@@ -2116,8 +2116,8 @@ public class ModelUtils {
     public static AddressLatLngResponse getAddressLatLngResponse() {
         return AddressLatLngResponse
             .builder()
-            .latitude(50.5555555)
-            .longitude(50.5555555)
+            .latitude(51.1234567)
+            .longitude(28.7654321)
             .addressEn(AddressResponse
                 .builder()
                 .street("fake street name")
@@ -2215,8 +2215,8 @@ public class ModelUtils {
 
     public static Coordinates getCoordinates() {
         return Coordinates.builder()
-            .latitude(45.45)
-            .longitude(45.45)
+            .latitude(13.4567236)
+            .longitude(98.2354469)
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
@@ -2241,8 +2241,8 @@ public class ModelUtils {
 
     public static CoordinatesDto getCoordinatesDto() {
         return CoordinatesDto.builder()
-            .latitude(45.45)
-            .longitude(45.45)
+            .latitude(13.4567236)
+            .longitude(98.2354469)
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
