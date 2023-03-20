@@ -25,7 +25,7 @@ class EventDateLocationDtoMapperTest {
             .id(expected.getId())
             .startDate(expected.getStartDate())
             .finishDate(expected.getFinishDate())
-            .coordinates(getAddressDto())
+            .address(getAddressDto())
             .build();
         EventDateLocation actual = mapper.convert(dto);
         assertEquals(expected.getId(), actual.getId());
