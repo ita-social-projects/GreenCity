@@ -3,7 +3,9 @@ package greencity.mapping;
 import greencity.dto.event.CoordinatesDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AddressLatLngResponseMapper extends AbstractConverter<AddressLatLngResponse, CoordinatesDto> {
     @Override
     protected CoordinatesDto convert(AddressLatLngResponse addressLatLngResponse) {

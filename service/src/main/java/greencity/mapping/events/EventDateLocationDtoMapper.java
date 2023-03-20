@@ -6,6 +6,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,6 +15,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocationDto, EventDateLocation> {
+    private final CoordinatesDtoMapper mapper;
+
+    @Autowired
+    public EventDateLocationDtoMapper(CoordinatesDtoMapper mapper) {
+        this.mapper = mapper;
+    }
+
     /**
      * Method for converting {@link EventDateLocationDto} into
      * {@link EventDateLocation}.
@@ -31,7 +39,7 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
             eventDateLocation.setOnlineLink(eventDateLocationDto.getOnlineLink());
         }
         if (eventDateLocationDto.getCoordinates() != null) {
-            eventDateLocation.setCoordinates(new CoordinatesDtoMapper().convert(eventDateLocationDto.getCoordinates()));
+            eventDateLocation.setCoordinates(mapper.convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
     }

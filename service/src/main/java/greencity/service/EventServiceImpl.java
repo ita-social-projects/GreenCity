@@ -50,11 +50,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        for (EventDateLocationDto eventDateLocationDto : addEventDtoRequest.getDatesLocations()) {
-            if (eventDateLocationDto.getCoordinates() != null) {
-                addAddressToLocation(eventDateLocationDto);
-            }
-        }
+        addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -318,11 +314,7 @@ public class EventServiceImpl implements EventService {
         updateImages(toUpdate, updateEventDto, images);
 
         if (updateEventDto.getDatesLocations() != null) {
-            for (EventDateLocationDto eventDateLocationDto : updateEventDto.getDatesLocations()) {
-                if (eventDateLocationDto.getCoordinates() != null) {
-                    addAddressToLocation(eventDateLocationDto);
-                }
-            }
+            addAddressToLocation(updateEventDto.getDatesLocations());
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
@@ -404,11 +396,16 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addAddressToLocation(EventDateLocationDto eventDateLocationDtos) {
-        CoordinatesDto coordinatesDto = eventDateLocationDtos.getCoordinates();
-        AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
-            new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-        eventDateLocationDtos.setCoordinates(modelMapper.map(response, CoordinatesDto.class));
+    private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
+        eventDateLocationDtos
+            .stream()
+            .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
+            .forEach(eventDateLocationDto -> {
+                CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
+                AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
+                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
+                eventDateLocationDto.setCoordinates(modelMapper.map(response, CoordinatesDto.class));
+            });
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {

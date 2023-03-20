@@ -6,6 +6,7 @@ import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,6 +18,13 @@ import java.util.List;
  */
 @Component(value = "eventDtoRequestMapper")
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
+    private final CoordinatesDtoMapper mapper;
+
+    @Autowired
+    public AddEventDtoRequestMapper(CoordinatesDtoMapper mapper) {
+        this.mapper = mapper;
+    }
+
     /**
      * Method for converting {@link greencity.dto.event.AddEventDtoRequest} into
      * {@link Event}.
@@ -40,7 +48,7 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
             eventDateLocation.setStartDate(date.getStartDate());
             eventDateLocation.setFinishDate(date.getFinishDate());
             if (date.getCoordinates() != null) {
-                eventDateLocation.setCoordinates(new CoordinatesDtoMapper().convert(date.getCoordinates()));
+                eventDateLocation.setCoordinates(mapper.convert(date.getCoordinates()));
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());

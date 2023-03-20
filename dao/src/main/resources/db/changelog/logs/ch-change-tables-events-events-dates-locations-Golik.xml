@@ -19,7 +19,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="region_en" type="varchar"/>
-            <column name="region_ua" type="varchar"/>
+            <column name="region_ua" type="varchar">
+                <constraints nullable="false"/>
+            </column>
             <column name="country_en" type="varchar(50)"/>
             <column name="country_ua" type="varchar(50)">
                 <constraints nullable="false"/>

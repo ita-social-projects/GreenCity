@@ -22,6 +22,7 @@ public class EventDto {
     private String title;
 
     private EventAuthorDto organizer;
+
     private LocalDate creationDate;
 
     private String description;

@@ -3,11 +3,14 @@ package greencity.mapping.events;
 import greencity.dto.event.CoordinatesDto;
 import greencity.entity.event.Coordinates;
 import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CoordinatesDtoMapper extends AbstractConverter<CoordinatesDto, Coordinates> {
     @Override
     protected Coordinates convert(CoordinatesDto coordinatesDto) {
-        return Coordinates.builder().latitude(coordinatesDto.getLatitude())
+        return Coordinates.builder()
+            .latitude(coordinatesDto.getLatitude())
             .longitude(coordinatesDto.getLongitude())
             .streetEn(coordinatesDto.getStreetEn())
             .streetUa(coordinatesDto.getStreetUa())
@@ -17,6 +20,7 @@ public class CoordinatesDtoMapper extends AbstractConverter<CoordinatesDto, Coor
             .regionEn(coordinatesDto.getRegionEn())
             .regionUa(coordinatesDto.getRegionUa())
             .countryEn(coordinatesDto.getCountryEn())
-            .countryUa(coordinatesDto.getCountryUa()).build();
+            .countryUa(coordinatesDto.getCountryUa())
+            .build();
     }
 }
