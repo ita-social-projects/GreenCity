@@ -35,7 +35,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
-            AddressDto addressDto = eventDateLocationDto.getCoordinates();
+            AddressDto addressDto = eventDateLocationDto.getAddress();
             String onlineLink = eventDateLocationDto.getOnlineLink();
             if (onlineLink == null && addressDto == null) {
                 throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_ADDRESS);

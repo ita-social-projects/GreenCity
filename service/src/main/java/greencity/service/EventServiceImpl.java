@@ -399,12 +399,12 @@ public class EventServiceImpl implements EventService {
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
         eventDateLocationDtos
             .stream()
-            .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
+            .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getAddress()))
             .forEach(eventDateLocationDto -> {
-                AddressDto addressDto = eventDateLocationDto.getCoordinates();
+                AddressDto addressDto = eventDateLocationDto.getAddress();
                 AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
                     new LatLng(addressDto.getLatitude(), addressDto.getLongitude()));
-                eventDateLocationDto.setCoordinates(modelMapper.map(response, AddressDto.class));
+                eventDateLocationDto.setAddress(modelMapper.map(response, AddressDto.class));
             });
     }
 
