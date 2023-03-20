@@ -4,6 +4,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,9 @@ import java.util.List;
  * {@link greencity.dto.event.AddEventDtoRequest} into {@link Event}.
  */
 @Component(value = "eventDtoRequestMapper")
+@RequiredArgsConstructor
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
     private final CoordinatesDtoMapper mapper;
-
-    @Autowired
-    public AddEventDtoRequestMapper(CoordinatesDtoMapper mapper) {
-        this.mapper = mapper;
-    }
 
     /**
      * Method for converting {@link greencity.dto.event.AddEventDtoRequest} into

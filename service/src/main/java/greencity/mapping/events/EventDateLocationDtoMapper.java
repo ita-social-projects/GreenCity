@@ -4,6 +4,7 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,9 @@ import org.springframework.stereotype.Component;
  * {@link EventDto}.
  */
 @Component
+@RequiredArgsConstructor
 public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocationDto, EventDateLocation> {
     private final CoordinatesDtoMapper mapper;
-
-    @Autowired
-    public EventDateLocationDtoMapper(CoordinatesDtoMapper mapper) {
-        this.mapper = mapper;
-    }
 
     /**
      * Method for converting {@link EventDateLocationDto} into

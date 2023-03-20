@@ -6,6 +6,7 @@ import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,9 @@ import java.util.List;
  * {@link Event}.
  */
 @Component
+@RequiredArgsConstructor
 public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
     private final CoordinatesDtoMapper mapper;
-
-    @Autowired
-    public EventDtoToEventMapper(CoordinatesDtoMapper mapper) {
-        this.mapper = mapper;
-    }
 
     /**
      * Method for converting {@link EventDto} into {@link Event}.
