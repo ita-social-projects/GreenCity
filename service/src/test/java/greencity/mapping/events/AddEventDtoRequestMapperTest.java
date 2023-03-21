@@ -39,9 +39,8 @@ class AddEventDtoRequestMapperTest {
     }
 
     @Test
-    void convertTestWithoutAddressOrOnlineLink() {
-        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressRequest;
-        request.getDatesLocations().get(0).setOnlineLink(null);
+    void convertTestWithoutAddressAndOnlineLink() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressAndLinkRequest;
         assertThrows(BadRequestException.class, () -> mapper.convert(request));
     }
 }

@@ -1940,6 +1940,17 @@ public class ModelUtils {
         .tags(List.of("Social"))
         .build();
 
+    public static AddEventDtoRequest addEventDtoWithoutAddressAndLinkRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            null)))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
     public static EventDto getEventDto() {
         return EventDto.builder()
             .id(1L)
