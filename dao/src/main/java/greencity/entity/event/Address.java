@@ -1,17 +1,18 @@
 package greencity.entity.event;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Builder
 @Embeddable
-@ToString
-@EqualsAndHashCode
+@Data
 public final class Address {
     @Column
     private double latitude;

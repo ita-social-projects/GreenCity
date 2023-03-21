@@ -10,6 +10,7 @@ import com.google.maps.model.LatLng;
 
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.exception.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,9 +28,9 @@ import java.util.Locale;
 @Slf4j
 public class GoogleApiService {
     private final GeoApiContext context;
-    private static final Locale LOCALE_UKRAINIAN = new Locale("uk");
-    private static final Locale LOCALE_ENGLISH = new Locale("en");
-    private static final List<Locale> locales = List.of(LOCALE_UKRAINIAN, LOCALE_ENGLISH);
+    private static final Locale UKRAINIAN = new Locale("uk");
+    private static final Locale ENGLISH = new Locale("en");
+    private static final List<Locale> LOCALES = List.of(UKRAINIAN, ENGLISH);
 
     /**
      * Send request to the Google and receive response with geocoding.
@@ -39,7 +40,7 @@ public class GoogleApiService {
      */
     public List<GeocodingResult> getResultFromGeoCode(String searchRequest) {
         List<GeocodingResult> geocodingResults = new ArrayList<>();
-        locales.forEach(locale -> {
+        LOCALES.forEach(locale -> {
             try {
                 GeocodingResult[] results = GeocodingApi.newRequest(context)
                     .address(searchRequest).language(locale.getLanguage()).await();
@@ -64,23 +65,27 @@ public class GoogleApiService {
             .latitude(searchCoordinates.lat)
             .longitude(searchCoordinates.lng)
             .build();
-        try {
-            addressLatLngResponse
-                .setAddressUa(getAddressResponseByLocaleAndCoordinates(searchCoordinates, LOCALE_UKRAINIAN));
-            addressLatLngResponse
-                .setAddressEn(getAddressResponseByLocaleAndCoordinates(searchCoordinates, LOCALE_ENGLISH));
-        } catch (IOException | InterruptedException | ApiException e) {
-            log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
-            Thread.currentThread().interrupt();
+
+        AddressResponse addressUa = getAddressResponseByLocaleAndCoordinates(searchCoordinates, UKRAINIAN);
+        if (addressUa == null) {
+            throw new BadRequestException("Address with ukrainian is required!");
         }
+        addressLatLngResponse.setAddressUa(addressUa);
+        addressLatLngResponse
+            .setAddressEn(getAddressResponseByLocaleAndCoordinates(searchCoordinates, ENGLISH));
         return addressLatLngResponse;
     }
 
-    private AddressResponse getAddressResponseByLocaleAndCoordinates(LatLng latLng, Locale locale)
-        throws IOException, InterruptedException, ApiException {
-        GeocodingResult[] results = GeocodingApi.newRequest(context)
-            .latlng(latLng).language(locale.getLanguage()).await();
-        return getAddressResponse(results[0].addressComponents);
+    private AddressResponse getAddressResponseByLocaleAndCoordinates(LatLng latLng, Locale locale) {
+        try {
+            GeocodingResult[] results = GeocodingApi.newRequest(context)
+                .latlng(latLng).language(locale.getLanguage()).await();
+            return getAddressResponse(results[0].addressComponents);
+        } catch (IOException | InterruptedException | ApiException e) {
+            log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+            return null;
+        }
     }
 
     private AddressResponse getAddressResponse(AddressComponent[] addressComponents) {

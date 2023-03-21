@@ -1,13 +1,14 @@
 package greencity.dto.event;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Builder
-@EqualsAndHashCode
-@Setter
+@Data
 public class AddressDto {
     private double latitude;
     private double longitude;
