@@ -457,7 +457,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
                 .orElseThrow(
                     () -> new NotFoundException(
-                            ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
                             + habitAssignId));
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
