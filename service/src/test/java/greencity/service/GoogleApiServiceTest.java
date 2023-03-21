@@ -54,7 +54,8 @@ class GoogleApiServiceTest {
     }
 
     @Test
-    void getResultFromGeoCodeByCoordinatesWithInvalidUkrainianRequestTest() throws IOException, InterruptedException, ApiException {
+    void getResultFromGeoCodeByCoordinatesWithInvalidUkrainianRequestTest()
+        throws IOException, InterruptedException, ApiException {
         AddressLatLngResponse expected = ModelUtils.getAddressLatLngResponse();
         LatLng latLng = new LatLng(expected.getLatitude(), expected.getLongitude());
         try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
@@ -63,7 +64,7 @@ class GoogleApiServiceTest {
             when(request.latlng(latLng)).thenReturn(request);
             when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
             when(request.await()).thenThrow(ApiException.class);
-            assertThrows(BadRequestException.class,()-> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
+            assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
             verify(request, times(1)).await();
         }
     }
