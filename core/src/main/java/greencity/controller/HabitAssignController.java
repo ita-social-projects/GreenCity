@@ -263,7 +263,7 @@ public class HabitAssignController {
      * @param locale        needed language code.
      * @return {@link HabitDto} instance.
      */
-    @ApiOperation(value = "Get inprogress or acquired assign by habit assign id for current user.")
+    @ApiOperation(value = "Get habit assign by habit assign id for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

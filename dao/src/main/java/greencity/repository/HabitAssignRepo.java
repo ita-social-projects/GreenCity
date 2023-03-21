@@ -238,8 +238,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     Long findAmountOfUsersAcquired(@Param("habitId") Long habitId);
 
     /**
-     * Method to find {@link HabitAssign} by {@link HabitAssign} id (with not
-     * cancelled and not expired status).
+     * Method to find {@link HabitAssign} by {@link HabitAssign} id.
      *
      * @param habitAssignId {@link Long} id.
      * @param userId        {@link Long} id.
@@ -248,7 +247,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "FROM HabitAssign ha"
         + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
         + " JOIN FETCH ht.language l"
-        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId"
-        + " AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId")
     Optional<HabitAssign> findByHabitAssignIdAndUserId(Long habitAssignId, Long userId);
 }
