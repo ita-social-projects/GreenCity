@@ -2113,6 +2113,74 @@ public class ModelUtils {
         return geocodingResults;
     }
 
+    public static GeocodingResult[] getGeocodingResultUk() {
+        GeocodingResult geocodingResult = new GeocodingResult();
+
+        AddressComponent route = new AddressComponent();
+        route.longName = "вулиця";
+        route.types = new AddressComponentType[] {AddressComponentType.ROUTE};
+
+        AddressComponent streetNumber = new AddressComponent();
+        streetNumber.longName = "13";
+        streetNumber.types = new AddressComponentType[] {AddressComponentType.STREET_NUMBER};
+
+        AddressComponent locality = new AddressComponent();
+        locality.longName = "місто";
+        locality.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
+
+        AddressComponent region = new AddressComponent();
+        region.longName = "область";
+        region.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
+
+        AddressComponent country = new AddressComponent();
+        country.longName = "країна";
+        country.types = new AddressComponentType[] {AddressComponentType.COUNTRY};
+
+        geocodingResult.addressComponents = new AddressComponent[] {
+            locality,
+            streetNumber,
+            region,
+            country,
+            route
+        };
+
+        return new GeocodingResult[] {geocodingResult};
+    }
+
+    public static GeocodingResult[] getGeocodingResultEn() {
+        GeocodingResult geocodingResult = new GeocodingResult();
+
+        AddressComponent route = new AddressComponent();
+        route.longName = "fake street name";
+        route.types = new AddressComponentType[] {AddressComponentType.ROUTE};
+
+        AddressComponent streetNumber = new AddressComponent();
+        streetNumber.longName = "13";
+        streetNumber.types = new AddressComponentType[] {AddressComponentType.STREET_NUMBER};
+
+        AddressComponent locality = new AddressComponent();
+        locality.longName = "fake city";
+        locality.types = new AddressComponentType[] {AddressComponentType.LOCALITY};
+
+        AddressComponent region = new AddressComponent();
+        region.longName = "fake region";
+        region.types = new AddressComponentType[] {AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1};
+
+        AddressComponent country = new AddressComponent();
+        country.longName = "fake country";
+        country.types = new AddressComponentType[] {AddressComponentType.COUNTRY};
+
+        geocodingResult.addressComponents = new AddressComponent[] {
+            locality,
+            streetNumber,
+            region,
+            country,
+            route
+        };
+
+        return new GeocodingResult[] {geocodingResult};
+    }
+
     public static AddressLatLngResponse getAddressLatLngResponse() {
         return AddressLatLngResponse
             .builder()
