@@ -775,56 +775,69 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitByUserIdAndHabitIdWithNoHabitAssignThrowNotFoundException() {
+    void findHabitByUserIdAndHabitAssignIdWithNoHabitAssignThrowNotFoundException() {
         Long userId = 1L;
-        Long habitId = 1L;
-        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId)).thenReturn(Optional.empty());
+        Long habitAssignId = 2L;
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
-            .findHabitByUserIdAndHabitId(userId, habitId, "ua"));
+            .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "ua"));
 
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
-            + habitId,
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
+            + habitAssignId,
             exception.getMessage());
     }
 
     @Test
     void findHabitWithHabitAssignStatus() {
-        Habit habit = ModelUtils.getHabit(1L, "image123");
-        HabitAssign habitAssign = ModelUtils.getHabitAssign(1L, habit, HabitAssignStatus.INPROGRESS);
-        HabitAssignDto habitAssignDto = ModelUtils.getHabitAssignDto(1L, habitAssign.getStatus(), habit.getImage());
+        Long habitId = 1L;
+        Long userId = 2L;
+        Long habitAssignId = 3L;
+        Habit habit = ModelUtils.getHabit(habitId, "image123");
+        HabitAssign habitAssign = ModelUtils.getHabitAssign(habitAssignId, habit, HabitAssignStatus.INPROGRESS);
+        HabitAssignDto habitAssignDto =
+            ModelUtils.getHabitAssignDto(habitAssignId, habitAssign.getStatus(), habit.getImage());
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, 1L))
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(new ArrayList<>());
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitAssignDto.getHabit());
-        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(1L)).thenReturn(new ArrayList<>());
+        when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(habitAssignId)).thenReturn(new ArrayList<>());
 
-        var dto = habitAssignService.findHabitByUserIdAndHabitId(1L, 1L, language);
+        var dto = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
 
         assertNotNull(dto);
         assertEquals(habit.getId(), dto.getId());
         assertEquals(habit.getImage(), dto.getImage());
         assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
-        verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(anyLong(), anyLong());
         verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
         verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
     }
 
     @Test
     void findHabitByUserIdAndHabitIdTest() {
-        Long userId = 1L;
         Long habitId = 1L;
+        Long userId = 2L;
+        Long habitAssignId = 3L;
+        Long amountOfUsersAcquired = 4L;
         HabitAssign habitAssign = getFullHabitAssign();
-        when(habitAssignRepo.findByHabitIdAndUserId(habitId, userId)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(getFullHabitAssignDto());
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+
+        HabitAssignDto habitAssignDto = getFullHabitAssignDto();
+        habitAssignDto.setId(habitAssignId);
+        habitAssignDto.setUserId(userId);
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getShoppingListItemTranslationList());
-        when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(5L);
-        HabitDto actual = habitAssignService.findHabitByUserIdAndHabitId(userId, habitId, language);
+        when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
+        HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
         assertNotNull(actual.getAmountAcquiredUsers());
-        verify(habitAssignRepo, times(1)).findByHabitIdAndUserId(habitId, userId);
+        verify(habitAssignRepo, times(1)).findByHabitAssignIdAndUserId(habitAssignId, userId);
         verify(shoppingListItemTranslationRepo, times(1)).findShoppingListByHabitIdAndByLanguageCode(language, habitId);
         verify(habitAssignRepo, times(1)).findAmountOfUsersAcquired(habitId);
     }
