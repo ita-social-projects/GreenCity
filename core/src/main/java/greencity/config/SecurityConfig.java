@@ -179,7 +179,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/shopping-list-items",
                 "/habit/assign/allForCurrentUser",
                 "/habit/assign/active/{date}",
-                "/habit/assign/{habitId}/more",
+                "/habit/assign/{habitAssignId}/more",
                 "/habit/assign/activity/{from}/to/{to}",
                 HABIT_ASSIGN_ID + "/active",
                 HABIT_ASSIGN_ID,

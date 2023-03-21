@@ -452,18 +452,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     @Override
-    public HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language) {
+    public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
         var habitAssign =
-            habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
                 .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
-                        + habitId));
+                    () -> new NotFoundException(
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
+                            + habitAssignId));
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
         List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
         shoppingListItemTranslationRepo
-            .findShoppingListByHabitIdAndByLanguageCode(language, habitId)
+            .findShoppingListByHabitIdAndByLanguageCode(language, habit.getId())
             .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         changeStatuses(ShoppingListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), shoppingListItems);
