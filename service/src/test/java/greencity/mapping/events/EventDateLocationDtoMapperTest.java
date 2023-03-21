@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static greencity.ModelUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 class EventDateLocationDtoMapperTest {
@@ -31,5 +32,20 @@ class EventDateLocationDtoMapperTest {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getStartDate(), actual.getStartDate());
         assertEquals(expected.getAddress(), actual.getAddress());
+    }
+
+    @Test
+    void convertWithoutAddress(){
+        EventDateLocation expected = getEventDateLocation();
+        expected.setAddress(null);
+        EventDateLocationDto dto = EventDateLocationDto.builder()
+                .id(expected.getId())
+                .startDate(expected.getStartDate())
+                .finishDate(expected.getFinishDate())
+                .build();
+        EventDateLocation actual = mapper.convert(dto);
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getStartDate(), actual.getStartDate());
+        assertNull(actual.getAddress());
     }
 }
