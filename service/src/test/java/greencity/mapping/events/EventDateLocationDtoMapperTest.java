@@ -35,14 +35,14 @@ class EventDateLocationDtoMapperTest {
     }
 
     @Test
-    void convertWithoutAddress(){
+    void convertWithoutAddress() {
         EventDateLocation expected = getEventDateLocation();
         expected.setAddress(null);
         EventDateLocationDto dto = EventDateLocationDto.builder()
-                .id(expected.getId())
-                .startDate(expected.getStartDate())
-                .finishDate(expected.getFinishDate())
-                .build();
+            .id(expected.getId())
+            .startDate(expected.getStartDate())
+            .finishDate(expected.getFinishDate())
+            .build();
         EventDateLocation actual = mapper.convert(dto);
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getStartDate(), actual.getStartDate());
