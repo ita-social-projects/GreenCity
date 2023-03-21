@@ -255,14 +255,15 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to return {@link HabitDto} with more it's information by it's id.
+     * Method to return {@link HabitDto} with more it's information by
+     * {@link HabitAssignVO} id.
      *
-     * @param habitId {@link HabitVO} id.
-     * @param userVO  {@link UserVO} user.
-     * @param locale  needed language code.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO} user.
+     * @param locale        needed language code.
      * @return {@link HabitDto} instance.
      */
-    @ApiOperation(value = "Get inprogress or acquired assign by habit id for current user.")
+    @ApiOperation(value = "Get inprogress or acquired assign by habit assign id for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -270,14 +271,14 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("/{habitId}/more")
-    public ResponseEntity<HabitDto> getUsersHabitByHabitId(
+    @GetMapping("/{habitAssignId}/more")
+    public ResponseEntity<HabitDto> getUsersHabitByHabitAssignId(
         @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable Long habitId,
+        @PathVariable Long habitAssignId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .findHabitByUserIdAndHabitId(userVO.getId(), habitId, locale.getLanguage()));
+                .findHabitByUserIdAndHabitAssignId(userVO.getId(), habitAssignId, locale.getLanguage()));
     }
 
     /**
