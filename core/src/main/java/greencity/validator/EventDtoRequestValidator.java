@@ -4,7 +4,7 @@ import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 
@@ -35,10 +35,10 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
-            CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
+            AddressDto addressDto = eventDateLocationDto.getCoordinates();
             String onlineLink = eventDateLocationDto.getOnlineLink();
-            if (onlineLink == null && coordinatesDto == null) {
-                throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_COORDINATES);
+            if (onlineLink == null && addressDto == null) {
+                throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_ADDRESS);
             }
             if (onlineLink != null) {
                 isUrlValid(onlineLink);

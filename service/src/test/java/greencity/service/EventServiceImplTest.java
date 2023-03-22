@@ -80,7 +80,8 @@ class EventServiceImplTest {
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(tags);
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         assertEquals(eventDto, eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), null));
 
@@ -95,6 +96,32 @@ class EventServiceImplTest {
         when(fileService.upload(multipartFiles[1])).thenReturn("/url2");
         assertEquals(eventDto,
             eventService.save(addEventDtoRequest, ModelUtils.getUser().getEmail(), multipartFiles));
+    }
+
+    @Test
+    void saveEventWithoutAddress() {
+        User user = ModelUtils.getUser();
+        EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
+        AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
+        Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
+        List<Tag> tags = ModelUtils.getEventTags();
+        when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
+        when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
+        when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
+        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+        when(tagService.findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
+            TagType.EVENT)).thenReturn(tagVOList);
+        when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
+        }.getType())).thenReturn(tags);
+
+        assertEquals(eventDtoWithoutCoordinatesDto,
+            eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null));
+        verify(restClient, times(1)).findByEmail(user.getEmail());
+        verify(eventRepo, times(1)).save(eventWithoutCoordinates);
+        verify(tagService, times(1)).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
+            TagType.EVENT);
     }
 
     @Test
@@ -159,7 +186,8 @@ class EventServiceImplTest {
         when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
@@ -269,7 +297,8 @@ class EventServiceImplTest {
         when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
-        when(googleApiService.getResultFromGeoCodeByCoordinates(any())).thenReturn(ModelUtils.getGeocodingResult());
+        when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
+            .thenReturn(ModelUtils.getAddressLatLngResponse());
 
         updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
 

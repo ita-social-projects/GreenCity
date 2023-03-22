@@ -48,8 +48,8 @@ class EventDtoRequestValidatorTest {
     }
 
     @Test
-    void withoutCoordinatesAndLinkException() {
-        AddEventDtoRequest addEventDtoRequest = ModelUtils.getEventWithoutCoordinatesAndLink();
+    void withoutAddressAndLinkException() {
+        AddEventDtoRequest addEventDtoRequest = ModelUtils.getEventWithoutAddressAndLink();
         assertThrows(EventDtoValidationException.class, () -> validator.isValid(addEventDtoRequest, null));
     }
 
