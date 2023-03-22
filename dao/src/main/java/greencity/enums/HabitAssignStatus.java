@@ -4,5 +4,6 @@ public enum HabitAssignStatus {
     INPROGRESS,
     ACQUIRED,
     CANCELLED,
-    EXPIRED
+    EXPIRED,
+    REQUESTED
 }

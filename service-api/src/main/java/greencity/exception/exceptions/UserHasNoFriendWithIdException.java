@@ -6,13 +6,15 @@ package greencity.exception.exceptions;
  * @author Volodymyr Kharchenko
  * @version 1.0
  */
-public class UserHasNoFriendWithIdException extends RuntimeException{
+public class UserHasNoFriendWithIdException extends RuntimeException {
 
     /**
      * Constructor for UserHasNoFriendWithIdException.
      *
      * @param message - giving message.
      */
-    public UserHasNoFriendWithIdException(String message) { super(message);}
+    public UserHasNoFriendWithIdException(String message) {
+        super(message);
+    }
 
 }

@@ -55,9 +55,10 @@ public class HabitAssignController {
     /**
      * Method which assigns habit for {@link UserVO} with custom props.
      *
-     * @param habitId                  {@link HabitVO} id.
-     * @param userVO                   {@link UserVO} instance.
-     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto} instance.
+     * @param habitId                        {@link HabitVO} id.
+     * @param userVO                         {@link UserVO} instance.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto}
+     *                                       instance.
      * @return {@link ResponseEntity}.
      */
     @ApiOperation(value = "Assign habit with custom properties for current user.")

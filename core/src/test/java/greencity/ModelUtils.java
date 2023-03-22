@@ -630,11 +630,11 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitAssignCustomPropertiesDto getHabitAssignCustomPropertiesDto(){
+    public static HabitAssignCustomPropertiesDto getHabitAssignCustomPropertiesDto() {
         return HabitAssignCustomPropertiesDto.builder()
-                .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
-                .friendsIdsList(List.of(1L, 2L))
-                .build();
+            .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
+            .friendsIdsList(List.of(1L, 2L))
+            .build();
     }
 
     public static UpdateUserShoppingListDto getUpdateUserShoppingListDto() {

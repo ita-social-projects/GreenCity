@@ -33,7 +33,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,33 +42,34 @@ class GoogleApiServiceTest {
     GeocodingApiRequest geocodingApiRequest;
     @InjectMocks
     GoogleApiService googleApiService;
+
     @Test
     void getResultFromGeoCode() {
     }
-    /*@BeforeEach
-    void init() throws NoSuchFieldException, IllegalAccessException{
-        var lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
-        VarHandle modifiers = lookup.findVarHandle(Field.class, "modifiers", int.class);
-        ApiConfig apiConfig = new ApiConfig("/maps/api/geocode/json");
-        Field config = GeocodingApiRequest.class.getDeclaredField("API_CONFIG");
-        modifiers.set(config, config.getModifiers() & ~Modifier.FINAL);
-        config.setAccessible(true);
-        config.set(null, apiConfig);
-    }*/
+    /*
+     * @BeforeEach void init() throws NoSuchFieldException, IllegalAccessException{
+     * var lookup = MethodHandles.privateLookupIn(Field.class,
+     * MethodHandles.lookup()); VarHandle modifiers =
+     * lookup.findVarHandle(Field.class, "modifiers", int.class); ApiConfig
+     * apiConfig = new ApiConfig("/maps/api/geocode/json"); Field config =
+     * GeocodingApiRequest.class.getDeclaredField("API_CONFIG");
+     * modifiers.set(config, config.getModifiers() & ~Modifier.FINAL);
+     * config.setAccessible(true); config.set(null, apiConfig); }
+     */
 
     @Test
     void getResultFromGeoCodeByCoordinates()
-            throws IOException, InterruptedException, ApiException{
+        throws IOException, InterruptedException, ApiException {
         LatLng searchCoordinates = new LatLng(50.613864770394684, 26.258814294011582);
         String address1 = "fake address";
         GeocodingResult geocod = ModelUtils.getGeocodingResult().get(0);
-        GeocodingResult[] geocodingResponse = new GeocodingResult[]{geocod};
+        GeocodingResult[] geocodingResponse = new GeocodingResult[] {geocod};
 
         when(geocodingApiRequest.latlng(searchCoordinates)).thenReturn(geocodingApiRequest);
         when(geocodingApiRequest.language(eq(anyString()))).thenReturn(geocodingApiRequest);
         when(geocodingApiRequest.await()).thenReturn(geocodingResponse);
         List<GeocodingResult> geocodingResults = googleApiService
-                .getResultFromGeoCodeByCoordinates(searchCoordinates);
+            .getResultFromGeoCodeByCoordinates(searchCoordinates);
         assertEquals(address1, geocodingResults.get(0).formattedAddress);
     }
 

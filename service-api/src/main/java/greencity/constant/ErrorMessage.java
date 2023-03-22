@@ -173,6 +173,7 @@ public final class ErrorMessage {
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
     public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
+    public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
 
     private ErrorMessage() {
     }

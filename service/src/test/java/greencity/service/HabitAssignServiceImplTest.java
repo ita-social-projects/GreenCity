@@ -145,10 +145,10 @@ class HabitAssignServiceImplTest {
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
         HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
     private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
-            HabitAssignCustomPropertiesDto.builder()
-                    .habitAssignPropertiesDto(habitAssignPropertiesDto)
-                    .friendsIdsList(List.of(2L, 3L))
-                    .build();
+        HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(habitAssignPropertiesDto)
+            .friendsIdsList(List.of(2L, 3L))
+            .build();
     private String language = "en";
 
     @Test
