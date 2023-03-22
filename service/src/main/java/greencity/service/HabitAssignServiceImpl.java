@@ -912,6 +912,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
+    @Transactional
+    @Override
     public void deleteHabitAssign(Long habitAssignId, Long userId) {
         HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
             .orElseThrow(() -> new NotFoundException(

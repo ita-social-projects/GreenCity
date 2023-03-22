@@ -431,13 +431,12 @@ public class HabitAssignController {
     }
 
     /**
-     * Method delete assigned habit {@link HabitAssignVO} for current
-     * {@link UserVO}.
+     * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}.
      *
      * @param habitAssignId - id of {@link HabitAssignVO}.
      * @param userVO        - {@link UserVO} user.
      */
-    @ApiOperation(value = "Delete assigned habit for current user.")
+    @ApiOperation(value = "Delete habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
