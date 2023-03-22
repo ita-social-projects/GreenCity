@@ -26,13 +26,22 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+<<<<<<< HEAD
 import greencity.dto.habit.*;
+=======
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
+>>>>>>> dev
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
 import greencity.dto.habitfact.HabitFactUpdateDto;
 import greencity.dto.habitfact.HabitFactVO;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
@@ -110,6 +119,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class ModelUtils {
     public static Tag getTag() {
@@ -727,4 +737,27 @@ public class ModelUtils {
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
             .build())).tags(List.of("first", "second", "third")).build();
     }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddCustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text("buy a shopper")
+                    .build()))
+            .defaultDuration(7)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description("Description")
+                    .habitItem("Item")
+                    .languageCode("en")
+                    .name("use shopper")
+                    .build()))
+            .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
+            .tags(Set.of("Reusable"))
+            .build();
+    }
+
 }

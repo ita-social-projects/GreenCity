@@ -163,8 +163,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity/signIn",
                 "/ownSecurity/changePassword",
                 "/place/getListPlaceLocationByMapsBounds",
-                "/place/filter",
-                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
+                "/place/filter")
             .permitAll()
             .antMatchers(HttpMethod.GET,
                 "/achievements",
@@ -180,7 +179,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/shopping-list-items",
                 "/habit/assign/allForCurrentUser",
                 "/habit/assign/active/{date}",
-                "/habit/assign/{habitId}/more",
+                "/habit/assign/{habitAssignId}/more",
                 "/habit/assign/activity/{from}/to/{to}",
                 HABIT_ASSIGN_ID + "/active",
                 HABIT_ASSIGN_ID,
@@ -247,7 +246,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/{friendId}",
                 "/user/{userId}/declineFriend/{friendId}",
                 "/user/{userId}/acceptFriend/{friendId}",
-                "/achievements/calculate-achievement")
+                "/achievements/calculate-achievement",
+                "/habit/custom",
+                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/habit/statistic/{id}",

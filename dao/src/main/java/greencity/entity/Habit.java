@@ -48,6 +48,12 @@ public class Habit {
     @Column(name = "default_duration", nullable = false)
     private Integer defaultDuration;
 
+    @Column(name = "is_custom_habit", nullable = false)
+    private Boolean isCustomHabit;
+
+    @Column(name = "user_id")
+    private Long userId;
+
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CustomShoppingListItem> customShoppingListItems;
 

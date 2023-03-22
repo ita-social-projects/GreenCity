@@ -200,10 +200,11 @@ class HabitAssignControllerTest {
 
     @Test
     void getUsersHabitByHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/{habitId}/more", 1L))
+        Long habitAssignId = 1L;
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/more", habitAssignId))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findHabitByUserIdAndHabitId(null, 1L, "en");
+        verify(habitAssignService).findHabitByUserIdAndHabitAssignId(null, habitAssignId, "en");
     }
 
     @Test
