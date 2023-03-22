@@ -26,15 +26,12 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
-<<<<<<< HEAD
-import greencity.dto.habit.*;
-=======
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
->>>>>>> dev
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
 import greencity.dto.habitfact.HabitFactTranslationVO;
