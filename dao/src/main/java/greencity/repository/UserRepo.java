@@ -141,7 +141,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link User}
      */
     @Query(nativeQuery = true, value = "SELECT * FROM users WHERE users.id IN ( "
-            + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') "
-            + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND'));")
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') "
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND'));")
     List<User> getFriendsForUser(Long userId);
 }

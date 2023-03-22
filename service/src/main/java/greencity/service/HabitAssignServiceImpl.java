@@ -192,14 +192,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     private void assignFriendsForCustomHabit(Habit habit,
-                                             Long userId,
-                                             HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto,
-                                             List<HabitAssignManagementDto> habitAssignManagementDtoList) {
+        Long userId,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto,
+        List<HabitAssignManagementDto> habitAssignManagementDtoList) {
         List<User> friendList = userRepo.getFriendsForUser(userId);
         habitAssignCustomPropertiesDto.getFriendsIdsList().forEach(id -> {
             User user = friendList.stream().filter(friend -> id.equals(friend.getId()))
-                    .findAny()
-                    .orElseThrow(() -> new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + id));
+                .findAny()
+                .orElseThrow(() -> new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + id));
             checkStatusInProgressExists(habit.getId(), UserVO.builder().id(user.getId()).build());
             validateHabitForAssign(habit.getId(), user);
             HabitAssign habitAssign =
