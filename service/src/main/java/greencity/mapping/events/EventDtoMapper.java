@@ -84,7 +84,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                 .regionUa(address.getRegionUa())
                 .countryEn(address.getCountryEn())
                 .countryUa(address.getCountryUa()).build();
-            eventDateLocationDto.setAddress(addressDto);
+            eventDateLocationDto.setCoordinates(addressDto);
         }
         return eventDateLocationDto;
     }

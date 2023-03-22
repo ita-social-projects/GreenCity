@@ -34,8 +34,8 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
         if (eventDateLocationDto.getOnlineLink() != null) {
             eventDateLocation.setOnlineLink(eventDateLocationDto.getOnlineLink());
         }
-        if (eventDateLocationDto.getAddress() != null) {
-            eventDateLocation.setAddress(mapper.convert(eventDateLocationDto.getAddress()));
+        if (eventDateLocationDto.getCoordinates() != null) {
+            eventDateLocation.setAddress(mapper.convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
     }

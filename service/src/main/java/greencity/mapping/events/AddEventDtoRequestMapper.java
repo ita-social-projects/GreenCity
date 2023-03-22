@@ -37,14 +37,14 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
 
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
         for (var date : addEventDtoRequest.getDatesLocations()) {
-            if (date.getAddress() == null && date.getOnlineLink() == null) {
+            if (date.getCoordinates() == null && date.getOnlineLink() == null) {
                 throw new BadRequestException("Coordinates or link should be set!");
             }
             EventDateLocation eventDateLocation = new EventDateLocation();
             eventDateLocation.setStartDate(date.getStartDate());
             eventDateLocation.setFinishDate(date.getFinishDate());
-            if (date.getAddress() != null) {
-                eventDateLocation.setAddress(mapper.convert(date.getAddress()));
+            if (date.getCoordinates() != null) {
+                eventDateLocation.setAddress(mapper.convert(date.getCoordinates()));
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());

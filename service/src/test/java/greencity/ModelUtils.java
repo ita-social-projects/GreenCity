@@ -2262,7 +2262,7 @@ public class ModelUtils {
 
     public static List<EventDateLocationDto> getUpdatedEventDateLocationDto() {
         return List.of(EventDateLocationDto.builder().startDate(ZonedDateTime.now()).finishDate(ZonedDateTime.now())
-            .address(AddressDto.builder().latitude(1L).longitude(1L).build()).build());
+            .coordinates(AddressDto.builder().latitude(1L).longitude(1L).build()).build());
     }
 
     public static EventDateLocation getUpdatedEventDateLocation() {

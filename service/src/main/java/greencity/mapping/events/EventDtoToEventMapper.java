@@ -52,7 +52,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
 
         List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
         for (var date : eventDto.getDates()) {
-            AddressDto addressDto = date.getAddress();
+            AddressDto addressDto = date.getCoordinates();
             eventDateLocationsDto.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
