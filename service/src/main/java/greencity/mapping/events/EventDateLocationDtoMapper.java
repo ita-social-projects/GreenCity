@@ -1,11 +1,10 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.CoordinatesDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,10 @@ import org.springframework.stereotype.Component;
  * {@link EventDto}.
  */
 @Component
+@RequiredArgsConstructor
 public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocationDto, EventDateLocation> {
+    private final AddressDtoMapper mapper;
+
     /**
      * Method for converting {@link EventDateLocationDto} into
      * {@link EventDateLocation}.
@@ -33,12 +35,7 @@ public class EventDateLocationDtoMapper extends AbstractConverter<EventDateLocat
             eventDateLocation.setOnlineLink(eventDateLocationDto.getOnlineLink());
         }
         if (eventDateLocationDto.getCoordinates() != null) {
-            CoordinatesDto coordinatesDto = eventDateLocationDto.getCoordinates();
-            eventDateLocation.setCoordinates(Coordinates.builder()
-                .latitude(coordinatesDto.getLatitude())
-                .longitude(coordinatesDto.getLongitude())
-                .addressUa(coordinatesDto.getAddressUa())
-                .addressEn(coordinatesDto.getAddressEn()).build());
+            eventDateLocation.setAddress(mapper.convert(eventDateLocationDto.getCoordinates()));
         }
         return eventDateLocation;
     }

@@ -1,12 +1,12 @@
 package greencity.service;
 
-import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.*;
+import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,8 +50,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        addAddressesToLocation(addEventDtoRequest.getDatesLocations());
+        addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
+        toSave.setCreationDate(LocalDate.now());
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
         toSave.setOrganizer(organizer);
         if (images != null && images.length > 0 && images[0] != null) {
@@ -312,7 +314,7 @@ public class EventServiceImpl implements EventService {
         updateImages(toUpdate, updateEventDto, images);
 
         if (updateEventDto.getDatesLocations() != null) {
-            addAddressesToLocation(updateEventDto.getDatesLocations());
+            addAddressToLocation(updateEventDto.getDatesLocations());
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
                 .map(d -> modelMapper.map(d, EventDateLocation.class))
@@ -394,19 +396,16 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void addAddressesToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
-        for (var date : eventDateLocationDtos) {
-            if (date.getCoordinates() != null) {
-                CoordinatesDto coordinatesDto = date.getCoordinates();
-                List<GeocodingResult> address = googleApiService.getResultFromGeoCodeByCoordinates(
-                    new LatLng(coordinatesDto.getLatitude(), coordinatesDto.getLongitude()));
-                GeocodingResult resultUa = address.get(0);
-                GeocodingResult resultEn = address.get(1);
-                coordinatesDto.setAddressUa(resultUa.formattedAddress);
-                coordinatesDto.setAddressEn(resultEn.formattedAddress);
-                date.setCoordinates(coordinatesDto);
-            }
-        }
+    private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
+        eventDateLocationDtos
+            .stream()
+            .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
+            .forEach(eventDateLocationDto -> {
+                AddressDto addressDto = eventDateLocationDto.getCoordinates();
+                AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
+                    new LatLng(addressDto.getLatitude(), addressDto.getLongitude()));
+                eventDateLocationDto.setCoordinates(modelMapper.map(response, AddressDto.class));
+            });
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {

@@ -3,7 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.tag.TagUaEnDto;
@@ -480,9 +480,16 @@ class EventsControllerTest {
                 .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .onlineLink("some-link.com")
-                .coordinates(CoordinatesDto.builder()
-                    .addressEn("address-1")
-                    .addressUa("адреса-1")
+                .coordinates(AddressDto.builder()
+                    .streetUa("Вулиця")
+                    .streetEn("Street")
+                    .houseNumber("1B")
+                    .cityUa("Місто")
+                    .cityEn("City")
+                    .regionUa("Область")
+                    .regionUa("Oblast")
+                    .countryUa("Країна")
+                    .countryEn("Country")
                     .latitude(50.45594503475653d)
                     .longitude(30.5058935778292d).build())
                 .build()))
@@ -563,9 +570,16 @@ class EventsControllerTest {
             "  ],\n" +
             "  \"dates\": [\n" +
             "    {\n" +
-            "      \"coordinates\": {\n" +
-            "        \"addressEn\": \"string\",\n" +
-            "        \"addressUa\": \"string\",\n" +
+            "        \"coordinates\": {\n" +
+            "        \"streetUa\": \"string\",\n" +
+            "        \"streetEn\": \"string\",\n" +
+            "        \"houseNumber\": \"string\",\n" +
+            "        \"cityUa\": \"string\",\n" +
+            "        \"cityEn\": \"string\",\n" +
+            "        \"regionUa\": \"string\",\n" +
+            "        \"regionEn\": \"string\",\n" +
+            "        \"countryUa\": \"string\",\n" +
+            "        \"countryEn\": \"string\",\n" +
             "        \"latitude\": 0,\n" +
             "        \"longitude\": 0\n" +
             "      },\n" +
@@ -576,6 +590,7 @@ class EventsControllerTest {
             "    }\n" +
             "  ],\n" +
             "  \"description\": \"stringstringstringstringstringstringstring\",\n" +
+            "  \"creationDate\": \"2022-12-08\",\n" +
             "  \"id\": 0,\n" +
             "  \"isSubscribed\": true,\n" +
             "  \"open\": true,\n" +

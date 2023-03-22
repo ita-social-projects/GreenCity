@@ -33,7 +33,7 @@ public class EventDateLocation {
 
     @Embedded
     @Nullable
-    private Coordinates coordinates;
+    private Address address;
 
     @Column
     @Nullable
