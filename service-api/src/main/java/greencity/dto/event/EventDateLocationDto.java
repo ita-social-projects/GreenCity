@@ -25,5 +25,5 @@ public class EventDateLocationDto {
 
     private String onlineLink;
 
-    private AddressDto address;
+    private AddressDto coordinates;
 }
