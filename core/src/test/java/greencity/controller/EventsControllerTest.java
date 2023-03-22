@@ -480,7 +480,7 @@ class EventsControllerTest {
                 .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
                 .onlineLink("some-link.com")
-                .address(AddressDto.builder()
+                .coordinates(AddressDto.builder()
                     .streetUa("Вулиця")
                     .streetEn("Street")
                     .houseNumber("1B")
@@ -524,7 +524,7 @@ class EventsControllerTest {
             "        {\n" +
             "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
             "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-            "            \"address\":{\n" +
+            "            \"coordinates\":{\n" +
             "                \"latitude\":1,\n" +
             "                \"longitude\":1\n" +
             "            },\n" +
@@ -548,7 +548,7 @@ class EventsControllerTest {
             "        {\n" +
             "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
             "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-            "            \"address\":{\n" +
+            "            \"coordinates\":{\n" +
             "                \"latitude\":1,\n" +
             "                \"longitude\":1\n" +
             "            },\n" +
@@ -570,7 +570,7 @@ class EventsControllerTest {
             "  ],\n" +
             "  \"dates\": [\n" +
             "    {\n" +
-            "        \"address\": {\n" +
+            "        \"coordinates\": {\n" +
             "        \"streetUa\": \"string\",\n" +
             "        \"streetEn\": \"string\",\n" +
             "        \"houseNumber\": \"string\",\n" +
