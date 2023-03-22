@@ -154,10 +154,12 @@ class HabitAssignControllerTest {
 
     @Test
     void deleteHabitAssignTest() throws Exception {
+        Long habitAssignId = 1L;
+
         Principal principal = () -> "xd87@ukr.net";
-        mockMvc.perform(delete(habitLink + "/delete/{habitId}", 1L)
+        mockMvc.perform(delete(habitLink + "/delete/{habitAssignId}", habitAssignId)
             .principal(principal)).andExpect(status().isOk());
-        verify(habitAssignService).deleteHabitAssign(1L, null);
+        verify(habitAssignService).deleteHabitAssign(habitAssignId, null);
     }
 
     @Test
