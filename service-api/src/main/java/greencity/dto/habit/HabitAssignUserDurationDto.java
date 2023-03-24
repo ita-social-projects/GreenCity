@@ -1,10 +1,12 @@
 package greencity.dto.habit;
 
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.enums.HabitAssignStatus;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,12 +14,11 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class HabitAssignUserShoppingListItemDto {
+public class HabitAssignUserDurationDto {
     private Long habitAssignId;
     private Long userId;
     private Long habitId;
     private HabitAssignStatus status;
     private Integer workingDays;
     private Integer duration;
-    List<UserShoppingListItemAdvanceDto> userShoppingListItemsDto;
 }

@@ -90,15 +90,11 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void updateShoppingItemList() throws Exception {
-        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
-        Gson gson = new Gson();
-        String json = gson.toJson(propertiesDto);
-        mockMvc.perform(put(habitLink + "/{habitId}/update-user-shopping-item-list", 1L)
-            .content(json)
+    void updateHabitAssignDurationTest() throws Exception {
+        mockMvc.perform(put(habitLink + "/{habitId}/update-habit-duration?duration=15", 1L)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingItemListAndDuration(1L, null, propertiesDto);
+        verify(habitAssignService).updateUserHabitInfoDuration(1L, null, 15);
     }
 
     @Test
