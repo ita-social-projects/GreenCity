@@ -109,9 +109,7 @@ public class HabitAssignController {
     public ResponseEntity<HabitAssignUserDurationDto> updateHabitAssignDuration(
         @PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @RequestParam
-        @Min(AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
-        @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER) Integer duration) {
+        @RequestParam @Min(AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER) @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER) Integer duration) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService.updateUserHabitInfoDuration(habitAssignId, userVO.getId(), duration));
     }
