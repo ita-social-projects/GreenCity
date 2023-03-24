@@ -84,6 +84,20 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     List<UserShoppingListItem> getAllAssignedShoppingListItemsFull(Long id);
 
     /**
+     * Method returns shopping lists with statuses INPROGRESS.
+     *
+     * @param habitAssignId id of needed habit assign
+     * @return List of {@link UserShoppingListItem}
+     */
+
+    @Query("SELECT ug FROM UserShoppingListItem ug WHERE "
+        + " ug.status='INPROGRESS' "
+        + "AND ug.habitAssign.id=:habitAssignId "
+        + "ORDER BY ug.id")
+    List<UserShoppingListItem> findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(
+        @Param("habitAssignId") Long habitAssignId);
+
+    /**
      * Method returns shopping list with statuses DONE.
      *
      * @param habitAssignId id of needed habit assign

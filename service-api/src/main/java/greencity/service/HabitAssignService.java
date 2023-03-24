@@ -117,6 +117,18 @@ public interface HabitAssignService {
         Long userId, Long habitAssignId, String language);
 
     /**
+     * Method that finds all UserShoppingLists and CustomShoppingLists inProgress
+     * for current user.
+     *
+     * @param userId   {@link Long} id.
+     * @param language {@link String} of language code value.
+     * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     * @author Lilia Mokhnatska
+     */
+    List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(Long userId,
+        String language);
+
+    /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
      * and acquired status.
      *

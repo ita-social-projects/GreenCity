@@ -66,7 +66,6 @@ import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitDto;
-import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
 import static greencity.ModelUtils.getHabitAssignPropertiesDto;
 import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
@@ -513,6 +512,51 @@ class HabitAssignServiceImplTest {
         verify(shoppingListItemService).getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
         verify(customShoppingListItemService).findAllAvailableCustomShoppingListItemsByHabitAssignId(userId,
             habitAssignId);
+    }
+
+    @Test
+    void getUserShoppingListItemAndUserCustomShoppingListTest() {
+        Habit habit1 = Habit.builder().id(1L)
+            .complexity(1).build();
+
+        List<HabitAssign> habitAssignList =
+            List.of(ModelUtils.getHabitAssign(1L, habit1, HabitAssignStatus.INPROGRESS));
+
+        List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
+            List.of(ModelUtils.getCustomShoppingListItemResponseDtoWithStatusInProgress());
+
+        List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
+            List.of(UserShoppingListItemResponseDto
+                .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build());
+
+        List<UserShoppingAndCustomShoppingListsDto> expected = List.of(
+            UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .customShoppingListItemDto(customShoppingListItemResponseDtos)
+                .userShoppingListItemDto(userShoppingListItemResponseDtos)
+                .build());
+
+        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
+        when(shoppingListItemService.getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(1L, "en"))
+            .thenReturn(userShoppingListItemResponseDtos);
+        when(customShoppingListItemService.findAllCustomShoppingListItemsWithStatusInProgress(1L, 1L))
+            .thenReturn(customShoppingListItemResponseDtos);
+
+        assertEquals(expected, habitAssignService.getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en"));
+
+        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
+        verify(shoppingListItemService).getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(anyLong(), any());
+        verify(customShoppingListItemService).findAllCustomShoppingListItemsWithStatusInProgress(anyLong(), anyLong());
+    }
+
+    @Test
+    void getUserShoppingListItemAndUserCustomShoppingListWithNotFoundExceptionTest() {
+        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class, () -> habitAssignService
+            .getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en"));
+
+        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
     }
 
     @Test

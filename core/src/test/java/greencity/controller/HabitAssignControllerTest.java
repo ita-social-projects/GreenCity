@@ -230,6 +230,14 @@ class HabitAssignControllerTest {
     }
 
     @Test
+    void getListOfUserAndCustomShoppingListsInprogress() throws Exception {
+        mockMvc.perform(get(habitLink + "/{userId}/allUserAndCustomShoppingListsInprogress", 1L)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en");
+    }
+
+    @Test
     void updateUserAndCustomShoppingLists() throws Exception {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();

@@ -108,6 +108,16 @@ public interface ShoppingListItemService {
     List<UserShoppingListItemResponseDto> getUserShoppingList(Long userId, Long habitId, String language);
 
     /**
+     * Method returns list of user shopping list for specific language.
+     *
+     * @param habitAssignId id of the {@link Long} current user.
+     * @param language      needed language code.
+     * @return List of {@link UserShoppingListItemResponseDto}.
+     */
+    List<UserShoppingListItemResponseDto> getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(
+        Long habitAssignId, String language);
+
+    /**
      * Method returns user shopping list by habitAssignId for specific language.
      *
      * @param userId        id of the {@link UserVO} current user.

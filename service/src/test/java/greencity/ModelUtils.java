@@ -2580,4 +2580,24 @@ public class ModelUtils {
                 .image(image).build())
             .userId(1L).build();
     }
+
+    public static CustomShoppingListItem getCustomShoppingListItemWithStatusInProgress() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .habit(Habit.builder()
+                .id(1L)
+                .build())
+            .user(getUser())
+            .text("item")
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoWithStatusInProgress() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .text("item")
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
+    }
 }
