@@ -27,8 +27,8 @@ public class HabitAssignManagementDto {
     @NotNull
     private Long userId;
 
-    @Min(AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
-    @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
+    @Min(AppConstant.MIN_DAYS_DURATION)
+    @Max(AppConstant.MAX_DAYS_DURATION)
     @NotNull
     private Integer duration;
 
