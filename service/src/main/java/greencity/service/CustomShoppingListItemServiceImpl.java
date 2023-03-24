@@ -239,13 +239,12 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Override
     public List<CustomShoppingListItemResponseDto> findAllCustomShoppingListItemsWithStatusInProgress(Long userId,
         Long habitId) {
-        List<CustomShoppingListItemResponseDto> itemDtos = customShoppingListItemRepo
+        return customShoppingListItemRepo
             .findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(userId, habitId)
             .stream()
             .map(customShoppingListItem -> modelMapper.map(customShoppingListItem,
                 CustomShoppingListItemResponseDto.class))
             .collect(Collectors.toList());
-        return itemDtos;
     }
 
     /**
