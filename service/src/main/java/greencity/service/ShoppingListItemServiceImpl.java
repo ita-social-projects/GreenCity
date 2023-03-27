@@ -360,12 +360,11 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Override
     public List<UserShoppingListItemResponseDto> getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(
         Long habitAssignId, String language) {
-        List<UserShoppingListItemResponseDto> itemDtos = userShoppingListItemRepo
+        return userShoppingListItemRepo
             .findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
             .stream()
             .map(userShoppingListItem -> converterUserShoppingListItemResponseDto(userShoppingListItem, language))
             .collect(Collectors.toList());
-        return itemDtos;
     }
 
     /**
