@@ -1,12 +1,10 @@
 package greencity.service;
 
+import com.azure.core.annotation.Get;
 import greencity.ModelUtils;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
@@ -24,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,6 +59,11 @@ class HabitStatisticServiceImplTest {
     private HabitStatisticDto habitStatisticDto =
         HabitStatisticDto.builder().id(1L).amountOfItems(10).habitRate(HabitRate.GOOD)
             .habitAssignId(1L).createDate(zonedDateTime).build();
+
+    private GetHabitStatisticDto getHabitStatisticDto = GetHabitStatisticDto.builder()
+        .amountOfUsersAcquired(1L)
+        .habitStatisticDtoList(List.of(habitStatisticDto))
+        .build();
 
     private HabitStatistic habitStatistic = ModelUtils.getHabitStatistic();
 
@@ -175,10 +180,10 @@ class HabitStatisticServiceImplTest {
     void findAllStatsByHabitId() {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitStatisticRepo.findAllByHabitId(1L)).thenReturn(habitStatistics);
-        when(modelMapper.map(habitStatistics, new TypeToken<List<HabitStatisticDto>>() {
-        }.getType())).thenReturn(habitStatisticDtos);
-        List<HabitStatisticDto> actual = habitStatisticService.findAllStatsByHabitId(1L);
-        assertEquals(habitStatisticDtos, actual);
+        when(modelMapper.map(any(HabitStatistic.class), eq(HabitStatisticDto.class))).thenReturn(habitStatisticDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(1L)).thenReturn(1L);
+        GetHabitStatisticDto actual = habitStatisticService.findAllStatsByHabitId(1L);
+        assertEquals(getHabitStatisticDto, actual);
     }
 
     @Test

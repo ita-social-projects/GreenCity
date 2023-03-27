@@ -1,10 +1,8 @@
 package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
+
 import java.util.List;
 
 public interface HabitStatisticService {
@@ -54,7 +52,7 @@ public interface HabitStatisticService {
      * @param habitId Habit id.
      * @return list of {@link HabitStatisticDto} instances.
      */
-    List<HabitStatisticDto> findAllStatsByHabitId(Long habitId);
+    GetHabitStatisticDto findAllStatsByHabitId(Long habitId);
 
     /**
      * Returns statistics for all not taken habit items in the system for today.

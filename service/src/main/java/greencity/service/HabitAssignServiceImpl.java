@@ -3,7 +3,18 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -15,14 +26,19 @@ import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -36,6 +52,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import lombok.AllArgsConstructor;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
@@ -422,24 +452,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     @Override
-    public HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language) {
+    public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
         var habitAssign =
-            habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
                 .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
-                        + habitId));
+                    () -> new NotFoundException(
+                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
+                            + habitAssignId));
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
         List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
         shoppingListItemTranslationRepo
-            .findShoppingListByHabitIdAndByLanguageCode(language, habitId)
+            .findShoppingListByHabitIdAndByLanguageCode(language, habit.getId())
             .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         changeStatuses(ShoppingListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), shoppingListItems);
         changeStatuses(ShoppingListItemStatus.DONE.toString(),
             habitAssign.getId(), shoppingListItems);
         habit.setShoppingListItems(shoppingListItems);
+        habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
+        habit.setHabitAssignStatus(habitAssign.getStatus());
         return habit;
     }
 

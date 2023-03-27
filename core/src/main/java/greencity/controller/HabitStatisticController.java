@@ -6,6 +6,7 @@ import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitVO;
+import greencity.dto.habitstatistic.GetHabitStatisticDto;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
 import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
 import greencity.dto.habitstatistic.HabitStatisticDto;
@@ -44,7 +45,7 @@ public class HabitStatisticController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = List.class),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    public ResponseEntity<List<HabitStatisticDto>> findAllByHabitId(
+    public ResponseEntity<GetHabitStatisticDto> findAllByHabitId(
         @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK).body(habitStatisticService.findAllStatsByHabitId(habitId));
     }
