@@ -6,6 +6,7 @@ import greencity.dto.shoppinglistitem.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
@@ -13,11 +14,14 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -43,6 +47,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private ModelMapper modelMapper;
     private RestClient restClient;
     private HabitRepo habitRepo;
+    private HabitAssignRepo habitAssignRepo;
 
     /**
      * {@inheritDoc}
@@ -228,6 +233,30 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
             customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId),
             new TypeToken<List<CustomShoppingListItemResponseDto>>() {
             }.getType());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
+        Long habitAssignId) {
+        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId);
+        if (habitAssign.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Long habitId = habitAssign.get().getHabit().getId();
+
+        List<CustomShoppingListItem> customShoppingListItemList =
+            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+
+        List<CustomShoppingListItemResponseDto> responseDtoList = new ArrayList<>();
+
+        customShoppingListItemList
+            .forEach(item -> responseDtoList.add(modelMapper.map(item, CustomShoppingListItemResponseDto.class)));
+
+        return responseDtoList;
     }
 
     /**

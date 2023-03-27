@@ -563,4 +563,75 @@ class ShoppingListItemServiceImplTest {
             .thenReturn(new ArrayList<>());
         assertEquals(0, shoppingListItemRepo.findInProgressByUserIdAndLanguageCode(1L, "ua").size());
     }
+
+    @Test
+    void getUserShoppingListByHabitAssignIdTest() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long userShoppingListItemId = 4L;
+        Long shoppingListItemTranslation = 5L;
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setId(habitAssignId);
+
+        UserShoppingListItem userShoppingListItem =
+            UserShoppingListItem.builder().id(userShoppingListItemId).status(ShoppingListItemStatus.ACTIVE).build();
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.singletonList(
+            userShoppingListItem));
+        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
+            .thenReturn(UserShoppingListItemResponseDto.builder().id(userShoppingListItemId).build());
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId("en", userShoppingListItemId))
+            .thenReturn(ShoppingListItemTranslation.builder().id(shoppingListItemTranslation).build());
+        assertEquals(userShoppingListItemId,
+            shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, "en").get(0).getId());
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
+        verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
+        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId("en", userShoppingListItemId);
+    }
+
+    @Test
+    void getEmptyUserShoppingListByHabitAssignIdTest() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setId(habitAssignId);
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.of(habitAssign));
+        when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.emptyList());
+
+        assertEquals(Collections.emptyList(),
+            shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, "en"));
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(shoppingListItemTranslationRepo, times(0)).findByLangAndUserShoppingListItemId(any(), anyLong());
+    }
+
+    @Test
+    void getUserShoppingListByHabitAssignIdWithNullTest() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        String language = "en";
+        List<UserShoppingListItemResponseDto> expected = Collections.emptyList();
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.empty());
+
+        List<UserShoppingListItemResponseDto> actual = shoppingListItemService
+            .getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
+        assertEquals(expected, actual);
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(userShoppingListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(shoppingListItemTranslationRepo, times(0)).findByLangAndUserShoppingListItemId(any(), anyLong());
+    }
 }

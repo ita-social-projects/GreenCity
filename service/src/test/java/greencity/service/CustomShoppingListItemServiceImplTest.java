@@ -9,6 +9,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
@@ -20,6 +21,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Assertions;
@@ -62,6 +64,8 @@ class CustomShoppingListItemServiceImplTest {
 
     @Mock
     private HabitRepo habitRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
 
     @Mock
     private UserShoppingListItemRepo userShoppingListItemRepo;
@@ -350,5 +354,39 @@ class CustomShoppingListItemServiceImplTest {
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, null)
             .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItemsByHabitAssignId() {
+        Long habitId = 1L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setId(habitAssignId);
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.of(habitAssign));
+
+        List<CustomShoppingListItem> items = new ArrayList<>();
+        items.add(item);
+
+        when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
+            .thenReturn(items);
+
+        var expectedDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        expectedDto.setText("item");
+        expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
+
+        when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(expectedDto);
+
+        var actualDto = customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId).get(0);
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+        verify(modelMapper).map(item, CustomShoppingListItemResponseDto.class);
+
+        assertEquals(expectedDto, actualDto);
     }
 }

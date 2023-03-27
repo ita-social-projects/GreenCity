@@ -482,9 +482,10 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getUserAndUserCustomShoppingList() {
-        Long userId = 1L;
-        Long habitId = 2L;
+    void getUserShoppingAndCustomShoppingLists() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
         String language = "en";
 
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
@@ -498,13 +499,14 @@ class HabitAssignServiceImplTest {
                 .userShoppingListItemDto(userShoppingListItemResponseDtos)
                 .build();
 
-        when(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+        when(shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language))
             .thenReturn(userShoppingListItemResponseDtos);
-        when(customShoppingListItemService.findAllAvailableCustomShoppingListItems(userId, habitId))
-            .thenReturn(customShoppingListItemResponseDtos);
+        when(
+            customShoppingListItemService.findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId))
+                .thenReturn(customShoppingListItemResponseDtos);
 
         UserShoppingAndCustomShoppingListsDto actual =
-            habitAssignService.getUserShoppingListItemAndUserCustomShoppingList(userId, habitId, language);
+            habitAssignService.getUserShoppingAndCustomShoppingLists(userId, habitAssignId, language);
         assertEquals(expected, actual);
     }
 

@@ -538,22 +538,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that return list of user shopping list and custom shopping list for
-     * habit.
-     *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param language {@link String} of language code value.
-     * @return @{link UserShoppingAndCustomShoppingListsDto} instance.
+     * {@inheritDoc}
      */
     @Override
-    public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
-        Long userId, Long habitId, String language) {
+    public UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+        Long userId, Long habitAssignId, String language) {
         return UserShoppingAndCustomShoppingListsDto
             .builder()
-            .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .userShoppingListItemDto(
+                shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language))
             .customShoppingListItemDto(customShoppingListItemService
-                .findAllAvailableCustomShoppingListItems(userId, habitId))
+                .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId))
             .build();
     }
 

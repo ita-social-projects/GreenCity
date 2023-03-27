@@ -80,6 +80,16 @@ public interface CustomShoppingListItemService {
     List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItems(Long userId, Long habitId);
 
     /**
+     * Method for finding all custom shopping list items with not DISABLED status.
+     *
+     * @param userId        user id.
+     * @param habitAssignId habitAssign id.
+     * @return list of {@link CustomShoppingListItemVO}
+     */
+    List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
+        Long habitAssignId);
+
+    /**
      * Method returns all user's custom shopping items by status(if is defined).
      *
      * @param userId user id.
