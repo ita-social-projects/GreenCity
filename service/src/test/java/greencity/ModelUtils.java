@@ -2583,9 +2583,9 @@ public class ModelUtils {
 
     public static CustomShoppingListItem getCustomShoppingListItemWithStatusInProgress() {
         return CustomShoppingListItem.builder()
-            .id(1L)
+            .id(2L)
             .habit(Habit.builder()
-                .id(1L)
+                .id(3L)
                 .build())
             .user(getUser())
             .text("item")
@@ -2595,7 +2595,7 @@ public class ModelUtils {
 
     public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoWithStatusInProgress() {
         return CustomShoppingListItemResponseDto.builder()
-            .id(1L)
+            .id(2L)
             .text("item")
             .status(ShoppingListItemStatus.INPROGRESS)
             .build();

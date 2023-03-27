@@ -363,11 +363,24 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
         List<UserShoppingListItemResponseDto> itemDtos = userShoppingListItemRepo
             .findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
             .stream()
-            .map(userShoppingListItem -> modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
+            .map(userShoppingListItem -> converterUserShoppingListItemResponseDto(userShoppingListItem, language))
             .collect(Collectors.toList());
-
-        itemDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
         return itemDtos;
+    }
+
+    /**
+     * Method converts UserShoppingListItem to UserShoppingListItemResponseDto and
+     * sets text for UserShoppingListItemResponseDto with localization.
+     *
+     * @param userShoppingListItem {@link UserShoppingListItem}
+     * @param language             {@link String}
+     */
+    private UserShoppingListItemResponseDto converterUserShoppingListItemResponseDto(
+        UserShoppingListItem userShoppingListItem, String language) {
+        UserShoppingListItemResponseDto dto =
+            modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class);
+        setTextForUserShoppingListItem(dto, language);
+        return dto;
     }
 
     /**

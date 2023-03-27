@@ -117,8 +117,8 @@ public interface HabitAssignService {
         Long userId, Long habitAssignId, String language);
 
     /**
-     * Method that finds all UserShoppingLists and CustomShoppingLists inProgress
-     * for current user.
+     * Method that finds list of user shopping list items and custom shopping list
+     * items by userId, specific language and INPROGRESS status.
      *
      * @param userId   {@link Long} id.
      * @param language {@link String} of language code value.

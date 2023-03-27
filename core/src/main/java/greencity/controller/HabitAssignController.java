@@ -226,27 +226,29 @@ public class HabitAssignController {
     }
 
     /**
-     * Method that return list of UserShoppingLists and CustomShoppingLists with
-     * status inprogress for current user.
+     * Method that return list of UserShoppingLists and CustomShoppingLists for
+     * current user, specific language and INPROGRESS status.
      *
-     * @param userId {@link Long} id.
+     * @param userVO {@link UserVO} instance.
      * @param locale needed language code.
      * @return List of User Shopping Lists and Custom Shopping Lists.
      */
-    @ApiOperation(value = "Get list of all user and custom shopping lists with status INPROGRESS")
+    @ApiOperation(value = "Get list of user shopping list items and custom shopping list items with status INPROGRESS")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK,
             response = UserShoppingAndCustomShoppingListsDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("{userId}/allUserAndCustomShoppingListsInprogress")
+    @GetMapping("/allUserAndCustomShoppingListsInprogress")
     public ResponseEntity<List<UserShoppingAndCustomShoppingListsDto>> getListOfUserAndCustomShoppingListsInprogress(
-        @PathVariable @CurrentUserId Long userId, @ApiIgnore @ValidLanguage Locale locale) {
+        @ApiIgnore @CurrentUser UserVO userVO, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getListOfUserAndCustomShoppingListsWithStatusInprogress(userId, locale.getLanguage()));
+                .getListOfUserAndCustomShoppingListsWithStatusInprogress(userVO.getId(), locale.getLanguage()));
     }
 
     /**

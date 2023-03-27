@@ -509,6 +509,7 @@ class ShoppingListItemServiceImplTest {
 
         verify(userShoppingListItemRepo).findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(anyLong());
         verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(any(), anyLong());
+        verify(modelMapper).map(any(), any());
     }
 
     @Test

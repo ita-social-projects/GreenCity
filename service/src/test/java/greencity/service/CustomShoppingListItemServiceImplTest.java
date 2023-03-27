@@ -158,10 +158,11 @@ class CustomShoppingListItemServiceImplTest {
         when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
 
         assertEquals(List.of(itemResponseDto), customShoppingListItemService
-            .findAllCustomShoppingListItemsWithStatusInProgress(1L, 1L));
+            .findAllCustomShoppingListItemsWithStatusInProgress(1L, 3L));
 
         verify(customShoppingListItemRepo).findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
             anyLong());
+        verify(modelMapper).map(any(), any());
     }
 
     @Test

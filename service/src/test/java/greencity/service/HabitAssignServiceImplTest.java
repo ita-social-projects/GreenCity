@@ -516,11 +516,11 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getUserShoppingListItemAndUserCustomShoppingListTest() {
-        Habit habit1 = Habit.builder().id(1L)
+        Habit habit1 = Habit.builder().id(3L)
             .complexity(1).build();
 
         List<HabitAssign> habitAssignList =
-            List.of(ModelUtils.getHabitAssign(1L, habit1, HabitAssignStatus.INPROGRESS));
+            List.of(ModelUtils.getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS));
 
         List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
             List.of(ModelUtils.getCustomShoppingListItemResponseDtoWithStatusInProgress());
@@ -537,9 +537,9 @@ class HabitAssignServiceImplTest {
                 .build());
 
         when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
-        when(shoppingListItemService.getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(1L, "en"))
+        when(shoppingListItemService.getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(2L, "en"))
             .thenReturn(userShoppingListItemResponseDtos);
-        when(customShoppingListItemService.findAllCustomShoppingListItemsWithStatusInProgress(1L, 1L))
+        when(customShoppingListItemService.findAllCustomShoppingListItemsWithStatusInProgress(1L, 3L))
             .thenReturn(customShoppingListItemResponseDtos);
 
         assertEquals(expected, habitAssignService.getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en"));
