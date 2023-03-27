@@ -507,7 +507,12 @@ class HabitAssignServiceImplTest {
 
         UserShoppingAndCustomShoppingListsDto actual =
             habitAssignService.getUserShoppingAndCustomShoppingLists(userId, habitAssignId, language);
+
         assertEquals(expected, actual);
+
+        verify(shoppingListItemService).getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
+        verify(customShoppingListItemService).findAllAvailableCustomShoppingListItemsByHabitAssignId(userId,
+            habitAssignId);
     }
 
     @Test

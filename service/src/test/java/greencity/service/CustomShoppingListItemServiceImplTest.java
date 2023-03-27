@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -366,29 +367,31 @@ class CustomShoppingListItemServiceImplTest {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.setId(habitAssignId);
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
-            .thenReturn(Optional.of(habitAssign));
-
         List<CustomShoppingListItem> items = new ArrayList<>();
         items.add(item);
+
+        CustomShoppingListItemResponseDto expectedDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        expectedDto.setText("item");
+        expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.of(habitAssign));
 
         when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
             .thenReturn(items);
 
-        var expectedDto = ModelUtils.getCustomShoppingListItemResponseDto();
-        expectedDto.setText("item");
-        expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
-
         when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(expectedDto);
 
-        var actualDto = customShoppingListItemService
-            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId).get(0);
+        List<CustomShoppingListItemResponseDto> actualDtoList = customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId);
+
+        assertNotNull(actualDtoList);
+        assertEquals(actualDtoList.size(), 1);
+        assertEquals(expectedDto, actualDtoList.get(0));
 
         verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
         verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
         verify(modelMapper).map(item, CustomShoppingListItemResponseDto.class);
-
-        assertEquals(expectedDto, actualDto);
     }
 
     @Test
@@ -402,12 +405,12 @@ class CustomShoppingListItemServiceImplTest {
         NotFoundException exception = assertThrows(NotFoundException.class, () -> customShoppingListItemService
             .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId));
 
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
+            exception.getMessage());
+
         verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
         verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
             anyLong());
         verify(modelMapper, times(0)).map(any(), any());
-
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
-            exception.getMessage());
     }
 }
