@@ -289,7 +289,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/delete/{eventId}",
                 EVENTS + "/removeAttender/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
-                "/habit/assign/delete/{habitId}")
+                "/habit/assign/delete/{habitAssignId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",

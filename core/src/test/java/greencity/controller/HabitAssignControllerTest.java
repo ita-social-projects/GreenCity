@@ -231,7 +231,7 @@ class HabitAssignControllerTest {
 
     @Test
     void getListOfUserAndCustomShoppingListsInprogress() throws Exception {
-        mockMvc.perform(get(habitLink + "/allUserAndCustomShoppingListsInprogress", 1L)
+        mockMvc.perform(get(habitLink + "/allUserAndCustomShoppingListsInprogress")
             .principal(principal)
             .locale(Locale.forLanguageTag("en")))
             .andExpect(status().isOk());
