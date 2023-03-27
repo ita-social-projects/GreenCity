@@ -244,7 +244,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId);
         }
         HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(habitAssignId, userId)
-            .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
+            .orElseThrow(() -> new InvalidStatusException(
+                ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS));
         if (duration < habitAssign.getWorkingDays()) {
             throw new BadRequestException(ErrorMessage.INVALID_DURATION);
         }

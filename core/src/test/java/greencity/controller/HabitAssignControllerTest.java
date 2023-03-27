@@ -91,7 +91,7 @@ class HabitAssignControllerTest {
 
     @Test
     void updateHabitAssignDurationTest() throws Exception {
-        mockMvc.perform(put(habitLink + "/{habitId}/update-habit-duration?duration=15", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/update-habit-duration?duration=15", 1L)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateUserHabitInfoDuration(1L, null, 15);

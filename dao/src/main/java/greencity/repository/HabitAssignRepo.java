@@ -94,7 +94,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance.
      * @author Anton Bondar
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
+    @Query(value = "SELECT ha FROM HabitAssign ha"
         + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
     Optional<HabitAssign> findByHabitAssignIdUserIdAndStatusIsInProgress(@Param("habitAssignId") Long habitAssignId,
         @Param("userId") Long userId);

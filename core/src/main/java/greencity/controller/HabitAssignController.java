@@ -99,7 +99,7 @@ public class HabitAssignController {
      * @return {@link ResponseEntity}.
      */
     @PutMapping("/{habitAssignId}/update-habit-duration")
-    @ApiOperation(value = "Update duration of habit assigned for user.")
+    @ApiOperation(value = "Update duration of habit with habitAssignId for user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignUserDurationDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

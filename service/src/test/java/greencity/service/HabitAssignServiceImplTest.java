@@ -705,7 +705,8 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.empty());
         var exception = assertThrows(InvalidStatusException.class,
             () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
-        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS, exception.getMessage());
+        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS,
+            exception.getMessage());
         verify(habitAssignRepo).existsById(anyLong());
         verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
     }
