@@ -399,16 +399,15 @@ class CustomShoppingListItemServiceImplTest {
         when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
             .thenReturn(Optional.empty());
 
-        var expected = Collections.emptyList();
-
-        var actual = customShoppingListItemService
-            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId);
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId));
 
         verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
         verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
             anyLong());
         verify(modelMapper, times(0)).map(any(), any());
 
-        assertEquals(expected, actual);
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
+            exception.getMessage());
     }
 }

@@ -316,11 +316,11 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Override
     public List<UserShoppingListItemResponseDto> getUserShoppingListByHabitAssignId(Long userId, Long habitAssignId,
         String language) {
-        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId);
-        if (habitAssign.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<UserShoppingListItemResponseDto> itemsDtos = getAllUserShoppingListItems(habitAssign.get());
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+
+        List<UserShoppingListItemResponseDto> itemsDtos = getAllUserShoppingListItems(habitAssign);
         itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
         return itemsDtos;
     }

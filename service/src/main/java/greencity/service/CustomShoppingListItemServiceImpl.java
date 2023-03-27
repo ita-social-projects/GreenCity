@@ -241,22 +241,18 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Override
     public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
         Long habitAssignId) {
-        Optional<HabitAssign> habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId);
-        if (habitAssign.isEmpty()) {
-            return Collections.emptyList();
-        }
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId).orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
-        Long habitId = habitAssign.get().getHabit().getId();
+        Long habitId = habitAssign.getHabit().getId();
 
         List<CustomShoppingListItem> customShoppingListItemList =
             customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
 
-        List<CustomShoppingListItemResponseDto> responseDtoList = new ArrayList<>();
-
-        customShoppingListItemList
-            .forEach(item -> responseDtoList.add(modelMapper.map(item, CustomShoppingListItemResponseDto.class)));
-
-        return responseDtoList;
+        return customShoppingListItemList
+            .stream().map(item -> modelMapper.map(item, CustomShoppingListItemResponseDto.class))
+            .collect(Collectors.toList());
     }
 
     /**

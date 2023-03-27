@@ -155,7 +155,7 @@ public class HabitAssignController {
      * @param locale        needed language code.
      * @return User Shopping List and Custom Shopping List.
      */
-    @ApiOperation(value = "Get user shopping and custom shopping lists")
+    @ApiOperation(value = "Get user shopping and custom shopping lists by habitAssignId")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK,
             response = UserShoppingAndCustomShoppingListsDto.class),
@@ -431,7 +431,8 @@ public class HabitAssignController {
     }
 
     /**
-     * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}.
+     * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}
+     * by habitAssignId.
      *
      * @param habitAssignId - id of {@link HabitAssignVO}.
      * @param userVO        - {@link UserVO} user.
@@ -439,6 +440,7 @@ public class HabitAssignController {
     @ApiOperation(value = "Delete habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })

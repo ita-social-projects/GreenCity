@@ -615,19 +615,19 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
-    void getUserShoppingListByHabitAssignIdWithNullTest() {
+    void getUserShoppingListByHabitAssignIdWithNoHabitAssign() {
         Long habitAssignId = 2L;
         Long userId = 3L;
 
         String language = "en";
-        List<UserShoppingListItemResponseDto> expected = Collections.emptyList();
 
         when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
             .thenReturn(Optional.empty());
 
-        List<UserShoppingListItemResponseDto> actual = shoppingListItemService
-            .getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
-        assertEquals(expected, actual);
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> shoppingListItemService
+            .getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
+            exception.getMessage());
 
         verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
         verify(userShoppingListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
