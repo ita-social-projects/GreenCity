@@ -147,6 +147,25 @@ class CustomShoppingListItemServiceImplTest {
     }
 
     @Test
+    void findAllCustomShoppingListItemsWithStatusInProgressTest() {
+        CustomShoppingListItem item = ModelUtils.getCustomShoppingListItemWithStatusInProgress();
+        CustomShoppingListItemResponseDto itemResponseDto =
+            ModelUtils.getCustomShoppingListItemResponseDtoWithStatusInProgress();
+
+        when(customShoppingListItemRepo.findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
+            anyLong()))
+                .thenReturn(List.of(item));
+        when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
+
+        assertEquals(List.of(itemResponseDto), customShoppingListItemService
+            .findAllCustomShoppingListItemsWithStatusInProgress(1L, 3L));
+
+        verify(customShoppingListItemRepo).findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
+            anyLong());
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
     void saveEmptyBulkSaveCustomShoppingListItemDtoTest() {
         UserVO userVO = ModelUtils.getUserVO();
         Habit habit = ModelUtils.getHabit();

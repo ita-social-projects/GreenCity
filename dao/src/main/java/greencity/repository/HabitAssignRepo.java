@@ -179,6 +179,17 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllInprogressHabitAssignsOnDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     /**
+     * Method to find {@link HabitAssign}'s by {@link User} id and INPROGRESS
+     * status.
+     *
+     * @param userId {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
+
+    /**
      * Method to find all inprogress, acquired habit assigns between 2
      * {@link LocalDate}s.
      *

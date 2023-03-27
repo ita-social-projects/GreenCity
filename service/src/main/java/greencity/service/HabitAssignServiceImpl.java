@@ -552,6 +552,26 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .build();
     }
 
+    @Transactional
+    @Override
+    public List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(
+        Long userId, String language) {
+        List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusIsInProgress(userId);
+        if (habitAssignList.isEmpty()) {
+            throw new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS + userId);
+        }
+        return habitAssignList.stream()
+            .map(habitAssign -> UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .userShoppingListItemDto(shoppingListItemService
+                    .getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssign.getId(), language))
+                .customShoppingListItemDto(customShoppingListItemService
+                    .findAllCustomShoppingListItemsWithStatusInProgress(userId, habitAssign.getHabit().getId()))
+                .build())
+            .collect(Collectors.toList());
+    }
+
     /**
      * {@inheritDoc}
      */

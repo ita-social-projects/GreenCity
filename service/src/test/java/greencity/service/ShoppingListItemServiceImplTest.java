@@ -489,6 +489,30 @@ class ShoppingListItemServiceImplTest {
     }
 
     @Test
+    void getUserShoppingListItemWithStatusInProgressTest() {
+        UserShoppingListItem item = UserShoppingListItem
+            .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build();
+
+        UserShoppingListItemResponseDto itemResponseDto = UserShoppingListItemResponseDto
+            .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build();
+
+        when(userShoppingListItemRepo.findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(1L))
+            .thenReturn(List.of(
+                item));
+        when(modelMapper.map(item, UserShoppingListItemResponseDto.class))
+            .thenReturn(itemResponseDto);
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId("en", 1L))
+            .thenReturn(ShoppingListItemTranslation.builder().id(1L).build());
+
+        assertEquals(List.of(itemResponseDto), shoppingListItemService
+            .getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(1L, "en"));
+
+        verify(userShoppingListItemRepo).findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(anyLong());
+        verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(any(), anyLong());
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
     void deleteUserShoppingListItemByItemIdAndUserIdAndHabitIdTest() {
         when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
             .thenReturn(Optional.of(habitAssign));
