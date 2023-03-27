@@ -43,7 +43,7 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     void deleteByShoppingListItemIdAndHabitAssignId(Long shoppingListItemId, Long habitAssignId);
 
     /**
-     * Method delete selected item from users shopping list.
+     * Method delete selected items from users shopping list.
      *
      * @param habitAssignId id of needed habit assign
      */
@@ -51,7 +51,7 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
     @Transactional
     @Query(nativeQuery = true, value = "DELETE FROM user_shopping_list usl "
         + "WHERE usl.habit_assign_id =:habitAssignId ")
-    void deleteByShoppingListItemsByHabitAssignId(Long habitAssignId);
+    void deleteShoppingListItemsByHabitAssignId(Long habitAssignId);
 
     /**
      * Method returns shopping list ids for habit.
