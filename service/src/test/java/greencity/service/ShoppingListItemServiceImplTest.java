@@ -605,7 +605,7 @@ class ShoppingListItemServiceImplTest {
             .getUserShoppingListByHabitAssignId(userId, habitAssignId, language);
 
         assertNotNull(actualDtoList);
-        assertEquals(actualDtoList.size(), 1);
+        assertEquals(1, actualDtoList.size());
         assertEquals(expectedDto, actualDtoList.get(0));
 
         verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
