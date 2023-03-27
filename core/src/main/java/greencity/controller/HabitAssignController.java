@@ -150,27 +150,28 @@ public class HabitAssignController {
     /**
      * Method that return UserShoppingList and CustomShoppingList.
      *
-     * @param habitId {@link HabitVO} id.
-     * @param userVO  {@link UserVO} instance.
-     * @param locale  needed language code.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO} instance.
+     * @param locale        needed language code.
      * @return User Shopping List and Custom Shopping List.
      */
-    @ApiOperation(value = "Get user shopping and user custom shopping lists")
+    @ApiOperation(value = "Get user shopping and custom shopping lists by habitAssignId")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK,
             response = UserShoppingAndCustomShoppingListsDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("{habitId}/allUserAndCustomList")
-    public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingListItemAndUserCustomShoppingList(
-        @PathVariable Long habitId,
+    @GetMapping("{habitAssignId}/allUserAndCustomList")
+    public ResponseEntity<UserShoppingAndCustomShoppingListsDto> getUserShoppingAndCustomShoppingLists(
+        @PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitAssignService
-                .getUserShoppingListItemAndUserCustomShoppingList(userVO.getId(), habitId, locale.getLanguage()));
+                .getUserShoppingAndCustomShoppingLists(userVO.getId(), habitAssignId, locale.getLanguage()));
     }
 
     /**
@@ -431,22 +432,23 @@ public class HabitAssignController {
     }
 
     /**
-     * Method delete assigned habit {@link HabitAssignVO} with inprogress status for
-     * current {@link UserVO}.
+     * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}
+     * by habitAssignId.
      *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  - {@link UserVO} user.
+     * @param habitAssignId - id of {@link HabitAssignVO}.
+     * @param userVO        - {@link UserVO} user.
      */
-    @ApiOperation(value = "Delete assigned habit with inprogress status for current user.")
+    @ApiOperation(value = "Delete habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @DeleteMapping("/delete/{habitId}")
-    public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitId,
+    @DeleteMapping("/delete/{habitAssignId}")
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO) {
-        habitAssignService.deleteHabitAssign(habitId, userVO.getId());
+        habitAssignService.deleteHabitAssign(habitAssignId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

@@ -105,16 +105,16 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
-     * Method that finds userShoppingListItems and userCustomShoppingListItems for
-     * habitId.
+     * Method that return user shopping list and custom shopping list by
+     * habitAssignId for specific language.
      *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param language {@link String} of language code value.
-     * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssignId} id.
+     * @param language      {@link String} of language code value.
+     * @return {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
-    UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
-        Long userId, Long habitId, String language);
+    UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+        Long userId, Long habitAssignId, String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -246,12 +246,12 @@ public interface HabitAssignService {
     HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
 
     /**
-     * Method delete HabitAssign with inprogress status.
+     * Method delete HabitAssign by habitAssignId for current User.
      *
-     * @param habitId {@link Long} id.
-     * @param userId  {@link Long} id.
+     * @param habitAssignId {@link Long} id.
+     * @param userId        {@link Long} id.
      */
-    void deleteHabitAssign(Long habitId, Long userId);
+    void deleteHabitAssign(Long habitAssignId, Long userId);
 
     /**
      * Method save HabitAssign.
