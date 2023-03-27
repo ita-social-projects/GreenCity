@@ -48,6 +48,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -388,5 +389,26 @@ class CustomShoppingListItemServiceImplTest {
         verify(modelMapper).map(item, CustomShoppingListItemResponseDto.class);
 
         assertEquals(expectedDto, actualDto);
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItemsByHabitAssignIdWithNoHabitAssign() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+            .thenReturn(Optional.empty());
+
+        var expected = Collections.emptyList();
+
+        var actual = customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId);
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
+            anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
+
+        assertEquals(expected, actual);
     }
 }
