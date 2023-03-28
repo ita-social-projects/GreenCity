@@ -65,6 +65,8 @@ public final class ErrorMessage {
         "There is no habit assign for current user and such habit assign id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS =
         "There is no inprogress habit assign for current user and such habit with id: ";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS =
+        "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =

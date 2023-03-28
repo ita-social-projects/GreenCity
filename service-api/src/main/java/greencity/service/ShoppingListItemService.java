@@ -108,6 +108,28 @@ public interface ShoppingListItemService {
     List<UserShoppingListItemResponseDto> getUserShoppingList(Long userId, Long habitId, String language);
 
     /**
+     * Method returns list of user shopping list items by habitAssignId, specific
+     * language and INPROGRESS status.
+     *
+     * @param habitAssignId id of the {@link Long} current user.
+     * @param language      needed language code.
+     * @return List of {@link UserShoppingListItemResponseDto}.
+     */
+    List<UserShoppingListItemResponseDto> getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(
+        Long habitAssignId, String language);
+
+    /**
+     * Method returns user shopping list by habitAssignId for specific language.
+     *
+     * @param userId        id of the {@link UserVO} current user.
+     * @param habitAssignId {@link greencity.dto.habit.HabitAssignVO} id.
+     * @param language      needed language code.
+     * @return List of {@link UserShoppingListItemResponseDto}.
+     */
+    List<UserShoppingListItemResponseDto> getUserShoppingListByHabitAssignId(Long userId, Long habitAssignId,
+        String language);
+
+    /**
      * Method for deleting shopping list item from user`s shopping list.
      *
      * @param userId  id of the {@link UserVO} current user.

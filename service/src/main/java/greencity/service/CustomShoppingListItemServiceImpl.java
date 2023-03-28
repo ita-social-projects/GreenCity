@@ -2,10 +2,14 @@ package greencity.service;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
-import greencity.dto.shoppinglistitem.*;
+import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.enums.ShoppingListItemStatus;
@@ -13,6 +17,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import java.util.ArrayList;
@@ -43,6 +48,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private ModelMapper modelMapper;
     private RestClient restClient;
     private HabitRepo habitRepo;
+    private HabitAssignRepo habitAssignRepo;
 
     /**
      * {@inheritDoc}
@@ -228,6 +234,37 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
             customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId),
             new TypeToken<List<CustomShoppingListItemResponseDto>>() {
             }.getType());
+    }
+
+    @Override
+    public List<CustomShoppingListItemResponseDto> findAllCustomShoppingListItemsWithStatusInProgress(Long userId,
+        Long habitId) {
+        return customShoppingListItemRepo
+            .findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(userId, habitId)
+            .stream()
+            .map(customShoppingListItem -> modelMapper.map(customShoppingListItem,
+                CustomShoppingListItemResponseDto.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
+        Long habitAssignId) {
+        HabitAssign habitAssign =
+            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId).orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+
+        Long habitId = habitAssign.getHabit().getId();
+
+        List<CustomShoppingListItem> customShoppingListItemList =
+            customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+
+        return customShoppingListItemList
+            .stream().map(item -> modelMapper.map(item, CustomShoppingListItemResponseDto.class))
+            .collect(Collectors.toList());
     }
 
     /**

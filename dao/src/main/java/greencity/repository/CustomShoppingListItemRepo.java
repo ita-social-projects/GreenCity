@@ -31,6 +31,22 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
         @Param("habitId") Long habitId);
 
     /**
+     * Method returns list of custom shopping list items by userId and habitId and
+     * INPROGRESS status.
+     *
+     * @param userId  id of the {@link User} current user
+     * @param habitId id of the {@link Long} habit
+     * @return list of {@link CustomShoppingListItem}
+     */
+    @Query("SELECT cg FROM CustomShoppingListItem cg WHERE "
+        + " cg.status='INPROGRESS' "
+        + "AND cg.user.id=:userId "
+        + "AND cg.habit.id=:habitId "
+        + "ORDER BY cg.id")
+    List<CustomShoppingListItem> findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(
+        @Param("userId") Long userId, @Param("habitId") Long habitId);
+
+    /**
      * Method returns particular selected custom shopping list items for user.
      *
      * @param userId id of the {@link User} current user

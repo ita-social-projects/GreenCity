@@ -525,23 +525,38 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that return list of user shopping list and custom shopping list for
-     * habit.
-     *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param language {@link String} of language code value.
-     * @return @{link UserShoppingAndCustomShoppingListsDto} instance.
+     * {@inheritDoc}
      */
     @Override
-    public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
-        Long userId, Long habitId, String language) {
+    public UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+        Long userId, Long habitAssignId, String language) {
         return UserShoppingAndCustomShoppingListsDto
             .builder()
-            .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .userShoppingListItemDto(
+                shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language))
             .customShoppingListItemDto(customShoppingListItemService
-                .findAllAvailableCustomShoppingListItems(userId, habitId))
+                .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId))
             .build();
+    }
+
+    @Transactional
+    @Override
+    public List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(
+        Long userId, String language) {
+        List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusIsInProgress(userId);
+        if (habitAssignList.isEmpty()) {
+            throw new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS + userId);
+        }
+        return habitAssignList.stream()
+            .map(habitAssign -> UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .userShoppingListItemDto(shoppingListItemService
+                    .getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssign.getId(), language))
+                .customShoppingListItemDto(customShoppingListItemService
+                    .findAllCustomShoppingListItemsWithStatusInProgress(userId, habitAssign.getHabit().getId()))
+                .build())
+            .collect(Collectors.toList());
     }
 
     /**
@@ -899,11 +914,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
-    public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
+    @Transactional
+    @Override
+    public void deleteHabitAssign(Long habitAssignId, Long userId) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
-        userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+        userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
 
