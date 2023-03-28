@@ -7,7 +7,7 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
@@ -67,7 +67,6 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -231,40 +230,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * {@inheritDoc}
+     * Method which updates duration of habit assigned for user.
+     *
+     * @param habitAssignId {@code AssignHabit} id.
+     * @param userId        {@link Long} id.
+     * @param duration      {@link Integer} with needed duration.
+     * @return {@link HabitAssignUserDurationDto}.
      */
     @Transactional
     @Override
-    public HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
-        HabitAssignPropertiesDto habitAssignPropertiesDto) {
-        if (!habitRepo.existsById(habitId)) {
-            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+    public HabitAssignUserDurationDto updateUserHabitInfoDuration(Long habitAssignId, Long userId, Integer duration) {
+        if (!habitAssignRepo.existsById(habitAssignId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId);
         }
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
-            .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
-        enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
-        if (habitAssignPropertiesDto.getDefaultShoppingListItems() != null
-            && !habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
-            List<ShoppingListItem> shoppingListItems =
-                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-                    .getDefaultShoppingListItems());
-            List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
-                .map(s -> buildUserShoppingListItems(s, habitAssign))
-                .collect(Collectors.toList());
-            Hibernate.initialize(habitAssign.getUserShoppingListItems());
-            userShoppingListItemRepo.deleteAll(habitAssign.getUserShoppingListItems());
-            habitAssign.setUserShoppingListItems(userShoppingListItems);
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(habitAssignId, userId)
+            .orElseThrow(() -> new InvalidStatusException(
+                ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS));
+        if (duration < habitAssign.getWorkingDays()) {
+            throw new BadRequestException(ErrorMessage.INVALID_DURATION);
         }
-        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserShoppingListItemDto.class);
-    }
 
-    private UserShoppingListItem buildUserShoppingListItems(ShoppingListItem shoppingListItem,
-        HabitAssign habitAssign) {
-        return UserShoppingListItem.builder()
-            .habitAssign(habitAssign)
-            .shoppingListItem(shoppingListItem)
-            .status(ShoppingListItemStatus.INPROGRESS)
-            .build();
+        habitAssign.setDuration(duration);
+        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserDurationDto.class);
     }
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {

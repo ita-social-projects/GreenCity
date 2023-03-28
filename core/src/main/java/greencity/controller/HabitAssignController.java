@@ -3,12 +3,13 @@ package greencity.controller;
 import greencity.annotations.ApiLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
@@ -25,6 +26,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -38,6 +42,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -96,27 +101,27 @@ public class HabitAssignController {
     }
 
     /**
-     * Method which updates shopping item list and habit assign duration.
+     * Method which updates duration of habit assigned for user.
      *
-     * @param habitId                  {@link HabitVO} id.
-     * @param userVO                   {@link UserVO} instance.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @param habitAssignId {@link HabitVO} id.
+     * @param userVO        {@link UserVO} instance.
+     * @param duration      {@link Integer} with needed duration.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Update user shopping item list and habit assign duration.")
+    @PutMapping("/{habitAssignId}/update-habit-duration")
+    @ApiOperation(value = "Update duration of habit with habitAssignId for user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignUserShoppingListItemDto.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignUserDurationDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PutMapping("/{habitId}/update-user-shopping-item-list")
-    public ResponseEntity<HabitAssignUserShoppingListItemDto> updateShoppingItemList(@PathVariable Long habitId,
+    public ResponseEntity<HabitAssignUserDurationDto> updateHabitAssignDuration(
+        @PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        @RequestParam @Min(AppConstant.MIN_DAYS_DURATION) @Max(AppConstant.MAX_DAYS_DURATION) Integer duration) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.updateUserShoppingItemListAndDuration(habitId, userVO.getId(),
-                habitAssignPropertiesDto));
+            .body(habitAssignService.updateUserHabitInfoDuration(habitAssignId, userVO.getId(), duration));
     }
 
     /**
