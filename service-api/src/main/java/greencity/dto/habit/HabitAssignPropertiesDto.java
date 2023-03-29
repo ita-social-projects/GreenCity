@@ -15,8 +15,8 @@ import lombok.*;
 @Builder
 public class HabitAssignPropertiesDto {
     @NotNull
-    @Min(AppConstant.MIN_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
-    @Max(AppConstant.MAX_DAYS_DURATION_OF_HABIT_ASSIGN_FOR_USER)
+    @Min(AppConstant.MIN_DAYS_DURATION)
+    @Max(AppConstant.MAX_DAYS_DURATION)
     private Integer duration;
 
     private List<Long> defaultShoppingListItems;

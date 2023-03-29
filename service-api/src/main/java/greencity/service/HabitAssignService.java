@@ -1,6 +1,16 @@
 package greencity.service;
 
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 
@@ -38,15 +48,15 @@ public interface HabitAssignService {
         HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
-     * Method updates {@code HabitAssign} shopping list with custom properties.
+     * Method updates {@code HabitAssign} duration of habit assigned for user.
      *
-     * @param habitId                  {@code AssignHabit} id.
-     * @param userId                   {@link Long} id.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
-     * @return {@link HabitAssignUserShoppingListItemDto}.
+     * @param habitAssignId {@code AssignHabit} id.
+     * @param userId        {@link Long} id.
+     * @param duration      {@link Integer} with needed duration.
+     * @return {@link HabitAssignUserDurationDto}.
+     * @author Anton Bondar
      */
-    HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+    HabitAssignUserDurationDto updateUserHabitInfoDuration(Long habitAssignId, Long userId, Integer duration);
 
     /**
      * Method to find all custom habit assigns by {@code User} id.
@@ -115,6 +125,18 @@ public interface HabitAssignService {
      */
     UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
         Long userId, Long habitAssignId, String language);
+
+    /**
+     * Method that finds list of user shopping list items and custom shopping list
+     * items by userId, specific language and INPROGRESS status.
+     *
+     * @param userId   {@link Long} id.
+     * @param language {@link String} of language code value.
+     * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     * @author Lilia Mokhnatska
+     */
+    List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(Long userId,
+        String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id

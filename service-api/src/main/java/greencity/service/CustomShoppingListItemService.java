@@ -91,6 +91,17 @@ public interface CustomShoppingListItemService {
         Long habitAssignId);
 
     /**
+     * Method for finding custom shopping list items by userId and habitId and
+     * INPROGRESS status.
+     *
+     * @param userId  user id.
+     * @param habitId habit id.
+     * @return list of {@link CustomShoppingListItemResponseDto}
+     */
+    List<CustomShoppingListItemResponseDto> findAllCustomShoppingListItemsWithStatusInProgress(Long userId,
+        Long habitId);
+
+    /**
      * Method returns all user's custom shopping items by status(if is defined).
      *
      * @param userId user id.

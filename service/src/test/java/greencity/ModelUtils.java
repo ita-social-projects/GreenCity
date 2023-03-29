@@ -65,7 +65,7 @@ import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
-import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
@@ -1453,19 +1453,14 @@ public class ModelUtils {
             .build();
     }
 
-    public static HabitAssignUserShoppingListItemDto getHabitAssignUserShoppingListItemDto() {
-        return HabitAssignUserShoppingListItemDto.builder()
+    public static HabitAssignUserDurationDto getHabitAssignUserDurationDto() {
+        return HabitAssignUserDurationDto.builder()
             .habitAssignId(1L)
             .userId(21L)
             .habitId(1L)
             .status(HabitAssignStatus.INPROGRESS)
             .workingDays(0)
             .duration(20)
-            .userShoppingListItemsDto(List.of(UserShoppingListItemAdvanceDto.builder()
-                .id(1L)
-                .shoppingListItemId(1L)
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .build()))
             .build();
     }
 
@@ -2579,5 +2574,25 @@ public class ModelUtils {
                 .id(1L)
                 .image(image).build())
             .userId(1L).build();
+    }
+
+    public static CustomShoppingListItem getCustomShoppingListItemWithStatusInProgress() {
+        return CustomShoppingListItem.builder()
+            .id(2L)
+            .habit(Habit.builder()
+                .id(3L)
+                .build())
+            .user(getUser())
+            .text("item")
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoWithStatusInProgress() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(2L)
+            .text("item")
+            .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
     }
 }

@@ -86,6 +86,20 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("userId") Long userId);
 
     /**
+     * Method to find {@link HabitAssign}'s by {@link User} and {@link HabitAssign}
+     * id and INPROGRESS status.
+     *
+     * @param habitAssignId {@link Long} id.
+     * @param userId        {@link Long} id.
+     * @return {@link HabitAssign} instance.
+     * @author Anton Bondar
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    Optional<HabitAssign> findByHabitAssignIdUserIdAndStatusIsInProgress(@Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
+
+    /**
      * Method to find {@link HabitAssign}'s by {@link User} id and ACQUIRED status.
      *
      * @param userId {@link User} id.
@@ -177,6 +191,17 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND cast(ha.createDate as date) <= cast(:date as date) "
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:date as date)")
     List<HabitAssign> findAllInprogressHabitAssignsOnDate(@Param("userId") Long userId, @Param("date") LocalDate date);
+
+    /**
+     * Method to find {@link HabitAssign}'s by {@link User} id and INPROGRESS
+     * status.
+     *
+     * @param userId {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
 
     /**
      * Method to find all inprogress, acquired habit assigns between 2

@@ -6,7 +6,6 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.HabitAssignUserShoppingListItemDto;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
@@ -65,11 +64,9 @@ import java.util.Optional;
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
+import static greencity.ModelUtils.getHabitAssignUserDurationDto;
 import static greencity.ModelUtils.getHabitDto;
-import static greencity.ModelUtils.getHabit;
 import static greencity.ModelUtils.getHabitAssign;
-import static greencity.ModelUtils.getHabitAssignPropertiesDto;
-import static greencity.ModelUtils.getHabitAssignUserShoppingListItemDto;
 import static greencity.ModelUtils.getShoppingListItem;
 import static greencity.ModelUtils.getShoppingListItemTranslationList;
 import static greencity.ModelUtils.getUpdateUserShoppingListDto;
@@ -516,6 +513,51 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void getUserShoppingListItemAndUserCustomShoppingListTest() {
+        Habit habit1 = Habit.builder().id(3L)
+            .complexity(1).build();
+
+        List<HabitAssign> habitAssignList =
+            List.of(ModelUtils.getHabitAssign(2L, habit1, HabitAssignStatus.INPROGRESS));
+
+        List<CustomShoppingListItemResponseDto> customShoppingListItemResponseDtos =
+            List.of(ModelUtils.getCustomShoppingListItemResponseDtoWithStatusInProgress());
+
+        List<UserShoppingListItemResponseDto> userShoppingListItemResponseDtos =
+            List.of(UserShoppingListItemResponseDto
+                .builder().id(1L).status(ShoppingListItemStatus.INPROGRESS).build());
+
+        List<UserShoppingAndCustomShoppingListsDto> expected = List.of(
+            UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .customShoppingListItemDto(customShoppingListItemResponseDtos)
+                .userShoppingListItemDto(userShoppingListItemResponseDtos)
+                .build());
+
+        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(habitAssignList);
+        when(shoppingListItemService.getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(2L, "en"))
+            .thenReturn(userShoppingListItemResponseDtos);
+        when(customShoppingListItemService.findAllCustomShoppingListItemsWithStatusInProgress(1L, 3L))
+            .thenReturn(customShoppingListItemResponseDtos);
+
+        assertEquals(expected, habitAssignService.getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en"));
+
+        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
+        verify(shoppingListItemService).getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(anyLong(), any());
+        verify(customShoppingListItemService).findAllCustomShoppingListItemsWithStatusInProgress(anyLong(), anyLong());
+    }
+
+    @Test
+    void getUserShoppingListItemAndUserCustomShoppingListWithNotFoundExceptionTest() {
+        when(habitAssignRepo.findAllByUserIdAndStatusIsInProgress(1L)).thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class, () -> habitAssignService
+            .getListOfUserAndCustomShoppingListsWithStatusInprogress(1L, "en"));
+
+        verify(habitAssignRepo).findAllByUserIdAndStatusIsInProgress(anyLong());
+    }
+
+    @Test
     void getAllHabitAssignsByUserIdAndStatusAcquired() {
         List<ShoppingListItemTranslation> list = getShoppingListItemTranslationList();
         when(habitAssignRepo.findAllByUserIdAndStatusAcquired(1L)).thenReturn(fullHabitAssigns);
@@ -692,82 +734,55 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void updateUserShoppingList() {
+    void updateUserHabitInfoDurationTest() {
         HabitAssign habitAssign = getHabitAssign();
         habitAssign.setDuration(20);
-        when(habitRepo.existsById(anyLong())).thenReturn(true);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+        when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
             .thenReturn(Optional.of(habitAssign));
-        when(shoppingListItemRepo.getShoppingListByListOfId(any())).thenReturn(List.of(getShoppingListItem()));
-        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
-
-        HabitAssignUserShoppingListItemDto result =
-            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, getHabitAssignPropertiesDto());
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserDurationDto());
+        var result = habitAssignService.updateUserHabitInfoDuration(1L, 21L, 20);
         assertEquals(20, result.getDuration());
-        assertEquals(1, result.getUserShoppingListItemsDto().size());
+        verify(habitAssignRepo).existsById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
+        verify(modelMapper).map(any(), any());
     }
 
     @Test
-    void updateUserShoppingListShouldThrowNotFoundException() {
-        when(habitRepo.existsById(anyLong())).thenReturn(false);
-        HabitAssignPropertiesDto habitAssignPropertiesDto = getHabitAssignPropertiesDto();
-        Exception thrown1 = assertThrows(NotFoundException.class,
-            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
-                habitAssignPropertiesDto));
-        assertEquals(thrown1.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
+    void updateUserHabitInfoDurationThrowNotFoundExceptionTest() {
+        when(habitAssignRepo.existsById(anyLong())).thenReturn(false);
+        var exception = assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
+        assertEquals(exception.getMessage(), ErrorMessage.HABIT_NOT_FOUND_BY_ID + 1L);
+        verify(habitAssignRepo).existsById(anyLong());
     }
 
     @Test
-    void updateUserShoppingListShouldThrowInvalidStatusException() {
-        when(habitRepo.existsById(anyLong())).thenReturn(true);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+    void updateUserHabitInfoDurationThrowInvalidStatusExceptionTest() {
+        when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
             .thenReturn(Optional.empty());
-        HabitAssignPropertiesDto habitAssignPropertiesDto = getHabitAssignPropertiesDto();
-        Exception thrown1 = assertThrows(InvalidStatusException.class,
-            () -> habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L,
-                habitAssignPropertiesDto));
-        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS, thrown1.getMessage());
+        var exception = assertThrows(InvalidStatusException.class,
+            () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 1));
+        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS,
+            exception.getMessage());
+        verify(habitAssignRepo).existsById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
     }
 
     @Test
-    void updateUserShoppingListWithNullValueOfPropertiesDtoDefaultList() {
+    void updateUserHabitInfoDurationThrowBadRequestExceptionTest() {
         HabitAssign habitAssign = getHabitAssign();
         habitAssign.setDuration(20);
-        HabitAssignPropertiesDto propertiesDto = getHabitAssignPropertiesDto();
-        propertiesDto.setDefaultShoppingListItems(null);
-        when(habitRepo.existsById(anyLong())).thenReturn(true);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
+        habitAssign.setWorkingDays(20);
+        when(habitAssignRepo.existsById(anyLong())).thenReturn(true);
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong()))
             .thenReturn(Optional.of(habitAssign));
-        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
-
-        HabitAssignUserShoppingListItemDto result =
-            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, propertiesDto);
-        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(anyList());
-        verify(userShoppingListItemRepo, times(0)).deleteAll();
-        assertEquals(20, result.getDuration());
-        assertEquals(1, result.getUserShoppingListItemsDto().size());
-    }
-
-    @Test
-    void updateUserShoppingListWithNullEmptyPropertiesDtoDefaultList() {
-        HabitAssign habitAssign = getHabitAssign();
-        habitAssign.setDuration(20);
-        HabitAssignPropertiesDto propertiesDto = getHabitAssignPropertiesDto();
-        propertiesDto.setDefaultShoppingListItems(List.of());
-        when(habitRepo.existsById(anyLong())).thenReturn(true);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(anyLong(), anyLong()))
-            .thenReturn(Optional.of(habitAssign));
-        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserShoppingListItemDto());
-
-        HabitAssignUserShoppingListItemDto result =
-            habitAssignService.updateUserShoppingItemListAndDuration(1L, 21L, propertiesDto);
-        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(anyList());
-        verify(userShoppingListItemRepo, times(0)).deleteAll();
-        assertEquals(20, result.getDuration());
-        assertEquals(1, result.getUserShoppingListItemsDto().size());
+        var exception = assertThrows(BadRequestException.class,
+            () -> habitAssignService.updateUserHabitInfoDuration(1L, 21L, 19));
+        assertEquals(ErrorMessage.INVALID_DURATION, exception.getMessage());
+        verify(habitAssignRepo).existsById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
     }
 
     @Test
