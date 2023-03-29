@@ -127,8 +127,8 @@ public class HabitAssignController {
     /**
      * Method returns {@link HabitAssignDto} by it's id.
      *
-     * @param id     {@link HabitAssignVO} id.
-     * @param locale needed language code.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param locale        needed language code.
      * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
@@ -139,11 +139,11 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("/{id}")
-    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
+    @GetMapping("/{habitAssignId}")
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getById(id, locale.getLanguage()));
+            .body(habitAssignService.getById(habitAssignId, locale.getLanguage()));
     }
 
     /**

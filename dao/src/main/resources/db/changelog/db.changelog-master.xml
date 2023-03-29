@@ -145,5 +145,6 @@
     <include file="db/changelog/logs/ch-insert-into-habits-tags-Mokhnatska.xml"/>
     <include file="db/changelog/logs/сh-add-new-columns-habit-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-change-tables-events-events-dates-locations-Golik.xml"/>
+    <include file="db/changelog/logs/сh-add-new-column-habit-assign-Mokhnatska.xml"/>
 </databaseChangeLog>
 

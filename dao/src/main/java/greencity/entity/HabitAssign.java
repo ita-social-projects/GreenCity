@@ -40,6 +40,9 @@ public class HabitAssign {
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
 
+    @Column(name = "is_saw_confirm", nullable = false)
+    private Boolean isSawConfirm;
+
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserShoppingListItem> userShoppingListItems;
 

@@ -20,7 +20,7 @@ import java.util.List;
 
 public interface HabitAssignService {
     /**
-     * Method to find {@code HabitAssign} by id.
+     * Method to find {@code HabitAssign} by habitAssignId.
      *
      * @param language {@link String} of language code value.
      * @return {@link HabitAssignDto}.

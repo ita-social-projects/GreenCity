@@ -97,7 +97,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     public HabitAssignDto getById(Long habitAssignId, String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-        return buildHabitAssignDto(habitAssign, language);
+
+        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        HabitDto habitDto = habitAssignDto.getHabit();
+        Long amountAcquiredUsers = habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId());
+        habitDto.setAmountAcquiredUsers(amountAcquiredUsers);
+        habitAssignDto.setHabit(habitDto);
+        habitAssignDto.setIsSawConfirm(habitAssign.getIsSawConfirm());
+
+        return habitAssignDto;
     }
 
     /**
