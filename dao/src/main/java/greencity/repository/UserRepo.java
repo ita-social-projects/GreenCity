@@ -133,4 +133,15 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET eventOrganizerRating=:rate WHERE id=:userId")
     void updateUserEventOrganizerRating(Long userId, Double rate);
+
+    /**
+     * Get all friends by {@link User}'s id.
+     *
+     * @param userId - {@link Long}
+     * @return {@link User}
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE users.id IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND') "
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND'));")
+    List<User> getFriendsForUser(Long userId);
 }

@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
@@ -126,6 +127,8 @@ class HabitAssignServiceImplTest {
         .id(1L)
         .createDateTime(zonedDateTime).habitId(habit.getId()).build();
 
+    private List<HabitAssignManagementDto> habitAssignManagementDtoList = List.of();
+
     private HabitVO habitVO =
         HabitVO.builder().id(1L).image("src/main/resources/static/css/background-image-footer.svg").build();
 
@@ -151,7 +154,11 @@ class HabitAssignServiceImplTest {
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
         HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
-
+    private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
+        HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(habitAssignPropertiesDto)
+            .friendsIdsList(List.of(2L, 3L))
+            .build();
     private String language = "en";
 
     @Test
@@ -219,8 +226,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual =
-            habitAssignService.assignCustomHabitForUser(habit.getId(), userVO, habitAssignPropertiesDto);
+        List<HabitAssignManagementDto> actual =
+            habitAssignService.assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
         assertEquals(habitAssignManagementDto, actual);
     }
 
@@ -277,8 +284,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
-            habitAssignPropertiesDto);
+        List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+            habitAssignCustomPropertiesDto);
         assertEquals(habitAssignManagementDto, actual);
     }
 

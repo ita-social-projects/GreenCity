@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
@@ -59,12 +60,14 @@ import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -82,6 +85,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemRepo shoppingListItemRepo;
     private final UserShoppingListItemRepo userShoppingListItemRepo;
     private final CustomShoppingListItemRepo customShoppingListItemRepo;
+    private final UserRepo userRepo;
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final ShoppingListItemService shoppingListItemService;
     private final CustomShoppingListItemService customShoppingListItemService;
@@ -123,7 +127,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             List<ShoppingListItem> shoppingList =
                 shoppingListItemRepo.getShoppingListByListOfId(
                     shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId));
-            habitAssign = buildHabitAssign(habit, user);
+            habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
 
@@ -146,8 +150,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO userVO,
-        HabitAssignPropertiesDto habitAssignPropertiesDto) {
+    public List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO userVO,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         User user = modelMapper.map(userVO, User.class);
 
         checkStatusInProgressExists(habitId, userVO);
@@ -161,20 +165,66 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
         } else {
-            habitAssign = buildHabitAssign(habit, user);
+            habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
         }
-        enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
+        enhanceAssignWithCustomProperties(habitAssign, habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
 
-        if (!habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
+        if (!habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems().isEmpty()) {
             List<ShoppingListItem> shoppingList =
-                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-                    .getDefaultShoppingListItems());
+                shoppingListItemRepo
+                    .getShoppingListByListOfId(habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto()
+                        .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
+        setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
+            habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
 
         habitAssignRepo.save(habitAssign);
 
-        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        List<HabitAssignManagementDto> habitAssignManagementDtoList = new ArrayList<>();
+        habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
+
+        assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
+            habitAssignManagementDtoList);
+
+        return habitAssignManagementDtoList;
+    }
+
+    private void assignFriendsForCustomHabit(Habit habit,
+        Long userId,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto,
+        List<HabitAssignManagementDto> habitAssignManagementDtoList) {
+        List<User> friendList = userRepo.getFriendsForUser(userId);
+        habitAssignCustomPropertiesDto.getFriendsIdsList().forEach(id -> {
+            User user = friendList.stream().filter(friend -> id.equals(friend.getId()))
+                .findAny()
+                .orElseThrow(() -> new UserHasNoFriendWithIdException(ErrorMessage.USER_HAS_NO_FRIEND_WITH_ID + id));
+            checkStatusInProgressExists(habit.getId(), UserVO.builder().id(user.getId()).build());
+            validateHabitForAssign(habit.getId(), user);
+            HabitAssign habitAssign =
+                habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId());
+            if (habitAssign != null) {
+                habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+                habitAssign.setCreateDate(ZonedDateTime.now());
+            } else {
+                habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.REQUESTED);
+            }
+            enhanceAssignWithCustomProperties(habitAssign,
+                habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto());
+            setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
+                habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
+            habitAssignRepo.save(habitAssign);
+            habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
+        });
+    }
+
+    private void setDefaultShoppingListItemsIntoCustomHabit(HabitAssign habitAssign,
+        List<Long> defaultShoppingListItems) {
+        if (!defaultShoppingListItems.isEmpty()) {
+            List<ShoppingListItem> shoppingList =
+                shoppingListItemRepo.getShoppingListByListOfId(defaultShoppingListItems);
+            saveUserShoppingListItems(shoppingList, habitAssign);
+        }
     }
 
     private void checkStatusInProgressExists(Long habitId, UserVO userVO) {
@@ -285,11 +335,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param user  {@link User} instance.
      * @return {@link HabitAssign} instance.
      */
-    private HabitAssign buildHabitAssign(Habit habit, User user) {
+    private HabitAssign buildHabitAssign(Habit habit, User user, HabitAssignStatus assignStatus) {
         return habitAssignRepo.save(
             HabitAssign.builder()
                 .habit(habit)
-                .status(HabitAssignStatus.INPROGRESS)
+                .status(assignStatus)
                 .createDate(ZonedDateTime.now())
                 .user(user)
                 .duration(habit.getDefaultDuration())

@@ -39,13 +39,14 @@ public interface HabitAssignService {
     /**
      * Method for assigning {@code Habit} with custom properties.
      *
-     * @param habitId                  {@code Habit} id.
-     * @param user                     @link UserVO} id.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @param habitId                        {@code Habit} id.
+     * @param user                           {@link UserVO} id.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto}
+     *                                       instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+    List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO user,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto);
 
     /**
      * Method updates {@code HabitAssign} duration of habit assigned for user.

@@ -79,9 +79,10 @@ public class HabitAssignController {
     /**
      * Method which assigns habit for {@link UserVO} with custom props.
      *
-     * @param habitId                  {@link HabitVO} id.
-     * @param userVO                   {@link UserVO} instance.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @param habitId                        {@link HabitVO} id.
+     * @param userVO                         {@link UserVO} instance.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto}
+     *                                       instance.
      * @return {@link ResponseEntity}.
      */
     @ApiOperation(value = "Assign habit with custom properties for current user.")
@@ -93,11 +94,11 @@ public class HabitAssignController {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @PostMapping("/{habitId}/custom")
-    public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long habitId,
+    public ResponseEntity<List<HabitAssignManagementDto>> assignCustom(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        @Valid @RequestBody HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignPropertiesDto));
+            .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignCustomPropertiesDto));
     }
 
     /**
