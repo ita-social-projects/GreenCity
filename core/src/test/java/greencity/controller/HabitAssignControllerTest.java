@@ -73,7 +73,7 @@ class HabitAssignControllerTest {
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).getById(1L, "en");
+        verify(habitAssignService).getByHabitAssignIdAndUserId(1L, null, "en");
     }
 
     @Test

@@ -155,8 +155,13 @@ class HabitAssignServiceImplTest {
     private String language = "en";
 
     @Test
-    void getByIdFailed() {
-        assertThrows(NotFoundException.class, () -> habitAssignService.getById(1L, language));
+    void getByHabitAssignIdAndUserIdFailed() {
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.getByHabitAssignIdAndUserId(1L, 1L, language));
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(anyLong(), anyLong());
     }
 
     @Test
@@ -610,12 +615,14 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void getById() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
+    void getByHabitAssignIdAndUserId() {
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
-        assertEquals(habitAssignDto, habitAssignService.getById(1L, language));
+        assertEquals(habitAssignDto, habitAssignService.getByHabitAssignIdAndUserId(1L, 1L, language));
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(anyLong(), anyLong());
+        verify(modelMapper, times(2)).map(any(), any());
     }
 
     @Test
