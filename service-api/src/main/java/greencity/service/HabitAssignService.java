@@ -201,11 +201,11 @@ public interface HabitAssignService {
      *
      * @param habitAssignId {@code HabitAssign} id to enroll.
      * @param userId        {@code User} id.
-     * @param dateTime      {@link LocalDate} dateTime we want enroll.
+     * @param date          {@link LocalDate} date we want to enroll.
      * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate dateTime, String language);
+    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language);
 
     /**
      * Method to unenroll Habit in defined date.

@@ -25,6 +25,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
 import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
@@ -599,6 +600,7 @@ class ShoppingListItemServiceImplTest {
 
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
 
         UserShoppingListItem userShoppingListItem = ModelUtils.getUserShoppingListItem();
         userShoppingListItem.setId(userShoppingListItemId);
@@ -616,7 +618,7 @@ class ShoppingListItemServiceImplTest {
         expectedDto.setId(userShoppingListItemId);
         expectedDto.setText(text);
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.singletonList(
             userShoppingListItem));
@@ -632,50 +634,74 @@ class ShoppingListItemServiceImplTest {
         assertEquals(1, actualDtoList.size());
         assertEquals(expectedDto, actualDtoList.get(0));
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
         verify(shoppingListItemTranslationRepo).findByLangAndUserShoppingListItemId(language, userShoppingListItemId);
     }
 
     @Test
-    void getEmptyUserShoppingListByHabitAssignIdTest() {
+    void getUserShoppingListByHabitAssignIdReturnEmptyListTest() {
         Long habitAssignId = 2L;
         Long userId = 3L;
         String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssignId)).thenReturn(Collections.emptyList());
 
         assertEquals(Collections.emptyList(),
             shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);
         verify(modelMapper, times(0)).map(any(), any());
         verify(shoppingListItemTranslationRepo, times(0)).findByLangAndUserShoppingListItemId(any(), anyLong());
     }
 
     @Test
-    void getUserShoppingListByHabitAssignIdWithNoHabitAssign() {
+    void getUserShoppingListByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
         Long habitAssignId = 2L;
         Long userId = 3L;
         String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId))
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
             .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> shoppingListItemService
             .getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
 
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
-            exception.getMessage());
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
+        verify(userShoppingListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
+        verify(shoppingListItemTranslationRepo, times(0)).findByLangAndUserShoppingListItemId(any(), anyLong());
+    }
+
+    @Test
+    void getUserShoppingListByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUser() {
+        long habitAssignId = 2L;
+        long userId = 3L;
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId + 1);
+
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
+            .thenReturn(Optional.of(habitAssign));
+
+        UserHasNoPermissionToAccessException exception =
+            assertThrows(UserHasNoPermissionToAccessException.class, () -> shoppingListItemService
+                .getUserShoppingListByHabitAssignId(userId, habitAssignId, language));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(userShoppingListItemRepo, times(0)).findAllByHabitAssingId(anyLong());
         verify(modelMapper, times(0)).map(any(), any());
         verify(shoppingListItemTranslationRepo, times(0)).findByLangAndUserShoppingListItemId(any(), anyLong());

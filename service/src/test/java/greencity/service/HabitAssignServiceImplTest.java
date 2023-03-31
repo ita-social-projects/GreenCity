@@ -41,6 +41,7 @@ import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -50,8 +51,6 @@ import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -349,7 +348,7 @@ class HabitAssignServiceImplTest {
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getUser().setId(userId);
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
 
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
@@ -358,18 +357,35 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void deleteHabitAssignWithNoHabitAssign() {
+    void deleteHabitAssignThrowsExceptionWhenHabitAssignNotExists() {
         Long habitAssignId = 1L;
         Long userId = 2L;
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.empty());
 
         NotFoundException exception =
             assertThrows(NotFoundException.class, () -> habitAssignService.deleteHabitAssign(habitAssignId, userId));
 
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
-            + habitAssignId,
-            exception.getMessage());
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
+
+        verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
+        verify(habitAssignRepo, times(0)).delete(any());
+    }
+
+    @Test
+    void deleteHabitAssignThrowsExceptionWhenHabitAssignNotBelongsToUser() {
+        long habitAssignId = 1L;
+        long userId = 2L;
+
+        habitAssign.getUser().setId(userId + 1);
+
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        UserHasNoPermissionToAccessException exception =
+            assertThrows(UserHasNoPermissionToAccessException.class,
+                () -> habitAssignService.deleteHabitAssign(habitAssignId, userId));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
         verify(habitAssignRepo, times(0)).delete(any());
@@ -629,10 +645,11 @@ class HabitAssignServiceImplTest {
         habitAssign.setId(habitAssignId);
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+        habitAssign.getUser().setId(userId);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
@@ -644,7 +661,7 @@ class HabitAssignServiceImplTest {
         assertEquals(1, habitAssign.getWorkingDays());
         assertEquals(habitAssignDto, actualDto);
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
         verify(habitAssignRepo).save(habitAssign);
@@ -661,15 +678,41 @@ class HabitAssignServiceImplTest {
         LocalDate localDate = LocalDate.now();
         String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.empty());
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
             () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
 
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId,
             exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignVO.class));
+        verify(habitStatusCalendarService, times(0)).findHabitStatusCalendarByEnrollDateAndHabitAssign(any(), any());
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void enrollHabitThrowsUserHasNoPermissionToAccessExceptionWhenHabitAssignNotBelongToUser() {
+        long habitAssignId = 2L;
+        long userId = 3L;
+        LocalDate localDate = LocalDate.now();
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId + 1L);
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(modelMapper, times(0)).map(any(), eq(HabitAssignVO.class));
         verify(habitStatusCalendarService, times(0)).findHabitStatusCalendarByEnrollDateAndHabitAssign(any(), any());
         verify(habitAssignRepo, times(0)).save(any());
@@ -693,12 +736,13 @@ class HabitAssignServiceImplTest {
         habitAssign.setId(habitAssignId);
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+        habitAssign.getUser().setId(userId);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
         HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
@@ -709,7 +753,7 @@ class HabitAssignServiceImplTest {
 
         assertEquals(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
         verify(habitAssignRepo, times(0)).save(any());
@@ -733,10 +777,11 @@ class HabitAssignServiceImplTest {
         habitAssign.setId(habitAssignId);
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+        habitAssign.getUser().setId(userId);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
@@ -747,7 +792,7 @@ class HabitAssignServiceImplTest {
 
         assertEquals(ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
         verify(habitAssignRepo, times(0)).save(any());
@@ -771,10 +816,11 @@ class HabitAssignServiceImplTest {
         habitAssign.setId(habitAssignId);
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+        habitAssign.getUser().setId(userId);
 
         HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
@@ -785,7 +831,7 @@ class HabitAssignServiceImplTest {
 
         assertEquals(ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
         verify(habitAssignRepo, times(0)).save(any());
@@ -950,16 +996,33 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void findHabitByUserIdAndHabitAssignIdWithNoHabitAssignThrowNotFoundException() {
+    void findHabitByUserIdAndHabitAssignIdThrowsNotFoundExceptionWhenHabitAssignNotExists() {
         Long userId = 1L;
         Long habitAssignId = 2L;
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.empty());
+
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.empty());
+
         NotFoundException exception = assertThrows(NotFoundException.class, () -> habitAssignService
             .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "ua"));
 
-        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
-            + habitAssignId,
-            exception.getMessage());
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
+    }
+
+    @Test
+    void findHabitByUserIdAndHabitAssignIdThrowsNotFoundExceptionWhenHabitAssignNotBelongsToUser() {
+        long userId = 1L;
+        long habitAssignId = 2L;
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId + 1);
+
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
+
+        UserHasNoPermissionToAccessException exception =
+            assertThrows(UserHasNoPermissionToAccessException.class, () -> habitAssignService
+                .findHabitByUserIdAndHabitAssignId(userId, habitAssignId, "ua"));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
     }
 
     @Test
@@ -969,10 +1032,12 @@ class HabitAssignServiceImplTest {
         Long habitAssignId = 3L;
         Habit habit = ModelUtils.getHabit(habitId, "image123");
         HabitAssign habitAssign = ModelUtils.getHabitAssign(habitAssignId, habit, HabitAssignStatus.INPROGRESS);
+        habitAssign.getUser().setId(userId);
         HabitAssignDto habitAssignDto =
             ModelUtils.getHabitAssignDto(habitAssignId, habitAssign.getStatus(), habit.getImage());
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(new ArrayList<>());
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
@@ -985,7 +1050,7 @@ class HabitAssignServiceImplTest {
         assertEquals(habit.getId(), dto.getId());
         assertEquals(habit.getImage(), dto.getImage());
         assertEquals(habitAssign.getStatus(), dto.getHabitAssignStatus());
-        verify(habitAssignRepo).findByHabitAssignIdAndUserId(anyLong(), anyLong());
+        verify(habitAssignRepo).findByHabitAssignId(anyLong());
         verify(shoppingListItemTranslationRepo).findShoppingListByHabitIdAndByLanguageCode(anyString(), anyLong());
         verify(userShoppingListItemRepo).getAllAssignedShoppingListItemsFull(anyLong());
     }
@@ -1004,15 +1069,17 @@ class HabitAssignServiceImplTest {
         habitAssignDto.setId(habitAssignId);
         habitAssignDto.setUserId(userId);
 
-        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignId(habitAssignId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(any(HabitTranslation.class), eq(HabitDto.class))).thenReturn(getHabitDto());
         when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(language, habitId))
             .thenReturn(getShoppingListItemTranslationList());
         when(habitAssignRepo.findAmountOfUsersAcquired(habitId)).thenReturn(amountOfUsersAcquired);
+
         HabitDto actual = habitAssignService.findHabitByUserIdAndHabitAssignId(userId, habitAssignId, language);
         assertNotNull(actual.getAmountAcquiredUsers());
-        verify(habitAssignRepo, times(1)).findByHabitAssignIdAndUserId(habitAssignId, userId);
+
+        verify(habitAssignRepo, times(1)).findByHabitAssignId(habitAssignId);
         verify(shoppingListItemTranslationRepo, times(1)).findShoppingListByHabitIdAndByLanguageCode(language, habitId);
         verify(habitAssignRepo, times(1)).findAmountOfUsersAcquired(habitId);
     }
