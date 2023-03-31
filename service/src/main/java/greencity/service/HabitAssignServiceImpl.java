@@ -441,7 +441,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     @Override
     public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignId(habitAssignId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
@@ -608,7 +608,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignId(habitAssignId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
@@ -924,7 +924,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public void deleteHabitAssign(Long habitAssignId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignId(habitAssignId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 

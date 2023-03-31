@@ -254,7 +254,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Override
     public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
         Long habitAssignId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignId(habitAssignId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 

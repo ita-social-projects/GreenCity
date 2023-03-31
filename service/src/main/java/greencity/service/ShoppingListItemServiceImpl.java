@@ -329,7 +329,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Override
     public List<UserShoppingListItemResponseDto> getUserShoppingListByHabitAssignId(Long userId, Long habitAssignId,
         String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignId(habitAssignId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 

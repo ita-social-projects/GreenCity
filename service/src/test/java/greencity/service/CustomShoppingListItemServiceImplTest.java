@@ -395,7 +395,7 @@ class CustomShoppingListItemServiceImplTest {
         expectedDto.setText("item");
         expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
 
-        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
+        when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
             .thenReturn(items);
@@ -408,7 +408,7 @@ class CustomShoppingListItemServiceImplTest {
         assertEquals(1, actualDtoList.size());
         assertEquals(expectedDto, actualDtoList.get(0));
 
-        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
+        verify(habitAssignRepo).findById(habitAssignId);
         verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
         verify(modelMapper).map(item, CustomShoppingListItemResponseDto.class);
     }
@@ -418,7 +418,7 @@ class CustomShoppingListItemServiceImplTest {
         Long habitAssignId = 2L;
         Long userId = 3L;
 
-        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
+        when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> customShoppingListItemService
@@ -426,7 +426,7 @@ class CustomShoppingListItemServiceImplTest {
 
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
+        verify(habitAssignRepo).findById(habitAssignId);
         verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
             anyLong());
         verify(modelMapper, times(0)).map(any(), any());
@@ -441,7 +441,7 @@ class CustomShoppingListItemServiceImplTest {
         habitAssign.setId(habitAssignId);
         habitAssign.getUser().setId(userId + 1);
 
-        when(habitAssignRepo.findByHabitAssignId(habitAssignId))
+        when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
 
         UserHasNoPermissionToAccessException exception =
@@ -450,7 +450,7 @@ class CustomShoppingListItemServiceImplTest {
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
-        verify(habitAssignRepo).findByHabitAssignId(habitAssignId);
+        verify(habitAssignRepo).findById(habitAssignId);
         verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
             anyLong());
         verify(modelMapper, times(0)).map(any(), any());
