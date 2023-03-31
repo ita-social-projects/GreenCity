@@ -604,10 +604,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+    public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate dateTime, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
         validateForEnroll(dateTime, habitAssign);
 
@@ -615,7 +615,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .enrollDate(dateTime).habitAssign(habitAssign).build();
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
-        return buildHabitAssignDto(habitAssign, "en");
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**

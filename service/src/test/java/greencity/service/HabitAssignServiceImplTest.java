@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
@@ -37,8 +38,10 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -47,6 +50,8 @@ import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -289,14 +294,6 @@ class HabitAssignServiceImplTest {
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
             habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
-    }
-
-    @Test
-    void enrollHabitThrowWrongIdException() {
-        LocalDate localDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class,
-            () -> habitAssignService.enrollHabit(1L, 1L, localDate, "en"));
     }
 
     @Test
@@ -620,33 +617,182 @@ class HabitAssignServiceImplTest {
 
     @Test
     void enrollHabit() {
-        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        HabitStatusCalendarVO calendarVO = null;
-        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long habitTranslationId = 4L;
+        LocalDate localDate = LocalDate.now();
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
 
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setId(habitTranslationId);
+
+        habitAssign.setId(habitAssignId);
         habitAssign.setHabit(habit);
         habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
 
-        when(habitAssignRepo.findByHabitIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(habitAssign));
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
-            .findHabitStatusCalendarByEnrollDateAndHabitAssign(any(LocalDate.class), any(HabitAssignVO.class)))
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
                 .thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
-        HabitAssignDto actualDto = habitAssignService.enrollHabit(1L, 1L, LocalDate.now(), "en");
 
-        verify(habitAssignRepo, times(1)).save(any(HabitAssign.class));
-
+        HabitAssignDto actualDto = habitAssignService.enrollHabit(habitAssignId, userId, localDate, language);
+        assertEquals(1, habitAssign.getWorkingDays());
         assertEquals(habitAssignDto, actualDto);
 
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(modelMapper).map(habitAssign, HabitAssignVO.class);
+        verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
+        verify(habitAssignRepo).save(habitAssign);
+        verify(modelMapper).map(habitAssign, HabitAssignDto.class);
+        verify(modelMapper).map(translation, HabitDto.class);
+        verify(userShoppingListItemRepo)
+            .getAllAssignedShoppingListItemsFull(habitAssignId);
     }
 
     @Test
-    void enrollHabitThrowException() {
-        when(habitAssignRepo.findByHabitIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.empty());
-        LocalDate d = LocalDate.now();
-        assertThrows(NotFoundException.class, () -> habitAssignService.enrollHabit(1L, 1L, d, "en"));
+    void enrollHabitThrowsNotFoundExceptionWhenHabitAssignNotExists() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        LocalDate localDate = LocalDate.now();
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId,
+            exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignVO.class));
+        verify(habitStatusCalendarService, times(0)).findHabitStatusCalendarByEnrollDateAndHabitAssign(any(), any());
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void enrollHabitThrowsUserAlreadyHasEnrolledHabitAssign() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long habitTranslationId = 4L;
+        LocalDate localDate = LocalDate.now();
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setId(habitTranslationId);
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.setHabit(habit);
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        HabitStatusCalendarVO habitStatusCalendarVO = ModelUtils.getHabitStatusCalendarVO();
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
+                .thenReturn(habitStatusCalendarVO);
+
+        UserAlreadyHasEnrolledHabitAssign exception = assertThrows(UserAlreadyHasEnrolledHabitAssign.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+
+        assertEquals(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(modelMapper).map(habitAssign, HabitAssignVO.class);
+        verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void enrollHabitThrowsUserHasReachedOutOfEnrollRangeWhenEnrollsInFuture() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long habitTranslationId = 4L;
+        LocalDate localDate = LocalDate.now().plusDays(1);
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setId(habitTranslationId);
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.setHabit(habit);
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
+                .thenReturn(null);
+
+        UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+
+        assertEquals(ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(modelMapper).map(habitAssign, HabitAssignVO.class);
+        verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
+    }
+
+    @Test
+    void enrollHabitThrowsUserHasReachedOutOfEnrollRangeWhenPassedMaxDayOfAbilityToEnroll() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        Long habitTranslationId = 4L;
+        LocalDate localDate = LocalDate.now().minusDays(AppConstant.MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL);
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        HabitTranslation translation = ModelUtils.getHabitTranslation();
+        translation.setId(habitTranslationId);
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.setHabit(habit);
+        habitAssign.getHabit().setHabitTranslations(Collections.singletonList(translation));
+
+        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
+
+        when(habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
+        when(habitStatusCalendarService
+            .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
+                .thenReturn(null);
+
+        UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
+            () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
+
+        assertEquals(ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE, exception.getMessage());
+
+        verify(habitAssignRepo).findByHabitAssignIdAndUserId(habitAssignId, userId);
+        verify(modelMapper).map(habitAssign, HabitAssignVO.class);
+        verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);
+        verify(habitAssignRepo, times(0)).save(any());
+        verify(modelMapper, times(0)).map(any(), eq(HabitAssignDto.class));
+        verify(modelMapper, times(0)).map(any(), eq(HabitDto.class));
+        verify(userShoppingListItemRepo, times(0))
+            .getAllAssignedShoppingListItemsFull(anyLong());
     }
 
     @Test

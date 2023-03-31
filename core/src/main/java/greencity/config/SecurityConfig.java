@@ -234,7 +234,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/files/convert",
                 HABIT_ASSIGN_ID,
                 HABIT_ASSIGN_ID + "/custom",
-                HABIT_ASSIGN_ID + "/enroll/**",
+                "/habit/assign/{habitAssignId}/enroll/**",
                 HABIT_ASSIGN_ID + "/unenroll/{date}",
                 "/habit/statistic/{habitId}",
                 "/newsSubscriber",

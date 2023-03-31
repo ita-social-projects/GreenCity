@@ -359,13 +359,13 @@ public class HabitAssignController {
     /**
      * Method to enroll {@link HabitAssignVO} for current date.
      *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  {@link UserVO} user.
-     * @param date    - {@link LocalDate} we want to enroll.
-     * @param locale  - needed language code.
+     * @param habitAssignId - id of {@link HabitAssignVO}.
+     * @param userVO        {@link UserVO} user.
+     * @param date          - {@link LocalDate} we want to enroll.
+     * @param locale        - needed language code.
      * @return {@link HabitStatusCalendarDto}.
      */
-    @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
+    @ApiOperation(value = "Enroll habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -373,13 +373,13 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @PostMapping("/{habitId}/enroll/{date}")
-    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
+    @PostMapping("/{habitAssignId}/enroll/{date}")
+    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.enrollHabit(habitId, userVO.getId(), date, locale.getLanguage()));
+            .body(habitAssignService.enrollHabit(habitAssignId, userVO.getId(), date, locale.getLanguage()));
     }
 
     /**

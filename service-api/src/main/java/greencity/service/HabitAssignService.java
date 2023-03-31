@@ -197,15 +197,15 @@ public interface HabitAssignService {
     HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
 
     /**
-     * Method to enroll {@code Habit}.
+     * Method to enroll {@code HabitAssign} by habitAssignId.
      *
-     * @param habitId  {@code Habit} id to enroll.
-     * @param userId   {@code User} id.
-     * @param dateTime {@link LocalDate} dateTime we want enroll.
-     * @param language {@link String} of language code value.
+     * @param habitAssignId {@code HabitAssign} id to enroll.
+     * @param userId        {@code User} id.
+     * @param dateTime      {@link LocalDate} dateTime we want enroll.
+     * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language);
+    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate dateTime, String language);
 
     /**
      * Method to unenroll Habit in defined date.
