@@ -201,10 +201,10 @@ public class HabitAssignController {
     /**
      * Method that update UserShoppingList and CustomShopping List.
      *
-     * @param habitId  {@link HabitVO} id.
-     * @param userVO   {@link UserVO} instance.
-     * @param locale   needed language code.
-     * @param listsDto {@link UserShoppingAndCustomShoppingListsDto} instance.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO} instance.
+     * @param locale        needed language code.
+     * @param listsDto      {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
     @ApiOperation(value = "Update user and custom shopping lists",
         notes = "If item are present in the db, method update it\n"
@@ -218,13 +218,13 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @PutMapping("{habitId}/allUserAndCustomList")
+    @PutMapping("{habitAssignId}/allUserAndCustomList")
     public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
-        @PathVariable Long habitId,
+        @PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @Valid @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
-        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitId, listsDto,
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitAssignId, listsDto,
             locale.getLanguage());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
