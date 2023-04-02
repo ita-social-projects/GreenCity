@@ -239,7 +239,7 @@ class HabitAssignControllerTest {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
