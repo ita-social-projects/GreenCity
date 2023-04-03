@@ -104,7 +104,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         Long amountAcquiredUsers = habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId());
         habitDto.setAmountAcquiredUsers(amountAcquiredUsers);
         habitAssignDto.setHabit(habitDto);
-        habitAssignDto.setProgressNotificationHasConfirmed(habitAssign.getProgressNotificationHasConfirmed());
+        habitAssignDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
 
         return habitAssignDto;
     }

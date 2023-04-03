@@ -59,13 +59,14 @@ public class HabitAssign {
     private ZonedDateTime lastEnrollmentDate;
 
     /**
-     * This variable shows that the user has confirmed the seen notification that
-     * habit has enough progress (from 80 to 100 %) to be in status ACQUIRED. Now
-     * user can change status from INPROGRESS to ACQUIRED.
+     * This variable shows that the progress notification has displayed and habit
+     * has enough progress (from 80 to 100 %) to be in status ACQUIRED. Now user can
+     * change status from INPROGRESS to ACQUIRED or continue to enroll habit to
+     * 100%.
      *
      */
-    @Column(name = "progress_notification_has_confirmed", nullable = false)
-    private Boolean progressNotificationHasConfirmed;
+    @Column(name = "progress_notification_has_displayed", nullable = false)
+    private Boolean progressNotificationHasDisplayed;
 
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserShoppingListItem> userShoppingListItems;
