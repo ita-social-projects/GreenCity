@@ -73,7 +73,7 @@ class HabitAssignControllerTest {
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).getById(1L, "en");
+        verify(habitAssignService).getByHabitAssignIdAndUserId(1L, null, "en");
     }
 
     @Test
@@ -241,7 +241,7 @@ class HabitAssignControllerTest {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
