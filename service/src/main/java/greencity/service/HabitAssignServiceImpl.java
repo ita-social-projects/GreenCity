@@ -94,10 +94,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto getById(Long habitAssignId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-        return buildHabitAssignDto(habitAssign, language);
+    public HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+
+        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        HabitDto habitDto = habitAssignDto.getHabit();
+        Long amountAcquiredUsers = habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId());
+        habitDto.setAmountAcquiredUsers(amountAcquiredUsers);
+        habitAssignDto.setHabit(habitDto);
+        habitAssignDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+
+        return habitAssignDto;
     }
 
     /**

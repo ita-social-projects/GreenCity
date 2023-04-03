@@ -125,10 +125,12 @@ public class HabitAssignController {
     }
 
     /**
-     * Method returns {@link HabitAssignDto} by it's id.
+     * Method returns {@link HabitAssignDto} by it's id, current user id and
+     * specific language.
      *
-     * @param id     {@link HabitAssignVO} id.
-     * @param locale needed language code.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO}.
+     * @param locale        needed language code.
      * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
@@ -136,14 +138,15 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("/{id}")
-    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+    @GetMapping("/{habitAssignId}")
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId,
+        @ApiIgnore @CurrentUser UserVO userVO, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getById(id, locale.getLanguage()));
+            .body(habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userVO.getId(), locale.getLanguage()));
     }
 
     /**

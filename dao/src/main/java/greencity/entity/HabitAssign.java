@@ -1,10 +1,28 @@
 package greencity.entity;
 
 import greencity.enums.HabitAssignStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.persistence.*;
-import lombok.*;
 
 @Entity
 @NoArgsConstructor
@@ -39,6 +57,16 @@ public class HabitAssign {
 
     @Column(name = "last_enrollment", nullable = false)
     private ZonedDateTime lastEnrollmentDate;
+
+    /**
+     * This variable shows that the progress notification has displayed and habit
+     * has enough progress (from 80 to 100 %) to be in status ACQUIRED. Now user can
+     * change status from INPROGRESS to ACQUIRED or continue to enroll habit to
+     * 100%.
+     *
+     */
+    @Column(name = "progress_notification_has_displayed", nullable = false)
+    private Boolean progressNotificationHasDisplayed;
 
     @OneToMany(mappedBy = "habitAssign", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<UserShoppingListItem> userShoppingListItems;
