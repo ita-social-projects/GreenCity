@@ -26,4 +26,5 @@ public class HabitAssignDto {
     private HabitAssignStatus status;
     private Long userId;
     private Integer workingDays;
+    private Boolean progressNotificationHasDisplayed;
 }

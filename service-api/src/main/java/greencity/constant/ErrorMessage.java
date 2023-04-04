@@ -19,6 +19,7 @@ public final class ErrorMessage {
         "User has reached the limit of active habit assigns: ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID = "Habit does not exist by this habitAssignId : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String SHOPPING_LIST_ITEM_TRANSLATION_NOT_FOUND =
@@ -60,8 +61,12 @@ public final class ErrorMessage {
     public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID =
+        "There is no habit assign for current user and such habit assign id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS =
         "There is no inprogress habit assign for current user and such habit with id: ";
+    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS =
+        "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
         "Can't enroll habit because date input is not in a range from today to it's 7 passed days";
     public static final String HABIT_STATISTIC_NOT_BELONGS_TO_USER =
@@ -154,14 +159,15 @@ public final class ErrorMessage {
         "Can`t convert To Multipart Image. Bad inputed image string : ";
     public static final String INCORRECT_INPUT_ITEM_STATUS = "Incorrect input status to update item.";
     public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
-    public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS = "Habit assign status is not INPROGRESS.";
+    public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
+        "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
     public static final String NOT_EVENT_ORGANIZER = "You're not the organizer of this event";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
-    public static final String NO_EVENT_LINK_OR_COORDINATES = "Invalid online-link or coordinates";
+    public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
     public static final String EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST =
         "Start date must be in future and before finish date";
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
@@ -173,6 +179,8 @@ public final class ErrorMessage {
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
     public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
+
+    public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
 
     private ErrorMessage() {
     }

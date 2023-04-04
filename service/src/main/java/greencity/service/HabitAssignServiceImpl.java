@@ -3,7 +3,18 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitEnrollDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
@@ -15,14 +26,19 @@ import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.CustomShoppingListItem;
+import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
+import greencity.entity.HabitStatusCalendar;
+import greencity.entity.HabitTranslation;
+import greencity.entity.ShoppingListItem;
+import greencity.entity.User;
+import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.*;
-import greencity.repository.*;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -36,8 +52,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
+import greencity.repository.HabitRepo;
+import greencity.repository.ShoppingListItemRepo;
+import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserShoppingListItemRepo;
 import lombok.AllArgsConstructor;
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,10 +95,23 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto getById(Long habitAssignId, String language) {
+    public HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language) {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-        return buildHabitAssignDto(habitAssign, language);
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
+        HabitDto habitDto = habitAssignDto.getHabit();
+        Long amountAcquiredUsers = habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId());
+        habitDto.setAmountAcquiredUsers(amountAcquiredUsers);
+        habitAssignDto.setHabit(habitDto);
+        habitAssignDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+
+        return habitAssignDto;
     }
 
     /**
@@ -201,40 +244,28 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * {@inheritDoc}
+     * Method which updates duration of habit assigned for user.
+     *
+     * @param habitAssignId {@code AssignHabit} id.
+     * @param userId        {@link Long} id.
+     * @param duration      {@link Integer} with needed duration.
+     * @return {@link HabitAssignUserDurationDto}.
      */
     @Transactional
     @Override
-    public HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
-        HabitAssignPropertiesDto habitAssignPropertiesDto) {
-        if (!habitRepo.existsById(habitId)) {
-            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+    public HabitAssignUserDurationDto updateUserHabitInfoDuration(Long habitAssignId, Long userId, Integer duration) {
+        if (!habitAssignRepo.existsById(habitAssignId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId);
         }
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
-            .orElseThrow(() -> new InvalidStatusException(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS));
-        enhanceAssignWithCustomProperties(habitAssign, habitAssignPropertiesDto);
-        if (habitAssignPropertiesDto.getDefaultShoppingListItems() != null
-            && !habitAssignPropertiesDto.getDefaultShoppingListItems().isEmpty()) {
-            List<ShoppingListItem> shoppingListItems =
-                shoppingListItemRepo.getShoppingListByListOfId(habitAssignPropertiesDto
-                    .getDefaultShoppingListItems());
-            List<UserShoppingListItem> userShoppingListItems = shoppingListItems.stream()
-                .map(s -> buildUserShoppingListItems(s, habitAssign))
-                .collect(Collectors.toList());
-            Hibernate.initialize(habitAssign.getUserShoppingListItems());
-            userShoppingListItemRepo.deleteAll(habitAssign.getUserShoppingListItems());
-            habitAssign.setUserShoppingListItems(userShoppingListItems);
+        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsInProgress(habitAssignId, userId)
+            .orElseThrow(() -> new InvalidStatusException(
+                ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS));
+        if (duration < habitAssign.getWorkingDays()) {
+            throw new BadRequestException(ErrorMessage.INVALID_DURATION);
         }
-        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserShoppingListItemDto.class);
-    }
 
-    private UserShoppingListItem buildUserShoppingListItems(ShoppingListItem shoppingListItem,
-        HabitAssign habitAssign) {
-        return UserShoppingListItem.builder()
-            .habitAssign(habitAssign)
-            .shoppingListItem(shoppingListItem)
-            .status(ShoppingListItemStatus.INPROGRESS)
-            .build();
+        habitAssign.setDuration(duration);
+        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserDurationDto.class);
     }
 
     private void saveUserShoppingListItems(List<ShoppingListItem> shoppingList, HabitAssign habitAssign) {
@@ -422,24 +453,29 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     @Override
-    public HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language) {
-        var habitAssign =
-            habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID
-                        + habitId));
+    public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
         List<ShoppingListItemDto> shoppingListItems = new ArrayList<>();
         shoppingListItemTranslationRepo
-            .findShoppingListByHabitIdAndByLanguageCode(language, habitId)
+            .findShoppingListByHabitIdAndByLanguageCode(language, habit.getId())
             .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         changeStatuses(ShoppingListItemStatus.INPROGRESS.toString(),
             habitAssign.getId(), shoppingListItems);
         changeStatuses(ShoppingListItemStatus.DONE.toString(),
             habitAssign.getId(), shoppingListItems);
         habit.setShoppingListItems(shoppingListItems);
+        habit.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habit.getId()));
+        habit.setHabitAssignStatus(habitAssign.getStatus());
         return habit;
     }
 
@@ -505,23 +541,38 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method that return list of user shopping list and custom shopping list for
-     * habit.
-     *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param language {@link String} of language code value.
-     * @return @{link UserShoppingAndCustomShoppingListsDto} instance.
+     * {@inheritDoc}
      */
     @Override
-    public UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
-        Long userId, Long habitId, String language) {
+    public UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+        Long userId, Long habitAssignId, String language) {
         return UserShoppingAndCustomShoppingListsDto
             .builder()
-            .userShoppingListItemDto(shoppingListItemService.getUserShoppingList(userId, habitId, language))
+            .userShoppingListItemDto(
+                shoppingListItemService.getUserShoppingListByHabitAssignId(userId, habitAssignId, language))
             .customShoppingListItemDto(customShoppingListItemService
-                .findAllAvailableCustomShoppingListItems(userId, habitId))
+                .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId))
             .build();
+    }
+
+    @Transactional
+    @Override
+    public List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(
+        Long userId, String language) {
+        List<HabitAssign> habitAssignList = habitAssignRepo.findAllByUserIdAndStatusIsInProgress(userId);
+        if (habitAssignList.isEmpty()) {
+            throw new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS + userId);
+        }
+        return habitAssignList.stream()
+            .map(habitAssign -> UserShoppingAndCustomShoppingListsDto
+                .builder()
+                .userShoppingListItemDto(shoppingListItemService
+                    .getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssign.getId(), language))
+                .customShoppingListItemDto(customShoppingListItemService
+                    .findAllCustomShoppingListItemsWithStatusInProgress(userId, habitAssign.getHabit().getId()))
+                .build())
+            .collect(Collectors.toList());
     }
 
     /**
@@ -569,38 +620,42 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+    public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
-        validateForEnroll(dateTime, habitAssign);
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        validateForEnroll(date, habitAssign);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
-            .enrollDate(dateTime).habitAssign(habitAssign).build();
+            .enrollDate(date).habitAssign(habitAssign).build();
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
-        return buildHabitAssignDto(habitAssign, "en");
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**
      * Method validates existed enrolls of {@link HabitAssign} for creating new one.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param dateTime    {@link LocalDate} date.
+     * @param date        {@link LocalDate} date.
      */
-    private void validateForEnroll(LocalDate dateTime, HabitAssign habitAssign) {
+    private void validateForEnroll(LocalDate date, HabitAssign habitAssign) {
         HabitAssignVO habitAssignVO = modelMapper.map(habitAssign, HabitAssignVO.class);
         HabitStatusCalendarVO habitCalendarVO =
             habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(
-                dateTime, habitAssignVO);
+                date, habitAssignVO);
         if (habitCalendarVO != null) {
             throw new UserAlreadyHasEnrolledHabitAssign(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
 
         LocalDate today = LocalDate.now();
         LocalDate lastDayToEnroll = today.minusDays(AppConstant.MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL);
-        if (!(dateTime.isBefore(today.plusDays(1)) && dateTime.isAfter(lastDayToEnroll))) {
+        if (!(date.isBefore(today.plusDays(1)) && date.isAfter(lastDayToEnroll))) {
             throw new UserHasReachedOutOfEnrollRange(
                 ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE);
         }
@@ -879,11 +934,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     /**
      * {@inheritDoc}
      */
-    public void deleteHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
+    @Transactional
+    @Override
+    public void deleteHabitAssign(Long habitAssignId, Long userId) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
-        userShoppingListItemRepo.deleteByShoppingListItemsByHabitAssignId(habitAssign.getId());
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
 
@@ -915,11 +976,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     public void fullUpdateUserAndCustomShoppingLists(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         UserShoppingAndCustomShoppingListsDto listsDto,
         String language) {
-        fullUpdateUserShoppingList(userId, habitId, listsDto.getUserShoppingListItemDto(), language);
-        fullUpdateCustomShoppingList(userId, habitId, listsDto.getCustomShoppingListItemDto());
+        fullUpdateUserShoppingList(userId, habitAssignId, listsDto.getUserShoppingListItemDto(), language);
+        fullUpdateCustomShoppingList(userId, habitAssignId, listsDto.getCustomShoppingListItemDto());
     }
 
     /**
@@ -933,18 +994,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * them(Except items with DISABLED status).</li>
      * </ul>
      *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param list     {@link UserShoppingListItemResponseDto} User Shopping lists.
-     * @param language {@link String} of language code value.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param list          {@link UserShoppingListItemResponseDto} User Shopping
+     *                      lists.
+     * @param language      {@link String} of language code value.
      */
     private void fullUpdateUserShoppingList(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<UserShoppingListItemResponseDto> list,
         String language) {
-        updateAndDeleteUserShoppingListWithStatuses(userId, habitId, list);
-        saveUserShoppingListWithStatuses(userId, habitId, list, language);
+        updateAndDeleteUserShoppingListWithStatuses(userId, habitAssignId, list);
+        saveUserShoppingListWithStatuses(userId, habitAssignId, list, language);
     }
 
     /**
@@ -952,20 +1014,30 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * null.
      *
      * @param userId           {@code User} id.
-     * @param habitId          {@code Habit} id.
+     * @param habitAssignId    {@code HabitAssign} id.
      * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
      *                         lists.
      * @param language         {@link String} of language code value.
      */
     private void saveUserShoppingListWithStatuses(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<UserShoppingListItemResponseDto> userShoppingList,
         String language) {
         List<UserShoppingListItemResponseDto> listToSave = userShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
         checkDuplicationForUserShoppingListByName(listToSave);
+
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
 
@@ -1052,13 +1124,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * except DISABLED, will be deleted.
      *
      * @param userId           {@code User} id.
-     * @param habitId          {@code Habit} id.
+     * @param habitAssignId    {@code HabitAssign} id.
      * @param userShoppingList {@link UserShoppingListItemResponseDto} User shopping
      *                         lists.
      */
     private void updateAndDeleteUserShoppingListWithStatuses(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<UserShoppingListItemResponseDto> userShoppingList) {
         List<UserShoppingListItemResponseDto> listToUpdate = userShoppingList.stream()
             .filter(item -> item.getId() != null)
@@ -1066,9 +1138,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         checkDuplicationForUserShoppingListById(listToUpdate);
 
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+        HabitAssign habitAssign = habitAssignRepo
+            .findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(habitAssignId, userId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
         List<UserShoppingListItem> currentList = habitAssign.getUserShoppingListItems();
 
@@ -1135,17 +1208,17 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * them(Except items with DISABLED status).</li>
      * </ul>
      *
-     * @param userId  {@code User} id.
-     * @param habitId {@code Habit} id.
-     * @param list    {@link CustomShoppingListItemResponseDto} Custom Shopping
-     *                lists.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param list          {@link CustomShoppingListItemResponseDto} Custom
+     *                      Shopping lists.
      */
     private void fullUpdateCustomShoppingList(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<CustomShoppingListItemResponseDto> list) {
-        updateAndDeleteCustomShoppingListWithStatuses(userId, habitId, list);
-        saveCustomShoppingListWithStatuses(userId, habitId, list);
+        updateAndDeleteCustomShoppingListWithStatuses(userId, habitAssignId, list);
+        saveCustomShoppingListWithStatuses(userId, habitAssignId, list);
     }
 
     /**
@@ -1153,19 +1226,29 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * null.
      *
      * @param userId             {@code User} id.
-     * @param habitId            {@code Habit} id.
+     * @param habitAssignId      {@code HabitAssign} id.
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
     private void saveCustomShoppingListWithStatuses(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToSave = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() == null)
             .collect(Collectors.toList());
 
         checkDuplicationForCustomShoppingListByName(listToSave);
+
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
@@ -1192,19 +1275,29 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * items, except DISABLED, will be deleted.
      *
      * @param userId             {@code User} id.
-     * @param habitId            {@code Habit} id.
+     * @param habitAssignId      {@code HabitAssign} id.
      * @param customShoppingList {@link CustomShoppingListItemResponseDto} Custom
      *                           shopping lists.
      */
     private void updateAndDeleteCustomShoppingListWithStatuses(
         Long userId,
-        Long habitId,
+        Long habitAssignId,
         List<CustomShoppingListItemResponseDto> customShoppingList) {
         List<CustomShoppingListItemResponseDto> listToUpdate = customShoppingList.stream()
             .filter(shoppingItem -> shoppingItem.getId() != null)
             .collect(Collectors.toList());
 
         checkDuplicationForCustomShoppingListById(listToUpdate);
+
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<CustomShoppingListItem> currentList =
             customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId);

@@ -29,11 +29,11 @@ class EventDtoMapperTest {
     }
 
     @Test
-    void convertWithoutCoordinatesTest() {
-        Event event = ModelUtils.getEventWithoutCoordinates();
+    void convertWithoutAddressTest() {
+        Event event = ModelUtils.getEventWithoutAddress();
         event.setAdditionalImages(new ArrayList<>());
 
-        EventDto expected = ModelUtils.getEventWithoutCoordinatesDto();
+        EventDto expected = ModelUtils.getEventWithoutAddressDto();
 
         assertEquals(expected.getTitle(), mapper.convert(event).getTitle());
     }

@@ -1,11 +1,10 @@
 package greencity.mapping.events;
 
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.CoordinatesDto;
-import greencity.entity.event.Coordinates;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,10 @@ import java.util.List;
  * {@link greencity.dto.event.AddEventDtoRequest} into {@link Event}.
  */
 @Component(value = "eventDtoRequestMapper")
+@RequiredArgsConstructor
 public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoRequest, Event> {
+    private final AddressDtoMapper mapper;
+
     /**
      * Method for converting {@link greencity.dto.event.AddEventDtoRequest} into
      * {@link Event}.
@@ -42,11 +44,7 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
             eventDateLocation.setStartDate(date.getStartDate());
             eventDateLocation.setFinishDate(date.getFinishDate());
             if (date.getCoordinates() != null) {
-                CoordinatesDto coordinatesDto = date.getCoordinates();
-                eventDateLocation.setCoordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude())
-                    .addressUa(coordinatesDto.getAddressUa())
-                    .addressEn(coordinatesDto.getAddressEn()).build());
+                eventDateLocation.setAddress(mapper.convert(date.getCoordinates()));
             }
             if (date.getOnlineLink() != null) {
                 eventDateLocation.setOnlineLink(date.getOnlineLink());

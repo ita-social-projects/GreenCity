@@ -9,6 +9,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
+import greencity.entity.HabitAssign;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
@@ -19,7 +20,9 @@ import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomShoppingListItemRepo;
+import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Assertions;
@@ -39,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -46,6 +50,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +67,8 @@ class CustomShoppingListItemServiceImplTest {
 
     @Mock
     private HabitRepo habitRepo;
+    @Mock
+    private HabitAssignRepo habitAssignRepo;
 
     @Mock
     private UserShoppingListItemRepo userShoppingListItemRepo;
@@ -138,6 +145,25 @@ class CustomShoppingListItemServiceImplTest {
         }.getType())).thenReturn(items);
 
         assertEquals(items, customShoppingListItemService.findAllAvailableCustomShoppingListItems(1L, 1L));
+    }
+
+    @Test
+    void findAllCustomShoppingListItemsWithStatusInProgressTest() {
+        CustomShoppingListItem item = ModelUtils.getCustomShoppingListItemWithStatusInProgress();
+        CustomShoppingListItemResponseDto itemResponseDto =
+            ModelUtils.getCustomShoppingListItemResponseDtoWithStatusInProgress();
+
+        when(customShoppingListItemRepo.findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
+            anyLong()))
+                .thenReturn(List.of(item));
+        when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
+
+        assertEquals(List.of(itemResponseDto), customShoppingListItemService
+            .findAllCustomShoppingListItemsWithStatusInProgress(1L, 3L));
+
+        verify(customShoppingListItemRepo).findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
+            anyLong());
+        verify(modelMapper).map(any(), any());
     }
 
     @Test
@@ -350,5 +376,83 @@ class CustomShoppingListItemServiceImplTest {
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, null)
             .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItemsByHabitAssignId() {
+        Long habitId = 1L;
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+
+        List<CustomShoppingListItem> items = new ArrayList<>();
+        items.add(item);
+
+        CustomShoppingListItemResponseDto expectedDto = ModelUtils.getCustomShoppingListItemResponseDto();
+        expectedDto.setText("item");
+        expectedDto.setStatus(ShoppingListItemStatus.ACTIVE);
+
+        when(habitAssignRepo.findById(habitAssignId))
+            .thenReturn(Optional.of(habitAssign));
+        when(customShoppingListItemRepo.findAllAvailableCustomShoppingListItemsForUserId(userId, habitId))
+            .thenReturn(items);
+        when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(expectedDto);
+
+        List<CustomShoppingListItemResponseDto> actualDtoList = customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId);
+
+        assertNotNull(actualDtoList);
+        assertEquals(1, actualDtoList.size());
+        assertEquals(expectedDto, actualDtoList.get(0));
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);
+        verify(modelMapper).map(item, CustomShoppingListItemResponseDto.class);
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItemsByHabitAssignIdThrowsExceptionWhenHabitAssignNotExists() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+
+        when(habitAssignRepo.findById(habitAssignId))
+            .thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> customShoppingListItemService
+            .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
+            anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
+    }
+
+    @Test
+    void findAllAvailableCustomShoppingListItemsByHabitAssignIdThrowsExceptionWhenHabitAssignNotBelongsToUser() {
+        long habitAssignId = 2L;
+        long userId = 3L;
+
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId + 1);
+
+        when(habitAssignRepo.findById(habitAssignId))
+            .thenReturn(Optional.of(habitAssign));
+
+        UserHasNoPermissionToAccessException exception =
+            assertThrows(UserHasNoPermissionToAccessException.class, () -> customShoppingListItemService
+                .findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(customShoppingListItemRepo, times(0)).findAllAvailableCustomShoppingListItemsForUserId(anyLong(),
+            anyLong());
+        verify(modelMapper, times(0)).map(any(), any());
     }
 }

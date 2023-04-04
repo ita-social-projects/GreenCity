@@ -1,8 +1,12 @@
 package greencity.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import greencity.ModelUtils;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.service.HabitService;
 
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -13,14 +17,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -39,6 +46,8 @@ class HabitControllerTest {
     HabitController habitController;
 
     private static final String habitLink = "/habit";
+
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
@@ -105,5 +114,17 @@ class HabitControllerTest {
             .andExpect(status().isOk());
 
         verify(habitService).getShoppingListForHabit(1L, "en");
+    }
+
+    @Test
+    void postCustomHabit() throws Exception {
+        AddCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+        String requestedJson = new ObjectMapper().writeValueAsString(dto);
+        mockMvc.perform(post(habitLink + "/custom")
+            .principal(principal)
+            .content(requestedJson)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
+        verify(habitService).addCustomHabit(dto, "test@gmail.com");
     }
 }

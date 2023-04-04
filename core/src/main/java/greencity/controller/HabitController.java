@@ -1,8 +1,12 @@
 package greencity.controller;
 
-import greencity.annotations.*;
+import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
@@ -13,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import lombok.AllArgsConstructor;
@@ -20,8 +25,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
 
 @Validated
 @AllArgsConstructor
@@ -132,5 +146,29 @@ public class HabitController {
     @ApiLocale
     public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
+    }
+
+    /**
+     * Method for creating Custom Habit.
+     *
+     * @param request {@link AddCustomHabitDtoRequest} - new custom habit dto.
+     * @return dto {@link AddCustomHabitDtoResponse}
+     *
+     * @author Lilia Mokhnatska.
+     */
+    @ApiOperation(value = "Add new custom habit.")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddCustomHabitDtoResponse.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @PostMapping("/custom")
+    public ResponseEntity<AddCustomHabitDtoResponse> addCustomHabit(
+        @Valid @RequestBody AddCustomHabitDtoRequest request, @ApiIgnore Principal principal) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(habitService.addCustomHabit(request, principal.getName()));
     }
 }

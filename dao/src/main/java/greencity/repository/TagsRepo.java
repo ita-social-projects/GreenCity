@@ -3,6 +3,7 @@ package greencity.repository;
 import greencity.entity.Tag;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
@@ -43,6 +44,16 @@ public interface TagsRepo extends JpaRepository<Tag, Long>, JpaSpecificationExec
      */
     @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names AND t.type = :tagType")
     List<Tag> findTagsByNamesAndType(List<String> names, TagType tagType);
+
+    /**
+     * Method finds tags by name.
+     *
+     * @param names {@link String}
+     * @return set of tags {@link Tag}
+     * @author Lilia Mokhnatska
+     */
+    @Query("SELECT t FROM Tag t JOIN FETCH t.tagTranslations tt WHERE LOWER(tt.name) IN :names")
+    Set<Tag> findTagsByNames(Set<String> names);
 
     /**
      * Method that allow you to find list of {@link Tag}s with all translations by

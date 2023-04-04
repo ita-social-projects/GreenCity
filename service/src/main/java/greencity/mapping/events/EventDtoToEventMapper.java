@@ -1,12 +1,12 @@
 package greencity.mapping.events;
 
-import greencity.dto.event.CoordinatesDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDto;
-import greencity.entity.*;
-import greencity.entity.event.Coordinates;
+import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,10 @@ import java.util.List;
  * {@link Event}.
  */
 @Component
+@RequiredArgsConstructor
 public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
+    private final AddressDtoMapper mapper;
+
     /**
      * Method for converting {@link EventDto} into {@link Event}.
      *
@@ -31,6 +34,7 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
         Event event = new Event();
         event.setId(eventDto.getId());
         event.setTitle(eventDto.getTitle());
+        event.setCreationDate(eventDto.getCreationDate());
         event.setDescription(eventDto.getDescription());
         event.setOrganizer(User.builder()
             .name(eventDto.getOrganizer().getName())
@@ -48,14 +52,11 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
 
         List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
         for (var date : eventDto.getDates()) {
-            CoordinatesDto coordinatesDto = date.getCoordinates();
+            AddressDto addressDto = date.getCoordinates();
             eventDateLocationsDto.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
-                .coordinates(Coordinates.builder().latitude(coordinatesDto.getLatitude())
-                    .longitude(coordinatesDto.getLongitude())
-                    .addressEn(coordinatesDto.getAddressEn())
-                    .addressUa(coordinatesDto.getAddressUa()).build())
+                .address(mapper.convert(addressDto))
                 .onlineLink(date.getOnlineLink())
                 .event(event).build());
         }
