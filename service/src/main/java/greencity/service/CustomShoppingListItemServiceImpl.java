@@ -58,20 +58,20 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Transactional
     @Override
     public List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSave, Long userId,
-        Long habitId) {
+        Long habitAssignId) {
         UserVO userVO = restClient.findById(userId);
-        Habit habit = habitRepo.findById(habitId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitAssignId));
         User user = modelMapper.map(userVO, User.class);
         List<CustomShoppingListItemSaveRequestDto> dto = bulkSave.getCustomShoppingListItemSaveRequestDtoList();
-        List<String> errorMessages = findDuplicates(dto, user, habit);
+        List<String> errorMessages = findDuplicates(dto, user, habitAssign.getHabit());
         if (!errorMessages.isEmpty()) {
             throw new CustomShoppingListItemNotSavedException(
                 ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + errorMessages.toString());
         }
         List<CustomShoppingListItem> items = user.getCustomShoppingListItems();
         for (CustomShoppingListItem item : items) {
-            item.setHabit(habit);
+            item.setHabit(habitAssign.getHabit());
         }
         customShoppingListItemRepo.saveAll(items);
         return user.getCustomShoppingListItems().stream()
