@@ -746,6 +746,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         habitStatusCalendarRepo.delete(habitStatusCalendar);
+        habitAssign.getHabitStatusCalendars().remove(habitStatusCalendar);
     }
 
     /**
