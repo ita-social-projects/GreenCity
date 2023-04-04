@@ -60,14 +60,14 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @PostMapping("/{userId}/{habitId}/custom-shopping-list-items")
+    @PostMapping("/{userId}/{habitAssignId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> saveUserCustomShoppingListItems(
         @Valid @RequestBody BulkSaveCustomShoppingListItemDto dto,
         @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
-        @PathVariable Long habitId) {
+        @PathVariable Long habitAssignId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(customShoppingListItemService.save(dto, userId, habitId));
+            .body(customShoppingListItemService.save(dto, userId, habitAssignId));
     }
 
     /**
