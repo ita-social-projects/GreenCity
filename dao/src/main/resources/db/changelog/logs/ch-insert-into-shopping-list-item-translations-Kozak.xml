@@ -169,11 +169,6 @@
             <column name="language_id">3</column>
         </insert>
         <insert tableName="shopping_list_item_translations">
-            <column name="content">Steel Straws</column>
-            <column name="shopping_list_item_id">101</column>
-            <column name="language_id">2</column>
-        </insert>
-        <insert tableName="shopping_list_item_translations">
             <column name="content">Скляна пляшка для води</column>
             <column name="shopping_list_item_id">12</column>
             <column name="language_id">1</column>
