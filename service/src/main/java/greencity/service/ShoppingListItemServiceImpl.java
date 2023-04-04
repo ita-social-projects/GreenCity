@@ -447,12 +447,13 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
      */
     @Transactional
     @Override
-    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId,
+    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId,
+        Long userShoppingListItemId,
         String language,
         String status) {
         String statusUpperCase = status.toUpperCase();
         List<UserShoppingListItem> userShoppingListItems =
-            userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(itemId, userId);
+            userShoppingListItemRepo.getAllByUserShoppingListIdAndUserId(userShoppingListItemId, userId);
         if (userShoppingListItems == null || userShoppingListItems.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID);
         }
