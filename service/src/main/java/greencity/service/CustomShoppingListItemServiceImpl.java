@@ -16,6 +16,7 @@ import greencity.enums.ShoppingListItemStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -253,9 +254,13 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     @Override
     public List<CustomShoppingListItemResponseDto> findAllAvailableCustomShoppingListItemsByHabitAssignId(Long userId,
         Long habitAssignId) {
-        HabitAssign habitAssign =
-            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId).orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         Long habitId = habitAssign.getHabit().getId();
 

@@ -59,6 +59,7 @@ import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -95,9 +96,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Override
     public HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         HabitAssignDto habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habitDto = habitAssignDto.getHabit();
@@ -449,12 +454,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
     @Override
     public HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language) {
-        var habitAssign =
-            habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
-                .orElseThrow(
-                    () -> new NotFoundException(
-                        ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID
-                            + habitAssignId));
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
         var habitAssignDto = buildHabitAssignDto(habitAssign, language);
         HabitDto habit = habitAssignDto.getHabit();
         habit.setDefaultDuration(habitAssignDto.getDuration());
@@ -613,38 +620,42 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * {@inheritDoc}
      */
     @Override
-    public HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+    public HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
 
-        validateForEnroll(dateTime, habitAssign);
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        validateForEnroll(date, habitAssign);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
-            .enrollDate(dateTime).habitAssign(habitAssign).build();
+            .enrollDate(date).habitAssign(habitAssign).build();
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
-        return buildHabitAssignDto(habitAssign, "en");
+        return buildHabitAssignDto(habitAssign, language);
     }
 
     /**
      * Method validates existed enrolls of {@link HabitAssign} for creating new one.
      *
      * @param habitAssign {@link HabitAssign} instance.
-     * @param dateTime    {@link LocalDate} date.
+     * @param date        {@link LocalDate} date.
      */
-    private void validateForEnroll(LocalDate dateTime, HabitAssign habitAssign) {
+    private void validateForEnroll(LocalDate date, HabitAssign habitAssign) {
         HabitAssignVO habitAssignVO = modelMapper.map(habitAssign, HabitAssignVO.class);
         HabitStatusCalendarVO habitCalendarVO =
             habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(
-                dateTime, habitAssignVO);
+                date, habitAssignVO);
         if (habitCalendarVO != null) {
             throw new UserAlreadyHasEnrolledHabitAssign(ErrorMessage.HABIT_HAS_BEEN_ALREADY_ENROLLED);
         }
 
         LocalDate today = LocalDate.now();
         LocalDate lastDayToEnroll = today.minusDays(AppConstant.MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL);
-        if (!(dateTime.isBefore(today.plusDays(1)) && dateTime.isAfter(lastDayToEnroll))) {
+        if (!(date.isBefore(today.plusDays(1)) && date.isAfter(lastDayToEnroll))) {
             throw new UserHasReachedOutOfEnrollRange(
                 ErrorMessage.HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE);
         }
@@ -926,9 +937,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Transactional
     @Override
     public void deleteHabitAssign(Long habitAssignId, Long userId) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         habitAssignRepo.delete(habitAssign);
     }
@@ -1014,10 +1029,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
         checkDuplicationForUserShoppingListByName(listToSave);
 
-        Long habitId = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID + habitAssignId))
-            .getHabit().getId();
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<ShoppingListItem> shoppingListItems = findRelatedShoppingListItem(habitId, language, listToSave);
 
@@ -1220,10 +1240,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         checkDuplicationForCustomShoppingListByName(listToSave);
 
-        Long habitId = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID + habitAssignId))
-            .getHabit().getId();
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
@@ -1264,10 +1289,15 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         checkDuplicationForCustomShoppingListById(listToUpdate);
 
-        Long habitId = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID + habitAssignId))
-            .getHabit().getId();
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Long habitId = habitAssign.getHabit().getId();
 
         List<CustomShoppingListItem> currentList =
             customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habitId);

@@ -278,17 +278,4 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT count(ha)"
         + "FROM HabitAssign ha WHERE ha.habit.id = :habitId AND ha.status='ACQUIRED'")
     Long findAmountOfUsersAcquired(@Param("habitId") Long habitId);
-
-    /**
-     * Method to find {@link HabitAssign} by {@link HabitAssign} id.
-     *
-     * @param habitAssignId {@link Long} id.
-     * @param userId        {@link Long} id.
-     * @return {@link HabitAssign} instance.
-     */
-    @Query(value = "FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId")
-    Optional<HabitAssign> findByHabitAssignIdAndUserId(Long habitAssignId, Long userId);
 }
