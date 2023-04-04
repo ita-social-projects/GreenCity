@@ -38,7 +38,7 @@ public class CustomShoppingListItemController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/{userId}/{habitAssignId}")
+    @GetMapping("/{userId}/{habitId}")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllAvailableCustomShoppingListItems(
         @PathVariable Long userId, @PathVariable Long habitId) {
         return ResponseEntity.status(HttpStatus.OK)
