@@ -2,15 +2,28 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.shoppinglistitem.*;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemManagementDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemPostDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.ShoppingListItemViewDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.entity.ShoppingListItem;
 import greencity.entity.HabitAssign;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.*;
+
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotDeletedException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
+import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.filters.ShoppingListItemSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.ShoppingListItemRepo;
@@ -310,6 +323,25 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserShoppingListItemResponseDto> getUserShoppingListByHabitAssignId(Long userId, Long habitAssignId,
+        String language) {
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
+            .orElseThrow(() -> new NotFoundException(
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        List<UserShoppingListItemResponseDto> itemsDtos = getAllUserShoppingListItems(habitAssign);
+        itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
+        return itemsDtos;
+    }
+
     private List<UserShoppingListItemResponseDto> getAllUserShoppingListItems(HabitAssign habitAssign) {
         return userShoppingListItemRepo
             .findAllByHabitAssingId(habitAssign.getId())
@@ -327,6 +359,32 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
         String text =
             shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, dto.getId()).getContent();
         dto.setText(text);
+    }
+
+    @Transactional
+    @Override
+    public List<UserShoppingListItemResponseDto> getUserShoppingListItemsByHabitAssignIdAndStatusInProgress(
+        Long habitAssignId, String language) {
+        return userShoppingListItemRepo
+            .findUserShoppingListItemsByHabitAssignIdAndStatusInProgress(habitAssignId)
+            .stream()
+            .map(userShoppingListItem -> converterUserShoppingListItemResponseDto(userShoppingListItem, language))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Method converts UserShoppingListItem to UserShoppingListItemResponseDto and
+     * sets text for UserShoppingListItemResponseDto with localization.
+     *
+     * @param userShoppingListItem {@link UserShoppingListItem}
+     * @param language             {@link String}
+     */
+    private UserShoppingListItemResponseDto converterUserShoppingListItemResponseDto(
+        UserShoppingListItem userShoppingListItem, String language) {
+        UserShoppingListItemResponseDto dto =
+            modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class);
+        setTextForUserShoppingListItem(dto, language);
+        return dto;
     }
 
     /**

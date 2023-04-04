@@ -1,6 +1,16 @@
 package greencity.service;
 
-import greencity.dto.habit.*;
+import greencity.dto.habit.HabitAssignDto;
+import greencity.dto.habit.HabitAssignManagementDto;
+import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignStatDto;
+import greencity.dto.habit.HabitAssignUserDurationDto;
+import greencity.dto.habit.HabitAssignVO;
+import greencity.dto.habit.HabitDto;
+import greencity.dto.habit.HabitVO;
+import greencity.dto.habit.HabitsDateEnrollmentDto;
+import greencity.dto.habit.UpdateUserShoppingListDto;
+import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
 
@@ -10,12 +20,15 @@ import java.util.List;
 
 public interface HabitAssignService {
     /**
-     * Method to find {@code HabitAssign} by id.
-     *
-     * @param language {@link String} of language code value.
+     * Method to find {@code HabitAssign} by habitAssignId, userId and specific
+     * language.
+     * 
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto getById(Long habitAssignId, String language);
+    HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language);
 
     /**
      * Method for assigning {@code Habit} with default properties.
@@ -38,15 +51,15 @@ public interface HabitAssignService {
         HabitAssignPropertiesDto habitAssignPropertiesDto);
 
     /**
-     * Method updates {@code HabitAssign} shopping list with custom properties.
+     * Method updates {@code HabitAssign} duration of habit assigned for user.
      *
-     * @param habitId                  {@code AssignHabit} id.
-     * @param userId                   {@link Long} id.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
-     * @return {@link HabitAssignUserShoppingListItemDto}.
+     * @param habitAssignId {@code AssignHabit} id.
+     * @param userId        {@link Long} id.
+     * @param duration      {@link Integer} with needed duration.
+     * @return {@link HabitAssignUserDurationDto}.
+     * @author Anton Bondar
      */
-    HabitAssignUserShoppingListItemDto updateUserShoppingItemListAndDuration(Long habitId, Long userId,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+    HabitAssignUserDurationDto updateUserHabitInfoDuration(Long habitAssignId, Long userId, Integer duration);
 
     /**
      * Method to find all custom habit assigns by {@code User} id.
@@ -84,14 +97,15 @@ public interface HabitAssignService {
     HabitAssignDto findHabitAssignByUserIdAndHabitId(Long userId, Long habitId, String language);
 
     /**
-     * Method to find {@code HabitAssign} by {@code Habit} id and {@code User} id.
+     * Method to find {@code HabitAssign} by {@code HabitAssign} id and {@code User}
+     * id.
      *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
-     * @param language {@link String} of language code value.
-     * @return HabitAssignDto.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param language      {@link String} of language code value.
+     * @return HabitDto.
      */
-    HabitDto findHabitByUserIdAndHabitId(Long userId, Long habitId, String language);
+    HabitDto findHabitByUserIdAndHabitAssignId(Long userId, Long habitAssignId, String language);
 
     /**
      * Method to find all (not cancelled) {@code HabitAssign}'s by {@code User} id
@@ -104,16 +118,28 @@ public interface HabitAssignService {
     List<HabitAssignDto> getAllHabitAssignsByUserIdAndStatusNotCancelled(Long userId, String language);
 
     /**
-     * Method that finds userShoppingListItems and userCustomShoppingListItems for
-     * habitId.
+     * Method that return user shopping list and custom shopping list by
+     * habitAssignId for specific language.
      *
-     * @param userId   {@code User} id.
-     * @param habitId  {@code Habit} id.
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssignId} id.
+     * @param language      {@link String} of language code value.
+     * @return {@link UserShoppingAndCustomShoppingListsDto} instance.
+     */
+    UserShoppingAndCustomShoppingListsDto getUserShoppingAndCustomShoppingLists(
+        Long userId, Long habitAssignId, String language);
+
+    /**
+     * Method that finds list of user shopping list items and custom shopping list
+     * items by userId, specific language and INPROGRESS status.
+     *
+     * @param userId   {@link Long} id.
      * @param language {@link String} of language code value.
      * @return {@link UserShoppingAndCustomShoppingListsDto}.
+     * @author Lilia Mokhnatska
      */
-    UserShoppingAndCustomShoppingListsDto getUserShoppingListItemAndUserCustomShoppingList(
-        Long userId, Long habitId, String language);
+    List<UserShoppingAndCustomShoppingListsDto> getListOfUserAndCustomShoppingListsWithStatusInprogress(Long userId,
+        String language);
 
     /**
      * Method to find all(not cancelled) {@code HabitAssign}'s by {@code Habit} id
@@ -174,15 +200,15 @@ public interface HabitAssignService {
     HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
 
     /**
-     * Method to enroll {@code Habit}.
+     * Method to enroll {@code HabitAssign} by habitAssignId.
      *
-     * @param habitId  {@code Habit} id to enroll.
-     * @param userId   {@code User} id.
-     * @param dateTime {@link LocalDate} dateTime we want enroll.
-     * @param language {@link String} of language code value.
+     * @param habitAssignId {@code HabitAssign} id to enroll.
+     * @param userId        {@code User} id.
+     * @param date          {@link LocalDate} date we want to enroll.
+     * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language);
+    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language);
 
     /**
      * Method to unenroll Habit in defined date.
@@ -245,12 +271,12 @@ public interface HabitAssignService {
     HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
 
     /**
-     * Method delete HabitAssign.
+     * Method delete HabitAssign by habitAssignId for current User.
      *
-     * @param habitId {@link Long} id.
-     * @param userId  {@link Long} id.
+     * @param habitAssignId {@link Long} id.
+     * @param userId        {@link Long} id.
      */
-    void deleteHabitAssign(Long habitId, Long userId);
+    void deleteHabitAssign(Long habitAssignId, Long userId);
 
     /**
      * Method save HabitAssign.

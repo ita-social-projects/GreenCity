@@ -4,10 +4,7 @@ import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.converters.DateService;
 import greencity.dto.habit.HabitAssignVO;
-import greencity.dto.habitstatistic.AddHabitStatisticDto;
-import greencity.dto.habitstatistic.HabitItemsAmountStatisticDto;
-import greencity.dto.habitstatistic.HabitStatisticDto;
-import greencity.dto.habitstatistic.UpdateHabitStatisticDto;
+import greencity.dto.habitstatistic.*;
 import greencity.entity.Habit;
 import greencity.entity.HabitAssign;
 import greencity.entity.HabitStatistic;
@@ -135,12 +132,17 @@ public class HabitStatisticServiceImpl implements HabitStatisticService {
      * @author Yuriy Olkovskyi
      */
     @Override
-    public List<HabitStatisticDto> findAllStatsByHabitId(Long habitId) {
+    public GetHabitStatisticDto findAllStatsByHabitId(Long habitId) {
         Habit habit = habitRepo.findById(habitId).orElseThrow(
             () -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
-        return modelMapper.map(habitStatisticRepo.findAllByHabitId(habit.getId()),
-            new TypeToken<List<HabitStatisticDto>>() {
-            }.getType());
+        Long amountOfUsersAcquired = habitAssignRepo.findAmountOfUsersAcquired(habit.getId());
+        List<HabitStatisticDto> habitStatisticDtoList = habitStatisticRepo.findAllByHabitId(habit.getId()).stream()
+            .map(o -> modelMapper.map(o, HabitStatisticDto.class))
+            .collect(Collectors.toList());
+        return GetHabitStatisticDto.builder()
+            .amountOfUsersAcquired(amountOfUsersAcquired)
+            .habitStatisticDtoList(habitStatisticDtoList)
+            .build();
     }
 
     /**

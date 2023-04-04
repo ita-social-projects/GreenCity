@@ -73,7 +73,7 @@ class HabitAssignControllerTest {
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).getById(1L, "en");
+        verify(habitAssignService).getByHabitAssignIdAndUserId(1L, null, "en");
     }
 
     @Test
@@ -90,22 +90,20 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void updateShoppingItemList() throws Exception {
-        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
-        Gson gson = new Gson();
-        String json = gson.toJson(propertiesDto);
-        mockMvc.perform(put(habitLink + "/{habitId}/update-user-shopping-item-list", 1L)
-            .content(json)
+    void updateHabitAssignDurationTest() throws Exception {
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/update-habit-duration?duration=15", 1L)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingItemListAndDuration(1L, null, propertiesDto);
+        verify(habitAssignService).updateUserHabitInfoDuration(1L, null, 15);
     }
 
     @Test
     void enrollHabit() throws Exception {
-        mockMvc.perform(post(habitLink + "/{habitId}/enroll/{date}", 1, LocalDate.now()))
+        Long habitAssignId = 2L;
+        LocalDate date = LocalDate.now();
+        mockMvc.perform(post(habitLink + "/{habitAssignId}/enroll/{date}", habitAssignId, date))
             .andExpect(status().isOk());
-        verify(habitAssignService).enrollHabit(1L, null, LocalDate.now(), "en");
+        verify(habitAssignService).enrollHabit(habitAssignId, null, date, "en");
     }
 
     @Test
@@ -154,10 +152,12 @@ class HabitAssignControllerTest {
 
     @Test
     void deleteHabitAssignTest() throws Exception {
+        Long habitAssignId = 1L;
+
         Principal principal = () -> "xd87@ukr.net";
-        mockMvc.perform(delete(habitLink + "/delete/{habitId}", 1L)
+        mockMvc.perform(delete(habitLink + "/delete/{habitAssignId}", habitAssignId)
             .principal(principal)).andExpect(status().isOk());
-        verify(habitAssignService).deleteHabitAssign(1L, null);
+        verify(habitAssignService).deleteHabitAssign(habitAssignId, null);
     }
 
     @Test
@@ -203,25 +203,37 @@ class HabitAssignControllerTest {
 
     @Test
     void getUsersHabitByHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/{habitId}/more", 1L))
+        Long habitAssignId = 1L;
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/more", habitAssignId))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findHabitByUserIdAndHabitId(null, 1L, "en");
+        verify(habitAssignService).findHabitByUserIdAndHabitAssignId(null, habitAssignId, "en");
     }
 
     @Test
     void getUserAndCustomListByUserIdAndHabitId() throws Exception {
-        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L))
+        Long habitAssignId = 1L;
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "en");
+        verify(habitAssignService).getUserShoppingAndCustomShoppingLists(null, habitAssignId, "en");
     }
 
     @Test
     void getUserAndCustomListByUserIdAndHabitIdAndLocale() throws Exception {
-        mockMvc.perform(get(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+        Long habitAssignId = 1L;
+        mockMvc.perform(get(habitLink + "/{habitAssignId}/allUserAndCustomList", habitAssignId)
             .locale(Locale.forLanguageTag("ua")))
             .andExpect(status().isOk());
-        verify(habitAssignService).getUserShoppingListItemAndUserCustomShoppingList(null, 1L, "ua");
+        verify(habitAssignService).getUserShoppingAndCustomShoppingLists(null, habitAssignId, "ua");
+    }
+
+    @Test
+    void getListOfUserAndCustomShoppingListsInprogress() throws Exception {
+        mockMvc.perform(get(habitLink + "/allUserAndCustomShoppingListsInprogress")
+            .principal(principal)
+            .locale(Locale.forLanguageTag("en")))
+            .andExpect(status().isOk());
+        verify(habitAssignService).getListOfUserAndCustomShoppingListsWithStatusInprogress(null, "en");
     }
 
     @Test
@@ -229,7 +241,7 @@ class HabitAssignControllerTest {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))

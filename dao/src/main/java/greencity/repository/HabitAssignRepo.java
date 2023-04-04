@@ -86,6 +86,20 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("userId") Long userId);
 
     /**
+     * Method to find {@link HabitAssign}'s by {@link User} and {@link HabitAssign}
+     * id and INPROGRESS status.
+     *
+     * @param habitAssignId {@link Long} id.
+     * @param userId        {@link Long} id.
+     * @return {@link HabitAssign} instance.
+     * @author Anton Bondar
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    Optional<HabitAssign> findByHabitAssignIdUserIdAndStatusIsInProgress(@Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
+
+    /**
      * Method to find {@link HabitAssign}'s by {@link User} id and ACQUIRED status.
      *
      * @param userId {@link User} id.
@@ -134,6 +148,23 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("userId") Long userId);
 
     /**
+     * Method to find {@link HabitAssign} by {@link User} id and {@link HabitAssign}
+     * id (with not cancelled and not expired status).
+     *
+     * @param userId        {@link User} id.
+     * @param habitAssignId {@link HabitAssign} id.
+     * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
+     * @author Anton Bondar
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
+        + " JOIN FETCH ht.language l"
+        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    Optional<HabitAssign> findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(
+        @Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
+
+    /**
      * Method for counting all inprogress {@link HabitAssign}'s by {@link User} id
      * (with not cancelled and not acquired status).
      *
@@ -179,6 +210,17 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllInprogressHabitAssignsOnDate(@Param("userId") Long userId, @Param("date") LocalDate date);
 
     /**
+     * Method to find {@link HabitAssign}'s by {@link User} id and INPROGRESS
+     * status.
+     *
+     * @param userId {@link User} id.
+     * @return {@link HabitAssign} instance.
+     */
+    @Query(value = "SELECT ha FROM HabitAssign ha"
+        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
+    List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
+
+    /**
      * Method to find all inprogress, acquired habit assigns between 2
      * {@link LocalDate}s.
      *
@@ -190,23 +232,14 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
         + "JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht "
         + "JOIN FETCH ht.language l "
-        + "WHERE upper(ha.status) NOT IN ('CANCELLED','EXPIRED')"
+        + "WHERE upper(ha.status) = 'INPROGRESS'"
         + "AND ha.user.id = :userId "
         + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
         + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
         + "AND ha.user.id = :userId "
-        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+        + "AND upper(ha.status) = 'INPROGRESS'")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
-
-    /**
-     * Method to find {@link HabitAssign} by {@link User} id and {@link Habit} id.
-     *
-     * @param habitId {@link Long} id.
-     * @param userId  {@link Long} id.
-     */
-    @Query(value = "FROM HabitAssign h WHERE h.habit.id = :habitId AND h.user.id = :userId")
-    Optional<HabitAssign> findByUserIdAndHabitId(Long habitId, Long userId);
 
     /**
      * Method to find all inprogress, habit assigns.
@@ -233,4 +266,16 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE (upper(ha.status) = :status) AND (ha.habit.id = :habitId)")
     List<HabitAssign> findAllHabitAssignsByStatusAndHabitId(@Param("status") HabitAssignStatus status,
         @Param("habitId") Long habitId);
+
+    /**
+     * Method to find amount of users that acquired habit.
+     *
+     * @param habitId {@link Habit} id.
+     *
+     * @return Long.
+     * @author Oleh Kulbaba
+     */
+    @Query(value = "SELECT count(ha)"
+        + "FROM HabitAssign ha WHERE ha.habit.id = :habitId AND ha.status='ACQUIRED'")
+    Long findAmountOfUsersAcquired(@Param("habitId") Long habitId);
 }

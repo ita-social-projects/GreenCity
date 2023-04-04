@@ -7,6 +7,8 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -28,6 +30,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class ModelUtils {
     public static UserVO getUserVO() {
@@ -178,6 +181,25 @@ public class ModelUtils {
         return UserShoppingAndCustomShoppingListsDto.builder()
             .userShoppingListItemDto(List.of(getUserShoppingListItemResponseDto()))
             .customShoppingListItemDto(List.of(getCustomShoppingListItemResponseDto()))
+            .build();
+    }
+
+    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddCustomHabitDtoRequest.builder()
+            .complexity(1)
+            .image("")
+            .defaultDuration(14)
+            .tags(Set.of(""))
+            .build();
+    }
+
+    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return AddCustomHabitDtoResponse.builder()
+            .id(1L)
+            .complexity(1)
+            .image("")
+            .defaultDuration(14)
+            .tags(Set.of(""))
             .build();
     }
 }

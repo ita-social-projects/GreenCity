@@ -3,21 +3,26 @@ package greencity.mapping.events;
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.entity.event.Event;
+import greencity.exception.exceptions.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 class AddEventDtoRequestMapperTest {
+    @Mock
+    private AddressDtoMapper addressDtoMapper;
     @InjectMocks
-    AddEventDtoRequestMapper mapper;
+    private AddEventDtoRequestMapper mapper;
 
     @Test
     void convertTest() {
-        Event expected = ModelUtils.getEventWithoutCoordinates();
+        Event expected = ModelUtils.getEvent();
 
         AddEventDtoRequest request = ModelUtils.addEventDtoRequest;
 
@@ -25,11 +30,17 @@ class AddEventDtoRequestMapperTest {
     }
 
     @Test
-    void convertTestWithoutCoordinates() {
-        Event expected = ModelUtils.getEventWithoutCoordinates();
+    void convertTestWithoutAddress() {
+        Event expected = ModelUtils.getEventWithoutAddress();
 
-        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutCoordinatesRequest;
+        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressRequest;
 
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
+    }
+
+    @Test
+    void convertTestWithoutAddressAndOnlineLink() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressAndLinkRequest;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
     }
 }

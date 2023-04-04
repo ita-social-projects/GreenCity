@@ -5,7 +5,7 @@
     <changeSet id="Korzh-5" author="Nikita Korzh">
         <insert tableName="users">
             <column name = "date_of_registration" value="1970-01-01 00:00:00.000000"/>
-            <column name="email" value="green.city.ubs@gmail.coml"/>
+            <column name="email" value="green.city.ubs@gmail.com"/>
             <column name="email_notification" value="0"/>
             <column name="name" value="UBS"/>
             <column name="role" value="ROLE_UBS_EMPLOYEE"/>
