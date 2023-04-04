@@ -46,6 +46,7 @@ import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
+import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.UserShoppingListItemRepo;
@@ -99,6 +100,8 @@ class HabitAssignServiceImplTest {
     UserShoppingListItemRepo userShoppingListItemRepo;
     @Mock
     CustomShoppingListItemRepo customShoppingListItemRepo;
+    @Mock
+    HabitStatusCalendarRepo habitStatusCalendarRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
@@ -297,47 +300,96 @@ class HabitAssignServiceImplTest {
 
     @Test
     void unenrollHabit() {
-        LocalDate enrollDate = LocalDate.now();
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        HabitStatusCalendarVO habitStatusCalendarVO = HabitStatusCalendarVO.builder()
-            .enrollDate(enrollDate).build();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        LocalDate date = LocalDate.now();
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+
+        HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
+        habitStatusCalendar.setEnrollDate(date);
+
+        when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(habitAssignRepo.save(habitAssign)).thenReturn(habitAssign);
+        when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
+            .thenReturn(habitStatusCalendar);
 
-        when(habitStatusCalendarService
-            .findHabitStatusCalendarByEnrollDateAndHabitAssign(
-                enrollDate, modelMapper.map(habitAssign, HabitAssignVO.class)))
-                    .thenReturn(habitStatusCalendarVO);
+        habitAssignService.unenrollHabit(habitAssignId, userId, date);
 
-        habitAssignService.unenrollHabit(1L, 1L, enrollDate);
-        verify(habitStatusCalendarService).delete(habitStatusCalendarVO);
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(habitStatusCalendarRepo).findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign);
+        verify(habitStatusCalendarRepo).delete(habitStatusCalendar);
+        verify(habitAssignRepo).save(habitAssign);
     }
 
     @Test
-    void unenrollHabitThrowBadRequestException() {
-        LocalDate enrollDate = LocalDate.now();
-        HabitAssign habitAssign = ModelUtils.getHabitAssign();
-        HabitAssignVO habitAssignVO = ModelUtils.getHabitAssignVO();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L))
+    void unenrollHabitThrowsNotFoundExceptionWhenHabitAssignNotExists() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        LocalDate date = LocalDate.now();
+
+        when(habitAssignRepo.findById(habitAssignId))
+            .thenReturn(Optional.empty());
+
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitAssignService.unenrollHabit(habitAssignId, userId, date));
+
+        assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(habitStatusCalendarRepo, times(0)).findHabitStatusCalendarByEnrollDateAndHabitAssign(any(), any());
+        verify(habitStatusCalendarRepo, times(0)).delete(any());
+        verify(habitAssignRepo, times(0)).save(any());
+    }
+
+    @Test
+    void unenrollHabitThrowsUserHasNoPermissionToAccessExceptionWhenHabitAssignNotBelongToUser() {
+        long habitAssignId = 2L;
+        long userId = 3L;
+        LocalDate date = LocalDate.now();
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId + 1);
+
+        when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
-        when(habitStatusCalendarService.findHabitStatusCalendarByEnrollDateAndHabitAssign(enrollDate, habitAssignVO))
+
+        UserHasNoPermissionToAccessException exception =
+            assertThrows(UserHasNoPermissionToAccessException.class,
+                () -> habitAssignService.unenrollHabit(habitAssignId, userId, date));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(habitStatusCalendarRepo, times(0)).findHabitStatusCalendarByEnrollDateAndHabitAssign(any(), any());
+        verify(habitStatusCalendarRepo, times(0)).delete(any());
+        verify(habitAssignRepo, times(0)).save(any());
+    }
+
+    @Test
+    void unenrollHabitThrowsNotFoundExceptionWhenHabitNotEnrolled() {
+        Long habitAssignId = 2L;
+        Long userId = 3L;
+        LocalDate date = LocalDate.now();
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getUser().setId(userId);
+
+        when(habitAssignRepo.findById(habitAssignId))
+            .thenReturn(Optional.of(habitAssign));
+        when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
             .thenReturn(null);
 
-        assertThrows(BadRequestException.class, () -> habitAssignService
-            .unenrollHabit(1L, 1L, enrollDate));
-    }
+        NotFoundException exception =
+            assertThrows(NotFoundException.class, () -> habitAssignService.unenrollHabit(habitAssignId, userId, date));
 
-    @Test
-    void unenrollHabitThrowWrongIdException() {
-        LocalDate enrollDate = LocalDate.now();
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        assertEquals(ErrorMessage.HABIT_IS_NOT_ENROLLED_ON_CURRENT_DATE + date, exception.getMessage());
 
-        assertThrows(NotFoundException.class, () -> habitAssignService
-            .unenrollHabit(1L, 1L, enrollDate));
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(habitStatusCalendarRepo).findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign);
+        verify(habitStatusCalendarRepo, times(0)).delete(any());
+        verify(habitAssignRepo, times(0)).save(any());
     }
 
     @Test

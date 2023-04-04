@@ -108,9 +108,12 @@ class HabitAssignControllerTest {
 
     @Test
     void unenrollHabit() throws Exception {
-        mockMvc.perform(post(habitLink + "/{habitId}/unenroll/{date}", 1, LocalDate.now()))
+        Long habitAssignId = 1L;
+        LocalDate date = LocalDate.now();
+
+        mockMvc.perform(post(habitLink + "/{habitAssignId}/unenroll/{date}", habitAssignId, date))
             .andExpect(status().isOk());
-        verify(habitAssignService).unenrollHabit(1L, null, LocalDate.now());
+        verify(habitAssignService).unenrollHabit(habitAssignId, null, date);
     }
 
     @Test
