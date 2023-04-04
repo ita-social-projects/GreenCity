@@ -334,12 +334,17 @@ class HabitAssignServiceImplTest {
         HabitStatusCalendar habitStatusCalendar = ModelUtils.getHabitStatusCalendar();
         habitStatusCalendar.setEnrollDate(date);
 
+        List<HabitStatusCalendar> list = new ArrayList<>();
+        list.add(habitStatusCalendar);
+        habitAssign.setHabitStatusCalendars(list);
+
         when(habitAssignRepo.findById(habitAssignId))
             .thenReturn(Optional.of(habitAssign));
         when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
             .thenReturn(habitStatusCalendar);
 
         habitAssignService.unenrollHabit(habitAssignId, userId, date);
+        assertEquals(0, habitAssign.getHabitStatusCalendars().size());
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(habitStatusCalendarRepo).findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign);
