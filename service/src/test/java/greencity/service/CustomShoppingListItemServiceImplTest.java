@@ -169,9 +169,9 @@ class CustomShoppingListItemServiceImplTest {
     @Test
     void saveEmptyBulkSaveCustomShoppingListItemDtoTest() {
         UserVO userVO = ModelUtils.getUserVO();
-        Habit habit = ModelUtils.getHabit();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(restClient.findById(1L)).thenReturn(userVO);
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         List<CustomShoppingListItem> items = user.getCustomShoppingListItems();
         when(customShoppingListItemRepo.saveAll(any())).thenReturn(items);
@@ -188,9 +188,9 @@ class CustomShoppingListItemServiceImplTest {
         CustomShoppingListItem customShoppingListItem =
             new CustomShoppingListItem(1L, dtoToSave.getText(), null, null, null, null);
         UserVO userVO = ModelUtils.getUserVO();
-        Habit habit = ModelUtils.getHabit();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(restClient.findById(1L)).thenReturn(userVO);
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomShoppingListItem.class)).thenReturn(customShoppingListItem);
         when(modelMapper.map(customShoppingListItem, CustomShoppingListItemResponseDto.class))
@@ -209,9 +209,9 @@ class CustomShoppingListItemServiceImplTest {
             new CustomShoppingListItem(1L, dtoToSave.getText(), user, habit, null, null);
         user.setCustomShoppingListItems(Collections.singletonList(customShoppingListItem));
         UserVO userVO = ModelUtils.getUserVO();
-        Habit habit = ModelUtils.getHabit();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
         when(restClient.findById(1L)).thenReturn(userVO);
-        when(habitRepo.findById(anyLong())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(dtoToSave, CustomShoppingListItem.class)).thenReturn(customShoppingListItem);
         BulkSaveCustomShoppingListItemDto bulkSave =
@@ -222,7 +222,7 @@ class CustomShoppingListItemServiceImplTest {
 
     @Test
     void saveFailedOnHabitFindBy() {
-        when(habitRepo.findById(anyLong())).thenThrow(NotFoundException.class);
+        when(habitAssignRepo.findById(anyLong())).thenThrow(NotFoundException.class);
         CustomShoppingListItemSaveRequestDto dtoToSave = new CustomShoppingListItemSaveRequestDto("foo");
         BulkSaveCustomShoppingListItemDto bulkSave =
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave));
