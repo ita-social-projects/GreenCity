@@ -131,29 +131,29 @@ public class ShoppingListItemController {
     }
 
     /**
-     * Method updates shopping list item status.
+     * Method updates user shopping list item status.
      *
      * @param locale - needed language code
      * @return new {@link ResponseEntity}.
      * @author Mykola Danylko
      */
-    @ApiOperation(value = "Change status of one of the shopping list item for current user.")
+    @ApiOperation(value = "Change status of one of the user shopping list item for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = UserShoppingListItemResponseDto[].class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
-    @PatchMapping("/{shoppingListItemId}/status/{status}")
+    @PatchMapping("/{userShoppingListItemId}/status/{status}")
     @ApiLocale
     public ResponseEntity<List<UserShoppingListItemResponseDto>> updateUserShoppingListItemStatus(
         @ApiIgnore @CurrentUser UserVO user,
-        @ApiParam("Id of the shoppingListItems that belongs to current user."
-            + " Cannot be empty.") @PathVariable(value = "shoppingListItemId") Long shoppingListItemId,
+        @ApiParam("Id of the userShoppingListItem that belongs to current user."
+            + " Cannot be empty.") @PathVariable(value = "userShoppingListItemId") Long userShoppingListItemId,
         @PathVariable(value = "status") String status,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(shoppingListItemService
-            .updateUserShoppingListItemStatus(user.getId(), shoppingListItemId, locale.getLanguage(), status));
+            .updateUserShoppingListItemStatus(user.getId(), userShoppingListItemId, locale.getLanguage(), status));
     }
 
     /**
