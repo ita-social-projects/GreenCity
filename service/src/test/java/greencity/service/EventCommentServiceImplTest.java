@@ -308,8 +308,6 @@ class EventCommentServiceImplTest {
 
         Page<EventComment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
-        when(eventCommentRepo.findByIdAndDeletedFalse(parentCommentId))
-            .thenReturn(Optional.of(getEventComment()));
         when(modelMapper.map(childComment, EventCommentDto.class)).thenReturn(ModelUtils.getEventCommentDto());
         when(eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(page);
@@ -337,8 +335,6 @@ class EventCommentServiceImplTest {
 
         Page<EventComment> page = new PageImpl<>(Collections.singletonList(childComment), pageable, 1);
 
-        when(eventCommentRepo.findByIdAndDeletedFalse(parentCommentId))
-            .thenReturn(Optional.of(getEventComment()));
         when(eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(page);
 
