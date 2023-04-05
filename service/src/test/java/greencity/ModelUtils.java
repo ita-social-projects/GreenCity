@@ -2381,6 +2381,23 @@ public class ModelUtils {
             .build();
     }
 
+    public static EventComment getEventCommentWithReplies() {
+        User user = getUser();
+        user.setProfilePicturePath("path-to-picture");
+        return EventComment.builder()
+            .id(1L)
+            .text("Some comment")
+            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
+            .deleted(false)
+            .user(user)
+            .event(getEvent())
+            .parentComment(EventComment.builder().id(12L).build())
+            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
+            .currentUserLiked(true)
+            .usersLiked(Set.of(user, new User()))
+            .build();
+    }
+
     public static EventCommentVO getEventCommentVO() {
         return EventCommentVO.builder()
             .id(278L)
