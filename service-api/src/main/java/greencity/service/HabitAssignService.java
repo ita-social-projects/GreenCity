@@ -213,12 +213,12 @@ public interface HabitAssignService {
     /**
      * Method to unenroll Habit in defined date.
      *
-     * @param habitId  {@code Habit} id to unenroll.
-     * @param userId   {@code User} id.
-     * @param dateTime {@link LocalDate} dateTime we want unenroll.
+     * @param habitAssignId {@code HabitAssign} id to unenroll.
+     * @param userId        {@code User} id.
+     * @param date          {@link LocalDate} date we want unenroll.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto unenrollHabit(Long habitId, Long userId, LocalDate dateTime);
+    HabitAssignDto unenrollHabit(Long habitAssignId, Long userId, LocalDate date);
 
     /**
      * Method to find all inprogress habit assigns on certain {@link LocalDate}.
