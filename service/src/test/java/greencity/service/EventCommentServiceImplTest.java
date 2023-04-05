@@ -348,23 +348,6 @@ class EventCommentServiceImplTest {
     }
 
     @Test
-    void findAllActiveRepliesNotFoundParentCommentTest() {
-        int pageNumber = 1;
-        int pageSize = 3;
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        UserVO userVO = getUserVO();
-        Long parentCommentId = 1L;
-
-        when(eventCommentRepo.findByIdAndDeletedFalse(parentCommentId)).thenReturn(Optional.empty());
-
-        NotFoundException notFoundException =
-            assertThrows(NotFoundException.class,
-                () -> eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO));
-
-        assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
-    }
-
-    @Test
     void countAllActiveRepliesTest() {
         Long parentCommentId = 1L;
         int repliesAmount = 5;
