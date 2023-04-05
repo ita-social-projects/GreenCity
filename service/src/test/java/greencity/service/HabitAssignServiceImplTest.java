@@ -91,27 +91,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
     @Mock
-    HabitRepo habitRepo;
+    private HabitRepo habitRepo;
     @Mock
-    HabitAssignRepo habitAssignRepo;
+    private HabitAssignRepo habitAssignRepo;
     @Mock
-    ShoppingListItemRepo shoppingListItemRepo;
+    private ShoppingListItemRepo shoppingListItemRepo;
     @Mock
-    UserShoppingListItemRepo userShoppingListItemRepo;
+    private UserShoppingListItemRepo userShoppingListItemRepo;
     @Mock
-    CustomShoppingListItemRepo customShoppingListItemRepo;
+    private CustomShoppingListItemRepo customShoppingListItemRepo;
     @Mock
-    HabitStatusCalendarRepo habitStatusCalendarRepo;
+    private HabitStatusCalendarRepo habitStatusCalendarRepo;
     @Mock
     private HabitStatusCalendarService habitStatusCalendarService;
     @Mock
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Mock
-    HabitStatisticService habitStatisticService;
+    private HabitStatisticService habitStatisticService;
     @Mock
-    ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
+    private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     @InjectMocks
-    HabitAssignServiceImpl habitAssignService;
+    private HabitAssignServiceImpl habitAssignService;
     @Mock
     private ShoppingListItemService shoppingListItemService;
     @Mock
