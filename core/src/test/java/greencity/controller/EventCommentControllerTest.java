@@ -81,7 +81,7 @@ class EventCommentControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(modelMapper.map(userVO, UserVO.class)).thenReturn(userVO);
         String content = "{\n"
-            + "  \"text\": \"string\"\n"
+            + "  \"text\": \"string\",\n"
             + "  \"parentCommentId\": \"100\"\n"
             + "}";
 
