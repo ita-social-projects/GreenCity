@@ -811,85 +811,37 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         String language) {
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
             .findAllHabitAssignsBetweenDates(userId, from, to);
-        List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
-            .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
-            .collect(Collectors.toList());
-        List<HabitsDateEnrollmentDto> dtos = new ArrayList<>();
-        for (LocalDate date : dates) {
-            dtos.add(HabitsDateEnrollmentDto.builder().enrollDate(date)
-                .habitAssigns(new ArrayList<>())
-                .build());
-        }
-        habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
 
-        return dtos;
+        return Stream.iterate(from, date -> date.plusDays(1))
+            .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
+            .map(date -> HabitsDateEnrollmentDto.builder().enrollDate(date)
+                .habitAssigns(getHabitEnrollDtoListForDate(habitAssignsBetweenDates, date, language))
+                .build())
+            .collect(Collectors.toList());
     }
 
-    /**
-     * Method to fill in all user enrollment activity in the list of
-     * {@code HabitsDateEnrollmentDto}'s by {@code HabitAssign}'s list of habit
-     * status calendar.
-     *
-     * @param habitAssign {@code HabitAssign} habit assign.
-     * @param language    {@link String} of language code value.
-     * @param list        of {@link HabitsDateEnrollmentDto} instances.
-     */
-    private void buildHabitsDateEnrollmentDto(HabitAssign habitAssign, String language,
-        List<HabitsDateEnrollmentDto> list) {
+    private List<HabitEnrollDto> getHabitEnrollDtoListForDate(List<HabitAssign> habitAssignList, LocalDate date,
+        String language) {
+        return habitAssignList.stream().filter(habitAssign -> checkIfHabitAssignIsEnrolledOnDate(habitAssign, date))
+            .map(habitAssign -> getHabitEnrollDtoForDate(habitAssign, date, language))
+            .collect(Collectors.toList());
+    }
+
+    private boolean checkIfHabitAssignIsEnrolledOnDate(HabitAssign habitAssign, LocalDate date) {
+        return date.isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L))
+            && date.isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L));
+    }
+
+    private HabitEnrollDto getHabitEnrollDtoForDate(HabitAssign habitAssign, LocalDate date, String language) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
 
-        for (HabitsDateEnrollmentDto dto : list) {
-            if (checkIfHabitIsActiveOnDay(dto, habitAssign)) {
-                markHabitOnHabitsEnrollmentDto(dto, checkIfHabitIsEnrolledOnDay(dto, habitAssign),
-                    habitTranslation, habitAssign);
-            }
-        }
-    }
+        boolean isEnrolled =
+            habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign) != null;
 
-    /**
-     * Method to mark if habit was enrolled on concrete date.
-     *
-     * @param dto              {@link HabitsDateEnrollmentDto}.
-     * @param isEnrolled       {@link boolean} shows if habit was enrolled.
-     * @param habitTranslation {@link HabitTranslation} contains content.
-     * @param habitAssign      {@link HabitAssign} contains habit id.
-     */
-    private void markHabitOnHabitsEnrollmentDto(HabitsDateEnrollmentDto dto, boolean isEnrolled,
-        HabitTranslation habitTranslation, HabitAssign habitAssign) {
-        dto.getHabitAssigns().add(HabitEnrollDto.builder()
+        return HabitEnrollDto.builder()
             .habitDescription(habitTranslation.getDescription()).habitName(habitTranslation.getName())
-            .isEnrolled(isEnrolled).habitId(habitAssign.getHabit().getId()).build());
-    }
-
-    /**
-     * Method to check if {@code HabitAssign} was enrolled on concrete date.
-     *
-     * @param dto         {@link HabitsDateEnrollmentDto} which contains date.
-     * @param habitAssign {@link HabitAssign} contains enroll dates.
-     * @return boolean.
-     */
-    private boolean checkIfHabitIsEnrolledOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
-        for (int i = 0; i < habitAssign.getHabitStatusCalendars().size(); i++) {
-            if (habitAssign.getHabitStatusCalendars().get(i).getEnrollDate()
-                .equals(dto.getEnrollDate())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Method to check if {@code HabitAssign} is active on concrete date.
-     *
-     * @param dto         {@link HabitsDateEnrollmentDto} which contains date.
-     * @param habitAssign {@link HabitAssign} contains habit date borders.
-     * @return boolean.
-     */
-    private boolean checkIfHabitIsActiveOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
-        return dto.getEnrollDate()
-            .isBefore(habitAssign.getCreateDate().toLocalDate().plusDays(habitAssign.getDuration() + 1L))
-            && dto.getEnrollDate()
-                .isAfter(habitAssign.getCreateDate().toLocalDate().minusDays(1L));
+            .isEnrolled(isEnrolled)
+            .habitAssignId(habitAssign.getId()).build();
     }
 
     /**

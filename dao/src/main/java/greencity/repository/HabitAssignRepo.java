@@ -221,7 +221,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2
+     * Method to find all inprogress habit assigns between the specified
      * {@link LocalDate}s.
      *
      * @param userId {@link User} id.
@@ -234,10 +234,10 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) = 'INPROGRESS'"
         + "AND ha.user.id = :userId "
-        + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
-        + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "AND ha.user.id = :userId "
-        + "AND upper(ha.status) = 'INPROGRESS'")
+        + "AND (cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
+        + "OR cast(ha.createDate as date) + ha.duration BETWEEN cast(:from as date) AND cast(:to as date)"
+        + "OR cast(ha.createDate as date) <= cast(:from as date) "
+        + "AND cast(:to as date) <= cast(ha.createDate as date) + ha.duration)")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
 

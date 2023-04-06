@@ -438,16 +438,16 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to find all user activity {@link HabitsDateEnrollmentDto} between 2
-     * {@link LocalDate}s.
+     * Method to find all user activity {@link HabitsDateEnrollmentDto} with
+     * INPROGRESS status between the specified dates.
      *
      * @param userVO {@link UserVO} user.
-     * @param from   {@link LocalDate} date to check if has inprogress assigns.
-     * @param to     {@link LocalDate} date to check if has inprogress assigns.
+     * @param from   The start {@link LocalDate} to retrieve from
+     * @param to     The end {@link LocalDate} to retrieve to
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */
-    @ApiOperation(value = "Get user assigns between 2 dates.")
+    @ApiOperation(value = "Get user assigns between 2 dates with INPROGRESS status.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitsDateEnrollmentDto.class,
             responseContainer = "List"),

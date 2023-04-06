@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @Builder
 public class HabitEnrollDto {
-    private Long habitId;
+    private Long habitAssignId;
     private String habitName;
     private String habitDescription;
     private boolean isEnrolled;
