@@ -210,10 +210,10 @@ public class HabitAssignController {
      * @param listsDto      {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
     @ApiOperation(value = "Update user and custom shopping lists",
-        notes = "If item are present in the db, method update it\n"
-            + "If item doesn't present in the db and id is null, method try to add it to user\n"
-            + "If some items from db don't present in the lists, method delete "
-            + "them(Except items with DISABLED status).")
+        notes = "If the item is already present in the db, the method updates it\n"
+            + "If item is not present in the db and id is null, the method attempts to add it to the user\n"
+            + "If some items from db are not present in the lists, the method deletes "
+            + "them (except for items with DISABLED status).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
