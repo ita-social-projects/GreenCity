@@ -5,7 +5,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
-import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;

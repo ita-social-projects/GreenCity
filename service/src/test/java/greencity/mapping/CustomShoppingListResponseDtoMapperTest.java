@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class CustomShoppingListResponseDtoMapperTest {
+class CustomShoppingListResponseDtoMapperTest {
 
     @InjectMocks
     private CustomShoppingListResponseDtoMapper customShoppingListResponseDtoMapper;
