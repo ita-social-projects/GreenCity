@@ -189,7 +189,7 @@ public class ModelUtils {
             .complexity(1)
             .image("")
             .defaultDuration(14)
-            .tags(Set.of(""))
+            .tagIds(Set.of(20L))
             .build();
     }
 
@@ -199,7 +199,7 @@ public class ModelUtils {
             .complexity(1)
             .image("")
             .defaultDuration(14)
-            .tags(Set.of(""))
+            .tagIds(Set.of(20L))
             .build();
     }
 }

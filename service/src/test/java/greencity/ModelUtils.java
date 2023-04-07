@@ -2464,7 +2464,17 @@ public class ModelUtils {
         return HabitTranslationDto.builder()
             .description(HABIT_TRANSLATION_DESCRIPTION)
             .habitItem(HABIT_ITEM)
-            .name("використовувати бавовняну сумку")
+            .name(HABIT_TRANSLATION_NAME)
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslationForServiceTest() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description(HABIT_TRANSLATION_DESCRIPTION)
+            .habitItem(HABIT_ITEM)
+            .name(HABIT_TRANSLATION_NAME)
+            .habit(getCustomHabitForServiceTest())
             .build();
     }
 
@@ -2486,7 +2496,7 @@ public class ModelUtils {
                     .name(HABIT_TRANSLATION_NAME)
                     .build()))
             .image(IMAGE_LINK)
-            .tags(Set.of(TAG_TRANSLATION_NAME))
+            .tagIds(Set.of(20L))
             .build();
     }
 
@@ -2507,15 +2517,40 @@ public class ModelUtils {
                     .habitItem(HABIT_ITEM)
                     .languageCode("ua")
                     .name(HABIT_TRANSLATION_NAME)
-                    .build()))
+                    .build(),
+
+                    HabitTranslationDto.builder()
+                        .description(HABIT_TRANSLATION_DESCRIPTION)
+                        .habitItem(HABIT_ITEM)
+                        .languageCode("en")
+                        .name(HABIT_TRANSLATION_NAME)
+                        .build()))
             .image(IMAGE_LINK)
-            .tags(Set.of(TAG_TRANSLATION_NAME))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoForServiceTest() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
+            .build();
+    }
+
+    public static CustomShoppingListItem getCustomShoppingListItemForServiceTest() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .habit(getCustomHabitForServiceTest())
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
+            .user(getUser())
             .build();
     }
 
     public static Tag getTagHabitForServiceTest() {
         return Tag.builder().id(1L).type(TagType.HABIT)
-            .tagTranslations(List.of(TagTranslation.builder().id(2L).name("News")
+            .tagTranslations(List.of(TagTranslation.builder().id(20L).name("Reusable")
                 .language(Language.builder().id(1L).code("en").build()).build()))
             .build();
     }
