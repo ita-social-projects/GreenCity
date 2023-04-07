@@ -303,6 +303,21 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void findHabitAssignsBetweenDatesThrowsBadRequestExceptionWhenFromDateIsLaterThenTo() {
+        Long userId = 2L;
+        LocalDate from = LocalDate.now();
+        LocalDate to = from.minusDays(1);
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitAssignService.findHabitAssignsBetweenDates(userId, from, to, language));
+
+        assertEquals(ErrorMessage.INVALID_DATE_RANGE, exception.getMessage());
+
+        verify(habitAssignRepo, times(0)).findAllHabitAssignsBetweenDates(anyLong(), any(), any());
+    }
+
+    @Test
     void assignCustomHabitForUser() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
