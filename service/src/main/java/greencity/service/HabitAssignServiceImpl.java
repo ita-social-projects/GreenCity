@@ -1235,8 +1235,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        Long habitId = habitAssign.getHabit().getId();
-
         List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
                 .text(item.getText())
@@ -1244,7 +1242,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .build())
             .collect(Collectors.toList());
 
-        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
+        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId,
+            habitAssignId);
     }
 
     private void checkDuplicationForCustomShoppingListByName(List<CustomShoppingListItemResponseDto> listToSave) {
