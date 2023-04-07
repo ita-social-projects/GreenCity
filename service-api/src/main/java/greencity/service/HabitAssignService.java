@@ -242,8 +242,8 @@ public interface HabitAssignService {
     List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2
-     * {@link LocalDate}s.
+     * Method to find all inprogress {@link HabitsDateEnrollmentDto} between the
+     * specified {@link LocalDate}s.
      *
      * @param userId   {@code User} id.
      * @param from     {@link LocalDate} instance.
