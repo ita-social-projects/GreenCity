@@ -20,12 +20,15 @@ import java.util.List;
 
 public interface HabitAssignService {
     /**
-     * Method to find {@code HabitAssign} by id.
-     *
-     * @param language {@link String} of language code value.
+     * Method to find {@code HabitAssign} by habitAssignId, userId and specific
+     * language.
+     * 
+     * @param userId        {@code User} id.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto getById(Long habitAssignId, String language);
+    HabitAssignDto getByHabitAssignIdAndUserId(Long habitAssignId, Long userId, String language);
 
     /**
      * Method for assigning {@code Habit} with default properties.
@@ -197,25 +200,25 @@ public interface HabitAssignService {
     HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
 
     /**
-     * Method to enroll {@code Habit}.
+     * Method to enroll {@code HabitAssign} by habitAssignId.
      *
-     * @param habitId  {@code Habit} id to enroll.
-     * @param userId   {@code User} id.
-     * @param dateTime {@link LocalDate} dateTime we want enroll.
-     * @param language {@link String} of language code value.
+     * @param habitAssignId {@code HabitAssign} id to enroll.
+     * @param userId        {@code User} id.
+     * @param date          {@link LocalDate} date we want to enroll.
+     * @param language      {@link String} of language code value.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto enrollHabit(Long habitId, Long userId, LocalDate dateTime, String language);
+    HabitAssignDto enrollHabit(Long habitAssignId, Long userId, LocalDate date, String language);
 
     /**
      * Method to unenroll Habit in defined date.
      *
-     * @param habitId  {@code Habit} id to unenroll.
-     * @param userId   {@code User} id.
-     * @param dateTime {@link LocalDate} dateTime we want unenroll.
+     * @param habitAssignId {@code HabitAssign} id to unenroll.
+     * @param userId        {@code User} id.
+     * @param date          {@link LocalDate} date we want unenroll.
      * @return {@link HabitAssignDto}.
      */
-    HabitAssignDto unenrollHabit(Long habitId, Long userId, LocalDate dateTime);
+    HabitAssignDto unenrollHabit(Long habitAssignId, Long userId, LocalDate date);
 
     /**
      * Method to find all inprogress habit assigns on certain {@link LocalDate}.
@@ -239,8 +242,8 @@ public interface HabitAssignService {
     List<HabitAssignDto> findInprogressHabitAssignsOnDateContent(Long userId, LocalDate date, String language);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2
-     * {@link LocalDate}s.
+     * Method to find all inprogress {@link HabitsDateEnrollmentDto} between the
+     * specified {@link LocalDate}s.
      *
      * @param userId   {@code User} id.
      * @param from     {@link LocalDate} instance.

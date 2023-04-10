@@ -20,6 +20,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
 import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
 import greencity.exception.exceptions.WrongIdException;
@@ -328,9 +329,13 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Override
     public List<UserShoppingListItemResponseDto> getUserShoppingListByHabitAssignId(Long userId, Long habitAssignId,
         String language) {
-        HabitAssign habitAssign = habitAssignRepo.findByHabitAssignIdAndUserId(habitAssignId, userId)
+        HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
+
+        if (!habitAssign.getUser().getId().equals(userId)) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
 
         List<UserShoppingListItemResponseDto> itemsDtos = getAllUserShoppingListItems(habitAssign);
         itemsDtos.forEach(el -> setTextForUserShoppingListItem(el, language));
@@ -442,12 +447,13 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
      */
     @Transactional
     @Override
-    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId,
+    public List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId,
+        Long userShoppingListItemId,
         String language,
         String status) {
         String statusUpperCase = status.toUpperCase();
         List<UserShoppingListItem> userShoppingListItems =
-            userShoppingListItemRepo.getAllByShoppingListItemIdANdUserId(itemId, userId);
+            userShoppingListItemRepo.getAllByUserShoppingListIdAndUserId(userShoppingListItemId, userId);
         if (userShoppingListItems == null || userShoppingListItems.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_SHOPPING_LIST_ITEM_NOT_FOUND_BY_USER_ID);
         }

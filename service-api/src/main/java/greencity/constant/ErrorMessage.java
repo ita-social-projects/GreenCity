@@ -19,6 +19,7 @@ public final class ErrorMessage {
         "User has reached the limit of active habit assigns: ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
+    public static final String HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID = "Habit does not exist by this habitAssignId : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String SHOPPING_LIST_ITEM_TRANSLATION_NOT_FOUND =
@@ -57,10 +58,9 @@ public final class ErrorMessage {
     public static final String LOCATION_NOT_FOUND_BY_ID = "The location does not exist by this id: ";
     public static final String HABIT_HAS_BEEN_ALREADY_ENROLLED = "You can enroll habit only once a day";
     public static final String HABIT_ALREADY_ACQUIRED = "You have already acquired habit with id: ";
-    public static final String HABIT_IS_NOT_ENROLLED = "Habit is not enrolled";
+    public static final String HABIT_IS_NOT_ENROLLED_ON_CURRENT_DATE = "Habit is not enrolled on ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID =
         "There is no habit assign for current user and such habit with id: ";
-
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID =
         "There is no habit assign for current user and such habit assign id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS =
@@ -147,6 +147,7 @@ public final class ErrorMessage {
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
+    public static final String INVALID_DATE_RANGE = "The 'From' date must be earlier than the 'To' date";
     public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'ua' or 'ru'";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =

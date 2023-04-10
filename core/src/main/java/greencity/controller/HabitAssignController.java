@@ -125,10 +125,12 @@ public class HabitAssignController {
     }
 
     /**
-     * Method returns {@link HabitAssignDto} by it's id.
+     * Method returns {@link HabitAssignDto} by it's id, current user id and
+     * specific language.
      *
-     * @param id     {@link HabitAssignVO} id.
-     * @param locale needed language code.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO}.
+     * @param locale        needed language code.
      * @return {@link HabitAssignDto}.
      */
     @ApiOperation(value = "Get habit assign.")
@@ -136,14 +138,15 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @GetMapping("/{id}")
-    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+    @GetMapping("/{habitAssignId}")
+    public ResponseEntity<HabitAssignDto> getHabitAssign(@PathVariable Long habitAssignId,
+        @ApiIgnore @CurrentUser UserVO userVO, @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.getById(id, locale.getLanguage()));
+            .body(habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userVO.getId(), locale.getLanguage()));
     }
 
     /**
@@ -201,16 +204,16 @@ public class HabitAssignController {
     /**
      * Method that update UserShoppingList and CustomShopping List.
      *
-     * @param habitId  {@link HabitVO} id.
-     * @param userVO   {@link UserVO} instance.
-     * @param locale   needed language code.
-     * @param listsDto {@link UserShoppingAndCustomShoppingListsDto} instance.
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO} instance.
+     * @param locale        needed language code.
+     * @param listsDto      {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
     @ApiOperation(value = "Update user and custom shopping lists",
-        notes = "If item are present in the db, method update it\n"
-            + "If item doesn't present in the db and id is null, method try to add it to user\n"
-            + "If some items from db don't present in the lists, method delete "
-            + "them(Except items with DISABLED status).")
+        notes = "If the item is already present in the db, the method updates it\n"
+            + "If item is not present in the db and id is null, the method attempts to add it to the user\n"
+            + "If some items from db are not present in the lists, the method deletes "
+            + "them (except for items with DISABLED status).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -218,13 +221,13 @@ public class HabitAssignController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @PutMapping("{habitId}/allUserAndCustomList")
+    @PutMapping("{habitAssignId}/allUserAndCustomList")
     public ResponseEntity<ResponseEntity.BodyBuilder> updateUserAndCustomShoppingLists(
-        @PathVariable Long habitId,
+        @PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @Valid @RequestBody UserShoppingAndCustomShoppingListsDto listsDto) {
-        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitId, listsDto,
+        habitAssignService.fullUpdateUserAndCustomShoppingLists(userVO.getId(), habitAssignId, listsDto,
             locale.getLanguage());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -359,35 +362,36 @@ public class HabitAssignController {
     /**
      * Method to enroll {@link HabitAssignVO} for current date.
      *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  {@link UserVO} user.
-     * @param date    - {@link LocalDate} we want to enroll.
-     * @param locale  - needed language code.
+     * @param habitAssignId - id of {@link HabitAssignVO}.
+     * @param userVO        {@link UserVO} user.
+     * @param date          - {@link LocalDate} we want to enroll.
+     * @param locale        - needed language code.
      * @return {@link HabitStatusCalendarDto}.
      */
-    @ApiOperation(value = "Enroll by habit id that is assigned for current user.")
+    @ApiOperation(value = "Enroll habit assign by habitAssignId for current user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
-    @PostMapping("/{habitId}/enroll/{date}")
-    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitId,
+    @PostMapping("/{habitAssignId}/enroll/{date}")
+    public ResponseEntity<HabitAssignDto> enrollHabit(@PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.enrollHabit(habitId, userVO.getId(), date, locale.getLanguage()));
+            .body(habitAssignService.enrollHabit(habitAssignId, userVO.getId(), date, locale.getLanguage()));
     }
 
     /**
      * Method to unenroll {@link HabitAssignVO} for defined date.
      *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  {@link UserVO} user.
-     * @param date    - {@link LocalDate} we want to unenroll.
+     * @param habitAssignId - id of {@link HabitAssignVO}.
+     * @param userVO        {@link UserVO} user.
+     * @param date          - {@link LocalDate} we want to unenroll.
      * @return {@link HabitAssignDto} instance.
      */
     @ApiOperation(value = "Unenroll assigned habit for a specific day.")
@@ -395,14 +399,15 @@ public class HabitAssignController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/{habitId}/unenroll/{date}")
-    public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitId,
+    @PostMapping("/{habitAssignId}/unenroll/{date}")
+    public ResponseEntity<HabitAssignDto> unenrollHabit(@PathVariable Long habitAssignId,
         @ApiIgnore @CurrentUser UserVO userVO,
         @PathVariable(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(habitAssignService.unenrollHabit(habitId, userVO.getId(), date));
+            .body(habitAssignService.unenrollHabit(habitAssignId, userVO.getId(), date));
     }
 
     /**
@@ -433,16 +438,16 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to find all user activity {@link HabitsDateEnrollmentDto} between 2
-     * {@link LocalDate}s.
+     * Method to find all user inprogress activities {@link HabitsDateEnrollmentDto}
+     * between the specified {@link LocalDate}s.
      *
      * @param userVO {@link UserVO} user.
-     * @param from   {@link LocalDate} date to check if has inprogress assigns.
-     * @param to     {@link LocalDate} date to check if has inprogress assigns.
+     * @param from   The start {@link LocalDate} to retrieve from
+     * @param to     The end {@link LocalDate} to retrieve to
      * @param locale needed language code.
      * @return {@link HabitsDateEnrollmentDto} instance.
      */
-    @ApiOperation(value = "Get user assigns between 2 dates.")
+    @ApiOperation(value = "Get user inprogress activities between the specified dates.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitsDateEnrollmentDto.class,
             responseContainer = "List"),

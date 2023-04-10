@@ -73,7 +73,7 @@ class HabitAssignControllerTest {
     void getHabitAssign() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitAssignId}", 1))
             .andExpect(status().isOk());
-        verify(habitAssignService).getById(1L, "en");
+        verify(habitAssignService).getByHabitAssignIdAndUserId(1L, null, "en");
     }
 
     @Test
@@ -99,26 +99,32 @@ class HabitAssignControllerTest {
 
     @Test
     void enrollHabit() throws Exception {
-        mockMvc.perform(post(habitLink + "/{habitId}/enroll/{date}", 1, LocalDate.now()))
+        Long habitAssignId = 2L;
+        LocalDate date = LocalDate.now();
+        mockMvc.perform(post(habitLink + "/{habitAssignId}/enroll/{date}", habitAssignId, date))
             .andExpect(status().isOk());
-        verify(habitAssignService).enrollHabit(1L, null, LocalDate.now(), "en");
+        verify(habitAssignService).enrollHabit(habitAssignId, null, date, "en");
     }
 
     @Test
     void unenrollHabit() throws Exception {
-        mockMvc.perform(post(habitLink + "/{habitId}/unenroll/{date}", 1, LocalDate.now()))
+        Long habitAssignId = 1L;
+        LocalDate date = LocalDate.now();
+
+        mockMvc.perform(post(habitLink + "/{habitAssignId}/unenroll/{date}", habitAssignId, date))
             .andExpect(status().isOk());
-        verify(habitAssignService).unenrollHabit(1L, null, LocalDate.now());
+        verify(habitAssignService).unenrollHabit(habitAssignId, null, date);
     }
 
     @Test
     void getHabitAssignBetweenDatesTest() throws Exception {
-        Locale locale = new Locale("en", "US");
-        mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", LocalDate.now(), LocalDate.now().plusDays(2L)))
+        LocalDate from = LocalDate.now();
+        LocalDate to = from.plusDays(2L);
+
+        mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", from, to))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findHabitAssignsBetweenDates(null, LocalDate.now(),
-            LocalDate.now().plusDays(2L), "en");
+        verify(habitAssignService).findHabitAssignsBetweenDates(null, from, to, "en");
     }
 
     @Test
@@ -239,7 +245,7 @@ class HabitAssignControllerTest {
         UserShoppingAndCustomShoppingListsDto dto = ModelUtils.getUserShoppingAndCustomShoppingListsDto();
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        mockMvc.perform(put(habitLink + "/{habitId}/allUserAndCustomList", 1L)
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/allUserAndCustomList", 1L)
             .locale(Locale.forLanguageTag("ua"))
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))

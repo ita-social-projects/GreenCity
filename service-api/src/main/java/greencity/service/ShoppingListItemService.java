@@ -149,15 +149,18 @@ public interface ShoppingListItemService {
     UserShoppingListItemResponseDto updateUserShopingListItemStatus(Long userId, Long itemId, String language);
 
     /**
-     * Method update status of user shopping list item to done.
+     * Method update status of user shopping list item to do.
      *
-     * @param userId   id of the {@link UserVO} current user.
-     * @param itemId   - {@link UserShoppingListItemVO}'s id that should be updated.
-     * @param language needed language code.
-     * @param status   needed language code.
+     * @param userId                 id of the {@link UserVO} current user.
+     * @param userShoppingListItemId - {@link UserShoppingListItemVO}'s id that
+     *                               should be updated.
+     * @param language               needed language code.
+     * @param status                 needed language code.
      * @return {@link UserShoppingListItemDto} with specific language.
      */
-    List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId, Long itemId, String language,
+    List<UserShoppingListItemResponseDto> updateUserShoppingListItemStatus(Long userId,
+        Long userShoppingListItemId,
+        String language,
         String status);
 
     /**
