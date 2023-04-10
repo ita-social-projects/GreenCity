@@ -438,6 +438,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void deleteHabitAssign() {
+        Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
 
@@ -449,6 +450,7 @@ class HabitAssignServiceImplTest {
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
         verify(userShoppingListItemRepo).deleteShoppingListItemsByHabitAssignId(habitAssignId);
+        verify(customShoppingListItemRepo).deleteCustomShoppingListItemsByHabitId(habitId);
         verify(habitAssignRepo).delete(habitAssign);
     }
 
@@ -465,6 +467,7 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
+        verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
         verify(habitAssignRepo, times(0)).delete(any());
     }
 
@@ -484,6 +487,7 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
+        verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
         verify(habitAssignRepo, times(0)).delete(any());
     }
 
