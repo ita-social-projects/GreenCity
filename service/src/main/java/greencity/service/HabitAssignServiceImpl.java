@@ -932,6 +932,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
+        customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
         habitAssignRepo.delete(habitAssign);
     }
 
