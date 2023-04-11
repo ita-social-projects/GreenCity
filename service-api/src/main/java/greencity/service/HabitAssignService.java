@@ -313,4 +313,12 @@ public interface HabitAssignService {
      */
     void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId, UserShoppingAndCustomShoppingListsDto listDto,
         String language);
+
+    /**
+     * Method updates value progressNotificationHasDisplayed to true.
+     *
+     * @param habitAssignId {@link Long} habit id.
+     * @param userId        {@link Long} item id.
+     */
+    void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId);
 }

@@ -38,4 +38,5 @@ public class HabitAssignManagementDto {
     private Integer habitStreak;
     @NotEmpty
     private ZonedDateTime lastEnrollment;
+    private Boolean progressNotificationHasDisplayed;
 }
