@@ -106,9 +106,11 @@ class HabitServiceImplTest {
     private CustomShoppingListItemRepo customShoppingListItemRepo;
 
     @Test()
-    void getByIdAndLanguageCode() {
+    void getByIdAndLanguageCodeIsCustomHabitFalse() {
         Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(false);
         HabitDto habitDto = ModelUtils.getHabitDto();
+        habitDto.setIsCustomHabit(false);
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitTranslationRepo.findByHabitAndLanguageCode(habit, "en"))
@@ -116,6 +118,32 @@ class HabitServiceImplTest {
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         assertEquals(habitDto, habitService.getByIdAndLanguageCode(1L, "en"));
+        verify(habitRepo).findById(1L);
+        verify(habitTranslationRepo).findByHabitAndLanguageCode(habit, "en");
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+
+    }
+
+    @Test()
+    void getByIdAndLanguageCodeIsCustomHabitTrue() {
+        Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setCustomShoppingListItems(List.of(ModelUtils.getCustomShoppingListItem()));
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        habitDto.setIsCustomHabit(true);
+        habitDto.setCustomShoppingListItems(List.of(ModelUtils.getCustomShoppingListItemResponseDto()));
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
+        when(habitTranslationRepo.findByHabitAndLanguageCode(habit, "en"))
+            .thenReturn(Optional.of(habitTranslation));
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        assertEquals(habitDto, habitService.getByIdAndLanguageCode(1L, "en"));
+        verify(habitRepo).findById(1L);
+        verify(habitTranslationRepo).findByHabitAndLanguageCode(habit, "en");
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
     }
 
     @Test

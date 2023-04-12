@@ -2,6 +2,7 @@ package greencity.dto.habit;
 
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import java.util.List;
 import javax.validation.constraints.Max;
@@ -31,5 +32,7 @@ public class HabitDto {
     private Integer complexity;
     private List<String> tags;
     private List<ShoppingListItemDto> shoppingListItems;
+    private List<CustomShoppingListItemResponseDto> customShoppingListItems;
+    private Boolean isCustomHabit;
     private HabitAssignStatus habitAssignStatus;
 }

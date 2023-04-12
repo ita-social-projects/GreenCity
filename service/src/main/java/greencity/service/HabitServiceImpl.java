@@ -82,6 +82,12 @@ public class HabitServiceImpl implements HabitService {
             .forEach(x -> shoppingListItems.add(modelMapper.map(x, ShoppingListItemDto.class)));
         habitDto.setShoppingListItems(shoppingListItems);
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
+        boolean isCustomHabit = habit.getIsCustomHabit();
+        habitDto.setIsCustomHabit(isCustomHabit);
+        if (isCustomHabit) {
+            habitDto.setCustomShoppingListItems(
+                customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
+        }
         return habitDto;
     }
 
