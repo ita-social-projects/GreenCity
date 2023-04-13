@@ -2234,4 +2234,28 @@ class HabitAssignServiceImplTest {
 
         verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
     }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(new HabitAssign()));
+
+        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId);
+
+        verify(habitAssignRepo).updateProgressNotificationHasDisplayed(habitAssignId, userId);
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTrowsExceptionTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
+
+    }
 }
