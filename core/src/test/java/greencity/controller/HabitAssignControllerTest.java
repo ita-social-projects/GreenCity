@@ -252,4 +252,12 @@ class HabitAssignControllerTest {
             .andExpect(status().isOk());
         verify(habitAssignService).fullUpdateUserAndCustomShoppingLists(null, 1L, dto, "ua");
     }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTest() throws Exception {
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/updateProgressNotificationHasDisplayed", 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).updateProgressNotificationHasDisplayed(1L, null);
+    }
 }
