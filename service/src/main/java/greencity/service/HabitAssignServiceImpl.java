@@ -597,11 +597,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
+    public HabitAssignManagementDto updateStatusByHabitAssignId(Long habitAssignId,
         HabitAssignStatDto dto) {
-        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+        HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
         updatable.setStatus(dto.getStatus());
 
