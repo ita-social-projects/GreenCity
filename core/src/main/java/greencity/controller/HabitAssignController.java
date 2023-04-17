@@ -339,8 +339,7 @@ public class HabitAssignController {
      * Method to update inprogress, acquired {@link HabitAssignVO} for it's
      * {@link HabitVO} id and current user.
      *
-     * @param userVO             {@link UserVO} instance.
-     * @param habitId            {@link HabitVO} id.
+     * @param habitAssignId      {@link HabitAssignVO} id.
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
@@ -351,12 +350,11 @@ public class HabitAssignController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("/{habitId}")
+    @PatchMapping("/{habitAssignId}")
     public ResponseEntity<HabitAssignManagementDto> updateAssignByHabitId(
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable Long habitId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
+        @PathVariable Long habitAssignId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
-            .updateStatusByHabitIdAndUserId(habitId, userVO.getId(), habitAssignStatDto));
+            .updateStatusByHabitAssignId(habitAssignId, habitAssignStatDto));
     }
 
     /**
