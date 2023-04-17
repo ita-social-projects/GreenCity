@@ -329,12 +329,12 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+    void updateStatusByHabitAssignId() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
-            habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
+            habitAssignService.updateStatusByHabitAssignId(1L, habitAssignStatDto));
     }
 
     @Test

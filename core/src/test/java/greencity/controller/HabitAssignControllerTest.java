@@ -77,16 +77,16 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void updateAssignByHabitId() throws Exception {
+    void updateAssignByHabitAssignId() throws Exception {
         HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
         habitAssignStatDto.setStatus(HabitAssignStatus.INPROGRESS);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
-        mockMvc.perform(patch(habitLink + "/{habitId}", 1)
+        mockMvc.perform(patch(habitLink + "/{habitAssignId}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, null, habitAssignStatDto);
+        verify(habitAssignService).updateStatusByHabitAssignId(1L, habitAssignStatDto);
     }
 
     @Test
