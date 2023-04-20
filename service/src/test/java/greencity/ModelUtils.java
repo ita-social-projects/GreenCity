@@ -1078,7 +1078,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithoutParentWithData() {
         return EcoNewsCommentVO.builder()
             .id(278L)
             .user(UserVO.builder()
@@ -1088,6 +1088,62 @@ public class ModelUtils {
                 .build())
             .modifiedDate(LocalDateTime.now())
             .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                    .id(76L)
+                    .build(),
+                UserVO.builder()
+                    .id(543L)
+                    .build(),
+                UserVO.builder()
+                    .id(349L)
+                    .build())))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithParentWithData() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .parentComment(EcoNewsCommentVO.builder()
+                .id(277L)
+                .user(UserVO.builder()
+                    .id(13L)
+                    .role(Role.ROLE_ADMIN)
+                    .name("name")
+                    .build())
+                .modifiedDate(LocalDateTime.now())
+                .text("I find this topic very useful!")
+                .deleted(false)
+                .currentUserLiked(true)
+                .parentComment(null)
+                .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+                .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                    UserVO.builder()
+                        .id(76L)
+                        .build(),
+                    UserVO.builder()
+                        .id(543L)
+                        .build(),
+                    UserVO.builder()
+                        .id(349L)
+                        .build())))
+                .ecoNews(EcoNewsVO.builder()
+                    .id(32L)
+                    .build())
+                .build())
             .deleted(false)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
