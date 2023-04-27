@@ -60,13 +60,15 @@ public class EventCommentServiceImpl implements EventCommentService {
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
 
-        if (addEventCommentDtoRequest.getParentCommentId() != null && addEventCommentDtoRequest.getParentCommentId() > 0) {
+        if (addEventCommentDtoRequest.getParentCommentId() != null
+            && addEventCommentDtoRequest.getParentCommentId() > 0) {
             Long parentCommentId = addEventCommentDtoRequest.getParentCommentId();
             EventComment parentEventComment = eventCommentRepo.findById(parentCommentId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
 
             if (!parentEventComment.getEvent().getId().equals(eventId)) {
-                String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId + " in event with id:" + eventId;
+                String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
+                    + " in event with id:" + eventId;
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
@@ -302,7 +304,8 @@ public class EventCommentServiceImpl implements EventCommentService {
         EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId).orElseThrow(
             () -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
 
-        boolean isLiked = userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
+        boolean isLiked =
+            userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
         return AmountCommentLikesDto.builder()
             .id(comment.getId())
             .userId(userVO == null ? 0 : userVO.getId())
