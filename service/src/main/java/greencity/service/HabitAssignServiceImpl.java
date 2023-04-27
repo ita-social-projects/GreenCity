@@ -144,8 +144,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
+        habitAssign.setProgressNotificationHasDisplayed(false);
 
-        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        HabitAssignManagementDto habitAssignManagementDto =
+            modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        habitAssignManagementDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+        return habitAssignManagementDto;
     }
 
     /**
@@ -593,11 +597,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
+    public HabitAssignManagementDto updateStatusByHabitAssignId(Long habitAssignId,
         HabitAssignStatDto dto) {
-        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+        HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
         updatable.setStatus(dto.getStatus());
 
@@ -809,17 +813,21 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     @Override
     public List<HabitsDateEnrollmentDto> findHabitAssignsBetweenDates(Long userId, LocalDate from, LocalDate to,
         String language) {
+        if (from.isAfter(to)) {
+            throw new BadRequestException(ErrorMessage.INVALID_DATE_RANGE);
+        }
         List<HabitAssign> habitAssignsBetweenDates = habitAssignRepo
             .findAllHabitAssignsBetweenDates(userId, from, to);
         List<LocalDate> dates = Stream.iterate(from, date -> date.plusDays(1))
             .limit(ChronoUnit.DAYS.between(from, to.plusDays(1)))
             .collect(Collectors.toList());
-        List<HabitsDateEnrollmentDto> dtos = new ArrayList<>();
-        for (LocalDate date : dates) {
-            dtos.add(HabitsDateEnrollmentDto.builder().enrollDate(date)
+
+        List<HabitsDateEnrollmentDto> dtos = dates.stream()
+            .map(date -> HabitsDateEnrollmentDto.builder().enrollDate(date)
                 .habitAssigns(new ArrayList<>())
-                .build());
-        }
+                .build())
+            .collect(Collectors.toList());
+
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
 
         return dtos;
@@ -838,12 +846,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<HabitsDateEnrollmentDto> list) {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
 
-        for (HabitsDateEnrollmentDto dto : list) {
-            if (checkIfHabitIsActiveOnDay(dto, habitAssign)) {
-                markHabitOnHabitsEnrollmentDto(dto, checkIfHabitIsEnrolledOnDay(dto, habitAssign),
-                    habitTranslation, habitAssign);
-            }
-        }
+        list.stream().filter(dto -> checkIfHabitIsActiveOnDay(dto, habitAssign))
+            .forEach(dto -> markHabitOnHabitsEnrollmentDto(dto, checkIfHabitIsEnrolledOnDay(dto, habitAssign),
+                habitTranslation, habitAssign));
     }
 
     /**
@@ -858,7 +863,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitTranslation habitTranslation, HabitAssign habitAssign) {
         dto.getHabitAssigns().add(HabitEnrollDto.builder()
             .habitDescription(habitTranslation.getDescription()).habitName(habitTranslation.getName())
-            .isEnrolled(isEnrolled).habitId(habitAssign.getHabit().getId()).build());
+            .isEnrolled(isEnrolled).habitAssignId(habitAssign.getId()).build());
     }
 
     /**
@@ -869,13 +874,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @return boolean.
      */
     private boolean checkIfHabitIsEnrolledOnDay(HabitsDateEnrollmentDto dto, HabitAssign habitAssign) {
-        for (int i = 0; i < habitAssign.getHabitStatusCalendars().size(); i++) {
-            if (habitAssign.getHabitStatusCalendars().get(i).getEnrollDate()
-                .equals(dto.getEnrollDate())) {
-                return true;
-            }
-        }
-        return false;
+        return habitAssign.getHabitStatusCalendars().stream()
+            .anyMatch(habitStatusCalendar -> habitStatusCalendar.getEnrollDate().equals(dto.getEnrollDate()));
     }
 
     /**
@@ -936,6 +936,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
+        customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
         habitAssignRepo.delete(habitAssign);
     }
 
@@ -1239,8 +1240,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
-        Long habitId = habitAssign.getHabit().getId();
-
         List<CustomShoppingListItemSaveRequestDto> listToSaveParam = listToSave.stream()
             .map(item -> CustomShoppingListItemWithStatusSaveRequestDto.builder()
                 .text(item.getText())
@@ -1248,7 +1247,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .build())
             .collect(Collectors.toList());
 
-        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId, habitId);
+        customShoppingListItemService.save(new BulkSaveCustomShoppingListItemDto(listToSaveParam), userId,
+            habitAssignId);
     }
 
     private void checkDuplicationForCustomShoppingListByName(List<CustomShoppingListItemResponseDto> listToSave) {
@@ -1343,5 +1343,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .collect(Collectors.joining(", "));
             throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundedIds);
         }
+    }
+
+    @Transactional
+    @Override
+    public void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId) {
+        if (habitAssignRepo.findById(habitAssignId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId);
+        }
+        habitAssignRepo.updateProgressNotificationHasDisplayed(habitAssignId, userId);
     }
 }

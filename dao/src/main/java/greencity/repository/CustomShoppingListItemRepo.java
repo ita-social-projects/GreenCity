@@ -6,9 +6,11 @@ import greencity.entity.User;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Provides an interface to manage {@link CustomShoppingListItem} entity.
@@ -96,4 +98,15 @@ public interface CustomShoppingListItemRepo extends JpaRepository<CustomShopping
      */
     @Query(value = "SELECT * from custom_shopping_list_items where user_id = :userId", nativeQuery = true)
     List<CustomShoppingListItem> findAllByUserId(@Param(value = "userId") Long userId);
+
+    /**
+     * Method delete selected items from custom shopping list.
+     *
+     * @param habitId id of needed habit
+     * @author Anton Bondar
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM custom_shopping_list_items WHERE habit_id =:habitId", nativeQuery = true)
+    void deleteCustomShoppingListItemsByHabitId(Long habitId);
 }

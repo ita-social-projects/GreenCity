@@ -150,5 +150,6 @@
     <include file="db/changelog/logs/ch-add-tables-events-comment-user-likes-dislikes-Lenets.xml"/>
     <include file="db/changelog/logs/ch-update-fact-of-the-day-translations-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translation-Vatuliak.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-translations-Mokhnatska.xml"/>
 </databaseChangeLog>
 

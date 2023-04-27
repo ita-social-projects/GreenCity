@@ -81,4 +81,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "INNER JOIN languages AS l ON l.id = ht.language_id "
         + "WHERE lower(t.name) IN (:tags) AND l.code = :languageCode")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+
+    /**
+     * Method return {@link List} of {@link HabitTranslation} by habit.
+     *
+     * @param habit {@link Habit}.
+     * @return {@link List} of {@link HabitTranslation}.
+     * @author Lilia Mokhnatska
+     */
+    List<HabitTranslation> findAllByHabit(Habit habit);
 }

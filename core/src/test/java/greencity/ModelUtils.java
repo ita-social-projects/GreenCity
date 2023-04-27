@@ -745,7 +745,7 @@ public class ModelUtils {
                     .name("use shopper")
                     .build()))
             .image("https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg")
-            .tags(Set.of("Reusable"))
+            .tagIds(Set.of(20L))
             .build();
     }
 

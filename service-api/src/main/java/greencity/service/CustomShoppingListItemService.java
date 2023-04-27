@@ -20,7 +20,7 @@ public interface CustomShoppingListItemService {
      * @return list of saved {@link CustomShoppingListItemResponseDto}
      */
     List<CustomShoppingListItemResponseDto> save(BulkSaveCustomShoppingListItemDto bulkSaveCustomShoppingListItemDto,
-        Long userId, Long habitId);
+        Long userId, Long habitAssignId);
 
     /**
      * Method for finding all custom shopping list items.

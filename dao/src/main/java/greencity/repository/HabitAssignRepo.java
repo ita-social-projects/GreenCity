@@ -11,6 +11,7 @@ import java.util.Optional;
 import greencity.enums.HabitAssignStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -221,7 +222,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<HabitAssign> findAllByUserIdAndStatusIsInProgress(@Param("userId") Long userId);
 
     /**
-     * Method to find all inprogress, acquired habit assigns between 2
+     * Method to find all inprogress habit assigns between the specified
      * {@link LocalDate}s.
      *
      * @param userId {@link User} id.
@@ -234,10 +235,10 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "JOIN FETCH ht.language l "
         + "WHERE upper(ha.status) = 'INPROGRESS'"
         + "AND ha.user.id = :userId "
-        + "AND cast(ha.createDate as date) + ha.duration >= cast(:from as date) "
-        + "OR cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "AND ha.user.id = :userId "
-        + "AND upper(ha.status) = 'INPROGRESS'")
+        + "AND (cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
+        + "OR cast(ha.createDate as date) + ha.duration BETWEEN cast(:from as date) AND cast(:to as date)"
+        + "OR cast(ha.createDate as date) <= cast(:from as date) "
+        + "AND cast(:to as date) <= cast(ha.createDate as date) + ha.duration)")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,
         @Param("to") LocalDate to);
 
@@ -278,4 +279,18 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     @Query(value = "SELECT count(ha)"
         + "FROM HabitAssign ha WHERE ha.habit.id = :habitId AND ha.status='ACQUIRED'")
     Long findAmountOfUsersAcquired(@Param("habitId") Long habitId);
+
+    /**
+     * Method to change value progressNotificationHasDisplayed in
+     * {@link HabitAssign} to true.
+     *
+     * @param habitAssignId id of {@link HabitAssign}.
+     * @param userId        id of {@link User}.
+     * @author Lilia Mokhnatska
+     */
+    @Modifying
+    @Query("UPDATE HabitAssign ha SET ha.progressNotificationHasDisplayed = 'true'"
+        + " WHERE ha.id = :habitAssignId and ha.user.id = :userId")
+    void updateProgressNotificationHasDisplayed(@Param("habitAssignId") Long habitAssignId,
+        @Param("userId") Long userId);
 }

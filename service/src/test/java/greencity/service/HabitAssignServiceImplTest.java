@@ -303,6 +303,21 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void findHabitAssignsBetweenDatesThrowsBadRequestExceptionWhenFromDateIsLaterThenTo() {
+        Long userId = 2L;
+        LocalDate from = LocalDate.now();
+        LocalDate to = from.minusDays(1);
+        String language = AppConstant.DEFAULT_LANGUAGE_CODE;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> habitAssignService.findHabitAssignsBetweenDates(userId, from, to, language));
+
+        assertEquals(ErrorMessage.INVALID_DATE_RANGE, exception.getMessage());
+
+        verify(habitAssignRepo, times(0)).findAllHabitAssignsBetweenDates(anyLong(), any(), any());
+    }
+
+    @Test
     void assignCustomHabitForUser() {
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
@@ -314,12 +329,12 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+    void updateStatusByHabitAssignId() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
-            habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
+            habitAssignService.updateStatusByHabitAssignId(1L, habitAssignStatDto));
     }
 
     @Test
@@ -423,6 +438,7 @@ class HabitAssignServiceImplTest {
 
     @Test
     void deleteHabitAssign() {
+        Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
 
@@ -434,6 +450,7 @@ class HabitAssignServiceImplTest {
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
         verify(userShoppingListItemRepo).deleteShoppingListItemsByHabitAssignId(habitAssignId);
+        verify(customShoppingListItemRepo).deleteCustomShoppingListItemsByHabitId(habitId);
         verify(habitAssignRepo).delete(habitAssign);
     }
 
@@ -450,6 +467,7 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId, exception.getMessage());
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
+        verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
         verify(habitAssignRepo, times(0)).delete(any());
     }
 
@@ -469,6 +487,7 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
+        verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
         verify(habitAssignRepo, times(0)).delete(any());
     }
 
@@ -2214,5 +2233,29 @@ class HabitAssignServiceImplTest {
         verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
 
         verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(new HabitAssign()));
+
+        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId);
+
+        verify(habitAssignRepo).updateProgressNotificationHasDisplayed(habitAssignId, userId);
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTrowsExceptionTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
+
     }
 }

@@ -77,16 +77,16 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void updateAssignByHabitId() throws Exception {
+    void updateAssignByHabitAssignId() throws Exception {
         HabitAssignStatDto habitAssignStatDto = new HabitAssignStatDto();
         habitAssignStatDto.setStatus(HabitAssignStatus.INPROGRESS);
         Gson gson = new Gson();
         String json = gson.toJson(habitAssignStatDto);
-        mockMvc.perform(patch(habitLink + "/{habitId}", 1)
+        mockMvc.perform(patch(habitLink + "/{habitAssignId}", 1)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitAssignService).updateStatusByHabitIdAndUserId(1L, null, habitAssignStatDto);
+        verify(habitAssignService).updateStatusByHabitAssignId(1L, habitAssignStatDto);
     }
 
     @Test
@@ -118,12 +118,13 @@ class HabitAssignControllerTest {
 
     @Test
     void getHabitAssignBetweenDatesTest() throws Exception {
-        Locale locale = new Locale("en", "US");
-        mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", LocalDate.now(), LocalDate.now().plusDays(2L)))
+        LocalDate from = LocalDate.now();
+        LocalDate to = from.plusDays(2L);
+
+        mockMvc.perform(get(habitLink + "/activity/{from}/to/{to}", from, to))
             .andExpect(status().isOk());
 
-        verify(habitAssignService).findHabitAssignsBetweenDates(null, LocalDate.now(),
-            LocalDate.now().plusDays(2L), "en");
+        verify(habitAssignService).findHabitAssignsBetweenDates(null, from, to, "en");
     }
 
     @Test
@@ -250,5 +251,13 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).fullUpdateUserAndCustomShoppingLists(null, 1L, dto, "ua");
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTest() throws Exception {
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/updateProgressNotificationHasDisplayed", 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).updateProgressNotificationHasDisplayed(1L, null);
     }
 }

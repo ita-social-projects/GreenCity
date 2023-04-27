@@ -18,8 +18,39 @@ class EcoNewsCommentVOMapperTest {
     EcoNewsCommentVOMapper mapper;
 
     @Test
-    void convert() {
-        EcoNewsCommentVO expected = ModelUtils.getEcoNewsCommentVOWithData();
+    void convertWithoutParent() {
+        EcoNewsCommentVO expected = ModelUtils.getEcoNewsCommentVOWithoutParentWithData();
+
+        EcoNewsComment ecoNewsComment = EcoNewsComment.builder()
+            .id(expected.getId())
+            .user(User.builder()
+                .id(expected.getUser().getId())
+                .role(expected.getUser().getRole())
+                .name(expected.getUser().getName())
+                .build())
+            .modifiedDate(expected.getModifiedDate())
+            .parentComment(null)
+            .text(expected.getText())
+            .deleted(expected.isDeleted())
+            .currentUserLiked(expected.isCurrentUserLiked())
+            .createdDate(expected.getCreatedDate())
+            .usersLiked(expected.getUsersLiked().stream().map(user -> User.builder()
+                .id(user.getId())
+                .build()).collect(Collectors.toSet()))
+            .ecoNews(EcoNews.builder()
+                .id(expected.getEcoNews().getId())
+                .build())
+            .build();
+
+        EcoNewsCommentVO actual = mapper.convert(ecoNewsComment);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void convertWithParent() {
+        EcoNewsCommentVO expected = ModelUtils.getEcoNewsCommentVOWithParentWithData();
+        EcoNewsCommentVO expectedParent = expected.getParentComment();
 
         EcoNewsComment ecoNewsComment = EcoNewsComment.builder()
             .id(expected.getId())
@@ -30,6 +61,26 @@ class EcoNewsCommentVOMapperTest {
                 .build())
             .modifiedDate(expected.getModifiedDate())
             .text(expected.getText())
+            .parentComment(EcoNewsComment.builder()
+                .id(expectedParent.getId())
+                .user(User.builder()
+                    .id(expectedParent.getUser().getId())
+                    .role(expectedParent.getUser().getRole())
+                    .name(expectedParent.getUser().getName())
+                    .build())
+                .modifiedDate(expectedParent.getModifiedDate())
+                .parentComment(null)
+                .text(expectedParent.getText())
+                .deleted(expectedParent.isDeleted())
+                .currentUserLiked(expectedParent.isCurrentUserLiked())
+                .createdDate(expectedParent.getCreatedDate())
+                .usersLiked(expectedParent.getUsersLiked().stream().map(user -> User.builder()
+                    .id(user.getId())
+                    .build()).collect(Collectors.toSet()))
+                .ecoNews(EcoNews.builder()
+                    .id(expectedParent.getEcoNews().getId())
+                    .build())
+                .build())
             .deleted(expected.isDeleted())
             .currentUserLiked(expected.isCurrentUserLiked())
             .createdDate(expected.getCreatedDate())
