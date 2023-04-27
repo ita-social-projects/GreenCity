@@ -60,13 +60,14 @@ public class EventCommentServiceImpl implements EventCommentService {
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
 
-        if (addEventCommentDtoRequest.getParentCommentId() != 0) {
+        if (addEventCommentDtoRequest.getParentCommentId() != null && addEventCommentDtoRequest.getParentCommentId() > 0) {
             Long parentCommentId = addEventCommentDtoRequest.getParentCommentId();
             EventComment parentEventComment = eventCommentRepo.findById(parentCommentId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
 
             if (!parentEventComment.getEvent().getId().equals(eventId)) {
-                throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId);
+                String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId + " in event with id:" + eventId;
+                throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
         }
@@ -134,7 +135,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public int countComments(Long eventId) {
-        return eventCommentRepo.countEventCommentsByEvent(eventRepo.findById(eventId)
+        return eventCommentRepo.countNotDeletedEventCommentsByEvent(eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId)));
     }
 
@@ -301,11 +302,10 @@ public class EventCommentServiceImpl implements EventCommentService {
         EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId).orElseThrow(
             () -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
 
-        UserVO user = userVO == null ? UserVO.builder().build() : userVO;
-        boolean isLiked = comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(user.getId()));
+        boolean isLiked = userVO != null && comment.getUsersLiked().stream().anyMatch(u -> u.getId().equals(userVO.getId()));
         return AmountCommentLikesDto.builder()
             .id(comment.getId())
-            .userId(user.getId())
+            .userId(userVO == null ? 0 : userVO.getId())
             .isLiked(isLiked)
             .amountLikes(comment.getUsersLiked().size())
             .build();

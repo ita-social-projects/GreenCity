@@ -14,12 +14,12 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * The method returns the count of not deleted comments, specified by
      * {@link Event}.
      *
-     * @return count of comments, specified by {@link Event}
+     * @return count of not deleted comments, specified by {@link Event}
      */
     @Query(value = "select count(ec.id) from events_comment ec"
         + " join events event on event.id = ec.event_id"
         + " where event.id = :event and deleted = false", nativeQuery = true)
-    int countEventCommentsByEvent(Event event);
+    int countNotDeletedEventCommentsByEvent(Event event);
 
     /**
      * The method returns not deleted comment {@link EventComment}, specified by id.

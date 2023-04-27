@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(MockitoExtension.class)
 class EventCommentDtoMapperTest {
     @InjectMocks
-    EventCommentDtoMapper eventCommentDtoMapper;
+    private EventCommentDtoMapper eventCommentDtoMapper;
 
     @Test
     void convertTest() {
