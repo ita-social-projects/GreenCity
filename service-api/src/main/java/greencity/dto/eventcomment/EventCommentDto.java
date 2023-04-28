@@ -32,9 +32,9 @@ public class EventCommentDto {
 
     private String text;
 
-    private int replies;
+    private int numberOfReplies;
 
-    private int likes;
+    private int numberOfLikes;
 
     private boolean currentUserLiked = false;
 }
