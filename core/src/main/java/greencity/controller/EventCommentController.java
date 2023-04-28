@@ -154,7 +154,7 @@ public class EventCommentController {
 
     /**
      * Method to get all active replies to {@link EventCommentDto} specified by
-     * eventId.
+     * parent comment id.
      *
      * @param parentCommentId id of parent comment {@link EventCommentDto}
      * @param user            {@link UserVO} user who want to get replies.
