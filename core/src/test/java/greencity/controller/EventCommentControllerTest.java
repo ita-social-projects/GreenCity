@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableDto;
@@ -161,8 +160,7 @@ class EventCommentControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(eventCommentReplies);
+        String expectedJson = objectMapper.writeValueAsString(eventCommentReplies);
 
         when(eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO))
             .thenReturn(eventCommentReplies);
@@ -174,6 +172,7 @@ class EventCommentControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
         verify(eventCommentService).findAllActiveReplies(pageable, parentCommentId, userVO);
+        verify(userService).findByEmail(principal.getName());
     }
 
     @Test
@@ -321,8 +320,7 @@ class EventCommentControllerTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(result);
+        String expectedJson = objectMapper.writeValueAsString(result);
 
         when(eventCommentService.countLikes(commentId, userVO)).thenReturn(result);
 
