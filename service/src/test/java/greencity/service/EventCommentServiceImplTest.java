@@ -144,7 +144,9 @@ class EventCommentServiceImplTest {
             assertThrows(NotFoundException.class,
                 () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
 
-        assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId, notFoundException.getMessage());
+        String expectedErrorMessage = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
+            + " in event with id:" + event.getId();
+        assertEquals(expectedErrorMessage, notFoundException.getMessage());
     }
 
     @Test
