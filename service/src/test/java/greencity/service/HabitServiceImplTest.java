@@ -40,7 +40,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,6 +52,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -87,6 +91,9 @@ class HabitServiceImplTest {
 
     @Mock
     private HabitTranslationDtoMapper habitTranslationDtoMapper;
+
+    @Mock
+    FileService fileService;
 
     @Mock
     private ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
@@ -238,20 +245,25 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void addCustomHabitTest() {
+    void addCustomHabitTest() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Language languageEn = ModelUtils.getLanguage();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
+        habit.setImage(imageToEncode);
         CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
             ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
         CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
 
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        addCustomHabitDtoRequest.setImage(imageToEncode);
         AddCustomHabitDtoResponse addCustomHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
+        addCustomHabitDtoResponse.setImage(imageToEncode);
 
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
@@ -280,8 +292,10 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
+        when(fileService.upload(image)).thenReturn(imageToEncode);
+
         assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, "taras@gmail.com"));
+            habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -295,16 +309,21 @@ class HabitServiceImplTest {
         verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
+        verify(fileService).convertToMultipartImage(any());
     }
 
     @Test
-    void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeTestUa() {
+    void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeTestUa() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
+        habit.setImage(imageToEncode);
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        addCustomHabitDtoRequest.setImage(imageToEncode);
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         habitTranslationDto.setLanguageCode("ua");
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationForServiceTest();
@@ -317,7 +336,7 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.empty());
 
         assertThrows(NoSuchElementException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, "taras@gmail.com"));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -328,13 +347,16 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeEn() {
+    void addCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodeEn() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
         Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
+        habit.setImage(imageToEncode);
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
         habitTranslationDto.setLanguageCode("ua");
@@ -349,7 +371,7 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("en")).thenReturn(Optional.empty());
 
         assertThrows(NoSuchElementException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, "taras@gmail.com"));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -363,11 +385,12 @@ class HabitServiceImplTest {
     @Test
     void addCustomHabitThrowUserNotFoundException() {
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
         when(userRepo.findByEmail("user@gmail.com")).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
         assertThrows(WrongEmailException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, "user@gmail.com"));
+            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "user@gmail.com"));
 
         verify(userRepo).findByEmail("user@gmail.com");
         verify(customHabitMapper).convert(addCustomHabitDtoRequest);

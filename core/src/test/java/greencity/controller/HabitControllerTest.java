@@ -22,12 +22,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -119,12 +120,19 @@ class HabitControllerTest {
     @Test
     void postCustomHabit() throws Exception {
         AddCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
-        String requestedJson = new ObjectMapper().writeValueAsString(dto);
-        mockMvc.perform(post(habitLink + "/custom")
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+
+        String requestedJson = objectMapper.writeValueAsString(dto);
+
+        MockMultipartFile jsonFile =
+            new MockMultipartFile("request", "", "application/json", requestedJson.getBytes());
+
+        mockMvc.perform(multipart(habitLink + "/custom")
+            .file(jsonFile)
             .principal(principal)
-            .content(requestedJson)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
-        verify(habitService).addCustomHabit(dto, "test@gmail.com");
+        verify(habitService).addCustomHabit(dto, null, principal.getName());
     }
 }

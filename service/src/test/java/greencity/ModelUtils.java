@@ -2509,7 +2509,6 @@ public class ModelUtils {
 
     public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return AddCustomHabitDtoRequest.builder()
-            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .build();

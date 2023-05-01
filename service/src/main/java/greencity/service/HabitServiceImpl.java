@@ -38,6 +38,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 
@@ -60,6 +61,7 @@ public class HabitServiceImpl implements HabitService {
     private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
+    private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
 
     /**
@@ -169,9 +171,15 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public AddCustomHabitDtoResponse addCustomHabit(
-        AddCustomHabitDtoRequest addCustomHabitDtoRequest, String userEmail) {
+        AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        if (addCustomHabitDtoRequest.getImage() != null) {
+            image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
+        }
+        if (image != null) {
+            addCustomHabitDtoRequest.setImage(fileService.upload(image));
+        }
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         Set<Long> tagIds = addCustomHabitDtoRequest.getTagIds();
 
