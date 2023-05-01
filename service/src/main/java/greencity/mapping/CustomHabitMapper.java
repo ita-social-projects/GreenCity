@@ -10,6 +10,7 @@ public class CustomHabitMapper extends AbstractConverter<AddCustomHabitDtoReques
     @Override
     public Habit convert(AddCustomHabitDtoRequest addCustomHabitDtoRequest) {
         return Habit.builder()
+            .image(addCustomHabitDtoRequest.getImage())
             .complexity(addCustomHabitDtoRequest.getComplexity())
             .defaultDuration(addCustomHabitDtoRequest.getDefaultDuration())
             .isCustomHabit(true)

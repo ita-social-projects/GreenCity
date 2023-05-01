@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
@@ -63,6 +64,7 @@ public class HabitServiceImpl implements HabitService {
     private final TagsRepo tagsRepo;
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
+    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     /**
      * Method returns Habit by its id.
@@ -179,7 +181,10 @@ public class HabitServiceImpl implements HabitService {
         }
         if (image != null) {
             addCustomHabitDtoRequest.setImage(fileService.upload(image));
+        } else {
+            addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
+
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
         Set<Long> tagIds = addCustomHabitDtoRequest.getTagIds();

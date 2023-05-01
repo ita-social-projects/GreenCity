@@ -294,6 +294,9 @@ class HabitServiceImplTest {
 
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
+        MultipartFile multipartFile = ModelUtils.getMultipartFile();
+        when(fileService.upload(multipartFile)).thenReturn("/url1");
+
         assertEquals(addCustomHabitDtoResponse,
             habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
