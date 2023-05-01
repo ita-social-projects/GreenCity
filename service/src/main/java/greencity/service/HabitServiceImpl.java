@@ -181,11 +181,11 @@ public class HabitServiceImpl implements HabitService {
             addCustomHabitDtoRequest.setImage(fileService.upload(image));
         }
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        habit.setUserId(user.getId());
         Set<Long> tagIds = addCustomHabitDtoRequest.getTagIds();
 
         habit.setTags(tagIds.stream().map(tagId -> tagsRepo.findById(tagId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId))).collect(Collectors.toSet()));
-        habit.setUserId(user.getId());
 
         List<HabitTranslation> habitTranslationListForUa =
             habitTranslationMapper.mapAllToList((addCustomHabitDtoRequest.getHabitTranslations()));
