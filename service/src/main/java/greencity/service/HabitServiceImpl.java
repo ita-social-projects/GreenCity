@@ -35,6 +35,7 @@ import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -176,7 +177,7 @@ public class HabitServiceImpl implements HabitService {
         AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
-        if (addCustomHabitDtoRequest.getImage() != null) {
+        if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
             image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
         if (image != null) {
