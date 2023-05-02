@@ -245,7 +245,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void addCustomHabitTest() throws IOException {
+    void addCustomHabitTestWithImagePathInDto() throws IOException {
         User user = ModelUtils.getUser();
         Tag tag = ModelUtils.getTagHabitForServiceTest();
         Language languageUa = ModelUtils.getLanguageUa();
@@ -294,8 +294,72 @@ class HabitServiceImplTest {
 
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
-        MultipartFile multipartFile = ModelUtils.getMultipartFile();
-        when(fileService.upload(multipartFile)).thenReturn("/url1");
+        assertEquals(addCustomHabitDtoResponse,
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+
+        verify(userRepo).findByEmail(user.getEmail());
+        verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
+        verify(tagsRepo).findById(20L);
+        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(languageRepo, times(2)).findByCode(anyString());
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
+        verify(customShoppingListMapper).mapAllToList(anyList());
+        verify(modelMapper).map(habit, AddCustomHabitDtoResponse.class);
+        verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
+        verify(habitTranslationRepo).findAllByHabit(habit);
+        verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
+        verify(fileService).convertToMultipartImage(any());
+    }
+
+    @Test
+    void addCustomHabitTestWithImageFile() throws IOException {
+        User user = ModelUtils.getUser();
+        Tag tag = ModelUtils.getTagHabitForServiceTest();
+        Language languageUa = ModelUtils.getLanguageUa();
+        Language languageEn = ModelUtils.getLanguage();
+        Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        habit.setTags(Set.of(tag));
+        habit.setUserId(1L);
+        habit.setImage(imageToEncode);
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
+            ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
+
+        AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        AddCustomHabitDtoResponse addCustomHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
+        addCustomHabitDtoResponse.setImage(imageToEncode);
+
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(
+            habitTranslationDto.setLanguageCode("en"),
+            habitTranslationDto.setLanguageCode("ua"));
+
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
+        List<HabitTranslation> habitTranslationList = List.of(
+            habitTranslationUa.setLanguage(languageEn),
+            habitTranslationUa.setLanguage(languageUa));
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
+        when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+            .thenReturn(List.of(habitTranslationUa));
+        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
+        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customShoppingListItem));
+        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
+            .thenReturn(List.of(customShoppingListItem));
+        when(modelMapper.map(habit, AddCustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem)))
+            .thenReturn(List.of(customShoppingListItemResponseDto));
+        when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
+        when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
+
+        when(fileService.upload(image)).thenReturn(imageToEncode);
 
         assertEquals(addCustomHabitDtoResponse,
             habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
@@ -312,7 +376,73 @@ class HabitServiceImplTest {
         verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
         verify(habitTranslationRepo).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
-        verify(fileService).convertToMultipartImage(any());
+        verify(fileService).upload(any());
+    }
+
+    @Test
+    void addCustomHabitTest2() throws IOException {
+        User user = ModelUtils.getUser();
+        Tag tag = ModelUtils.getTagHabitForServiceTest();
+        Language languageUa = ModelUtils.getLanguageUa();
+        Language languageEn = ModelUtils.getLanguage();
+        Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        MultipartFile image = ModelUtils.getFile();
+        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        habit.setTags(Set.of(tag));
+        habit.setUserId(1L);
+        habit.setImage(imageToEncode);
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
+            ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
+        CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
+
+        AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
+        AddCustomHabitDtoResponse addCustomHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
+        addCustomHabitDtoResponse.setImage(imageToEncode);
+
+        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
+
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(
+            habitTranslationDto.setLanguageCode("en"),
+            habitTranslationDto.setLanguageCode("ua"));
+
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
+        List<HabitTranslation> habitTranslationList = List.of(
+            habitTranslationUa.setLanguage(languageEn),
+            habitTranslationUa.setLanguage(languageUa));
+
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
+        when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
+        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
+            .thenReturn(List.of(habitTranslationUa));
+        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
+        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
+        when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customShoppingListItem));
+        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
+            .thenReturn(List.of(customShoppingListItem));
+        when(modelMapper.map(habit, AddCustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
+        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem)))
+            .thenReturn(List.of(customShoppingListItemResponseDto));
+        when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
+        when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
+
+        when(fileService.upload(image)).thenReturn(imageToEncode);
+
+        assertEquals(addCustomHabitDtoResponse,
+            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+
+        verify(userRepo).findByEmail(user.getEmail());
+        verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        verify(customHabitMapper, times(3)).convert(addCustomHabitDtoRequest);
+        verify(tagsRepo).findById(20L);
+        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
+        verify(languageRepo, times(2)).findByCode(anyString());
+        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(1L, 1L);
+        verify(customShoppingListMapper).mapAllToList(anyList());
+        verify(modelMapper).map(habit, AddCustomHabitDtoResponse.class);
+        verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
+        verify(habitTranslationRepo).findAllByHabit(habit);
+        verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
     }
 
     @Test
