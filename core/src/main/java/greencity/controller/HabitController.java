@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -14,6 +15,7 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
@@ -23,16 +25,18 @@ import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -164,11 +168,14 @@ public class HabitController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
-    @PostMapping("/custom")
+    @PostMapping(value = "/custom",
+        consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AddCustomHabitDtoResponse> addCustomHabit(
-        @Valid @RequestBody AddCustomHabitDtoRequest request, @ApiIgnore Principal principal) {
+        @RequestPart @Valid AddCustomHabitDtoRequest request,
+        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @ApiIgnore Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(habitService.addCustomHabit(request, principal.getName()));
+            .body(habitService.addCustomHabit(request, image, principal.getName()));
     }
 }
