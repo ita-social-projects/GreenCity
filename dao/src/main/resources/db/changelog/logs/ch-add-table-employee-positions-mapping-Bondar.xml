@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet id="Bondar-1" author="Anton Bondar">
+        <createTable tableName="employee_positions_mapping">
+            <column name="user_id" type="BIGINT" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="position_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="employee_positions_mapping"
+                       columnNames="user_id, position_id"/>
+        <addForeignKeyConstraint baseTableName="employee_positions_mapping"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_employee_positions_mapping_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="employee_positions_mapping"
+                                 baseColumnNames="position_id"
+                                 constraintName="fk_employee_positions_mapping_position_id"
+                                 referencedTableName="positions"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

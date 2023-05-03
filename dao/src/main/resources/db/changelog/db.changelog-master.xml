@@ -149,5 +149,6 @@
     <include file="db/changelog/logs/ch-update-fact-of-the-day-translations-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translation-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translations-Mokhnatska.xml"/>
+    <include file="/db/changelog/logs/ch-add-table-employee-positions-mapping-Bondar.xml"/>
 </databaseChangeLog>
 
