@@ -2428,9 +2428,27 @@ public class ModelUtils {
         return EventComment.builder()
             .id(1L)
             .text("text")
+            .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .build();
+    }
+
+    public static EventComment getEventCommentWithReplies() {
+        User user = getUser();
+        user.setProfilePicturePath("path-to-picture");
+        return EventComment.builder()
+            .id(1L)
+            .text("Some comment")
+            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
+            .deleted(false)
+            .user(user)
+            .event(getEvent())
+            .parentComment(EventComment.builder().id(12L).build())
+            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
+            .currentUserLiked(true)
+            .usersLiked(Set.of(user, new User()))
             .build();
     }
 
@@ -2444,6 +2462,7 @@ public class ModelUtils {
                 .build())
             .text("I find this topic very useful!")
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<>())
             .event(EventVO.builder()
                 .id(32L)
                 .build())
@@ -2459,7 +2478,7 @@ public class ModelUtils {
     }
 
     public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text");
+        return new AddEventCommentDtoRequest("text", 100L);
     }
 
     public static EventCommentDto getEventCommentDto() {
@@ -2467,6 +2486,9 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
+            .numberOfLikes(0)
+            .numberOfReplies(0)
+            .currentUserLiked(false)
             .build();
     }
 
