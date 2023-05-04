@@ -1,9 +1,11 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -63,9 +65,10 @@ public class EventCommentController {
      * @return comment to certain event specified by commentId.
      */
     @GetMapping("{id}")
-    public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id) {
+    public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventCommentService.getEventCommentById(id));
+            .body(eventCommentService.getEventCommentById(id, userVO));
     }
 
     /**
@@ -137,7 +140,7 @@ public class EventCommentController {
      * @return id of deleted {@link greencity.dto.eventcomment.EventCommentVO}.
      * @author Oleh Vatulaik.
      */
-    @ApiOperation(value = "Delete event comment.")
+    @ApiOperation(value = "Mark comment as deleted.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
@@ -150,26 +153,84 @@ public class EventCommentController {
     }
 
     /**
-     * Method for creating {@link greencity.dto.eventcomment.EventCommentVO}.
+     * Method to get all active replies to {@link EventCommentDto} specified by
+     * parent comment id.
      *
-     * @param replyText       text of
-     *                        {@link greencity.dto.eventcomment.EventCommentVO}
-     *                        reply.
-     * @param user            - {@link UserVO} user who replied.
-     * @param parentCommentId {@link greencity.dto.event.EventVO} comment on which
-     *                        replied.
+     * @param parentCommentId id of parent comment {@link EventCommentDto}
+     * @param user            {@link UserVO} user who want to get replies.
+     * @return Pageable of {@link EventCommentDto}
      */
-    @ApiOperation(value = "Add reply.")
-    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiOperation(value = "Get all active replies to comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("replies/active/{parentCommentId}")
+    @ApiPageable
+    public ResponseEntity<PageableDto<EventCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
+        @PathVariable Long parentCommentId,
+        @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(eventCommentService.findAllActiveReplies(pageable, parentCommentId, user));
+    }
+
+    /**
+     * Method to count all active replies for {@link EventCommentDto} comment.
+     *
+     * @param parentCommentId to specify {@link EventCommentDto}
+     * @return amount of all active comments for certain {@link EventCommentDto}
+     */
+    @ApiOperation(value = "Count replies for comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/replies/active/count/{parentCommentId}")
+    public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
+        return eventCommentService.countAllActiveReplies(parentCommentId);
+    }
+
+    /**
+     * Method to like/dislike certain {@link EventCommentDto} comment specified by
+     * id.
+     *
+     * @param commentId of {@link EventCommentDto} to like/dislike
+     */
+    @ApiOperation(value = "Like/dislike comment.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("{eventId}/saveReply/{parentCommentId}")
-    public void saveReply(@RequestParam String replyText,
-        @ApiIgnore @CurrentUser UserVO user, @PathVariable Long parentCommentId) {
-        eventCommentService.saveReply(replyText, user, parentCommentId);
+    @PostMapping("/like")
+    public void like(@RequestParam("commentId") Long commentId, @ApiIgnore @CurrentUser UserVO user) {
+        eventCommentService.like(commentId, user);
+    }
+
+    /**
+     * Method to count likes for comment.
+     *
+     * @param commentId id of {@link EventCommentDto} comment whose likes must be
+     *                  counted
+     * @param user      {@link UserVO} user who want to get amount of likes for
+     *                  comment.
+     * @return amountCommentLikesDto dto with id and count likes for comments.
+     */
+    @ApiOperation(value = "Count likes for comment.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/likes/count/{commentId}")
+    public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
+        @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(eventCommentService.countLikes(commentId, user));
     }
 }
