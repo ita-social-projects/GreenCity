@@ -283,6 +283,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
+                "/events/comments/{eventCommentId}",
                 "/econews/{econewsId}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 CUSTOM_SHOPPING_LIST_URL,

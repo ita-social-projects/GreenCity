@@ -44,7 +44,7 @@ public class EventCommentVO {
 
     private boolean deleted;
 
-    private boolean currentUserLiked = false;
+    private boolean currentUserLiked;
 
     private Set<UserVO> usersLiked = new HashSet<>();
 }

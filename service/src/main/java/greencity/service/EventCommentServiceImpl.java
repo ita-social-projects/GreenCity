@@ -212,6 +212,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @param eventCommentId specifies {@link EventComment} to which we search for
      *                       comments.
      */
+    @Transactional
     @Override
     public void delete(Long eventCommentId, UserVO user) {
         EventComment eventComment = eventCommentRepo
