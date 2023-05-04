@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
@@ -34,10 +35,12 @@ import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 
@@ -60,7 +63,9 @@ public class HabitServiceImpl implements HabitService {
     private final LanguageRepo languageRepo;
     private final UserRepo userRepo;
     private final TagsRepo tagsRepo;
+    private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
+    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
 
     /**
      * Method returns Habit by its id.
@@ -169,15 +174,24 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public AddCustomHabitDtoResponse addCustomHabit(
-        AddCustomHabitDtoRequest addCustomHabitDtoRequest, String userEmail) {
+        AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
+            image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
+        }
+        if (image != null) {
+            addCustomHabitDtoRequest.setImage(fileService.upload(image));
+        } else {
+            addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
+        }
+
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
+        habit.setUserId(user.getId());
         Set<Long> tagIds = addCustomHabitDtoRequest.getTagIds();
 
         habit.setTags(tagIds.stream().map(tagId -> tagsRepo.findById(tagId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId))).collect(Collectors.toSet()));
-        habit.setUserId(user.getId());
 
         List<HabitTranslation> habitTranslationListForUa =
             habitTranslationMapper.mapAllToList((addCustomHabitDtoRequest.getHabitTranslations()));

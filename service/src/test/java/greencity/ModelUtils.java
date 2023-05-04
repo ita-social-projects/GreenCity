@@ -219,8 +219,6 @@ public class ModelUtils {
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
-    public static String IMAGE_LINK =
-        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg";
     public static String HABIT_TRANSLATION_NAME = "use shopper";
     public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
     public static String TAG_TRANSLATION_NAME = "Reusable";
@@ -2531,7 +2529,6 @@ public class ModelUtils {
 
     public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return AddCustomHabitDtoRequest.builder()
-            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2573,7 +2570,6 @@ public class ModelUtils {
                     .languageCode("ua")
                     .name(HABIT_TRANSLATION_NAME)
                     .build()))
-            .image(IMAGE_LINK)
             .tagIds(Set.of(20L))
             .build();
     }
@@ -2603,7 +2599,6 @@ public class ModelUtils {
                         .languageCode("en")
                         .name(HABIT_TRANSLATION_NAME)
                         .build()))
-            .image(IMAGE_LINK)
             .tagIds(Set.of(20L))
             .build();
     }
@@ -2636,7 +2631,6 @@ public class ModelUtils {
     public static Habit getCustomHabitForServiceTest() {
         return Habit.builder()
             .id(1L)
-            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .isCustomHabit(true)

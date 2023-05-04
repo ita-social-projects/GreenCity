@@ -6,6 +6,8 @@ import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 public interface HabitService {
@@ -95,5 +97,6 @@ public interface HabitService {
      * @return {@link AddCustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, String userEmail);
+    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
+        String userEmail);
 }
