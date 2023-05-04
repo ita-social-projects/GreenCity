@@ -150,6 +150,41 @@ class EventCommentServiceImplTest {
     }
 
     @Test
+    void saveReplyForReplyThrowException() {
+        Long parentCommentId = 123L;
+        Long replyEventId = 1L;
+        UserVO userVO = getUserVO();
+        User user = getUser();
+        AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
+        addEventCommentDtoRequest.setParentCommentId(parentCommentId);
+
+        EventComment eventComment = getEventComment();
+        EventVO eventVO = ModelUtils.getEventVO();
+
+        Event event = ModelUtils.getEvent();
+        event.setId(replyEventId);
+
+        EventComment parentEventComment = getEventComment();
+        parentEventComment.setId(parentCommentId);
+        parentEventComment.setEvent(event);
+        parentEventComment.setParentComment(getEventComment());
+
+        when(eventService.findById(anyLong())).thenReturn(eventVO);
+        when(eventCommentRepo.findById(parentCommentId)).thenReturn(Optional.of(parentEventComment));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
+        when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
+
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class,
+                () -> eventCommentService.save(replyEventId, addEventCommentDtoRequest, userVO));
+
+        String expectedErrorMessage = ErrorMessage.CANNOT_REPLY_THE_REPLY;
+
+        assertEquals(expectedErrorMessage, badRequestException.getMessage());
+    }
+
+    @Test
     void getEventCommentById() {
         EventComment eventComment = getEventComment();
         EventCommentDto eventCommentDto = modelMapper.map(eventComment, EventCommentDto.class);

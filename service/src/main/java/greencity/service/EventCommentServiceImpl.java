@@ -66,11 +66,16 @@ public class EventCommentServiceImpl implements EventCommentService {
             EventComment parentEventComment = eventCommentRepo.findById(parentCommentId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId));
 
+            if (parentEventComment.getParentComment() != null) {
+                throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
+            }
+
             if (!parentEventComment.getEvent().getId().equals(eventId)) {
                 String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
                     + " in event with id:" + eventId;
                 throw new NotFoundException(message);
             }
+
             eventComment.setParentComment(parentEventComment);
         }
 
