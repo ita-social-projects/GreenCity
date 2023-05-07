@@ -164,7 +164,6 @@ public final class ErrorMessage {
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
-    public static final String NOT_EVENT_ORGANIZER = "You're not the organizer of this event";
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
     public static final String WRONG_COUNT_OF_EVENT_DATES =
         "Count of dates should be at least one but not more seven";
