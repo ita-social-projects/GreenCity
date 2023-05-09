@@ -15,12 +15,16 @@ import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.repository.EventRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -32,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -305,22 +310,29 @@ class EventServiceImplTest {
         assertEquals(updatedEventDto, eventDto);
     }
 
-    @Test
-    void delete() {
+    @ParameterizedTest
+    @MethodSource("provideUserVOForDeleteEventTest")
+    void delete(UserVO userVO, User user) {
         Event event = ModelUtils.getEvent();
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
-            .thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(restClient.findByEmail(userVO.getEmail()), User.class))
+            .thenReturn(user);
         when(eventRepo.getOne(any())).thenReturn(event);
-
         doNothing().when(fileService).delete(any());
 
-        eventService.delete(event.getId(), ModelUtils.getUserVO().getEmail());
+        eventService.delete(event.getId(), userVO.getEmail());
 
         verify(eventRepo).delete(event);
     }
 
+    private static Stream<Arguments> provideUserVOForDeleteEventTest() {
+        return Stream.of(
+            Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
+            Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(999L),
+                ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(999L)));
+    }
+
     @Test
-    void deleteWithException() throws BadRequestException {
+    void deleteWithException() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
         user.setId(2L);
@@ -328,13 +340,7 @@ class EventServiceImplTest {
         when(eventRepo.getOne(any())).thenReturn(event);
         String userEmail = ModelUtils.getUserVO().getEmail();
         Long eventId = event.getId();
-
-        try {
-            eventService.delete(eventId, userEmail);
-            fail();
-        } catch (RuntimeException re) {
-        }
-
+        assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
     }
 
     @Test
