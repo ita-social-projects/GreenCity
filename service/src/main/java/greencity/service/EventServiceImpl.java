@@ -89,11 +89,11 @@ public class EventServiceImpl implements EventService {
                 .addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink).collect(Collectors.toList()));
         }
 
-        if (toDelete.getOrganizer().getId().equals(user.getId())) {
+        if (toDelete.getOrganizer().getId().equals(user.getId()) || user.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
             eventRepo.delete(toDelete);
         } else {
-            throw new BadRequestException(ErrorMessage.NOT_EVENT_ORGANIZER);
+            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
     }
 
