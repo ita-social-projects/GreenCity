@@ -329,12 +329,12 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void updateStatusByHabitIdAndUserId() {
-        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.of(habitAssign));
+    void updateStatusByHabitAssignId() {
+        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
             .thenReturn(habitAssignManagementDto);
         assertEquals(habitAssignManagementDto,
-            habitAssignService.updateStatusByHabitIdAndUserId(1L, 1L, habitAssignStatDto));
+            habitAssignService.updateStatusByHabitAssignId(1L, habitAssignStatDto));
     }
 
     @Test
@@ -2233,5 +2233,29 @@ class HabitAssignServiceImplTest {
         verify(customShoppingListItemRepo, times(0)).deleteAll(anyList());
 
         verify(customShoppingListItemService, times(0)).save(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(new HabitAssign()));
+
+        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId);
+
+        verify(habitAssignRepo).updateProgressNotificationHasDisplayed(habitAssignId, userId);
+    }
+
+    @Test
+    void updateProgressNotificationHasDisplayedTrowsExceptionTest() {
+        Long habitAssignId = 1L;
+        Long userId = 2L;
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userId));
+
     }
 }

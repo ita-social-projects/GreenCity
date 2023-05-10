@@ -189,15 +189,14 @@ public interface HabitAssignService {
 
     /**
      * Method for updating inprogress, acquired {@code HabitAssign} in database by
-     * {@code Habit} and {@code User} id's.
+     * {@code HabitAssign} id.
      *
-     * @param habitId {@code Habit} id.
-     * @param userId  {@code User} id.
-     * @param dto     {@link HabitAssignStatDto} dto with new cancelled and acquired
-     *                status.
+     * @param habitAssignId {@code HabitAssign} id.
+     * @param dto           {@link HabitAssignStatDto} dto with new cancelled and
+     *                      acquired status.
      * @return {@link HabitAssignManagementDto} instance.
      */
-    HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId, HabitAssignStatDto dto);
+    HabitAssignManagementDto updateStatusByHabitAssignId(Long habitAssignId, HabitAssignStatDto dto);
 
     /**
      * Method to enroll {@code HabitAssign} by habitAssignId.
@@ -313,4 +312,12 @@ public interface HabitAssignService {
      */
     void fullUpdateUserAndCustomShoppingLists(Long userId, Long habitId, UserShoppingAndCustomShoppingListsDto listDto,
         String language);
+
+    /**
+     * Method updates value progressNotificationHasDisplayed to true.
+     *
+     * @param habitAssignId {@link Long} habit id.
+     * @param userId        {@link Long} item id.
+     */
+    void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId);
 }

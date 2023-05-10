@@ -144,8 +144,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
+        habitAssign.setProgressNotificationHasDisplayed(false);
 
-        return modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        HabitAssignManagementDto habitAssignManagementDto =
+            modelMapper.map(habitAssign, HabitAssignManagementDto.class);
+        habitAssignManagementDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+        return habitAssignManagementDto;
     }
 
     /**
@@ -593,11 +597,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      */
     @Transactional
     @Override
-    public HabitAssignManagementDto updateStatusByHabitIdAndUserId(Long habitId, Long userId,
+    public HabitAssignManagementDto updateStatusByHabitAssignId(Long habitAssignId,
         HabitAssignStatDto dto) {
-        HabitAssign updatable = habitAssignRepo.findByHabitIdAndUserId(habitId, userId)
+        HabitAssign updatable = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID + habitId));
+                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID + habitAssignId));
 
         updatable.setStatus(dto.getStatus());
 
@@ -1339,5 +1343,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .collect(Collectors.joining(", "));
             throw new NotFoundException(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND + notFoundedIds);
         }
+    }
+
+    @Transactional
+    @Override
+    public void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId) {
+        if (habitAssignRepo.findById(habitAssignId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId);
+        }
+        habitAssignRepo.updateProgressNotificationHasDisplayed(habitAssignId, userId);
     }
 }

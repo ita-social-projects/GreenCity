@@ -31,4 +31,10 @@ public class EventCommentDto {
     private EventCommentAuthorDto author;
 
     private String text;
+
+    private int numberOfReplies;
+
+    private int numberOfLikes;
+
+    private boolean currentUserLiked = false;
 }

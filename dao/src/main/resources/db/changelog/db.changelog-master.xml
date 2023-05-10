@@ -146,7 +146,10 @@
     <include file="db/changelog/logs/сh-add-new-columns-habit-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-change-tables-events-events-dates-locations-Golik.xml"/>
     <include file="db/changelog/logs/сh-add-new-column-habit-assign-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-add-column-deleted-to-events-comment-Lenets-1.xml"/>
+    <include file="db/changelog/logs/ch-add-tables-events-comment-user-likes-dislikes-Lenets.xml"/>
     <include file="db/changelog/logs/ch-update-fact-of-the-day-translations-Vatuliak.xml"/>
     <include file="db/changelog/logs/ch-update-habit-translation-Vatuliak.xml"/>
+    <include file="db/changelog/logs/ch-update-habit-translations-Mokhnatska.xml"/>
 </databaseChangeLog>
 

@@ -10,9 +10,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
@@ -33,5 +35,8 @@ public class AddCustomHabitDtoResponse {
     private Integer defaultDuration;
     private List<CustomShoppingListItemResponseDto> customShoppingListItemDto;
     private List<HabitTranslationDto> habitTranslations;
-    private Set<String> tags;
+    @Valid
+    @Size(min = 1, message = ServiceValidationConstants.TAG_LIST_MIN_LENGTH)
+    @Size(max = 3, message = ServiceValidationConstants.TAG_LIST_MAX_LENGTH)
+    private Set<Long> tagIds;
 }

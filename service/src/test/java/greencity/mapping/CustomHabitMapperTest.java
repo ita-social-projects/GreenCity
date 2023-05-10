@@ -21,7 +21,6 @@ class CustomHabitMapperTest {
 
         Habit expected = Habit.builder()
             .complexity(addCustomHabitDtoRequest.getComplexity())
-            .image(addCustomHabitDtoRequest.getImage())
             .defaultDuration(addCustomHabitDtoRequest.getDefaultDuration())
             .isCustomHabit(true)
             .build();

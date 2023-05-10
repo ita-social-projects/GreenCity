@@ -339,8 +339,7 @@ public class HabitAssignController {
      * Method to update inprogress, acquired {@link HabitAssignVO} for it's
      * {@link HabitVO} id and current user.
      *
-     * @param userVO             {@link UserVO} instance.
-     * @param habitId            {@link HabitVO} id.
+     * @param habitAssignId      {@link HabitAssignVO} id.
      * @param habitAssignStatDto {@link HabitAssignStatDto} instance.
      * @return {@link HabitAssignManagementDto}.
      */
@@ -351,12 +350,11 @@ public class HabitAssignController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("/{habitId}")
+    @PatchMapping("/{habitAssignId}")
     public ResponseEntity<HabitAssignManagementDto> updateAssignByHabitId(
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @PathVariable Long habitId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
+        @PathVariable Long habitAssignId, @Valid @RequestBody HabitAssignStatDto habitAssignStatDto) {
         return ResponseEntity.status(HttpStatus.OK).body(habitAssignService
-            .updateStatusByHabitIdAndUserId(habitId, userVO.getId(), habitAssignStatDto));
+            .updateStatusByHabitAssignId(habitAssignId, habitAssignStatDto));
     }
 
     /**
@@ -522,6 +520,29 @@ public class HabitAssignController {
     public ResponseEntity<ResponseEntity.BodyBuilder> updateShoppingListStatus(
         @RequestBody UpdateUserShoppingListDto updateUserShoppingListDto) {
         habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method updates value progressNotificationHasDisplayed in HabitAssign to true
+     * {@link Boolean}.
+     *
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO}.
+     */
+    @ApiOperation(value = "Update value progressNotificationHasDisplayed to true.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PutMapping("{habitAssignId}/updateProgressNotificationHasDisplayed")
+    public ResponseEntity<ResponseEntity.BodyBuilder> updateProgressNotificationHasDisplayed(
+        @PathVariable Long habitAssignId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        habitAssignService.updateProgressNotificationHasDisplayed(habitAssignId, userVO.getId());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

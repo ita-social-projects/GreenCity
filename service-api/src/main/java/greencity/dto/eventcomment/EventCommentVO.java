@@ -14,7 +14,9 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -32,9 +34,17 @@ public class EventCommentVO {
     @CreatedDate
     private LocalDateTime createdDate;
 
+    private EventCommentVO parentComment;
+
     private List<EventCommentVO> comments = new ArrayList<>();
 
     private UserVO user;
 
     private EventVO event;
+
+    private boolean deleted;
+
+    private boolean currentUserLiked;
+
+    private Set<UserVO> usersLiked = new HashSet<>();
 }

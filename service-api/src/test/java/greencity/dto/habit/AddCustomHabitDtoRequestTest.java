@@ -82,4 +82,67 @@ class AddCustomHabitDtoRequestTest {
             Arguments.of(-1),
             Arguments.of(0));
     }
+
+    @Test
+    void invalidNumberOfTagsIdNullInAddCustomHabitDtoRequestTest() {
+        var dto = AddCustomHabitDtoRequest.builder()
+            .tagIds(null)
+            .build();
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        final Validator validator = factory.getValidator();
+
+        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+            validator.validate(dto);
+
+        assertEquals(1, constraintViolations.size());
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("provideFieldsAndValidValuesForTagsIds")
+    void validNumberOfTagsIdsInAddCustomHabitDtoRequestTest(Set<Long> tagIds) {
+        var dto = AddCustomHabitDtoRequest.builder()
+            .tagIds(tagIds)
+            .build();
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        final Validator validator = factory.getValidator();
+
+        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+            validator.validate(dto);
+
+        assertEquals(1, constraintViolations.size());
+    }
+
+    @SneakyThrows
+    @ParameterizedTest
+    @MethodSource("provideFieldsAndInvalidValuesForTagsIds")
+    void invalidNumberOfTagsIdsInAddCustomHabitDtoRequestTest(Set<Long> tagIds) {
+        var dto = AddCustomHabitDtoRequest.builder()
+            .tagIds(tagIds)
+            .build();
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        final Validator validator = factory.getValidator();
+
+        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+            validator.validate(dto);
+
+        assertEquals(2, constraintViolations.size());
+    }
+
+    private static Stream<Arguments> provideFieldsAndValidValuesForTagsIds() {
+        return Stream.of(
+            Arguments.of(Set.of(1L)),
+            Arguments.of(Set.of(1L, 2L, 3L)),
+            Arguments.of(Set.of(1L, 2L)));
+    }
+
+    private static Stream<Arguments> provideFieldsAndInvalidValuesForTagsIds() {
+        return Stream.of(
+            Arguments.of(Set.of(1L, 2L, 3L, 4L)),
+            Arguments.of(Set.of()),
+            Arguments.of(Set.of(1L, 2L, 3L, 4L, 5L, 6L)));
+    }
 }

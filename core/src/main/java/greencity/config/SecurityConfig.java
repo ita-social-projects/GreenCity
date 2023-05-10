@@ -146,6 +146,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/active",
                 "/events/comments/active",
                 "/events/comments/count/{eventId}",
+                "/events/comments/replies/active/{parentCommentId}",
+                "/events/comments/replies/active/count/{parentCommentId}",
+                "/events/comments/likes/count/{commentId}",
                 EVENTS,
                 EVENTS + "/event/{eventId}",
                 EVENTS + "/getAllSubscribers/{eventId}",
@@ -227,6 +230,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/comments/{econewsId}",
                 "/econews/comments/like",
                 "/events/comments/{eventId}",
+                "/events/comments/like",
                 EVENTS + "/addAttender/{eventId}",
                 EVENTS + "/create",
                 EVENTS + "/rateEvent/{eventId}/{rate}",
@@ -260,6 +264,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/profile",
                 EVENTS + "/update",
                 HABIT_ASSIGN_ID + "/update-habit-duration",
+                "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
                 HABIT_ASSIGN_ID + "/allUserAndCustomList")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
@@ -278,6 +283,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
+                "/events/comments/{eventCommentId}",
                 "/econews/{econewsId}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 CUSTOM_SHOPPING_LIST_URL,

@@ -219,8 +219,6 @@ public class ModelUtils {
     public static HabitAssign HABIT_ASSIGN_IN_PROGRESS = createHabitAssignInProgress();
     public static ZonedDateTime zonedDateTime = ZonedDateTime.now();
     public static LocalDateTime localDateTime = LocalDateTime.now();
-    public static String IMAGE_LINK =
-        "https://csb10032000a548f571.blob.core.windows.net/allfiles/photo_2021-06-01_15-39-56.jpg";
     public static String HABIT_TRANSLATION_NAME = "use shopper";
     public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
     public static String TAG_TRANSLATION_NAME = "Reusable";
@@ -1078,7 +1076,7 @@ public class ModelUtils {
             .build();
     }
 
-    public static EcoNewsCommentVO getEcoNewsCommentVOWithData() {
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithoutParentWithData() {
         return EcoNewsCommentVO.builder()
             .id(278L)
             .user(UserVO.builder()
@@ -1088,6 +1086,62 @@ public class ModelUtils {
                 .build())
             .modifiedDate(LocalDateTime.now())
             .text("I find this topic very useful!")
+            .deleted(false)
+            .currentUserLiked(true)
+            .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                UserVO.builder()
+                    .id(76L)
+                    .build(),
+                UserVO.builder()
+                    .id(543L)
+                    .build(),
+                UserVO.builder()
+                    .id(349L)
+                    .build())))
+            .ecoNews(EcoNewsVO.builder()
+                .id(32L)
+                .build())
+            .build();
+    }
+
+    public static EcoNewsCommentVO getEcoNewsCommentVOWithParentWithData() {
+        return EcoNewsCommentVO.builder()
+            .id(278L)
+            .user(UserVO.builder()
+                .id(13L)
+                .role(Role.ROLE_ADMIN)
+                .name("name")
+                .build())
+            .modifiedDate(LocalDateTime.now())
+            .text("I find this topic very useful!")
+            .parentComment(EcoNewsCommentVO.builder()
+                .id(277L)
+                .user(UserVO.builder()
+                    .id(13L)
+                    .role(Role.ROLE_ADMIN)
+                    .name("name")
+                    .build())
+                .modifiedDate(LocalDateTime.now())
+                .text("I find this topic very useful!")
+                .deleted(false)
+                .currentUserLiked(true)
+                .parentComment(null)
+                .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+                .usersLiked(new HashSet<UserVO>(Arrays.asList(
+                    UserVO.builder()
+                        .id(76L)
+                        .build(),
+                    UserVO.builder()
+                        .id(543L)
+                        .build(),
+                    UserVO.builder()
+                        .id(349L)
+                        .build())))
+                .ecoNews(EcoNewsVO.builder()
+                    .id(32L)
+                    .build())
+                .build())
             .deleted(false)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
@@ -2374,9 +2428,27 @@ public class ModelUtils {
         return EventComment.builder()
             .id(1L)
             .text("text")
+            .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .build();
+    }
+
+    public static EventComment getEventCommentWithReplies() {
+        User user = getUser();
+        user.setProfilePicturePath("path-to-picture");
+        return EventComment.builder()
+            .id(1L)
+            .text("Some comment")
+            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
+            .deleted(false)
+            .user(user)
+            .event(getEvent())
+            .parentComment(EventComment.builder().id(12L).build())
+            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
+            .currentUserLiked(true)
+            .usersLiked(Set.of(user, new User()))
             .build();
     }
 
@@ -2390,6 +2462,7 @@ public class ModelUtils {
                 .build())
             .text("I find this topic very useful!")
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<>())
             .event(EventVO.builder()
                 .id(32L)
                 .build())
@@ -2405,7 +2478,7 @@ public class ModelUtils {
     }
 
     public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text");
+        return new AddEventCommentDtoRequest("text", 100L);
     }
 
     public static EventCommentDto getEventCommentDto() {
@@ -2413,6 +2486,9 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
+            .numberOfLikes(0)
+            .numberOfReplies(0)
+            .currentUserLiked(false)
             .build();
     }
 
@@ -2453,7 +2529,6 @@ public class ModelUtils {
 
     public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
         return AddCustomHabitDtoRequest.builder()
-            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2464,7 +2539,17 @@ public class ModelUtils {
         return HabitTranslationDto.builder()
             .description(HABIT_TRANSLATION_DESCRIPTION)
             .habitItem(HABIT_ITEM)
-            .name("використовувати бавовняну сумку")
+            .name(HABIT_TRANSLATION_NAME)
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslationForServiceTest() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description(HABIT_TRANSLATION_DESCRIPTION)
+            .habitItem(HABIT_ITEM)
+            .name(HABIT_TRANSLATION_NAME)
+            .habit(getCustomHabitForServiceTest())
             .build();
     }
 
@@ -2485,8 +2570,7 @@ public class ModelUtils {
                     .languageCode("ua")
                     .name(HABIT_TRANSLATION_NAME)
                     .build()))
-            .image(IMAGE_LINK)
-            .tags(Set.of(TAG_TRANSLATION_NAME))
+            .tagIds(Set.of(20L))
             .build();
     }
 
@@ -2507,15 +2591,39 @@ public class ModelUtils {
                     .habitItem(HABIT_ITEM)
                     .languageCode("ua")
                     .name(HABIT_TRANSLATION_NAME)
-                    .build()))
-            .image(IMAGE_LINK)
-            .tags(Set.of(TAG_TRANSLATION_NAME))
+                    .build(),
+
+                    HabitTranslationDto.builder()
+                        .description(HABIT_TRANSLATION_DESCRIPTION)
+                        .habitItem(HABIT_ITEM)
+                        .languageCode("en")
+                        .name(HABIT_TRANSLATION_NAME)
+                        .build()))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomShoppingListItemResponseDto getCustomShoppingListItemResponseDtoForServiceTest() {
+        return CustomShoppingListItemResponseDto.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
+            .build();
+    }
+
+    public static CustomShoppingListItem getCustomShoppingListItemForServiceTest() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .habit(getCustomHabitForServiceTest())
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
+            .user(getUser())
             .build();
     }
 
     public static Tag getTagHabitForServiceTest() {
         return Tag.builder().id(1L).type(TagType.HABIT)
-            .tagTranslations(List.of(TagTranslation.builder().id(2L).name("News")
+            .tagTranslations(List.of(TagTranslation.builder().id(20L).name("Reusable")
                 .language(Language.builder().id(1L).code("en").build()).build()))
             .build();
     }
@@ -2523,7 +2631,6 @@ public class ModelUtils {
     public static Habit getCustomHabitForServiceTest() {
         return Habit.builder()
             .id(1L)
-            .image(IMAGE_LINK)
             .complexity(2)
             .defaultDuration(7)
             .isCustomHabit(true)
