@@ -1959,6 +1959,17 @@ public class ModelUtils {
         .tags(List.of("Social"))
         .build();
 
+    public static AddEventDtoRequest addEventDtoWithoutLinkRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDto())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
     public static AddressDto getAddressDtoWithNullStreetUa() {
         return AddressDto.builder()
             .latitude(13.4567236)
@@ -2023,6 +2034,10 @@ public class ModelUtils {
             .build();
     }
 
+    public static AddressDto getAddressDtoWithoutData() {
+        return AddressDto.builder().build();
+    }
+
     public static AddEventDtoRequest addEventDtoRequestWithNullStreetUa = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
@@ -2062,6 +2077,17 @@ public class ModelUtils {
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             null,
             getAddressDtoWithNullCountryUa())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullData = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDtoWithoutData())))
         .description("Description")
         .title("Title")
         .tags(List.of("Social"))
