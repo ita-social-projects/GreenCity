@@ -39,7 +39,7 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
         for (var date : addEventDtoRequest.getDatesLocations()) {
             if (date.getCoordinates() == null && date.getOnlineLink() == null
-            || date.getCoordinates() != null && addressIsNotValid(date.getCoordinates())) {
+                || date.getCoordinates() != null && addressIsNotValid(date.getCoordinates())) {
                 throw new BadRequestException("Coordinates or link should be set!");
             }
             EventDateLocation eventDateLocation = new EventDateLocation();
@@ -60,6 +60,6 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
 
     private boolean addressIsNotValid(AddressDto dto) {
         return dto.getStreetUa() == null || dto.getCityUa() == null
-                || dto.getRegionUa() == null || dto.getCountryUa() == null;
+            || dto.getRegionUa() == null || dto.getCountryUa() == null;
     }
 }
