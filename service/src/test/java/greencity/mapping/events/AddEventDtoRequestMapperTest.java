@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -32,12 +33,12 @@ class AddEventDtoRequestMapperTest {
         when(addressDtoMapper.convert(addressDto)).thenReturn(ModelUtils.getAddress());
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
         verify(addressDtoMapper).convert(addressDto);
+        verifyNoMoreInteractions(addressDtoMapper);
     }
 
     @Test
     void convertTestWithoutAddress() {
         Event expected = ModelUtils.getEventWithoutAddress();
-
         AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressRequest;
 
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
@@ -47,11 +48,8 @@ class AddEventDtoRequestMapperTest {
     void convertTestWithoutOnlineLink() {
         Event expected = ModelUtils.getEvent();
         AddEventDtoRequest request = ModelUtils.addEventDtoWithoutLinkRequest;
-        AddressDto addressDto = ModelUtils.getAddressDto();
 
-        when(addressDtoMapper.convert(addressDto)).thenReturn(ModelUtils.getAddress());
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
-        verify(addressDtoMapper).convert(addressDto);
     }
 
     @Test
