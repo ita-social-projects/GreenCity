@@ -23,7 +23,7 @@ public final class Address {
     @Column
     private String streetEn;
 
-    @Column(nullable = false)
+    @Column
     private String streetUa;
 
     @Column
@@ -32,18 +32,18 @@ public final class Address {
     @Column
     private String cityEn;
 
-    @Column(nullable = false)
+    @Column
     private String cityUa;
 
     @Column
     private String regionEn;
 
-    @Column(nullable = false)
+    @Column
     private String regionUa;
 
     @Column
     private String countryEn;
 
-    @Column(nullable = false)
+    @Column
     private String countryUa;
 }

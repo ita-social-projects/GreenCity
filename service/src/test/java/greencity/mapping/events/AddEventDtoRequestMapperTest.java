@@ -23,7 +23,6 @@ class AddEventDtoRequestMapperTest {
     @Test
     void convertTest() {
         Event expected = ModelUtils.getEvent();
-
         AddEventDtoRequest request = ModelUtils.addEventDtoRequest;
 
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
@@ -32,8 +31,15 @@ class AddEventDtoRequestMapperTest {
     @Test
     void convertTestWithoutAddress() {
         Event expected = ModelUtils.getEventWithoutAddress();
-
         AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressRequest;
+
+        assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
+    }
+
+    @Test
+    void convertTestWithoutOnlineLink() {
+        Event expected = ModelUtils.getEvent();
+        AddEventDtoRequest request = ModelUtils.addEventDtoWithoutLinkRequest;
 
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
     }
@@ -41,6 +47,36 @@ class AddEventDtoRequestMapperTest {
     @Test
     void convertTestWithoutAddressAndOnlineLink() {
         AddEventDtoRequest request = ModelUtils.addEventDtoWithoutAddressAndLinkRequest;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
+    }
+
+    @Test
+    void convertTestWithNullStreetUa() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullStreetUa;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
+    }
+
+    @Test
+    void convertTestWithNullCityUa() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullCityUa;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
+    }
+
+    @Test
+    void convertTestWithNullRegionUa() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullRegionUa;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
+    }
+
+    @Test
+    void convertTestWithNullCountryUa() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullCountryUa;
+        assertThrows(BadRequestException.class, () -> mapper.convert(request));
+    }
+
+    @Test
+    void convertTestWhenAddressDtoWithNullData() {
+        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullData;
         assertThrows(BadRequestException.class, () -> mapper.convert(request));
     }
 }
