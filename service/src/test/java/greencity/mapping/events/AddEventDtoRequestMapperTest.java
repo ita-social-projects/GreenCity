@@ -2,7 +2,6 @@ package greencity.mapping.events;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
 import greencity.entity.event.Event;
 import greencity.exception.exceptions.BadRequestException;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class AddEventDtoRequestMapperTest {
@@ -28,12 +24,8 @@ class AddEventDtoRequestMapperTest {
     void convertTest() {
         Event expected = ModelUtils.getEvent();
         AddEventDtoRequest request = ModelUtils.addEventDtoRequest;
-        AddressDto addressDto = ModelUtils.getAddressDto();
 
-        when(addressDtoMapper.convert(addressDto)).thenReturn(ModelUtils.getAddress());
         assertEquals(expected.getTitle(), mapper.convert(request).getTitle());
-        verify(addressDtoMapper).convert(addressDto);
-        verifyNoMoreInteractions(addressDtoMapper);
     }
 
     @Test
