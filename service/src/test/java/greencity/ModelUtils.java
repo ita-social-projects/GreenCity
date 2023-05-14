@@ -1959,6 +1959,140 @@ public class ModelUtils {
         .tags(List.of("Social"))
         .build();
 
+    public static AddEventDtoRequest addEventDtoWithoutLinkRequest = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDto())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddressDto getAddressDtoWithNullStreetUa() {
+        return AddressDto.builder()
+            .latitude(13.4567236)
+            .longitude(98.2354469)
+            .streetUa(null)
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoWithNullCityUa() {
+        return AddressDto.builder()
+            .latitude(13.4567236)
+            .longitude(98.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa(null)
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoWithNullRegionUa() {
+        return AddressDto.builder()
+            .latitude(13.4567236)
+            .longitude(98.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa(null)
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoWithNullCountryUa() {
+        return AddressDto.builder()
+            .latitude(13.4567236)
+            .longitude(98.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa(null)
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoWithoutData() {
+        return AddressDto.builder().build();
+    }
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullStreetUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            "/url",
+            getAddressDtoWithNullStreetUa())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullCityUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            "/url",
+            getAddressDtoWithNullCityUa())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDtoWithNullRegionUa())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullCountryUa = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDtoWithNullCountryUa())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
+    public static AddEventDtoRequest addEventDtoRequestWithNullData = AddEventDtoRequest.builder()
+        .datesLocations(List.of(new EventDateLocationDto(1L, null,
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null,
+            getAddressDtoWithoutData())))
+        .description("Description")
+        .title("Title")
+        .tags(List.of("Social"))
+        .build();
+
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
@@ -2428,9 +2562,27 @@ public class ModelUtils {
         return EventComment.builder()
             .id(1L)
             .text("text")
+            .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .build();
+    }
+
+    public static EventComment getEventCommentWithReplies() {
+        User user = getUser();
+        user.setProfilePicturePath("path-to-picture");
+        return EventComment.builder()
+            .id(1L)
+            .text("Some comment")
+            .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
+            .deleted(false)
+            .user(user)
+            .event(getEvent())
+            .parentComment(EventComment.builder().id(12L).build())
+            .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
+            .currentUserLiked(true)
+            .usersLiked(Set.of(user, new User()))
             .build();
     }
 
@@ -2444,6 +2596,7 @@ public class ModelUtils {
                 .build())
             .text("I find this topic very useful!")
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
+            .usersLiked(new HashSet<>())
             .event(EventVO.builder()
                 .id(32L)
                 .build())
@@ -2459,7 +2612,7 @@ public class ModelUtils {
     }
 
     public static AddEventCommentDtoRequest getAddEventCommentDtoRequest() {
-        return new AddEventCommentDtoRequest("text");
+        return new AddEventCommentDtoRequest("text", 100L);
     }
 
     public static EventCommentDto getEventCommentDto() {
@@ -2467,6 +2620,9 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
+            .numberOfLikes(0)
+            .numberOfReplies(0)
+            .currentUserLiked(false)
             .build();
     }
 
