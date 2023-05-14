@@ -153,5 +153,6 @@
     <include file="db/changelog/logs/ch-update-habit-translations-Mokhnatska.xml"/>
     <include file="/db/changelog/logs/ch-add-table-employee-positions-mapping-Bondar.xml"/>
     <include file="db/changelog/logs/ch-change-table-events-dates-locations-dropNotNullConstraint-Seti.xml"/>
+    <include file="db/changelog/logs/ch-update-employee_authorities-table-name-value-Bondar.xml"/>
 </databaseChangeLog>
 
