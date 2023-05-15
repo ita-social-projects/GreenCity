@@ -18,7 +18,9 @@ import greencity.entity.event.EventImages;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventRepo;
+import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +66,9 @@ class EventServiceImplTest {
 
     @Mock
     GoogleApiService googleApiService;
+
+    @Mock
+    UserRepo userRepo;
 
     @InjectMocks
     EventServiceImpl eventService;
@@ -521,42 +526,140 @@ class EventServiceImplTest {
     }
 
     @Test
-    void addAttender() {
+    void addAttenderToOpenEvent() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getAttenderUser();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(user);
+        when(eventRepo.save(event)).thenReturn(event);
 
         eventService.addAttender(event.getId(), user.getEmail());
 
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
         verify(eventRepo).save(event);
     }
 
     @Test
-    void addAttenderThrows() throws BadRequestException {
+    void addAttenderToOpenEventIfAttenderIsOrganizerException() {
         Event event = ModelUtils.getEvent();
-        Set<User> userSet = new HashSet();
-        userSet.add(ModelUtils.getUser());
-        event.setAttenders(userSet);
         User user = ModelUtils.getUser();
-        when(eventRepo.getOne(any())).thenReturn(event);
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
-        Long eventId = event.getId();
-        String userEmail = user.getEmail();
-        try {
-            eventService.addAttender(eventId, userEmail);
-            fail();
-        } catch (RuntimeException re) {
-        }
 
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(eventRepo, never()).save(event);
+    }
+
+    @Test
+    void addAttenderToOpenEventIfAttenderAlreadySubscribedException() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getAttenderUser();
+        Set<User> userSet = new HashSet<>();
+        userSet.add(ModelUtils.getAttenderUser());
+        event.setAttenders(userSet);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(eventRepo, never()).save(event);
+    }
+
+    @Test
+    void addAttenderToCloseEvent() {
+        Event event = ModelUtils.getCloseEvent();
+        User user = ModelUtils.getAttenderUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+        when(userRepo.findUserByIdAndByFriendId(2L, 1L)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.addAttender(event.getId(), user.getEmail());
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(userRepo).findUserByIdAndByFriendId(2L, 1L);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void addAttenderToCloseEventIfAttenderIsOrganizerException() {
+        Event event = ModelUtils.getCloseEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(eventRepo, never()).save(event);
+    }
+
+    @Test
+    void addAttenderToCloseEventIfAttenderAlreadySubscribedException() {
+        Event event = ModelUtils.getCloseEvent();
+        User user = ModelUtils.getAttenderUser();
+        Set<User> userSet = new HashSet<>();
+        userSet.add(ModelUtils.getAttenderUser());
+        event.setAttenders(userSet);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(eventRepo, never()).save(event);
+    }
+
+    @Test
+    void addAttenderToCloseEventIfAttenderIsNotAFriendException() {
+        Event event = ModelUtils.getCloseEvent();
+        User user = ModelUtils.getAttenderUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+        when(userRepo.findUserByIdAndByFriendId(2L, 1L)).thenReturn(Optional.empty());
+
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(userRepo).findUserByIdAndByFriendId(2L, 1L);
+        verify(eventRepo, never()).save(event);
+    }
+
+    @Test
+    void addAttenderToEventIfEventNotFoundException() {
+        when(eventRepo.findById(any())).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, () -> eventService.addAttender(1L, "danylo@gmail.com"));
+        verify(eventRepo).findById(any());
     }
 
     @Test
     void removeAttender() {
         Event event = ModelUtils.getEvent();
-        Set<User> userSet = new HashSet();
+        Set<User> userSet = new HashSet<>();
         User user = ModelUtils.getUser();
         user.setId(22L);
         userSet.add(user);

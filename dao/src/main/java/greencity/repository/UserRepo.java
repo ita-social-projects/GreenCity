@@ -133,4 +133,21 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Transactional
     @Query(value = "UPDATE User SET eventOrganizerRating=:rate WHERE id=:userId")
     void updateUserEventOrganizerRating(Long userId, Double rate);
+
+    /**
+     * Find user by user id and friend id when their status is Friend.
+     *
+     * @param userId   {@link User}'s id
+     * @param friendId {@link User}'s friend id
+     * @return {@link Optional} of {@link User}
+     * @author Julia Seti
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT * FROM users AS u "
+        + "WHERE u.id = "
+        + "((SELECT user_id FROM users_friends "
+        + "WHERE user_id = :userId AND friend_id = :friendId AND status = 'FRIEND') "
+        + "UNION "
+        + "(SELECT friend_id FROM users_friends "
+        + "WHERE user_id = :friendId AND friend_id = :userId AND status = 'FRIEND'))")
+    Optional<User> findUserByIdAndByFriendId(Long userId, Long friendId);
 }

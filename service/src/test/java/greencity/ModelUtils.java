@@ -1831,6 +1831,29 @@ public class ModelUtils {
 
     public static Event getEvent() {
         Event event = new Event();
+        event.setOpen(true);
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2098, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2099, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getAddress(), null));
+        dates.add(new EventDateLocation(2L, event,
+            ZonedDateTime.of(2099, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2100, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        return event;
+    }
+
+    public static Event getCloseEvent() {
+        Event event = new Event();
+        event.setOpen(false);
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
