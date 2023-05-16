@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -535,7 +536,7 @@ class EventServiceImplTest {
             .thenReturn(user);
         when(eventRepo.save(event)).thenReturn(event);
 
-        eventService.addAttender(event.getId(), user.getEmail());
+        eventService.addAttender(1L, "danylo@gmail.com");
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -570,7 +571,7 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(user);
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(1L, "danylo@gmail.com"));
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -588,7 +589,7 @@ class EventServiceImplTest {
         when(userRepo.findUserByIdAndByFriendId(2L, 1L)).thenReturn(Optional.of(user));
         when(eventRepo.save(event)).thenReturn(event);
 
-        eventService.addAttender(event.getId(), user.getEmail());
+        eventService.addAttender(1L, "danylo@gmail.com");
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -605,7 +606,7 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(user);
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(1L, TestConst.EMAIL));
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -624,7 +625,7 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(user);
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(1L, "danylo@gmail.com"));
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -641,7 +642,7 @@ class EventServiceImplTest {
             .thenReturn(user);
         when(userRepo.findUserByIdAndByFriendId(2L, 1L)).thenReturn(Optional.empty());
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(1L, "danylo@gmail.com"));
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
