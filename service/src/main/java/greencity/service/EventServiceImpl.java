@@ -19,6 +19,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.EventRepo;
+import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -46,6 +47,7 @@ public class EventServiceImpl implements EventService {
     private final GoogleApiService googleApiService;
     private final UserService userService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
+    private final UserRepo userRepo;
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
@@ -179,13 +181,18 @@ public class EventServiceImpl implements EventService {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+        checkAttenderToJoinTheEvent(event, currentUser);
+        event.getAttenders().add(currentUser);
+        eventRepo.save(event);
+    }
 
-        if (Objects.equals(event.getOrganizer().getId(), currentUser.getId())) {
+    private void checkAttenderToJoinTheEvent(Event event, User user) {
+        if (Objects.equals(event.getOrganizer().getId(), user.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
-        } else if (event.getAttenders().stream().noneMatch(a -> a.getId().equals(currentUser.getId()))) {
-            event.getAttenders().add(currentUser);
-            eventRepo.save(event);
-        } else {
+        } else if (!event.isOpen()
+            && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
+            throw new BadRequestException(ErrorMessage.YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT);
+        } else if (event.getAttenders().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
         }
     }
