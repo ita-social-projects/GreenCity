@@ -137,8 +137,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Find user by user id and friend id when their status is Friend.
      *
-     * @param userId   {@link User}'s id
-     * @param friendId {@link User}'s friend id
+     * @param userId   {@link Long} user id
+     * @param friendId {@link Long} friend id
      * @return {@link Optional} of {@link User}
      * @author Julia Seti
      */
