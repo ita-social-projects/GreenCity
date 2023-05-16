@@ -552,7 +552,7 @@ class EventServiceImplTest {
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
             .thenReturn(user);
 
-        assertThrows(BadRequestException.class, () -> eventService.addAttender(event.getId(), user.getEmail()));
+        assertThrows(BadRequestException.class, () -> eventService.addAttender(1L, TestConst.EMAIL));
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
