@@ -174,6 +174,7 @@ public final class ErrorMessage {
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
     public static final String YOU_ARE_NOT_EVENT_SUBSCRIBER = "You are not event subscriber";
+    public static final String YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT = "The event is close. You can't subscribe to it";
     public static final String HAVE_ALREADY_RATED = "You have already rated this event";
     public static final String EVENT_IS_NOT_FINISHED = "Event is not finished yet";
     public static final String EVENT_NOT_FOUND_BY_ID = "Event doesn't exist by this id: ";
