@@ -1,6 +1,7 @@
 package greencity.mapping.events;
 
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.exception.exceptions.BadRequestException;
@@ -37,7 +38,8 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
 
         List<EventDateLocation> eventDateLocations = new ArrayList<>();
         for (var date : addEventDtoRequest.getDatesLocations()) {
-            if (date.getCoordinates() == null && date.getOnlineLink() == null) {
+            if (date.getCoordinates() == null && date.getOnlineLink() == null
+                || date.getCoordinates() != null && addressIsNotValid(date.getCoordinates())) {
                 throw new BadRequestException("Coordinates or link should be set!");
             }
             EventDateLocation eventDateLocation = new EventDateLocation();
@@ -54,5 +56,10 @@ public class AddEventDtoRequestMapper extends AbstractConverter<AddEventDtoReque
         }
         event.setDates(eventDateLocations);
         return event;
+    }
+
+    private boolean addressIsNotValid(AddressDto dto) {
+        return dto.getStreetUa() == null || dto.getCityUa() == null
+            || dto.getRegionUa() == null || dto.getCountryUa() == null;
     }
 }
