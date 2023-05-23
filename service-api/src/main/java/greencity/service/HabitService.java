@@ -3,8 +3,11 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,4 +102,13 @@ public interface HabitService {
      */
     AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
         String userEmail);
+
+    /**
+     * Retrieves the list of friends' (assigned to the habit) profile pictures.
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userId  {@link UserVO} id.
+     * @return List of friends' profile pictures.
+     */
+    List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
 }

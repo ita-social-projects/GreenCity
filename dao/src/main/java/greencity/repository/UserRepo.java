@@ -1,6 +1,8 @@
 package greencity.repository;
 
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -150,4 +152,30 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT friend_id FROM users_friends "
         + "WHERE user_id = :friendId AND friend_id = :userId AND status = 'FRIEND'))")
     Optional<User> findUserByIdAndByFriendId(Long userId, Long friendId);
+
+    /**
+     * Retrieves the list of friend IDs assigned to the habit.
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userId  {@link UserVO} id.
+     * @return List of friends IDs.
+     */
+    @Query(nativeQuery = true, value = "(SELECT user_id FROM users_friends AS uf "
+        + "WHERE uf.friend_id = :userId AND uf.status = 'FRIEND' AND "
+        + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.user_id "
+        + "AND ha.status = 'INPROGRESS') = 1) "
+        + "UNION "
+        + "(SELECT friend_id FROM users_friends AS uf "
+        + "WHERE uf.user_id = :userId AND uf.status = 'FRIEND' AND "
+        + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
+        + "AND ha.status = 'INPROGRESS') = 1)")
+    List<Long> getFriendsIdsAssignedToHabit(Long userId, Long habitId);
+
+    /**
+     * Retrieves the list of user by their IDs.
+     *
+     * @param userIds the list of user IDs.
+     * @return List of users.
+     */
+    List<User> findAllByIdIn(List<Long> userIds);
 }

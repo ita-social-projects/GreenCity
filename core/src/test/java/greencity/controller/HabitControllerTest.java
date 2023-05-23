@@ -135,4 +135,14 @@ class HabitControllerTest {
             .andExpect(status().isCreated());
         verify(habitService).addCustomHabit(dto, null, principal.getName());
     }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePictures() throws Exception {
+        Long habitId = 1L;
+
+        mockMvc.perform(get(habitLink + "/{habitId}/friends/profile-pictures", habitId))
+            .andExpect(status().isOk());
+
+        verify(habitService).getFriendsAssignedToHabitProfilePictures(habitId, null);
+    }
 }
