@@ -248,8 +248,7 @@ public class HabitServiceImpl implements HabitService {
         if (!habitRepo.existsById(habitId)) {
             throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
         }
-        List<Long> userIds = userRepo.getFriendsIdsAssignedToHabit(userId, habitId);
-        List<User> users = userRepo.findAllByIdIn(userIds);
+        List<User> users = userRepo.getFriendsIdsAssignedToHabit(userId, habitId);
         return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
             .collect(Collectors.toList());
     }

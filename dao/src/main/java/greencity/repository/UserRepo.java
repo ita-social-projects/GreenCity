@@ -154,13 +154,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<User> findUserByIdAndByFriendId(Long userId, Long friendId);
 
     /**
-     * Retrieves the list of friend IDs assigned to the habit.
+     * Retrieves the list of friend assigned to the habit.
      *
      * @param habitId {@link HabitVO} id.
      * @param userId  {@link UserVO} id.
-     * @return List of friends IDs.
+     * @return List of friends.
      */
-    @Query(nativeQuery = true, value = "(SELECT user_id FROM users_friends AS uf "
+    @Query(nativeQuery = true, value = "SELECT * FROM ((SELECT user_id FROM users_friends AS uf "
         + "WHERE uf.friend_id = :userId AND uf.status = 'FRIEND' AND "
         + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.user_id "
         + "AND ha.status = 'INPROGRESS') = 1) "
@@ -168,14 +168,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT friend_id FROM users_friends AS uf "
         + "WHERE uf.user_id = :userId AND uf.status = 'FRIEND' AND "
         + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
-        + "AND ha.status = 'INPROGRESS') = 1)")
-    List<Long> getFriendsIdsAssignedToHabit(Long userId, Long habitId);
-
-    /**
-     * Retrieves the list of user by their IDs.
-     *
-     * @param userIds the list of user IDs.
-     * @return List of users.
-     */
-    List<User> findAllByIdIn(List<Long> userIds);
+        + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN users as u ON user_id = u.id")
+    List<User> getFriendsIdsAssignedToHabit(Long userId, Long habitId);
 }
