@@ -183,13 +183,16 @@ public class HabitController {
     }
 
     /**
-     * Retrieves the list of friends' (assigned to the habit) profile pictures.
+     * Retrieves the list of profile pictures of the user's friends (which have
+     * INPROGRESS assign to the habit).
      *
      * @param habitId {@link HabitVO} id.
      * @param userVO  {@link UserVO}.
      * @return List of friends profile picture.
      */
-    @ApiOperation(value = "Retrieves the list of friends' (assigned to the habit) profile pictures.")
+    @ApiOperation(
+        value = "Retrieves the list of profile pictures of the user's friends "
+            + "(which have INPROGRESS assign to the habit).")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

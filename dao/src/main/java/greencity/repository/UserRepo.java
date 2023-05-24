@@ -154,7 +154,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Optional<User> findUserByIdAndByFriendId(Long userId, Long friendId);
 
     /**
-     * Retrieves the list of friend assigned to the habit.
+     * Retrieves the list of the user's friends (which have INPROGRESS assign to the
+     * habit).
      *
      * @param habitId {@link HabitVO} id.
      * @param userId  {@link UserVO} id.

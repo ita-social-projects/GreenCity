@@ -61,6 +61,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -574,9 +575,9 @@ class HabitServiceImplTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
-        verify(habitRepo, times(0)).existsById(anyLong());
-        verify(userRepo, times(0)).getFriendsAssignedToHabit(anyLong(), anyLong());
-        verify(modelMapper, times(0)).map(any(), any());
+        verify(habitRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
     }
 
     @Test
@@ -594,7 +595,7 @@ class HabitServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(habitRepo).existsById(habitId);
-        verify(userRepo, times(0)).getFriendsAssignedToHabit(anyLong(), anyLong());
-        verify(modelMapper, times(0)).map(any(), any());
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
     }
 }

@@ -104,7 +104,8 @@ public interface HabitService {
         String userEmail);
 
     /**
-     * Retrieves the list of friends' (assigned to the habit) profile pictures.
+     * Retrieves the list of profile pictures of the user's friends (which have
+     * INPROGRESS assign to the habit).
      *
      * @param habitId {@link HabitVO} id.
      * @param userId  {@link UserVO} id.
