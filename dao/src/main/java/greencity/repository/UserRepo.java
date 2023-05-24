@@ -169,5 +169,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "WHERE uf.user_id = :userId AND uf.status = 'FRIEND' AND "
         + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
         + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN users as u ON user_id = u.id")
-    List<User> getFriendsIdsAssignedToHabit(Long userId, Long habitId);
+    List<User> getFriendsAssignedToHabit(Long userId, Long habitId);
 }

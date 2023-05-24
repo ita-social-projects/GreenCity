@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 class UserProfilePictureDtoMapperTest {
     @InjectMocks
-    UserProfilePictureDtoMapper mapper;
+    private UserProfilePictureDtoMapper mapper;
 
     @Test
     void convertTest() {

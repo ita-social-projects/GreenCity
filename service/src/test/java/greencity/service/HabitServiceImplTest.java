@@ -548,7 +548,7 @@ class HabitServiceImplTest {
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(habitRepo.existsById(habitId)).thenReturn(true);
-        when(userRepo.getFriendsIdsAssignedToHabit(userId, habitId)).thenReturn(List.of(friend));
+        when(userRepo.getFriendsAssignedToHabit(userId, habitId)).thenReturn(List.of(friend));
         when(modelMapper.map(friend, UserProfilePictureDto.class)).thenReturn(friendProfilePicture);
 
         List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
@@ -557,7 +557,7 @@ class HabitServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(habitRepo).existsById(habitId);
-        verify(userRepo).getFriendsIdsAssignedToHabit(userId, habitId);
+        verify(userRepo).getFriendsAssignedToHabit(userId, habitId);
         verify(modelMapper).map(friend, UserProfilePictureDto.class);
     }
 
@@ -575,7 +575,7 @@ class HabitServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(habitRepo, times(0)).existsById(anyLong());
-        verify(userRepo, times(0)).getFriendsIdsAssignedToHabit(anyLong(), anyLong());
+        verify(userRepo, times(0)).getFriendsAssignedToHabit(anyLong(), anyLong());
         verify(modelMapper, times(0)).map(any(), any());
     }
 
@@ -594,7 +594,7 @@ class HabitServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(habitRepo).existsById(habitId);
-        verify(userRepo, times(0)).getFriendsIdsAssignedToHabit(anyLong(), anyLong());
+        verify(userRepo, times(0)).getFriendsAssignedToHabit(anyLong(), anyLong());
         verify(modelMapper, times(0)).map(any(), any());
     }
 }
