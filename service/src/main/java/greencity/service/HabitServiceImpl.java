@@ -7,6 +7,7 @@ import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -234,5 +235,21 @@ public class HabitServiceImpl implements HabitService {
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
         return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        if (!habitRepo.existsById(habitId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+        }
+        List<User> users = userRepo.getFriendsAssignedToHabit(userId, habitId);
+        return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
+            .collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -12,6 +13,8 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -177,5 +180,30 @@ public class HabitController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(habitService.addCustomHabit(request, image, principal.getName()));
+    }
+
+    /**
+     * Retrieves the list of profile pictures of the user's friends (which have
+     * INPROGRESS assign to the habit).
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userVO  {@link UserVO}.
+     * @return List of friends profile picture.
+     */
+    @ApiOperation(
+        value = "Retrieves the list of profile pictures of the user's friends "
+            + "(which have INPROGRESS assign to the habit).")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @GetMapping("/{habitId}/friends/profile-pictures")
+    public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
+        @PathVariable Long habitId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.getFriendsAssignedToHabitProfilePictures(habitId, userVO.getId()));
     }
 }

@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
@@ -8,6 +9,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -51,6 +53,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -58,6 +61,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -527,5 +531,71 @@ class HabitServiceImplTest {
 
         verify(userRepo).findByEmail("user@gmail.com");
         verify(customHabitMapper).convert(addCustomHabitDtoRequest);
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+        Long friendId = 3L;
+        User friend = ModelUtils.getUser();
+        friend.setId(friendId);
+        friend.setProfilePicturePath("test");
+        UserProfilePictureDto friendProfilePicture = UserProfilePictureDto.builder()
+            .id(friend.getId())
+            .name(friend.getName())
+            .profilePicturePath(friend.getProfilePicturePath())
+            .build();
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(habitRepo.existsById(habitId)).thenReturn(true);
+        when(userRepo.getFriendsAssignedToHabit(userId, habitId)).thenReturn(List.of(friend));
+        when(modelMapper.map(friend, UserProfilePictureDto.class)).thenReturn(friendProfilePicture);
+
+        List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
+        assertFalse(list.isEmpty());
+        assertEquals(friendProfilePicture, list.get(0));
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo).existsById(habitId);
+        verify(userRepo).getFriendsAssignedToHabit(userId, habitId);
+        verify(modelMapper).map(friend, UserProfilePictureDto.class);
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesWhenUserNotFoundTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesWhenHabitNotFoundTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(habitRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+
+        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo).existsById(habitId);
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
     }
 }
