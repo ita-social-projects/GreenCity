@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
 
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
 import java.util.Optional;
 
 import greencity.service.TagsService;
@@ -19,6 +21,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -32,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 
 @ExtendWith(MockitoExtension.class)
 class HabitControllerTest {
@@ -47,14 +52,23 @@ class HabitControllerTest {
     @InjectMocks
     HabitController habitController;
 
+    @Mock
+    private Validator mockValidator;
+
     private static final String habitLink = "/habit";
 
     private final Principal principal = getPrincipal();
+
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(habitController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setControllerAdvice(new CustomExceptionHandler(errorAttributes, objectMapper))
+            .setValidator(mockValidator)
             .build();
     }
 
@@ -232,8 +246,12 @@ class HabitControllerTest {
     }
 
     @Test
-    void deactivateTariffForChosenParamBadRequest() throws Exception {
-        mockMvc.perform(get(habitLink + "/search"))
+    void findByDifferentParametersBadRequest() throws Exception {
+        Locale locale = new Locale("en");
+        Gson gson = new Gson();
+        mockMvc.perform(get(habitLink + "/search")
+            .content(gson.toJson(locale))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
 

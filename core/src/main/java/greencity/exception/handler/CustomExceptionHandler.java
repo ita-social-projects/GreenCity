@@ -249,23 +249,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Method intercept exception {@link BadPlaceRequestException}.
-     *
-     * @param ex      Exception witch should be intercepted.
-     * @param request contain detail about occur exception
-     * @return ResponseEntity witch contain http status and body with message of
-     *         exception.
-     * @author Lilia Mokhnatska
-     */
-    @ExceptionHandler(ResponseStatusException.class)
-    public final ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex,
-        WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
-    }
-
-    /**
      * Method intercept exception {@link BadRefreshTokenException}.
      *
      * @param request contain detail about occur exception

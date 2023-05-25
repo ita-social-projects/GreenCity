@@ -153,7 +153,7 @@ public class HabitController {
      * @param complexity    {@link Integer} value.
      * @return Pageable of {@link HabitDto} instance.
      */
-    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexity and language code.")
+    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexity.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -167,12 +167,12 @@ public class HabitController {
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
         @RequestParam(required = false, name = "complexity") Optional<Integer> complexity,
         @ApiIgnore Pageable pageable) throws BadRequestException {
-        if (tags.isPresent() || isCustomHabit.isPresent() || complexity.isPresent()) {
+        if ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 habitService.getAllByDifferentParameters(pageable, tags,
                     isCustomHabit, complexity, locale.getLanguage()));
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You should enter at least one parameter");
+            throw new BadRequestException("You should enter at least one parameter");
         }
     }
 

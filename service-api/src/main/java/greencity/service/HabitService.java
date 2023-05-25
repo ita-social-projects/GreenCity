@@ -54,8 +54,8 @@ public interface HabitService {
     PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
-     * Method that find all habit's translations by tags, isCustomHabit, complexity,
-     * habitAssignStatus and language code.
+     * Method that return all PageableDto of HabitDto by tags, isCustomHabit,
+     * complexity, habitAssignStatus and language code.
      *
      * @param pageable      {@link Pageable}
      * @param tags          {@link List} of {@link String} tags
