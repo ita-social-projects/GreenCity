@@ -258,7 +258,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      * @author Lilia Mokhnatska
      */
     @ExceptionHandler(ResponseStatusException.class)
-    public final ResponseEntity<Object> handleBadPlaceRequestException1(ResponseStatusException ex,
+    public final ResponseEntity<Object> handleResponseStatusException(ResponseStatusException ex,
         WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
