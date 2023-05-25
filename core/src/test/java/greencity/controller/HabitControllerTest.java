@@ -135,6 +135,17 @@ class HabitControllerTest {
     }
 
     @Test
+    void findByDifferentParametersBadRequest1() throws Exception {
+        Locale locale = new Locale("en");
+        Gson gson = new Gson();
+        mockMvc.perform(get(habitLink + "/search")
+            .param("tags", "")
+            .content(gson.toJson(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void findByDifferentParametersWithComplexityAndTags() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
