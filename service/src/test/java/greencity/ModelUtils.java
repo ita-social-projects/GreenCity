@@ -234,6 +234,11 @@ public class ModelUtils {
             Collections.emptySet(), Collections.emptySet());
     }
 
+    public static Tag getHabitTag() {
+        return new Tag(1L, TagType.HABIT, getHabitTagTranslations(), Collections.emptyList(),
+            Collections.emptySet(), Collections.emptySet());
+    }
+
     public static Tag getEventTag() {
         return new Tag(1L, TagType.EVENT, getEventTagTranslations(), Collections.emptyList(),
             Collections.emptySet(), Collections.emptySet());
@@ -244,6 +249,15 @@ public class ModelUtils {
             TagTranslation.builder().id(1L).name("Новини").language(Language.builder().id(2L).code("ua").build())
                 .build(),
             TagTranslation.builder().id(2L).name("News").language(Language.builder().id(1L).code("en").build())
+                .build());
+    }
+
+    public static List<TagTranslation> getHabitTagTranslations() {
+        return Arrays.asList(
+            TagTranslation.builder().id(1L).name("Багаторазове використання")
+                .language(Language.builder().id(2L).code("ua").build())
+                .build(),
+            TagTranslation.builder().id(2L).name("Reusable").language(Language.builder().id(1L).code("en").build())
                 .build());
     }
 
@@ -261,6 +275,10 @@ public class ModelUtils {
 
     public static List<Tag> getTags() {
         return Collections.singletonList(getTag());
+    }
+
+    public static List<Tag> getHabitsTags() {
+        return Collections.singletonList(getHabitTag());
     }
 
     public static List<Tag> getEventTags() {
@@ -1333,6 +1351,11 @@ public class ModelUtils {
             .complexity(1).tags(new HashSet<>(getTags())).build();
     }
 
+    public static Habit getHabitWithCustom() {
+        return Habit.builder().id(1L).image("image.png")
+            .complexity(1).isCustomHabit(true).tags(new HashSet<>(getHabitsTags())).build();
+    }
+
     public static HabitTranslation getHabitTranslation() {
         return HabitTranslation.builder()
             .id(1L)
@@ -1341,6 +1364,17 @@ public class ModelUtils {
             .language(getLanguage())
             .name("test name")
             .habit(getHabit())
+            .build();
+    }
+
+    public static HabitTranslation getHabitTranslationWithCustom() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("test description")
+            .habitItem("test habit item")
+            .language(getLanguage())
+            .name("test name")
+            .habit(getHabitWithCustom())
             .build();
     }
 
@@ -1471,6 +1505,7 @@ public class ModelUtils {
         return HabitDto.builder()
             .id(1L)
             .image("image")
+            .isCustomHabit(true)
             .habitTranslation(new HabitTranslationDto())
             .defaultDuration(1)
             .tags(new ArrayList<>())

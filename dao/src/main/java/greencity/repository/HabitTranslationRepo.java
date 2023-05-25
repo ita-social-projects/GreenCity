@@ -83,6 +83,124 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
+     * Method that find all habit's translations by tags, complexity, isCustomHabit
+     * and language code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param tags          {@link List} of {@link String} tags
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     * @param languageCode  language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
+        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE lower(t.name) IN (:tags) AND h.is_custom_habit = :isCustomHabit AND h.complexity = :complexity "
+        + "AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByDifferentParameters(Pageable pageable, List<String> tags,
+        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
+
+    /**
+     * Method that find all habit's translations by isCustomHabit and language code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param isCustomHabit {@link Boolean} value.
+     * @param languageCode  language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE h.is_custom_habit = :isCustomHabit AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByIsCustomHabitAndLanguageCode(Pageable pageable, Optional<Boolean> isCustomHabit,
+        String languageCode);
+
+    /**
+     * Method that find all habit's translations by complexity and language code.
+     *
+     * @param pageable     {@link Pageable}
+     * @param complexity   {@link Integer} value.
+     * @param languageCode language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE  h.complexity = :complexity AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByComplexityAndLanguageCode(Pageable pageable, Optional<Integer> complexity,
+        String languageCode);
+
+    /**
+     * Method that find all habit's translations by tags, isCustomHabit and language
+     * code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param tags          {@link List} of {@link String} tags
+     * @param isCustomHabit {@link Boolean} value.
+     * @param languageCode  language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
+        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE lower(t.name) IN (:tags) AND h.is_custom_habit = :isCustomHabit AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByTagsAndIsCustomHabitAndLanguageCode(Pageable pageable, List<String> tags,
+        Optional<Boolean> isCustomHabit, String languageCode);
+
+    /**
+     * Method that find all habit's translations by tags, complexity and language
+     * code.
+     *
+     * @param pageable     {@link Pageable}
+     * @param tags         {@link List} of {@link String} tags
+     * @param complexity   {@link Integer} value.
+     * @param languageCode language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
+        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE lower(t.name) IN (:tags) AND h.complexity = :complexity AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCode(Pageable pageable, List<String> tags,
+        Optional<Integer> complexity, String languageCode);
+
+    /**
+     * Method that find all habit's translations by isCustomHabit, complexity and
+     * language code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     * @param languageCode  language code {@link String}
+     * @return {@link List} of {@link HabitTranslation}.
+     *
+     * @author Lilia Mokhnatska
+     */
+    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
+        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
+        + "INNER JOIN languages AS l ON l.id = ht.language_id "
+        + "WHERE h.is_custom_habit = :isCustomHabit AND h.complexity = :complexity AND l.code = :languageCode")
+    Page<HabitTranslation> findAllByIsCustomHabitAndComplexityAndLanguageCode(Pageable pageable,
+        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
+
+    /**
      * Method return {@link List} of {@link HabitTranslation} by habit.
      *
      * @param habit {@link Habit}.

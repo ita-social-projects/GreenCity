@@ -10,6 +10,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import greencity.service.TagsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +98,29 @@ class HabitControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(tagsService).findAllHabitsTags(locale.getLanguage());
+    }
+
+    @Test
+    void findByDifferentParameters() throws Exception {
+        Locale locale = new Locale("en");
+        Gson gson = new Gson();
+        int pageNumber = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        mockMvc.perform(get(habitLink + "/search")
+            .param("complexity", "1")
+            .content(gson.toJson(locale))
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitService).getAllByDifferentParameters(pageable, Optional.empty(), Optional.empty(), Optional.of(1),
+            locale.getLanguage());
+    }
+
+    @Test
+    void deactivateTariffForChosenParamBadRequest() throws Exception {
+        mockMvc.perform(get(habitLink + "/search"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

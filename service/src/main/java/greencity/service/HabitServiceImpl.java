@@ -28,6 +28,7 @@ import greencity.repository.HabitAssignRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -135,6 +136,73 @@ public class HabitServiceImpl implements HabitService {
         habits.forEach(
             habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
         return new PageableDto<>(habits, habitTranslationsPage.getTotalElements(),
+            habitTranslationsPage.getPageable().getPageNumber(),
+            habitTranslationsPage.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<HabitDto> getAllByDifferentParameters(Pageable pageable, Optional<List<String>> tags,
+        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode) {
+        List<String> lowerCaseTags = new ArrayList<>();
+        if (tags.isPresent()) {
+            lowerCaseTags = tags.get().stream().map(String::toLowerCase).collect(Collectors.toList());
+        }
+        Page<HabitTranslation> habitTranslationsPage;
+
+        if (isCustomHabit.isPresent() && tags.isPresent() && complexity.isPresent()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByDifferentParameters(pageable, lowerCaseTags,
+                isCustomHabit, complexity, languageCode);
+        } else if (complexity.isPresent() && isCustomHabit.isPresent()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
+                isCustomHabit, complexity, languageCode);
+        } else if (complexity.isPresent() && tags.isPresent()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
+                    complexity, languageCode);
+        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
+                lowerCaseTags, isCustomHabit, languageCode);
+        } else if (tags.isPresent()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+        } else if (complexity.isPresent()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByComplexityAndLanguageCode(pageable, complexity, languageCode);
+        } else {
+            habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
+                isCustomHabit, languageCode);
+        }
+        return buildPageableDtoForDifferentParameters(habitTranslationsPage);
+    }
+
+    /**
+     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page}
+     * of {@link HabitTranslation}.
+     *
+     * @param habitTranslationsPage {@link Page} of {@link HabitTranslation}
+     * @return {@link PageableDto} of {@link HabitDto}
+     * @author Lilia Mokhnatska
+     */
+    private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage) {
+        List<HabitDto> habits = habitTranslationsPage.stream()
+            .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
+            .collect(Collectors.toList());
+        habits.forEach(
+            habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
+
+        for (HabitDto habitDto : habits) {
+            Habit habit = habitRepo.findById(habitDto.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
+            boolean isCustomHabit = habit.getIsCustomHabit();
+            habitDto.setIsCustomHabit(isCustomHabit);
+            habitDto.setCustomShoppingListItems(
+                customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
+        }
+        return new PageableDto<>(habits,
+            habitTranslationsPage.getTotalElements(),
             habitTranslationsPage.getPageable().getPageNumber(),
             habitTranslationsPage.getTotalPages());
     }
