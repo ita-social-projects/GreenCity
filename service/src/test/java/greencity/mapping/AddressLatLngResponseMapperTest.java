@@ -29,6 +29,7 @@ class AddressLatLngResponseMapperTest {
                 .city(expected.getCityUa())
                 .region(expected.getRegionUa())
                 .country(expected.getCountryUa())
+                .formattedAddress(expected.getFormattedAddressUa())
                 .build())
             .addressEn(AddressResponse
                 .builder()
@@ -37,6 +38,7 @@ class AddressLatLngResponseMapperTest {
                 .city(expected.getCityEn())
                 .region(expected.getRegionEn())
                 .country(expected.getCountryEn())
+                .formattedAddress(expected.getFormattedAddressEn())
                 .build())
             .build();
         Assertions.assertEquals(expected, mapper.convert(response));

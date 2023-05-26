@@ -46,4 +46,10 @@ public final class Address {
 
     @Column
     private String countryUa;
+
+    @Column
+    private String formattedAddressEn;
+
+    @Column
+    private String formattedAddressUa;
 }
