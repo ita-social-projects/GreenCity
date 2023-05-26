@@ -2333,6 +2333,8 @@ public class ModelUtils {
     public static GeocodingResult[] getGeocodingResultUk() {
         GeocodingResult geocodingResult = new GeocodingResult();
 
+        geocodingResult.formattedAddress = "Повна відформатована адреса";
+
         AddressComponent route = new AddressComponent();
         route.longName = "вулиця";
         route.types = new AddressComponentType[] {AddressComponentType.ROUTE};
@@ -2366,6 +2368,8 @@ public class ModelUtils {
 
     public static GeocodingResult[] getGeocodingResultEn() {
         GeocodingResult geocodingResult = new GeocodingResult();
+
+        geocodingResult.formattedAddress = "Full formatted address";
 
         AddressComponent route = new AddressComponent();
         route.longName = "fake street name";
