@@ -21,7 +21,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -227,6 +234,42 @@ public class EventsController {
     @DeleteMapping("/removeAttender/{eventId}")
     public ResponseEntity<Object> removeAttender(@PathVariable Long eventId, @ApiIgnore Principal principal) {
         eventService.removeAttender(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for saving an Event by ID.
+     *
+     * @author Anton Bondar.
+     */
+    @ApiOperation(value = "Saving of an event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/save/{eventId}")
+    public ResponseEntity<Object> saveEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.saveEvent(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for undoing the saving of an Event by ID.
+     *
+     * @author Anton Bondar.
+     */
+    @ApiOperation(value = "Undo the saving of an event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/undoSave/{eventId}")
+    public ResponseEntity<Object> undoSaveEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.undoSaveEvent(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

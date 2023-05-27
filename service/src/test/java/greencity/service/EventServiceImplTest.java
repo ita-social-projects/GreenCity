@@ -32,45 +32,56 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
 import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
     @Mock
     ModelMapper modelMapper;
-
     @Mock
     EventRepo eventRepo;
-
     @Mock
     RestClient restClient;
-
     @Mock
     TagsService tagService;
-
     @Mock
     UserService userService;
-
     @Mock
     FileService fileService;
-
     @Mock
     GoogleApiService googleApiService;
-
     @Mock
     UserRepo userRepo;
-
     @InjectMocks
     EventServiceImpl eventService;
 
@@ -658,6 +669,55 @@ class EventServiceImplTest {
     }
 
     @Test
+    void saveEventTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.saveEvent(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void saveEventThrowNotFoundExceptionTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.saveEvent(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void undoSaveEventTest() {
+        Event event = ModelUtils.getEvent();
+        Set<User> userSet = new HashSet<>();
+        User user = ModelUtils.getUser();
+        user.setId(22L);
+        userSet.add(user);
+        event.setFollowers(userSet);
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
+
+        eventService.undoSaveEvent(event.getId(), user.getEmail());
+
+        verify(eventRepo).save(event);
+        verify(eventRepo).findById(any());
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+    }
+
+    @Test
+    void undoSaveEventThrowNotFoundExceptionTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.undoSaveEvent(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
     void removeAttender() {
         Event event = ModelUtils.getEvent();
         Set<User> userSet = new HashSet<>();
@@ -751,5 +811,21 @@ class EventServiceImplTest {
         assertEquals(eventService.getAllEventAttenders(event.getId()), eventAttenderDtos);
 
         verify(modelMapper).map(user, EventAttenderDto.class);
+    }
+
+    @Test
+    void findByIdTest() {
+        Event event = ModelUtils.getEvent();
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(eventService.findById(1L)).thenReturn(ModelUtils.getEventVO());
+        assertEquals(eventService.findById(1L), ModelUtils.getEventVO());
+        verify(eventRepo, times(2)).findById(any());
+    }
+
+    @Test
+    void findByIdThrowNotFoundExceptionTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.findById(1L));
+        verify(eventRepo).findById(any());
     }
 }

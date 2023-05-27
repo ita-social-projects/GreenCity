@@ -44,6 +44,8 @@ public class EventDto {
 
     private Boolean isSubscribed;
 
+    private Boolean isSaved;
+
     /**
      * Return String of event tags in English.
      *

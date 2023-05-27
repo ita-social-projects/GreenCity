@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Bondar-3" author="Anton Bondar">
+        <createTable tableName="events_followers">
+            <column name="event_id" type="BIGINT" >
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="events_followers"
+                       columnNames="event_id, user_id"/>
+        <addForeignKeyConstraint baseTableName="events_followers"
+                                 baseColumnNames="event_id"
+                                 constraintName="fk_events_followers_event_id"
+                                 referencedTableName="events"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="events_followers"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_events_followers_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

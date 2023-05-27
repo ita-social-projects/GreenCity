@@ -233,6 +233,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/events/comments/{eventId}",
                 "/events/comments/like",
                 EVENTS + "/addAttender/{eventId}",
+                EVENTS + "/save/{eventId}",
                 EVENTS + "/create",
                 EVENTS + "/rateEvent/{eventId}/{rate}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
@@ -295,6 +296,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST,
                 EVENTS + "/delete/{eventId}",
                 EVENTS + "/removeAttender/{eventId}",
+                EVENTS + "/undoSave/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)

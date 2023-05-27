@@ -83,6 +83,26 @@ public interface EventService {
     void removeAttender(Long eventId, String email);
 
     /**
+     * Method for saving an Event by ID.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     *
+     * @author Anton Bondar.
+     */
+    void saveEvent(Long eventId, String email);
+
+    /**
+     * Method for undoing the saving of an Event by ID.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     *
+     * @author Anton Bondar.
+     */
+    void undoSaveEvent(Long eventId, String email);
+
+    /**
      * Return Events searched by some query.
      *
      * @param paging - pagination params.
