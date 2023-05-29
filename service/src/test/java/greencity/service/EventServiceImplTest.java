@@ -669,7 +669,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void saveEventTest() {
+    void addToFavoritesTest() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
 
@@ -678,7 +678,7 @@ class EventServiceImplTest {
             .thenReturn(user);
         when(eventRepo.save(event)).thenReturn(event);
 
-        eventService.saveEvent(1L, TestConst.EMAIL);
+        eventService.addToFavorites(1L, TestConst.EMAIL);
 
         verify(eventRepo).findById(any());
         verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
@@ -686,14 +686,14 @@ class EventServiceImplTest {
     }
 
     @Test
-    void saveEventThrowNotFoundExceptionTest() {
+    void addToFavoritesThrowNotFoundExceptionTest() {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> eventService.saveEvent(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> eventService.addToFavorites(1L, TestConst.EMAIL));
         verify(eventRepo).findById(any());
     }
 
     @Test
-    void undoSaveEventTest() {
+    void removeFromFavoritesTest() {
         Event event = ModelUtils.getEvent();
         Set<User> userSet = new HashSet<>();
         User user = ModelUtils.getUser();
@@ -703,7 +703,7 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
 
-        eventService.undoSaveEvent(event.getId(), user.getEmail());
+        eventService.removeFromFavorites(event.getId(), user.getEmail());
 
         verify(eventRepo).save(event);
         verify(eventRepo).findById(any());
@@ -711,9 +711,9 @@ class EventServiceImplTest {
     }
 
     @Test
-    void undoSaveEventThrowNotFoundExceptionTest() {
+    void removeFromFavoritesThrowNotFoundExceptionTest() {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
-        assertThrows(NotFoundException.class, () -> eventService.undoSaveEvent(1L, TestConst.EMAIL));
+        assertThrows(NotFoundException.class, () -> eventService.removeFromFavorites(1L, TestConst.EMAIL));
         verify(eventRepo).findById(any());
     }
 

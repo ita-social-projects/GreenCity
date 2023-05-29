@@ -205,22 +205,22 @@ class EventsControllerTest {
 
     @Test
     @SneakyThrows
-    void saveEventTest() {
+    void addToFavoritesTest() {
         Long eventId = 1L;
-        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/save/{eventId}", eventId)
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addToFavorites/{eventId}", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).saveEvent(eventId, principal.getName());
+        verify(eventService).addToFavorites(eventId, principal.getName());
     }
 
     @Test
     @SneakyThrows
-    void undoSaveEventTest() {
+    void removeFromFavoritesTest() {
         Long eventId = 1L;
-        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/undoSave/{eventId}", eventId)
+        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeFromFavorites/{eventId}", eventId)
             .principal(principal))
             .andExpect(status().isOk());
-        verify(eventService).undoSaveEvent(eventId, principal.getName());
+        verify(eventService).removeFromFavorites(eventId, principal.getName());
     }
 
     @Test

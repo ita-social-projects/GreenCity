@@ -177,7 +177,7 @@ public class EventServiceImpl implements EventService {
                 .contains(user.getId()))
             .map(Event::getId)
             .collect(Collectors.toList());
-        eventDtos.getPage().forEach(eventDto -> eventDto.setIsSaved(eventIds.contains(eventDto.getId())));
+        eventDtos.getPage().forEach(eventDto -> eventDto.setIsFavorite(eventIds.contains(eventDto.getId())));
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
@@ -220,7 +220,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void saveEvent(Long eventId, String email) {
+    public void addToFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
@@ -230,7 +230,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void undoSaveEvent(Long eventId, String email) {
+    public void removeFromFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);

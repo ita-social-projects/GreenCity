@@ -238,38 +238,38 @@ public class EventsController {
     }
 
     /**
-     * Method for saving an Event by ID.
+     * Method for adding an event to favorites by event id.
      *
      * @author Anton Bondar.
      */
-    @ApiOperation(value = "Saving of an event")
+    @ApiOperation(value = "Add an event to favorites")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PostMapping("/save/{eventId}")
-    public ResponseEntity<Object> saveEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
-        eventService.saveEvent(eventId, principal.getName());
+    @PostMapping("/addToFavorites/{eventId}")
+    public ResponseEntity<Object> addToFavorites(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.addToFavorites(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
-     * Method for undoing the saving of an Event by ID.
+     * Method for removing an event from favorites by event id.
      *
      * @author Anton Bondar.
      */
-    @ApiOperation(value = "Undo the saving of an event")
+    @ApiOperation(value = "Remove an event from favorites")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @DeleteMapping("/undoSave/{eventId}")
-    public ResponseEntity<Object> undoSaveEvent(@PathVariable Long eventId, @ApiIgnore Principal principal) {
-        eventService.undoSaveEvent(eventId, principal.getName());
+    @DeleteMapping("/removeFromFavorites/{eventId}")
+    public ResponseEntity<Object> removeFromFavorites(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.removeFromFavorites(eventId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
