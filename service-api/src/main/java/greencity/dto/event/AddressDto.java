@@ -21,4 +21,6 @@ public class AddressDto {
     private String regionUa;
     private String countryEn;
     private String countryUa;
+    private String formattedAddressEn;
+    private String formattedAddressUa;
 }
