@@ -50,17 +50,17 @@ public class EventDtoToEventMapper extends AbstractConverter<EventDto, Event> {
             event.setAdditionalImages(eventImages);
         }
 
-        List<EventDateLocation> eventDateLocationsDto = new ArrayList<>();
+        List<EventDateLocation> eventDateLocations = new ArrayList<>();
         for (var date : eventDto.getDates()) {
             AddressDto addressDto = date.getCoordinates();
-            eventDateLocationsDto.add(EventDateLocation.builder()
+            eventDateLocations.add(EventDateLocation.builder()
                 .startDate(date.getStartDate())
                 .finishDate(date.getFinishDate())
                 .address(mapper.convert(addressDto))
                 .onlineLink(date.getOnlineLink())
                 .event(event).build());
         }
-        event.setDates(eventDateLocationsDto);
+        event.setDates(eventDateLocations);
 
         return event;
     }

@@ -80,7 +80,7 @@ public class GoogleApiService {
         try {
             GeocodingResult[] results = GeocodingApi.newRequest(context)
                 .latlng(latLng).language(locale.getLanguage()).await();
-            return getAddressResponse(results[0].addressComponents);
+            return getAddressResponse(results[0]);
         } catch (IOException | InterruptedException | ApiException e) {
             log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
             Thread.currentThread().interrupt();
@@ -88,8 +88,10 @@ public class GoogleApiService {
         }
     }
 
-    private AddressResponse getAddressResponse(AddressComponent[] addressComponents) {
+    private AddressResponse getAddressResponse(GeocodingResult geocodingResult) {
+        AddressComponent[] addressComponents = geocodingResult.addressComponents;
         AddressResponse addressResponse = new AddressResponse();
+        addressResponse.setFormattedAddress(geocodingResult.formattedAddress);
         for (AddressComponent component : addressComponents) {
             List<AddressComponentType> componentTypes = Arrays.asList(component.types);
             if (componentTypes.contains(AddressComponentType.STREET_NUMBER)) {
