@@ -185,7 +185,7 @@ public class HabitController {
      *
      * @author Lilia Mokhnatska
      */
-    private Boolean isValid(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
+    private boolean isValid(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
         Optional<Integer> complexity) {
         return ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
     }
