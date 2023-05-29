@@ -152,20 +152,20 @@ public class HabitServiceImpl implements HabitService {
         }
         Page<HabitTranslation> habitTranslationsPage;
 
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexity.isPresent()) {
+        if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && complexity.isPresent()) {
             habitTranslationsPage = habitTranslationRepo.findAllByDifferentParameters(pageable, lowerCaseTags,
                 isCustomHabit, complexity, languageCode);
         } else if (complexity.isPresent() && isCustomHabit.isPresent()) {
             habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
                 isCustomHabit, complexity, languageCode);
-        } else if (complexity.isPresent() && tags.isPresent()) {
+        } else if (complexity.isPresent() && !lowerCaseTags.isEmpty()) {
             habitTranslationsPage =
                 habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
                     complexity, languageCode);
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
+        } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
             habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
                 lowerCaseTags, isCustomHabit, languageCode);
-        } else if (tags.isPresent()) {
+        } else if (!lowerCaseTags.isEmpty()) {
             habitTranslationsPage =
                 habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
         } else if (complexity.isPresent()) {

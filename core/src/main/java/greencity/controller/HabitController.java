@@ -166,13 +166,28 @@ public class HabitController {
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
         @RequestParam(required = false, name = "complexity") Optional<Integer> complexity,
         @ApiIgnore Pageable pageable) throws BadRequestException {
-        if ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent()) {
+        if (isValid(tags, isCustomHabit, complexity)) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 habitService.getAllByDifferentParameters(pageable, tags,
                     isCustomHabit, complexity, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
         }
+    }
+
+    /**
+     * Method checks if at least one of the input parameters (tags, isCustomHabit,
+     * complexity) is present.
+     *
+     * @param tags          {@link Set} of {@link String}
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     *
+     * @author Lilia Mokhnatska
+     */
+    private Boolean isValid(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
+        Optional<Integer> complexity) {
+        return ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
     }
 
     /**

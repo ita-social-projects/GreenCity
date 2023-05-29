@@ -213,13 +213,13 @@ class HabitServiceImplTest {
     private static Stream<Arguments> getAllByDifferentParametersArguments() {
         return Stream.of(
             arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(1)),
-            arguments(Optional.ofNullable(null), Optional.of(true), Optional.of(1)),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.ofNullable(null), Optional.of(1)),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.ofNullable(null)),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.ofNullable(null),
-                Optional.ofNullable(null)),
-            arguments(Optional.ofNullable(null), Optional.ofNullable(null), Optional.of(1)),
-            arguments(Optional.ofNullable(null), Optional.of(true), Optional.ofNullable(null)));
+            arguments(Optional.empty(), Optional.of(true), Optional.of(1)),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(1)),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(),
+                Optional.empty()),
+            arguments(Optional.empty(), Optional.empty(), Optional.of(1)),
+            arguments(Optional.empty(), Optional.of(true), Optional.empty()));
     }
 
     @ParameterizedTest
