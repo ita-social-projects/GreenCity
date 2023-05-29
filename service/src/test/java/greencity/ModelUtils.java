@@ -2333,6 +2333,8 @@ public class ModelUtils {
     public static GeocodingResult[] getGeocodingResultUk() {
         GeocodingResult geocodingResult = new GeocodingResult();
 
+        geocodingResult.formattedAddress = "Повна відформатована адреса";
+
         AddressComponent route = new AddressComponent();
         route.longName = "вулиця";
         route.types = new AddressComponentType[] {AddressComponentType.ROUTE};
@@ -2366,6 +2368,8 @@ public class ModelUtils {
 
     public static GeocodingResult[] getGeocodingResultEn() {
         GeocodingResult geocodingResult = new GeocodingResult();
+
+        geocodingResult.formattedAddress = "Full formatted address";
 
         AddressComponent route = new AddressComponent();
         route.longName = "fake street name";
@@ -2410,6 +2414,7 @@ public class ModelUtils {
                 .city("fake city")
                 .region("fake region")
                 .country("fake country")
+                .formattedAddress("Full formatted address")
                 .build())
             .addressUa(AddressResponse
                 .builder()
@@ -2418,6 +2423,7 @@ public class ModelUtils {
                 .city("місто")
                 .region("область")
                 .country("країна")
+                .formattedAddress("Повна відформатована адреса")
                 .build())
             .build();
     }
@@ -2511,6 +2517,8 @@ public class ModelUtils {
             .regionEn("Oblast")
             .countryUa("Країна")
             .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
             .build();
     }
 
@@ -2536,6 +2544,9 @@ public class ModelUtils {
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa("Країна")
+            .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
             .countryEn("Country")
             .build();
     }
