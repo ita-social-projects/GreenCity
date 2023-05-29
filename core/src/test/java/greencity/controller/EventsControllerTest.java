@@ -59,16 +59,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class EventsControllerTest {
+
     private static final String EVENTS_CONTROLLER_LINK = "/events";
+
     private MockMvc mockMvc;
+
     @InjectMocks
     private EventsController eventsController;
+
     @Mock
     private EventService eventService;
+
     @Mock
     private UserService userService;
+
     @Mock
     private ModelMapper modelMapper;
+
     private final Principal principal = getPrincipal();
 
     @BeforeEach

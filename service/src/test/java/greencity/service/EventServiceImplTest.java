@@ -76,8 +76,8 @@ class EventServiceImplTest {
     RestClient restClient;
 
     @Mock
-
     TagsService tagService;
+
     @Mock
     UserService userService;
 
