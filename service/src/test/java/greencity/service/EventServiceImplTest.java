@@ -68,20 +68,28 @@ import static org.mockito.Mockito.when;
 class EventServiceImplTest {
     @Mock
     ModelMapper modelMapper;
+
     @Mock
     EventRepo eventRepo;
+
     @Mock
     RestClient restClient;
+
     @Mock
+
     TagsService tagService;
     @Mock
     UserService userService;
+
     @Mock
     FileService fileService;
+
     @Mock
     GoogleApiService googleApiService;
+
     @Mock
     UserRepo userRepo;
+
     @InjectMocks
     EventServiceImpl eventService;
 
@@ -672,49 +680,90 @@ class EventServiceImplTest {
     void addToFavoritesTest() {
         Event event = ModelUtils.getEvent();
         User user = ModelUtils.getUser();
+        user.setId(2L);
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
-            .thenReturn(user);
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
         when(eventRepo.save(event)).thenReturn(event);
 
         eventService.addToFavorites(1L, TestConst.EMAIL);
 
         verify(eventRepo).findById(any());
-        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
+        verify(userRepo).findByEmail(TestConst.EMAIL);
         verify(eventRepo).save(event);
     }
 
     @Test
-    void addToFavoritesThrowNotFoundExceptionTest() {
+    void addToFavoritesThrowsExceptionWhenEventNotFoundTest() {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> eventService.addToFavorites(1L, TestConst.EMAIL));
         verify(eventRepo).findById(any());
     }
 
     @Test
-    void removeFromFavoritesTest() {
-        Event event = ModelUtils.getEvent();
-        Set<User> userSet = new HashSet<>();
-        User user = ModelUtils.getUser();
-        user.setId(22L);
-        userSet.add(user);
-        event.setFollowers(userSet);
-        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
-
-        eventService.removeFromFavorites(event.getId(), user.getEmail());
-
-        verify(eventRepo).save(event);
+    void addToFavoritesThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.addToFavorites(1L, TestConst.EMAIL));
         verify(eventRepo).findById(any());
-        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
     }
 
     @Test
-    void removeFromFavoritesThrowNotFoundExceptionTest() {
+    void addToFavoritesThrowsExceptionWhenUserHasAlreadyAddedEventToFavoritesTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.addToFavorites(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void removeFromFavoritesTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.removeFromFavorites(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenEventNotFoundTest() {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> eventService.removeFromFavorites(1L, TestConst.EMAIL));
         verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.removeFromFavorites(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromFavoritesThrowsExceptionWhenEventIsNotInFavoritesTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.removeFromFavorites(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
     }
 
     @Test

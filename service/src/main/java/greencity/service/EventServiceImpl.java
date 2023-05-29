@@ -222,8 +222,14 @@ public class EventServiceImpl implements EventService {
     @Override
     public void addToFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (event.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES);
+        }
 
         event.getFollowers().add(currentUser);
         eventRepo.save(event);
@@ -232,8 +238,14 @@ public class EventServiceImpl implements EventService {
     @Override
     public void removeFromFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!event.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
+        }
 
         event.setFollowers(event.getAttenders()
             .stream()
