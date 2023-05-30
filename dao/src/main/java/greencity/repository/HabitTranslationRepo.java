@@ -75,11 +75,16 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Markiyan Derevetskyi
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
-        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE lower(t.name) IN (:tags) AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "JOIN h.tags AS t "
+        + "WHERE t.id IN "
+        + "(SELECT tt.tag FROM TagTranslation AS tt "
+        + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
@@ -95,13 +100,16 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
-        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE lower(t.name) IN (:tags) AND h.is_custom_habit = :isCustomHabit AND h.complexity = :complexity "
-        + "AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "JOIN h.tags AS t "
+        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity = :complexity AND t.id IN "
+        + "(SELECT tt.tag FROM TagTranslation AS tt "
+        + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByDifferentParameters(Pageable pageable, List<String> tags,
         Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
 
@@ -115,10 +123,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE h.is_custom_habit = :isCustomHabit AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "WHERE h.isCustomHabit = :isCustomHabit)")
     Page<HabitTranslation> findAllByIsCustomHabitAndLanguageCode(Pageable pageable, Optional<Boolean> isCustomHabit,
         String languageCode);
 
@@ -132,10 +143,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE  h.complexity = :complexity AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "WHERE h.complexity = :complexity)")
     Page<HabitTranslation> findAllByComplexityAndLanguageCode(Pageable pageable, Optional<Integer> complexity,
         String languageCode);
 
@@ -151,12 +165,16 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
-        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE lower(t.name) IN (:tags) AND h.is_custom_habit = :isCustomHabit AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "JOIN h.tags AS t "
+        + "WHERE h.isCustomHabit = :isCustomHabit AND t.id IN "
+        + "(SELECT tt.tag FROM TagTranslation AS tt "
+        + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByTagsAndIsCustomHabitAndLanguageCode(Pageable pageable, List<String> tags,
         Optional<Boolean> isCustomHabit, String languageCode);
 
@@ -172,12 +190,16 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits_tags AS htg ON ht.habit_id = htg.habit_id "
-        + "INNER JOIN tag_translations AS t ON t.tag_id = htg.tag_id "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE lower(t.name) IN (:tags) AND h.complexity = :complexity AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "JOIN h.tags AS t "
+        + "WHERE h.complexity = :complexity AND t.id IN "
+        + "(SELECT tt.tag FROM TagTranslation AS tt "
+        + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCode(Pageable pageable, List<String> tags,
         Optional<Integer> complexity, String languageCode);
 
@@ -193,10 +215,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @author Lilia Mokhnatska
      */
-    @Query(nativeQuery = true, value = "SELECT DISTINCT ht.* FROM habit_translation AS ht "
-        + "INNER JOIN habits AS h ON h.id = ht.habit_id "
-        + "INNER JOIN languages AS l ON l.id = ht.language_id "
-        + "WHERE h.is_custom_habit = :isCustomHabit AND h.complexity = :complexity AND l.code = :languageCode")
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity = :complexity)")
     Page<HabitTranslation> findAllByIsCustomHabitAndComplexityAndLanguageCode(Pageable pageable,
         Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
 
