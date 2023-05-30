@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class FriendServiceImplTest {
+class FriendServiceImplTest {
     @InjectMocks
     private FriendServiceImpl friendService;
 
