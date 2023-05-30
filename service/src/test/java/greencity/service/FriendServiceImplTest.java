@@ -58,7 +58,7 @@ public class FriendServiceImplTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).existsById(friendId);
         verify(userRepo, never()).isFriend(anyLong(), anyLong());
         verify(userRepo, never()).deleteUserFriendById(anyLong(), anyLong());
     }
