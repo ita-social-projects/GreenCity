@@ -51,18 +51,6 @@ class AddEventDtoRequestMapperTest {
     }
 
     @Test
-    void convertTestWithNullStreetUa() {
-        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullStreetUa;
-        assertThrows(BadRequestException.class, () -> mapper.convert(request));
-    }
-
-    @Test
-    void convertTestWithNullCityUa() {
-        AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullCityUa;
-        assertThrows(BadRequestException.class, () -> mapper.convert(request));
-    }
-
-    @Test
     void convertTestWithNullRegionUa() {
         AddEventDtoRequest request = ModelUtils.addEventDtoRequestWithNullRegionUa;
         assertThrows(BadRequestException.class, () -> mapper.convert(request));

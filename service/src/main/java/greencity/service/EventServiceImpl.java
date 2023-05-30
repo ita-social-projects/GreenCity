@@ -5,7 +5,13 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
@@ -33,7 +39,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,6 +130,7 @@ public class EventServiceImpl implements EventService {
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             setSubscribes(events, eventDtos, user);
+            setFollowers(events, eventDtos, user);
         }
         return eventDtos;
     }
@@ -157,6 +169,15 @@ public class EventServiceImpl implements EventService {
             .map(Event::getId)
             .collect(Collectors.toList());
         eventDtos.getPage().forEach(eventDto -> eventDto.setIsSubscribed(eventIds.contains(eventDto.getId())));
+    }
+
+    private void setFollowers(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
+        List<Long> eventIds = events.stream()
+            .filter(event -> event.getFollowers().stream().map(User::getId).collect(Collectors.toList())
+                .contains(user.getId()))
+            .map(Event::getId)
+            .collect(Collectors.toList());
+        eventDtos.getPage().forEach(eventDto -> eventDto.setIsFavorite(eventIds.contains(eventDto.getId())));
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
@@ -206,6 +227,41 @@ public class EventServiceImpl implements EventService {
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
 
+        eventRepo.save(event);
+    }
+
+    @Override
+    public void addToFavorites(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (event.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES);
+        }
+
+        event.getFollowers().add(currentUser);
+        eventRepo.save(event);
+    }
+
+    @Override
+    public void removeFromFavorites(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!event.getFollowers().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
+        }
+
+        event.setFollowers(event.getAttenders()
+            .stream()
+            .filter(user -> !user.getId().equals(currentUser.getId()))
+            .collect(Collectors.toSet()));
         eventRepo.save(event);
     }
 

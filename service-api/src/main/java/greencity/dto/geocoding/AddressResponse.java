@@ -19,4 +19,5 @@ public class AddressResponse {
     private String city;
     private String region;
     private String country;
+    private String formattedAddress;
 }

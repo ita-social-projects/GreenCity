@@ -234,6 +234,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/events/comments/{eventId}",
                 "/events/comments/like",
                 EVENTS + "/addAttender/{eventId}",
+                EVENTS + "/addToFavorites/{eventId}",
                 EVENTS + "/create",
                 EVENTS + "/rateEvent/{eventId}/{rate}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
@@ -296,6 +297,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST,
                 EVENTS + "/delete/{eventId}",
                 EVENTS + "/removeAttender/{eventId}",
+                EVENTS + "/removeFromFavorites/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
                 FRIENDS + "/{friendId}")
