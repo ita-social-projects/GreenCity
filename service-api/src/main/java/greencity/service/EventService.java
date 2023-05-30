@@ -83,6 +83,26 @@ public interface EventService {
     void removeAttender(Long eventId, String email);
 
     /**
+     * Method for adding an event to favorites by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     *
+     * @author Anton Bondar.
+     */
+    void addToFavorites(Long eventId, String email);
+
+    /**
+     * Method for removing an event from favorites by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     *
+     * @author Anton Bondar.
+     */
+    void removeFromFavorites(Long eventId, String email);
+
+    /**
      * Return Events searched by some query.
      *
      * @param paging - pagination params.

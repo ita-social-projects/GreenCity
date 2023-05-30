@@ -154,6 +154,7 @@
     <include file="/db/changelog/logs/ch-add-table-employee-positions-mapping-Bondar.xml"/>
     <include file="db/changelog/logs/ch-change-table-events-dates-locations-dropNotNullConstraint-Seti.xml"/>
     <include file="db/changelog/logs/ch-update-employee_authorities-table-name-value-Bondar.xml"/>
+    <include file="db/changelog/logs/ch-add-table-events-followers-Bondar.xml"/>
     <include file="db/changelog/logs/ch-add-formatted_address-to-event_dates_locations-Lenets.xml"/>
 </databaseChangeLog>
 
