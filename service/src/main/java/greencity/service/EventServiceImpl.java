@@ -211,7 +211,7 @@ public class EventServiceImpl implements EventService {
         if (Objects.equals(event.getOrganizer().getId(), user.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
         } else if (!event.isOpen()
-                && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
+            && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
             throw new BadRequestException(ErrorMessage.YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT);
         } else if (event.getAttenders().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
