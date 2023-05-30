@@ -207,6 +207,17 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    private void checkAttenderToJoinTheEvent(Event event, User user) {
+        if (Objects.equals(event.getOrganizer().getId(), user.getId())) {
+            throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
+        } else if (!event.isOpen()
+                && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
+            throw new BadRequestException(ErrorMessage.YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT);
+        } else if (event.getAttenders().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
+            throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
+        }
+    }
+
     @Override
     public void removeAttender(Long eventId, String email) {
         Event event =
@@ -252,17 +263,6 @@ public class EventServiceImpl implements EventService {
             .filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
         eventRepo.save(event);
-    }
-
-    private void checkAttenderToJoinTheEvent(Event event, User user) {
-        if (Objects.equals(event.getOrganizer().getId(), user.getId())) {
-            throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
-        } else if (!event.isOpen()
-            && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
-            throw new BadRequestException(ErrorMessage.YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT);
-        } else if (event.getAttenders().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
-            throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
-        }
     }
 
     @Override
