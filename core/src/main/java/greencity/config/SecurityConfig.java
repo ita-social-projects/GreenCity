@@ -221,6 +221,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
                 "/habit/assign/{habitAssignId}",
                 "/habit/tags/search",
+                "/habit/search",
                 "/habit/{habitId}/friends/profile-pictures")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
