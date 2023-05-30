@@ -264,6 +264,9 @@ class HabitServiceImplTest {
         } else if (isCustomHabit.isPresent()) {
             when(habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
                 isCustomHabit, "en")).thenReturn(habitTranslationPage);
+        } else {
+            assertFalse(
+                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
         }
 
         assertEquals(pageableDto, habitService.getAllByDifferentParameters(pageable,
@@ -294,6 +297,9 @@ class HabitServiceImplTest {
         } else if (isCustomHabit.isPresent()) {
             verify(habitTranslationRepo).findAllByIsCustomHabitAndLanguageCode(pageable,
                 isCustomHabit, "en");
+        } else {
+            assertFalse(
+                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
         }
     }
 
