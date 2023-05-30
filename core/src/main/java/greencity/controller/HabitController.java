@@ -15,6 +15,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,9 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -136,6 +140,54 @@ public class HabitController {
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
+    }
+
+    /**
+     * Method finds all habits by tags, isCustomHabit, complexity and language code.
+     *
+     * @param locale        {@link Locale} with needed language code.
+     * @param pageable      {@link Pageable} instance.
+     * @param tags          {@link Set} of {@link String}
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     * @return Pageable of {@link HabitDto} instance.
+     */
+    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexity.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/search")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
+        @ApiIgnore @ValidLanguage Locale locale,
+        @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
+        @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
+        @RequestParam(required = false, name = "complexity") Optional<Integer> complexity,
+        @ApiIgnore Pageable pageable) throws BadRequestException {
+        if (isValid(tags, isCustomHabit, complexity)) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                habitService.getAllByDifferentParameters(pageable, tags,
+                    isCustomHabit, complexity, locale.getLanguage()));
+        } else {
+            throw new BadRequestException("You should enter at least one parameter");
+        }
+    }
+
+    /**
+     * Method checks if at least one of the input parameters (tags, isCustomHabit,
+     * complexity) is present.
+     *
+     * @param tags          {@link Set} of {@link String}
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     *
+     * @author Lilia Mokhnatska
+     */
+    private boolean isValid(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
+        Optional<Integer> complexity) {
+        return ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
     }
 
     /**

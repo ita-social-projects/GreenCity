@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HabitService {
     /**
@@ -51,6 +52,22 @@ public interface HabitService {
      * @author Markiyan Derevetskyi
      */
     PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+
+    /**
+     * Method that return all PageableDto of HabitDto by tags, isCustomHabit,
+     * complexity, habitAssignStatus and language code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param tags          {@link List} of {@link String} tags
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexity    {@link Integer} value.
+     * @param languageCode  language code {@link String}
+     *
+     * @return {@link PageableDto} of {@link HabitDto}.
+     * @author Lilia Mokhnatska
+     */
+    PageableDto<HabitDto> getAllByDifferentParameters(Pageable pageable, Optional<List<String>> tags,
+        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
 
     /**
      * Method that add shopping list item To Habit by habit id and shopping list
