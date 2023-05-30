@@ -46,6 +46,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
+    private static final String FRIENDS = "/friends";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -296,7 +297,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/delete/{eventId}",
                 EVENTS + "/removeAttender/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
-                "/habit/assign/delete/{habitAssignId}")
+                "/habit/assign/delete/{habitAssignId}",
+                FRIENDS + "/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
