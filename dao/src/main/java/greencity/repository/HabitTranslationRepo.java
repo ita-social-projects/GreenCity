@@ -88,13 +88,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
-     * Method that find all habit's translations by tags, complexity, isCustomHabit
-     * and language code.
+     * Method that find all habit's translations by tags, complexities,
+     * isCustomHabit and language code.
      *
      * @param pageable      {@link Pageable}
      * @param tags          {@link List} of {@link String} tags
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexity    {@link Integer} value.
+     * @param complexities  {@link Integer} value.
      * @param languageCode  language code {@link String}
      * @return {@link List} of {@link HabitTranslation}.
      *
@@ -107,11 +107,11 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity = :complexity AND t.id IN "
+        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByDifferentParameters(Pageable pageable, List<String> tags,
-        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
+        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
      * Method that find all habit's translations by isCustomHabit and language code.
@@ -134,10 +134,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         String languageCode);
 
     /**
-     * Method that find all habit's translations by complexity and language code.
+     * Method that find all habit's translations by complexities and language code.
      *
      * @param pageable     {@link Pageable}
-     * @param complexity   {@link Integer} value.
+     * @param complexities {@link Integer} value.
      * @param languageCode language code {@link String}
      * @return {@link List} of {@link HabitTranslation}.
      *
@@ -149,8 +149,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.complexity = :complexity)")
-    Page<HabitTranslation> findAllByComplexityAndLanguageCode(Pageable pageable, Optional<Integer> complexity,
+        + "WHERE h.complexity IN (:complexities))")
+    Page<HabitTranslation> findAllByComplexityAndLanguageCode(Pageable pageable, Optional<List<Integer>> complexities,
         String languageCode);
 
     /**
@@ -179,12 +179,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         Optional<Boolean> isCustomHabit, String languageCode);
 
     /**
-     * Method that find all habit's translations by tags, complexity and language
+     * Method that find all habit's translations by tags, complexities and language
      * code.
      *
      * @param pageable     {@link Pageable}
      * @param tags         {@link List} of {@link String} tags
-     * @param complexity   {@link Integer} value.
+     * @param complexities {@link Integer} value.
      * @param languageCode language code {@link String}
      * @return {@link List} of {@link HabitTranslation}.
      *
@@ -197,19 +197,19 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE h.complexity = :complexity AND t.id IN "
+        + "WHERE h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags)))")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCode(Pageable pageable, List<String> tags,
-        Optional<Integer> complexity, String languageCode);
+        Optional<List<Integer>> complexities, String languageCode);
 
     /**
-     * Method that find all habit's translations by isCustomHabit, complexity and
+     * Method that find all habit's translations by isCustomHabit, complexities and
      * language code.
      *
      * @param pageable      {@link Pageable}
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexity    {@link Integer} value.
+     * @param complexities  {@link Integer} value.
      * @param languageCode  language code {@link String}
      * @return {@link List} of {@link HabitTranslation}.
      *
@@ -221,9 +221,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity = :complexity)")
+        + "WHERE h.isCustomHabit = :isCustomHabit AND h.complexity IN (:complexities))")
     Page<HabitTranslation> findAllByIsCustomHabitAndComplexityAndLanguageCode(Pageable pageable,
-        Optional<Boolean> isCustomHabit, Optional<Integer> complexity, String languageCode);
+        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
      * Method return {@link List} of {@link HabitTranslation} by habit.

@@ -143,16 +143,17 @@ public class HabitController {
     }
 
     /**
-     * Method finds all habits by tags, isCustomHabit, complexity and language code.
+     * Method finds all habits by tags, isCustomHabit, complexities and language
+     * code.
      *
      * @param locale        {@link Locale} with needed language code.
      * @param pageable      {@link Pageable} instance.
      * @param tags          {@link Set} of {@link String}
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexity    {@link Integer} value.
+     * @param complexities  {@link Integer} value.
      * @return Pageable of {@link HabitDto} instance.
      */
-    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexity.")
+    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexities.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -164,12 +165,12 @@ public class HabitController {
         @ApiIgnore @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
-        @RequestParam(required = false, name = "complexity") Optional<Integer> complexity,
+        @RequestParam(required = false, name = "complexities") Optional<List<Integer>> complexities,
         @ApiIgnore Pageable pageable) throws BadRequestException {
-        if (isValid(tags, isCustomHabit, complexity)) {
+        if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 habitService.getAllByDifferentParameters(pageable, tags,
-                    isCustomHabit, complexity, locale.getLanguage()));
+                    isCustomHabit, complexities, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
         }
@@ -177,17 +178,18 @@ public class HabitController {
 
     /**
      * Method checks if at least one of the input parameters (tags, isCustomHabit,
-     * complexity) is present.
+     * complexities) is present.
      *
      * @param tags          {@link Set} of {@link String}
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexity    {@link Integer} value.
+     * @param complexities  {@link Integer} value.
      *
      * @author Lilia Mokhnatska
      */
     private boolean isValid(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
-        Optional<Integer> complexity) {
-        return ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() || complexity.isPresent());
+        Optional<List<Integer>> complexities) {
+        return ((tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent()
+            || (complexities.isPresent() && !complexities.get().isEmpty()));
     }
 
     /**
