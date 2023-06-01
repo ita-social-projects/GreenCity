@@ -171,4 +171,27 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
         + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN users as u ON user_id = u.id")
     List<User> getFriendsAssignedToHabit(Long userId, Long habitId);
+
+    /**
+     * Delete friend {@link User}.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "DELETE FROM users_friends WHERE (user_id = :userId AND friend_id = :friendId)"
+            + " OR (user_id = :friendId AND friend_id = :userId)")
+    void deleteUserFriendById(Long userId, Long friendId);
+
+    /**
+     * Checks if a user is a friend of another user.
+     *
+     * @param userId   The ID of the user to check if they are a friend.
+     * @param friendId The ID of the potential friend.
+     * @return {@code true} if the user is a friend of the other user, {@code false}
+     *         otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'FRIEND' AND ("
+            + "user_id = :userId AND friend_id = :friendId OR "
+            + "user_id = :friendId AND friend_id = :userId))")
+    boolean isFriend(Long userId, Long friendId);
 }
