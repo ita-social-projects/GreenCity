@@ -127,14 +127,14 @@ class HabitControllerTest {
 
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
-            .param("complexity", "1")
+            .param("complexities", "1")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
             Optional.of(true),
-            Optional.of(1),
+            Optional.of(List.of(1)),
             locale.getLanguage());
     }
 
@@ -145,13 +145,13 @@ class HabitControllerTest {
 
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
-            .param("complexity", "1")
+            .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
             Optional.empty(),
-            Optional.of(1),
+            Optional.of(List.of(1)),
             locale.getLanguage());
     }
 
@@ -161,13 +161,13 @@ class HabitControllerTest {
         Gson gson = new Gson();
 
         mockMvc.perform(get(habitLink + "/search")
-            .param("complexity", "1")
+            .param("complexities", "1")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.empty(), Optional.of(true),
-            Optional.of(1),
+            Optional.of(List.of(1)),
             locale.getLanguage());
     }
 
@@ -194,12 +194,12 @@ class HabitControllerTest {
         Gson gson = new Gson();
 
         mockMvc.perform(get(habitLink + "/search")
-            .param("complexity", "1")
+            .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.empty(), Optional.empty(),
-            Optional.of(1),
+            Optional.of(List.of(1)),
             locale.getLanguage());
     }
 
