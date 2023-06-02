@@ -91,11 +91,11 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that find all habit's translations by tags, complexities,
      * isCustomHabit and language code.
      *
-     * @param pageable      {@link Pageable}
-     * @param tags          {@link List} of {@link String} tags
+     * @param pageable      {@link Pageable}.
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
-     * @param languageCode  language code {@link String}
+     * @param complexities  {@link List} of {@link Integer}.
+     * @param languageCode  language code {@link String}.
      * @return {@link List} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -136,9 +136,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     /**
      * Method that find all habit's translations by complexities and language code.
      *
-     * @param pageable     {@link Pageable}
-     * @param complexities {@link Integer} value.
-     * @param languageCode language code {@link String}
+     * @param pageable     {@link Pageable}.
+     * @param complexities {@link List} of {@link Integer}.
+     * @param languageCode language code {@link String}.
      * @return {@link List} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -182,10 +182,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that find all habit's translations by tags, complexities and language
      * code.
      *
-     * @param pageable     {@link Pageable}
-     * @param tags         {@link List} of {@link String} tags
-     * @param complexities {@link Integer} value.
-     * @param languageCode language code {@link String}
+     * @param pageable     {@link Pageable}.
+     * @param tags         {@link List} of {@link String}.
+     * @param complexities {@link List} of {@link Integer}.
+     * @param languageCode language code {@link String}.
      * @return {@link List} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -207,10 +207,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that find all habit's translations by isCustomHabit, complexities and
      * language code.
      *
-     * @param pageable      {@link Pageable}
+     * @param pageable      {@link Pageable}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
-     * @param languageCode  language code {@link String}
+     * @param complexities  {@link List} of {@link Integer}.
+     * @param languageCode  language code {@link String}.
      * @return {@link List} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
