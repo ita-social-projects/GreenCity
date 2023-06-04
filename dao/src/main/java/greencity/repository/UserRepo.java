@@ -194,4 +194,30 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             + "user_id = :userId AND friend_id = :friendId OR "
             + "user_id = :friendId AND friend_id = :userId))")
     boolean isFriend(Long userId, Long friendId);
+
+    /**
+     * Checks if a friend request exists between two users.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend.
+     * @return {@code true} if a friend request exists between the two users,
+     *         {@code false} otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'REQUEST' AND ("
+            + "user_id = :userId AND friend_id = :friendId OR "
+            + "user_id = :friendId AND friend_id = :userId))")
+    boolean isFriendRequested(Long userId, Long friendId);
+
+    /**
+     * Adds a new friend for a user.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend to be added.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "INSERT INTO users_friends(user_id, friend_id, status, created_date) "
+            + "VALUES (:userId, :friendId, 'REQUEST', CURRENT_TIMESTAMP)")
+    void addNewFriend(Long userId, Long friendId);
 }

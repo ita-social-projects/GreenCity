@@ -98,6 +98,7 @@ public final class ErrorMessage {
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
+    public static final String FRIEND_REQUEST_ALREADY_SENT = "Friend request already exists between two users";
     public static final String NOT_FOUND_REQUEST = "Not found friend request from user with id: ";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
