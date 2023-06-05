@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
@@ -8,6 +9,7 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -32,6 +34,9 @@ import greencity.repository.TagsRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -49,15 +54,19 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -199,6 +208,101 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, "en"))
             .thenReturn(habitTranslationPage);
         assertEquals(pageableDto, habitService.getAllByTagsAndLanguageCode(pageable, tags, "en"));
+    }
+
+    private static Stream<Arguments> getAllByDifferentParametersArguments() {
+        return Stream.of(
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(List.of(1))),
+            arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(),
+                Optional.empty()),
+            arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
+            arguments(Optional.empty(), Optional.of(true), Optional.empty()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getAllByDifferentParametersArguments")
+    void getAllByDifferentParameters(Optional<List<String>> tags,
+        Optional<Boolean> isCustomHabit,
+        Optional<List<Integer>> complexities) {
+        Pageable pageable = PageRequest.of(0, 2);
+        String tag = "HABIT";
+
+        List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
+        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
+        HabitDto habitDto = ModelUtils.getHabitDto();
+        Page<HabitTranslation> habitTranslationPage =
+            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
+            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+
+        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
+
+        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
+            when(habitTranslationRepo.findAllByDifferentParameters(pageable, lowerCaseTags,
+                isCustomHabit, complexities, "en")).thenReturn(habitTranslationPage);
+        } else if (complexities.isPresent() && isCustomHabit.isPresent()) {
+            when(habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
+                isCustomHabit, complexities, "en")).thenReturn(habitTranslationPage);
+        } else if (complexities.isPresent() && tags.isPresent()) {
+            when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
+                complexities, "en")).thenReturn(habitTranslationPage);
+        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
+            when(habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
+                lowerCaseTags, isCustomHabit, "en")).thenReturn(habitTranslationPage);
+        } else if (tags.isPresent()) {
+            when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable,
+                lowerCaseTags, "en")).thenReturn(habitTranslationPage);
+        } else if (complexities.isPresent()) {
+            when(habitTranslationRepo.findAllByComplexityAndLanguageCode(pageable,
+                complexities, "en")).thenReturn(habitTranslationPage);
+        } else if (isCustomHabit.isPresent()) {
+            when(habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
+                isCustomHabit, "en")).thenReturn(habitTranslationPage);
+        } else {
+            assertFalse(
+                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent()
+                    || (complexities.isPresent() && !complexities.get().isEmpty()));
+        }
+
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(pageable,
+            tags, isCustomHabit, complexities, "en"));
+
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
+        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+        verify(habitRepo).findById(1L);
+
+        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
+            verify(habitTranslationRepo).findAllByDifferentParameters(pageable, lowerCaseTags,
+                isCustomHabit, complexities, "en");
+        } else if (complexities.isPresent() && isCustomHabit.isPresent()) {
+            verify(habitTranslationRepo).findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
+                isCustomHabit, complexities, "en");
+        } else if (complexities.isPresent() && tags.isPresent()) {
+            verify(habitTranslationRepo).findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
+                complexities, "en");
+        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
+            verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
+                lowerCaseTags, isCustomHabit, "en");
+        } else if (tags.isPresent()) {
+            verify(habitTranslationRepo).findAllByTagsAndLanguageCode(pageable,
+                lowerCaseTags, "en");
+        } else if (complexities.isPresent()) {
+            verify(habitTranslationRepo).findAllByComplexityAndLanguageCode(pageable,
+                complexities, "en");
+        } else if (isCustomHabit.isPresent()) {
+            verify(habitTranslationRepo).findAllByIsCustomHabitAndLanguageCode(pageable,
+                isCustomHabit, "en");
+        } else {
+            assertFalse(
+                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent()
+                    || (complexities.isPresent() && !complexities.get().isEmpty()));
+        }
     }
 
     @Test
@@ -527,5 +631,71 @@ class HabitServiceImplTest {
 
         verify(userRepo).findByEmail("user@gmail.com");
         verify(customHabitMapper).convert(addCustomHabitDtoRequest);
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+        Long friendId = 3L;
+        User friend = ModelUtils.getUser();
+        friend.setId(friendId);
+        friend.setProfilePicturePath("test");
+        UserProfilePictureDto friendProfilePicture = UserProfilePictureDto.builder()
+            .id(friend.getId())
+            .name(friend.getName())
+            .profilePicturePath(friend.getProfilePicturePath())
+            .build();
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(habitRepo.existsById(habitId)).thenReturn(true);
+        when(userRepo.getFriendsAssignedToHabit(userId, habitId)).thenReturn(List.of(friend));
+        when(modelMapper.map(friend, UserProfilePictureDto.class)).thenReturn(friendProfilePicture);
+
+        List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
+        assertFalse(list.isEmpty());
+        assertEquals(friendProfilePicture, list.get(0));
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo).existsById(habitId);
+        verify(userRepo).getFriendsAssignedToHabit(userId, habitId);
+        verify(modelMapper).map(friend, UserProfilePictureDto.class);
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesWhenUserNotFoundTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
+    }
+
+    @Test
+    void getFriendsAssignedToHabitProfilePicturesWhenHabitNotFoundTest() {
+        Long habitId = 1L;
+        Long userId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(habitRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+
+        assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(habitRepo).existsById(habitId);
+        verify(userRepo, never()).getFriendsAssignedToHabit(anyLong(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
     }
 }

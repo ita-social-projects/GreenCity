@@ -7,6 +7,7 @@ import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
+import greencity.dto.user.UserProfilePictureDto;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -27,6 +28,7 @@ import greencity.repository.HabitAssignRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -142,6 +144,77 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<HabitDto> getAllByDifferentParameters(Pageable pageable, Optional<List<String>> tags,
+        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode) {
+        List<String> lowerCaseTags = new ArrayList<>();
+        List<Integer> complexitiesList = new ArrayList<>();
+        if (tags.isPresent()) {
+            lowerCaseTags = tags.get().stream().map(String::toLowerCase).collect(Collectors.toList());
+        }
+        if (complexities.isPresent()) {
+            complexitiesList = complexities.get().stream().collect(Collectors.toList());
+        }
+        Page<HabitTranslation> habitTranslationsPage;
+
+        if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && !complexitiesList.isEmpty()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByDifferentParameters(pageable, lowerCaseTags,
+                isCustomHabit, complexities, languageCode);
+        } else if (!complexitiesList.isEmpty() && isCustomHabit.isPresent()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
+                isCustomHabit, complexities, languageCode);
+        } else if (!complexitiesList.isEmpty() && !lowerCaseTags.isEmpty()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
+                    complexities, languageCode);
+        } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
+            habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
+                lowerCaseTags, isCustomHabit, languageCode);
+        } else if (!lowerCaseTags.isEmpty()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, languageCode);
+        } else if (!complexitiesList.isEmpty()) {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByComplexityAndLanguageCode(pageable, complexities, languageCode);
+        } else {
+            habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
+                isCustomHabit, languageCode);
+        }
+        return buildPageableDtoForDifferentParameters(habitTranslationsPage);
+    }
+
+    /**
+     * Method that build {@link PageableDto} of {@link HabitDto} from {@link Page}
+     * of {@link HabitTranslation}.
+     *
+     * @param habitTranslationsPage {@link Page} of {@link HabitTranslation}
+     * @return {@link PageableDto} of {@link HabitDto}
+     * @author Lilia Mokhnatska
+     */
+    private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage) {
+        List<HabitDto> habits = habitTranslationsPage.stream()
+            .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
+            .collect(Collectors.toList());
+        habits.forEach(
+            habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
+
+        for (HabitDto habitDto : habits) {
+            Habit habit = habitRepo.findById(habitDto.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitDto.getId()));
+            boolean isCustomHabit = habit.getIsCustomHabit();
+            habitDto.setIsCustomHabit(isCustomHabit);
+            habitDto.setCustomShoppingListItems(
+                customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
+        }
+        return new PageableDto<>(habits,
+            habitTranslationsPage.getTotalElements(),
+            habitTranslationsPage.getPageable().getPageNumber(),
+            habitTranslationsPage.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<ShoppingListItemDto> getShoppingListForHabit(Long habitId, String lang) {
         return shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode(lang, habitId)
             .stream()
@@ -234,5 +307,21 @@ public class HabitServiceImpl implements HabitService {
         response
             .setHabitTranslations(habitTranslationDtoMapper.mapAllToList(habitTranslationRepo.findAllByHabit(habit)));
         return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        if (!habitRepo.existsById(habitId)) {
+            throw new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId);
+        }
+        List<User> users = userRepo.getFriendsAssignedToHabit(userId, habitId);
+        return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
+            .collect(Collectors.toList());
     }
 }

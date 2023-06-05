@@ -1,6 +1,8 @@
 package greencity.repository;
 
+import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -150,4 +152,46 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT friend_id FROM users_friends "
         + "WHERE user_id = :friendId AND friend_id = :userId AND status = 'FRIEND'))")
     Optional<User> findUserByIdAndByFriendId(Long userId, Long friendId);
+
+    /**
+     * Retrieves the list of the user's friends (which have INPROGRESS assign to the
+     * habit).
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userId  {@link UserVO} id.
+     * @return List of friends.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM ((SELECT user_id FROM users_friends AS uf "
+        + "WHERE uf.friend_id = :userId AND uf.status = 'FRIEND' AND "
+        + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.user_id "
+        + "AND ha.status = 'INPROGRESS') = 1) "
+        + "UNION "
+        + "(SELECT friend_id FROM users_friends AS uf "
+        + "WHERE uf.user_id = :userId AND uf.status = 'FRIEND' AND "
+        + "(SELECT count(*) FROM habit_assign ha WHERE ha.habit_id = :habitId AND ha.user_id = uf.friend_id "
+        + "AND ha.status = 'INPROGRESS') = 1)) as ui JOIN users as u ON user_id = u.id")
+    List<User> getFriendsAssignedToHabit(Long userId, Long habitId);
+
+    /**
+     * Delete friend {@link User}.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "DELETE FROM users_friends WHERE (user_id = :userId AND friend_id = :friendId)"
+            + " OR (user_id = :friendId AND friend_id = :userId)")
+    void deleteUserFriendById(Long userId, Long friendId);
+
+    /**
+     * Checks if a user is a friend of another user.
+     *
+     * @param userId   The ID of the user to check if they are a friend.
+     * @param friendId The ID of the potential friend.
+     * @return {@code true} if the user is a friend of the other user, {@code false}
+     *         otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'FRIEND' AND ("
+            + "user_id = :userId AND friend_id = :friendId OR "
+            + "user_id = :friendId AND friend_id = :userId))")
+    boolean isFriend(Long userId, Long friendId);
 }

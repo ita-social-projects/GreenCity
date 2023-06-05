@@ -21,6 +21,8 @@ public class AddressDtoMapper extends AbstractConverter<AddressDto, Address> {
             .regionUa(addressDto.getRegionUa())
             .countryEn(addressDto.getCountryEn())
             .countryUa(addressDto.getCountryUa())
+            .formattedAddressEn(addressDto.getFormattedAddressEn())
+            .formattedAddressUa(addressDto.getFormattedAddressUa())
             .build();
     }
 }

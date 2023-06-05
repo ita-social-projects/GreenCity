@@ -3,12 +3,16 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HabitService {
     /**
@@ -48,6 +52,22 @@ public interface HabitService {
      * @author Markiyan Derevetskyi
      */
     PageableDto<HabitDto> getAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
+
+    /**
+     * Method that return all PageableDto of HabitDto by tags, isCustomHabit,
+     * complexities, habitAssignStatus and language code.
+     *
+     * @param pageable      {@link Pageable}
+     * @param tags          {@link List} of {@link String} tags
+     * @param isCustomHabit {@link Boolean} value.
+     * @param complexities  {@link Integer} value.
+     * @param languageCode  language code {@link String}
+     *
+     * @return {@link PageableDto} of {@link HabitDto}.
+     * @author Lilia Mokhnatska
+     */
+    PageableDto<HabitDto> getAllByDifferentParameters(Pageable pageable, Optional<List<String>> tags,
+        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
      * Method that add shopping list item To Habit by habit id and shopping list
@@ -99,4 +119,14 @@ public interface HabitService {
      */
     AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
         String userEmail);
+
+    /**
+     * Retrieves the list of profile pictures of the user's friends (which have
+     * INPROGRESS assign to the habit).
+     *
+     * @param habitId {@link HabitVO} id.
+     * @param userId  {@link UserVO} id.
+     * @return List of friends' profile pictures.
+     */
+    List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
 }

@@ -46,6 +46,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String EVENTS = "/events";
+    private static final String FRIENDS = "/friends";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
     private static final String CUSTOM_SHOPPING_LIST = "/custom/shopping-list-items/{userId}";
     private static final String CUSTOM_SHOPPING_LIST_URL = "/custom/shopping-list-items/{userId}/"
@@ -220,7 +221,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/assign/{habitAssignId}/allUserAndCustomList",
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
                 "/habit/assign/{habitAssignId}",
-                "/habit/tags/search")
+                "/habit/tags/search",
+                "/habit/search",
+                "/habit/{habitId}/friends/profile-pictures")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -232,6 +235,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/events/comments/{eventId}",
                 "/events/comments/like",
                 EVENTS + "/addAttender/{eventId}",
+                EVENTS + "/addToFavorites/{eventId}",
                 EVENTS + "/create",
                 EVENTS + "/rateEvent/{eventId}/{rate}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
@@ -294,8 +298,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST,
                 EVENTS + "/delete/{eventId}",
                 EVENTS + "/removeAttender/{eventId}",
+                EVENTS + "/removeFromFavorites/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
-                "/habit/assign/delete/{habitAssignId}")
+                "/habit/assign/delete/{habitAssignId}",
+                FRIENDS + "/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",

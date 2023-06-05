@@ -72,8 +72,10 @@ class EventsControllerTest {
 
     @Mock
     private UserService userService;
+
     @Mock
     private ModelMapper modelMapper;
+
     private final Principal principal = getPrincipal();
 
     @BeforeEach
@@ -95,6 +97,32 @@ class EventsControllerTest {
             .andExpect(status().isOk());
         verify(eventService).getEventsCreatedByUser(pageable, "test@gmail.com");
 
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllEventsTest() {
+        int pageNumber = 0;
+        int pageSize = 20;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        ObjectWriter ow = objectMapper.writer();
+        String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
+
+        when(eventService.getAll(pageable, principal)).thenReturn(pageableAdvancedDto);
+
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
+
+        verify(eventService).getAll(pageable, principal);
     }
 
     @Test
@@ -180,6 +208,26 @@ class EventsControllerTest {
             () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
                 .andExpect(status().isBadRequest()))
             .hasCause(new BadRequestException("ErrorMessage"));
+    }
+
+    @Test
+    @SneakyThrows
+    void addToFavoritesTest() {
+        Long eventId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addToFavorites/{eventId}", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).addToFavorites(eventId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void removeFromFavoritesTest() {
+        Long eventId = 1L;
+        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeFromFavorites/{eventId}", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).removeFromFavorites(eventId, principal.getName());
     }
 
     @Test
@@ -613,5 +661,4 @@ class EventsControllerTest {
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);
     }
-
 }
