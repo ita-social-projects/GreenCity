@@ -210,6 +210,19 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequested(Long userId, Long friendId);
 
     /**
+     * Checks if a friend requested by current user with userId.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend.
+     * @return {@code true} if a friend requested by current user, {@code false}
+     *         otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'REQUEST' AND "
+            + "user_id = :userId AND friend_id = :friendId)")
+    boolean isFriendRequestedByCurrentUser(Long userId, Long friendId);
+
+    /**
      * Adds a new friend for a user.
      *
      * @param userId   The ID of the user.
@@ -220,4 +233,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         value = "INSERT INTO users_friends(user_id, friend_id, status, created_date) "
             + "VALUES (:userId, :friendId, 'REQUEST', CURRENT_TIMESTAMP)")
     void addNewFriend(Long userId, Long friendId);
+
+    /**
+     * Accept friend request.
+     * 
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend to be added.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "UPDATE users_friends SET status = 'FRIEND' "
+            + "WHERE user_id = :friendId AND friend_id = :userId")
+    void acceptFriendRequest(Long userId, Long friendId);
 }

@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
 import greencity.service.FriendService;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +69,27 @@ public class FriendController {
         @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.addNewFriend(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for accepting friend request from user.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     */
+    @ApiOperation(value = "Accept friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @PatchMapping("/{friendId}/acceptFriend")
+    public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.acceptFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

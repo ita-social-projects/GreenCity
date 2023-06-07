@@ -52,4 +52,13 @@ class FriendControllerTest {
 
         verify(friendService).addNewFriend(null, friendId);
     }
+
+    @Test
+    void acceptFriendRequestTest() throws Exception {
+        Long friendId = 1L;
+        mockMvc.perform(post(FRIEND_LINK + "/{friendId}", friendId))
+                .andExpect(status().isOk());
+
+        verify(friendService).acceptFriendRequest(null, friendId);
+    }
 }
