@@ -57,8 +57,17 @@ class FriendControllerTest {
     void acceptFriendRequestTest() throws Exception {
         Long friendId = 1L;
         mockMvc.perform(post(FRIEND_LINK + "/{friendId}", friendId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(friendService).acceptFriendRequest(null, friendId);
+    }
+
+    @Test
+    void declineFriendRequestTest() throws Exception {
+        Long friendId = 1L;
+        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/declineFriend", friendId))
+            .andExpect(status().isOk());
+
+        verify(friendService).declineFriendRequest(null, friendId);
     }
 }

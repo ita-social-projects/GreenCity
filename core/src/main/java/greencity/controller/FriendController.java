@@ -92,4 +92,25 @@ public class FriendController {
         friendService.acceptFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    /**
+     * Method for declining friend request from user.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     */
+    @ApiOperation(value = "Decline friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @DeleteMapping("/{friendId}/declineFriend")
+    public ResponseEntity<Object> declineFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.declineFriendRequest(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

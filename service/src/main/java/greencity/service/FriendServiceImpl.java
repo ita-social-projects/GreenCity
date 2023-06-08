@@ -88,4 +88,28 @@ public class FriendServiceImpl implements FriendService {
 
         userRepo.acceptFriendRequest(userId, friendId);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void declineFriendRequest(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
+            throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
+        }
+        if (!userRepo.existsById(userId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        if (!userRepo.existsById(friendId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId);
+        }
+        if (userRepo.isFriend(userId, friendId)) {
+            throw new BadRequestException(ErrorMessage.FRIEND_EXISTS + friendId);
+        }
+        if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
+            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
+        }
+        userRepo.declineFriendRequest(userId, friendId);
+    }
 }
