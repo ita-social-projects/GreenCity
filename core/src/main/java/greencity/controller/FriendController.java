@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -44,6 +45,28 @@ public class FriendController {
         @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.deleteUserFriendById(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for add new user friend.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     * @author Marian Datsko
+     */
+    @ApiOperation(value = "Add new user friend")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @PostMapping("/{friendId}")
+    public ResponseEntity<ResponseEntity.BodyBuilder> addNewFriend(
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +26,7 @@ class FriendControllerTest {
     @InjectMocks
     FriendController friendController;
 
-    private static final String friendLink = "/friends";
+    private static final String FRIEND_LINK = "/friends";
 
     @BeforeEach
     void setUp() {
@@ -37,9 +38,18 @@ class FriendControllerTest {
     @Test
     void deleteUserFriendTest() throws Exception {
         Long friendId = 1L;
-        mockMvc.perform(delete(friendLink + "/{friendId}", friendId))
+        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}", friendId))
             .andExpect(status().isOk());
 
         verify(friendService).deleteUserFriendById(null, friendId);
+    }
+
+    @Test
+    void addNewFriendTest() throws Exception {
+        Long friendId = 1L;
+        mockMvc.perform(post(FRIEND_LINK + "/{friendId}", friendId))
+            .andExpect(status().isOk());
+
+        verify(friendService).addNewFriend(null, friendId);
     }
 }

@@ -258,7 +258,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/acceptFriend/{friendId}",
                 "/achievements/calculate-achievement",
                 "/habit/custom",
-                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
+                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
+                FRIENDS + "/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/habit/statistic/{id}",
