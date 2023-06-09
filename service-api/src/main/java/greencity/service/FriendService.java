@@ -1,6 +1,9 @@
 package greencity.service;
 
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+
+import java.util.List;
 
 public interface FriendService {
     /**
@@ -36,4 +39,13 @@ public interface FriendService {
      * @param friendId {@link Long}
      */
     void declineFriendRequest(Long userId, Long friendId);
+
+    /**
+     * Method that finds user's friends by userId.
+     *
+     * @param userId {@link Long}
+     *
+     * @return {@link List} of {@link UserManagementDto} instances.
+     */
+    List<UserManagementDto> findUserFriendsByUserId(Long userId);
 }

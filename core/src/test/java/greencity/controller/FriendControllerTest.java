@@ -1,5 +1,7 @@
 package greencity.controller;
 
+import greencity.ModelUtils;
+import greencity.TestConst;
 import greencity.service.FriendService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +13,14 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,5 +76,14 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(friendService).declineFriendRequest(null, friendId);
+    }
+
+    @Test
+    void findUserFriendByUserIdTest() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
+                .andExpect(status().isOk());
+
+        verify(friendService).findUserFriendsByUserId(userId);
     }
 }

@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.CheckRepeatingValueException;
@@ -9,10 +10,13 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoRequestException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link FriendService}.
@@ -21,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
+    private final ModelMapper modelMapper;
 
     /**
      * {@inheritDoc}
@@ -111,5 +116,17 @@ public class FriendServiceImpl implements FriendService {
             throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
         }
         userRepo.declineFriendRequest(userId, friendId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserManagementDto> findUserFriendsByUserId(Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        var friends = userRepo.getAllUserFriends(userId);
+        return friends.stream().map(x -> modelMapper.map(x, UserManagementDto.class)).collect(Collectors.toList());
     }
 }
