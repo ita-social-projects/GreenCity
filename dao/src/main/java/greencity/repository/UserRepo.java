@@ -210,8 +210,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequested(Long userId, Long friendId);
 
     /**
-<<<<<<< HEAD
-     * Checks if a friend requested by current user with userId.
+     * <<<<<<< HEAD Checks if a friend requested by current user with userId.
      *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend.
@@ -224,9 +223,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequestedByCurrentUser(Long userId, Long friendId);
 
     /**
-=======
->>>>>>> dev
-     * Adds a new friend for a user.
+     * ======= >>>>>>> dev Adds a new friend for a user.
      *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend to be added.

@@ -464,7 +464,7 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findUserFriendsByUserIdTest(){
+    void findUserFriendsByUserIdTest() {
         Long userId = 1L;
         List<User> users = List.of(ModelUtils.getUser());
 
@@ -479,13 +479,13 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findUserFriendsByUserIdWhenUserNotFoundTest(){
+    void findUserFriendsByUserIdWhenUserNotFoundTest() {
         Long userId = 1L;
 
         when(userRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> friendService.findUserFriendsByUserId(userId));
+            () -> friendService.findUserFriendsByUserId(userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
