@@ -57,11 +57,11 @@ public interface HabitService {
      * Method that return all PageableDto of HabitDto by tags, isCustomHabit,
      * complexities, habitAssignStatus and language code.
      *
-     * @param pageable      {@link Pageable}
-     * @param tags          {@link List} of {@link String} tags
+     * @param pageable      {@link Pageable}.
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
-     * @param languageCode  language code {@link String}
+     * @param complexities  {@link List} of {@link Integer}.
+     * @param languageCode  language code {@link String}.
      *
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
