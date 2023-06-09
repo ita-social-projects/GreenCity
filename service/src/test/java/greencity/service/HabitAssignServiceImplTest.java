@@ -352,8 +352,8 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
 
-        assertThrows(UserHasNoFriendWithIdException.class, () -> habitAssignService
-            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDtoWithFriend));
+        assertThrows(UserHasNoFriendWithIdException.class,
+            () -> habitAssignService.assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
     }
 
     @Test
