@@ -27,7 +27,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -148,9 +147,9 @@ public class HabitController {
      *
      * @param locale        {@link Locale} with needed language code.
      * @param pageable      {@link Pageable} instance.
-     * @param tags          {@link Set} of {@link String}
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
+     * @param complexities  {@link List} of {@link Integer}.
      * @return Pageable of {@link HabitDto} instance.
      */
     @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexities.")
@@ -180,9 +179,9 @@ public class HabitController {
      * Method checks if at least one of the input parameters (tags, isCustomHabit,
      * complexities) is present.
      *
-     * @param tags          {@link Set} of {@link String}
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
+     * @param complexities  {@link List} of {@link Integer}.
      *
      * @author Lilia Mokhnatska
      */
