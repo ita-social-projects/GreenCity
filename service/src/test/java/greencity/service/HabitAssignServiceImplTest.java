@@ -332,7 +332,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
 
         assertThrows(NotFoundException.class, () -> habitAssignService
-            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDtoWithFriend));
+            .assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
     }
 
     @Test
