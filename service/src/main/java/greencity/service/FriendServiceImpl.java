@@ -2,16 +2,12 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementDto;
-import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.CheckRepeatingValueException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.UserHasNoRequestException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
