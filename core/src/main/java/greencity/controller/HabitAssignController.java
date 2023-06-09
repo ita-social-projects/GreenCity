@@ -5,9 +5,9 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
@@ -79,12 +79,13 @@ public class HabitAssignController {
     /**
      * Method which assigns habit for {@link UserVO} with custom props.
      *
-     * @param habitId                  {@link HabitVO} id.
-     * @param userVO                   {@link UserVO} instance.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @param habitId                        {@link HabitVO} id.
+     * @param userVO                         {@link UserVO} instance.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto}
+     *                                       instance.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Assign habit with custom properties for current user.")
+    @ApiOperation(value = "Assign habit with custom properties for current user and his friends.")
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = HabitAssignDto.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -93,11 +94,11 @@ public class HabitAssignController {
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @PostMapping("/{habitId}/custom")
-    public ResponseEntity<HabitAssignManagementDto> assignCustom(@PathVariable Long habitId,
+    public ResponseEntity<List<HabitAssignManagementDto>> assignCustom(@PathVariable Long habitId,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @Valid @RequestBody HabitAssignPropertiesDto habitAssignPropertiesDto) {
+        @Valid @RequestBody HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignPropertiesDto));
+            .body(habitAssignService.assignCustomHabitForUser(habitId, userVO, habitAssignCustomPropertiesDto));
     }
 
     /**
