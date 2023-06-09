@@ -77,7 +77,7 @@ class FriendControllerTest {
     void findUserFriendByUserIdTest() throws Exception {
         Long userId = 1L;
         mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(friendService).findUserFriendsByUserId(userId);
     }
