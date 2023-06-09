@@ -644,4 +644,19 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         return new HashMap<>(errorAttributes.getErrorAttributes(webRequest, true));
     }
+
+    /**
+     * Customize the response for UserHasNoFriendWithIdException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(UserHasNoFriendWithIdException.class)
+    public final ResponseEntity<Object> handleUserHasNoFriendWithIdException(
+        UserHasNoFriendWithIdException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
 }

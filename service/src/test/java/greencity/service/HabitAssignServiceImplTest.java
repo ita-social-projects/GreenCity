@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
@@ -41,6 +42,7 @@ import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.repository.CustomShoppingListItemRepo;
@@ -49,6 +51,7 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,6 +95,8 @@ import static org.mockito.Mockito.when;
 class HabitAssignServiceImplTest {
     @Mock
     private HabitRepo habitRepo;
+    @Mock
+    private UserRepo userRepo;
     @Mock
     private HabitAssignRepo habitAssignRepo;
     @Mock
@@ -158,6 +163,12 @@ class HabitAssignServiceImplTest {
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
         HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
+
+    private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
+        HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(habitAssignPropertiesDto)
+            .friendsIdsList(List.of())
+            .build();
 
     private String language = "en";
 
@@ -250,9 +261,111 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual =
-            habitAssignService.assignCustomHabitForUser(habit.getId(), userVO, habitAssignPropertiesDto);
-        assertEquals(habitAssignManagementDto, actual);
+        List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+            habitAssignCustomPropertiesDto);
+        assertEquals(List.of(habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserWithFriend() {
+        User userFriend1 = User.builder().id(3L).build();
+
+        UserVO userVO1 = UserVO.builder().id(1L).build();
+
+        User user1 = User.builder().id(1L).userFriends(List.of(userFriend1)).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+
+        when(habitAssignRepo.findAllByUserId(userVO1.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO1, User.class)).thenReturn(user1);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
+        when(userRepo.isFriend(user1.getId(), userFriend1.getId())).thenReturn(true);
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO1, habitAssignCustomPropertiesDtoWithFriend);
+        assertEquals(List.of(habitAssignManagementDto, habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserWithFriendNullHabitAssign() {
+        User userFriend1 = User.builder().id(3L).build();
+
+        UserVO userVO1 = UserVO.builder().id(1L).build();
+
+        User user1 = User.builder().id(1L).userFriends(List.of(userFriend1)).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+
+        when(habitAssignRepo.findAllByUserId(userVO1.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO1, User.class)).thenReturn(user1);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
+        when(userRepo.isFriend(user1.getId(), userFriend1.getId())).thenReturn(true);
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDtoWithFriend);
+        assertEquals(List.of(habitAssignManagementDto, habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsNotFoundException() {
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+
+        assertThrows(NotFoundException.class, () -> habitAssignService
+            .assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsUserHasNoFriendWithIdException() {
+
+        User userFriend1 = User.builder().id(3L).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
+
+        assertThrows(UserHasNoFriendWithIdException.class,
+            () -> habitAssignService.assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
+    }
+
+    @Test
+    void assignCustomHabitForUser() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
+        assertEquals(List.of(habitAssignManagementDto), actual);
     }
 
     @Test
@@ -315,17 +428,6 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.INVALID_DATE_RANGE, exception.getMessage());
 
         verify(habitAssignRepo, times(0)).findAllHabitAssignsBetweenDates(anyLong(), any(), any());
-    }
-
-    @Test
-    void assignCustomHabitForUser() {
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
-            habitAssignPropertiesDto);
-        assertEquals(habitAssignManagementDto, actual);
     }
 
     @Test

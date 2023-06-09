@@ -26,6 +26,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
@@ -633,6 +634,13 @@ public class ModelUtils {
         return HabitAssignPropertiesDto.builder()
             .defaultShoppingListItems(List.of(1L, 2L))
             .duration(20)
+            .build();
+    }
+
+    public static HabitAssignCustomPropertiesDto getHabitAssignCustomPropertiesDto() {
+        return HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
+            .friendsIdsList(List.of(1L, 2L))
             .build();
     }
 
