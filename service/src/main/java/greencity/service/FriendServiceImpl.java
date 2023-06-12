@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserManagementDto;
+import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -29,15 +30,9 @@ public class FriendServiceImpl implements FriendService {
     @Override
     @Transactional
     public void deleteUserFriendById(Long userId, Long friendId) {
-        if (!userRepo.existsById(userId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        if (!userRepo.existsById(friendId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId);
-        }
-        if (!userRepo.isFriend(userId, friendId)) {
-            throw new NotDeletedException(ErrorMessage.USER_FRIENDS_LIST + friendId);
-        }
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriends(userId, friendId);
         userRepo.deleteUserFriendById(userId, friendId);
     }
 
@@ -47,21 +42,10 @@ public class FriendServiceImpl implements FriendService {
     @Override
     @Transactional
     public void addNewFriend(Long userId, Long friendId) {
-        if (userId.equals(friendId)) {
-            throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
-        }
-        if (!userRepo.existsById(userId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        if (!userRepo.existsById(friendId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId);
-        }
-        if (userRepo.isFriendRequested(userId, friendId)) {
-            throw new BadRequestException(ErrorMessage.FRIEND_REQUEST_ALREADY_SENT);
-        }
-        if (userRepo.isFriend(userId, friendId)) {
-            throw new BadRequestException(ErrorMessage.FRIEND_EXISTS + friendId);
-        }
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriendRequestNotSent(userId, friendId);
+        validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
     }
 
@@ -71,22 +55,10 @@ public class FriendServiceImpl implements FriendService {
     @Override
     @Transactional
     public void acceptFriendRequest(Long userId, Long friendId) {
-        if (userId.equals(friendId)) {
-            throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
-        }
-        if (!userRepo.existsById(userId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        if (!userRepo.existsById(friendId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId);
-        }
-        if (userRepo.isFriend(userId, friendId)) {
-            throw new BadRequestException(ErrorMessage.FRIEND_EXISTS + friendId);
-        }
-        if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
-            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
-        }
-
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriendNotExists(userId, friendId);
+        validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
     }
 
@@ -96,21 +68,10 @@ public class FriendServiceImpl implements FriendService {
     @Override
     @Transactional
     public void declineFriendRequest(Long userId, Long friendId) {
-        if (userId.equals(friendId)) {
-            throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
-        }
-        if (!userRepo.existsById(userId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
-        }
-        if (!userRepo.existsById(friendId)) {
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId);
-        }
-        if (userRepo.isFriend(userId, friendId)) {
-            throw new BadRequestException(ErrorMessage.FRIEND_EXISTS + friendId);
-        }
-        if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
-            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
-        }
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriendNotExists(userId, friendId);
+        validateFriendRequestSentByFriend(userId, friendId);
         userRepo.declineFriendRequest(userId, friendId);
     }
 
@@ -119,10 +80,50 @@ public class FriendServiceImpl implements FriendService {
      */
     @Override
     public List<UserManagementDto> findUserFriendsByUserId(Long userId) {
+        validateUserExistence(userId);
+        List<User> friends = userRepo.getAllUserFriends(userId);
+        return friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
+            .collect(Collectors.toList());
+    }
+
+    private void validateUserAndFriendExistence(Long userId, Long friendId) {
+        validateUserExistence(userId);
+        validateUserExistence(friendId);
+    }
+
+    private void validateUserExistence(Long userId) {
         if (!userRepo.existsById(userId)) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
-        var friends = userRepo.getAllUserFriends(userId);
-        return friends.stream().map(x -> modelMapper.map(x, UserManagementDto.class)).collect(Collectors.toList());
+    }
+
+    private void validateFriendRequestNotSent(Long userId, Long friendId) {
+        if (userRepo.isFriendRequested(userId, friendId)) {
+            throw new BadRequestException(ErrorMessage.FRIEND_REQUEST_ALREADY_SENT);
+        }
+    }
+
+    private void validateFriendNotExists(Long userId, Long friendId) {
+        if (userRepo.isFriend(userId, friendId)) {
+            throw new BadRequestException(ErrorMessage.FRIEND_EXISTS + friendId);
+        }
+    }
+
+    private void validateFriendRequestSentByFriend(Long userId, Long friendId) {
+        if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
+            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
+        }
+    }
+
+    private void validateFriends(Long userId, Long friendId) {
+        if (!userRepo.isFriend(userId, friendId)) {
+            throw new NotDeletedException(ErrorMessage.USER_FRIENDS_LIST + friendId);
+        }
+    }
+
+    private void validateUserAndFriendNotSamePerson(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
+            throw new BadRequestException(ErrorMessage.OWN_USER_ID + friendId);
+        }
     }
 }
