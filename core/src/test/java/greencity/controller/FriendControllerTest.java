@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,5 +53,32 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(friendService).addNewFriend(null, friendId);
+    }
+
+    @Test
+    void acceptFriendRequestTest() throws Exception {
+        Long friendId = 1L;
+        mockMvc.perform(patch(FRIEND_LINK + "/{friendId}/acceptFriend", friendId))
+            .andExpect(status().isOk());
+
+        verify(friendService).acceptFriendRequest(null, friendId);
+    }
+
+    @Test
+    void declineFriendRequestTest() throws Exception {
+        Long friendId = 1L;
+        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/declineFriend", friendId))
+            .andExpect(status().isOk());
+
+        verify(friendService).declineFriendRequest(null, friendId);
+    }
+
+    @Test
+    void findUserFriendByUserIdTest() throws Exception {
+        Long userId = 1L;
+        mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
+            .andExpect(status().isOk());
+
+        verify(friendService).findUserFriendsByUserId(userId);
     }
 }

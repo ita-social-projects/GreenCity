@@ -1,6 +1,9 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.user.UserManagementDto;
+import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -12,9 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.modelmapper.ModelMapper;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -28,6 +35,8 @@ class FriendServiceImplTest {
 
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private ModelMapper modelMapper;
 
     @Test
     void deleteUserFriendByIdTest() {
@@ -218,5 +227,270 @@ class FriendServiceImplTest {
         verify(userRepo).isFriendRequested(userId, friendId);
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo, never()).addNewFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptFriendRequestTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(true);
+
+        friendService.acceptFriendRequest(userId, friendId);
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo).acceptFriendRequest(userId, friendId);
+    }
+
+    @Test
+    void acceptFriendRequestWhenUserIdEqualFriendIdTest() {
+        Long userId = 1L;
+        Long friendId = 1L;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.acceptFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.OWN_USER_ID + friendId, exception.getMessage());
+
+        verify(userRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).acceptFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptFriendRequestWhenUserNotFoundTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.acceptFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).acceptFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptFriendRequestWhenFriendNotFoundTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.acceptFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).acceptFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptFriendRequestWhenUsersIsAlreadyFriendsTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.acceptFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_EXISTS + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).acceptFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void acceptFriendRequestWhenRequestIsAlreadyMadeTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.acceptFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_REQUEST_NOT_SENT, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo, never()).acceptFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void declineFriendRequestTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(true);
+
+        friendService.declineFriendRequest(userId, friendId);
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo).declineFriendRequest(userId, friendId);
+    }
+
+    @Test
+    void declineFriendRequestWhenUserIdEqualFriendIdTest() {
+        Long userId = 1L;
+        Long friendId = 1L;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.declineFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.OWN_USER_ID + friendId, exception.getMessage());
+
+        verify(userRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).declineFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void declineFriendRequestWhenUserNotFoundTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.declineFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).declineFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void declineFriendRequestWhenFriendNotFoundTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.declineFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).declineFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void declineFriendRequestWhenUsersIsAlreadyFriendsTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.declineFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_EXISTS + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).declineFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void declineFriendRequestWhenRequestIsAlreadyMadeTest() {
+        Long userId = 1L;
+        Long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.declineFriendRequest(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_REQUEST_NOT_SENT, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo, never()).declineFriendRequest(anyLong(), anyLong());
+    }
+
+    @Test
+    void findUserFriendsByUserIdTest() {
+        Long userId = 1L;
+        List<User> users = List.of(ModelUtils.getUser());
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUserFriends(userId)).thenReturn(users);
+
+        friendService.findUserFriendsByUserId(userId);
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUserFriends(userId);
+        verify(modelMapper).map(users.get(0), UserManagementDto.class);
+    }
+
+    @Test
+    void findUserFriendsByUserIdWhenUserNotFoundTest() {
+        Long userId = 1L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.findUserFriendsByUserId(userId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).getAllUserFriends(anyLong());
+        verify(modelMapper, never()).map(anyLong(), any());
     }
 }

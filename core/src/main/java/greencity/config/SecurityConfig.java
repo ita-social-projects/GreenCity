@@ -160,7 +160,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
                 "/token",
-                "/socket/**")
+                "/socket/**",
+                FRIENDS + "/user/{userId}")
             .permitAll()
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
@@ -284,7 +285,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
-                "/user/deleteProfilePicture")
+                "/user/deleteProfilePicture",
+                FRIENDS + "/{friendId}/acceptFriend")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
@@ -302,7 +304,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/removeFromFavorites/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
-                FRIENDS + "/{friendId}")
+                FRIENDS + "/{friendId}",
+                FRIENDS + "/{friendId}/declineFriend")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
