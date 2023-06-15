@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
+import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.service.FriendService;
 import io.swagger.annotations.ApiOperation;
@@ -13,11 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 @Validated
 @AllArgsConstructor
@@ -68,5 +73,66 @@ public class FriendController {
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for accepting friend request from user.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     */
+    @ApiOperation(value = "Accept friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @PatchMapping("/{friendId}/acceptFriend")
+    public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.acceptFriendRequest(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for declining friend request from user.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     */
+    @ApiOperation(value = "Decline friend request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+    })
+    @DeleteMapping("/{friendId}/declineFriend")
+    public ResponseEntity<Object> declineFriendRequest(
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.declineFriendRequest(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method to find all user friends by userId.
+     *
+     * @param userId user id.
+     *
+     * @return {@link UserManagementDto list}.
+     * @author Orest Mamchuk
+     */
+    @ApiOperation(value = "Get all user friends")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<UserManagementDto>> findUserFriendsByUserId(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(friendService.findUserFriendsByUserId(userId));
     }
 }
