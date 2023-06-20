@@ -2,6 +2,10 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
+import greencity.dto.SliceDto;
+import greencity.dto.friends.FriendsChatDto;
+import greencity.dto.friends.UserFriendDto;
+import greencity.dto.friends.UserFriendProjectionDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
@@ -16,11 +20,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -492,5 +502,81 @@ class FriendServiceImplTest {
         verify(userRepo).existsById(userId);
         verify(userRepo, never()).getAllUserFriends(anyLong());
         verify(modelMapper, never()).map(anyLong(), any());
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendTest() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+        UserFriendProjectionDto user = ModelUtils.getUserFriendProjectionDto();
+        Slice<UserFriendProjectionDto> slice = new SliceImpl<>(List.of(user), pageable, false);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        expectedResult.setFriendsChatDto(FriendsChatDto.builder()
+            .chatId(1L)
+            .chatExists(true)
+            .build());
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId)).thenReturn(slice);
+        when(modelMapper.map(user, UserFriendDto.class)).thenReturn(ModelUtils.getUserFriendDto());
+
+        SliceDto<UserFriendDto> sliceDto = friendService.findAllUsersExceptMainUserAndUsersFriend(pageable, userId);
+
+        assertNotNull(sliceDto);
+        assertNotNull(sliceDto.getPage());
+        assertEquals(1, sliceDto.getPage().size());
+        assertEquals(expectedResult, sliceDto.getPage().get(0));
+        assertTrue(sliceDto.isLast());
+        assertEquals(0, sliceDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUsersExceptMainUserAndFriends(pageable, userId);
+        verify(modelMapper).map(user, UserFriendDto.class);
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendWhenUserNotFoundTest() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.findAllUsersExceptMainUserAndUsersFriend(pageable, userId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(1L);
+        verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(any(), anyLong());
+        verify(modelMapper, never()).map(any(), any());
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendWhenChatNotExistsTest() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+        UserFriendProjectionDto user = ModelUtils.getUserFriendProjectionDtoWithoutChat();
+        Slice<UserFriendProjectionDto> slice = new SliceImpl<>(List.of(user), pageable, false);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        expectedResult.setFriendsChatDto(FriendsChatDto.builder()
+            .chatId(null)
+            .chatExists(false)
+            .build());
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId)).thenReturn(slice);
+        when(modelMapper.map(user, UserFriendDto.class)).thenReturn(ModelUtils.getUserFriendDto());
+
+        SliceDto<UserFriendDto> sliceDto = friendService.findAllUsersExceptMainUserAndUsersFriend(pageable, userId);
+        assertNotNull(sliceDto);
+        assertNotNull(sliceDto.getPage());
+        assertEquals(1, sliceDto.getPage().size());
+        assertEquals(expectedResult, sliceDto.getPage().get(0));
+        assertTrue(sliceDto.isLast());
+        assertEquals(0, sliceDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUsersExceptMainUserAndFriends(pageable, userId);
+        verify(modelMapper).map(user, UserFriendDto.class);
     }
 }

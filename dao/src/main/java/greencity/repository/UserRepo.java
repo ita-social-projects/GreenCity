@@ -1,11 +1,13 @@
 package greencity.repository;
 
+import greencity.dto.friends.UserFriendProjectionDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -236,7 +238,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     /**
      * Accept friend request.
-     * 
+     *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend to be added.
      */
@@ -268,4 +270,41 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
     List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Method that finds all users except current user and his friends.
+     *
+     * @param pageable {@link Pageable} -current page.
+     * @param userId   {@link Long} -current user's id.
+     * @return {@link Slice} of {@link UserFriendProjectionDto}.
+     */
+    @Query(nativeQuery = true, value = "SELECT *, (SELECT count(*) "
+        + "        FROM users_friends uf1 "
+        + "        WHERE uf1.user_id in ((SELECT uf11.user_id FROM users_friends uf11 WHERE uf11.friend_id = :userId "
+        + "        and uf11.status = 'FRIEND') "
+        + "                          UNION "
+        + "                          (SELECT uf12.friend_id FROM users_friends uf12 WHERE uf12.user_id = :userId "
+        + "        and uf12.status = 'FRIEND')) "
+        + "          and uf1.friend_id = u.id "
+        + "          and uf1.status = 'FRIEND' "
+        + "           or "
+        + "         uf1.friend_id in ((SELECT uf13.user_id FROM users_friends uf13 WHERE uf13.friend_id = :userId "
+        + "        and uf13.status = 'FRIEND') "
+        + "                            UNION "
+        + "                            (SELECT uf14.friend_id FROM users_friends uf14 WHERE uf14.user_id = :userId "
+        + "        and uf14.status = 'FRIEND')) "
+        + "          and uf1.user_id = u.id "
+        + "          and uf1.status = 'FRIEND') as mutualFriends, "
+        + "       u.profile_picture           as profilePicturePath, "
+        + "       (SELECT p.room_id "
+        + "       FROM chat_rooms_participants p"
+        + "       WHERE p.participant_id IN (u.id, :userId) "
+        + "       GROUP BY p.room_id "
+        + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as roomId "
+        + "FROM users u "
+        + "WHERE u.id != :userId "
+        + "  AND u.id NOT IN ((SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') "
+        + "                 UNION "
+        + "                 (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) ")
+    Slice<UserFriendProjectionDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId);
 }

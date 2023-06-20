@@ -1,6 +1,10 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.SliceDto;
+import greencity.dto.friends.FriendsChatDto;
+import greencity.dto.friends.UserFriendDto;
+import greencity.dto.friends.UserFriendProjectionDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
@@ -9,6 +13,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +90,33 @@ public class FriendServiceImpl implements FriendService {
         List<User> friends = userRepo.getAllUserFriends(userId);
         return friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId) {
+        validateUserExistence(userId);
+        Slice<UserFriendProjectionDto> users =
+            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId);
+        List<UserFriendDto> userFriendDtoList = users.getContent().stream()
+            .map(userFriendProjection -> {
+                var user = modelMapper.map(userFriendProjection, UserFriendDto.class);
+                FriendsChatDto friendsChatDto = new FriendsChatDto();
+                friendsChatDto.setChatExists(false);
+                if (userFriendProjection.getRoomId() != null) {
+                    friendsChatDto.setChatId(userFriendProjection.getRoomId().longValue());
+                    friendsChatDto.setChatExists(true);
+                }
+                user.setFriendsChatDto(friendsChatDto);
+                return user;
+            })
+            .collect(Collectors.toList());
+        return new SliceDto<>(
+            userFriendDtoList,
+            users.isLast(),
+            users.getPageable().getPageNumber());
     }
 
     private void validateUserAndFriendExistence(Long userId, Long friendId) {

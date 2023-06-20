@@ -1,7 +1,10 @@
 package greencity.service;
 
+import greencity.dto.SliceDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -48,4 +51,16 @@ public interface FriendService {
      * @return {@link List} of {@link UserManagementDto} instances.
      */
     List<UserManagementDto> findUserFriendsByUserId(Long userId);
+
+    /**
+     * Method find all users except current user and his friends.
+     *
+     * @param pageable The information about pagination and sorting for the result.
+     * @param userId   {@link Long}
+     *
+     * @return {@link SliceDto} of {@link UserFriendDto}.
+     *
+     * @author Stepan Omeliukh
+     */
+    SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId);
 }
