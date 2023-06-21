@@ -24,6 +24,7 @@ import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -285,7 +287,7 @@ public class EventServiceImpl implements EventService {
 
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
             && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
