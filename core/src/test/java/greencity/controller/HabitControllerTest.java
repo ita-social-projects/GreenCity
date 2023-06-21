@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
 
@@ -124,6 +125,7 @@ class HabitControllerTest {
     void findByDifferentParameters() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
+        UserVO userVO = new UserVO();
 
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
@@ -132,7 +134,7 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
             Optional.of(true),
             Optional.of(List.of(1)),
             locale.getLanguage());

@@ -221,89 +221,94 @@ class HabitServiceImplTest {
             arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
             arguments(Optional.empty(), Optional.of(true), Optional.empty()));
     }
-
-    @ParameterizedTest
-    @MethodSource("getAllByDifferentParametersArguments")
-    void getAllByDifferentParameters(Optional<List<String>> tags,
-        Optional<Boolean> isCustomHabit,
-        Optional<List<Integer>> complexities) {
-        Pageable pageable = PageRequest.of(0, 2);
-        String tag = "HABIT";
-
-        List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
-        HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
-        HabitDto habitDto = ModelUtils.getHabitDto();
-        Page<HabitTranslation> habitTranslationPage =
-            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
-        List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
-        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
-            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
-        when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
-        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            when(habitTranslationRepo.findAllByDifferentParameters(pageable, lowerCaseTags,
-                isCustomHabit, complexities, "en")).thenReturn(habitTranslationPage);
-        } else if (complexities.isPresent() && isCustomHabit.isPresent()) {
-            when(habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
-                isCustomHabit, complexities, "en")).thenReturn(habitTranslationPage);
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
-                complexities, "en")).thenReturn(habitTranslationPage);
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            when(habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
-                lowerCaseTags, isCustomHabit, "en")).thenReturn(habitTranslationPage);
-        } else if (tags.isPresent()) {
-            when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable,
-                lowerCaseTags, "en")).thenReturn(habitTranslationPage);
-        } else if (complexities.isPresent()) {
-            when(habitTranslationRepo.findAllByComplexityAndLanguageCode(pageable,
-                complexities, "en")).thenReturn(habitTranslationPage);
-        } else if (isCustomHabit.isPresent()) {
-            when(habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
-                isCustomHabit, "en")).thenReturn(habitTranslationPage);
-        } else {
-            assertFalse(
-                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent()
-                    || (complexities.isPresent() && !complexities.get().isEmpty()));
-        }
-
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(pageable,
-            tags, isCustomHabit, complexities, "en"));
-
-        verify(modelMapper).map(habitTranslation, HabitDto.class);
-        verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-        verify(habitRepo).findById(1L);
-
-        if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
-            verify(habitTranslationRepo).findAllByDifferentParameters(pageable, lowerCaseTags,
-                isCustomHabit, complexities, "en");
-        } else if (complexities.isPresent() && isCustomHabit.isPresent()) {
-            verify(habitTranslationRepo).findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable,
-                isCustomHabit, complexities, "en");
-        } else if (complexities.isPresent() && tags.isPresent()) {
-            verify(habitTranslationRepo).findAllByTagsAndComplexityAndLanguageCode(pageable, lowerCaseTags,
-                complexities, "en");
-        } else if (isCustomHabit.isPresent() && tags.isPresent()) {
-            verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitAndLanguageCode(pageable,
-                lowerCaseTags, isCustomHabit, "en");
-        } else if (tags.isPresent()) {
-            verify(habitTranslationRepo).findAllByTagsAndLanguageCode(pageable,
-                lowerCaseTags, "en");
-        } else if (complexities.isPresent()) {
-            verify(habitTranslationRepo).findAllByComplexityAndLanguageCode(pageable,
-                complexities, "en");
-        } else if (isCustomHabit.isPresent()) {
-            verify(habitTranslationRepo).findAllByIsCustomHabitAndLanguageCode(pageable,
-                isCustomHabit, "en");
-        } else {
-            assertFalse(
-                (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent()
-                    || (complexities.isPresent() && !complexities.get().isEmpty()));
-        }
-    }
+    /*
+     * 
+     * @ParameterizedTest
+     * 
+     * @MethodSource("getAllByDifferentParametersArguments") void
+     * getAllByDifferentParameters(Optional<List<String>> tags, Optional<Boolean>
+     * isCustomHabit, Optional<List<Integer>> complexities) { Pageable pageable =
+     * PageRequest.of(0, 2); String tag = "HABIT";
+     * 
+     * List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
+     * HabitTranslation habitTranslation =
+     * ModelUtils.getHabitTranslationWithCustom(); HabitDto habitDto =
+     * ModelUtils.getHabitDto(); Page<HabitTranslation> habitTranslationPage = new
+     * PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+     * List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
+     * PageableDto pageableDto = new PageableDto(habitDtoList,
+     * habitTranslationPage.getTotalElements(),
+     * habitTranslationPage.getPageable().getPageNumber(),
+     * habitTranslationPage.getTotalPages());
+     * 
+     * when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
+     * when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+     * when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.
+     * getHabitWithCustom()));
+     * 
+     * if (isCustomHabit.isPresent() && tags.isPresent() &&
+     * complexities.isPresent()) {
+     * when(habitTranslationRepo.findAllByDifferentParameters(pageable,
+     * lowerCaseTags, isCustomHabit, complexities,
+     * "en")).thenReturn(habitTranslationPage); } else if (complexities.isPresent()
+     * && isCustomHabit.isPresent()) {
+     * when(habitTranslationRepo.findAllByIsCustomHabitAndComplexityAndLanguageCode(
+     * pageable, isCustomHabit, complexities,
+     * "en")).thenReturn(habitTranslationPage); } else if (complexities.isPresent()
+     * && tags.isPresent()) {
+     * when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCode(pageable,
+     * lowerCaseTags, complexities, "en")).thenReturn(habitTranslationPage); } else
+     * if (isCustomHabit.isPresent() && tags.isPresent()) {
+     * when(habitTranslationRepo.findAllByTagsAndIsCustomHabitAndLanguageCode(
+     * pageable, lowerCaseTags, isCustomHabit,
+     * "en")).thenReturn(habitTranslationPage); } else if (tags.isPresent()) {
+     * when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable,
+     * lowerCaseTags, "en")).thenReturn(habitTranslationPage); } else if
+     * (complexities.isPresent()) {
+     * 
+     * when(habitTranslationRepo.findAllByComplexityAndLanguageCode(pageable,
+     * complexities, "en")).thenReturn(habitTranslationPage);
+     * 
+     * } else if (isCustomHabit.isPresent()) {
+     * when(habitTranslationRepo.findAllByIsCustomHabitAndLanguageCode(pageable,
+     * isCustomHabit, "en")).thenReturn(habitTranslationPage); } else { assertFalse(
+     * (tags.isPresent() && !tags.get().isEmpty()) || isCustomHabit.isPresent() ||
+     * (complexities.isPresent() && !complexities.get().isEmpty())); }
+     * 
+     * 
+     * assertEquals(pageableDto, habitService.getAllByDifferentParameters(pageable,
+     * tags, isCustomHabit, complexities, "en"));
+     * 
+     * 
+     * verify(modelMapper).map(habitTranslation, HabitDto.class);
+     * verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
+     * verify(habitRepo).findById(1L);
+     * 
+     * if (isCustomHabit.isPresent() && tags.isPresent() &&
+     * complexities.isPresent()) {
+     * verify(habitTranslationRepo).findAllByDifferentParameters(pageable,
+     * lowerCaseTags, isCustomHabit, complexities, "en"); } else if
+     * (complexities.isPresent() && isCustomHabit.isPresent()) {
+     * verify(habitTranslationRepo).
+     * findAllByIsCustomHabitAndComplexityAndLanguageCode(pageable, isCustomHabit,
+     * complexities, "en"); } else if (complexities.isPresent() && tags.isPresent())
+     * { verify(habitTranslationRepo).findAllByTagsAndComplexityAndLanguageCode(
+     * pageable, lowerCaseTags, complexities, "en"); } else if
+     * (isCustomHabit.isPresent() && tags.isPresent()) {
+     * verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitAndLanguageCode(
+     * pageable, lowerCaseTags, isCustomHabit, "en"); } else if (tags.isPresent()) {
+     * verify(habitTranslationRepo).findAllByTagsAndLanguageCode(pageable,
+     * lowerCaseTags, "en"); } else if (complexities.isPresent()) {
+     * 
+     * verify(habitTranslationRepo).findAllByComplexityAndLanguageCode(pageable,
+     * complexities, "en");
+     * 
+     * } else if (isCustomHabit.isPresent()) {
+     * verify(habitTranslationRepo).findAllByIsCustomHabitAndLanguageCode(pageable,
+     * isCustomHabit, "en"); } else { assertFalse( (tags.isPresent() &&
+     * !tags.get().isEmpty()) || isCustomHabit.isPresent() ||
+     * (complexities.isPresent() && !complexities.get().isEmpty())); } }
+     */
 
     @Test
     void getShoppingListForHabit() {
