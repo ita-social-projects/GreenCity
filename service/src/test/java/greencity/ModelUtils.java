@@ -303,6 +303,22 @@ public class ModelUtils {
             .build();
     }
 
+    public static UserVO getTestUserVo() {
+        return UserVO.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("user@email.com")
+            .build();
+    }
+
+    public static User getTestUser() {
+        return User.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("user@email.com")
+            .build();
+    }
+
     public static List<User> getFriendsList() {
         User friend1 = User.builder()
             .id(10L)

@@ -20,6 +20,7 @@ import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -36,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
@@ -167,6 +169,19 @@ class EventServiceImplTest {
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
         assertEquals(eventDto, actualEvent);
+    }
+
+    @Test
+    void updateThrowsUserHasNoPermissionToAccessException() {
+        UserVO userVO = ModelUtils.getTestUserVo();
+        User user = ModelUtils.getTestUser();
+        Event expectedEvent = ModelUtils.getEvent();
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.update(eventToUpdateDto, userVO.getEmail(), null));
     }
 
     @Test
