@@ -1,7 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
@@ -9,8 +9,6 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
-@Getter
-@Setter
 public class UpdateEventDto {
     @NotNull
     private Long id;
