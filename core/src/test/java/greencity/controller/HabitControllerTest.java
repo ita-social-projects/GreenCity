@@ -144,96 +144,89 @@ class HabitControllerTest {
     void findByDifferentParametersWithComplexityAndTags() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
-
+        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
-            Optional.empty(),
-            Optional.of(List.of(1)),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(),
+                Optional.of(List.of("reusable")), Optional.empty(),
+                Optional.of(List.of(1)), locale.getLanguage());
     }
 
     @Test
     void findByDifferentParametersWithComplexityAndIsCustomHabit() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
-
+        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("complexities", "1")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.empty(), Optional.of(true),
-            Optional.of(List.of(1)),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+                Optional.of(true), Optional.of(List.of(1)), locale.getLanguage());
     }
 
     @Test
     void findByDifferentParametersWithTagsAndIsCustomHabit() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
-
+        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
-            Optional.of(true),
-            Optional.empty(),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+            Optional.of(true), Optional.empty(), locale.getLanguage());
     }
 
     @Test
     void findByDifferentParametersWithComplexity() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
+        UserVO userVO = new UserVO();
 
         mockMvc.perform(get(habitLink + "/search")
             .param("complexities", "1")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.empty(), Optional.empty(),
-            Optional.of(List.of(1)),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(), Optional.empty(),
+            Optional.of(List.of(1)), locale.getLanguage());
     }
 
     @Test
     void findByDifferentParametersWithIsCustomHabit() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
-
+        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("isCustomHabit", "true")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.empty(), Optional.of(true),
-            Optional.empty(),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(), Optional.of(true),
+            Optional.empty(), locale.getLanguage());
     }
 
     @Test
     void findByDifferentParametersWithTags() throws Exception {
         Locale locale = new Locale("en");
         Gson gson = new Gson();
-
+        UserVO userVO = new UserVO();
         mockMvc.perform(get(habitLink + "/search")
             .param("tags", "reusable")
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(createPageRequest(), Optional.of(List.of("reusable")),
-            Optional.empty(),
-            Optional.empty(),
-            locale.getLanguage());
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.of(List.of("reusable")),
+            Optional.empty(), Optional.empty(), locale.getLanguage());
     }
 
     @Test
