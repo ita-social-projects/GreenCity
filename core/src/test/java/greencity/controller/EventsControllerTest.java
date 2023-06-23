@@ -589,6 +589,7 @@ class EventsControllerTest {
     @SneakyThrows
     private UpdateEventDto getUpdateEventDto() {
         String json = "{\n" +
+            "    \"id\":0,\n" +
             "    \"title\":\"string\",\n" +
             "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
             "    \"open\":true,\n" +
