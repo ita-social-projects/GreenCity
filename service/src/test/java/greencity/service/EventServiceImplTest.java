@@ -180,8 +180,9 @@ class EventServiceImplTest {
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        String userVoEmail = userVO.getEmail();
         assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> eventService.update(eventToUpdateDto, userVO.getEmail(), null));
+            () -> eventService.update(eventToUpdateDto, userVoEmail, null));
     }
 
     @Test
