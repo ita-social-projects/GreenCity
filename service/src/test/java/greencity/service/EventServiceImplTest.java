@@ -20,6 +20,7 @@ import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -167,6 +168,25 @@ class EventServiceImplTest {
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
         assertEquals(eventDto, actualEvent);
+    }
+
+    @Test
+    void updateThrowsUserHasNoPermissionToAccessException() {
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        UserVO userVO = ModelUtils.getTestUserVo();
+        User user = ModelUtils.getTestUser();
+        String userVoEmail = userVO.getEmail();
+        Event expectedEvent = ModelUtils.getEvent();
+
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(anyString())).thenReturn(userVO);
+
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.update(eventToUpdateDto, userVoEmail, null));
+        verify(eventRepo).findById(1L);
+        verify(restClient).findByEmail("user@email.com");
+        verify(modelMapper).map(userVO, User.class);
     }
 
     @Test
