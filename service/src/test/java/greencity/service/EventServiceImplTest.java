@@ -172,16 +172,21 @@ class EventServiceImplTest {
 
     @Test
     void updateThrowsUserHasNoPermissionToAccessException() {
+        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
         UserVO userVO = ModelUtils.getTestUserVo();
         User user = ModelUtils.getTestUser();
+        String userVoEmail = userVO.getEmail();
         Event expectedEvent = ModelUtils.getEvent();
+
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(restClient.findByEmail(anyString())).thenReturn(userVO);
-        UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
-        String userVoEmail = userVO.getEmail();
+
         assertThrows(UserHasNoPermissionToAccessException.class,
             () -> eventService.update(eventToUpdateDto, userVoEmail, null));
+        verify(eventRepo).findById(1L);
+        verify(restClient).findByEmail("user@email.com");
+        verify(modelMapper).map(userVO, User.class);
     }
 
     @Test
