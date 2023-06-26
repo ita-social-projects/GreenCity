@@ -3,7 +3,6 @@ package greencity.dto.friends;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserFriendDtoTest {
     @Test
@@ -16,7 +15,7 @@ public class UserFriendDtoTest {
         String profilePicture = "profilePicture";
         Long chatId = 4L;
         UserFriendDto userFriendDto = new UserFriendDto(id, name, city, rating, mutualFriends,
-                profilePicture, chatId);
+            profilePicture, chatId);
         assertEquals(id, userFriendDto.getId());
         assertEquals(name, userFriendDto.getName());
         assertEquals(city, userFriendDto.getCity());
