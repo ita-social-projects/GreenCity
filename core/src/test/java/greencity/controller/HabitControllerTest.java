@@ -168,7 +168,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(), Optional.of(true),
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+            Optional.of(true),
             Optional.of(List.of(1)),
             locale.getLanguage());
     }
@@ -200,7 +201,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(), Optional.empty(),
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+            Optional.empty(),
             Optional.of(List.of(1)),
             locale.getLanguage());
     }
@@ -215,7 +217,8 @@ class HabitControllerTest {
             .content(gson.toJson(locale))
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(), Optional.of(true),
+        verify(habitService).getAllByDifferentParameters(userVO, createPageRequest(), Optional.empty(),
+            Optional.of(true),
             Optional.empty(),
             locale.getLanguage());
     }
