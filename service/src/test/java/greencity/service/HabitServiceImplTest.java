@@ -172,15 +172,13 @@ class HabitServiceImplTest {
     void getAllHabitsByLanguageCode() {
         Pageable pageable = PageRequest.of(0, 2);
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
-        Page<HabitTranslation> habitTranslationPage =
-            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        Page<HabitTranslation> habitTranslationPage = new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
         HabitDto habitDto = ModelUtils.getHabitDto();
         when(habitTranslationRepo.findAllByLanguageCode(pageable, "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
-        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
-            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(), habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(pageable, "en"));
     }
 
@@ -192,44 +190,39 @@ class HabitServiceImplTest {
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         HabitDto habitDto = ModelUtils.getHabitDto();
-        Page<HabitTranslation> habitTranslationPage =
-            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        Page<HabitTranslation> habitTranslationPage = new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
-        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
-            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+        PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(), habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
-        when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, "en"))
-            .thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByTagsAndLanguageCode(pageable, lowerCaseTags, "en")).thenReturn(habitTranslationPage);
         assertEquals(pageableDto, habitService.getAllByTagsAndLanguageCode(pageable, tags, "en"));
     }
 
     private static Stream<Arguments> getAllByDifferentParametersArguments() {
         return Stream.of(
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.empty()),
-            arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(true), Optional.empty()));
+                arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(List.of(1))),
+                arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
+                arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
+                arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
+                arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.empty()),
+                arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
+                arguments(Optional.empty(), Optional.of(true), Optional.empty()));
     }
 
     @ParameterizedTest
     @MethodSource("getAllByDifferentParametersArguments")
-    void getAllByDifferentParameters(Optional<List<String>> tags, Optional<Boolean> isCustomHabit,
-        Optional<List<Integer>> complexities) {
+    void getAllByDifferentParameters(Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities) {
 
         Pageable pageable = PageRequest.of(0, 2);
         String tag = "HABIT";
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
         HabitDto habitDto = ModelUtils.getHabitDto();
-        Page<HabitTranslation> habitTranslationPage =
-            new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        Page<HabitTranslation> habitTranslationPage = new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
-            habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
+                habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
 
         List<Long> userIds = userRepo.getAllUserFriends(1L).stream().map(User::getId).collect(Collectors.toList());
 
@@ -239,61 +232,45 @@ class HabitServiceImplTest {
         List<User> users = Collections.singletonList(ModelUtils.getUser());
         when(userRepo.getAllUserFriends(ModelUtils.getUser().getId())).thenReturn(users);
 
-        when(habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(any(Pageable.class), anyList(), any(),
-            anyString(), anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(any(Pageable.class), anyList(), any(), anyString(), anyList())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(any(Pageable.class), anyList(), any(),
-            anyString())).thenReturn(habitTranslationPage);
+                anyString())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(any(Pageable.class), anyList(),
-            anyString(), anyList())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(any(Pageable.class), anyList(),
-            anyString()))
+                anyString(), anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(any(Pageable.class), anyList(), anyString()))
                 .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(any(Pageable.class), any(),
-            anyString(),
-            anyList())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(any(Pageable.class), any(),
-            anyString())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(
-            any(Pageable.class), anyList(), any(), anyString(),
-            anyList())).thenReturn(habitTranslationPage);
-        when(
-            habitTranslationRepo.findAllByIsCustomHabitTrueAndLanguageCode(any(Pageable.class), anyString(), anyList()))
-                .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
-            .thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(
-            any(Pageable.class), any(), anyString(),
-            anyList())).thenReturn(habitTranslationPage);
-        when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(
-            any(Pageable.class), any(), anyString(),
-            anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(any(Pageable.class), any(), anyString(),
+                anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(any(Pageable.class), any(), anyString())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(any(Pageable.class), anyList(), any(), anyString(),
+                anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByIsCustomHabitTrueAndLanguageCode(any(Pageable.class), anyString(), anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(any(Pageable.class), any(), anyString(),
+                anyList())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(any(Pageable.class), any(), anyString(),
+                anyList())).thenReturn(habitTranslationPage);
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
-                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags,
-                    complexities, "en", userIds);
+                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags, complexities, "en", userIds);
             } else {
-                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                    complexities, "en");
+                habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags, complexities, "en");
             }
         } else if (isCustomHabit.isPresent() && tags.isPresent()) {
             if (isCustomHabit.get()) {
-                habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable, lowerCaseTags, "en",
-                    userIds);
+                habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable, lowerCaseTags, "en", userIds);
             } else {
                 habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags, "en");
             }
         } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
-                habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable, complexities,
-                    "en", userIds);
+                habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable, complexities, "en", userIds);
             } else {
-                habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
-                    "en");
+                habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities, "en");
             }
         } else if (complexities.isPresent() && tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(pageable,
-                lowerCaseTags, complexities, "en", userIds);
+            habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(pageable, lowerCaseTags, complexities, "en", userIds);
         } else if (isCustomHabit.isPresent()) {
             if (isCustomHabit.get()) {
                 habitTranslationRepo.findAllByIsCustomHabitTrueAndLanguageCode(pageable, "en", userIds);
@@ -301,15 +278,13 @@ class HabitServiceImplTest {
                 habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
             }
         } else if (tags.isPresent()) {
-            habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable,
-                lowerCaseTags, "en", userIds);
+            habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable, lowerCaseTags,"en", userIds);
         } else if (complexities.isPresent()) {
-            habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable,
-                complexities, "en", userIds);
+            habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable, complexities, "en", userIds);
         }
 
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
-            isCustomHabit, complexities, "en"));
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags, isCustomHabit, complexities, "en"));
+
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
@@ -317,31 +292,24 @@ class HabitServiceImplTest {
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
-                verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags,
-                    complexities, "en", userIds);
+                verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags, complexities, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
-                    complexities, "en");
+                verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags, complexities, "en");
             }
         } else if (isCustomHabit.isPresent() && tags.isPresent()) {
             if (isCustomHabit.get()) {
-                verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable, lowerCaseTags,
-                    "en", userIds);
+                verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable, lowerCaseTags, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags,
-                    "en");
+                verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags, "en");
             }
         } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
-                verify(habitTranslationRepo).findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable,
-                    complexities, "en", userIds);
+                verify(habitTranslationRepo).findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable, complexities, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
-                    complexities, "en");
+                verify(habitTranslationRepo).findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities, "en");
             }
         } else if (complexities.isPresent() && tags.isPresent()) {
-            verify(habitTranslationRepo).findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(
-                pageable, lowerCaseTags, complexities, "en", userIds);
+            verify(habitTranslationRepo).findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(pageable, lowerCaseTags, complexities, "en", userIds);
         } else if (isCustomHabit.isPresent()) {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo).findAllByIsCustomHabitTrueAndLanguageCode(pageable, "en", userIds);
@@ -349,24 +317,20 @@ class HabitServiceImplTest {
                 verify(habitTranslationRepo).findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
             }
         } else if (tags.isPresent()) {
-            verify(habitTranslationRepo).findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable,
-                lowerCaseTags, "en", userIds);
+            verify(habitTranslationRepo).findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable, lowerCaseTags, "en", userIds);
         } else if (complexities.isPresent()) {
-            verify(habitTranslationRepo).findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable,
-                complexities, "en", userIds);
+            verify(habitTranslationRepo).findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable, complexities, "en", userIds);
         }
     }
 
     @Test
     void getShoppingListForHabit() {
         ShoppingListItemTranslation shoppingListItemTranslation = ModelUtils.getShoppingListItemTranslation();
-        List<ShoppingListItemTranslation> shoppingListItemTranslations =
-            Collections.singletonList(shoppingListItemTranslation);
+        List<ShoppingListItemTranslation> shoppingListItemTranslations = Collections.singletonList(shoppingListItemTranslation);
         ShoppingListItemDto shoppingListItemDto = new ShoppingListItemDto(1L, "test", "ACTIVE");
         List<ShoppingListItemDto> shoppingListItemDtos = Collections.singletonList(shoppingListItemDto);
         when(modelMapper.map(shoppingListItemTranslation, ShoppingListItemDto.class)).thenReturn(shoppingListItemDto);
-        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1l))
-            .thenReturn(shoppingListItemTranslations);
+        when(shoppingListItemTranslationRepo.findShoppingListByHabitIdAndByLanguageCode("en", 1l)).thenReturn(shoppingListItemTranslations);
         assertEquals(shoppingListItemDtos, habitService.getShoppingListForHabit(1L, "en"));
     }
 
@@ -412,8 +376,7 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto = ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
         CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
 
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -423,12 +386,10 @@ class HabitServiceImplTest {
 
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
-        List<HabitTranslationDto> habitTranslationDtoList =
-            List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
-        List<HabitTranslation> habitTranslationList =
-            List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
+        List<HabitTranslation> habitTranslationList = List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -437,18 +398,15 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customShoppingListItem));
-        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
-            .thenReturn(List.of(customShoppingListItem));
+        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto))).thenReturn(List.of(customShoppingListItem));
         when(modelMapper.map(habit, AddCustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem)))
-            .thenReturn(List.of(customShoppingListItemResponseDto));
+        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem))).thenReturn(List.of(customShoppingListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
-        assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+        assertEquals(addCustomHabitDtoResponse, habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -477,8 +435,7 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto = ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
         CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
 
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -487,12 +444,10 @@ class HabitServiceImplTest {
 
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
-        List<HabitTranslationDto> habitTranslationDtoList =
-            List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
-        List<HabitTranslation> habitTranslationList =
-            List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
+        List<HabitTranslation> habitTranslationList = List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -501,18 +456,15 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customShoppingListItem));
-        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
-            .thenReturn(List.of(customShoppingListItem));
+        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto))).thenReturn(List.of(customShoppingListItem));
         when(modelMapper.map(habit, AddCustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem)))
-            .thenReturn(List.of(customShoppingListItemResponseDto));
+        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem))).thenReturn(List.of(customShoppingListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
-        assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
+        assertEquals(addCustomHabitDtoResponse, habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -541,8 +493,7 @@ class HabitServiceImplTest {
         habit.setTags(Set.of(tag));
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
-        CustomShoppingListItemResponseDto customShoppingListItemResponseDto =
-            ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
+        CustomShoppingListItemResponseDto customShoppingListItemResponseDto = ModelUtils.getCustomShoppingListItemResponseDtoForServiceTest();
         CustomShoppingListItem customShoppingListItem = ModelUtils.getCustomShoppingListItemForServiceTest();
 
         AddCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
@@ -551,12 +502,10 @@ class HabitServiceImplTest {
 
         HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
 
-        List<HabitTranslationDto> habitTranslationDtoList =
-            List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
+        List<HabitTranslationDto> habitTranslationDtoList = List.of(habitTranslationDto.setLanguageCode("en"), habitTranslationDto.setLanguageCode("ua"));
 
         HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
-        List<HabitTranslation> habitTranslationList =
-            List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
+        List<HabitTranslation> habitTranslationList = List.of(habitTranslationUa.setLanguage(languageEn), habitTranslationUa.setLanguage(languageUa));
 
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(habit);
@@ -565,18 +514,15 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(1L, 1L)).thenReturn(List.of(customShoppingListItem));
-        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
-            .thenReturn(List.of(customShoppingListItem));
+        when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto))).thenReturn(List.of(customShoppingListItem));
         when(modelMapper.map(habit, AddCustomHabitDtoResponse.class)).thenReturn(addCustomHabitDtoResponse);
-        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem)))
-            .thenReturn(List.of(customShoppingListItemResponseDto));
+        when(customShoppingListResponseDtoMapper.mapAllToList(List.of(customShoppingListItem))).thenReturn(List.of(customShoppingListItemResponseDto));
         when(habitTranslationRepo.findAllByHabit(habit)).thenReturn(habitTranslationList);
         when(habitTranslationDtoMapper.mapAllToList(habitTranslationList)).thenReturn(habitTranslationDtoList);
 
         when(fileService.upload(image)).thenReturn(imageToEncode);
 
-        assertEquals(addCustomHabitDtoResponse,
-            habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
+        assertEquals(addCustomHabitDtoResponse, habitService.addCustomHabit(addCustomHabitDtoRequest, null, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -614,8 +560,7 @@ class HabitServiceImplTest {
         when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto))).thenReturn(List.of(habitTranslation));
         when(languageRepo.findByCode("ua")).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
+        assertThrows(NoSuchElementException.class, () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -648,8 +593,7 @@ class HabitServiceImplTest {
         when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
         when(languageRepo.findByCode("en")).thenReturn(Optional.empty());
 
-        assertThrows(NoSuchElementException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
+        assertThrows(NoSuchElementException.class, () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "taras@gmail.com"));
 
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(customHabitMapper.convert(addCustomHabitDtoRequest));
@@ -667,8 +611,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail("user@gmail.com")).thenReturn(Optional.empty());
         when(habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest))).thenReturn(nullable(Habit.class));
 
-        assertThrows(WrongEmailException.class,
-            () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "user@gmail.com"));
+        assertThrows(WrongEmailException.class, () -> habitService.addCustomHabit(addCustomHabitDtoRequest, image, "user@gmail.com"));
 
         verify(userRepo).findByEmail("user@gmail.com");
         verify(customHabitMapper).convert(addCustomHabitDtoRequest);
@@ -682,8 +625,7 @@ class HabitServiceImplTest {
         User friend = ModelUtils.getUser();
         friend.setId(friendId);
         friend.setProfilePicturePath("test");
-        UserProfilePictureDto friendProfilePicture = UserProfilePictureDto.builder().id(friend.getId())
-            .name(friend.getName()).profilePicturePath(friend.getProfilePicturePath()).build();
+        UserProfilePictureDto friendProfilePicture = UserProfilePictureDto.builder().id(friend.getId()).name(friend.getName()).profilePicturePath(friend.getProfilePicturePath()).build();
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(habitRepo.existsById(habitId)).thenReturn(true);
@@ -707,8 +649,7 @@ class HabitServiceImplTest {
 
         when(userRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -726,8 +667,7 @@ class HabitServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(true);
         when(habitRepo.existsById(userId)).thenReturn(false);
 
-        NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId));
 
         assertEquals(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId, exception.getMessage());
 
