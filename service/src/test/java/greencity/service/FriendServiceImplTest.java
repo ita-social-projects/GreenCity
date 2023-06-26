@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.SliceDto;
-import greencity.dto.friends.FriendsChatDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
@@ -510,10 +509,6 @@ class FriendServiceImplTest {
         Pageable pageable = PageRequest.of(0, 20);
         List<User> friendList = List.of();
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
-        expectedResult.setFriendsChatDto(FriendsChatDto.builder()
-            .chatId(1L)
-            .chatExists(true)
-            .build());
         Slice<UserFriendDto> slice = new SliceImpl<>(List.of(expectedResult), pageable, false);
 
         when(userRepo.existsById(userId)).thenReturn(true);

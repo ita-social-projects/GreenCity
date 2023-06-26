@@ -17,7 +17,7 @@ public class UserFriendDto {
     private Long mutualFriends;
     private String profilePicturePath;
     private String friendStatus;
-    private FriendsChatDto friendsChatDto;
+    private Long chatId;
 
     /**
      * Constructor is needed for SqlResultSetMapping.
@@ -30,6 +30,6 @@ public class UserFriendDto {
         this.rating = rating;
         this.mutualFriends = mutualFriends;
         this.profilePicturePath = profilePicturePath;
-        this.friendsChatDto = new FriendsChatDto(chatId, chatId != null);
+        this.chatId = chatId;
     }
 }
