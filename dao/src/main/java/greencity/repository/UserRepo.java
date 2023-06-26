@@ -280,19 +280,11 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Query(nativeQuery = true, value = "SELECT *, (SELECT count(*) "
         + "        FROM users_friends uf1 "
-        + "        WHERE uf1.user_id in ((SELECT uf11.user_id FROM users_friends uf11 WHERE uf11.friend_id = :userId "
-        + "        and uf11.status = 'FRIEND') "
-        + "                          UNION "
-        + "                          (SELECT uf12.friend_id FROM users_friends uf12 WHERE uf12.user_id = :userId "
-        + "        and uf12.status = 'FRIEND')) "
+        + "        WHERE uf1.user_id in :friends "
         + "          and uf1.friend_id = u.id "
         + "          and uf1.status = 'FRIEND' "
         + "           or "
-        + "         uf1.friend_id in ((SELECT uf13.user_id FROM users_friends uf13 WHERE uf13.friend_id = :userId "
-        + "        and uf13.status = 'FRIEND') "
-        + "                            UNION "
-        + "                            (SELECT uf14.friend_id FROM users_friends uf14 WHERE uf14.user_id = :userId "
-        + "        and uf14.status = 'FRIEND')) "
+        + "         uf1.friend_id in :friends "
         + "          and uf1.user_id = u.id "
         + "          and uf1.status = 'FRIEND') as mutualFriends, "
         + "       u.profile_picture           as profilePicturePath, "
@@ -303,8 +295,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as roomId "
         + "FROM users u "
         + "WHERE u.id != :userId "
-        + "  AND u.id NOT IN ((SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') "
-        + "                 UNION "
-        + "                 (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) ")
-    Slice<UserFriendProjectionDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId);
+        + "  AND u.id NOT IN :friends ")
+    Slice<UserFriendProjectionDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
+        List<User> friends);
 }

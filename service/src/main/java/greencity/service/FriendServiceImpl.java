@@ -98,8 +98,9 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId) {
         validateUserExistence(userId);
+        List<User> friends = userRepo.getAllUserFriends(userId);
         Slice<UserFriendProjectionDto> users =
-            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId);
+            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends);
         List<UserFriendDto> userFriendDtoList = users.getContent().stream()
             .map(userFriendProjection -> {
                 var user = modelMapper.map(userFriendProjection, UserFriendDto.class);
