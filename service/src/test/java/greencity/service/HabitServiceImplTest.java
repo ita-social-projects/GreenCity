@@ -66,11 +66,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class HabitServiceImplTest {
@@ -214,13 +210,17 @@ class HabitServiceImplTest {
     private static Stream<Arguments> getAllByDifferentParametersArguments() {
         return Stream.of(
             arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(false), Optional.of(List.of(1))),
             arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(true), Optional.empty()),
-            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(),
-                Optional.empty()),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.of(false), Optional.empty()),
+            arguments(Optional.empty(), Optional.of(true), Optional.of(List.of(1))),
+            arguments(Optional.empty(), Optional.of(false), Optional.of(List.of(1))),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.of(List.of(1))),
+            arguments(Optional.empty(), Optional.of(true), Optional.empty()),
+            arguments(Optional.empty(), Optional.of(false), Optional.empty()),
+            arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.empty()),
             arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.of(true), Optional.empty()));
+            arguments(Optional.empty(), Optional.empty(), Optional.empty()));
     }
 
     @ParameterizedTest
@@ -254,8 +254,7 @@ class HabitServiceImplTest {
         when(habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(any(Pageable.class), anyList(),
             anyString(), anyList())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(any(Pageable.class), anyList(),
-            anyString()))
-                .thenReturn(habitTranslationPage);
+            anyString())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(any(Pageable.class), any(),
             anyString(),
             anyList())).thenReturn(habitTranslationPage);
@@ -328,7 +327,8 @@ class HabitServiceImplTest {
                 verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags,
                     complexities, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
+                verify(habitTranslationRepo, times(2)).findAllByDifferentParametersIsCustomHabitFalse(pageable,
+                    lowerCaseTags,
                     complexities, "en");
             }
         } else if (isCustomHabit.isPresent() && tags.isPresent()) {
@@ -336,7 +336,8 @@ class HabitServiceImplTest {
                 verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable, lowerCaseTags,
                     "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags,
+                verify(habitTranslationRepo, times(2)).findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable,
+                    lowerCaseTags,
                     "en");
             }
         } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
@@ -344,7 +345,7 @@ class HabitServiceImplTest {
                 verify(habitTranslationRepo).findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable,
                     complexities, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
+                verify(habitTranslationRepo, times(2)).findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
                     complexities, "en");
             }
         } else if (complexities.isPresent() && tags.isPresent()) {
