@@ -58,7 +58,6 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.friends.UserFriendProjectionDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.habit.AddCustomHabitDtoRequest;
@@ -177,14 +176,10 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -2784,30 +2779,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static UserFriendProjectionDto getUserFriendProjectionDto() {
-        return UserFriendProjectionDtoImpl.builder()
-            .id(1L)
-            .name("name")
-            .city("city")
-            .rating(10.0)
-            .mutualFriends(3L)
-            .profilePicturePath("path-to-picrute")
-            .roomId(BigInteger.valueOf(1))
-            .build();
-    }
-
-    public static UserFriendProjectionDto getUserFriendProjectionDtoWithoutChat() {
-        return UserFriendProjectionDtoImpl.builder()
-            .id(1L)
-            .name("name")
-            .city("city")
-            .rating(10.0)
-            .mutualFriends(3L)
-            .profilePicturePath("path-to-picrute")
-            .roomId(null)
-            .build();
-    }
-
     public static UserFriendDto getUserFriendDto() {
         return UserFriendDto.builder()
             .id(1L)
@@ -2818,17 +2789,4 @@ public class ModelUtils {
             .profilePicturePath("path-to-picture")
             .build();
     }
-
-    @Getter
-    @Setter
-    @Builder
-    private static class UserFriendProjectionDtoImpl implements UserFriendProjectionDto {
-        private Long id;
-        private String name;
-        private String city;
-        private Double rating;
-        private Long mutualFriends;
-        private String profilePicturePath;
-        private BigInteger roomId;
-    };
 }

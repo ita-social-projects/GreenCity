@@ -2,9 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.SliceDto;
-import greencity.dto.friends.FriendsChatDto;
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.friends.UserFriendProjectionDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
@@ -99,23 +97,10 @@ public class FriendServiceImpl implements FriendService {
     public SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId) {
         validateUserExistence(userId);
         List<User> friends = userRepo.getAllUserFriends(userId);
-        Slice<UserFriendProjectionDto> users =
+        Slice<UserFriendDto> users =
             userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends);
-        List<UserFriendDto> userFriendDtoList = users.getContent().stream()
-            .map(userFriendProjection -> {
-                var user = modelMapper.map(userFriendProjection, UserFriendDto.class);
-                FriendsChatDto friendsChatDto = new FriendsChatDto();
-                friendsChatDto.setChatExists(false);
-                if (userFriendProjection.getRoomId() != null) {
-                    friendsChatDto.setChatId(userFriendProjection.getRoomId().longValue());
-                    friendsChatDto.setChatExists(true);
-                }
-                user.setFriendsChatDto(friendsChatDto);
-                return user;
-            })
-            .collect(Collectors.toList());
         return new SliceDto<>(
-            userFriendDtoList,
+            users.getContent(),
             users.isLast(),
             users.getPageable().getPageNumber());
     }

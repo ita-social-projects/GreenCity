@@ -148,7 +148,7 @@ public class FriendController {
      *
      * @return {@link SliceDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find all users that are not friend for current users(except current user)")
+    @ApiOperation(value = "Find all users that are not friend for current users")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),

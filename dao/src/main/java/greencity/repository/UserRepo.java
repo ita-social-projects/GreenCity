@@ -1,6 +1,6 @@
 package greencity.repository;
 
-import greencity.dto.friends.UserFriendProjectionDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
@@ -276,26 +276,9 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      *
      * @param pageable {@link Pageable} -current page.
      * @param userId   {@link Long} -current user's id.
-     * @return {@link Slice} of {@link UserFriendProjectionDto}.
+     * @return {@link Slice} of {@link UserFriendDto}.
      */
-    @Query(nativeQuery = true, value = "SELECT *, (SELECT count(*) "
-        + "        FROM users_friends uf1 "
-        + "        WHERE uf1.user_id in :friends "
-        + "          and uf1.friend_id = u.id "
-        + "          and uf1.status = 'FRIEND' "
-        + "           or "
-        + "         uf1.friend_id in :friends "
-        + "          and uf1.user_id = u.id "
-        + "          and uf1.status = 'FRIEND') as mutualFriends, "
-        + "       u.profile_picture           as profilePicturePath, "
-        + "       (SELECT p.room_id "
-        + "       FROM chat_rooms_participants p"
-        + "       WHERE p.participant_id IN (u.id, :userId) "
-        + "       GROUP BY p.room_id "
-        + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as roomId "
-        + "FROM users u "
-        + "WHERE u.id != :userId "
-        + "  AND u.id NOT IN :friends ")
-    Slice<UserFriendProjectionDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
+    @Query(nativeQuery = true, name = "User.getAllUsersExceptMainUserAndFriends")
+    Slice<UserFriendDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
         List<User> friends);
 }

@@ -1,32 +1,99 @@
 package greencity.entity;
 
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
-import lombok.*;
 
 @Entity
-@SqlResultSetMapping(
-    name = "monthsStatisticsMapping",
-    classes = {
-        @ConstructorResult(
-            targetClass = RegistrationStatisticsDtoResponse.class,
-            columns = {
-                @ColumnResult(name = "month", type = Integer.class),
-                @ColumnResult(name = "count", type = Long.class)
-            })
-    })
-@NamedNativeQuery(name = "User.findAllRegistrationMonths",
-    query = "SELECT EXTRACT(MONTH FROM date_of_registration) - 1 as month, count(date_of_registration) FROM users "
-        + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
-        + "GROUP BY month",
-    resultSetMapping = "monthsStatisticsMapping")
+@SqlResultSetMappings(value = {
+    @SqlResultSetMapping(
+        name = "monthsStatisticsMapping",
+        classes = {
+            @ConstructorResult(
+                targetClass = RegistrationStatisticsDtoResponse.class,
+                columns = {
+                    @ColumnResult(name = "month", type = Integer.class),
+                    @ColumnResult(name = "count", type = Long.class)
+                })
+        }),
+    @SqlResultSetMapping(
+        name = "userFriendDtoMapping",
+        classes = {
+            @ConstructorResult(
+                targetClass = UserFriendDto.class,
+                columns = {
+                    @ColumnResult(name = "id", type = Long.class),
+                    @ColumnResult(name = "name", type = String.class),
+                    @ColumnResult(name = "city", type = String.class),
+                    @ColumnResult(name = "rating", type = Double.class),
+                    @ColumnResult(name = "mutualFriends", type = Long.class),
+                    @ColumnResult(name = "profilePicturePath", type = String.class),
+                    @ColumnResult(name = "chatId", type = Long.class),
+                })
+        })
+})
+@NamedNativeQueries(value = {
+    @NamedNativeQuery(name = "User.findAllRegistrationMonths",
+        query = "SELECT EXTRACT(MONTH FROM date_of_registration) - 1 as month, count(date_of_registration) FROM users "
+            + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
+            + "GROUP BY month",
+        resultSetMapping = "monthsStatisticsMapping"),
+    @NamedNativeQuery(name = "User.getAllUsersExceptMainUserAndFriends",
+        query = "SELECT *, (SELECT count(*) "
+            + "        FROM users_friends uf1 "
+            + "        WHERE uf1.user_id in :friends "
+            + "          and uf1.friend_id = u.id "
+            + "          and uf1.status = 'FRIEND' "
+            + "           or "
+            + "         uf1.friend_id in :friends "
+            + "          and uf1.user_id = u.id "
+            + "          and uf1.status = 'FRIEND') as mutualFriends, "
+            + "       u.profile_picture           as profilePicturePath, "
+            + "       (SELECT p.room_id "
+            + "       FROM chat_rooms_participants p"
+            + "       WHERE p.participant_id IN (u.id, :userId) "
+            + "       GROUP BY p.room_id "
+            + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
+            + "FROM users u "
+            + "WHERE u.id != :userId "
+            + "  AND u.id NOT IN :friends ",
+        resultSetMapping = "userFriendDtoMapping")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

@@ -2,17 +2,13 @@ package greencity.dto.friends;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 public class UserFriendDto {
     private Long id;
     private String name;
@@ -22,4 +18,18 @@ public class UserFriendDto {
     private String profilePicturePath;
     private String friendStatus;
     private FriendsChatDto friendsChatDto;
+
+    /**
+     * Constructor is needed for SqlResultSetMapping.
+     */
+    public UserFriendDto(Long id, String name, String city, Double rating, Long mutualFriends,
+        String profilePicturePath, Long chatId) {
+        this.id = id;
+        this.name = name;
+        this.city = city;
+        this.rating = rating;
+        this.mutualFriends = mutualFriends;
+        this.profilePicturePath = profilePicturePath;
+        this.friendsChatDto = new FriendsChatDto(chatId, chatId != null);
+    }
 }
