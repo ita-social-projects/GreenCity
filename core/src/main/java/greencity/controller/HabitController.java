@@ -161,6 +161,7 @@ public class HabitController {
     @GetMapping("/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
+        @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
@@ -168,7 +169,7 @@ public class HabitController {
         @ApiIgnore Pageable pageable) throws BadRequestException {
         if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getAllByDifferentParameters(pageable, tags,
+                habitService.getAllByDifferentParameters(userVO, pageable, tags,
                     isCustomHabit, complexities, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
