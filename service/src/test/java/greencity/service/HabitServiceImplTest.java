@@ -315,7 +315,7 @@ class HabitServiceImplTest {
                 complexities, "en", userIds);
         }
 
-        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
+        assertEquals(pageableDto, habitService.getAllByParameters(ModelUtils.getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);

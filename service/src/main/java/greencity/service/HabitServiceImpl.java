@@ -146,7 +146,7 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllByParameters(UserVO userVO, Pageable pageable,
         Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode) {
         List<String> lowerCaseTags = new ArrayList<>();
@@ -165,7 +165,8 @@ public class HabitServiceImpl implements HabitService {
         availableUsersIds.add(userId);
 
         if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && !complexitiesList.isEmpty()) {
-            if (isCustomHabit.get()) {
+            boolean checkIsCustomHabit = isCustomHabit.get();
+            if (checkIsCustomHabit) {
                 habitTranslationsPage =
                     habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags,
                         complexities, languageCode, availableUsersIds);
@@ -175,7 +176,8 @@ public class HabitServiceImpl implements HabitService {
                         complexities, languageCode);
             }
         } else if (!complexitiesList.isEmpty() && isCustomHabit.isPresent()) {
-            if (isCustomHabit.get()) {
+            boolean checkIsCustomHabit = isCustomHabit.get();
+            if (checkIsCustomHabit) {
                 habitTranslationsPage =
                     habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable,
                         complexities, languageCode, availableUsersIds);
@@ -190,7 +192,8 @@ public class HabitServiceImpl implements HabitService {
                     lowerCaseTags,
                     complexities, languageCode, availableUsersIds);
         } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
-            if (isCustomHabit.get()) {
+            boolean checkIsCustomHabit = isCustomHabit.get();
+            if (checkIsCustomHabit) {
                 habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable,
                     lowerCaseTags, languageCode, availableUsersIds);
             } else {
