@@ -220,7 +220,7 @@ class HabitServiceImplTest {
             arguments(Optional.empty(), Optional.of(false), Optional.empty()),
             arguments(Optional.of(Collections.singletonList("HABIT")), Optional.empty(), Optional.empty()),
             arguments(Optional.empty(), Optional.empty(), Optional.of(List.of(1))),
-            arguments(Optional.empty(), Optional.empty(), Optional.empty()));
+            arguments(Optional.empty(), Optional.of(false), Optional.empty()));
     }
 
     @ParameterizedTest
@@ -315,7 +315,7 @@ class HabitServiceImplTest {
                 complexities, "en", userIds);
         }
 
-        assertEquals(pageableDto, habitService.getAllByParameters(ModelUtils.getUserVO(), pageable, tags,
+        assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
             isCustomHabit, complexities, "en"));
 
         verify(modelMapper).map(habitTranslation, HabitDto.class);
@@ -355,7 +355,7 @@ class HabitServiceImplTest {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo).findAllByIsCustomHabitTrueAndLanguageCode(pageable, "en", userIds);
             } else {
-                verify(habitTranslationRepo).findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
+                verify(habitTranslationRepo, times(2)).findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
             }
         } else if (tags.isPresent()) {
             verify(habitTranslationRepo).findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable,

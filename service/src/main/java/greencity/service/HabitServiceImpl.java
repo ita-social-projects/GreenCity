@@ -146,7 +146,7 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllByParameters(UserVO userVO, Pageable pageable,
+    public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
         Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode) {
         List<String> lowerCaseTags = new ArrayList<>();
@@ -205,18 +205,19 @@ public class HabitServiceImpl implements HabitService {
                 habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable,
                     lowerCaseTags,
                     languageCode, availableUsersIds);
-        } else if (!complexitiesList.isEmpty()) {
-            habitTranslationsPage =
-                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable,
-                    complexities, languageCode, availableUsersIds);
-        } else {
-            if (isCustomHabit.isPresent()) {
+        } else if (isCustomHabit.isPresent()) {
+            boolean checkIsCustomHabit = isCustomHabit.get();
+            if (checkIsCustomHabit) {
                 habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitTrueAndLanguageCode(pageable,
                     languageCode, availableUsersIds);
             } else {
                 habitTranslationsPage = habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable,
                     languageCode);
             }
+        } else {
+            habitTranslationsPage =
+                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable,
+                    complexities, languageCode, availableUsersIds);
         }
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
     }

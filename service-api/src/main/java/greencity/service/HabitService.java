@@ -66,7 +66,7 @@ public interface HabitService {
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
      */
-    PageableDto<HabitDto> getAllByParameters(UserVO userVO, Pageable pageable, Optional<List<String>> tags,
+    PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable, Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
