@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UserFriendDtoTest {
+class UserFriendDtoTest {
     @Test
     void userFriendDtoConstructorTest() {
         Long id = 1L;
