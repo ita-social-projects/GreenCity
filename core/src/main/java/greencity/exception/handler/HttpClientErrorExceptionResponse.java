@@ -16,10 +16,10 @@ public class HttpClientErrorExceptionResponse {
 
     /**
      * Constructor that creates an instance from the Map with error attributes and
-     * String message.
+     * String message and path.
      */
-    public HttpClientErrorExceptionResponse(Map<String, Object> errorAttributes, String message) {
-        this.path = errorAttributes.get("path").toString();
+    public HttpClientErrorExceptionResponse(Map<String, Object> errorAttributes, String message, String path) {
+        this.path = path;
         this.message = message;
         this.timeStamp = errorAttributes.get("timestamp").toString();
         this.trace = errorAttributes.get("trace").toString();

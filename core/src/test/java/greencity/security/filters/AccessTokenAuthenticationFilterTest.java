@@ -1,13 +1,13 @@
 package greencity.security.filters;
 
-import greencity.client.RestClient;
-import greencity.dto.user.UserVO;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import greencity.security.jwt.JwtTool;
+import greencity.service.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,16 +24,15 @@ import org.mockito.quality.Strictness;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import static org.mockito.Mockito.*;
+import static greencity.TestConst.EMAIL;
+import static greencity.TestConst.TOKEN;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AccessTokenAuthenticationFilterTest {
-    private PrintStream systemOut;
-    private ByteArrayOutputStream systemOutContent;
-
     @Mock
     HttpServletRequest request;
     @Mock
@@ -45,30 +44,33 @@ class AccessTokenAuthenticationFilterTest {
     @Mock
     AuthenticationManager authenticationManager;
     @Mock
-    RestClient restClient;
-
+    UserService userService;
     @InjectMocks
     private AccessTokenAuthenticationFilter authenticationFilter;
+    private ListAppender<ILoggingEvent> listAppender;
+    private Logger logger;
 
     @BeforeEach
-    void setUp() {
-        systemOut = System.out;
-        systemOutContent = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(systemOutContent));
+    public void setUp() {
+        listAppender = new ListAppender<>();
+        listAppender.start();
+
+        logger = (Logger) org.slf4j.LoggerFactory.getLogger(AccessTokenAuthenticationFilter.class);
+        logger.addAppender(listAppender);
+        logger.setLevel(Level.INFO);
     }
 
     @AfterEach
-    void restoreSystemOutStream() {
-        System.setOut(systemOut);
+    public void tearDown() {
+        logger.detachAppender(listAppender);
     }
 
     @Test
     void doFilterInternalTest() throws IOException, ServletException {
-        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn("SuperSecretAccessToken");
+        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(TOKEN);
         when(authenticationManager.authenticate(any()))
-            .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
-        when(restClient.findNotDeactivatedByEmail("test@mail.com"))
-            .thenReturn(Optional.of(UserVO.builder().id(1L).build()));
+            .thenReturn(new UsernamePasswordAuthenticationToken(EMAIL, null));
+        when(userService.isNotDeactivatedByEmail(EMAIL)).thenReturn(true);
         doNothing().when(chain).doFilter(request, response);
 
         authenticationFilter.doFilterInternal(request, response, chain);
@@ -78,25 +80,33 @@ class AccessTokenAuthenticationFilterTest {
 
     @Test
     void doFilterInternalTokenHasExpiredTest() throws IOException, ServletException {
-        String token = "SuperSecretAccessToken";
-        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
+        // given
+        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(TOKEN);
         when(authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(token, null)))
+            new UsernamePasswordAuthenticationToken(TOKEN, null)))
                 .thenThrow(ExpiredJwtException.class);
+
+        // when
         authenticationFilter.doFilterInternal(request, response, chain);
-        verify(jwtTool).getTokenFromHttpServletRequest(request);
-        verify(authenticationManager).authenticate(any());
+
+        // then
+        assertEquals("Token has expired: " + TOKEN, listAppender.list.get(0).getMessage());
+        listAppender.list.clear();
     }
 
     @Test
     void doFilterInternalAccessDeniedTest() throws IOException, ServletException {
-        String token = "SuperSecretAccessToken";
-        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(token);
+        // given
+        when(jwtTool.getTokenFromHttpServletRequest(request)).thenReturn(TOKEN);
         when(authenticationManager.authenticate(any()))
-            .thenReturn(new UsernamePasswordAuthenticationToken("test@mail.com", null));
-        when(restClient.findNotDeactivatedByEmail("test@mail.com")).thenThrow(RuntimeException.class);
+            .thenReturn(new UsernamePasswordAuthenticationToken(EMAIL, null));
+        when(userService.isNotDeactivatedByEmail(EMAIL)).thenThrow(RuntimeException.class);
+
+        // when
         authenticationFilter.doFilterInternal(request, response, chain);
-        verify(jwtTool).getTokenFromHttpServletRequest(request);
-        verify(authenticationManager).authenticate(any());
+
+        // then
+        assertEquals("Access denied with token: " + TOKEN, listAppender.list.get(0).getMessage());
+        listAppender.list.clear();
     }
 }

@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/footer.css}">
     <link rel="stylesheet" th:href="@{/css/position.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
@@ -55,10 +56,32 @@
                     <div class="row manager-user">
                         <h2 class="text-describe" th:text="#{greenCity.user.page.h}"></h2>
                         <div class="buttons">
-                            <a href="#deactivateAllSelectedModal" id="btnDeactivate" class="btn btn-remove disabled"
+                            <a href="#deactivateCheckedModal" id="btnDeactivate" class="btn btn-remove disabled"
                                data-toggle="modal">
                                 <div>[[#{greenCity.user.page.deactivated}]]</div>
                             </a>
+                            <!-- Deactivate all checked users Modal HTML -->
+                            <div id="deactivateCheckedModal" class="modal fade">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">[[#{greenCity.user.page.popup.deactivated.all.p1}]]</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" id="deactivateUsersModalBody">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
+                                                   th:value="#{greenCity.pages.popup.cancel.}">
+                                            <a href="" id="deactivateCheckedSubmit" class="btn btn-remove btn-deactivate-all">
+                                                <div>[[#{greenCity.user.page.deactivated}]]</div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <a href="#addUserModal" id="addUserModalBtn" class="btn btn-secondary" data-toggle="modal">
                                 <div>[[#{greenCity.user.page.add.user}]]</div>
                             </a>
@@ -321,7 +344,7 @@
                         <th:block class="list-of" th:each="user, iterStatus :${users.getPage()}">
                             <tr class="clickable-row" th:href="@{/management/users/{id}/friends/(id=${user.id})}">
                                 <td>
-                                    <span class="custom-checkbox">
+                                    <span class="custom-checkbox" th:if="${!user.getId().equals(currentUser.getId())}">
                                         <input type="checkbox" th:id="checkbox+${iterStatus.count}"
                                                name="options[]" th:value="${user.id}"
                                                th:onclick="'updateCheckBoxCount('+${iterStatus.count}+')'">
@@ -331,8 +354,8 @@
                                 <td style="width: 50px;">
                                     <a class="id-link" th:text="${user.id}" th:href="@{/management/users/{id} (id=${user.id})}"/>
                                 </td>
-                                <td th:text="${user.name}"></td>
-                                <td th:text="${user.email}"></td>
+                                <td th:text="${user.name}" th:id="'nameColumn'+${user.getId()}"></td>
+                                <td th:text="${user.email}" th:id="'emailColumn'+${user.getId()}"></td>
                                 <td class="column-credo-text" th:text="${user.userCredo}"></td>
                                 <td class="column-role">
                                     <div class="dropdown role" >
@@ -410,7 +433,7 @@
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Credo</label>
-                                                            <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo" required>
+                                                            <input th:value="${user.getUserCredo()}" type="text" class="form-control" id="userCredo" name="userCredo">
                                                         </div>
                                                         <div class="form-group">
                                                             <label>Role</label>
@@ -538,30 +561,6 @@
                                     </a>
                                 </div>
                                 <!--</form>-->
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Deactivate all selected users Modal HTML -->
-                    <div id="deactivateAllSelectedModal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form id="">
-                                    <div class="modal-header">
-                                        <h4 class="modal-title-deac">[[#{greenCity.pages.popup.delete.all.h}]]</h4>
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>[[#{greenCity.pages.popup.delete.all.h1}]]</p>
-                                        <p class="text-warning"><small>[[#{greenCity.pages.popup.delete.all.h2}]]</small></p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <input type="button" class="wbtn btn-default btn-tertiary" data-dismiss="modal"
-                                               th:value="#{greenCity.pages.popup.cancel.}">
-                                        <a href="" id="deactivateAllSubmit" class="btn btn-remove" style="margin-top: 25px;">
-                                            <div>[[#{greenCity.user.page.deactivated}]]</div>
-                                        </a>
-                                    </div>
-                                </form>
                             </div>
                         </div>
                     </div>

@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.gson.Gson;
-
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
@@ -357,15 +355,12 @@ public class RestClient {
      *               deleted.
      * @author Orest Mamchuk
      */
-    public void deactivateAllUsers(List<Long> listId) {
-        Gson gson = new Gson();
-        String json = gson.toJson(listId);
+    public void deactivateListedUsers(List<Long> listId) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(json, headers);
+        HttpEntity<List<Long>> entity = new HttpEntity<>(listId, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.USER_DEACTIVATE
-            + RestTemplateLinks.ID + listId, HttpMethod.PUT, entity, Long[].class);
+            + RestTemplateLinks.USER_DEACTIVATE_LISTED, HttpMethod.PATCH, entity, Long[].class);
     }
 
     /**

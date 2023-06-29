@@ -4,6 +4,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -41,14 +42,13 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<UserManagementVO> findAllManagementVo(Specification<User> filter, Pageable pageable);
 
     /**
-     * Find not 'DEACTIVATED' {@link User} by email.
+     * check if {@link User} {@link UserStatus} is not 'DEACTIVATED'.
      *
      * @param email - {@link User}'s email
-     * @return found {@link User}
-     * @author Vasyl Zhovnir
+     * @return optional of 1
      */
-    @Query("FROM User WHERE email=:email AND userStatus <> 1")
-    Optional<User> findNotDeactivatedByEmail(String email);
+    @Query("SELECT 1 FROM User u WHERE u.email=:email AND u.userStatus <> 1")
+    Optional<String> checkIfNotDeactivated(String email);
 
     /**
      * Find id by email.

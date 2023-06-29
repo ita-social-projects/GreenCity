@@ -131,7 +131,7 @@ function updateUser(userId) {
         success: function () {
             history.go();
         },
-        error: function (){
+        error: function () {
             let sp = document.getElementById("serverErrorEditModal" + userId);
             sp.innerText = "Server error";
         }
@@ -148,13 +148,13 @@ function validateForUpdate(form) {
 
 function changeRole(userId, role) {
     let href = '/management/users/' + userId + '/role';
-    let payload = { 'role': role };
+    let payload = {'role': role};
     $.ajax({
         url: href,
         type: 'PATCH',
         contentType: 'application/json',
         data: JSON.stringify(payload),
-        success: function(){
+        success: function () {
             history.go();
         }
     });
@@ -218,7 +218,6 @@ $(document).ready(function () {
         });
     });
 
-
     // Add user button (popup)
     $('#addUserModalBtn').on('click', function (event) {
         clearAllErrorsSpan();
@@ -234,24 +233,6 @@ $(document).ready(function () {
         form.classList.add("was-validated");
     })
 
-    // Edit user button (popup)
-    $('td .edit.eBtn').on('click', function (event) {
-        event.preventDefault();
-        $("#editUserModal").each(function () {
-            $(this).find('input.eEdit').val("");
-        });
-        clearAllErrorsSpan();
-        $('#editUserModal').modal();
-        var href = $(this).attr('href');
-        $.get(href, function (user, status) {
-            $('#id').val(user.id);
-            $('#name').val(user.name);
-            $('#email').val(user.email);
-            $('#role').val(user.role);
-            $('#userCredo').val(user.userCredo);
-            $('#userStatus').val(user.userStatus);
-        });
-    });
     // Deactivate user button (popup)
     $('td .deactivate-user.eDeactBtn').on('click', function (event) {
         event.preventDefault();
@@ -269,8 +250,8 @@ $(document).ready(function () {
         }
         $('#deactivateOneSubmit').attr('href', href);
     });
-    // Confirm deactivation button in deactivateUserModal
 
+    // Confirm deactivation button in deactivateUserModal
     $('#deactivateOneSubmit').on('click', function (event) {
         event.preventDefault();
         let firstClick = document.getElementById("first-click");
@@ -354,29 +335,50 @@ $(document).ready(function () {
         });
     });
 
+    $('#btnDeactivate').on('click', function () {
+        const modalBody = $('#deactivateUsersModalBody');
+        modalBody.empty();
+        const selectedIds = getIdsOfSelectedUsers();
+        selectedIds.forEach(userid => {
+            const userEmail = $('#emailColumn' + userid);
+            const userName = $('#nameColumn' + userid);
+            const paragraph =
+                $("<p></p>")
+                    .text(userName.text() + " " + userEmail.text())
+                    .addClass('deactivate-all-modal-body-content');
+            modalBody.append(paragraph);
+        });
+    });
+
     // Deactivate marked users button (popup)
-    $('#deactivateAllSubmit').on('click', function (event) {
+    $('#deactivateCheckedSubmit').on('click', function (event) {
         event.preventDefault();
-        var checkbox = $('table tbody input[type="checkbox"]');
-        var payload = [];
-        checkbox.each(function () {
-            if (this.checked) {
-                payload.push(this.value);
-            }
-        })
-        var href = '/management/users/deactivateAll';
-        // post request when 'Deactivate marked' button in deactivateAllSelectedModal clicked
+        let payload = getIdsOfSelectedUsers();
+        const href = '/management/users/deactivateListed';
         $.ajax({
             url: href,
-            type: 'post',
-            dataType: 'json',
+            type: 'patch',
             contentType: 'application/json',
-            success: function (data) {
+            success: function () {
+                location.reload();
+            },
+            error: function () {
                 location.reload();
             },
             data: JSON.stringify(payload)
         });
     });
+
+    function getIdsOfSelectedUsers() {
+        let checkbox = $('table tbody input[type="checkbox"]');
+        let idsArray = [];
+        checkbox.each(function () {
+            if (this.checked) {
+                idsArray.push(this.value);
+            }
+        })
+        return idsArray;
+    }
 
     /*$(".clickable-row").click(function () {
         $('#userFriendsModal').modal();

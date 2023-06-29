@@ -17,6 +17,7 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -173,15 +174,30 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testFindNotDeactivatedByEmail() {
-        when(userRepo.findNotDeactivatedByEmail(TEST_EMAIL))
-            .thenReturn(Optional.of(TEST_USER));
-        when(modelMapper.map(Optional.of(TEST_USER), UserVO.class))
-            .thenReturn(TEST_USER_VO);
+    void isDeactivatedByEmailTest() {
+        // given
+        User user = getUser();
+        when(userRepo.checkIfNotDeactivated(user.getEmail())).thenReturn(Optional.of("1"));
 
-        Optional<UserVO> actual = userService.findNotDeactivatedByEmail(TEST_EMAIL);
+        // when
+        boolean isNotDeactivated = userService.isNotDeactivatedByEmail(user.getEmail());
 
-        assertEquals(Optional.of(TEST_USER_VO), actual);
+        // then
+        assertTrue(isNotDeactivated);
+    }
+
+    @Test
+    void isDeactivatedByEmailThrowsExceptionWhenDeactivated() {
+        // given
+        User user = getUser();
+        user.setUserStatus(UserStatus.DEACTIVATED);
+        when(userRepo.checkIfNotDeactivated(user.getEmail())).thenReturn(Optional.empty());
+
+        // when
+        Executable e = () -> userService.isNotDeactivatedByEmail(user.getEmail());
+
+        // then
+        assertThrows(UserDeactivatedException.class, e);
     }
 
     @Test

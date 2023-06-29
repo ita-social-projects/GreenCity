@@ -202,9 +202,10 @@ public class ManagementUserController {
      *               deleted.
      * @author Vasyl Zhovnir
      */
-    @PostMapping("/deactivateAll")
-    public void deactivateAll(@RequestBody List<Long> listId) {
-        restClient.deactivateAllUsers(listId);
+    @PatchMapping("/deactivateListed")
+    @ResponseBody
+    public void deactivateListed(@RequestBody List<Long> listId) {
+        restClient.deactivateListedUsers(listId);
     }
 
     /**
