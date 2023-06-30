@@ -1,6 +1,6 @@
 package greencity.service;
 
-import greencity.dto.SliceDto;
+import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -55,12 +55,13 @@ public interface FriendService {
     /**
      * Method find all users except current user and his friends.
      *
-     * @param pageable The information about pagination and sorting for the result.
-     * @param userId   {@link Long}
+     * @param pageable the information about pagination and sorting for the result.
+     * @param userId   user id.
+     * @param name     filtering name.
      *
-     * @return {@link SliceDto} of {@link UserFriendDto}.
+     * @return {@link PageableDto} of {@link UserFriendDto}.
      *
      * @author Stepan Omeliukh
      */
-    SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId);
+    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId, String name);
 }

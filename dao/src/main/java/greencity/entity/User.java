@@ -91,7 +91,7 @@ import java.util.Set;
             + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
             + "FROM users u "
             + "WHERE u.id != :userId "
-            + "  AND u.id NOT IN :friends ",
+            + "AND u.id NOT IN :friends AND LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')) ",
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor

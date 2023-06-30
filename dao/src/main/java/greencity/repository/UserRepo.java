@@ -274,11 +274,28 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method that finds all users except current user and his friends.
      *
-     * @param pageable {@link Pageable} -current page.
-     * @param userId   {@link Long} -current user's id.
+     * @param pageable current page.
+     * @param userId   current user's id.
+     * @param friends  {@link List} of {@link User} which are user friends.
+     * @param name     name filter.
+     *
      * @return {@link Slice} of {@link UserFriendDto}.
      */
     @Query(nativeQuery = true, name = "User.getAllUsersExceptMainUserAndFriends")
     Slice<UserFriendDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
-        List<User> friends);
+        List<User> friends, String name);
+
+    /**
+     * Get count of not user friends.
+     *
+     * @param userId id of the user.
+     * @param name   name filter.
+     *
+     * @return {@link Long} count of not user friends.
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users WHERE id NOT IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
+        + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) AND id != :userId")
+    Long getCountOfNotUserFriends(Long userId, String name);
 }

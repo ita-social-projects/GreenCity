@@ -1,7 +1,7 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.SliceDto;
+import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
@@ -94,15 +94,19 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public SliceDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId) {
+    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId,
+        String name) {
         validateUserExistence(userId);
         List<User> friends = userRepo.getAllUserFriends(userId);
+        name = name == null ? "" : name;
         Slice<UserFriendDto> users =
-            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends);
-        return new SliceDto<>(
+            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends, name);
+        Long totalElements = userRepo.getCountOfNotUserFriends(userId, name);
+        return new PageableDto<>(
             users.getContent(),
-            users.isLast(),
-            users.getPageable().getPageNumber());
+            totalElements,
+            users.getPageable().getPageNumber(),
+            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
     }
 
     private void validateUserAndFriendExistence(Long userId, Long friendId) {

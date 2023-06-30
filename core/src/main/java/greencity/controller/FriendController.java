@@ -3,7 +3,7 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
-import greencity.dto.SliceDto;
+import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -144,9 +145,10 @@ public class FriendController {
      * Method to find {@link UserFriendDto}s that are not friend for current
      * user(except current user).
      *
-     * @param userVO {@link UserVO} user.
+     * @param userVO user.
+     * @param name   filtering name.
      *
-     * @return {@link SliceDto} of {@link UserFriendDto}.
+     * @return {@link PageableDto} of {@link UserFriendDto}.
      */
     @ApiOperation(value = "Find all users that are not friend for current users")
     @ApiResponses(value = {
@@ -155,13 +157,14 @@ public class FriendController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/not-friends-yet")
+    @GetMapping("/not-friends-yet-by-name")
     @ApiPageable
-    public ResponseEntity<SliceDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
+    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
         @ApiIgnore Pageable page,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @RequestParam(required = false) String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(page, userVO.getId()));
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(page, userVO.getId(), name));
     }
 }

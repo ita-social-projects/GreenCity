@@ -88,6 +88,6 @@ class FriendControllerTest {
         mockMvc.perform(get(FRIEND_LINK + "/not-friends-yet"))
             .andExpect(status().isOk());
 
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(PageRequest.of(0, 20), null);
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(PageRequest.of(0, 20), null, null);
     }
 }
