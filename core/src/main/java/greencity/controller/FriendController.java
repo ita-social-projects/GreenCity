@@ -157,7 +157,7 @@ public class FriendController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/not-friends-yet-by-name")
+    @GetMapping("/not-friends-yet")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
         @ApiIgnore Pageable page,
