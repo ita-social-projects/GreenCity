@@ -76,6 +76,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -206,8 +207,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         List<HabitAssignManagementDto> habitAssignManagementDtoList = new ArrayList<>();
         habitAssignManagementDtoList.add(modelMapper.map(habitAssign, HabitAssignManagementDto.class));
 
-        assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
-            habitAssignManagementDtoList);
+        if (!CollectionUtils.isEmpty(habitAssignCustomPropertiesDto.getFriendsIdsList())) {
+            assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
+                habitAssignManagementDtoList);
+        }
 
         return habitAssignManagementDtoList;
     }
