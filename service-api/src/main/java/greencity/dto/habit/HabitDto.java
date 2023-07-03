@@ -34,5 +34,6 @@ public class HabitDto {
     private List<ShoppingListItemDto> shoppingListItems;
     private List<CustomShoppingListItemResponseDto> customShoppingListItems;
     private Boolean isCustomHabit;
+    private Long usersIdWhoCreatedCustomHabit;
     private HabitAssignStatus habitAssignStatus;
 }

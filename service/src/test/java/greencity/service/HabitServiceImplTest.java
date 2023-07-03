@@ -10,6 +10,7 @@ import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.CustomShoppingListItem;
 import greencity.entity.Habit;
 import greencity.entity.HabitTranslation;
@@ -177,14 +178,23 @@ class HabitServiceImplTest {
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
+        Habit habit = ModelUtils.getHabit();
+        habit.setIsCustomHabit(true);
+        habit.setUserId(1L);
         HabitDto habitDto = ModelUtils.getHabitDto();
-        when(habitTranslationRepo.findAllByLanguageCode(pageable, "en")).thenReturn(habitTranslationPage);
+        habitDto.setIsCustomHabit(true);
+        UserVO userVO = ModelUtils.getUserVO();
+        List<Long> availableUsersIds = List.of(1L);
+        when(habitTranslationRepo.findAllByLanguageCode(pageable, "en", availableUsersIds))
+            .thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
+        when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
+        when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(pageable, "en"));
+        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable, "en"));
     }
 
     @Test
