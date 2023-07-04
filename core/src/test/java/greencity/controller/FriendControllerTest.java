@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -80,5 +81,13 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(friendService).findUserFriendsByUserId(userId);
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriend() throws Exception {
+        mockMvc.perform(get(FRIEND_LINK + "/not-friends-yet"))
+            .andExpect(status().isOk());
+
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(PageRequest.of(0, 20), null, null);
     }
 }

@@ -1,11 +1,13 @@
 package greencity.repository;
 
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -236,7 +238,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
 
     /**
      * Accept friend request.
-     * 
+     *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend to be added.
      */
@@ -268,4 +270,32 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
     List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Method that finds all users except current user and his friends.
+     *
+     * @param pageable current page.
+     * @param userId   current user's id.
+     * @param friends  {@link List} of {@link User} which are user friends.
+     * @param name     name filter.
+     *
+     * @return {@link Slice} of {@link UserFriendDto}.
+     */
+    @Query(nativeQuery = true, name = "User.getAllUsersExceptMainUserAndFriends")
+    Slice<UserFriendDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
+        List<User> friends, String name);
+
+    /**
+     * Get count of not user friends.
+     *
+     * @param userId id of the user.
+     * @param name   name filter.
+     *
+     * @return {@link Long} count of not user friends.
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users WHERE id NOT IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
+        + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) AND id != :userId")
+    Long getCountOfNotUserFriends(Long userId, String name);
 }

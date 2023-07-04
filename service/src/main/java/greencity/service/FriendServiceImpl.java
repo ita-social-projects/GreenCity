@@ -1,6 +1,8 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
+import greencity.dto.PageableDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
@@ -9,6 +11,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +88,25 @@ public class FriendServiceImpl implements FriendService {
         List<User> friends = userRepo.getAllUserFriends(userId);
         return friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId,
+        String name) {
+        validateUserExistence(userId);
+        List<User> friends = userRepo.getAllUserFriends(userId);
+        name = name == null ? "" : name;
+        Slice<UserFriendDto> users =
+            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends, name);
+        Long totalElements = userRepo.getCountOfNotUserFriends(userId, name);
+        return new PageableDto<>(
+            users.getContent(),
+            totalElements,
+            users.getPageable().getPageNumber(),
+            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
     }
 
     private void validateUserAndFriendExistence(Long userId, Long friendId) {
