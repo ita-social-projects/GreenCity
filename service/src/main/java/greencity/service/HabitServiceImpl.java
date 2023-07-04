@@ -104,10 +104,16 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language) {
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String language) {
+        long userId = userVO.getId();
+        List<Long> availableUsersIds =
+            userRepo.getAllUserFriends(userId).stream().map(user -> user.getId())
+                .collect(Collectors.toList());
+        availableUsersIds.add(userId);
+
         Page<HabitTranslation> habitTranslationPage =
-            habitTranslationRepo.findAllByLanguageCode(pageable, language);
-        return buildPageableDto(habitTranslationPage);
+            habitTranslationRepo.findAllByLanguageCode(pageable, language, availableUsersIds);
+        return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
     }
 
     /**
@@ -246,6 +252,9 @@ public class HabitServiceImpl implements HabitService {
             habitAssign.ifPresent(assign -> habitDto.setHabitAssignStatus(assign.getStatus()));
             boolean isCustomHabit = habit.getIsCustomHabit();
             habitDto.setIsCustomHabit(isCustomHabit);
+            if (isCustomHabit) {
+                habitDto.setUsersIdWhoCreatedCustomHabit(habit.getUserId());
+            }
             habitDto.setCustomShoppingListItems(
                 customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));
         }

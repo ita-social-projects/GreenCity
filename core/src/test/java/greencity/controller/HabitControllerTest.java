@@ -77,6 +77,7 @@ class HabitControllerTest {
     void getAll() throws Exception {
         int pageNumber = 1;
         int pageSize = 20;
+        UserVO userVO = new UserVO();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Locale locale = new Locale("en");
         Gson gson = new Gson();
@@ -85,7 +86,7 @@ class HabitControllerTest {
             .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllHabitsByLanguageCode(pageable, locale.getLanguage());
+        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage());
     }
 
     @Test

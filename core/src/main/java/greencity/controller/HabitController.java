@@ -77,7 +77,8 @@ public class HabitController {
     }
 
     /**
-     * Method finds all habits that available for tracking for specific language.
+     * Method finds all default and custom with created by current user and his
+     * friends habits that available for tracking for specific language.
      *
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
@@ -91,10 +92,11 @@ public class HabitController {
     @GetMapping("")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAll(
+        @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 
     /**

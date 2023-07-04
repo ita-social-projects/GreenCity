@@ -50,13 +50,24 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         @Param("language") String language);
 
     /**
-     * Method returns all {@link Habit}'s by language.
+     * Method returns all default and custom which created by current user his
+     * friends {@link Habit}'s by language.
      *
-     * @param language code language.
+     * @param pageable          {@link Pageable}.
+     * @param language          code language.
+     * @param availableUsersIds {@link Long}
+     *
      * @return Pageable of available {@link HabitTranslation}`s.
      * @author Dovganyuk Taras
      */
-    Page<HabitTranslation> findAllByLanguageCode(Pageable pageable, String language);
+
+    @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :language) "
+        + "AND ht.habit IN "
+        + "(SELECT h FROM Habit AS h "
+        + "WHERE ( h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) or h.isCustomHabit = false )")
+    Page<HabitTranslation> findAllByLanguageCode(Pageable pageable, String language, List<Long> availableUsersIds);
 
     /**
      * Method deletes all {@link HabitTranslation}'s by {@link Habit} instance.
