@@ -34,7 +34,7 @@ public class EcoNewsCommentController {
     /**
      * Method for creating {@link EcoNewsCommentVO}.
      *
-     * @param econewsId id of {@link EcoNewsVO} to add comment to.
+     * @param econewsId id of {@link EcoNewsVO} to add comment to_.
      * @param request   - dto for {@link EcoNewsCommentVO} entity.
      * @return dto {@link greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse}
      */
