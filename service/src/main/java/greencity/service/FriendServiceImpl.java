@@ -109,6 +109,23 @@ public class FriendServiceImpl implements FriendService {
             (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public PageableDto<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable) {
+        validateUserExistence(userId);
+        List<User> friends = userRepo.getAllUserFriends(userId);
+        Slice<UserFriendDto> usersThatSentRequest = userRepo.getAllUserFriendRequests(userId, pageable, friends);
+        Long totalElements = userRepo.getCountOfIncomingRequests(userId);
+        return new PageableDto<>(
+            usersThatSentRequest.getContent(),
+            totalElements,
+            usersThatSentRequest.getPageable().getPageNumber(),
+            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
+    }
+
     private void validateUserAndFriendExistence(Long userId, Long friendId) {
         validateUserExistence(userId);
         validateUserExistence(friendId);

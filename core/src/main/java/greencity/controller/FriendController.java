@@ -2,6 +2,7 @@ package greencity.controller;
 
 import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
+import greencity.annotations.CurrentUserId;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
@@ -166,5 +167,29 @@ public class FriendController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllUsersExceptMainUserAndUsersFriend(page, userVO.getId(), name));
+    }
+
+    /**
+     * Method to find {@link UserFriendDto}s which sent request to current user.
+     *
+     * @param userVO user.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    @ApiOperation(value = "Find user's requests")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/friendRequests")
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
+        @ApiIgnore Pageable page,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.getAllUserFriendRequests(userVO.getId(), page));
     }
 }

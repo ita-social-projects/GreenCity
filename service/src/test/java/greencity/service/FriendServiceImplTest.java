@@ -22,15 +22,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -591,5 +588,56 @@ class FriendServiceImplTest {
         verify(userRepo, never()).getAllUserFriends(anyLong());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(any(), anyLong(), anyList(), anyString());
         verify(userRepo, never()).getCountOfNotUserFriends(anyLong(), anyString());
+    }
+
+    @Test
+    void getAllUserFriendRequestsTest() {
+        Long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        List<User> friendList = List.of();
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<UserFriendDto> sliceWithUserFriendDto = new PageImpl<>(List.of(expectedResult), pageable, totalElements);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUserFriends(userId)).thenReturn(friendList);
+        when(userRepo.getAllUserFriendRequests(userId, pageable, friendList)).thenReturn(sliceWithUserFriendDto);
+        when(userRepo.getCountOfIncomingRequests(userId)).thenReturn(totalElements);
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.getAllUserFriendRequests(userId, pageable);
+
+        assertNotNull(pageableDto);
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUserFriends(userId);
+        verify(userRepo).getAllUserFriendRequests(userId, pageable, friendList);
+        verify(userRepo).getCountOfIncomingRequests(userId);
+    }
+
+    @Test
+    void getAllUserFriendRequestsWhenUserNotFoundTest() {
+        Long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.getAllUserFriendRequests(userId, pageable));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(1L);
+        verify(userRepo, never()).getAllUserFriends(anyLong());
+        verify(userRepo, never()).getAllUserFriendRequests(anyLong(), any(), anyList());
+        verify(userRepo, never()).getCountOfIncomingRequests(anyLong());
     }
 }

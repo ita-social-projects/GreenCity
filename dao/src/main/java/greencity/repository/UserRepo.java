@@ -212,7 +212,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequested(Long userId, Long friendId);
 
     /**
-     * <<<<<<< HEAD Checks if a friend requested by current user with userId.
+     * Checks if a friend requested by current user with userId.
      *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend.
@@ -225,7 +225,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     boolean isFriendRequestedByCurrentUser(Long userId, Long friendId);
 
     /**
-     * ======= >>>>>>> dev Adds a new friend for a user.
+     * Adds a new friend for a user.
      *
      * @param userId   The ID of the user.
      * @param friendId The ID of the friend to be added.
@@ -298,4 +298,27 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
         + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) AND id != :userId")
     Long getCountOfNotUserFriends(Long userId, String name);
+
+    /**
+     * Method to find {@link User}s which sent request to user with userId.
+     *
+     * @param pageable current page.
+     * @param userId   current user's id.
+     *
+     * @return {@link Slice} of {@link UserFriendDto}.
+     */
+    @Query(nativeQuery = true, name = "User.getAllUserFriendRequests")
+    Slice<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable, List<User> friends);
+
+    /**
+     * Get count of incoming requests.
+     *
+     * @param userId id of the user.
+     *
+     * @return {@link Long} count of not user friends.
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users u "
+        + "       INNER JOIN users_friends ON u.id = users_friends.user_id "
+        + "       WHERE users_friends.friend_id = :userId AND users_friends.status = 'REQUEST' ")
+    Long getCountOfIncomingRequests(Long userId);
 }

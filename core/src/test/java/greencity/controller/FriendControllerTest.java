@@ -90,4 +90,12 @@ class FriendControllerTest {
 
         verify(friendService).findAllUsersExceptMainUserAndUsersFriend(PageRequest.of(0, 20), null, null);
     }
+
+    @Test
+    void getAllUserFriendsRequestsTest() throws Exception {
+        mockMvc.perform(get(FRIEND_LINK + "/friendRequests"))
+            .andExpect(status().isOk());
+
+        verify(friendService).getAllUserFriendRequests(null, PageRequest.of(0, 20));
+    }
 }

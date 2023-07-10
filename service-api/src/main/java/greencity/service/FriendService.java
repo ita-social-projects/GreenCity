@@ -64,4 +64,14 @@ public interface FriendService {
      * @author Stepan Omeliukh
      */
     PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId, String name);
+
+    /**
+     * Method to find {@link UserFriendDto}s which sent request to user with userId.
+     *
+     * @param pageable the information about pagination and sorting for the result.
+     * @param userId   user id.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable);
 }
