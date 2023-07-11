@@ -79,22 +79,7 @@ import java.util.Set;
         query = RepoQueryConstants.GET_ALL_USER_FRIEND_REQUESTS,
         resultSetMapping = "userFriendDtoMapping"),
     @NamedNativeQuery(name = "User.findAllFriendsOfUser",
-        query = "SELECT *, (SELECT count(*) "
-            + "        FROM users_friends uf1 "
-            + "        WHERE uf1.user_id in :friends "
-            + "          and uf1.friend_id = u.id "
-            + "          and uf1.status = 'FRIEND' "
-            + "           or "
-            + "         uf1.friend_id in :friends "
-            + "          and uf1.user_id = u.id "
-            + "          and uf1.status = 'FRIEND') as mutualFriends, "
-            + "       u.profile_picture           as profilePicturePath, "
-            + "       (SELECT p.room_id "
-            + "       FROM chat_rooms_participants p"
-            + "       WHERE p.participant_id IN (u.id, :userId) "
-            + "       GROUP BY p.room_id "
-            + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
-            + "       FROM users u WHERE u.id in :friends AND LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%'))",
+        query = RepoQueryConstants.FIND_ALL_FRIENDS_OF_USER,
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
