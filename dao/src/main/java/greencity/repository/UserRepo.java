@@ -300,7 +300,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Long getCountOfNotUserFriends(Long userId, String name);
 
     /**
-     * Method to find {@link User}s which sent request to user with userId.
+     * Method to find users which sent request to user with userId.
      *
      * @param pageable current page.
      * @param userId   current user's id.
@@ -311,7 +311,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Slice<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable, List<User> friends);
 
     /**
-     * Get count of incoming requests.
+     * Get count of incoming friend requests.
      *
      * @param userId id of the user.
      *
@@ -321,4 +321,29 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "       INNER JOIN users_friends ON u.id = users_friends.user_id "
         + "       WHERE users_friends.friend_id = :userId AND users_friends.status = 'REQUEST' ")
     Long getCountOfIncomingRequests(Long userId);
+
+    /**
+     * Method to find users which are friends to user with userId.
+     *
+     * @param userId   current user's id.
+     * @param pageable current page.
+     *
+     * @return {@link Slice} of {@link UserFriendDto}.
+     */
+    @Query(nativeQuery = true, name = "User.findAllFriendsOfUser")
+    Slice<UserFriendDto> findAllFriendsOfUser(Long userId, String name, List<User> friends, Pageable pageable);
+
+    /**
+     * Get count of user's friends.
+     *
+     * @param userId current user's id.
+     * @param name   name filter.
+     *
+     * @return {@link Long} count of user friends.
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users WHERE id IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') "
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
+        + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Long getCountOfAllFriendsOfUser(Long userId, String name);
 }

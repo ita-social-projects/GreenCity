@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
@@ -74,4 +75,15 @@ public interface FriendService {
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
     PageableDto<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable);
+
+    /**
+     * Method that finds all user's friends.
+     *
+     * @param pageable pageable.
+     * @param userId   user's id.
+     * @param name     filtering name.
+     *
+     * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
+     */
+    PageableDto<UserFriendDto> findAllFriendsOfUser(Long userId, String name, Pageable pageable);
 }

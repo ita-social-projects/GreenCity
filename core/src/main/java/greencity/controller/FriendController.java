@@ -191,4 +191,30 @@ public class FriendController {
             .status(HttpStatus.OK)
             .body(friendService.getAllUserFriendRequests(userVO.getId(), page));
     }
+
+    /**
+     * The method returns friends for the current user.
+     *
+     * @param userVO user.
+     * @param name   filtering name.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    @ApiOperation(value = "Find all friends")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
+        @ApiIgnore Pageable page,
+        @RequestParam(required = false) String name,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
+    }
 }

@@ -11,6 +11,8 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -123,6 +125,23 @@ public class FriendServiceImpl implements FriendService {
             usersThatSentRequest.getContent(),
             totalElements,
             usersThatSentRequest.getPageable().getPageNumber(),
+            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserFriendDto> findAllFriendsOfUser(Long userId, String name, Pageable pageable) {
+        validateUserExistence(userId);
+        name = name == null ? "" : name;
+        List<User> friends = userRepo.getAllUserFriends(userId);
+        Slice<UserFriendDto> fullFriends = userRepo.findAllFriendsOfUser(userId, name, friends, pageable);
+        Long totalElements = userRepo.getCountOfAllFriendsOfUser(userId, name);
+        return new PageableDto<>(
+            fullFriends.getContent(),
+            totalElements,
+            fullFriends.getPageable().getPageNumber(),
             (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
     }
 

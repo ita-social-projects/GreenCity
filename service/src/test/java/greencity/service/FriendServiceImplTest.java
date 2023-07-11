@@ -547,7 +547,6 @@ class FriendServiceImplTest {
         List<User> friendList = List.of();
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<UserFriendDto> slice = new PageImpl<>(List.of(expectedResult), pageable, totalElements);
-        String name = null;
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getAllUserFriends(userId)).thenReturn(friendList);
@@ -555,7 +554,7 @@ class FriendServiceImplTest {
         when(userRepo.getCountOfNotUserFriends(userId, "")).thenReturn(totalElements);
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriend(pageable, userId, name);
+            friendService.findAllUsersExceptMainUserAndUsersFriend(pageable, userId, null);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -639,5 +638,91 @@ class FriendServiceImplTest {
         verify(userRepo, never()).getAllUserFriends(anyLong());
         verify(userRepo, never()).getAllUserFriendRequests(anyLong(), any(), anyList());
         verify(userRepo, never()).getCountOfIncomingRequests(anyLong());
+    }
+
+    @Test
+    void findAllFriendsOfUserTest() {
+        Long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        List<User> friendList = List.of();
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<UserFriendDto> slice = new PageImpl<>(List.of(expectedResult), pageable, totalElements);
+        String name = "vi";
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUserFriends(userId)).thenReturn(friendList);
+        when(userRepo.findAllFriendsOfUser(userId, name, friendList, pageable)).thenReturn(slice);
+        when(userRepo.getCountOfAllFriendsOfUser(userId, name)).thenReturn(totalElements);
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findAllFriendsOfUser(userId, name, pageable);
+
+        assertNotNull(pageableDto);
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUserFriends(userId);
+        verify(userRepo).findAllFriendsOfUser(userId, name, friendList, pageable);
+        verify(userRepo).getCountOfAllFriendsOfUser(userId, name);
+    }
+
+    @Test
+    void findAllFriendsOfUserWhenNameIsNullTest() {
+        Long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        List<User> friendList = List.of();
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<UserFriendDto> slice = new PageImpl<>(List.of(expectedResult), pageable, totalElements);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUserFriends(userId)).thenReturn(friendList);
+        when(userRepo.findAllFriendsOfUser(userId, "", friendList, pageable)).thenReturn(slice);
+        when(userRepo.getCountOfAllFriendsOfUser(userId, "")).thenReturn(totalElements);
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findAllFriendsOfUser(userId, null, pageable);
+
+        assertNotNull(pageableDto);
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUserFriends(userId);
+        verify(userRepo).findAllFriendsOfUser(userId, "", friendList, pageable);
+        verify(userRepo).getCountOfAllFriendsOfUser(userId, "");
+    }
+
+    @Test
+    void findAllFriendsOfUserWhenUserNotFoundTest() {
+        Long userId = 1L;
+        String name = "vi";
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.findAllFriendsOfUser(userId, name, pageable));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(1L);
+        verify(userRepo, never()).getAllUserFriends(anyLong());
+        verify(userRepo, never()).findAllFriendsOfUser(anyLong(), anyString(), anyList(), any());
+        verify(userRepo, never()).getCountOfAllFriendsOfUser(anyLong(), anyString());
     }
 }
