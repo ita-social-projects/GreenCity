@@ -72,14 +72,8 @@ import java.util.Set;
     @NamedNativeQuery(name = "User.findAllRegistrationMonths",
         query = RepoQueryConstants.FIND_ALL_REGISTRATION_MONTHS,
         resultSetMapping = "monthsStatisticsMapping"),
-    @NamedNativeQuery(name = "User.getAllUsersExceptMainUserAndFriends",
-        query = RepoQueryConstants.GET_ALL_USERS_EXCEPT_MAIN_USER_AND_FRIENDS,
-        resultSetMapping = "userFriendDtoMapping"),
-    @NamedNativeQuery(name = "User.getAllUserFriendRequests",
-        query = RepoQueryConstants.GET_ALL_USER_FRIEND_REQUESTS,
-        resultSetMapping = "userFriendDtoMapping"),
-    @NamedNativeQuery(name = "User.findAllFriendsOfUser",
-        query = RepoQueryConstants.FIND_ALL_FRIENDS_OF_USER,
+    @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
+        query = RepoQueryConstants.FILL_LIST_OF_USER_WITH_COUNT_OF_MUTUAL_FRIENDS_AND_CHAT_ID_FOR_CURRENT_USER,
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor

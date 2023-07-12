@@ -8,11 +8,12 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
+    private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -94,19 +96,19 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Pageable pageable, Long userId,
-        String name) {
+    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(Long userId,
+        String name, Pageable pageable) {
         validateUserExistence(userId);
-        List<User> friends = userRepo.getAllUserFriends(userId);
         name = name == null ? "" : name;
-        Slice<UserFriendDto> users =
-            userRepo.getAllUsersExceptMainUserAndFriends(pageable, userId, friends, name);
-        Long totalElements = userRepo.getCountOfNotUserFriends(userId, name);
+        Page<User> users =
+            userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-            users.getContent(),
-            totalElements,
+            userFriendDtoList,
+            users.getTotalElements(),
             users.getPageable().getPageNumber(),
-            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
+            users.getTotalPages());
     }
 
     /**
@@ -116,31 +118,32 @@ public class FriendServiceImpl implements FriendService {
     @Transactional
     public PageableDto<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable) {
         validateUserExistence(userId);
-        List<User> friends = userRepo.getAllUserFriends(userId);
-        Slice<UserFriendDto> usersThatSentRequest = userRepo.getAllUserFriendRequests(userId, pageable, friends);
-        Long totalElements = userRepo.getCountOfIncomingRequests(userId);
+        Page<User> users = userRepo.getAllUserFriendRequests(userId, pageable);
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-            usersThatSentRequest.getContent(),
-            totalElements,
-            usersThatSentRequest.getPageable().getPageNumber(),
-            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
+            userFriendDtoList,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     /**
      * {@inheritDoc}
      */
+    @Transactional(readOnly = true)
     @Override
     public PageableDto<UserFriendDto> findAllFriendsOfUser(Long userId, String name, Pageable pageable) {
         validateUserExistence(userId);
         name = name == null ? "" : name;
-        List<User> friends = userRepo.getAllUserFriends(userId);
-        Slice<UserFriendDto> fullFriends = userRepo.findAllFriendsOfUser(userId, name, friends, pageable);
-        Long totalElements = userRepo.getCountOfAllFriendsOfUser(userId, name);
+        Page<User> users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-            fullFriends.getContent(),
-            totalElements,
-            fullFriends.getPageable().getPageNumber(),
-            (int) Math.ceil(totalElements * 1.0 / pageable.getPageSize()));
+            userFriendDtoList,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     private void validateUserAndFriendExistence(Long userId, Long friendId) {

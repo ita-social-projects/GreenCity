@@ -1,13 +1,11 @@
 package greencity.repository;
 
-import greencity.dto.friends.UserFriendDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -274,30 +272,20 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method that finds all users except current user and his friends.
      *
-     * @param pageable current page.
-     * @param userId   current user's id.
-     * @param friends  {@link List} of {@link User} which are user friends.
-     * @param name     name filter.
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
      *
-     * @return {@link Slice} of {@link UserFriendDto}.
+     * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, name = "User.getAllUsersExceptMainUserAndFriends")
-    Slice<UserFriendDto> getAllUsersExceptMainUserAndFriends(Pageable pageable, Long userId,
-        List<User> friends, String name);
-
-    /**
-     * Get count of not user friends.
-     *
-     * @param userId id of the user.
-     * @param name   name filter.
-     *
-     * @return {@link Long} count of not user friends.
-     */
-    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users WHERE id NOT IN ( "
-        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
-        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
-        + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) AND id != :userId")
-    Long getCountOfNotUserFriends(Long userId, String name);
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id != :userId "
+        + "AND u.id NOT IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%')) ")
+    Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
 
     /**
      * Method to find users which sent request to user with userId.
@@ -305,45 +293,27 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @param pageable current page.
      * @param userId   current user's id.
      *
-     * @return {@link Slice} of {@link UserFriendDto}.
+     * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, name = "User.getAllUserFriendRequests")
-    Slice<UserFriendDto> getAllUserFriendRequests(Long userId, Pageable pageable, List<User> friends);
-
-    /**
-     * Get count of incoming friend requests.
-     *
-     * @param userId id of the user.
-     *
-     * @return {@link Long} count of not user friends.
-     */
-    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users u "
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
         + "       INNER JOIN users_friends ON u.id = users_friends.user_id "
         + "       WHERE users_friends.friend_id = :userId AND users_friends.status = 'REQUEST' ")
-    Long getCountOfIncomingRequests(Long userId);
+    Page<User> getAllUserFriendRequests(Long userId, Pageable pageable);
 
     /**
      * Method to find users which are friends to user with userId.
      *
-     * @param userId   current user's id.
-     * @param pageable current page.
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
      *
-     * @return {@link Slice} of {@link UserFriendDto}.
+     * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, name = "User.findAllFriendsOfUser")
-    Slice<UserFriendDto> findAllFriendsOfUser(Long userId, String name, List<User> friends, Pageable pageable);
-
-    /**
-     * Get count of user's friends.
-     *
-     * @param userId current user's id.
-     * @param name   name filter.
-     *
-     * @return {@link Long} count of user friends.
-     */
-    @Query(nativeQuery = true, value = "SELECT COUNT(*) FROM users WHERE id IN ( "
-        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND') "
-        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND')) "
-        + "AND LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'))")
-    Long getCountOfAllFriendsOfUser(Long userId, String name);
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%'))")
+    Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
 }

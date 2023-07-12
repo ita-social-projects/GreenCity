@@ -165,7 +165,7 @@ public class FriendController {
         @RequestParam(required = false) String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(page, userVO.getId(), name));
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
     }
 
     /**
