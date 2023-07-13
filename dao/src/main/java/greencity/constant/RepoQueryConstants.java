@@ -1,5 +1,6 @@
 package greencity.constant;
 
+import greencity.annotations.Generated;
 import lombok.NoArgsConstructor;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -7,6 +8,7 @@ import static lombok.AccessLevel.PRIVATE;
 /**
  * Class, that contains named queries constants.
  */
+@Generated
 @NoArgsConstructor(access = PRIVATE)
 public final class RepoQueryConstants {
     public static final String FIND_ALL_REGISTRATION_MONTHS =

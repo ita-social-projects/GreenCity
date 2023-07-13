@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +53,7 @@ public class FriendController {
     })
     @DeleteMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.deleteUserFriendById(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -74,7 +75,7 @@ public class FriendController {
     })
     @PostMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> addNewFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -95,7 +96,7 @@ public class FriendController {
     })
     @PatchMapping("/{friendId}/acceptFriend")
     public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
-        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.acceptFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -116,7 +117,7 @@ public class FriendController {
     })
     @DeleteMapping("/{friendId}/declineFriend")
     public ResponseEntity<Object> declineFriendRequest(
-        @ApiParam("Friend's id. Cannot be empty.") @PathVariable Long friendId,
+        @ApiParam("Friend's id. Cannot be empty.") @PathVariable long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
         friendService.declineFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -137,7 +138,7 @@ public class FriendController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserManagementDto>> findUserFriendsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<UserManagementDto>> findUserFriendsByUserId(@PathVariable long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(friendService.findUserFriendsByUserId(userId));
     }
 
@@ -162,7 +163,7 @@ public class FriendController {
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
         @ApiIgnore Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO,
-        @RequestParam(required = false) String name) {
+        @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
@@ -211,7 +212,7 @@ public class FriendController {
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
         @ApiIgnore Pageable page,
-        @RequestParam(required = false) String name,
+        @RequestParam(required = false) @Nullable String name,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)

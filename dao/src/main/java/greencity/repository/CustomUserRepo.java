@@ -11,9 +11,9 @@ public interface CustomUserRepo {
      * for current user.
      *
      * @param userId current user's id.
-     * @param users  list of users to be filled
+     * @param users  list of users to be filled, must not be null.
      *
      * @return {@link List} of {@link UserFriendDto}.
      */
-    List<UserFriendDto> fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(Long userId, List<User> users);
+    List<UserFriendDto> fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(long userId, List<User> users);
 }

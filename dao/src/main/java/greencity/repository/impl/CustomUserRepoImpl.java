@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Repository
@@ -19,8 +20,10 @@ public class CustomUserRepoImpl implements CustomUserRepo {
      * {@inheritDoc}
      */
     @Override
-    public List<UserFriendDto> fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(Long userId,
+    public List<UserFriendDto> fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(long userId,
         List<User> users) {
+        Objects.requireNonNull(users);
+
         TypedQuery<UserFriendDto> query = entityManager
             .createNamedQuery("User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
                 UserFriendDto.class);
