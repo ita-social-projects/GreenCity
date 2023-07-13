@@ -73,14 +73,23 @@ import java.util.Set;
             + "WHERE EXTRACT(YEAR from date_of_registration) = EXTRACT(YEAR FROM CURRENT_DATE) "
             + "GROUP BY month",
         resultSetMapping = "monthsStatisticsMapping"),
-    @NamedNativeQuery(name = "User.getAllUsersExceptMainUserAndFriends",
-        query = "SELECT *, (SELECT count(*) "
+    @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
+        query = "with current_user_friends as ("
+            + "SELECT user_id AS id "
+            + "    FROM users_friends "
+            + "    WHERE friend_id = :userId AND status = 'FRIEND' "
+            + "    UNION "
+            + "    SELECT friend_id AS id "
+            + "    FROM users_friends "
+            + "    WHERE user_id = :userId AND status = 'FRIEND' "
+            + ") "
+            + "SELECT *, (SELECT count(*) "
             + "        FROM users_friends uf1 "
-            + "        WHERE uf1.user_id in :friends "
+            + "        WHERE uf1.user_id in (SELECT id FROM current_user_friends) "
             + "          and uf1.friend_id = u.id "
             + "          and uf1.status = 'FRIEND' "
             + "           or "
-            + "         uf1.friend_id in :friends "
+            + "         uf1.friend_id in (SELECT id FROM current_user_friends) "
             + "          and uf1.user_id = u.id "
             + "          and uf1.status = 'FRIEND') as mutualFriends, "
             + "       u.profile_picture           as profilePicturePath, "
@@ -89,9 +98,8 @@ import java.util.Set;
             + "       WHERE p.participant_id IN (u.id, :userId) "
             + "       GROUP BY p.room_id "
             + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
-            + "FROM users u "
-            + "WHERE u.id != :userId "
-            + "AND u.id NOT IN :friends AND LOWER(u.name) LIKE LOWER(CONCAT('%', :name, '%')) ",
+            + " FROM users u "
+            + " WHERE u.id IN (:users)",
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
