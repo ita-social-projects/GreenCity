@@ -321,4 +321,13 @@ public interface HabitAssignService {
      * @param userId        {@link Long} item id.
      */
     void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId);
+
+    /**
+     * Method updates Duration and HabitAssignStatus from Requested to Inprogress.
+     *
+     *
+     * @param habitAssignId {@link Long} habit id.
+     * @param userId        {@link Long} item id.
+     */
+    HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
 }

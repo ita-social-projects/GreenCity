@@ -102,6 +102,31 @@ public class HabitAssignController {
     }
 
     /**
+     * Method that update duration of HabitAssign and HabitAssignStatus from
+     * REQUESTED to INPROGRESS.
+     *
+     * @param habitAssignId {@link HabitAssignVO} id.
+     * @param userVO        {@link UserVO} instance.
+     * @param duration      {@link Integer} with needed duration.
+     */
+    @ApiOperation(value = "Update duration of HabitAssign and HabitAssignStatus")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiLocale
+    @PutMapping("{habitAssignId}/update-status-and-duration")
+    public ResponseEntity<HabitAssignUserDurationDto> updateStatusAndDurationOfHabitAssign(
+        @PathVariable Long habitAssignId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @RequestParam @Min(AppConstant.MIN_DAYS_DURATION) @Max(AppConstant.MAX_DAYS_DURATION) Integer duration) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitAssignService.updateStatusAndDurationOfHabitAssign(habitAssignId, userVO.getId(), duration));
+    }
+
+    /**
      * Method which updates duration of habit assigned for user.
      *
      * @param habitAssignId {@link HabitVO} id.

@@ -164,6 +164,8 @@ public final class ErrorMessage {
     public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
+    public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
+        "Habit assign status is not REQUESTED or user has not any assigned habits";
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";

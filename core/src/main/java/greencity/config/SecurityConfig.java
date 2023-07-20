@@ -274,7 +274,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/update",
                 HABIT_ASSIGN_ID + "/update-habit-duration",
                 "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
-                HABIT_ASSIGN_ID + "/allUserAndCustomList")
+                HABIT_ASSIGN_ID + "/allUserAndCustomList",
+                "/habit/assign/{habitAssignId}/update-status-and-duration")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
