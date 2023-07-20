@@ -1131,6 +1131,49 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void updateStatusAndDurationOfHabitAssignTest() {
+        HabitAssign habitAssign = getHabitAssign();
+        HabitAssign habitAssign1 = getHabitAssign();
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+        habitAssign.setDuration(20);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
+            .thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserDurationDto());
+
+        var result = habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 20);
+        assertEquals(20, result.getDuration());
+        assertEquals(HabitAssignStatus.INPROGRESS, result.getStatus());
+        verify(habitAssignRepo).findById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong());
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignThrowNotFoundExceptionTest() {
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.empty());
+        var exception = assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
+        assertEquals(exception.getMessage(), ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + 1L);
+        verify(habitAssignRepo).findById(anyLong());
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignThrowInvalidStatusExceptionTest() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
+            .thenReturn(Optional.empty());
+        var exception = assertThrows(InvalidStatusException.class,
+            () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
+        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS,
+            exception.getMessage());
+        verify(habitAssignRepo).findById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong());
+    }
+
+    @Test
     void updateUserHabitInfoDurationTest() {
         HabitAssign habitAssign = getHabitAssign();
         habitAssign.setDuration(20);

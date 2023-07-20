@@ -1414,4 +1414,23 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
         habitAssignRepo.updateProgressNotificationHasDisplayed(habitAssignId, userId);
     }
+
+    @Transactional
+    @Override
+    public HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId,
+        Integer duration) {
+        Optional<HabitAssign> habitAssignOptional = habitAssignRepo.findById(habitAssignId);
+        HabitAssign habitAssign;
+
+        if (habitAssignOptional.isPresent()) {
+            habitAssign = habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(habitAssignId, userId)
+                .orElseThrow(() -> new InvalidStatusException(
+                    ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS));
+        } else {
+            throw new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId);
+        }
+        habitAssign.setDuration(duration);
+        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+        return modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignUserDurationDto.class);
+    }
 }
