@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
+@SuppressWarnings("java:S107")
 public class UserFriendDto {
     private Long id;
     private String name;
