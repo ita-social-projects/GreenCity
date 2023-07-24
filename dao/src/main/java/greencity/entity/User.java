@@ -59,6 +59,7 @@ import java.util.Set;
                 columns = {
                     @ColumnResult(name = "id", type = Long.class),
                     @ColumnResult(name = "name", type = String.class),
+                    @ColumnResult(name = "email", type = String.class),
                     @ColumnResult(name = "city", type = String.class),
                     @ColumnResult(name = "rating", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
