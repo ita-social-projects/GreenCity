@@ -672,6 +672,7 @@ class FriendServiceImplTest {
         long totalElements = 50;
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        expectedResult.setFriendStatus("FRIEND");
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
         String name = "vi";
 
