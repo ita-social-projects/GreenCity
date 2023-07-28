@@ -81,9 +81,9 @@ class EventsControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(eventsController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
-                        new UserArgumentResolver(userService, modelMapper))
-                .build();
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
+                new UserArgumentResolver(userService, modelMapper))
+            .build();
     }
 
     @Test
@@ -94,7 +94,7 @@ class EventsControllerTest {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/createdEvents").principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(eventService).getEventsCreatedByUser(pageable, "test@gmail.com");
 
     }
@@ -116,11 +116,11 @@ class EventsControllerTest {
         when(eventService.getAll(pageable, principal)).thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .principal(principal))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
 
         verify(eventService).getAll(pageable, principal);
     }
@@ -140,16 +140,17 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", eventType)).thenReturn(pageableAdvancedDto);
+        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", eventType))
+            .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents?eventType=&userLatitude=&userLongitude=")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .principal(principal))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .principal(principal))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllUserEvents(pageable, principal.getName(),"","", eventType);
+        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", eventType);
     }
 
     @Test
@@ -159,7 +160,7 @@ class EventsControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents/relatedEvents").principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
         verify(eventService).getRelatedToUserEvents(pageable, principal.getName());
     }
 
@@ -178,7 +179,7 @@ class EventsControllerTest {
     void addAttenderWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", notValidId).principal(principal))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -187,13 +188,13 @@ class EventsControllerTest {
         Long eventId = 1L;
 
         doThrow(new NotFoundException("ErrorMessage"))
-                .when(eventService)
-                .addAttender(eventId, principal.getName());
+            .when(eventService)
+            .addAttender(eventId, principal.getName());
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
-                                .andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException("ErrorMessage"));
+            () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException("ErrorMessage"));
     }
 
     @Test
@@ -202,13 +203,13 @@ class EventsControllerTest {
         Long eventId = 1L;
 
         doThrow(new BadRequestException("ErrorMessage"))
-                .when(eventService)
-                .addAttender(eventId, principal.getName());
+            .when(eventService)
+            .addAttender(eventId, principal.getName());
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
-                                .andExpect(status().isBadRequest()))
-                .hasCause(new BadRequestException("ErrorMessage"));
+            () -> mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addAttender/{eventId}", eventId).principal(principal))
+                .andExpect(status().isBadRequest()))
+            .hasCause(new BadRequestException("ErrorMessage"));
     }
 
     @Test
@@ -216,8 +217,8 @@ class EventsControllerTest {
     void addToFavoritesTest() {
         Long eventId = 1L;
         mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addToFavorites/{eventId}", eventId)
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
         verify(eventService).addToFavorites(eventId, principal.getName());
     }
 
@@ -226,8 +227,8 @@ class EventsControllerTest {
     void removeFromFavoritesTest() {
         Long eventId = 1L;
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeFromFavorites/{eventId}", eventId)
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
         verify(eventService).removeFromFavorites(eventId, principal.getName());
     }
 
@@ -241,14 +242,14 @@ class EventsControllerTest {
         String json = objectMapper.writeValueAsString(addEventDtoRequest);
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
 
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK + "/create")
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isCreated());
 
         verify(eventService).save(addEventDtoRequest, principal.getName(), new MultipartFile[0]);
     }
@@ -258,13 +259,13 @@ class EventsControllerTest {
     void saveBadRequestTest() {
         String json = "{}";
         MockMultipartFile jsonFile =
-                new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
+            new MockMultipartFile("addEventDtoRequest", "", "application/json", json.getBytes());
         mockMvc.perform(multipart(EVENTS_CONTROLLER_LINK + "/create")
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -273,7 +274,7 @@ class EventsControllerTest {
         Long eventId = 1L;
 
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", eventId).principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(eventService).removeAttender(eventId, principal.getName());
     }
@@ -283,8 +284,8 @@ class EventsControllerTest {
     void removeAttenderBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", notValidId)
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -292,12 +293,12 @@ class EventsControllerTest {
     void removeAttenderNotFoundTest() {
         Long eventId = 1L;
         doThrow(new NotFoundException("ErrorMessage"))
-                .when(eventService)
-                .removeAttender(eventId, principal.getName());
+            .when(eventService)
+            .removeAttender(eventId, principal.getName());
 
         Assertions.assertThatThrownBy(() -> mockMvc
-                .perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", eventId).principal(principal))
-                .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
+            .perform(delete(EVENTS_CONTROLLER_LINK + "/removeAttender/{eventId}", eventId).principal(principal))
+            .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
     }
 
     @Test
@@ -305,8 +306,8 @@ class EventsControllerTest {
     void deleteTest() {
 
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/delete/{eventId}", 1)
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(eventService).delete(1L, "test@gmail.com");
     }
@@ -315,8 +316,8 @@ class EventsControllerTest {
     @SneakyThrows
     void deleteFailedTest() {
         mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/delete/{eventId}", "not_number")
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -329,21 +330,21 @@ class EventsControllerTest {
         String json = objectMapper.writeValueAsString(updateEventDto);
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+            new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
         mockMvc.perform(builder
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
 
         verify(eventService).update(updateEventDto, principal.getName(), new MultipartFile[0]);
     }
@@ -355,8 +356,8 @@ class EventsControllerTest {
         int grade = 2;
 
         mockMvc
-                .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
-                .andExpect(status().isOk());
+            .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
+            .andExpect(status().isOk());
 
         verify(eventService).rateEvent(eventId, principal.getName(), grade);
     }
@@ -368,9 +369,9 @@ class EventsControllerTest {
         int grade = 2;
 
         mockMvc
-                .perform(
-                        post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", notValidId, grade).principal(principal))
-                .andExpect(status().isBadRequest());
+            .perform(
+                post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", notValidId, grade).principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -380,9 +381,9 @@ class EventsControllerTest {
         String notValidGrade = "grade";
 
         mockMvc
-                .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, notValidGrade)
-                        .principal(principal))
-                .andExpect(status().isBadRequest());
+            .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, notValidGrade)
+                .principal(principal))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -392,12 +393,12 @@ class EventsControllerTest {
         int grade = 2;
 
         doThrow(new NotFoundException("ErrorMessage"))
-                .when(eventService)
-                .rateEvent(eventId, principal.getName(), grade);
+            .when(eventService)
+            .rateEvent(eventId, principal.getName(), grade);
 
         Assertions.assertThatThrownBy(() -> mockMvc
-                .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
-                .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
+            .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
+            .andExpect(status().isNotFound())).hasCause(new NotFoundException("ErrorMessage"));
     }
 
     @Test
@@ -407,12 +408,12 @@ class EventsControllerTest {
         int grade = 2;
 
         doThrow(new BadRequestException("ErrorMessage"))
-                .when(eventService)
-                .rateEvent(eventId, principal.getName(), grade);
+            .when(eventService)
+            .rateEvent(eventId, principal.getName(), grade);
 
         Assertions.assertThatThrownBy(() -> mockMvc
-                .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
-                .andExpect(status().isBadRequest())).hasCause(new BadRequestException("ErrorMessage"));
+            .perform(post(EVENTS_CONTROLLER_LINK + "/rateEvent/{eventId}/{grade}", eventId, grade).principal(principal))
+            .andExpect(status().isBadRequest())).hasCause(new BadRequestException("ErrorMessage"));
     }
 
     @Test
@@ -421,41 +422,41 @@ class EventsControllerTest {
         String json = "";
 
         MockMultipartFile jsonFile =
-                new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+            new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
 
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
         builder.with(request -> {
             request.setMethod("PUT");
             return request;
         });
 
         mockMvc.perform(builder
-                        .file(jsonFile)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     @SneakyThrows
     void getEventTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/event/{eventId}", 1L).principal(principal))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(eventService)
-                .getEvent(1L, principal);
+            .getEvent(1L, principal);
     }
 
     @Test
     @SneakyThrows
     void getEventFailedTest() {
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/event/{eventId}", "not_number").principal(principal))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
 
         verify(eventService, times(0))
-                .getEvent(1L, principal);
+            .getEvent(1L, principal);
     }
 
     @Test
@@ -466,10 +467,10 @@ class EventsControllerTest {
         when(eventService.getEvent(1L, principal)).thenReturn(eventDto);
 
         MvcResult result = mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/event/{eventId}", 1L)
-                        .principal(principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()).andReturn();
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk()).andReturn();
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
@@ -478,7 +479,7 @@ class EventsControllerTest {
         assertEquals(eventDto, responseEventDto);
 
         verify(eventService)
-                .getEvent(1L, principal);
+            .getEvent(1L, principal);
     }
 
     @Test
@@ -486,7 +487,7 @@ class EventsControllerTest {
     void getAllEventSubscribersTest() {
         Long eventId = 1L;
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", eventId))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(eventService).getAllEventAttenders(eventId);
     }
@@ -496,7 +497,7 @@ class EventsControllerTest {
     void getAllEventSubscribersWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", notValidId))
-                .andExpect(status().isBadRequest());
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -505,83 +506,83 @@ class EventsControllerTest {
         Long eventId = 1L;
 
         doThrow(new NotFoundException("ErrorMessage"))
-                .when(eventService)
-                .getAllEventAttenders(eventId);
+            .when(eventService)
+            .getAllEventAttenders(eventId);
 
         Assertions.assertThatThrownBy(
-                        () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", eventId))
-                                .andExpect(status().isNotFound()))
-                .hasCause(new NotFoundException("ErrorMessage"));
+            () -> mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", eventId))
+                .andExpect(status().isNotFound()))
+            .hasCause(new NotFoundException("ErrorMessage"));
     }
 
     private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
         EventDto eventDto = EventDto.builder()
-                .id(11L)
-                .title("Test-Title")
-                .organizer(EventAuthorDto.builder()
-                        .id(12L)
-                        .name("Organizer-Name")
-                        .organizerRating(1.1D)
-                        .build())
-                .description("Event Description")
-                .dates(List.of(EventDateLocationDto.builder()
-                        .id(13L)
-                        .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
-                        .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
-                        .onlineLink("some-link.com")
-                        .coordinates(AddressDto.builder()
-                                .streetUa("Вулиця")
-                                .streetEn("Street")
-                                .houseNumber("1B")
-                                .cityUa("Місто")
-                                .cityEn("City")
-                                .regionUa("Область")
-                                .regionUa("Oblast")
-                                .countryUa("Країна")
-                                .countryEn("Country")
-                                .latitude(50.45594503475653d)
-                                .longitude(30.5058935778292d).build())
-                        .build()))
-                .tags(List.of(TagUaEnDto.builder()
-                        .id(20)
-                        .nameEn("Name")
-                        .nameUa("Назва").build()))
-                .titleImage("https://csb10032000a548f571.blob.core.windows.net/all/8f09887c.png")
-                .additionalImages(List.of("https://csb10032000a548f571.blob.core.windows.net/all/10005000.png"))
-                .isOpen(true)
-                .isSubscribed(true).build();
+            .id(11L)
+            .title("Test-Title")
+            .organizer(EventAuthorDto.builder()
+                .id(12L)
+                .name("Organizer-Name")
+                .organizerRating(1.1D)
+                .build())
+            .description("Event Description")
+            .dates(List.of(EventDateLocationDto.builder()
+                .id(13L)
+                .startDate(ZonedDateTime.of(2023, 6, 1, 1, 2, 3, 4, ZoneId.of("Europe/Kiev")))
+                .finishDate(ZonedDateTime.of(2023, 6, 1, 3, 2, 3, 4, ZoneId.of("Europe/Kiev")))
+                .onlineLink("some-link.com")
+                .coordinates(AddressDto.builder()
+                    .streetUa("Вулиця")
+                    .streetEn("Street")
+                    .houseNumber("1B")
+                    .cityUa("Місто")
+                    .cityEn("City")
+                    .regionUa("Область")
+                    .regionUa("Oblast")
+                    .countryUa("Країна")
+                    .countryEn("Country")
+                    .latitude(50.45594503475653d)
+                    .longitude(30.5058935778292d).build())
+                .build()))
+            .tags(List.of(TagUaEnDto.builder()
+                .id(20)
+                .nameEn("Name")
+                .nameUa("Назва").build()))
+            .titleImage("https://csb10032000a548f571.blob.core.windows.net/all/8f09887c.png")
+            .additionalImages(List.of("https://csb10032000a548f571.blob.core.windows.net/all/10005000.png"))
+            .isOpen(true)
+            .isSubscribed(true).build();
 
         return new PageableAdvancedDto<>(
-                List.of(eventDto),
-                1,
-                0,
-                1,
-                0,
-                false,
-                false,
-                true,
-                true);
+            List.of(eventDto),
+            1,
+            0,
+            1,
+            0,
+            false,
+            false,
+            true,
+            true);
     }
 
     @SneakyThrows
     private AddEventDtoRequest getAddEventDtoRequest() {
         String json = "{\n" +
-                "    \"title\":\"string\",\n" +
-                "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-                "    \"open\":true,\n" +
-                "    \"datesLocations\":[\n" +
-                "        {\n" +
-                "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-                "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-                "            \"coordinates\":{\n" +
-                "                \"latitude\":1,\n" +
-                "                \"longitude\":1\n" +
-                "            },\n" +
-                "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"tags\":[\"Social\"]\n" +
-                "}   ";
+            "    \"title\":\"string\",\n" +
+            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
+            "    \"open\":true,\n" +
+            "    \"datesLocations\":[\n" +
+            "        {\n" +
+            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
+            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
+            "            \"coordinates\":{\n" +
+            "                \"latitude\":1,\n" +
+            "                \"longitude\":1\n" +
+            "            },\n" +
+            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
+            "        }\n" +
+            "    ],\n" +
+            "    \"tags\":[\"Social\"]\n" +
+            "}   ";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, AddEventDtoRequest.class);
@@ -590,23 +591,23 @@ class EventsControllerTest {
     @SneakyThrows
     private UpdateEventDto getUpdateEventDto() {
         String json = "{\n" +
-                "    \"id\":0,\n" +
-                "    \"title\":\"string\",\n" +
-                "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
-                "    \"open\":true,\n" +
-                "    \"datesLocations\":[\n" +
-                "        {\n" +
-                "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
-                "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
-                "            \"coordinates\":{\n" +
-                "                \"latitude\":1,\n" +
-                "                \"longitude\":1\n" +
-                "            },\n" +
-                "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
-                "        }\n" +
-                "    ],\n" +
-                "    \"tags\":[\"Social\"]\n" +
-                "}   ";
+            "    \"id\":0,\n" +
+            "    \"title\":\"string\",\n" +
+            "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
+            "    \"open\":true,\n" +
+            "    \"datesLocations\":[\n" +
+            "        {\n" +
+            "            \"startDate\":\"2023-05-27T15:00:00Z\",\n" +
+            "            \"finishDate\":\"2023-05-27T17:00:00Z\",\n" +
+            "            \"coordinates\":{\n" +
+            "                \"latitude\":1,\n" +
+            "                \"longitude\":1\n" +
+            "            },\n" +
+            "            \"onlineLink\":\"http://localhost:8080/swagger-ui.html#/events-controller\"\n" +
+            "        }\n" +
+            "    ],\n" +
+            "    \"tags\":[\"Social\"]\n" +
+            "}   ";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, UpdateEventDto.class);
@@ -615,50 +616,50 @@ class EventsControllerTest {
     @SneakyThrows
     private EventDto getEventDto() {
         String json = "{\n" +
-                "  \"additionalImages\": [\n" +
-                "    \"string\"\n" +
-                "  ],\n" +
-                "  \"dates\": [\n" +
-                "    {\n" +
-                "        \"coordinates\": {\n" +
-                "        \"streetUa\": \"string\",\n" +
-                "        \"streetEn\": \"string\",\n" +
-                "        \"houseNumber\": \"string\",\n" +
-                "        \"cityUa\": \"string\",\n" +
-                "        \"cityEn\": \"string\",\n" +
-                "        \"regionUa\": \"string\",\n" +
-                "        \"regionEn\": \"string\",\n" +
-                "        \"countryUa\": \"string\",\n" +
-                "        \"countryEn\": \"string\",\n" +
-                "        \"latitude\": 0,\n" +
-                "        \"longitude\": 0\n" +
-                "      },\n" +
-                "      \"finishDate\": \"2022-12-08T15:13:27.538Z\",\n" +
-                "      \"id\": 0,\n" +
-                "      \"onlineLink\": \"string\",\n" +
-                "      \"startDate\": \"2022-12-08T15:13:27.538Z\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"description\": \"stringstringstringstringstringstringstring\",\n" +
-                "  \"creationDate\": \"2022-12-08\",\n" +
-                "  \"id\": 0,\n" +
-                "  \"isSubscribed\": true,\n" +
-                "  \"open\": true,\n" +
-                "  \"organizer\": {\n" +
-                "    \"id\": 0,\n" +
-                "    \"name\": \"string\",\n" +
-                "    \"organizerRating\": 0\n" +
-                "  },\n" +
-                "  \"tags\": [\n" +
-                "    {\n" +
-                "      \"id\": 0,\n" +
-                "      \"nameEn\": \"string\",\n" +
-                "      \"nameUa\": \"string\"\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"title\": \"string\",\n" +
-                "  \"titleImage\": \"string\"\n" +
-                "}";
+            "  \"additionalImages\": [\n" +
+            "    \"string\"\n" +
+            "  ],\n" +
+            "  \"dates\": [\n" +
+            "    {\n" +
+            "        \"coordinates\": {\n" +
+            "        \"streetUa\": \"string\",\n" +
+            "        \"streetEn\": \"string\",\n" +
+            "        \"houseNumber\": \"string\",\n" +
+            "        \"cityUa\": \"string\",\n" +
+            "        \"cityEn\": \"string\",\n" +
+            "        \"regionUa\": \"string\",\n" +
+            "        \"regionEn\": \"string\",\n" +
+            "        \"countryUa\": \"string\",\n" +
+            "        \"countryEn\": \"string\",\n" +
+            "        \"latitude\": 0,\n" +
+            "        \"longitude\": 0\n" +
+            "      },\n" +
+            "      \"finishDate\": \"2022-12-08T15:13:27.538Z\",\n" +
+            "      \"id\": 0,\n" +
+            "      \"onlineLink\": \"string\",\n" +
+            "      \"startDate\": \"2022-12-08T15:13:27.538Z\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"description\": \"stringstringstringstringstringstringstring\",\n" +
+            "  \"creationDate\": \"2022-12-08\",\n" +
+            "  \"id\": 0,\n" +
+            "  \"isSubscribed\": true,\n" +
+            "  \"open\": true,\n" +
+            "  \"organizer\": {\n" +
+            "    \"id\": 0,\n" +
+            "    \"name\": \"string\",\n" +
+            "    \"organizerRating\": 0\n" +
+            "  },\n" +
+            "  \"tags\": [\n" +
+            "    {\n" +
+            "      \"id\": 0,\n" +
+            "      \"nameEn\": \"string\",\n" +
+            "      \"nameUa\": \"string\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"title\": \"string\",\n" +
+            "  \"titleImage\": \"string\"\n" +
+            "}";
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);

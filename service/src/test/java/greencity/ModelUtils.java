@@ -1922,9 +1922,9 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                getAddress(), "url/"));
+            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1939,9 +1939,9 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-                ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.now(),
-                getAddress(), "url/"));
+            ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.now(),
+            getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;

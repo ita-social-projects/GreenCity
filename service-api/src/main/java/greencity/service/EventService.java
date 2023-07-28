@@ -50,7 +50,7 @@ public interface EventService {
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
-                                                   String longitude, String eventType);
+        String longitude, String eventType);
 
     /**
      * Method for getting page of events which were created user.
