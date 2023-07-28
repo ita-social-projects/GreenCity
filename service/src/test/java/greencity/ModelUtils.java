@@ -1907,7 +1907,41 @@ public class ModelUtils {
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, null));
+            null, "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOnlineEvent() {
+        Event event = new Event();
+
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                getAddress(), "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOfflineOnlineEventIfEventFinalDateToday() {
+        Event event = new Event();
+
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+                ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.now(),
+                getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -2118,8 +2152,8 @@ public class ModelUtils {
                 .build())
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 AddressDto.builder().build())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
