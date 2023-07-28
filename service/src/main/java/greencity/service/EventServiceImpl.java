@@ -163,7 +163,6 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> getOfflineUserEventsSortedByDate(User attender) {
         return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getDates().get(event.getDates().size() - 1).getAddress() != null)
             .filter(event -> Objects.requireNonNull(event.getDates().get(event.getDates().size() - 1)
                 .getAddress()).getLatitude() != 0
                 && Objects.requireNonNull(event.getDates().get(event.getDates().size() - 1)
@@ -190,21 +189,18 @@ public class EventServiceImpl implements EventService {
     }
 
     private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
-        return new Comparator<Event>() {
-            @Override
-            public int compare(Event e1, Event e2) {
-                double distance1 = calculateDistance(userLatitude, userLongitude,
-                    Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
-                        .getAddress()).getLatitude(),
-                    Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
-                        .getAddress()).getLongitude());
-                double distance2 = calculateDistance(userLatitude, userLongitude,
-                    Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
-                        .getAddress()).getLatitude(),
-                    Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
-                        .getAddress()).getLongitude());
-                return Double.compare(distance1, distance2);
-            }
+        return (e1, e2) -> {
+            double distance1 = calculateDistance(userLatitude, userLongitude,
+                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                    .getAddress()).getLatitude(),
+                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                    .getAddress()).getLongitude());
+            double distance2 = calculateDistance(userLatitude, userLongitude,
+                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                    .getAddress()).getLatitude(),
+                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                    .getAddress()).getLongitude());
+            return Double.compare(distance1, distance2);
         };
     }
 
