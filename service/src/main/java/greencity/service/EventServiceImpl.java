@@ -5,7 +5,13 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventVO;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
@@ -14,6 +20,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
+import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -23,6 +30,10 @@ import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -35,7 +46,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -156,17 +172,16 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> getOnlineUserEventsSortedByDate(User attender) {
         return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getDates().get(event.getDates().size() - 1).getOnlineLink() != null)
+            .filter(event -> event.getEventType().equals(EventType.ONLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDates())
             .collect(Collectors.toList());
     }
 
     private List<Event> getOfflineUserEventsSortedByDate(User attender) {
         return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> Objects.requireNonNull(event.getDates().get(event.getDates().size() - 1)
-                .getAddress()).getLatitude() != 0
-                && Objects.requireNonNull(event.getDates().get(event.getDates().size() - 1)
-                    .getAddress()).getLongitude() != 0)
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDates())
             .collect(Collectors.toList());
     }
@@ -174,28 +189,29 @@ public class EventServiceImpl implements EventService {
     private List<Event> getOfflineUserEventsSortedCloserToUserLocation(
         User attender, String userLatitude, String userLongitude) {
         List<Event> eventsFurtherSorted = getOfflineUserEventsSortedByDate(attender).stream()
-            .filter(event -> LocalDate.now().isBefore(event.getDates().get(event.getDates().size() - 1)
-                .getFinishDate().toLocalDate())
-                || LocalDate.now().isEqual(event.getDates().get(event.getDates().size() - 1)
-                    .getFinishDate().toLocalDate()))
+            .filter(this::isEventRelevant)
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
             .collect(Collectors.toList());
         List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
-            .filter(event -> LocalDate.now().isAfter(event.getDates().get(event.getDates().size() - 1)
-                .getFinishDate().toLocalDate()))
+            .filter(event -> !isEventRelevant(event))
             .collect(Collectors.toList());
         eventsFurtherSorted.addAll(eventsPassed);
         return eventsFurtherSorted;
     }
 
+    private boolean isEventRelevant(Event event) {
+        return findLastEventDateTime(event).isAfter(ZonedDateTime.now())
+            || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
+    }
+
     private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
         return (e1, e2) -> {
-            double distance1 = calculateDistance(userLatitude, userLongitude,
+            double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
                 Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
                     .getAddress()).getLatitude(),
                 Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
                     .getAddress()).getLongitude());
-            double distance2 = calculateDistance(userLatitude, userLongitude,
+            double distance2 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
                 Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
                     .getAddress()).getLatitude(),
                 Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
@@ -209,21 +225,12 @@ public class EventServiceImpl implements EventService {
             .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
     }
 
-    private static double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
-        double earthRadius = 6371.0;
-
-        double latitude1Rad = Math.toRadians(latitude1);
-        double longitude1Rad = Math.toRadians(longitude1);
-        double latitude2Rad = Math.toRadians(latitude2);
-        double longitude2Rad = Math.toRadians(longitude2);
-        double distanceLatitude = latitude2Rad - latitude1Rad;
-        double distanceLongitude = longitude2Rad - longitude1Rad;
-
-        double a = Math.sin(distanceLatitude / 2) * Math.sin(distanceLatitude / 2)
-            + Math.cos(latitude1Rad) * Math.cos(latitude2Rad) * Math.sin(distanceLongitude / 2)
-                * Math.sin(distanceLongitude / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return earthRadius * c;
+    private static double calculateDistanceBetweenUserAndEventCoordinates(
+        double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point userGeoPoint = geometryFactory.createPoint(new Coordinate(userLongitude, userLatitude));
+        Point eventGeoPoint = geometryFactory.createPoint(new Coordinate(eventLongitude, eventLatitude));
+        return userGeoPoint.distance(eventGeoPoint);
     }
 
     @Override
