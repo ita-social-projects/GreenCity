@@ -188,7 +188,9 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> getOfflineUserEventsSortedCloserToUserLocation(
         User attender, String userLatitude, String userLongitude) {
-        List<Event> eventsFurtherSorted = getOfflineUserEventsSortedByDate(attender).stream()
+        List<Event> eventsFurtherSorted = eventRepo.findAllByAttender(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .filter(this::isEventRelevant)
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
             .collect(Collectors.toList());
@@ -204,7 +206,7 @@ public class EventServiceImpl implements EventService {
             || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
     }
 
-    private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
+    private static Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
         return (e1, e2) -> {
             double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
                 Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
