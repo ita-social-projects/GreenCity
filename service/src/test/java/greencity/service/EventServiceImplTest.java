@@ -562,7 +562,6 @@ class EventServiceImplTest {
                 pageRequest, principal.getName(), "", "", eventType);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
 
-        assertEquals(eventsOnline.get(1).getEventType(), EventType.ONLINE);
         assertEquals(expected, actual);
     }
 
@@ -584,7 +583,6 @@ class EventServiceImplTest {
         for (int i = 0; i < events.size(); i++) {
             when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(expected.get(i));
         }
-        assertEquals(ModelUtils.getEvent().getEventType(), EventType.OFFLINE);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
@@ -641,7 +639,6 @@ class EventServiceImplTest {
                 pageRequest, principal.getName(), "", "", eventType);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
 
-        assertEquals(events.get(0).getEventType(), EventType.ONLINE_OFFLINE);
         assertEquals(expected.contains(ModelUtils.getEventDto()), actual.contains(ModelUtils.getEventDto()));
         assertEquals(expected.contains(ModelUtils.getSecondEventDto()), actual.contains(ModelUtils.getEventDto()));
     }

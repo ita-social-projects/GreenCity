@@ -206,7 +206,7 @@ public class EventServiceImpl implements EventService {
             || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
     }
 
-    private static Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
+    private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
         return (e1, e2) -> {
             double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
                 Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
@@ -222,12 +222,12 @@ public class EventServiceImpl implements EventService {
         };
     }
 
-    private static Comparator<Event> getComparatorByDates() {
+    private Comparator<Event> getComparatorByDates() {
         return (e1, e2) -> e2.getDates().get(e2.getDates().size() - 1).getStartDate()
             .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
     }
 
-    private static double calculateDistanceBetweenUserAndEventCoordinates(
+    private double calculateDistanceBetweenUserAndEventCoordinates(
         double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point userGeoPoint = geometryFactory.createPoint(new Coordinate(userLongitude, userLatitude));
