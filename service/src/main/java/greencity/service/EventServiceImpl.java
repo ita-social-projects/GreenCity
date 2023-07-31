@@ -192,8 +192,8 @@ public class EventServiceImpl implements EventService {
             .filter(event -> event.getEventType().equals(EventType.OFFLINE)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
-                .filter(this::isEventRelevant)
-                .collect(Collectors.toList());
+            .filter(this::isEventRelevant)
+            .collect(Collectors.toList());
         List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
             .filter(event -> !isEventRelevant(event))
             .collect(Collectors.toList());
