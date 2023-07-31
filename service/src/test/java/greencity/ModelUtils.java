@@ -1894,7 +1894,6 @@ public class ModelUtils {
 
     public static Event getEventWithoutAddress() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
@@ -1915,7 +1914,6 @@ public class ModelUtils {
 
     public static Event getOnlineEvent() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
@@ -1932,7 +1930,6 @@ public class ModelUtils {
 
     public static Event getOfflineOnlineEventIfEventFinalDateToday() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
