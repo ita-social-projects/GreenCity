@@ -162,9 +162,8 @@ public class EventServiceImpl implements EventService {
         if (eventType.equalsIgnoreCase("OFFLINE")) {
             if (!userLatitude.isBlank() && !userLongitude.isBlank()) {
                 return getOfflineUserEventsSortedCloserToUserLocation(attender, userLatitude, userLongitude);
-            } else {
-                return getOfflineUserEventsSortedByDate(attender);
             }
+            return getOfflineUserEventsSortedByDate(attender);
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
             .collect(Collectors.toList());

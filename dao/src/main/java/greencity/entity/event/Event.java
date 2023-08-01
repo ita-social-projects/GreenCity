@@ -10,18 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -71,6 +60,7 @@ public class Event {
     private Set<User> followers;
 
     @NonNull
+    @OrderBy("finishDate ASC")
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventDateLocation> dates = new ArrayList<>();
 
@@ -99,10 +89,10 @@ public class Event {
         if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink())
             && Objects.nonNull(date.getAddress()))) {
             return EventType.ONLINE_OFFLINE;
-        } else if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
-            return EventType.ONLINE;
-        } else {
-            return EventType.OFFLINE;
         }
+        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
+            return EventType.ONLINE;
+        }
+        return EventType.OFFLINE;
     }
 }
