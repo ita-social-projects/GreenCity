@@ -69,7 +69,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
-        MultipartFile[] images) {
+                         MultipartFile[] images) {
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
@@ -89,11 +89,11 @@ public class EventServiceImpl implements EventService {
         }
 
         List<TagVO> tagVOs = tagService.findTagsWithAllTranslationsByNamesAndType(
-            addEventDtoRequest.getTags(), TagType.EVENT);
+                addEventDtoRequest.getTags(), TagType.EVENT);
 
         toSave.setTags(modelMapper.map(tagVOs,
-            new TypeToken<List<Tag>>() {
-            }.getType()));
+                new TypeToken<List<Tag>>() {
+                }.getType()));
 
         return modelMapper.map(eventRepo.save(toSave), EventDto.class);
     }
@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
         eventImages.add(toDelete.getTitleImage());
         if (toDelete.getAdditionalImages() != null) {
             eventImages.addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink)
-                .collect(Collectors.toList()));
+                    .collect(Collectors.toList()));
         }
 
         if (toDelete.getOrganizer().getId().equals(user.getId()) || user.getRole() == Role.ROLE_ADMIN) {
@@ -120,12 +120,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         EventDto eventDto = modelMapper.map(event, EventDto.class);
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             eventDto.setIsSubscribed(event.getAttenders().stream()
-                .anyMatch(attender -> attender.getId().equals(currentUser.getId())));
+                    .anyMatch(attender -> attender.getId().equals(currentUser.getId())));
         }
         return eventDto;
     }
@@ -144,7 +144,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAllUserEvents(
-        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
+            Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(events, page, events.size());
@@ -154,80 +154,79 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> sortUserEventsByEventType(
-        String eventType, User attender, String userLatitude, String userLongitude) {
+            String eventType, User attender, String userLatitude, String userLongitude) {
         if (eventType.equalsIgnoreCase("ONLINE")) {
             return getOnlineUserEventsSortedByDate(attender);
         }
 
         if (eventType.equalsIgnoreCase("OFFLINE")) {
-            if (!userLatitude.isBlank() && !userLongitude.isBlank()) {
-                return getOfflineUserEventsSortedCloserToUserLocation(attender, userLatitude, userLongitude);
-            }
-            return getOfflineUserEventsSortedByDate(attender);
+            return (!userLatitude.isBlank() && !userLongitude.isBlank()) ?
+                    getOfflineUserEventsSortedCloserToUserLocation(attender, userLatitude, userLongitude) :
+                    getOfflineUserEventsSortedByDate(attender);
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     private List<Event> getOnlineUserEventsSortedByDate(User attender) {
         return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.ONLINE)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDates())
-            .collect(Collectors.toList());
+                .filter(event -> event.getEventType().equals(EventType.ONLINE)
+                        || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+                .sorted(getComparatorByDates())
+                .collect(Collectors.toList());
     }
 
     private List<Event> getOfflineUserEventsSortedByDate(User attender) {
         return eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDates())
-            .collect(Collectors.toList());
+                .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                        || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+                .sorted(getComparatorByDates())
+                .collect(Collectors.toList());
     }
 
     private List<Event> getOfflineUserEventsSortedCloserToUserLocation(
-        User attender, String userLatitude, String userLongitude) {
+            User attender, String userLatitude, String userLongitude) {
         List<Event> eventsFurtherSorted = eventRepo.findAllByAttender(attender.getId()).stream()
-            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
-                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
-            .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
-            .filter(this::isEventRelevant)
-            .collect(Collectors.toList());
+                .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                        || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+                .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
+                .filter(this::isEventRelevant)
+                .collect(Collectors.toList());
         List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
-            .filter(event -> !isEventRelevant(event))
-            .collect(Collectors.toList());
+                .filter(event -> !isEventRelevant(event))
+                .collect(Collectors.toList());
         eventsFurtherSorted.addAll(eventsPassed);
         return eventsFurtherSorted;
     }
 
     private boolean isEventRelevant(Event event) {
         return findLastEventDateTime(event).isAfter(ZonedDateTime.now())
-            || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
+                || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
     }
 
     private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
         return (e1, e2) -> {
             double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
-                    .getAddress()).getLatitude(),
-                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
-                    .getAddress()).getLongitude());
+                    Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                            .getAddress()).getLatitude(),
+                    Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                            .getAddress()).getLongitude());
             double distance2 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
-                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
-                    .getAddress()).getLatitude(),
-                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
-                    .getAddress()).getLongitude());
+                    Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                            .getAddress()).getLatitude(),
+                    Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                            .getAddress()).getLongitude());
             return Double.compare(distance1, distance2);
         };
     }
 
     private Comparator<Event> getComparatorByDates() {
         return (e1, e2) -> e2.getDates().get(e2.getDates().size() - 1).getStartDate()
-            .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
+                .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
     }
 
     private double calculateDistanceBetweenUserAndEventCoordinates(
-        double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
+            double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point userGeoPoint = geometryFactory.createPoint(new Coordinate(userLongitude, userLatitude));
         Point eventGeoPoint = geometryFactory.createPoint(new Coordinate(eventLongitude, eventLatitude));
@@ -254,43 +253,43 @@ public class EventServiceImpl implements EventService {
 
     private void setSubscribes(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
         List<Long> eventIds = events.stream()
-            .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
-                .contains(user.getId()))
-            .map(Event::getId)
-            .collect(Collectors.toList());
+                .filter(event -> event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
+                        .contains(user.getId()))
+                .map(Event::getId)
+                .collect(Collectors.toList());
         eventDtos.getPage().forEach(eventDto -> eventDto.setIsSubscribed(eventIds.contains(eventDto.getId())));
     }
 
     private void setFollowers(Page<Event> events, PageableAdvancedDto<EventDto> eventDtos, User user) {
         List<Long> eventIds = events.stream()
-            .filter(event -> event.getFollowers().stream().map(User::getId).collect(Collectors.toList())
-                .contains(user.getId()))
-            .map(Event::getId)
-            .collect(Collectors.toList());
+                .filter(event -> event.getFollowers().stream().map(User::getId).collect(Collectors.toList())
+                        .contains(user.getId()))
+                .map(Event::getId)
+                .collect(Collectors.toList());
         eventDtos.getPage().forEach(eventDto -> eventDto.setIsFavorite(eventIds.contains(eventDto.getId())));
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = eventsPage.stream()
-            .map(event -> modelMapper.map(event, EventDto.class))
-            .collect(Collectors.toList());
+                .map(event -> modelMapper.map(event, EventDto.class))
+                .collect(Collectors.toList());
 
         return new PageableAdvancedDto<>(
-            eventDtos,
-            eventsPage.getTotalElements(),
-            eventsPage.getPageable().getPageNumber(),
-            eventsPage.getTotalPages(),
-            eventsPage.getNumber(),
-            eventsPage.hasPrevious(),
-            eventsPage.hasNext(),
-            eventsPage.isFirst(),
-            eventsPage.isLast());
+                eventDtos,
+                eventsPage.getTotalElements(),
+                eventsPage.getPageable().getPageNumber(),
+                eventsPage.getTotalPages(),
+                eventsPage.getNumber(),
+                eventsPage.hasPrevious(),
+                eventsPage.hasNext(),
+                eventsPage.isFirst(),
+                eventsPage.isLast());
     }
 
     @Override
     public void addAttender(Long eventId, String email) {
         Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
         checkAttenderToJoinTheEvent(event, currentUser);
         event.getAttenders().add(currentUser);
@@ -301,7 +300,7 @@ public class EventServiceImpl implements EventService {
         if (Objects.equals(event.getOrganizer().getId(), user.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_EVENT_ORGANIZER);
         } else if (!event.isOpen()
-            && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
+                && userRepo.findUserByIdAndByFriendId(user.getId(), event.getOrganizer().getId()).isEmpty()) {
             throw new BadRequestException(ErrorMessage.YOU_CANNOT_SUBSCRIBE_TO_CLOSE_EVENT);
         } else if (event.getAttenders().stream().anyMatch(a -> a.getId().equals(user.getId()))) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_SUBSCRIBED_ON_EVENT);
@@ -311,11 +310,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public void removeAttender(Long eventId, String email) {
         Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
-            .collect(Collectors.toSet()));
+                .collect(Collectors.toSet()));
 
         eventRepo.save(event);
     }
@@ -323,10 +322,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public void addToFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
         User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         if (event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES);
@@ -339,19 +338,19 @@ public class EventServiceImpl implements EventService {
     @Override
     public void removeFromFavorites(Long eventId, String email) {
         Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
 
         User currentUser = userRepo.findByEmail(email)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
 
         if (!event.getFollowers().contains(currentUser)) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_FAVORITES);
         }
 
         event.setFollowers(event.getAttenders()
-            .stream()
-            .filter(user -> !user.getId().equals(currentUser.getId()))
-            .collect(Collectors.toSet()));
+                .stream()
+                .filter(user -> !user.getId().equals(currentUser.getId()))
+                .collect(Collectors.toSet()));
         eventRepo.save(event);
     }
 
@@ -370,11 +369,11 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
         Event toUpdate = eventRepo.findById(eventDto.getId())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
-            && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
+                && !organizer.getId().equals(toUpdate.getOrganizer().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
 
@@ -392,18 +391,18 @@ public class EventServiceImpl implements EventService {
     @Override
     public void rateEvent(Long eventId, String email, int grade) {
         Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (findLastEventDateTime(event).isAfter(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_FINISHED);
         }
         if (!event.getAttenders().stream().map(User::getId).collect(Collectors.toList())
-            .contains(currentUser.getId())) {
+                .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.YOU_ARE_NOT_EVENT_SUBSCRIBER);
         }
         if (event.getEventGrades().stream().map(eventGrade -> eventGrade.getUser().getId()).collect(Collectors.toList())
-            .contains(currentUser.getId())) {
+                .contains(currentUser.getId())) {
             throw new BadRequestException(ErrorMessage.HAVE_ALREADY_RATED);
         }
 
@@ -411,21 +410,21 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
 
         userService.updateEventOrganizerRating(event.getOrganizer().getId(),
-            calculateUserEventOrganizerRating(event.getOrganizer()));
+                calculateUserEventOrganizerRating(event.getOrganizer()));
     }
 
     @Override
     public Set<EventAttenderDto> getAllEventAttenders(Long eventId) {
         Event event =
-            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+                eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         return event.getAttenders().stream().map(attender -> modelMapper.map(attender, EventAttenderDto.class))
-            .collect(Collectors.toSet());
+                .collect(Collectors.toSet());
     }
 
     @Override
     public EventVO findById(Long eventId) {
         Event event = eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + eventId));
         return modelMapper.map(event, EventVO.class);
     }
 
@@ -459,9 +458,9 @@ public class EventServiceImpl implements EventService {
 
         if (updateEventDto.getTags() != null) {
             toUpdate.setTags(modelMapper.map(tagService
-                .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
-                new TypeToken<List<Tag>>() {
-                }.getType()));
+                            .findTagsWithAllTranslationsByNamesAndType(updateEventDto.getTags(), TagType.EVENT),
+                    new TypeToken<List<Tag>>() {
+                    }.getType()));
         }
 
         updateImages(toUpdate, updateEventDto, images);
@@ -470,12 +469,12 @@ public class EventServiceImpl implements EventService {
             addAddressToLocation(updateEventDto.getDatesLocations());
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
-                .map(d -> modelMapper.map(d, EventDateLocation.class))
-                .map(d -> {
-                    d.setEvent(toUpdate);
-                    return d;
-                })
-                .collect(Collectors.toList()));
+                    .map(d -> modelMapper.map(d, EventDateLocation.class))
+                    .map(d -> {
+                        d.setEvent(toUpdate);
+                        return d;
+                    })
+                    .collect(Collectors.toList()));
         }
     }
 
@@ -501,7 +500,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventDto.getAdditionalImages() != null) {
             updateEventDto.getAdditionalImages().forEach(img -> toUpdate
-                .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+                    .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
         } else {
             toUpdate.setAdditionalImages(null);
         }
@@ -513,8 +512,8 @@ public class EventServiceImpl implements EventService {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
             if (updateEventDto.getAdditionalImages() != null) {
                 toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
-                    .map(url -> EventImages.builder().event(toUpdate).link(url).build())
-                    .collect(Collectors.toList()));
+                        .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                        .collect(Collectors.toList()));
             } else {
                 toUpdate.setAdditionalImages(null);
             }
@@ -543,7 +542,7 @@ public class EventServiceImpl implements EventService {
         }
         if (!additionalImagesStr.isEmpty()) {
             toUpdate.setAdditionalImages(additionalImagesStr.stream().map(url -> EventImages.builder()
-                .event(toUpdate).link(url).build()).collect(Collectors.toList()));
+                    .event(toUpdate).link(url).build()).collect(Collectors.toList()));
         } else {
             toUpdate.setAdditionalImages(null);
         }
@@ -551,18 +550,18 @@ public class EventServiceImpl implements EventService {
 
     private void addAddressToLocation(List<EventDateLocationDto> eventDateLocationDtos) {
         eventDateLocationDtos
-            .stream()
-            .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
-            .forEach(eventDateLocationDto -> {
-                AddressDto addressDto = eventDateLocationDto.getCoordinates();
-                AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
-                    new LatLng(addressDto.getLatitude(), addressDto.getLongitude()));
-                eventDateLocationDto.setCoordinates(modelMapper.map(response, AddressDto.class));
-            });
+                .stream()
+                .filter(eventDateLocationDto -> Objects.nonNull(eventDateLocationDto.getCoordinates()))
+                .forEach(eventDateLocationDto -> {
+                    AddressDto addressDto = eventDateLocationDto.getCoordinates();
+                    AddressLatLngResponse response = googleApiService.getResultFromGeoCodeByCoordinates(
+                            new LatLng(addressDto.getLatitude(), addressDto.getLongitude()));
+                    eventDateLocationDto.setCoordinates(modelMapper.map(response, AddressDto.class));
+                });
     }
 
     private ZonedDateTime findLastEventDateTime(Event event) {
         return Collections
-            .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
+                .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 }
