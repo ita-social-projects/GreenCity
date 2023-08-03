@@ -30,6 +30,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -160,8 +161,8 @@ public class EventServiceImpl implements EventService {
         }
 
         if (eventType.equalsIgnoreCase("OFFLINE")) {
-            return (!userLatitude.isBlank() && !userLongitude.isBlank())
-                ? getOfflineUserEventsSortedCloserToUserLocation(attender, userLatitude, userLongitude)
+            return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
+                ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                 : getOfflineUserEventsSortedByDate(attender);
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
@@ -184,24 +185,19 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
     }
 
-    private List<Event> getOfflineUserEventsSortedCloserToUserLocation(
+    private List<Event> getOfflineUserEventsSortedByUserLocation(
         User attender, String userLatitude, String userLongitude) {
         List<Event> eventsFurtherSorted = eventRepo.findAllByAttender(attender.getId()).stream()
             .filter(event -> event.getEventType().equals(EventType.OFFLINE)
                 || event.getEventType().equals(EventType.ONLINE_OFFLINE))
             .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
-            .filter(this::isEventRelevant)
+            .filter(Event::isRelevant)
             .collect(Collectors.toList());
         List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
-            .filter(event -> !isEventRelevant(event))
+            .filter(event -> !event.isRelevant())
             .collect(Collectors.toList());
         eventsFurtherSorted.addAll(eventsPassed);
         return eventsFurtherSorted;
-    }
-
-    private boolean isEventRelevant(Event event) {
-        return findLastEventDateTime(event).isAfter(ZonedDateTime.now())
-            || findLastEventDateTime(event).isEqual(ZonedDateTime.now());
     }
 
     private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {

@@ -24,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.OrderBy;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -98,13 +99,24 @@ public class Event {
      * @author Olena Sotnik.
      */
     public EventType getEventType() {
-        if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink())
+        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink())
             && Objects.nonNull(date.getAddress()))) {
             return EventType.ONLINE_OFFLINE;
         }
-        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
+        if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
             return EventType.ONLINE;
         }
         return EventType.OFFLINE;
+    }
+
+    /**
+     * Method for checking if event is Relevant.
+     *
+     * @return boolean: true if relevant, false if event passed.
+     * @author Olena Sotnik.
+     */
+    public boolean isRelevant() {
+        return dates.get(dates.size() - 1).getFinishDate().isAfter(ZonedDateTime.now())
+            || dates.get(dates.size() - 1).getFinishDate().isEqual(ZonedDateTime.now());
     }
 }
