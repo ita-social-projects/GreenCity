@@ -1881,11 +1881,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1922,7 +1922,7 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2023, 10, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), "url/"));
+            null, "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -2223,6 +2223,25 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 AddressDto.builder().build())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static EventDto getEventOfflineDto() {
+        return EventDto.builder()
+            .id(1L)
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                null,
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
