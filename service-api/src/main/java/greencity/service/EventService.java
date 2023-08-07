@@ -49,7 +49,8 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email);
+    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
+        String longitude, String eventType);
 
     /**
      * Method for getting page of events which were created user.
@@ -87,7 +88,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     *
      * @author Anton Bondar.
      */
     void addToFavorites(Long eventId, String email);
@@ -97,7 +97,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     *
      * @author Anton Bondar.
      */
     void removeFromFavorites(Long eventId, String email);
@@ -114,7 +113,6 @@ public interface EventService {
      * Update Event.
      *
      * @param email    - user that edits event
-     *
      * @param eventDto - new event information
      * @param images   - new images of event
      * @return EventDto

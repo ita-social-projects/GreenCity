@@ -130,6 +130,7 @@ class EventsControllerTest {
     void getUserEventsTest() {
         int pageNumber = 0;
         int pageSize = 20;
+        String eventType = "";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
@@ -139,16 +140,17 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAllUserEvents(pageable, principal.getName())).thenReturn(pageableAdvancedDto);
+        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", eventType))
+            .thenReturn(pageableAdvancedDto);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents")
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents?eventType=&userLatitude=&userLongitude=")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .principal(principal))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllUserEvents(pageable, principal.getName());
+        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", eventType);
     }
 
     @Test

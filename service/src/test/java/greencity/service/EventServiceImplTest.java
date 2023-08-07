@@ -37,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
@@ -48,6 +49,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import static greencity.ModelUtils.TEST_USER_VO;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -102,8 +106,8 @@ class EventServiceImplTest {
         List<Tag> tags = ModelUtils.getEventTags();
 
         when(modelMapper.map(addEventDtoRequest, Event.class)).thenReturn(event);
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -137,8 +141,8 @@ class EventServiceImplTest {
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
         List<Tag> tags = ModelUtils.getEventTags();
         when(modelMapper.map(addEventDtoWithoutCoordinates, Event.class)).thenReturn(eventWithoutCoordinates);
-        when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.TEST_USER_VO);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(user);
+        when(restClient.findByEmail(user.getEmail())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
         when(eventRepo.save(eventWithoutCoordinates)).thenReturn(eventWithoutCoordinates);
         when(modelMapper.map(eventWithoutCoordinates, EventDto.class)).thenReturn(eventDtoWithoutCoordinatesDto);
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
@@ -162,8 +166,8 @@ class EventServiceImplTest {
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
         when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         EventDto actualEvent = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
@@ -196,8 +200,8 @@ class EventServiceImplTest {
         String userEmail = ModelUtils.getUser().getEmail();
 
         when(eventRepo.findById(any())).thenReturn(Optional.of(actualEvent));
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
 
         assertThrows(BadRequestException.class,
             () -> eventService.update(eventToUpdateDto, userEmail, null));
@@ -316,9 +320,9 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
 
-        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
 
@@ -406,8 +410,8 @@ class EventServiceImplTest {
         Event event = ModelUtils.getEvent();
         EventDto eventDto = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
         EventDto actual = eventService.getEvent(1L, principal);
@@ -415,25 +419,185 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllUserEvents() {
-        List<Event> events = List.of(ModelUtils.getEvent());
+    void getAllUserOfflineEventsWithoutUserGeoPosition() {
+        String eventType = "OFFLINE";
+        List<Event> eventsOffline = List.of(ModelUtils.getEvent());
         EventDto expected = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-
-        when(eventRepo.findAllByAttender(pageRequest, ModelUtils.TEST_USER_VO.getId()))
-            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
-
-        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(eventsOffline));
+        when(modelMapper.map(eventsOffline.get(0), EventDto.class)).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
-            eventService.getAllUserEvents(pageRequest, principal.getName());
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), "", "", eventType);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
 
         assertEquals(expected, actual);
+
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(1)).findAllByAttender(TEST_USER_VO.getId());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(eventsOffline.get(0), EventDto.class);
+    }
+
+    @Test
+    void getAllUserOfflineEventsWithUserGeoPositionIfEventFinishesToday() {
+        String eventType = "OFFLINE";
+        String userLatitude = "50.42929";
+        String userLongitude = "30.53806";
+        List<Event> eventsOffline = List.of(ModelUtils.getOfflineOnlineEventIfEventFinalDateToday());
+        EventDto expected = ModelUtils.getEventDto();
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(eventsOffline));
+        when(modelMapper.map(eventsOffline.get(0), EventDto.class)).thenReturn(expected);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), userLatitude, userLongitude, eventType);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertSame(expected, actual);
+
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(2)).findAllByAttender(TEST_USER_VO.getId());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(eventsOffline.get(0), EventDto.class);
+
+    }
+
+    @Test
+    void getAllUserEventsWithoutParams() {
+        String eventType = "";
+        List<Event> events = List.of(ModelUtils.getOnlineEvent());
+        List<EventDto> expected = List.of(ModelUtils.getEventDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(events));
+        when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected.get(0));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), "", "", eventType);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+
+        assertEquals(expected.size(), actual.size());
+
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(1)).findAllByAttender(TEST_USER_VO.getId());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(events.get(0), EventDto.class);
+    }
+
+    @Test
+    void getAllUserOnlineEvents() {
+        String eventType = "ONLINE";
+        List<Event> eventsOnline = List.of(ModelUtils.getOnlineEvent(),
+            ModelUtils.getSecondEvent());
+        List<EventDto> expected = List.of(ModelUtils.getEventDto(),
+            ModelUtils.getEventWithoutAddressDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(eventsOnline));
+
+        for (int i = 0; i < eventsOnline.size(); i++) {
+            when(modelMapper.map(eventsOnline.get(i), EventDto.class)).thenReturn(expected.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), "", "", eventType);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+
+        assertEquals(expected.get(0), actual.get(0));
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(1)).findAllByAttender(TEST_USER_VO.getId());
+
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(eventsOnline.get(0), EventDto.class);
+        verify(modelMapper).map(eventsOnline.get(1), EventDto.class);
+    }
+
+    @Test
+    void getAllUserOfflineEventsSortedByCoordinates() {
+        String eventType = "OFFLINE";
+        String userLatitude = "50.42929";
+        String userLongitude = "30.53806";
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getOfflineOnlineEventIfEventFinalDateToday());
+        List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getEventOfflineDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(events));
+
+        for (int i = 0; i < events.size(); i++) {
+            when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(expected.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), userLatitude, userLongitude, eventType);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+
+        assertEquals(expected, actual);
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(2)).findAllByAttender(TEST_USER_VO.getId());
+
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(events.get(0), EventDto.class);
+        verify(modelMapper).map(events.get(1), EventDto.class);
+    }
+
+    @Test
+    void getAllUserOfflineEventsSortedByDates() {
+        String eventType = "OFFLINE";
+        List<Event> events = List.of(ModelUtils.getSecondEvent(), ModelUtils.getCloseEvent());
+        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto(), ModelUtils.getEventOfflineDto());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(eventRepo.findAllByAttender(TEST_USER_VO.getId()))
+            .thenReturn(new ArrayList<>(events));
+
+        for (int i = 0; i < events.size(); i++) {
+            when(modelMapper.map(events.get(i), EventDto.class)).thenReturn(expected.get(i));
+        }
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllUserEvents(
+                pageRequest, principal.getName(), "", "", eventType);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+
+        assertTrue(expected.contains(actual.get(0)));
+        assertTrue(expected.contains(actual.get(1)));
+
+        verify(restClient, times(1)).findByEmail(principal.getName());
+        verify(eventRepo, times(1)).findAllByAttender(TEST_USER_VO.getId());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+        verify(modelMapper).map(events.get(0), EventDto.class);
+        verify(modelMapper).map(events.get(1), EventDto.class);
     }
 
     @Test
@@ -443,10 +607,10 @@ class EventServiceImplTest {
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 2);
 
-        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
 
-        when(eventRepo.findEventsByOrganizer(pageRequest, ModelUtils.TEST_USER_VO.getId()))
+        when(eventRepo.findEventsByOrganizer(pageRequest, TEST_USER_VO.getId()))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
 
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
@@ -464,7 +628,7 @@ class EventServiceImplTest {
         List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, events.size());
-        UserVO userVO = ModelUtils.TEST_USER_VO;
+        UserVO userVO = TEST_USER_VO;
         User user = ModelUtils.getUser();
 
         when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
@@ -490,7 +654,7 @@ class EventServiceImplTest {
         List<EventDto> eventDtos = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, events.size());
-        UserVO userVO = ModelUtils.TEST_USER_VO;
+        UserVO userVO = TEST_USER_VO;
         User user = ModelUtils.getUser();
 
         events.forEach(event -> {
@@ -522,7 +686,7 @@ class EventServiceImplTest {
         List<EventDto> eventDtos = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, events.size());
-        UserVO userVO = ModelUtils.TEST_USER_VO;
+        UserVO userVO = TEST_USER_VO;
         User user = ModelUtils.getUser();
 
         events.forEach(event -> event.getAttenders().add(user));
@@ -550,7 +714,7 @@ class EventServiceImplTest {
         int eventSize = events.size();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, eventSize + 2);
-        UserVO userVO = ModelUtils.TEST_USER_VO;
+        UserVO userVO = TEST_USER_VO;
         User user = ModelUtils.getUser();
 
         when(restClient.findByEmail(principal.getName())).thenReturn(userVO);
@@ -830,8 +994,8 @@ class EventServiceImplTest {
         when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events.get(0), EventDto.class)).thenReturn(expected);
-        when(modelMapper.map(ModelUtils.TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(restClient.findByEmail(principal.getName())).thenReturn(ModelUtils.TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);

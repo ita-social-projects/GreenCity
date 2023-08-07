@@ -20,6 +20,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
+import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -29,9 +30,15 @@ import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,12 +47,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,8 +106,8 @@ public class EventServiceImpl implements EventService {
         List<String> eventImages = new ArrayList<>();
         eventImages.add(toDelete.getTitleImage());
         if (toDelete.getAdditionalImages() != null) {
-            eventImages
-                .addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink).collect(Collectors.toList()));
+            eventImages.addAll(toDelete.getAdditionalImages().stream().map(EventImages::getLink)
+                .collect(Collectors.toList()));
         }
 
         if (toDelete.getOrganizer().getId().equals(user.getId()) || user.getRole() == Role.ROLE_ADMIN) {
@@ -137,12 +144,89 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email) {
+    public PageableAdvancedDto<EventDto> getAllUserEvents(
+        Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
-        Page<Event> events = eventRepo.findAllByAttender(page, attender.getId());
-        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
-        setSubscribes(events, eventDtos, attender);
+        List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
+        Page<Event> eventPage = new PageImpl<>(events, page, events.size());
+        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(eventPage);
+        setSubscribes(eventPage, eventDtos, attender);
         return eventDtos;
+    }
+
+    private List<Event> sortUserEventsByEventType(
+        String eventType, User attender, String userLatitude, String userLongitude) {
+        if (eventType.equalsIgnoreCase("ONLINE")) {
+            return getOnlineUserEventsSortedByDate(attender);
+        }
+
+        if (eventType.equalsIgnoreCase("OFFLINE")) {
+            return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
+                ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
+                : getOfflineUserEventsSortedByDate(attender);
+        }
+        return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getOnlineUserEventsSortedByDate(User attender) {
+        return eventRepo.findAllByAttender(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.ONLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+            .sorted(getComparatorByDates())
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getOfflineUserEventsSortedByDate(User attender) {
+        return eventRepo.findAllByAttender(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+            .sorted(getComparatorByDates())
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getOfflineUserEventsSortedByUserLocation(
+        User attender, String userLatitude, String userLongitude) {
+        List<Event> eventsFurtherSorted = eventRepo.findAllByAttender(attender.getId()).stream()
+            .filter(event -> event.getEventType().equals(EventType.OFFLINE)
+                || event.getEventType().equals(EventType.ONLINE_OFFLINE))
+            .sorted(getComparatorByDistance(Double.parseDouble(userLatitude), Double.parseDouble(userLongitude)))
+            .filter(Event::isRelevant)
+            .collect(Collectors.toList());
+        List<Event> eventsPassed = getOfflineUserEventsSortedByDate(attender).stream()
+            .filter(event -> !event.isRelevant())
+            .collect(Collectors.toList());
+        eventsFurtherSorted.addAll(eventsPassed);
+        return eventsFurtherSorted;
+    }
+
+    private Comparator<Event> getComparatorByDistance(final double userLatitude, final double userLongitude) {
+        return (e1, e2) -> {
+            double distance1 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
+                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                    .getAddress()).getLatitude(),
+                Objects.requireNonNull(e1.getDates().get(e1.getDates().size() - 1)
+                    .getAddress()).getLongitude());
+            double distance2 = calculateDistanceBetweenUserAndEventCoordinates(userLatitude, userLongitude,
+                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                    .getAddress()).getLatitude(),
+                Objects.requireNonNull(e2.getDates().get(e2.getDates().size() - 1)
+                    .getAddress()).getLongitude());
+            return Double.compare(distance1, distance2);
+        };
+    }
+
+    private Comparator<Event> getComparatorByDates() {
+        return (e1, e2) -> e2.getDates().get(e2.getDates().size() - 1).getStartDate()
+            .compareTo(e1.getDates().get(e1.getDates().size() - 1).getStartDate());
+    }
+
+    private double calculateDistanceBetweenUserAndEventCoordinates(
+        double userLatitude, double userLongitude, double eventLatitude, double eventLongitude) {
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point userGeoPoint = geometryFactory.createPoint(new Coordinate(userLongitude, userLatitude));
+        Point eventGeoPoint = geometryFactory.createPoint(new Coordinate(eventLongitude, eventLatitude));
+        return userGeoPoint.distance(eventGeoPoint);
     }
 
     @Override
@@ -280,8 +364,8 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDto update(UpdateEventDto eventDto, String email, MultipartFile[] images) {
-        Event toUpdate =
-            eventRepo.findById(eventDto.getId()).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+        Event toUpdate = eventRepo.findById(eventDto.getId())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
 
         if (organizer.getRole() != Role.ROLE_ADMIN && organizer.getRole() != Role.ROLE_MODERATOR
