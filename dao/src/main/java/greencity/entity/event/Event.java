@@ -2,6 +2,7 @@ package greencity.entity.event;
 
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.EventType;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,11 +22,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.OrderBy;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
 
 @Entity
 @Table(name = "events")
@@ -57,20 +61,19 @@ public class Event {
     private String description;
 
     @ManyToMany
-    @JoinTable(
-        name = "events_attenders",
+    @JoinTable(name = "events_attenders",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attenders = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "events_followers",
+    @JoinTable(name = "events_followers",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> followers;
 
     @NonNull
+    @OrderBy("finishDate ASC")
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventDateLocation> dates = new ArrayList<>();
 
@@ -81,12 +84,39 @@ public class Event {
     private boolean isOpen = true;
 
     @ManyToMany
-    @JoinTable(
-        name = "events_tags",
+    @JoinTable(name = "events_tags",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGrade> eventGrades = new ArrayList<>();
+
+    /**
+     * Method for getting an event type.
+     *
+     * @return {@link EventType} instance.
+     * @author Olena Sotnik.
+     */
+    public EventType getEventType() {
+        if (dates.stream().anyMatch(date -> Objects.nonNull(date.getOnlineLink())
+            && Objects.nonNull(date.getAddress()))) {
+            return EventType.ONLINE_OFFLINE;
+        }
+        if (dates.stream().allMatch(date -> Objects.nonNull(date.getOnlineLink()))) {
+            return EventType.ONLINE;
+        }
+        return EventType.OFFLINE;
+    }
+
+    /**
+     * Method for checking if event is Relevant.
+     *
+     * @return boolean: true if relevant, false if event passed.
+     * @author Olena Sotnik.
+     */
+    public boolean isRelevant() {
+        return dates.get(dates.size() - 1).getFinishDate().isAfter(ZonedDateTime.now())
+            || dates.get(dates.size() - 1).getFinishDate().isEqual(ZonedDateTime.now());
+    }
 }

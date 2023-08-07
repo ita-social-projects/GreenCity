@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -145,10 +146,11 @@ public class EventsController {
     }
 
     /**
-     * Method for getting pages of users events.
+     * Method for getting pages of users events sorted by dates if online and by
+     * closeness to coordinates of User if offline.
      *
      * @return a page of {@link EventDto} instance.
-     * @author Danylo Hlysnkyi.
+     * @author Danylo Hlysnkyi, Olena Sotnik.
      */
     @ApiOperation(value = "Get all users events")
     @ApiResponses(value = {
@@ -158,9 +160,13 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping("/myEvents")
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(@ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(pageable, principal.getName()));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal,
+        @RequestParam(required = false) String eventType,
+        @RequestParam(required = false) String userLatitude,
+        @RequestParam(required = false) String userLongitude) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(
+            pageable, principal.getName(), userLatitude, userLongitude, eventType));
     }
 
     /**

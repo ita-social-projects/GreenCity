@@ -1881,11 +1881,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1894,7 +1894,6 @@ public class ModelUtils {
 
     public static Event getEventWithoutAddress() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
@@ -1907,7 +1906,39 @@ public class ModelUtils {
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, null));
+            null, "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOnlineEvent() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2023, 10, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null, "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOfflineOnlineEventIfEventFinalDateToday() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.now(),
+            getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1962,8 +1993,8 @@ public class ModelUtils {
 
     public static AddressDto getAddressDtoWithNullCityUa() {
         return AddressDto.builder()
-            .latitude(13.4567236)
-            .longitude(98.2354469)
+            .latitude(50.4567236)
+            .longitude(30.2354469)
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
@@ -2004,6 +2035,38 @@ public class ModelUtils {
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa(null)
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getSecondAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(46.4567236)
+            .longitude(28.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Місто")
+            .cityEn("City")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
             .countryEn("Country")
             .build();
     }
@@ -2118,10 +2181,10 @@ public class ModelUtils {
                 .build())
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                AddressDto.builder().build())))
+                getAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2140,7 +2203,7 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                AddressDto.builder().build())))
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2160,6 +2223,25 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 AddressDto.builder().build())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static EventDto getEventOfflineDto() {
+        return EventDto.builder()
+            .id(1L)
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                null,
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
