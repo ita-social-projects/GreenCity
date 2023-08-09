@@ -323,8 +323,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
-            .peek(comment -> comment.setCurrentUserLiked(comment.getUsersLiked().stream()
-                .anyMatch(u -> u.getId().equals(user.getId()))))
+            .map(comment -> {
+                comment.setCurrentUserLiked(comment.getUsersLiked().stream()
+                    .anyMatch(u -> u.getId().equals(user.getId())));
+                return comment;
+            })
             .map(ecoNewsComment -> modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class))
             .collect(Collectors.toList());
 
