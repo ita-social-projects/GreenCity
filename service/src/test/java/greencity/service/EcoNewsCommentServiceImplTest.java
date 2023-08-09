@@ -47,6 +47,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.parameters.P;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
@@ -492,5 +493,16 @@ class EcoNewsCommentServiceImplTest {
 
         PageableDto<EcoNewsCommentDto> actual = ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO);
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllActiveRepliesThrowsNotFoundExceptionTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        when(ecoNewsCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
+            .thenReturn(Page.empty());
+        assertThrows(NotFoundException.class,
+            () -> ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO));
+        verify(ecoNewsCommentRepo).findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L);
     }
 }
