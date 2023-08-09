@@ -7,8 +7,14 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
@@ -47,7 +53,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.parameters.P;
 
 @ExtendWith(MockitoExtension.class)
 class EcoNewsCommentServiceImplTest {
