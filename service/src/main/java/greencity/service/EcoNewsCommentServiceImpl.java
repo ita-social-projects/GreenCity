@@ -3,6 +3,8 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.annotations.RatingCalculationEnum;
 import static greencity.constant.AppConstant.AUTHORIZATION;
+import static greencity.constant.ErrorMessage.REPLIES_NOT_FOUND;
+
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -303,8 +305,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to
-     *                        which we search for replies
+     * @param parentCommentId specifies {@link EcoNewsComment} to which we search
+     *                        for replies
      * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      * @author Taras Dovganyuk
@@ -313,6 +315,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+
+        if (pages.isEmpty()) {
+            throw new NotFoundException(REPLIES_NOT_FOUND + parentCommentId);
+        }
+
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()

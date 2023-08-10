@@ -7,8 +7,14 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
@@ -492,5 +498,16 @@ class EcoNewsCommentServiceImplTest {
 
         PageableDto<EcoNewsCommentDto> actual = ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO);
         assertEquals(pageableDto, actual);
+    }
+
+    @Test
+    void findAllActiveRepliesThrowsNotFoundExceptionTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        when(ecoNewsCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
+            .thenReturn(Page.empty());
+        assertThrows(NotFoundException.class,
+            () -> ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO));
+        verify(ecoNewsCommentRepo).findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L);
     }
 }
