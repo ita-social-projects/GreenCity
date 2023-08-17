@@ -26,6 +26,7 @@
             <column name="user_id" valueNumeric="2"/>
         </insert>
     </changeSet>
+
     <changeSet id="Spodaryk-7" author="Oksana Spodaryk">
         <sqlFile path="db/functions/insert-values-employee_authorities.sql"/>
     </changeSet>
