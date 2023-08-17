@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Spodaryk-5" author="Oksana Spodaryk">
+        <preConditions>
+            <tableExists tableName="employee_authorities"/>
+            <columnExists tableName="employee_authorities" columnName="name"/>
+            <not>
+                <sqlCheck expectedResult="DELETE_DEACTIVATE_COURIER">SELECT 1 FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_COURIER'</sqlCheck>
+                <sqlCheck expectedResult="DELETE_DEACTIVATE_STATION">SELECT 1 FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_STATION'</sqlCheck>
+                <sqlCheck expectedResult="CREATE_PRICING_CARD">SELECT 1 FROM employee_authorities WHERE name = 'CREATE_PRICING_CARD'</sqlCheck>
+            </not>
+        </preConditions>
+
+        <insert tableName="employee_authorities">
+            <column name="name" value="DELETE_DEACTIVATE_COURIER"/>
+        </insert>
+
+        <insert tableName="employee_authorities">
+            <column name="name" value="DELETE_DEACTIVATE_STATION"/>
+        </insert>
+
+        <insert tableName="employee_authorities">
+            <column name="name" value="CREATE_PRICING_CARD"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>
