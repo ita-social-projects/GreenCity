@@ -8,23 +8,16 @@
         <preConditions>
             <tableExists tableName="employee_authorities"/>
             <columnExists tableName="employee_authorities" columnName="name"/>
-            <not>
-                <sqlCheck expectedResult="DELETE_DEACTIVATE_COURIER">SELECT 1 FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_COURIER'</sqlCheck>
-                <sqlCheck expectedResult="DELETE_DEACTIVATE_STATION">SELECT 1 FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_STATION'</sqlCheck>
-                <sqlCheck expectedResult="CREATE_PRICING_CARD">SELECT 1 FROM employee_authorities WHERE name = 'CREATE_PRICING_CARD'</sqlCheck>
-            </not>
         </preConditions>
 
         <insert tableName="employee_authorities">
+            <column name="id" value="29"/>
             <column name="name" value="DELETE_DEACTIVATE_COURIER"/>
         </insert>
 
         <insert tableName="employee_authorities">
+            <column name="id" value="30"/>
             <column name="name" value="DELETE_DEACTIVATE_STATION"/>
-        </insert>
-
-        <insert tableName="employee_authorities">
-            <column name="name" value="CREATE_PRICING_CARD"/>
         </insert>
 
     </changeSet>

@@ -157,9 +157,9 @@
     <include file="db/changelog/logs/ch-add-table-events-followers-Bondar.xml"/>
     <include file="db/changelog/logs/ch-add-formatted_address-to-event_dates_locations-Lenets.xml"/>
     <include file="db/changelog/logs/ch-add-column-position-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-update-column-employee_authorities-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-delete-column-employee_authorities-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-insert-column-employee_authorities-Spodaryk.xml"/>
+    <include file="/db/changelog/logs/ch-update-values-employee_authorities-Spodaryk.xml"/>
+    <include file="/db/changelog/logs/ch-delete-values-employee_authorities-Spodaryk.xml"/>
+    <include file="/db/changelog/logs/ch-insert-values-employee_authorities-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-positions_authorities_mapping-Spodaryk.xml"/>
 </databaseChangeLog>
 

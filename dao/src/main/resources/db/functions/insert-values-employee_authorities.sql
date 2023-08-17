@@ -1,35 +1,29 @@
-DECLARE
-@createNewCourierId INT
-            SET @createNewCourierId = (SELECT id FROM employee_authorities WHERE name = 'CREATE_NEW_COURIER');
-            DECLARE
-@deleteDeactivateCourierId INT
-            SET @deleteDeactivateCourierId = (SELECT id FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_COURIER');
+-- Insert for 'CREATE_NEW_COURIER' authority
+INSERT INTO employee_authorities_mapping (authority_id, user_id)
+SELECT ea.id, eam.user_id
+FROM employee_authorities AS ea
+         JOIN employee_authorities_mapping AS eam ON eam.authority_id IN (
+    SELECT ea2.id
+    FROM employee_authorities AS ea2
+    WHERE ea2.name = 'CREATE_NEW_COURIER'
+)
+WHERE ea.id IN (
+    SELECT ea3.id
+    FROM employee_authorities AS ea3
+    WHERE ea3.name = 'DELETE_DEACTIVATE_COURIER'
+);
 
-INSERT INTO employee_authorities_mapping (authorities_id, user_id)
-SELECT @deleteDeactivateCourierId, user_id
-FROM employee_authorities
-WHERE authorities_id = @createNewCourierId;
-
-DECLARE
-@createNewStation INT
-            SET @createNewStation = (SELECT id FROM employee_authorities WHERE name = 'CREATE_NEW_STATION');
-            DECLARE
-@deleteDeactivateStation INT
-            SET @deleteDeactivateStation = (SELECT id FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_STATION');
-
-INSERT INTO employee_authorities_mapping (authorities_id, user_id)
-SELECT @deleteDeactivateStation, user_id
-FROM employee_authorities
-WHERE authorities_id = @createNewStation;
-
-DECLARE
-@editDeleteDeactivatePricingCard INT
-            SET @editDeleteDeactivatePricingCard = (SELECT id FROM employee_authorities WHERE name = 'EDIT_DELETE_DEACTIVATE_PRICING_CARD');
-            DECLARE
-@createPricingCard INT
-            SET @createPricingCard = (SELECT id FROM employee_authorities WHERE name = 'CREATE_PRICING_CARD');
-
-INSERT INTO employee_authorities_mapping (authorities_id, user_id)
-SELECT @createPricingCard, user_id
-FROM employee_authorities
-WHERE authorities_id = @editDeleteDeactivatePricingCard;
+-- Insert for 'DELETE_DEACTIVATE_STATION' authority
+INSERT INTO employee_authorities_mapping (authority_id, user_id)
+SELECT ea.id, eam.user_id
+FROM employee_authorities AS ea
+         JOIN employee_authorities_mapping AS eam ON eam.authority_id IN (
+    SELECT ea2.id
+    FROM employee_authorities AS ea2
+    WHERE ea2.name = 'CREATE_NEW_STATION'
+)
+WHERE ea.id IN (
+    SELECT ea3.id
+    FROM employee_authorities AS ea3
+    WHERE ea3.name = 'DELETE_DEACTIVATE_STATION'
+);
