@@ -1087,32 +1087,3 @@ class EventServiceImplTest {
         verify(modelMapper).map(first, EventDto.class);
     }
 }
-/*
- * @Test void getAllUserOfflineEventsWithUserGeoPositionIfEventFinishesToday() {
- * String eventType = "OFFLINE"; String userLatitude = "50.42929"; String
- * userLongitude = "30.53806"; List<Event> eventsOffline =
- * List.of(ModelUtils.getOfflineOnlineEventIfEventFinalDateToday()); EventDto
- * expected = ModelUtils.getEventDto(); Principal principal =
- * ModelUtils.getPrincipal(); PageRequest pageRequest = PageRequest.of(0, 1);
- * 
- * when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
- * when(modelMapper.map(TEST_USER_VO,
- * User.class)).thenReturn(ModelUtils.getUser());
- * when(eventRepo.findAllByAttender(TEST_USER_VO.getId())) .thenReturn(new
- * ArrayList<>(eventsOffline)); when(modelMapper.map(eventsOffline.get(0),
- * EventDto.class)).thenReturn(expected);
- * 
- * PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
- * eventService.getAllUserEvents( pageRequest, principal.getName(),
- * userLatitude, userLongitude, eventType); EventDto actual =
- * eventDtoPageableAdvancedDto.getPage().get(0);
- * 
- * assertSame(expected, actual);
- * 
- * verify(restClient, times(1)).findByEmail(principal.getName());
- * verify(eventRepo, times(2)).findAllByAttender(TEST_USER_VO.getId());
- * verify(modelMapper).map(TEST_USER_VO, User.class);
- * verify(modelMapper).map(eventsOffline.get(0), EventDto.class);
- * 
- * }
- */
