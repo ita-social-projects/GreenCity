@@ -34,5 +34,6 @@
             <column name="name" value="DELETE_LOCATION"/>
             <where>name='EDIT_DELETE_LOCATION_CARD'</where>
         </update>
+
     </changeSet>
 </databaseChangeLog>
