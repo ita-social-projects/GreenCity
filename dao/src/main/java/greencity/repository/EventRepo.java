@@ -1,5 +1,6 @@
 package greencity.repository;
 
+import greencity.dto.event.EventDto;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -90,4 +92,12 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      * @param organizer {@link User}.
      */
     List<Event> getAllByOrganizer(User organizer);
+
+    /**
+     * Get all user's favorite events by user id.
+     *
+     * @param userId {@link Long}.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
+    List<Event> findAllFavoritesByUser(Long userId);
 }

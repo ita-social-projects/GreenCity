@@ -8,7 +8,6 @@ import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.util.Set;
 
@@ -141,4 +140,12 @@ public interface EventService {
      * @param eventId - id of event
      */
     EventVO findById(Long eventId);
+
+    /**
+     * Method for getting all user's favorite events.
+     * 
+     * @return a page of{@link EventDto} instance.
+     * @author Midianyi Yurii.
+     */
+    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
 }
