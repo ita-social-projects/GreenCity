@@ -8,11 +8,7 @@
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="employee_authorities"/>
             <columnExists tableName="employee_authorities" columnName="name"/>
-            <sqlCheck expectedResult="EDIT_LOCATION_NAME">SELECT 1 FROM employee_authorities WHERE name = 'EDIT_LOCATION_NAME'</sqlCheck>
-            <sqlCheck expectedResult="EDIT_DESTINATION_NAME">SELECT 1 FROM employee_authorities WHERE name = 'EDIT_DESTINATION_NAME'</sqlCheck>
-            <sqlCheck expectedResult="EDIT_DELETE_PRICE_CARD">SELECT 1 FROM employee_authorities WHERE name = 'EDIT_DELETE_PRICE_CARD'</sqlCheck>
-            <sqlCheck expectedResult="DEACTIVATE_PRICING_CARD">SELECT 1 FROM employee_authorities WHERE name = 'DEACTIVATE_PRICING_CARD'</sqlCheck>
-        </preConditions>
+  </preConditions>
 
         <update tableName="employee_authorities">
             <column name="name" value="EDIT_LOCATION"/>
@@ -32,6 +28,11 @@
         <update tableName="employee_authorities">
             <column name="name" value="CREATE_PRICING_CARD"/>
             <where>name='DEACTIVATE_PRICING_CARD'</where>
+        </update>
+
+        <update tableName="employee_authorities">
+            <column name="name" value="DELETE_LOCATION"/>
+            <where>name='EDIT_DELETE_LOCATION_CARD'</where>
         </update>
     </changeSet>
 </databaseChangeLog>

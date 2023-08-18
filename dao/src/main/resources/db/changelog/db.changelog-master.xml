@@ -160,6 +160,7 @@
     <include file="/db/changelog/logs/ch-update-values-employee_authorities-Spodaryk.xml"/>
     <include file="/db/changelog/logs/ch-delete-values-employee_authorities-Spodaryk.xml"/>
     <include file="/db/changelog/logs/ch-insert-values-employee_authorities-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-values-employee_authorities-mapping-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-positions_authorities_mapping-Spodaryk.xml"/>
 </databaseChangeLog>
 

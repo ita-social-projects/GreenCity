@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Spodaryk-6" author="Oksana Spodaryk">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="employee_authorities_mapping"/>
+            <tableExists tableName="employee_authorities"/>
+            <sqlCheck expectedResult="DELETE_DEACTIVATE_COURIER">SELECT 1
+                                                                 FROM employee_authorities
+                                                                 WHERE name = 'DELETE_DEACTIVATE_COURIER'</sqlCheck>
+            <sqlCheck expectedResult="CREATE_NEW_STATION">SELECT 1
+                                                          FROM employee_authorities
+                                                          WHERE name = 'CREATE_NEW_STATION'</sqlCheck>
+            <sqlCheck expectedResult="EDIT_DELETE_DEACTIVATE_PRICING_CARD">SELECT 1
+                                                                           FROM employee_authorities
+                                                                           WHERE name = 'EDIT_DELETE_DEACTIVATE_PRICING_CARD'</sqlCheck>
+        </preConditions>
+
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id"
+                    valueNumeric="(SELECT id FROM employee_authorities WHERE name = 'DELETE_DEACTIVATE_COURIER')"/>
+            <column name="user_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id"
+                    valueNumeric="(SELECT id FROM employee_authorities WHERE name = 'CREATE_NEW_STATION')"/>
+            <column name="user_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="employee_authorities_mapping">
+            <column name="authority_id"
+                    valueNumeric="(SELECT id FROM employee_authorities WHERE name = 'EDIT_DELETE_DEACTIVATE_PRICING_CARD')"/>
+            <column name="user_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="Spodaryk-7" author="Oksana Spodaryk">
+        <sqlFile path="db/functions/insert-values-employee_authorities.sql"/>
+    </changeSet>
+</databaseChangeLog>
