@@ -97,8 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/", "/management/", "/management/login").permitAll()
-            .antMatchers("/management/**",
-                "/econews/comments/replies/{parentCommentId}")
+            .antMatchers("/management/**")
             .hasAnyRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**")
@@ -140,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/recommended",
                 "/econews/{id}",
                 "/econews/countLikes/{econewsId}",
+                "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/comments/{ecoNewsId}",
                 "/econews/comments/count/replies/{parentCommentId}",
                 "/econews/comments/count/likes",
