@@ -158,7 +158,6 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable page, String email) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
-        // Page<Event> eventPage = new PageImpl<>(events, page, events.size());
         return buildPageableAdvancedDto(events);
     }
 
