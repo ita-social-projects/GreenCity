@@ -170,6 +170,27 @@ public class EventsController {
     }
 
     /**
+     * Method for getting all user's favorite events.
+     *
+     * @return a set of {@link EventDto} instance.
+     * @author Midianyi Yurii
+     */
+    @ApiOperation(value = "Get all user's favorite events")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/getAllFavoriteEvents")
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getAllFavoriteEventsByUser(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getAllFavoriteEventsByUser(pageable, principal.getName()));
+    }
+
+    /**
      * Method for getting page of events which were created user.
      *
      * @return a page of{@link EventDto} instance.
