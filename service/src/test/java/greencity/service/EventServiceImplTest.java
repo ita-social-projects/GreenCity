@@ -36,6 +36,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
@@ -1060,5 +1061,27 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> eventService.findById(1L));
         verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void getAllFavoriteEventsByUserTest() {
+        User user = ModelUtils.getUser();
+        Event first = ModelUtils.getEvent();
+        first.setFollowers(Set.of(user));
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Event> events = new ArrayList<>();
+        events.add(first);
+        EventDto expected = ModelUtils.getEventDto();
+        Page<Event> eventPage = new PageImpl<>(events, pageable, events.size());
+        when(eventRepo.findAllFavoritesByUser(anyLong(), eq(pageable))).thenReturn(eventPage);
+        when(modelMapper.map(restClient.findByEmail(anyString()), User.class)).thenReturn(user);
+        when(modelMapper.map(first, EventDto.class)).thenReturn(expected);
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        assertEquals(expected, actual);
+        verify(eventRepo).findAllFavoritesByUser(anyLong(), eq(pageable));
+        verify(modelMapper).map(restClient.findByEmail(anyString()), User.class);
+        verify(modelMapper).map(first, EventDto.class);
     }
 }
