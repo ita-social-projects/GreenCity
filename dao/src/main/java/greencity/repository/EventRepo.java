@@ -96,5 +96,5 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      * @param userId {@link Long}.
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
-    List<Event> findAllFavoritesByUser(Long userId);
+    Page<Event> findAllFavoritesByUser(Long userId, Pageable pageable);
 }

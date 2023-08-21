@@ -1072,17 +1072,15 @@ class EventServiceImplTest {
         List<Event> events = new ArrayList<>();
         events.add(first);
         EventDto expected = ModelUtils.getEventDto();
-
-        when(eventRepo.findAllFavoritesByUser(anyLong())).thenReturn(events);
+        Page<Event> eventPage = new PageImpl<>(events, pageable, events.size());
+        when(eventRepo.findAllFavoritesByUser(anyLong(), eq(pageable))).thenReturn(eventPage);
         when(modelMapper.map(restClient.findByEmail(anyString()), User.class)).thenReturn(user);
         when(modelMapper.map(first, EventDto.class)).thenReturn(expected);
-
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
         assertEquals(expected, actual);
-
-        verify(eventRepo).findAllFavoritesByUser(anyLong());
+        verify(eventRepo).findAllFavoritesByUser(anyLong(), eq(pageable));
         verify(modelMapper).map(restClient.findByEmail(anyString()), User.class);
         verify(modelMapper).map(first, EventDto.class);
     }
