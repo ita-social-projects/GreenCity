@@ -582,6 +582,7 @@ public class ModelUtils {
             .habit(Habit.builder()
                 .id(1L)
                 .image("")
+                .userId(2L)
                 .habitTranslations(Collections.singletonList(HabitTranslation.builder()
                     .id(1L)
                     .name("")
