@@ -146,7 +146,7 @@ class HabitAssignServiceImplTest {
 
     private User user = User.builder().id(1L).build();
 
-    private HabitAssign habitAssign = getHabitAssign();
+    private final HabitAssign habitAssign = getHabitAssign();
 
     private HabitAssign fullHabitAssign = getFullHabitAssign();
 
@@ -827,13 +827,26 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getByHabitAssignIdAndUserId() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        Long userId = 1L;
+        Long habitAssignId = 2L;
+        Long habitAuthorId = 3L;
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getHabit().setUserId(habitAuthorId);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
-        assertEquals(habitAssignDto, habitAssignService.getByHabitAssignIdAndUserId(1L, 1L, language));
-        verify(habitAssignRepo).findById(anyLong());
-        verify(modelMapper, times(2)).map(any(), any());
+
+        HabitAssignDto result = habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userId, language);
+
+        assertEquals(habitAssignDto, result);
+        assertEquals(habitAuthorId, result.getHabit().getUsersIdWhoCreatedCustomHabit());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(modelMapper).map(habitAssign, HabitAssignDto.class);
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
     }
 
     @Test
