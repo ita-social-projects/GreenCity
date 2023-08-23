@@ -371,7 +371,7 @@ class EventCommentControllerTest {
             EventCommentDto eventComment = EventCommentDto.builder()
                 .id((long) i)
                 .text("Comment #" + i)
-                .createdDate(LocalDateTime.now().minusDays(i))
+                .modifiedDate(LocalDateTime.now().minusDays(i))
                 .author(EventCommentAuthorDto.builder()
                     .id(1L)
                     .name("UserName")
