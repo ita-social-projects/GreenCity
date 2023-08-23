@@ -2133,7 +2133,7 @@ public class ModelUtils {
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
-            .countComments(1)
+            .countComments(2)
             .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -2176,7 +2176,7 @@ public class ModelUtils {
     public static EventDto getEventDto() {
         return EventDto.builder()
             .id(1L)
-            .countComments(1)
+            .countComments(2)
             .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -2197,7 +2197,7 @@ public class ModelUtils {
     public static EventDto getSecondEventDto() {
         return EventDto.builder()
             .id(2L)
-            .countComments(1)
+            .countComments(2)
             .likes(1)
             .description("Description2")
             .organizer(EventAuthorDto.builder()
@@ -2218,7 +2218,7 @@ public class ModelUtils {
     public static EventDto getEventWithoutAddressDto() {
         return EventDto.builder()
             .id(1L)
-            .countComments(1)
+            .countComments(2)
             .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
@@ -2245,7 +2245,7 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
-            .countComments(1)
+            .countComments(2)
             .likes(1)
             .dates(List.of(new EventDateLocationDto(1L, null,
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),

@@ -3,13 +3,18 @@ package greencity.mapping;
 import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
 import greencity.entity.event.Event;
+import greencity.entity.event.EventComment;
 import greencity.mapping.events.EventDtoMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,10 +27,20 @@ class EventDtoMapperTest {
     void convertTest() {
         Event event = ModelUtils.getEvent();
         event.setAdditionalImages(new ArrayList<>());
-
+        event.setUsersLikedEvents(Set.of(ModelUtils.getUser()));
+        var eventComment = ModelUtils.getEventComment();
+        var eventComment2 = ModelUtils.getEventComment();
+        eventComment2.setDeleted(true);
+        event.setEventsComments(Arrays.asList(eventComment, eventComment2));
         EventDto expected = ModelUtils.getEventDto();
 
-        assertEquals(expected.getTitle(), mapper.convert(event).getTitle());
+        EventDto result = mapper.convert(event);
+
+        assertEquals(expected.getTitle(), result.getTitle());
+        assertEquals(expected.getLikes(), result.getLikes());
+        assertEquals(expected.getCountComments(), result.getCountComments());
+        assertEquals(event.getUsersLikedEvents().size(), result.getLikes());
+        assertEquals(event.getEventsComments().size(), result.getCountComments());
     }
 
     @Test
