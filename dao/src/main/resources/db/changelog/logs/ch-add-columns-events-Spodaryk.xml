@@ -46,7 +46,7 @@
         <addForeignKeyConstraint baseTableName="events"
                                  baseColumnNames="events_comments_id"
                                  constraintName="fk_events_comments_id"
-                                 referencedTableName="event_comment"
+                                 referencedTableName="events_comment"
                                  referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
