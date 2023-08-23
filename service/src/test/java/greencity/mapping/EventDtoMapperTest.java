@@ -37,10 +37,9 @@ class EventDtoMapperTest {
         EventDto result = mapper.convert(event);
 
         assertEquals(expected.getTitle(), result.getTitle());
-        assertEquals(expected.getLikes(), result.getLikes());
-        assertEquals(expected.getCountComments(), result.getCountComments());
         assertEquals(event.getUsersLikedEvents().size(), result.getLikes());
-        assertEquals(event.getEventsComments().size(), result.getCountComments());
+        assertEquals(event.getEventsComments().stream().filter(deleted -> !deleted.isDeleted()).count(),
+            result.getCountComments());
     }
 
     @Test
