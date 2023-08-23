@@ -89,7 +89,7 @@ public class Event {
         name = "events_users_likes",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
-    private Set<User> usersLikedNews = new HashSet<>();
+    private Set<User> usersLikedEvents = new HashSet<>();
 
     /**
      * Method for getting an event type.
