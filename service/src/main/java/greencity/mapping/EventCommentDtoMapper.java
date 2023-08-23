@@ -26,7 +26,7 @@ public class EventCommentDtoMapper extends AbstractConverter<EventComment, Event
                 .build())
             .text(eventComment.getText())
             .numberOfReplies(eventComment.getComments().size())
-            .numberOfLikes(eventComment.getUsersLiked().size())
+            .likes(eventComment.getUsersLiked().size())
             .currentUserLiked(eventComment.isCurrentUserLiked())
             .build();
     }

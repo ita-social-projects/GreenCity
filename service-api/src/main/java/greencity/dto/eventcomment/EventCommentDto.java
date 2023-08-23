@@ -34,7 +34,7 @@ public class EventCommentDto {
 
     private int numberOfReplies;
 
-    private int numberOfLikes;
+    private int likes;
 
     private boolean currentUserLiked = false;
 }

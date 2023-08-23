@@ -2670,7 +2670,7 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
-            .numberOfLikes(0)
+            .likes(0)
             .numberOfReplies(0)
             .currentUserLiked(false)
             .build();
