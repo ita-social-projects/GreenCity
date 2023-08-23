@@ -7,7 +7,7 @@
 
     <changeSet id="Spodaryk-9" author="Oksana Spodaryk">
         <createTable tableName="events_users_likes">
-            <column name="events_id" type="BIGINT">
+            <column name="event_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="users_id" type="BIGINT">
