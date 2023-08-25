@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -42,9 +43,11 @@ public class EventDto {
 
     private boolean isOpen;
 
-    private Boolean isSubscribed;
+    @JsonProperty("isSubscribed")
+    private boolean isSubscribed;
 
-    private Boolean isFavorite;
+    @JsonProperty("isFavorite")
+    private boolean isFavorite;
 
     /**
      * Return String of event tags in English.

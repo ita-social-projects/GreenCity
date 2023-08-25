@@ -13,6 +13,7 @@ import lombok.Setter;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +34,7 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "events")
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"attenders", "followers"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -60,17 +61,17 @@ public class Event {
     @NonNull
     private String description;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "events_attenders",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attenders = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "events_followers",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> followers;
+    private Set<User> followers = new HashSet<>();
 
     @NonNull
     @OrderBy("finishDate ASC")
