@@ -154,11 +154,20 @@ public class ModelUtils {
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
 
     public static EventDto getEventDtoWithTag() {
-        return EventDto.builder().id(1L).tags(List.of(tagUaEnDto)).build();
+        return EventDto.builder()
+            .id(1L)
+            .countComments(2)
+            .likes(20)
+            .tags(List.of(tagUaEnDto))
+            .build();
     }
 
     public static EventDto getEventDtoWithoutTag() {
-        return EventDto.builder().id(1L).build();
+        return EventDto.builder()
+            .id(1L)
+            .countComments(2)
+            .likes(20)
+            .build();
     }
 
     public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
