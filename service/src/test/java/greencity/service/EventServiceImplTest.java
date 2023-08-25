@@ -802,8 +802,8 @@ class EventServiceImplTest {
 
         assertEquals(eventSize, actual);
 
-        verify(eventRepo, never()).findAllFavoritesByUser(user.getId());
-        verify(eventRepo, never()).findAllSubscribedByUser(user.getId());
+        verify(eventRepo).findAllFavoritesByUser(user.getId());
+        verify(eventRepo).findAllSubscribedByUser(user.getId());
     }
 
     @Test
