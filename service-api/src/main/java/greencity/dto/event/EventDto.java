@@ -49,6 +49,10 @@ public class EventDto {
     @JsonProperty("isFavorite")
     private boolean isFavorite;
 
+    private int likes;
+
+    private int countComments;
+
     /**
      * Return String of event tags in English.
      *

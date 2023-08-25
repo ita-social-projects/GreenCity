@@ -93,6 +93,16 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<EventGrade> eventGrades = new ArrayList<>();
 
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<EventComment> eventsComments = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+        name = "events_users_likes",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_id"))
+    private Set<User> usersLikedEvents = new HashSet<>();
+
     /**
      * Method for getting an event type.
      *
