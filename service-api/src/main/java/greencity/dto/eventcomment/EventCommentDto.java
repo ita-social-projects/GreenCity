@@ -26,7 +26,7 @@ public class EventCommentDto {
     private Long id;
 
     @CreatedDate
-    private LocalDateTime createdDate;
+    private LocalDateTime modifiedDate;
 
     private EventCommentAuthorDto author;
 
@@ -34,7 +34,7 @@ public class EventCommentDto {
 
     private int numberOfReplies;
 
-    private int numberOfLikes;
+    private int likes;
 
     private boolean currentUserLiked = false;
 }
