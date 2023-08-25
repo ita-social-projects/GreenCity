@@ -22,15 +22,15 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
 
 @Entity
 @Table(name = "events")
