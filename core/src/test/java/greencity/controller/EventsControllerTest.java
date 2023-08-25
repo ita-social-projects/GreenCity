@@ -528,6 +528,8 @@ class EventsControllerTest {
     private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
         EventDto eventDto = EventDto.builder()
             .id(11L)
+            .countComments(2)
+            .likes(20)
             .title("Test-Title")
             .organizer(EventAuthorDto.builder()
                 .id(12L)
