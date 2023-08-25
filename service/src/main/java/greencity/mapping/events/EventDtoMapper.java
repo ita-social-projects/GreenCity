@@ -40,6 +40,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setDescription(event.getDescription());
         eventDto.setTitleImage(event.getTitleImage());
         eventDto.setOpen(event.isOpen());
+        eventDto.setIsRelevant(event.isRelevant());
         eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto
             .setCountComments((int) event.getEventsComments().stream().filter(deleted -> !deleted.isDeleted()).count());
