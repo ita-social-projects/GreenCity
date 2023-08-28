@@ -150,7 +150,7 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getAllFilteredEvents(
         Pageable page, String email, FilterEventDto filterEventDto) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
-        List<Event> allEvents = eventRepo.findAll();
+        List<Event> allEvents = getSortedListByEventId(eventRepo.findAll());
         if (filterEventDto != null) {
             allEvents = getAllFilteredEventsAndSortedByIdDesc(allEvents, user.getId(), filterEventDto);
         }
