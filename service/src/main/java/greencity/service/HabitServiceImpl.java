@@ -93,6 +93,7 @@ public class HabitServiceImpl implements HabitService {
         habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId()));
         boolean isCustomHabit = habit.getIsCustomHabit();
         habitDto.setIsCustomHabit(isCustomHabit);
+        habitDto.setUsersIdWhoCreatedCustomHabit(habit.getUserId());
         if (isCustomHabit) {
             habitDto.setCustomShoppingListItems(
                 customShoppingListResponseDtoMapper.mapAllToList(habit.getCustomShoppingListItems()));

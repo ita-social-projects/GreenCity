@@ -18,7 +18,7 @@ public class EventCommentDtoMapper extends AbstractConverter<EventComment, Event
     protected EventCommentDto convert(EventComment eventComment) {
         return EventCommentDto.builder()
             .id(eventComment.getId())
-            .createdDate(eventComment.getCreatedDate())
+            .modifiedDate(eventComment.getCreatedDate())
             .author(EventCommentAuthorDto.builder()
                 .id(eventComment.getUser().getId())
                 .name(eventComment.getUser().getName())
@@ -26,7 +26,7 @@ public class EventCommentDtoMapper extends AbstractConverter<EventComment, Event
                 .build())
             .text(eventComment.getText())
             .numberOfReplies(eventComment.getComments().size())
-            .numberOfLikes(eventComment.getUsersLiked().size())
+            .likes(eventComment.getUsersLiked().size())
             .currentUserLiked(eventComment.isCurrentUserLiked())
             .build();
     }

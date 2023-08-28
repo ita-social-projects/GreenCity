@@ -46,6 +46,12 @@ public class EventDto {
 
     private Boolean isFavorite;
 
+    private Boolean isRelevant;
+
+    private int likes;
+
+    private int countComments;
+
     /**
      * Return String of event tags in English.
      *

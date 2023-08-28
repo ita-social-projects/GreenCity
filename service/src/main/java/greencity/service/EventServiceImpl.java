@@ -170,6 +170,13 @@ public class EventServiceImpl implements EventService {
         return eventDtos;
     }
 
+    @Override
+    public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable page, String email) {
+        User user = modelMapper.map(restClient.findByEmail(email), User.class);
+        Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
+        return buildPageableAdvancedDto(events);
+    }
+
     private List<Event> sortUserEventsByEventType(
         String eventType, User attender, String userLatitude, String userLongitude) {
         if (eventType.equalsIgnoreCase("ONLINE")) {

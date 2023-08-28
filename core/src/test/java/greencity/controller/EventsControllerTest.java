@@ -499,6 +499,16 @@ class EventsControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllFavoriteEventsByUserTest() {
+        Pageable pageable = PageRequest.of(0, 20);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllFavoriteEvents").principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAllFavoriteEventsByUser(pageable, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
     void getAllEventSubscribersWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", notValidId))
@@ -523,6 +533,8 @@ class EventsControllerTest {
     private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
         EventDto eventDto = EventDto.builder()
             .id(11L)
+            .countComments(2)
+            .likes(20)
             .title("Test-Title")
             .organizer(EventAuthorDto.builder()
                 .id(12L)

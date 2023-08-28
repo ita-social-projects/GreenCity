@@ -97,8 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/", "/management/", "/management/login").permitAll()
-            .antMatchers("/management/**",
-                "/econews/comments/replies/{parentCommentId}")
+            .antMatchers("/management/**")
             .hasAnyRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**")
@@ -140,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/recommended",
                 "/econews/{id}",
                 "/econews/countLikes/{econewsId}",
+                "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/comments/{ecoNewsId}",
                 "/econews/comments/count/replies/{parentCommentId}",
                 "/econews/comments/count/likes",
@@ -218,6 +218,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/myEvents",
                 EVENTS + "/myEvents/createdEvents",
                 EVENTS + "/myEvents/relatedEvents",
+                EVENTS + "/getAllFavoriteEvents",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
                 "/habit/assign/{habitAssignId}/allUserAndCustomList",
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
@@ -352,6 +353,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/{factId}",
                 "/comments")
             .hasAnyRole(ADMIN)
+            .antMatchers(HttpMethod.PATCH,
+                "/events/comments")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .antMatchers(HttpMethod.POST,
+                "/events/comments/{eventId}")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .anyRequest().hasAnyRole(ADMIN)
             .and()
             .logout()

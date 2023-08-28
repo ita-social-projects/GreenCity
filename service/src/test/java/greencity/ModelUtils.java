@@ -583,6 +583,7 @@ public class ModelUtils {
             .habit(Habit.builder()
                 .id(1L)
                 .image("")
+                .userId(2L)
                 .habitTranslations(Collections.singletonList(HabitTranslation.builder()
                     .id(1L)
                     .name("")
@@ -2134,6 +2135,8 @@ public class ModelUtils {
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2175,6 +2178,8 @@ public class ModelUtils {
     public static EventDto getEventDto() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2213,6 +2218,8 @@ public class ModelUtils {
     public static EventDto getSecondEventDto() {
         return EventDto.builder()
             .id(2L)
+            .countComments(2)
+            .likes(1)
             .description("Description2")
             .organizer(EventAuthorDto.builder()
                 .name("User2")
@@ -2232,6 +2239,8 @@ public class ModelUtils {
     public static EventDto getEventWithoutAddressDto() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2257,6 +2266,8 @@ public class ModelUtils {
                 .id(1L)
                 .build())
             .title("Title")
+            .countComments(2)
+            .likes(1)
             .dates(List.of(new EventDateLocationDto(1L, null,
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
@@ -2724,7 +2735,7 @@ public class ModelUtils {
             .id(1L)
             .author(getEventCommentAuthorDto())
             .text("text")
-            .numberOfLikes(0)
+            .likes(0)
             .numberOfReplies(0)
             .currentUserLiked(false)
             .build();
