@@ -2965,7 +2965,7 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDtoWithStatuses() {
         return FilterEventDto.builder()
-            .statuses(new String[] {"OPEN", "CLOSE"})
+            .statuses(new String[] {"OPEN"})
             .build();
     }
 

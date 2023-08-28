@@ -150,7 +150,7 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getAllFilteredEvents(
         Pageable page, String email, FilterEventDto filterEventDto) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
-        List<Event> allEvents = getSortedListByEventId(eventRepo.findAll());
+        List<Event> allEvents = eventRepo.findAll();
         if (filterEventDto != null) {
             allEvents = getAllFilteredEventsAndSortedByIdDesc(allEvents, user.getId(), filterEventDto);
         }
@@ -610,14 +610,14 @@ public class EventServiceImpl implements EventService {
     private List<Event> getEventsByCitiesAndEventTimeConditions(
         List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
         return (isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())
-            && isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+            || isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
     }
 
     private List<Event> getEventsByCitiesAndEventTimeAndStatusesConditions(
         List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
         return (isStringArrayNotNullAndNotEmpty(filterEventDto.getStatuses())
-            && isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())
-            && isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+            || isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())
+            || isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
     }
 
     private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
