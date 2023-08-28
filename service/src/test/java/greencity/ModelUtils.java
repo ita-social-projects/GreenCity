@@ -2968,4 +2968,24 @@ public class ModelUtils {
             .statuses(new String[] {"OPEN", "CLOSE"})
             .build();
     }
+
+    public static FilterEventDto getFilterEventDtoWithSomeFilters() {
+        return FilterEventDto.builder()
+            .eventTime(new String[] {"PAST"})
+            .cities(new String[] {"Kyiv"})
+            .statuses(new String[] {"SUBSCRIBED", "CREATED", "SAVED"})
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithCities() {
+        return FilterEventDto.builder()
+            .cities(new String[] {"Kyiv", "Lviv", "Odessa"})
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithTags() {
+        return FilterEventDto.builder()
+            .tags(new String[] {"SOCIAL", "ECONOMIC", "ENVIRONMENTAL"})
+            .build();
+    }
 }

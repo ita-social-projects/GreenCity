@@ -155,8 +155,7 @@ public class EventServiceImpl implements EventService {
             allEvents = getAllFilteredEventsAndSortedByIdDesc(allEvents, user.getId(), filterEventDto);
         }
         Page<Event> eventPage = new PageImpl<>(allEvents, page, allEvents.size());
-        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(eventPage);
-        return eventDtos;
+        return buildPageableAdvancedDto(eventPage);
     }
 
     @Override
