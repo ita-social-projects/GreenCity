@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -100,18 +101,28 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> findAllFavoritesByUser(Long userId, Pageable pageable);
 
     /**
-     * Get all user's favorite events by user id.
-     *
-     * @param userId {@link Long}.
+     * Get subscribed events in given event ids by user id.
      */
-    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
-    Set<Event> findAllFavoritesByUser(Long userId);
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findSubscribedAmongEventIds(Collection<Long> eventIds, Long userId);
 
     /**
-     * Get all user's favorite events by user id.
-     *
-     * @param userId {@link Long}.
+     * Get favorite events in given events by user id.
      */
-    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS f WHERE f.id = :userId")
-    Set<Event> findAllSubscribedByUser(Long userId);
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Check if user attends event.
+     */
+    @Query(
+        value = "SELECT count(e) = 1 FROM Event e LEFT JOIN e.attenders AS a WHERE e.id = :eventId AND a.id = :userId")
+    boolean isSubscribed(Long eventId, Long userId);
+
+    /**
+     * Check if user follows event.
+     */
+    @Query(
+        value = "SELECT count(e) = 1 FROM Event e LEFT JOIN e.followers AS f WHERE e.id = :eventId AND f.id = :userId")
+    boolean isFavorite(Long eventId, Long userId);
 }

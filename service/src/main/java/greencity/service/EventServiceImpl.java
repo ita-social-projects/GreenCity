@@ -44,15 +44,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,7 +100,7 @@ public class EventServiceImpl implements EventService {
 
         Event savedEvent = eventRepo.save(toSave);
 
-        return buildEventDtoForUser(savedEvent, organizer);
+        return buildEventDto(savedEvent, organizer.getId());
     }
 
     @Override
@@ -124,27 +126,23 @@ public class EventServiceImpl implements EventService {
     public EventDto getEvent(Long eventId, Principal principal) {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        EventDto eventDto;
         if (principal != null) {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            eventDto = buildEventDtoForUser(event, currentUser);
-        } else {
-            eventDto = modelMapper.map(event, EventDto.class);
+            return buildEventDto(event, currentUser.getId());
         }
-        return eventDto;
+
+        return buildEventDto(event, null);
     }
 
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
-        PageableAdvancedDto<EventDto> eventDtos;
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            eventDtos = buildPageableAdvancedDtoForUser(events, user);
-        } else {
-            eventDtos = buildPageableAdvancedDto(events);
+            return buildPageableAdvancedDto(events, user.getId());
         }
-        return eventDtos;
+
+        return buildPageableAdvancedDto(events, null);
     }
 
     @Override
@@ -153,14 +151,14 @@ public class EventServiceImpl implements EventService {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
         Page<Event> eventPage = new PageImpl<>(events, page, events.size());
-        return buildPageableAdvancedDtoForUser(eventPage, attender);
+        return buildPageableAdvancedDto(eventPage, attender.getId());
     }
 
     @Override
     public PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable page, String email) {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
-        return buildPageableAdvancedDtoForUser(events, user);
+        return buildPageableAdvancedDto(events, user.getId());
     }
 
     private List<Event> sortUserEventsByEventType(
@@ -242,14 +240,14 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getEventsCreatedByUser(Pageable page, String email) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findEventsByOrganizer(page, attender.getId());
-        return buildPageableAdvancedDtoForUser(events, attender);
+        return buildPageableAdvancedDto(events, attender.getId());
     }
 
     @Override
     public PageableAdvancedDto<EventDto> getRelatedToUserEvents(Pageable page, String email) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findRelatedEventsByUser(page, attender.getId());
-        return buildPageableAdvancedDtoForUser(events, attender);
+        return buildPageableAdvancedDto(events, attender.getId());
     }
 
     @Override
@@ -323,7 +321,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
         Page<Event> page = eventRepo.searchEventsBy(paging, query);
-        return buildPageableAdvancedDto(page);
+        return buildPageableAdvancedDto(page, null);
     }
 
     /**
@@ -349,7 +347,7 @@ public class EventServiceImpl implements EventService {
 
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
-        return buildEventDtoForUser(updatedEvent, organizer);
+        return buildEventDto(updatedEvent, organizer.getId());
     }
 
     /**
@@ -532,10 +530,15 @@ public class EventServiceImpl implements EventService {
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 
-    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
-        List<EventDto> eventDtos = eventsPage.stream()
-            .map(event -> modelMapper.map(event, EventDto.class))
-            .collect(Collectors.toList());
+    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, @Nullable Long userId) {
+        List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+
+        if (userId != null) {
+            setSubscribes(eventDtos, userId);
+            setFollowers(eventDtos, userId);
+        }
 
         return new PageableAdvancedDto<>(
             eventDtos,
@@ -549,37 +552,31 @@ public class EventServiceImpl implements EventService {
             eventsPage.isLast());
     }
 
-    private PageableAdvancedDto<EventDto> buildPageableAdvancedDtoForUser(Page<Event> events,
-        User user) {
-        PageableAdvancedDto<EventDto> eventDtos = buildPageableAdvancedDto(events);
-
-        setSubscribes(eventDtos, user);
-        setFollowers(eventDtos, user);
-
-        return eventDtos;
-    }
-
-    private void setSubscribes(PageableAdvancedDto<EventDto> eventDtos, User user) {
-        Set<Long> userEventIds = eventRepo.findAllSubscribedByUser(user.getId()).stream()
+    private void setSubscribes(Collection<EventDto> eventDtos, Long userId) {
+        List<Long> eventIds = eventDtos.stream().map(EventDto::getId).collect(Collectors.toList());
+        List<Event> subscribedEvents = eventRepo.findSubscribedAmongEventIds(eventIds, userId);
+        List<Long> subscribedEventIds = subscribedEvents.stream()
             .map(Event::getId)
-            .collect(Collectors.toSet());
-        eventDtos.getPage().forEach(eventDto -> eventDto.setSubscribed(userEventIds.contains(eventDto.getId())));
+            .collect(Collectors.toList());
+        eventDtos.forEach(eventDto -> eventDto.setSubscribed(subscribedEventIds.contains(eventDto.getId())));
     }
 
-    private void setFollowers(PageableAdvancedDto<EventDto> eventDtos, User user) {
-        Set<Long> favoriteEventIds = eventRepo.findAllFavoritesByUser(user.getId()).stream()
+    private void setFollowers(Collection<EventDto> eventDtos, Long userId) {
+        List<Long> eventIds = eventDtos.stream().map(EventDto::getId).collect(Collectors.toList());
+        List<Event> followedEvents = eventRepo.findFavoritesAmongEventIds(eventIds, userId);
+        List<Long> followedEventIds = followedEvents.stream()
             .map(Event::getId)
-            .collect(Collectors.toSet());
-        eventDtos.getPage().forEach(eventDto -> eventDto.setFavorite(favoriteEventIds.contains(eventDto.getId())));
+            .collect(Collectors.toList());
+        eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
-    private EventDto buildEventDtoForUser(Event event, User user) {
+    private EventDto buildEventDto(Event event, @Nullable Long userId) {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
 
-        eventDto.setSubscribed(event.getAttenders().stream()
-            .anyMatch(attender -> attender.getId().equals(user.getId())));
-        eventDto.setFavorite(event.getFollowers().stream()
-            .anyMatch(follower -> follower.getId().equals(user.getId())));
+        if (userId != null) {
+            eventDto.setSubscribed(eventRepo.isSubscribed(event.getId(), userId));
+            eventDto.setFavorite(eventRepo.isFavorite(event.getId(), userId));
+        }
 
         return eventDto;
     }

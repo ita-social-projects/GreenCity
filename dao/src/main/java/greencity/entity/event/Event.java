@@ -34,7 +34,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-@EqualsAndHashCode(exclude = {"attenders", "followers"})
+@EqualsAndHashCode(exclude = {"attenders", "followers", "dates"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
