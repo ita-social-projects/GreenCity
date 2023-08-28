@@ -17,7 +17,11 @@ import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.entity.event.*;
+import greencity.entity.event.Event;
+import greencity.entity.event.EventDateLocation;
+import greencity.entity.event.EventGrade;
+import greencity.entity.event.EventImages;
+import greencity.entity.event.Address;
 import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -45,7 +49,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @Service
