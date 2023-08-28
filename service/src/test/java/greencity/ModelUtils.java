@@ -57,6 +57,7 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
@@ -1819,13 +1820,13 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2098, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2099, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
         dates.add(new EventDateLocation(2L, event,
-            ZonedDateTime.of(2099, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2100, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -2046,8 +2047,8 @@ public class ModelUtils {
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUa("Місто")
-            .cityEn("City")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa("Країна")
@@ -2062,8 +2063,8 @@ public class ModelUtils {
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
-            .cityUa("Місто")
-            .cityEn("City")
+            .cityUa("Одеса")
+            .cityEn("Odessa")
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa("Країна")
@@ -2182,9 +2183,28 @@ public class ModelUtils {
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
                 ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2023, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 12, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 getAddressDtoCorrect())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static EventDto getEventWithOdessaAddressDto() {
+        return EventDto.builder()
+            .id(2L)
+            .description("Description2")
+            .organizer(EventAuthorDto.builder()
+                .name("User2")
+                .id(2L)
+                .build())
+            .title("Title2")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2024, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                "/url",
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2481,10 +2501,7 @@ public class ModelUtils {
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getAddress(), null));
-        dates.add(new EventDateLocation(2L, event,
-            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+        dates.add(getEventDateLocation());
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -2555,6 +2572,24 @@ public class ModelUtils {
             .build();
     }
 
+    public static Address getKyivAddress() {
+        return Address.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
+            .build();
+    }
+
     public static EventDateLocation getEventDateLocation() {
         return EventDateLocation.builder()
             .id(1L)
@@ -2578,6 +2613,25 @@ public class ModelUtils {
             .regionEn("Oblast")
             .countryUa("Країна")
             .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getKyivAddressDto() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Україна")
+            .countryEn("Ukraine")
             .formattedAddressEn("Full formatted address")
             .formattedAddressUa("Повна відформатована адреса")
             .countryEn("Country")
@@ -2886,6 +2940,21 @@ public class ModelUtils {
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
             .chatId(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDto() {
+        return FilterEventDto.builder()
+            .eventTime(new String[] {"FUTURE", "PAST"})
+            .cities(new String[] {"Kyiv"})
+            .statuses(new String[] {"OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"})
+            .tags(new String[] {"SOCIAL", "ECONOMIC", "ENVIRONMENTAL"})
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithStatuses() {
+        return FilterEventDto.builder()
+            .statuses(new String[] {"OPEN", "CLOSE"})
             .build();
     }
 }

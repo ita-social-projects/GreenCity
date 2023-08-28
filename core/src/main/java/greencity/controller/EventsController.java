@@ -9,6 +9,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -131,7 +132,7 @@ public class EventsController {
      * Method for getting pages of events.
      *
      * @return a page of {@link EventDto} instance.
-     * @author Max Bohonko.
+     * @author Max Bohonko, Olena Sotnik.
      */
     @ApiOperation(value = "Get all events")
     @ApiResponses(value = {
@@ -140,9 +141,10 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable, principal));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal, FilterEventDto filterEventDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllFilteredEvents(
+            pageable, principal.getName(), filterEventDto));
     }
 
     /**
