@@ -1101,7 +1101,7 @@ class EventServiceImplTest {
 
         verify(eventRepo).findAll();
         verify(modelMapper).map(restClient.findByEmail(anyString()), User.class);
-        verify(modelMapper.map(events.get(0), EventDto.class));
+        verify(modelMapper).map(events.get(0), EventDto.class);
     }
 
     @Test
