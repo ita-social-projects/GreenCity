@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Collection;
 import java.util.List;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -97,4 +99,16 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
     Page<Event> findAllFavoritesByUser(Long userId, Pageable pageable);
+
+    /**
+     * Get subscribed events in given event ids by user id.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findSubscribedAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Get favorite events in given events by user id.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
 }
