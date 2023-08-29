@@ -111,18 +111,4 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
     List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
-
-    /**
-     * Check if user attends event.
-     */
-    @Query(
-        value = "SELECT count(e) = 1 FROM Event e LEFT JOIN e.attenders AS a WHERE e.id = :eventId AND a.id = :userId")
-    boolean isSubscribed(Long eventId, Long userId);
-
-    /**
-     * Check if user follows event.
-     */
-    @Query(
-        value = "SELECT count(e) = 1 FROM Event e LEFT JOIN e.followers AS f WHERE e.id = :eventId AND f.id = :userId")
-    boolean isFavorite(Long eventId, Long userId);
 }

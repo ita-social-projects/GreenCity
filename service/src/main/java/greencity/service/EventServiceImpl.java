@@ -574,10 +574,9 @@ public class EventServiceImpl implements EventService {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
 
         if (userId != null) {
-            eventDto.setSubscribed(eventRepo.isSubscribed(event.getId(), userId));
-            eventDto.setFavorite(eventRepo.isFavorite(event.getId(), userId));
+            setFollowers(List.of(eventDto), userId);
+            setSubscribes(List.of(eventDto), userId);
         }
-
         return eventDto;
     }
 }

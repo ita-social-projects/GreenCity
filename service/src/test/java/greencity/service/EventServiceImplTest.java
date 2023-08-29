@@ -101,6 +101,7 @@ class EventServiceImplTest {
     @Test
     void save() {
         EventDto eventDto = ModelUtils.getEventDto();
+        List<Long> eventIds = List.of(eventDto.getId());
         AddEventDtoRequest addEventDtoRequest = ModelUtils.addEventDtoRequest;
         Event event = ModelUtils.getEvent();
         List<Tag> tags = ModelUtils.getEventTags();
@@ -117,16 +118,16 @@ class EventServiceImplTest {
         }.getType())).thenReturn(tags);
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
-        when(eventRepo.isFavorite(eventDto.getId(), user.getId())).thenReturn(true);
-        when(eventRepo.isSubscribed(eventDto.getId(), user.getId())).thenReturn(false);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
 
         EventDto resultEventDto = eventService.save(addEventDtoRequest, user.getEmail(), null);
         assertEquals(eventDto, resultEventDto);
         assertFalse(resultEventDto.isSubscribed());
         assertTrue(resultEventDto.isFavorite());
 
-        verify(eventRepo).isFavorite(eventDto.getId(), user.getId());
-        verify(eventRepo).isSubscribed(eventDto.getId(), user.getId());
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
 
         MultipartFile multipartFile = ModelUtils.getMultipartFile();
         when(fileService.upload(multipartFile)).thenReturn("/url1");
@@ -145,6 +146,7 @@ class EventServiceImplTest {
     void saveEventWithoutAddress() {
         User user = ModelUtils.getUser();
         EventDto eventDtoWithoutCoordinatesDto = ModelUtils.getEventDtoWithoutAddress();
+        List<Long> eventIds = List.of(eventDtoWithoutCoordinatesDto.getId());
         AddEventDtoRequest addEventDtoWithoutCoordinates = ModelUtils.addEventDtoWithoutAddressRequest;
         Event eventWithoutCoordinates = ModelUtils.getEventWithoutAddress();
         List<Tag> tags = ModelUtils.getEventTags();
@@ -159,34 +161,37 @@ class EventServiceImplTest {
             TagType.EVENT)).thenReturn(tagVOList);
         when(modelMapper.map(tagVOList, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(tags);
-        when(eventRepo.isFavorite(eventDtoWithoutCoordinatesDto.getId(), user.getId())).thenReturn(true);
-        when(eventRepo.isSubscribed(eventDtoWithoutCoordinatesDto.getId(), user.getId())).thenReturn(false);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(eventWithoutCoordinates));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()))
+            .thenReturn(List.of(eventWithoutCoordinates));
 
         EventDto resultEventDto = eventService.save(addEventDtoWithoutCoordinates, user.getEmail(), null);
 
         assertEquals(eventDtoWithoutCoordinatesDto, resultEventDto);
-        assertFalse(resultEventDto.isSubscribed());
+        assertTrue(resultEventDto.isSubscribed());
         assertTrue(resultEventDto.isFavorite());
 
         verify(restClient).findByEmail(user.getEmail());
         verify(eventRepo).save(eventWithoutCoordinates);
         verify(tagService).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
             TagType.EVENT);
-        verify(eventRepo).isFavorite(eventDtoWithoutCoordinatesDto.getId(), user.getId());
-        verify(eventRepo).isSubscribed(eventDtoWithoutCoordinatesDto.getId(), user.getId());
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
     }
 
     @Test
     void update() {
         EventDto eventDto = ModelUtils.getEventDto();
         Event expectedEvent = ModelUtils.getEvent();
+        List<Long> eventIds = List.of(eventDto.getId());
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        User user = ModelUtils.getUser();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(expectedEvent));
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
-        when(eventRepo.isFavorite(eventDto.getId(), TEST_USER_VO.getId())).thenReturn(true);
-        when(eventRepo.isSubscribed(eventDto.getId(), TEST_USER_VO.getId())).thenReturn(false);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of());
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(expectedEvent));
         when(modelMapper.map(expectedEvent, EventDto.class)).thenReturn(eventDto);
         when(eventRepo.save(expectedEvent)).thenReturn(expectedEvent);
 
@@ -194,11 +199,11 @@ class EventServiceImplTest {
 
         assertEquals(eventDto, actualEvent);
 
-        assertTrue(actualEvent.isFavorite());
-        assertFalse(actualEvent.isSubscribed());
+        assertFalse(actualEvent.isFavorite());
+        assertTrue(actualEvent.isSubscribed());
 
-        verify(eventRepo).isFavorite(eventDto.getId(), TEST_USER_VO.getId());
-        verify(eventRepo).isSubscribed(eventDto.getId(), TEST_USER_VO.getId());
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
     }
 
     @Test
@@ -219,8 +224,8 @@ class EventServiceImplTest {
         verify(eventRepo).findById(1L);
         verify(restClient).findByEmail("user@email.com");
         verify(modelMapper).map(userVO, User.class);
-        verify(eventRepo, never()).isFavorite(anyLong(), anyLong());
-        verify(eventRepo, never()).isSubscribed(anyLong(), anyLong());
+        verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
+        verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
     }
 
     @Test
@@ -236,8 +241,8 @@ class EventServiceImplTest {
         assertThrows(BadRequestException.class,
             () -> eventService.update(eventToUpdateDto, userEmail, null));
 
-        verify(eventRepo, never()).isFavorite(anyLong(), anyLong());
-        verify(eventRepo, never()).isSubscribed(anyLong(), anyLong());
+        verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
+        verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
     }
 
     @Test
@@ -351,16 +356,18 @@ class EventServiceImplTest {
         EventDto eventDto = ModelUtils.getEventDto();
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
         Event event = ModelUtils.getEvent();
+        List<Long> eventIds = List.of(event.getId());
+        User user = ModelUtils.getUser();
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
         when(restClient.findByEmail(anyString())).thenReturn(TEST_USER_VO);
         when(eventRepo.save(event)).thenReturn(event);
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-        when(eventRepo.isFavorite(eventDto.getId(), TEST_USER_VO.getId())).thenReturn(true);
-        when(eventRepo.isSubscribed(eventDto.getId(), TEST_USER_VO.getId())).thenReturn(true);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
 
-        EventDto updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
+        EventDto updatedEventDto = eventService.update(eventToUpdateDto, user.getEmail(), null);
         assertEquals(updatedEventDto, eventDto);
         assertTrue(updatedEventDto.isFavorite());
         assertTrue(updatedEventDto.isSubscribed());
@@ -445,14 +452,15 @@ class EventServiceImplTest {
         assertFalse(actual.isSubscribed());
         assertFalse(actual.isFavorite());
 
-        verify(eventRepo, never()).isFavorite(anyLong(), anyLong());
-        verify(eventRepo, never()).isSubscribed(anyLong(), anyLong());
+        verify(eventRepo, never()).findFavoritesAmongEventIds(anyList(), anyLong());
+        verify(eventRepo, never()).findSubscribedAmongEventIds(anyList(), anyLong());
     }
 
     @Test
     void getEventWithCurrentUser() {
         Event event = ModelUtils.getEvent();
         EventDto eventDto = ModelUtils.getEventDto();
+        List<Long> eventIds = List.of(eventDto.getId());
         Principal principal = ModelUtils.getPrincipal();
         User user = ModelUtils.getUser();
 
@@ -460,16 +468,16 @@ class EventServiceImplTest {
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(eventRepo.findById(anyLong())).thenReturn(Optional.of(event));
         when(modelMapper.map(event, EventDto.class)).thenReturn(eventDto);
-        when(eventRepo.isFavorite(event.getId(), user.getId())).thenReturn(true);
-        when(eventRepo.isSubscribed(event.getId(), user.getId())).thenReturn(true);
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(List.of(event));
 
         EventDto actual = eventService.getEvent(1L, principal);
 
         assertTrue(actual.isSubscribed());
         assertTrue(actual.isFavorite());
 
-        verify(eventRepo).isFavorite(event.getId(), user.getId());
-        verify(eventRepo).isSubscribed(event.getId(), user.getId());
+        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
+        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
     }
 
     @Test
