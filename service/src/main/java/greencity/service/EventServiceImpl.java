@@ -552,19 +552,19 @@ public class EventServiceImpl implements EventService {
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
         List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
-                new TypeToken<List<EventDto>>() {
-                }.getType());
+            new TypeToken<List<EventDto>>() {
+            }.getType());
 
         return new PageableAdvancedDto<>(
-                eventDtos,
-                eventsPage.getTotalElements(),
-                eventsPage.getPageable().getPageNumber(),
-                eventsPage.getTotalPages(),
-                eventsPage.getNumber(),
-                eventsPage.hasPrevious(),
-                eventsPage.hasNext(),
-                eventsPage.isFirst(),
-                eventsPage.isLast());
+            eventDtos,
+            eventsPage.getTotalElements(),
+            eventsPage.getPageable().getPageNumber(),
+            eventsPage.getTotalPages(),
+            eventsPage.getNumber(),
+            eventsPage.hasPrevious(),
+            eventsPage.hasNext(),
+            eventsPage.isFirst(),
+            eventsPage.isLast());
     }
 
     private void setSubscribes(Collection<EventDto> eventDtos, Long userId) {
