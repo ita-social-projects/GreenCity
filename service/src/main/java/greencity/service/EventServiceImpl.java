@@ -131,7 +131,7 @@ public class EventServiceImpl implements EventService {
             return buildEventDto(event, currentUser.getId());
         }
 
-        return buildEventDto(event, null);
+        return buildEventDto(event);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class EventServiceImpl implements EventService {
             return buildPageableAdvancedDto(events, user.getId());
         }
 
-        return buildPageableAdvancedDto(events, null);
+        return buildPageableAdvancedDto(events);
     }
 
     @Override
@@ -321,7 +321,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> searchEventsBy(Pageable paging, String query) {
         Page<Event> page = eventRepo.searchEventsBy(paging, query);
-        return buildPageableAdvancedDto(page, null);
+        return buildPageableAdvancedDto(page);
     }
 
     /**
@@ -530,15 +530,13 @@ public class EventServiceImpl implements EventService {
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 
-    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, @Nullable Long userId) {
+    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
         List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
             new TypeToken<List<EventDto>>() {
             }.getType());
 
-        if (userId != null) {
-            setSubscribes(eventDtos, userId);
-            setFollowers(eventDtos, userId);
-        }
+        setSubscribes(eventDtos, userId);
+        setFollowers(eventDtos, userId);
 
         return new PageableAdvancedDto<>(
             eventDtos,
@@ -550,6 +548,23 @@ public class EventServiceImpl implements EventService {
             eventsPage.hasNext(),
             eventsPage.isFirst(),
             eventsPage.isLast());
+    }
+
+    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
+        List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
+                new TypeToken<List<EventDto>>() {
+                }.getType());
+
+        return new PageableAdvancedDto<>(
+                eventDtos,
+                eventsPage.getTotalElements(),
+                eventsPage.getPageable().getPageNumber(),
+                eventsPage.getTotalPages(),
+                eventsPage.getNumber(),
+                eventsPage.hasPrevious(),
+                eventsPage.hasNext(),
+                eventsPage.isFirst(),
+                eventsPage.isLast());
     }
 
     private void setSubscribes(Collection<EventDto> eventDtos, Long userId) {
@@ -570,13 +585,16 @@ public class EventServiceImpl implements EventService {
         eventDtos.forEach(eventDto -> eventDto.setFavorite(followedEventIds.contains(eventDto.getId())));
     }
 
-    private EventDto buildEventDto(Event event, @Nullable Long userId) {
+    private EventDto buildEventDto(Event event, Long userId) {
         EventDto eventDto = modelMapper.map(event, EventDto.class);
 
-        if (userId != null) {
-            setFollowers(List.of(eventDto), userId);
-            setSubscribes(List.of(eventDto), userId);
-        }
+        setFollowers(List.of(eventDto), userId);
+        setSubscribes(List.of(eventDto), userId);
+
         return eventDto;
+    }
+
+    private EventDto buildEventDto(Event event) {
+        return modelMapper.map(event, EventDto.class);
     }
 }
