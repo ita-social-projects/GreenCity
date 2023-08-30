@@ -389,7 +389,7 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void addEcoNews(EcoNewsForSendEmailDto message) {
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
@@ -449,8 +449,10 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendChangePlaceStatusEmailMessage> entity =
-            new HttpEntity<>(changePlaceStatusEmailMessage, new HttpHeaders());
+            new HttpEntity<>(changePlaceStatusEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
             .getBody();

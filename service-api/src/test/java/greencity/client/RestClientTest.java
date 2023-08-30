@@ -353,8 +353,11 @@ class RestClientTest {
     void addEcoNews() {
         EcoNewsForSendEmailDto message = ModelUtils.getEcoNewsForSendEmailDto();
         HttpHeaders httpHeaders = new HttpHeaders();
+        String accessToken = "accessToken";
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set(AUTHORIZATION, accessToken);
         HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, httpHeaders);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
@@ -400,7 +403,13 @@ class RestClientTest {
     @Test
     void changePlaceStatus() {
         SendChangePlaceStatusEmailMessage message = ModelUtils.getSendChangePlaceStatusEmailMessage();
-        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, new HttpHeaders());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String accessToken = "accessToken";
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        httpHeaders.set(AUTHORIZATION, accessToken);
+
+        HttpEntity<SendChangePlaceStatusEmailMessage> entity = new HttpEntity<>(message, httpHeaders);
+        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
