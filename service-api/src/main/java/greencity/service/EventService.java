@@ -6,6 +6,7 @@ import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.filter.FilterEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
@@ -42,6 +43,14 @@ public interface EventService {
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
+
+    /**
+     * Method for getting all Event instances filtered.
+     *
+     * @return List of {@link EventDto} instance.
+     */
+    PageableAdvancedDto<EventDto> getAllFilteredEvents(
+        Pageable page, Principal principal, FilterEventDto filterEventDto);
 
     /**
      * Method for getting all Event instances that user attended.
