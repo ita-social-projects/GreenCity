@@ -2960,36 +2960,36 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
-            .eventTime(new String[] {"FUTURE", "PAST"})
-            .cities(new String[] {"Kyiv"})
-            .statuses(new String[] {"OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"})
-            .tags(new String[] {"SOCIAL", "ECONOMIC", "ENVIRONMENTAL"})
+            .eventTime(List.of("FUTURE", "PAST"))
+            .cities(List.of("Kyiv"))
+            .statuses(List.of("OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithStatuses() {
         return FilterEventDto.builder()
-            .statuses(new String[] {"OPEN"})
+            .statuses(List.of("OPEN"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithSomeFilters() {
         return FilterEventDto.builder()
-            .eventTime(new String[] {"PAST"})
-            .cities(new String[] {"Kyiv"})
-            .statuses(new String[] {"SUBSCRIBED", "CREATED", "SAVED"})
+            .eventTime(List.of("PAST"))
+            .cities(List.of("Kyiv"))
+            .statuses(List.of("SUBSCRIBED", "CREATED", "SAVED"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithCities() {
         return FilterEventDto.builder()
-            .cities(new String[] {"Kyiv", "Lviv", "Odessa"})
+            .cities(List.of("Kyiv", "Lviv", "Odessa"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
-            .tags(new String[] {"SOCIAL", "ECONOMIC", "ENVIRONMENTAL"})
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
 }

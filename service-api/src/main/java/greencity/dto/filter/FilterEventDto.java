@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class FilterEventDto {
-    private String[] eventTime;
-    private String[] cities;
-    private String[] statuses;
-    private String[] tags;
+    private List<String> eventTime;
+    private List<String> cities;
+    private List<String> statuses;
+    private List<String> tags;
 }

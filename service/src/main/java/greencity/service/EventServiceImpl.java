@@ -56,9 +56,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -549,37 +549,37 @@ public class EventServiceImpl implements EventService {
         List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
         List<Event> filtered = getEventsByEventTimeCondition(allEvents, filterEventDto.getEventTime());
 
-        if (isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())) {
-            filtered = filterByLocation(filtered, Arrays.asList(filterEventDto.getCities()));
+        if (isNotEmpty(filterEventDto.getCities())) {
+            filtered = filterByLocation(filtered, filterEventDto.getCities());
         }
-        if (isStringArrayNotNullAndNotEmpty(filterEventDto.getStatuses())) {
+        if (isNotEmpty(filterEventDto.getStatuses())) {
             filtered = filterByStatus(getEventsByCitiesAndEventTimeConditions(
-                allEvents, filtered, filterEventDto), Arrays.asList(filterEventDto.getStatuses()), userId);
+                allEvents, filtered, filterEventDto), filterEventDto.getStatuses(), userId);
         }
-        if (isStringArrayNotNullAndNotEmpty(filterEventDto.getTags())) {
+        if (isNotEmpty(filterEventDto.getTags())) {
             filtered = filterByTags(getEventsByCitiesAndEventTimeAndStatusesConditions(
-                allEvents, filtered, filterEventDto), Arrays.asList(filterEventDto.getTags()));
+                allEvents, filtered, filterEventDto), filterEventDto.getTags());
         }
         return getSortedListByEventId(filtered);
     }
 
-    private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, String[] eventTimes) {
-        return isStringArrayNotNullAndNotEmpty(eventTimes)
-            ? filterByTime(allEvents, Arrays.asList(eventTimes))
+    private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, List<String> eventTimes) {
+        return (isNotEmpty(eventTimes))
+            ? filterByTime(allEvents, eventTimes)
             : allEvents;
     }
 
     private List<Event> getEventsByCitiesAndEventTimeConditions(
         List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
-        return (isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())
-            || isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+        return (isNotEmpty(filterEventDto.getCities()))
+            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
     }
 
     private List<Event> getEventsByCitiesAndEventTimeAndStatusesConditions(
         List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
-        return (isStringArrayNotNullAndNotEmpty(filterEventDto.getStatuses())
-            || isStringArrayNotNullAndNotEmpty(filterEventDto.getCities())
-            || isStringArrayNotNullAndNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+        return (isNotEmpty(filterEventDto.getStatuses()))
+            || (isNotEmpty(filterEventDto.getCities()))
+            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
     }
 
     private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
@@ -694,14 +694,11 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
     }
 
-    private boolean isStringArrayNotNullAndNotEmpty(String[] parameter) {
-        return parameter != null && parameter.length != 0;
-    }
-
     private List<Event> getSortedListByEventId(List<Event> unsorted) {
         return unsorted.stream().distinct().sorted(Comparator.comparing(Event::getId, Comparator.reverseOrder()))
             .collect(Collectors.toList());
-      
+    }
+
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
         List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
             new TypeToken<List<EventDto>>() {
@@ -709,6 +706,23 @@ public class EventServiceImpl implements EventService {
 
         setSubscribes(eventDtos, userId);
         setFollowers(eventDtos, userId);
+
+        return new PageableAdvancedDto<>(
+            eventDtos,
+            eventsPage.getTotalElements(),
+            eventsPage.getPageable().getPageNumber(),
+            eventsPage.getTotalPages(),
+            eventsPage.getNumber(),
+            eventsPage.hasPrevious(),
+            eventsPage.hasNext(),
+            eventsPage.isFirst(),
+            eventsPage.isLast());
+    }
+
+    private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage) {
+        List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
+            new TypeToken<List<EventDto>>() {
+            }.getType());
 
         return new PageableAdvancedDto<>(
             eventDtos,
