@@ -289,6 +289,8 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
+            .subscribedEvents(new HashSet<>())
+            .favoriteEvents(new HashSet<>())
             .build();
     }
 
@@ -2193,6 +2195,8 @@ public class ModelUtils {
                 getAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
+            .isFavorite(false)
+            .isSubscribed(false)
             .build();
     }
 
