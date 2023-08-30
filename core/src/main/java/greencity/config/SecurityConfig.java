@@ -353,6 +353,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/{factId}",
                 "/comments")
             .hasAnyRole(ADMIN)
+            .antMatchers(HttpMethod.PATCH,
+                "/events/comments")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .antMatchers(HttpMethod.POST,
+                "/events/comments/{eventId}")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .anyRequest().hasAnyRole(ADMIN)
             .and()
             .logout()
