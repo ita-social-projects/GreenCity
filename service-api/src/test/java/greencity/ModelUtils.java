@@ -132,6 +132,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .author(ModelUtils.getEventCommentAuthorDto())
             .text("text")
+            .eventId(1L)
             .build();
     }
 
