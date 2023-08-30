@@ -144,18 +144,18 @@ public class EventServiceImpl implements EventService {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
         }
-
         return buildPageableAdvancedDto(events);
     }
 
     @Override
     public PageableAdvancedDto<EventDto> getAllFilteredEvents(
-        Pageable page, String email, FilterEventDto filterEventDto) {
-        User user = modelMapper.map(restClient.findByEmail(email), User.class);
-        List<Event> allEvents = eventRepo.findAll();
-        if (filterEventDto != null) {
-            allEvents = getAllFilteredEventsAndSortedByIdDesc(allEvents, user.getId(), filterEventDto);
+        Pageable page, Principal principal, FilterEventDto filterEventDto) {
+        if (filterEventDto == null || principal == null) {
+            return getAll(page, principal);
         }
+        User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+        List<Event> allEvents = getAllFilteredEventsAndSortedByIdDesc(
+            eventRepo.findAll(), user.getId(), filterEventDto);
         Page<Event> eventPage = new PageImpl<>(allEvents, page, allEvents.size());
         return buildPageableAdvancedDto(eventPage);
     }
@@ -637,7 +637,6 @@ public class EventServiceImpl implements EventService {
             if (eventTag.trim().equalsIgnoreCase("ENVIRONMENTAL")) {
                 filteredByTags.addAll(getEnvironmentalEvents(events));
             }
-
             if (eventTag.trim().equalsIgnoreCase("SOCIAL")) {
                 filteredByTags.addAll(getSocialEvents(events));
             }

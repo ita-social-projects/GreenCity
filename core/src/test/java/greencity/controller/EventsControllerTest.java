@@ -117,7 +117,7 @@ class EventsControllerTest {
 
         FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
 
-        when(eventService.getAllFilteredEvents(pageable, principal.getName(), filterEventDto))
+        when(eventService.getAllFilteredEvents(pageable, principal, filterEventDto))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
@@ -127,7 +127,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllFilteredEvents(pageable, principal.getName(), filterEventDto);
+        verify(eventService).getAllFilteredEvents(pageable, principal, filterEventDto);
     }
 
     @Test

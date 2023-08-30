@@ -50,7 +50,7 @@ public interface EventService {
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getAllFilteredEvents(
-        Pageable page, String email, FilterEventDto filterEventDto);
+        Pageable page, Principal principal, FilterEventDto filterEventDto);
 
     /**
      * Method for getting all Event instances that user attended.
