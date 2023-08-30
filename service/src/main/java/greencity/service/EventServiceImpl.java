@@ -12,6 +12,7 @@ import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
@@ -20,6 +21,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
+import greencity.entity.event.Address;
 import greencity.enums.EventType;
 import greencity.enums.Role;
 import greencity.enums.TagType;
@@ -55,6 +57,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @Service
 @RequiredArgsConstructor
@@ -140,8 +144,20 @@ public class EventServiceImpl implements EventService {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
         }
-
         return buildPageableAdvancedDto(events);
+    }
+
+    @Override
+    public PageableAdvancedDto<EventDto> getAllFilteredEvents(
+        Pageable page, Principal principal, FilterEventDto filterEventDto) {
+        if (filterEventDto == null || principal == null) {
+            return getAll(page, principal);
+        }
+        User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+        List<Event> allEvents = getAllFilteredEventsAndSortedByIdDesc(
+            eventRepo.findAll(), user.getId(), filterEventDto);
+        Page<Event> eventPage = new PageImpl<>(allEvents, page, allEvents.size());
+        return buildPageableAdvancedDto(eventPage);
     }
 
     @Override
@@ -527,6 +543,159 @@ public class EventServiceImpl implements EventService {
     private ZonedDateTime findLastEventDateTime(Event event) {
         return Collections
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
+    }
+
+    private List<Event> getAllFilteredEventsAndSortedByIdDesc(
+        List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
+        List<Event> filtered = getEventsByEventTimeCondition(allEvents, filterEventDto.getEventTime());
+
+        if (isNotEmpty(filterEventDto.getCities())) {
+            filtered = filterByLocation(filtered, filterEventDto.getCities());
+        }
+        if (isNotEmpty(filterEventDto.getStatuses())) {
+            filtered = filterByStatus(getEventsByCitiesAndEventTimeConditions(
+                allEvents, filtered, filterEventDto), filterEventDto.getStatuses(), userId);
+        }
+        if (isNotEmpty(filterEventDto.getTags())) {
+            filtered = filterByTags(getEventsByCitiesAndEventTimeAndStatusesConditions(
+                allEvents, filtered, filterEventDto), filterEventDto.getTags());
+        }
+        return getSortedListByEventId(filtered);
+    }
+
+    private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, List<String> eventTimes) {
+        return (isNotEmpty(eventTimes))
+            ? filterByTime(allEvents, eventTimes)
+            : allEvents;
+    }
+
+    private List<Event> getEventsByCitiesAndEventTimeConditions(
+        List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
+        return (isNotEmpty(filterEventDto.getCities()))
+            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+    }
+
+    private List<Event> getEventsByCitiesAndEventTimeAndStatusesConditions(
+        List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
+        return (isNotEmpty(filterEventDto.getStatuses()))
+            || (isNotEmpty(filterEventDto.getCities()))
+            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
+    }
+
+    private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
+        List<Event> filteredByTime = new ArrayList<>();
+        for (String time : eventTimes) {
+            if (time.trim().equalsIgnoreCase("FUTURE")) {
+                filteredByTime.addAll(getFutureEvents(events));
+            }
+            if (time.trim().equalsIgnoreCase("PAST")) {
+                filteredByTime.addAll(getPastEvents(events));
+            }
+        }
+        return filteredByTime;
+    }
+
+    private List<Event> filterByLocation(List<Event> events, List<String> locations) {
+        List<Event> filteredByLocation = new ArrayList<>();
+        for (Event event : events) {
+            Address eventLocation = event.getDates().get(event.getDates().size() - 1).getAddress();
+            if (eventLocation != null && locations.contains(eventLocation.getCityEn())) {
+                filteredByLocation.add(event);
+            }
+        }
+        return filteredByLocation;
+    }
+
+    private List<Event> filterByStatus(List<Event> events, List<String> statuses, Long userId) {
+        List<Event> filteredByStatus = new ArrayList<>();
+        for (String status : statuses) {
+            if (status.trim().equalsIgnoreCase("OPEN")) {
+                filteredByStatus.addAll(getOpenEvents(events));
+            }
+            if (status.trim().equalsIgnoreCase("CLOSED")) {
+                filteredByStatus.addAll(getClosedEvents(events));
+            }
+            if (status.trim().equalsIgnoreCase("SUBSCRIBED")) {
+                filteredByStatus.addAll(getSubscribedEvents(events, userId));
+            }
+            if (status.trim().equalsIgnoreCase("CREATED")) {
+                filteredByStatus.addAll(getCreatedEvents(events, userId));
+            }
+            if (status.trim().equalsIgnoreCase("SAVED")) {
+                filteredByStatus.addAll(getSavedEvents(events, userId));
+            }
+        }
+        return filteredByStatus;
+    }
+
+    private List<Event> filterByTags(List<Event> events, List<String> tags) {
+        List<Event> filteredByTags = new ArrayList<>();
+        for (String eventTag : tags) {
+            if (eventTag.trim().equalsIgnoreCase("ECONOMIC")) {
+                filteredByTags.addAll(getEconomicEvents(events));
+            }
+            if (eventTag.trim().equalsIgnoreCase("ENVIRONMENTAL")) {
+                filteredByTags.addAll(getEnvironmentalEvents(events));
+            }
+            if (eventTag.trim().equalsIgnoreCase("SOCIAL")) {
+                filteredByTags.addAll(getSocialEvents(events));
+            }
+        }
+        return filteredByTags;
+    }
+
+    private List<Event> getFutureEvents(List<Event> events) {
+        return events.stream().filter(Event::isRelevant).collect(Collectors.toList());
+    }
+
+    private List<Event> getPastEvents(List<Event> events) {
+        return events.stream().filter(event -> !event.isRelevant()).collect(Collectors.toList());
+    }
+
+    private List<Event> getOpenEvents(List<Event> events) {
+        return events.stream().filter(Event::isOpen).collect(Collectors.toList());
+    }
+
+    private List<Event> getClosedEvents(List<Event> events) {
+        return events.stream().filter(event -> !event.isOpen()).collect(Collectors.toList());
+    }
+
+    private List<Event> getSubscribedEvents(List<Event> events, Long userId) {
+        return events.stream().filter(event -> event.getAttenders().stream().map(User::getId)
+            .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
+    }
+
+    private List<Event> getCreatedEvents(List<Event> events, Long userId) {
+        return events.stream().filter(event -> event.getOrganizer().getId().equals(userId))
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getSavedEvents(List<Event> events, Long userId) {
+        return events.stream().filter(event -> event.getFollowers().stream().map(User::getId)
+            .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
+    }
+
+    private List<Event> getSocialEvents(List<Event> events) {
+        return events.stream().filter(event -> event.getTags().stream()
+            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 12L))
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getEnvironmentalEvents(List<Event> events) {
+        return events.stream().filter(event -> event.getTags().stream()
+            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 13L))
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getEconomicEvents(List<Event> events) {
+        return events.stream().filter(event -> event.getTags().stream()
+            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 14L))
+            .collect(Collectors.toList());
+    }
+
+    private List<Event> getSortedListByEventId(List<Event> unsorted) {
+        return unsorted.stream().distinct().sorted(Comparator.comparing(Event::getId, Comparator.reverseOrder()))
+            .collect(Collectors.toList());
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {

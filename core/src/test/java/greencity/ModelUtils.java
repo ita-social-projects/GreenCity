@@ -26,6 +26,7 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
@@ -757,4 +758,12 @@ public class ModelUtils {
             .build();
     }
 
+    public static FilterEventDto getNullFilterEventDto() {
+        return FilterEventDto.builder()
+            .eventTime(null)
+            .cities(null)
+            .statuses(null)
+            .tags(null)
+            .build();
+    }
 }
