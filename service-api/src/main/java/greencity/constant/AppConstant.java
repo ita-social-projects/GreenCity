@@ -22,7 +22,7 @@ public final class AppConstant {
     public static final int MIN_DAYS_DURATION = 7;
     public static final int MAX_DAYS_DURATION = 56;
     public static final Integer MAX_PASSED_DAYS_OF_ABILITY_TO_ENROLL = 8;
-    public static final String DEFAULT_HABIT_IMAGE = "img/habit-default.png";
+    public static final String DEFAULT_HABIT_IMAGE = "img/habits/default-habit-image.png";
 
     private AppConstant() {
     }
