@@ -310,7 +310,7 @@ class EventServiceImplTest {
         assertNull(event.getAdditionalImages());
 
         eventToUpdateDto.setTitleImage(null);
-        expectedEvent.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        expectedEvent.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
 
