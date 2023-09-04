@@ -70,7 +70,7 @@ public class EventServiceImpl implements EventService {
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
-    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
+    private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
 
     @Override
