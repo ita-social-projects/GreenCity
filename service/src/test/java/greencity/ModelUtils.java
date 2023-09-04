@@ -1832,7 +1832,7 @@ public class ModelUtils {
             getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
 
@@ -2519,7 +2519,7 @@ public class ModelUtils {
         dates.add(getEventDateLocation());
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
 
