@@ -15,6 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.enums.EventCommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -78,7 +79,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
             eventComment.setParentComment(parentEventComment);
         }
-
+        eventComment.setStatus(EventCommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
 
@@ -202,6 +203,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         eventComment.setText(commentText);
+        eventComment.setStatus(EventCommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }
 
@@ -227,7 +229,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         if (eventComment.getComments() != null) {
             eventComment.getComments().forEach(comment -> comment.setDeleted(true));
         }
-
+        eventComment.setStatus(EventCommentStatus.DELETED);
         eventCommentRepo.save(eventComment);
     }
 
