@@ -15,6 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.enums.EventCommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -89,6 +90,7 @@ class EventCommentServiceImplTest {
         doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
+        assertEquals(eventComment.getStatus(), EventCommentStatus.ORIGINAL);
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -247,11 +249,14 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
         String editedText = "edited text";
+        EventComment eventComment = getEventComment();
 
         when(eventCommentRepo.findByIdAndDeletedFalse(commentId))
-            .thenReturn(Optional.ofNullable(getEventComment()));
+            .thenReturn(Optional.ofNullable(eventComment));
 
         eventCommentService.update(editedText, commentId, userVO);
+
+        assertEquals(eventComment.getStatus(), EventCommentStatus.EDITED);
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -291,12 +296,11 @@ class EventCommentServiceImplTest {
     void delete() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
-
+        EventComment eventComment = getEventComment();
         when(eventCommentRepo.findByIdAndDeletedFalse(commentId))
-            .thenReturn(Optional.ofNullable(getEventComment()));
-
+            .thenReturn(Optional.ofNullable(eventComment));
         eventCommentService.delete(commentId, userVO);
-
+        assertEquals(eventComment.getStatus(), EventCommentStatus.DELETED);
         verify(eventCommentRepo).findByIdAndDeletedFalse(any(Long.class));
     }
 
