@@ -90,7 +90,7 @@ class EventCommentServiceImplTest {
         doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
-        assertEquals(eventComment.getStatus(), EventCommentStatus.ORIGINAL);
+        assertEquals(EventCommentStatus.ORIGINAL, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -256,7 +256,7 @@ class EventCommentServiceImplTest {
 
         eventCommentService.update(editedText, commentId, userVO);
 
-        assertEquals(eventComment.getStatus(), EventCommentStatus.EDITED);
+        assertEquals(EventCommentStatus.EDITED, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -300,7 +300,9 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndDeletedFalse(commentId))
             .thenReturn(Optional.ofNullable(eventComment));
         eventCommentService.delete(commentId, userVO);
-        assertEquals(eventComment.getStatus(), EventCommentStatus.DELETED);
+
+        assertEquals(EventCommentStatus.DELETED, eventComment.getComments().get(0).getStatus());
+        assertEquals(EventCommentStatus.DELETED, eventComment.getStatus());
         verify(eventCommentRepo).findByIdAndDeletedFalse(any(Long.class));
     }
 

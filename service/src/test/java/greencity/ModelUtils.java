@@ -2702,6 +2702,18 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .comments(Arrays.asList(getSubEventComment()))
+            .build();
+    }
+
+    public static EventComment getSubEventComment() {
+        return EventComment.builder()
+            .id(4L)
+            .text("SubEventComment")
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .event(getEvent())
             .build();
     }
 
