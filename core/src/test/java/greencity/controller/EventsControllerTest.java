@@ -2,10 +2,12 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -113,7 +115,10 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAll(pageable, principal)).thenReturn(pageableAdvancedDto);
+        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+
+        when(eventService.getAllFilteredEvents(pageable, principal, filterEventDto))
+            .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
             .contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +127,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAll(pageable, principal);
+        verify(eventService).getAllFilteredEvents(pageable, principal, filterEventDto);
     }
 
     @Test

@@ -9,6 +9,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -309,7 +310,7 @@ class EventServiceImplTest {
         assertNull(event.getAdditionalImages());
 
         eventToUpdateDto.setTitleImage(null);
-        expectedEvent.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        expectedEvent.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
 
@@ -1195,6 +1196,132 @@ class EventServiceImplTest {
         when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
         assertThrows(NotFoundException.class, () -> eventService.findById(1L));
         verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void getAllFilteredEventsWithAllFilters() {
+        List<Event> events = List.of(ModelUtils.getEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, ModelUtils.getFilterEventDto());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithSomeFilters() {
+        List<Event> events = List.of(ModelUtils.getSecondEvent(), ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithSomeFilters());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithNullFilters() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, FilterEventDto.builder().build());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(2, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithFilterEventDtoWithCities() {
+        List<Event> events = List.of(ModelUtils.getSecondEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithCities());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithFilterEventDtoWithTags() {
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getOfflineOnlineEventIfEventFinalDateToday());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithTags());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithNullEventTime() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithStatuses());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+        verify(restClient).findByEmail(principal.getName());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
     }
 
     @Test
