@@ -224,12 +224,15 @@ public class EventCommentServiceImpl implements EventCommentService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(eventComment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-
         eventComment.setDeleted(true);
-        if (eventComment.getComments() != null) {
-            eventComment.getComments().forEach(comment -> comment.setDeleted(true));
-        }
         eventComment.setStatus(EventCommentStatus.DELETED);
+        if (eventComment.getComments() != null) {
+            eventComment.getComments()
+                .forEach(comment -> {
+                    comment.setDeleted(true);
+                    comment.setStatus(EventCommentStatus.DELETED);
+                });
+        }
         eventCommentRepo.save(eventComment);
     }
 
