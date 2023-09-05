@@ -11,6 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.security.jwt.JwtTool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -48,6 +50,9 @@ public class RestClient {
     @Value("${greencityuser.server.address}")
     private String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
+    private final JwtTool jwtTool;
+    @Value("${spring.liquibase.parameters.service-email}")
+    private String systemEmail;
 
     /**
      * Method for getting all users by their {@link EmailNotification}.
@@ -420,8 +425,8 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendReport(SendReportEmailMessage reportEmailMessage) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
@@ -466,7 +471,9 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
-        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, new HttpHeaders());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
             .getBody();
@@ -538,9 +545,15 @@ public class RestClient {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         Cookie[] cookies = httpServletRequest.getCookies();
         String uri = httpServletRequest.getRequestURI();
+
         if (cookies != null && uri.startsWith("/management")) {
             accessToken = getTokenFromCookies(cookies);
         }
+
+        if (StringUtils.isEmpty(accessToken)) {
+            accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         return headers;
