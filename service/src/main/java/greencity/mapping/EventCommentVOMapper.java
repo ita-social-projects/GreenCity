@@ -32,7 +32,6 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
             .event(EventVO.builder()
                 .id(eventComment.getEvent().getId())
                 .build())
-            .deleted(eventComment.isDeleted())
             .currentUserLiked(eventComment.isCurrentUserLiked())
             .usersLiked(eventComment.getUsersLiked().stream()
                 .map(user -> UserVO.builder()

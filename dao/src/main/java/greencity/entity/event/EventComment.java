@@ -51,9 +51,6 @@ public class EventComment {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    @Column(nullable = false)
-    private boolean deleted;
-
     @ManyToOne
     private User user;
 

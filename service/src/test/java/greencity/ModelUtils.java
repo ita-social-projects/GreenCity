@@ -166,17 +166,7 @@ import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
-import greencity.enums.CommentStatus;
-import greencity.enums.EmailNotification;
-import greencity.enums.FactOfDayStatus;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.HabitRate;
-import greencity.enums.PlaceStatus;
-import greencity.enums.Role;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.enums.TagType;
-import greencity.enums.UserStatus;
+import greencity.enums.*;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -2702,6 +2692,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .status(EventCommentStatus.ORIGINAL)
             .comments(Arrays.asList(getSubEventComment()))
             .build();
     }
@@ -2710,6 +2701,7 @@ public class ModelUtils {
         return EventComment.builder()
             .id(4L)
             .text("SubEventComment")
+            .status(EventCommentStatus.ORIGINAL)
             .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
@@ -2724,10 +2716,13 @@ public class ModelUtils {
             .id(1L)
             .text("Some comment")
             .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
-            .deleted(false)
+            .status(EventCommentStatus.ORIGINAL)
             .user(user)
             .event(getEvent())
-            .parentComment(EventComment.builder().id(12L).build())
+            .parentComment(EventComment.builder()
+                .id(12L)
+                .status(EventCommentStatus.ORIGINAL)
+                .build())
             .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
             .currentUserLiked(true)
             .usersLiked(Set.of(user, new User()))
