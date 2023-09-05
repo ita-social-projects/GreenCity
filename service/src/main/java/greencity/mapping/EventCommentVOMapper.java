@@ -39,6 +39,7 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
                     .id(user.getId())
                     .build())
                 .collect(Collectors.toSet()))
+            .eventCommentStatus(eventComment.getStatus().toString())
             .build();
     }
 }

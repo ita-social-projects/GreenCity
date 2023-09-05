@@ -47,4 +47,6 @@ public class EventCommentVO {
     private boolean currentUserLiked;
 
     private Set<UserVO> usersLiked = new HashSet<>();
+
+    private String eventCommentStatus;
 }

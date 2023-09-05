@@ -37,4 +37,6 @@ public class EventCommentDto {
     private int likes;
 
     private boolean currentUserLiked = false;
+
+    private String eventCommentStatus;
 }
