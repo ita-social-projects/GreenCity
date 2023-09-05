@@ -25,7 +25,6 @@ import javax.persistence.Transient;
 import javax.persistence.CascadeType;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
-
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
