@@ -396,6 +396,7 @@ public class ModelUtils {
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
+            .status(CommentStatus.ORIGINAL)
             .user(getUser())
             .ecoNews(getEcoNews())
             .build();

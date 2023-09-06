@@ -7,6 +7,8 @@ import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import greencity.enums.CommentStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +33,7 @@ class EcoNewsCommentVOMapperTest {
             .modifiedDate(expected.getModifiedDate())
             .parentComment(null)
             .text(expected.getText())
-            .deleted(expected.isDeleted())
+            .status(expected.getStatus())
             .currentUserLiked(expected.isCurrentUserLiked())
             .createdDate(expected.getCreatedDate())
             .usersLiked(expected.getUsersLiked().stream().map(user -> User.builder()
@@ -71,7 +73,7 @@ class EcoNewsCommentVOMapperTest {
                 .modifiedDate(expectedParent.getModifiedDate())
                 .parentComment(null)
                 .text(expectedParent.getText())
-                .deleted(expectedParent.isDeleted())
+                .status(expectedParent.getStatus())
                 .currentUserLiked(expectedParent.isCurrentUserLiked())
                 .createdDate(expectedParent.getCreatedDate())
                 .usersLiked(expectedParent.getUsersLiked().stream().map(user -> User.builder()
@@ -81,7 +83,7 @@ class EcoNewsCommentVOMapperTest {
                     .id(expectedParent.getEcoNews().getId())
                     .build())
                 .build())
-            .deleted(expected.isDeleted())
+            .status(expected.getStatus())
             .currentUserLiked(expected.isCurrentUserLiked())
             .createdDate(expected.getCreatedDate())
             .usersLiked(expected.getUsersLiked().stream().map(user -> User.builder()

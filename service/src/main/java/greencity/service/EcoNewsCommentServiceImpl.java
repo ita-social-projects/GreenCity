@@ -17,6 +17,7 @@ import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
+import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -84,6 +85,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
+        ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -166,9 +168,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
-            comment.getComments().forEach(c -> c.setDeleted(true));
+            comment.getComments().forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
-        comment.setDeleted(true);
+        comment.setStatus(CommentStatus.DELETED);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
@@ -191,6 +193,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
+        comment.setStatus(CommentStatus.EDITED);
         comment.setText(text);
         ecoNewsCommentRepo.save(comment);
     }
@@ -277,7 +280,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
-                .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
+                .findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId,
+                    CommentStatus.DELETED);
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
@@ -312,7 +316,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
-            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+            .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+                CommentStatus.DELETED);
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()

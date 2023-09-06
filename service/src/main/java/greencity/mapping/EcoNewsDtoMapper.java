@@ -7,6 +7,7 @@ import greencity.entity.EcoNews;
 import java.util.stream.Collectors;
 
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,8 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             .dislikes(ecoNews.getUsersDislikedNews().size())
             .title(ecoNews.getTitle())
             .countComments(
-                (int) ecoNews.getEcoNewsComments().stream().filter(deleted -> !deleted.isDeleted()).count())
+                (int) ecoNews.getEcoNewsComments().stream()
+                    .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count())
             .build();
     }
 }

@@ -1,11 +1,13 @@
 package greencity.entity.event;
 
 import greencity.entity.User;
+import greencity.enums.CommentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Table;
@@ -22,6 +24,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Transient;
 import javax.persistence.CascadeType;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,8 +52,9 @@ public class EventComment {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
+    @LastModifiedDate
     @Column(nullable = false)
-    private boolean deleted;
+    private LocalDateTime modifiedDate;
 
     @ManyToOne
     private User user;
@@ -73,4 +78,8 @@ public class EventComment {
         joinColumns = @JoinColumn(name = "event_comment_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLiked;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CommentStatus status;
 }

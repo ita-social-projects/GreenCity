@@ -3,6 +3,7 @@ package greencity.service;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 
+import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -460,8 +461,9 @@ class EcoNewsCommentServiceImplTest {
         PageableDto<EcoNewsCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(ecoNewsCommentRepo
-            .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L))
-                .thenReturn(page);
+            .findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L,
+                CommentStatus.DELETED))
+                    .thenReturn(page);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId())).thenReturn(10);
 
@@ -485,7 +487,7 @@ class EcoNewsCommentServiceImplTest {
         PageableDto<EcoNewsCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(ecoNewsCommentRepo
-            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageRequest, 1L))
+            .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 1L, CommentStatus.DELETED))
                 .thenReturn(page);
 
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
