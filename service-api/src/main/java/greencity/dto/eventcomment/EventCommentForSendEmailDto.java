@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,6 +21,8 @@ public class EventCommentForSendEmailDto {
     private String text;
 
     private LocalDateTime createdDate;
+
+    private LocalDateTime modifiedDate;
 
     private EventAuthorDto organizer;
 

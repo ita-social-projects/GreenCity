@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class EventCommentVO {
 
     @CreatedDate
     private LocalDateTime createdDate;
+
+    @NotEmpty
+    private LocalDateTime modifiedDate;
 
     private EventCommentVO parentComment;
 

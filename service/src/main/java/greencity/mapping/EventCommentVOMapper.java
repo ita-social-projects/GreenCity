@@ -21,6 +21,7 @@ public class EventCommentVOMapper extends AbstractConverter<EventComment, EventC
             .id(eventComment.getId())
             .text(eventComment.getText())
             .createdDate(eventComment.getCreatedDate())
+            .modifiedDate(eventComment.getModifiedDate())
             .parentComment(EventCommentVO.builder()
                 .id(eventComment.getParentComment().getId())
                 .build())

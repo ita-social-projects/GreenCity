@@ -6,12 +6,24 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists tableName="events_comment" columnName="status"/>
+                <columnExists tableName="events_comment" columnName="modified_date"/>
             </not>
+            <columnExists tableName="events_comment" columnName="created_date"/>
+
         </preConditions>
         <addColumn tableName="events_comment">
             <column name="status" type="varchar(30)" defaultValue="ORIGINAL">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
+        <addColumn tableName="events_comment">
+            <column name="modified_date" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <update tableName="events_comment">
+            <column name="modified_date" valueComputed="created_date"/>
+        </update>
     </changeSet>
+
 </databaseChangeLog>
