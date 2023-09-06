@@ -280,7 +280,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
-                .findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId);
+                .findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId,
+                    CommentStatus.DELETED);
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()
@@ -315,7 +316,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     @Override
     public PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
-            .findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+            .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+                CommentStatus.DELETED);
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()

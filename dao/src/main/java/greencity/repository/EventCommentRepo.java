@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +19,7 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      */
     @Query(value = "select count(ec.id) from events_comment ec"
         + " join events event on event.id = ec.event_id"
-        + " where event.id = :event and deleted = false", nativeQuery = true)
+        + " where event.id = :event and ec.status <>'DELETED'", nativeQuery = true)
     int countNotDeletedEventCommentsByEvent(Event event);
 
     /**
@@ -27,7 +28,7 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * @param id id of {@link EventComment} parent comment
      * @return not deleted comment by it id
      */
-    Optional<EventComment> findByIdAndDeletedFalse(Long id);
+    Optional<EventComment> findByIdAndStatusNot(Long id, CommentStatus status);
 
     /**
      * Method returns all {@link EventComment} by page.
@@ -36,8 +37,8 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * @param eventId  id of {@link Event} for which comments we search.
      * @return all active {@link EventComment} by page.
      */
-    Page<EventComment> findAllByParentCommentIdIsNullAndEventIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
-        Long eventId);
+    Page<EventComment> findAllByParentCommentIdIsNullAndEventIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable,
+        Long eventId, CommentStatus status);
 
     /**
      * Method returns all {@link EventComment} not deleted replies to the comment by
@@ -47,8 +48,8 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * @param parentCommentId id of {@link EventComment} parent comment
      * @return all replies to comment, specified by parentCommentId and page.
      */
-    Page<EventComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
-        Long parentCommentId);
+    Page<EventComment> findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable,
+        Long parentCommentId, CommentStatus status);
 
     /**
      * Method returns the count of not deleted replies to the comment, specified by
@@ -57,5 +58,5 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
      * @param parentCommentId id of {@link EventComment} parent comment
      * @return count of comments, specified by {@link EventComment}
      */
-    int countByParentCommentIdAndDeletedFalse(Long parentCommentId);
+    int countByParentCommentIdAndStatusNot(Long parentCommentId, CommentStatus status);
 }
