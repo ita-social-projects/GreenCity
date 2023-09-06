@@ -62,7 +62,7 @@ class EcoNewsVOMapperTest {
                     .id(ecoNewsComment.getId())
                     .createdDate(ecoNewsComment.getCreatedDate())
                     .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
-                    .deleted(ecoNewsComment.getStatus().equals(CommentStatus.DELETED))
+                    .status(ecoNewsComment.getStatus())
                     .text(ecoNewsComment.getText())
                     .modifiedDate(ecoNewsComment.getModifiedDate())
                     .user(UserVO.builder()

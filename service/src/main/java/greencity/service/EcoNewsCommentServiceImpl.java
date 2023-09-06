@@ -85,6 +85,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
+      ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -192,6 +193,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
+        comment.setStatus(CommentStatus.EDITED);
         comment.setText(text);
         ecoNewsCommentRepo.save(comment);
     }

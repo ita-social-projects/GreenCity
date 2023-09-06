@@ -1080,7 +1080,7 @@ public class ModelUtils {
                 .build())
             .modifiedDate(LocalDateTime.now())
             .text("I find this topic very useful!")
-            .deleted(false)
+            .status(CommentStatus.ORIGINAL)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<>(Arrays.asList(
@@ -1118,7 +1118,7 @@ public class ModelUtils {
                     .build())
                 .modifiedDate(LocalDateTime.now())
                 .text("I find this topic very useful!")
-                .deleted(false)
+                    .status(CommentStatus.ORIGINAL)
                 .currentUserLiked(true)
                 .parentComment(null)
                 .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
@@ -1136,7 +1136,7 @@ public class ModelUtils {
                     .id(32L)
                     .build())
                 .build())
-            .deleted(false)
+                .status(CommentStatus.ORIGINAL)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<>(Arrays.asList(
@@ -1440,7 +1440,7 @@ public class ModelUtils {
 
     public static EcoNewsCommentVO getEcoNewsCommentVO() {
         return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
-            new ArrayList<>(), getUserVO(), getEcoNewsVO(), false,
+            new ArrayList<>(), getUserVO(), getEcoNewsVO(),
             false, new HashSet<>(),CommentStatus.ORIGINAL);
     }
 

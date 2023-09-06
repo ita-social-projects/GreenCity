@@ -38,6 +38,7 @@ class EcoNewsCommentDtoMapperTest {
     @Test
     void ecoNewsCommentIsDeleted() {
         expected.setStatus(CommentStatus.DELETED);
+        ecoNewsComment.setStatus(CommentStatus.DELETED);
         assertEquals(expected, ecoNewsCommentDtoMapper.convert(ecoNewsComment));
     }
 
@@ -61,6 +62,7 @@ class EcoNewsCommentDtoMapperTest {
     void EcoNewsCommentIsEdited() {
         ecoNewsComment.setCreatedDate(LocalDateTime.now().minusDays(1).withNano(0));
         expected.setStatus(CommentStatus.EDITED);
+        ecoNewsComment.setStatus(CommentStatus.EDITED);
         expected.setText(ecoNewsComment.getText());
         expected.setAuthor(EcoNewsCommentAuthorDto.builder()
             .id(ecoNewsComment.getUser().getId())

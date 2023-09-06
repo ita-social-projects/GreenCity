@@ -41,8 +41,6 @@ public class EcoNewsCommentVO {
 
     private EcoNewsVO ecoNews;
 
-    private boolean deleted;
-
     private boolean currentUserLiked = false;
 
     private Set<UserVO> usersLiked = new HashSet<>();

@@ -36,7 +36,7 @@ public class EcoNewsCommentVOMapper extends AbstractConverter<EcoNewsComment, Ec
             .modifiedDate(ecoNewsComment.getModifiedDate())
             .parentComment(null)
             .text(ecoNewsComment.getText())
-            .deleted(ecoNewsComment.getStatus().equals(CommentStatus.DELETED))
+            .status(ecoNewsComment.getStatus())
             .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
             .createdDate(ecoNewsComment.getCreatedDate())
             .usersLiked(ecoNewsComment.getUsersLiked().stream().map(user -> UserVO.builder()
