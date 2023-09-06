@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.Size;
 
+import greencity.enums.CommentStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,9 +41,9 @@ public class EcoNewsCommentVO {
 
     private EcoNewsVO ecoNews;
 
-    private boolean deleted;
-
     private boolean currentUserLiked = false;
 
     private Set<UserVO> usersLiked = new HashSet<>();
+
+    private CommentStatus status;
 }

@@ -7,8 +7,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import greencity.entity.localization.TagTranslation;
-
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +59,7 @@ public class EcoNewsVOMapper extends AbstractConverter<EcoNews, EcoNewsVO> {
                     .id(ecoNewsComment.getId())
                     .createdDate(ecoNewsComment.getCreatedDate())
                     .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
-                    .deleted(ecoNewsComment.isDeleted())
+                    .status(ecoNewsComment.getStatus())
                     .text(ecoNewsComment.getText())
                     .modifiedDate(ecoNewsComment.getModifiedDate())
                     .user(UserVO.builder()

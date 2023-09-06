@@ -2,6 +2,7 @@ package greencity.repository;
 
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
+import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,7 +39,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @param parentCommentId id of comment, count of replies to which we get.
      * @return count of replies to comment, specified by parentCommentId.
      */
-    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1 AND ec.deleted = FALSE")
+    @Query("SELECT count(ec) from EcoNewsComment ec where ec.parentComment.id = ?1 AND ec.status <> 'DELETED'")
     int countByParentCommentId(Long parentCommentId);
 
     /**
@@ -47,7 +48,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @return count of comments, specified by {@link greencity.entity.EcoNews}.
      */
     @Query("SELECT count(ec) FROM EcoNewsComment ec "
-        + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.deleted = FALSE")
+        + "WHERE ec.parentComment IS NULL AND ec.ecoNews.id = ?1 AND ec.status <> 'DELETED'")
     int countOfComments(Long ecoNewsId);
 
     /**
@@ -58,7 +59,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      */
     @Query(value = "select count(ec.id) from econews_comment ec"
         + " join eco_news en on en.id = ec.eco_news_id"
-        + " where en.id = :ecoNews and ec.deleted<>'true'", nativeQuery = true)
+        + " where en.id = :ecoNews and ec.status<>'DELETED'", nativeQuery = true)
     int countEcoNewsCommentByEcoNews(EcoNews ecoNews);
 
     /**
@@ -70,9 +71,8 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @return all active {@link EcoNewsComment} by page.
      * @author Dovganyuk Taras
      */
-    Page<EcoNewsComment> findAllByParentCommentIsNullAndDeletedFalseAndEcoNewsIdOrderByCreatedDateDesc(
-        Pageable pageable,
-        Long ecoNewsId);
+    Page<EcoNewsComment> findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(
+        Pageable pageable, Long ecoNewsId, CommentStatus status);
 
     /**
      * Method returns all {@link EcoNewsComment} by page.
@@ -82,6 +82,6 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @return all replies to comment, specified by parentCommentId and page.
      * @author Dovganyuk Taras
      */
-    Page<EcoNewsComment> findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(Pageable pageable,
-        Long parentCommentId);
+    Page<EcoNewsComment> findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(Pageable pageable,
+        Long parentCommentId, CommentStatus status);
 }
