@@ -50,7 +50,7 @@ public class EcoNewsDtoMapper extends AbstractConverter<EcoNews, EcoNewsDto> {
             .title(ecoNews.getTitle())
             .countComments(
                 (int) ecoNews.getEcoNewsComments().stream()
-                    .filter(notDeleted -> !notDeleted.getStatus().equals(CommentStatus.DELETED)).count())
+                    .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count())
             .build();
     }
 }

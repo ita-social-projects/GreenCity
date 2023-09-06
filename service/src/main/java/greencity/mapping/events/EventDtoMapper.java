@@ -45,7 +45,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto
             .setCountComments((int) event.getEventsComments().stream()
-                .filter(notDeleted -> !notDeleted.getStatus().equals(CommentStatus.DELETED)).count());
+                .filter(eventComment -> !eventComment.getStatus().equals(CommentStatus.DELETED)).count());
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName())
             .organizerRating(organizer.getEventOrganizerRating()).build());
