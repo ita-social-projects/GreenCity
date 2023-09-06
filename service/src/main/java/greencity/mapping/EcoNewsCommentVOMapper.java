@@ -4,6 +4,7 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNewsComment;
+import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,7 @@ public class EcoNewsCommentVOMapper extends AbstractConverter<EcoNewsComment, Ec
             .modifiedDate(ecoNewsComment.getModifiedDate())
             .parentComment(null)
             .text(ecoNewsComment.getText())
-            .deleted(ecoNewsComment.isDeleted())
+            .deleted(ecoNewsComment.getStatus().equals(CommentStatus.DELETED))
             .currentUserLiked(ecoNewsComment.isCurrentUserLiked())
             .createdDate(ecoNewsComment.getCreatedDate())
             .usersLiked(ecoNewsComment.getUsersLiked().stream().map(user -> UserVO.builder()

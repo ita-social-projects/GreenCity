@@ -7,7 +7,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.entity.*;
 import greencity.entity.event.*;
-import greencity.enums.EventCommentStatus;
+import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
         eventDto.setLikes(event.getUsersLikedEvents().size());
         eventDto
             .setCountComments((int) event.getEventsComments().stream()
-                .filter(deleted -> !deleted.getStatus().equals(EventCommentStatus.DELETED)).count());
+                .filter(deleted -> !deleted.getStatus().equals(CommentStatus.DELETED)).count());
         User organizer = event.getOrganizer();
         eventDto.setOrganizer(EventAuthorDto.builder().id(organizer.getId()).name(organizer.getName())
             .organizerRating(organizer.getEventOrganizerRating()).build());

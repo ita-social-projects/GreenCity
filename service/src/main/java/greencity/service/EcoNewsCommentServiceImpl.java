@@ -17,6 +17,7 @@ import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
+import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -166,9 +167,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         if (comment.getComments() != null) {
-            comment.getComments().forEach(c -> c.setDeleted(true));
+            comment.getComments().forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
-        comment.setDeleted(true);
+        comment.setStatus(CommentStatus.DELETED);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));

@@ -1,5 +1,7 @@
 package greencity.entity;
 
+import greencity.enums.CommentStatus;
+import greencity.enums.CommentStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -49,9 +51,6 @@ public class EcoNewsComment {
     @ManyToOne
     private EcoNews ecoNews;
 
-    @Column
-    private boolean deleted;
-
     @Transient
     private boolean currentUserLiked = false;
 
@@ -61,4 +60,8 @@ public class EcoNewsComment {
         joinColumns = @JoinColumn(name = "econews_comment_id"),
         inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
     private Set<User> usersLiked;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CommentStatus status;
 }

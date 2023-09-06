@@ -480,7 +480,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().id(1L).text("test").build()),
+            "title", "text", List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
@@ -490,7 +490,7 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
+            "title", "text", List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).text("sdfs").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
@@ -1061,6 +1061,7 @@ public class ModelUtils {
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
             .id(1L)
+                .status(CommentStatus.ORIGINAL)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
@@ -1440,7 +1441,7 @@ public class ModelUtils {
     public static EcoNewsCommentVO getEcoNewsCommentVO() {
         return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
             new ArrayList<>(), getUserVO(), getEcoNewsVO(), false,
-            false, new HashSet<>());
+            false, new HashSet<>(),CommentStatus.ORIGINAL);
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
@@ -2692,7 +2693,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
-            .status(EventCommentStatus.ORIGINAL)
+            .status(CommentStatus.ORIGINAL)
             .comments(Arrays.asList(getSubEventComment()))
             .build();
     }
@@ -2701,7 +2702,7 @@ public class ModelUtils {
         return EventComment.builder()
             .id(4L)
             .text("SubEventComment")
-            .status(EventCommentStatus.ORIGINAL)
+            .status(CommentStatus.ORIGINAL)
             .usersLiked(new HashSet<>())
             .createdDate(LocalDateTime.now())
             .user(getUser())
@@ -2716,12 +2717,12 @@ public class ModelUtils {
             .id(1L)
             .text("Some comment")
             .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
-            .status(EventCommentStatus.ORIGINAL)
+            .status(CommentStatus.ORIGINAL)
             .user(user)
             .event(getEvent())
             .parentComment(EventComment.builder()
                 .id(12L)
-                .status(EventCommentStatus.ORIGINAL)
+                .status(CommentStatus.ORIGINAL)
                 .build())
             .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
             .currentUserLiked(true)

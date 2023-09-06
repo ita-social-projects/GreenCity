@@ -1,7 +1,8 @@
 package greencity.entity.event;
 
 import greencity.entity.User;
-import greencity.enums.EventCommentStatus;
+import greencity.enums.CommentStatus;
+import greencity.enums.CommentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -76,5 +77,5 @@ public class EventComment {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EventCommentStatus status;
+    private CommentStatus status;
 }

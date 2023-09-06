@@ -15,7 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
-import greencity.enums.EventCommentStatus;
+import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -79,7 +79,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
             eventComment.setParentComment(parentEventComment);
         }
-        eventComment.setStatus(EventCommentStatus.ORIGINAL);
+        eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
 
@@ -203,7 +203,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         eventComment.setText(commentText);
-        eventComment.setStatus(EventCommentStatus.EDITED);
+        eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }
 
@@ -224,10 +224,10 @@ public class EventCommentServiceImpl implements EventCommentService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(eventComment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        eventComment.setStatus(EventCommentStatus.DELETED);
+        eventComment.setStatus(CommentStatus.DELETED);
         if (eventComment.getComments() != null) {
             eventComment.getComments()
-                .forEach(comment -> comment.setStatus(EventCommentStatus.DELETED));
+                .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
         eventCommentRepo.save(eventComment);
     }

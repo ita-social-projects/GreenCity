@@ -15,7 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
-import greencity.enums.EventCommentStatus;
+import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -90,7 +90,7 @@ class EventCommentServiceImplTest {
         doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
-        assertEquals(EventCommentStatus.ORIGINAL, eventComment.getStatus());
+        assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -256,7 +256,7 @@ class EventCommentServiceImplTest {
 
         eventCommentService.update(editedText, commentId, userVO);
 
-        assertEquals(EventCommentStatus.EDITED, eventComment.getStatus());
+        assertEquals(CommentStatus.EDITED, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
     }
 
@@ -301,8 +301,8 @@ class EventCommentServiceImplTest {
             .thenReturn(Optional.ofNullable(eventComment));
         eventCommentService.delete(commentId, userVO);
 
-        assertEquals(EventCommentStatus.DELETED, eventComment.getComments().get(0).getStatus());
-        assertEquals(EventCommentStatus.DELETED, eventComment.getStatus());
+        assertEquals(CommentStatus.DELETED, eventComment.getComments().get(0).getStatus());
+        assertEquals(CommentStatus.DELETED, eventComment.getStatus());
         verify(eventCommentRepo).findByIdAndDeletedFalse(any(Long.class));
     }
 

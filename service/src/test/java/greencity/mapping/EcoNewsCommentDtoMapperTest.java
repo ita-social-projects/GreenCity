@@ -37,7 +37,6 @@ class EcoNewsCommentDtoMapperTest {
 
     @Test
     void ecoNewsCommentIsDeleted() {
-        ecoNewsComment.setDeleted(true);
         expected.setStatus(CommentStatus.DELETED);
         assertEquals(expected, ecoNewsCommentDtoMapper.convert(ecoNewsComment));
     }
