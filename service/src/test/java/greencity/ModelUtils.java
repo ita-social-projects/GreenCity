@@ -509,7 +509,7 @@ public class ModelUtils {
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text",
-            List.of(getEcoNewsComment(CommentStatus.DELETED), getEcoNewsComment(CommentStatus.EDITED),
+            List.of(getEcoNewsComment(CommentStatus.EDITED),
                 getEcoNewsComment(CommentStatus.ORIGINAL)),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }

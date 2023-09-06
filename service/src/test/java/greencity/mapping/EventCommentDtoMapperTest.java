@@ -22,7 +22,7 @@ class EventCommentDtoMapperTest {
 
         assertEquals(eventComment.getId(), actual.getId());
         assertEquals(eventComment.getText(), actual.getText());
-        assertEquals(eventComment.getCreatedDate(), actual.getModifiedDate());
+        assertEquals(eventComment.getModifiedDate(), actual.getModifiedDate());
         assertEquals(eventComment.getComments().size(), actual.getNumberOfReplies());
         assertEquals(eventComment.getUsersLiked().size(), actual.getLikes());
         assertEquals(eventComment.isCurrentUserLiked(), actual.isCurrentUserLiked());
