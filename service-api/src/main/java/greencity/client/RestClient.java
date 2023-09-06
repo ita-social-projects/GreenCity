@@ -37,22 +37,43 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
-@RequiredArgsConstructor
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;
-    @Setter
-    @Value("${greencityuser.server.address}")
-    private String greenCityUserServerAddress;
+    private final String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
-    @Value("${spring.liquibase.parameters.service-email}")
-    private String systemEmail;
+    private final String systemEmail;
+
+    /**
+     * Constructs a new instance of the RestClient class.
+     *
+     * @param restTemplate               The RestTemplate to be used for making HTTP
+     *                                   requests to GreenCityUser.
+     * @param greenCityUserServerAddress The address of the GreenCityUser server.
+     * @param httpServletRequest         The HttpServletRequest object contains data
+     *                                   related to the current http request.
+     * @param jwtTool                    The JwtTool is used to create JWT tokens
+     *                                   for system requests to GreenCityUser.
+     * @param systemEmail                The system email address used to creat JWT
+     *                                   tokens for system requests to
+     *                                   GreenCityUser.
+     */
+    public RestClient(RestTemplate restTemplate,
+        @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
+        HttpServletRequest httpServletRequest,
+        JwtTool jwtTool,
+        @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
+        this.restTemplate = restTemplate;
+        this.greenCityUserServerAddress = greenCityUserServerAddress;
+        this.httpServletRequest = httpServletRequest;
+        this.jwtTool = jwtTool;
+        this.systemEmail = systemEmail;
+    }
 
     /**
      * Method for getting all users by their {@link EmailNotification}.
