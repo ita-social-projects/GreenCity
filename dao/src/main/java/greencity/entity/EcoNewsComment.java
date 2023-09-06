@@ -1,11 +1,16 @@
 package greencity.entity;
 
 import greencity.enums.CommentStatus;
-import greencity.enums.CommentStatus;
-import lombok.*;
+import lombok.Getter;
+import lombok.Builder;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -56,9 +61,9 @@ public class EcoNewsComment {
 
     @ManyToMany
     @JoinTable(
-        name = "econews_comment_users_liked",
-        joinColumns = @JoinColumn(name = "econews_comment_id"),
-        inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
+            name = "econews_comment_users_liked",
+            joinColumns = @JoinColumn(name = "econews_comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
     private Set<User> usersLiked;
 
     @Column(nullable = false)

@@ -4,7 +4,6 @@ import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNewsComment;
-import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 

@@ -7,9 +7,6 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
-import greencity.entity.localization.TagTranslation;
-
-import greencity.enums.CommentStatus;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
