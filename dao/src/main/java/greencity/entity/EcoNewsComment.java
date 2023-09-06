@@ -61,9 +61,9 @@ public class EcoNewsComment {
 
     @ManyToMany
     @JoinTable(
-            name = "econews_comment_users_liked",
-            joinColumns = @JoinColumn(name = "econews_comment_id"),
-            inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
+        name = "econews_comment_users_liked",
+        joinColumns = @JoinColumn(name = "econews_comment_id"),
+        inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
     private Set<User> usersLiked;
 
     @Column(nullable = false)

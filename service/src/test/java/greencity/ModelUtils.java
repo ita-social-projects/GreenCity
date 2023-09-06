@@ -177,7 +177,6 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
-import greencity.enums.CommentStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -496,13 +495,22 @@ public class ModelUtils {
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
+    public static EcoNewsComment getEcoNewsComment(CommentStatus commentStatus) {
+        return EcoNewsComment.builder()
+            .status(commentStatus)
+            .text("sdfs")
+            .build();
+    }
+
     public static EcoNews getEcoNewsForMethodConvertTest() {
         Tag tag = new Tag();
         tag.setTagTranslations(
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).text("sdfs").build()),
+            "title", "text",
+            List.of(getEcoNewsComment(CommentStatus.DELETED), getEcoNewsComment(CommentStatus.EDITED),
+                getEcoNewsComment(CommentStatus.ORIGINAL)),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
