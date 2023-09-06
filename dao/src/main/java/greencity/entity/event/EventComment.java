@@ -2,7 +2,6 @@ package greencity.entity.event;
 
 import greencity.entity.User;
 import greencity.enums.CommentStatus;
-import greencity.enums.CommentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

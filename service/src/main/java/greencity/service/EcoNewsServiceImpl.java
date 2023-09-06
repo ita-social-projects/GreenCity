@@ -699,7 +699,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
         int countOfComments = ecoNews.getEcoNewsComments() != null
-            ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.getStatus().equals(CommentStatus.DELETED)).count()
+            ? (int) ecoNews.getEcoNewsComments().stream()
+                .filter(notDeleted -> !notDeleted.getStatus().equals(CommentStatus.DELETED)).count()
             : 0;
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()

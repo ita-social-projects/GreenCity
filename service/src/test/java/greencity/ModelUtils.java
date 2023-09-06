@@ -480,7 +480,8 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
+            "title", "text",
+            List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
@@ -1061,7 +1062,7 @@ public class ModelUtils {
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
             .id(1L)
-                .status(CommentStatus.ORIGINAL)
+            .status(CommentStatus.ORIGINAL)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
@@ -1118,7 +1119,7 @@ public class ModelUtils {
                     .build())
                 .modifiedDate(LocalDateTime.now())
                 .text("I find this topic very useful!")
-                    .status(CommentStatus.ORIGINAL)
+                .status(CommentStatus.ORIGINAL)
                 .currentUserLiked(true)
                 .parentComment(null)
                 .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
@@ -1136,7 +1137,7 @@ public class ModelUtils {
                     .id(32L)
                     .build())
                 .build())
-                .status(CommentStatus.ORIGINAL)
+            .status(CommentStatus.ORIGINAL)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<>(Arrays.asList(
@@ -1441,7 +1442,7 @@ public class ModelUtils {
     public static EcoNewsCommentVO getEcoNewsCommentVO() {
         return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
             new ArrayList<>(), getUserVO(), getEcoNewsVO(),
-            false, new HashSet<>(),CommentStatus.ORIGINAL);
+            false, new HashSet<>(), CommentStatus.ORIGINAL);
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
