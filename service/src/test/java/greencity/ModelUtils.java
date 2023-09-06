@@ -510,7 +510,9 @@ public class ModelUtils {
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
             "title", "text",
             List.of(getEcoNewsComment(CommentStatus.EDITED),
-                getEcoNewsComment(CommentStatus.ORIGINAL)),
+                getEcoNewsComment(CommentStatus.ORIGINAL),
+                getEcoNewsComment(CommentStatus.DELETED),
+                getEcoNewsComment(CommentStatus.DELETED)),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
@@ -2765,6 +2767,8 @@ public class ModelUtils {
     public static EventCommentDto getEventCommentDto() {
         return EventCommentDto.builder()
             .id(1L)
+            .status(CommentStatus.ORIGINAL.toString())
+
             .author(getEventCommentAuthorDto())
             .text("text")
             .likes(0)
