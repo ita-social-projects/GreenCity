@@ -1,9 +1,16 @@
 package greencity.entity;
 
-import lombok.*;
+import greencity.enums.CommentStatus;
+import lombok.Getter;
+import lombok.Builder;
+import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -49,9 +56,6 @@ public class EcoNewsComment {
     @ManyToOne
     private EcoNews ecoNews;
 
-    @Column
-    private boolean deleted;
-
     @Transient
     private boolean currentUserLiked = false;
 
@@ -61,4 +65,8 @@ public class EcoNewsComment {
         joinColumns = @JoinColumn(name = "econews_comment_id"),
         inverseJoinColumns = @JoinColumn(name = "users_liked_id"))
     private Set<User> usersLiked;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CommentStatus status;
 }

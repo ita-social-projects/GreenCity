@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.entity.localization.TagTranslation;
+import greencity.enums.CommentStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,7 +36,9 @@ class EcoNewsDtoMapperTest {
                 .filter(t -> t.getLanguage().getCode().equals(defaultLanguage))
                 .map(TagTranslation::getName)
                 .collect(Collectors.toList()))
-            .countComments(ecoNews.getEcoNewsComments().size())
+            .countComments(ecoNews.getEcoNewsComments()
+                .stream()
+                .filter(obj -> !obj.getStatus().equals(CommentStatus.DELETED)).collect(Collectors.toList()).size())
             .title(ecoNews.getTitle())
             .shortInfo(ecoNews.getShortInfo())
             .imagePath(ecoNews.getImagePath())

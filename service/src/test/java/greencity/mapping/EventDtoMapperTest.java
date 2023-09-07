@@ -4,6 +4,7 @@ import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.enums.CommentStatus;
 import greencity.mapping.events.EventDtoMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +31,7 @@ class EventDtoMapperTest {
         event.setUsersLikedEvents(Set.of(ModelUtils.getUser()));
         var eventComment = ModelUtils.getEventComment();
         var eventComment2 = ModelUtils.getEventComment();
-        eventComment2.setDeleted(true);
+        eventComment2.setStatus(CommentStatus.DELETED);
         event.setEventsComments(Arrays.asList(eventComment, eventComment2));
         EventDto expected = ModelUtils.getEventDto();
 
@@ -38,7 +39,9 @@ class EventDtoMapperTest {
 
         assertEquals(expected.getTitle(), result.getTitle());
         assertEquals(event.getUsersLikedEvents().size(), result.getLikes());
-        assertEquals(event.getEventsComments().stream().filter(deleted -> !deleted.isDeleted()).count(),
+        assertEquals(
+            event.getEventsComments().stream().filter(deleted -> deleted.getStatus().equals(CommentStatus.DELETED))
+                .count(),
             result.getCountComments());
     }
 

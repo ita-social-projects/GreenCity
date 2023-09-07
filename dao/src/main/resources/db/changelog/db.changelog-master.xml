@@ -163,5 +163,9 @@
     <include file="db/changelog/logs/ch-add-values-employee_authorities-mapping-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-positions_authorities_mapping-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-columns-events-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-column-eventcomment-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-column-eventcomment-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-column-econewscomment-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-econewscomment-Spodaryk.xml"/>
 </databaseChangeLog>
 

@@ -20,6 +20,7 @@ import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.enums.Role;
+import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -702,7 +703,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
         int countOfComments = ecoNews.getEcoNewsComments() != null
-            ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count()
+            ? (int) ecoNews.getEcoNewsComments().stream()
+                .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count()
             : 0;
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()

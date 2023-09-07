@@ -37,7 +37,7 @@ class EventCommentVOMapperTest {
         assertEquals(eventComment.getUser().getName(), actual.getUser().getName());
         assertEquals(eventComment.getUser().getRole().name(), actual.getUser().getRole().name());
         assertEquals(eventComment.getEvent().getId(), actual.getEvent().getId());
-        assertEquals(eventComment.isDeleted(), actual.isDeleted());
+        assertEquals(eventComment.getStatus().toString(), actual.getStatus());
         assertEquals(eventComment.getText(), actual.getText());
         assertEquals(eventComment.isCurrentUserLiked(), actual.isCurrentUserLiked());
         assertEquals(usersLiked, actual.getUsersLiked());
