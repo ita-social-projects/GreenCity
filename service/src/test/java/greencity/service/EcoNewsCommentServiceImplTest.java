@@ -461,7 +461,7 @@ class EcoNewsCommentServiceImplTest {
         PageableDto<EcoNewsCommentDto> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(ecoNewsCommentRepo
-            .findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(pageRequest, 1L,
+            .findAllByParentCommentIsNullAndEcoNewsIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 1L,
                 CommentStatus.DELETED))
                     .thenReturn(page);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
