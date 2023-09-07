@@ -19,10 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 import java.util.Optional;
 
-//@ExtendWith(SpringExtension.class)
 @DataMongoTest(includeFilters = @ComponentScan.Filter(Component.class))
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest//(classes = GreenCityApplication.class)
+@SpringBootTest
 class LanguageRepoTest extends IntegrationTestBase {
     @Autowired
     private LanguageRepo languageRepo;
