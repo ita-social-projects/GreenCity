@@ -71,7 +71,7 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      * @return all active {@link EcoNewsComment} by page.
      * @author Dovganyuk Taras
      */
-    Page<EcoNewsComment> findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(
+    Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdAndStatusNotOrderByCreatedDateDesc(
         Pageable pageable, Long ecoNewsId, CommentStatus status);
 
     /**

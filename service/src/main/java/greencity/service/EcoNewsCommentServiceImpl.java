@@ -280,7 +280,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     public PageableDto<EcoNewsCommentDto> getAllActiveComments(Pageable pageable, UserVO userVO, Long ecoNewsId) {
         Page<EcoNewsComment> pages =
             ecoNewsCommentRepo
-                .findAllByParentCommentIsNullAndStatusNotAndEcoNewsIdOrderByCreatedDateDesc(pageable, ecoNewsId,
+                .findAllByParentCommentIsNullAndEcoNewsIdAndStatusNotOrderByCreatedDateDesc(pageable, ecoNewsId,
                     CommentStatus.DELETED);
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
