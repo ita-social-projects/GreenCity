@@ -17,7 +17,6 @@ public class ModelUtils {
         List<String> languages = new ArrayList<>();
         languages.add("ua");
         languages.add("en");
-        languages.add("ru");
         return languages;
     }
 }
