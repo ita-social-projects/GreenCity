@@ -44,7 +44,7 @@ class RestClientTest {
     @Mock
     private java.lang.Object Object;
     private final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
-    private final String SYSTEM_EMAIL = "test-service-email@greencity.ua";
+    private final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
     private RestClient restClient;
     @Mock
     private JwtTool jwtTool;
