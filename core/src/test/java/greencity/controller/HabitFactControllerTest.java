@@ -69,13 +69,6 @@ class HabitFactControllerTest {
         + "        \"code\": \"en\",\n"
         + "        \"id\": 2\n"
         + "      }\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"content\": \"тест\",\n"
-        + "      \"language\": {\n"
-        + "        \"code\": \"ru\",\n"
-        + "        \"id\": 3\n"
-        + "      }\n"
         + "    }\n"
         + "  ]\n"
         + "}";
