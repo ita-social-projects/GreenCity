@@ -1284,8 +1284,6 @@ public class ModelUtils {
             HabitFactTranslationUpdateDto.builder().content("ua").factOfDayStatus(FactOfDayStatus.POTENTIAL)
                 .language(getLanguageDTO()).build(),
             HabitFactTranslationUpdateDto.builder().content("en").factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .language(getLanguageDTO()).build(),
-            HabitFactTranslationUpdateDto.builder().content("ru").factOfDayStatus(FactOfDayStatus.POTENTIAL)
                 .language(getLanguageDTO()).build()));
     }
 
