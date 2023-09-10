@@ -167,5 +167,10 @@
     <include file="db/changelog/logs/ch-delete-column-eventcomment-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-econewscomment-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-drop-column-econewscomment-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-from-shopping_list_item_translations-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-from-habit_translation-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-from-tag_translations-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-from-languages-Spodaryk.xml"/>
 </databaseChangeLog>
 

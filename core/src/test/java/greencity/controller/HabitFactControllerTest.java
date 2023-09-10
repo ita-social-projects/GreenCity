@@ -69,13 +69,6 @@ class HabitFactControllerTest {
         + "        \"code\": \"en\",\n"
         + "        \"id\": 2\n"
         + "      }\n"
-        + "    },\n"
-        + "    {\n"
-        + "      \"content\": \"тест\",\n"
-        + "      \"language\": {\n"
-        + "        \"code\": \"ru\",\n"
-        + "        \"id\": 3\n"
-        + "      }\n"
         + "    }\n"
         + "  ]\n"
         + "}";
@@ -144,9 +137,7 @@ class HabitFactControllerTest {
             new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
                 new LanguageDTO(1L, "ua"), "hello"),
             new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
-                new LanguageDTO(2L, "en"), "привіт"),
-            new HabitFactTranslationUpdateDto(FactOfDayStatus.POTENTIAL,
-                new LanguageDTO(3L, "ru"), "привет"));
+                new LanguageDTO(2L, "en"), "привіт"));
         HabitFactUpdateDto habitFactUpdateDto = new HabitFactUpdateDto(habitFactTranslationUpdateDtos,
             new HabitIdRequestDto(1L));
         ObjectMapper objectMapper = new ObjectMapper();
