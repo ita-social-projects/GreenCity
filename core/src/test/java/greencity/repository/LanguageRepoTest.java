@@ -1,6 +1,6 @@
 package greencity.repository;
 
-import greencity.GreenCityApplication;
+import greencity.DaoApplication;
 import greencity.IntegrationTestBase;
 import greencity.entity.Language;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = GreenCityApplication.class)
+@SpringBootTest(classes = DaoApplication.class)
 class LanguageRepoTest extends IntegrationTestBase {
     @Autowired
     private LanguageRepo languageRepo;
