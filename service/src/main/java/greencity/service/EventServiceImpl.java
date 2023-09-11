@@ -184,11 +184,11 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> sortUserEventsByEventType(
         String eventType, User attender, String userLatitude, String userLongitude) {
-        if (eventType.equalsIgnoreCase("ONLINE")) {
+        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("ONLINE")) {
             return getOnlineUserEventsSortedByDate(attender);
         }
 
-        if (eventType.equalsIgnoreCase("OFFLINE")) {
+        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("OFFLINE")) {
             return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                 ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                 : getOfflineUserEventsSortedByDate(attender);
