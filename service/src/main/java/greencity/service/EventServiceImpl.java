@@ -156,7 +156,7 @@ public class EventServiceImpl implements EventService {
         User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
         List<Event> allEvents = getAllFilteredEventsAndSortedByIdDesc(
             eventRepo.findAll(), user.getId(), filterEventDto);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, allEvents), page, allEvents.size());
+        Page<Event> eventPage = new PageImpl<>(allEvents, page, allEvents.size());
         return buildPageableAdvancedDto(eventPage);
     }
 
@@ -165,7 +165,7 @@ public class EventServiceImpl implements EventService {
         Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
+        Page<Event> eventPage = new PageImpl<>(events, page, events.size());
         return buildPageableAdvancedDto(eventPage, attender.getId());
     }
 
@@ -174,12 +174,6 @@ public class EventServiceImpl implements EventService {
         User user = modelMapper.map(restClient.findByEmail(email), User.class);
         Page<Event> events = eventRepo.findAllFavoritesByUser(user.getId(), page);
         return buildPageableAdvancedDto(events, user.getId());
-    }
-
-    private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
-        int startIndex = page.getPageNumber() * page.getPageSize();
-        int endIndex = Math.min(startIndex + page.getPageSize(), allEvents.size());
-        return allEvents.subList(startIndex, endIndex);
     }
 
     private List<Event> sortUserEventsByEventType(
