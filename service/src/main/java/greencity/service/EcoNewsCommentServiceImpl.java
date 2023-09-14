@@ -45,7 +45,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
-    private  UserService userService;
+    private UserService userService;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -83,7 +83,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        userService.updateUserRating(UserUpdateScoreType.COMMENT_OR_REPLY.getPoints(), userVO.getEmail());
+        userService.updateUserRating(RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -171,7 +171,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         comment.setStatus(CommentStatus.DELETED);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO,
+                accessToken));
         ecoNewsCommentRepo.save(comment);
     }
 
@@ -214,7 +215,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
-        userService.updateUserRating(UserUpdateScoreType.LIKE_COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
+        userService.updateUserRating(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 

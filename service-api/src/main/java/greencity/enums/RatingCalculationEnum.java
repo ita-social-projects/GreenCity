@@ -58,9 +58,9 @@ public enum RatingCalculationEnum {
 
     UNDO_FIRST_20_ACHIEVEMENTS(-50);
 
-    private final float ratingPoints;
+    private final long ratingPoints;
 
-    RatingCalculationEnum(float ratingPoints) {
+    RatingCalculationEnum(long ratingPoints) {
         this.ratingPoints = ratingPoints;
     }
 }

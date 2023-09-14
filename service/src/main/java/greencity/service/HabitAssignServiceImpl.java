@@ -889,25 +889,24 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
-        UserVO userVO=userService.findById(userId);
+        UserVO userVO = userService.findById(userId);
         int dateSize = dates.size();
-        UserUpdateScoreType scoreType = null;
+        RatingCalculationEnum scoreType = null;
         switch (dateSize) {
             case 14:
-                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_14_DAYS;
+                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS;
                 break;
             case 21:
-                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_21_DAYS;
+                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS;
                 break;
             case 30:
-                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_30_PLUS_DAYS;
+                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS;
                 break;
             default:
         }
         if (scoreType != null) {
-            userService.updateUserRating(scoreType.getPoints(), userVO.getEmail());
+            userService.updateUserRating(scoreType.getRatingPoints(), userVO.getEmail());
         }
-
 
         return dtos;
     }

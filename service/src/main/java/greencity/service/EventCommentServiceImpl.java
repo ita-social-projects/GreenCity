@@ -17,7 +17,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
-import greencity.enums.UserUpdateScoreType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -87,7 +87,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
-        userService.updateUserRating(UserUpdateScoreType.COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
+        userService.updateUserRating(RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
         return addEventCommentDtoResponse;
     }
 
@@ -296,7 +296,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
         }
-        userService.updateUserRating(UserUpdateScoreType.LIKE_COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
+        userService.updateUserRating(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
         eventCommentRepo.save(comment);
     }
 

@@ -19,6 +19,7 @@ public interface UserService {
      *
      */
     void updateUserRating(long add, String email);
+
     /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
      *

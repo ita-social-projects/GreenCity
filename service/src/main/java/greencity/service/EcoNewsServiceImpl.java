@@ -97,7 +97,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
                 AchievementCategoryType.ECO_NEWS, 0));
-        userService.updateUserRating(UserUpdateScoreType.CREATED_NEWS.getPoints(),email);
+        userService.updateUserRating(RatingCalculationEnum.CREATE_NEWS.getRatingPoints(), email);
         return ecoNewsDto;
     }
 
@@ -423,7 +423,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         comment.getUsersLiked().add(user);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user, accessToken));
+            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user,
+                accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS_LIKE, 0));
     }
@@ -439,7 +440,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
         CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user, accessToken));
+            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user,
+                accessToken));
     }
 
     @Override

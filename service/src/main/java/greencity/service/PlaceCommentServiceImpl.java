@@ -1,4 +1,5 @@
 package greencity.service;
+
 import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -105,7 +106,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         UserVO userVO = restClient.findByEmail(authentication.getName());
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO,
+                accessToken));
     }
 
     /**

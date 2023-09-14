@@ -67,6 +67,7 @@ class EventCommentServiceImplTest {
     private EventCommentServiceImpl eventCommentService;
     @Mock
     private UserService userService;
+
     @Test
     void save() {
         UserVO userVO = getUserVO();

@@ -67,6 +67,7 @@ class AchievementServiceImplTest {
     private AchievementTranslationRepo achievementTranslationRepo;
     @Mock
     private UserService userService;
+
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
