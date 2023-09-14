@@ -15,10 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
-import greencity.enums.CommentStatus;
-import greencity.enums.Role;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -49,6 +46,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
+    private  UserService userService;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -86,6 +84,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
+        userService.updateUserRating(UserUpdateScoreType.COMMENT_OR_REPLY.getPoints(), userVO.getEmail());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 

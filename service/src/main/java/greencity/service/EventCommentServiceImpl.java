@@ -17,6 +17,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
+import greencity.enums.UserUpdateScoreType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
+    private UserService userService;
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RestClient restClient;
@@ -85,6 +87,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
+        userService.updateUserRating(UserUpdateScoreType.COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
         return addEventCommentDtoResponse;
     }
 
