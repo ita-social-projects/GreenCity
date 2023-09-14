@@ -242,6 +242,11 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user,
+                accessToken));
         eventCommentRepo.save(eventComment);
     }
 
@@ -300,17 +305,19 @@ public class EventCommentServiceImpl implements EventCommentService {
     public void like(Long commentId, UserVO userVO) {
         EventComment comment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO,
+                    accessToken));
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
+                    accessToken));
         }
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
-                accessToken));
-
         eventCommentRepo.save(comment);
     }
 

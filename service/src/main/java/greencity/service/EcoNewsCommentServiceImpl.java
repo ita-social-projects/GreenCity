@@ -208,20 +208,22 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public void like(Long id, UserVO userVO) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO,
+                    accessToken));
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
+                    accessToken));
         }
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
-                accessToken));
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 
