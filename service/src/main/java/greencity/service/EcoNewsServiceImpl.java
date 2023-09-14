@@ -17,11 +17,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
-import greencity.enums.Role;
-import greencity.enums.CommentStatus;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -66,6 +62,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -101,6 +98,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
                 AchievementCategoryType.ECO_NEWS, 0));
+        userService.updateUserRating(UserUpdateScoreType.CREATED_NEWS.getPoints(),email);
         return ecoNewsDto;
     }
 

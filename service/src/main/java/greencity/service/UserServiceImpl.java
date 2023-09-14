@@ -8,10 +8,7 @@ import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.LowRoleLevelException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
 
 import java.sql.Timestamp;
@@ -81,7 +78,16 @@ public class UserServiceImpl implements UserService {
         return userRepo.findIdByEmail(email).orElseThrow(
             () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserRating(long add, String email) {
+        var user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
+        user.setRating(user.getRating() + add);
+        userRepo.save(user);
+    }
     /**
      * Updates last activity time for a given user.
      *
