@@ -37,10 +37,7 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.*;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -93,6 +90,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final HabitStatusCalendarRepo habitStatusCalendarRepo;
     private final ShoppingListItemService shoppingListItemService;
+    private final UserService userService;
     private final CustomShoppingListItemService customShoppingListItemService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
@@ -891,6 +889,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
+        UserVO userVO=userService.findById(userId);
+        int dateSize = dates.size();
+        UserUpdateScoreType scoreType = null;
+        switch (dateSize) {
+            case 14:
+                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_14_DAYS;
+                break;
+            case 21:
+                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_21_DAYS;
+                break;
+            case 30:
+                scoreType = UserUpdateScoreType.ACQUIRED_HABIT_30_PLUS_DAYS;
+                break;
+            default:
+        }
+        if (scoreType != null) {
+            userService.updateUserRating(scoreType.getPoints(), userVO.getEmail());
+        }
+
 
         return dtos;
     }
