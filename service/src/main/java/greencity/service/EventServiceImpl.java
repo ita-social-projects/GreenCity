@@ -176,6 +176,13 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events, user.getId());
     }
 
+    @Override
+    public Set<AddressDto> getAllEventsAddresses() {
+        return eventRepo.findAll().stream().map(event -> modelMapper
+            .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+            .collect(Collectors.toSet());
+    }
+
     private List<Event> sortUserEventsByEventType(
         String eventType, User attender, String userLatitude, String userLongitude) {
         if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("ONLINE")) {

@@ -5,15 +5,13 @@ import greencity.TestConst;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
@@ -1355,5 +1353,24 @@ class EventServiceImplTest {
             }.getType());
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+    }
+
+    @Test
+    void getAllEventAddressesTest() {
+        Event event = ModelUtils.getEvent();
+        AddressDto expectedAddressDto = ModelUtils.getAddressDto();
+        Set<AddressDto> expectedAddresses = Set.of(expectedAddressDto);
+        Address address = event.getDates().get(event.getDates().size() - 1).getAddress();
+
+        when(eventRepo.findAll()).thenReturn(List.of(event));
+        when(modelMapper.map(address, AddressDto.class)).thenReturn(expectedAddressDto);
+
+        Set<AddressDto> actualAddresses = eventService.getAllEventsAddresses();
+
+        assertEquals(expectedAddresses, actualAddresses);
+        assertTrue(actualAddresses.contains(expectedAddressDto));
+
+        verify(eventRepo).findAll();
+        verify(modelMapper).map(address, AddressDto.class);
     }
 }

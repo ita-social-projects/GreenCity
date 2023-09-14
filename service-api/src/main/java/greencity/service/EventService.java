@@ -1,11 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.EventAttenderDto;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventVO;
-import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.*;
 import greencity.dto.filter.FilterEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -159,4 +155,12 @@ public interface EventService {
      * @author Midianyi Yurii.
      */
     PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
+
+    /**
+     * Method for getting all events' addresses.
+     *
+     * @return set of {@link AddressDto} instances.
+     * @author Olena Sotnik.
+     */
+    Set<AddressDto> getAllEventsAddresses();
 }
