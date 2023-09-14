@@ -1,7 +1,12 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.event.*;
+import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventVO;
 import greencity.dto.filter.FilterEventDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

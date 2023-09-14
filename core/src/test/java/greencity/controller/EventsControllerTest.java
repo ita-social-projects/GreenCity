@@ -685,7 +685,7 @@ class EventsControllerTest {
     @Test
     @SneakyThrows
     void getAllEventsAddressesTest() {
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllEventsAddresses"))
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses"))
             .andExpect(status().isOk());
 
         verify(eventService).getAllEventsAddresses();
