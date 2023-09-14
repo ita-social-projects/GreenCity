@@ -15,6 +15,7 @@ import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
+import greencity.enums.UserUpdateScoreType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -45,6 +46,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final RestClient restClient;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
+    private final UserService userService;
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
     private final AchievementTranslationRepo achievementTranslationRepo;
@@ -225,6 +227,26 @@ public class AchievementServiceImpl implements AchievementService {
     public void calculateAchievements(Long id, AchievementType achievementType,
         AchievementCategoryType achievementCategory, Integer size) {
         achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
+       UserVO userVO= userService.findById(id);
+        UserUpdateScoreType scoreType = null;
+        switch (size) {
+            case 5:
+                scoreType = UserUpdateScoreType.FIRST_5_ACHIEVEMENTS;
+                break;
+            case 10:
+                scoreType = UserUpdateScoreType.FIRST_10_ACHIEVEMENTS;
+                break;
+            case 15:
+                scoreType = UserUpdateScoreType.FIRST_15_ACHIEVEMENTS;
+                break;
+            case 20:
+                scoreType = UserUpdateScoreType.FIRST_20_ACHIEVEMENTS;
+                break;
+            default:
+        }
+        if (scoreType != null) {
+            userService.updateUserRating(scoreType.getPoints(), userVO.getEmail());
+        }
     }
 
     private List<AchievementNotification> setAchievementNotifications(
