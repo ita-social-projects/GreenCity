@@ -32,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -266,5 +268,23 @@ class AchievementServiceImplTest {
             any(AchievementType.class),
             any(AchievementCategoryType.class),
             anyInt());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {5, 10, 15, 20})
+    void calculateAchievement(int incrementValue) {
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
+
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+
+        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS,
+            incrementValue);
+
+        verify(achievementCalculation).calculateAchievement(
+            anyLong(),
+            any(AchievementType.class),
+            any(AchievementCategoryType.class),
+            eq(incrementValue));
     }
 }

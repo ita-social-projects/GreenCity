@@ -236,7 +236,6 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategoryType achievementCategory, Integer size) {
         achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
         UserVO userVO = userService.findById(id);
-        RatingCalculationEnum scoreType = null;
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         switch (size) {

@@ -1,8 +1,6 @@
 package greencity.enums;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 public enum RatingCalculationEnum {

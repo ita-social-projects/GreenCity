@@ -55,6 +55,8 @@ import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -420,7 +422,43 @@ class HabitAssignServiceImplTest {
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
-            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
+            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 30),
+            "en"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {14, 21, 30})
+    void findHabitAssignsBetweenDates(int num) {
+        HabitAssign habit1 = ModelUtils.getHabitAssign();
+        HabitAssign habit2 = ModelUtils.getHabitAssign();
+        habit2.setId(2L);
+        habit2.getHabit().setId(2L);
+        habit1.setDuration(3);
+        habit2.setDuration(3);
+        ZonedDateTime creation = ZonedDateTime.of(2020, 12, 1,
+            12, 12, 12, 12, ZoneId.of("Europe/Kiev"));
+        habit1.setCreateDate(creation);
+        habit2.setCreateDate(creation);
+        habit1.setHabitStatusCalendars(Collections.singletonList(HabitStatusCalendar
+            .builder().enrollDate(LocalDate.of(2020, 12, 1)).build()));
+        habit2.setHabitStatusCalendars(Collections.emptyList());
+
+        List<HabitsDateEnrollmentDto> dtos = new ArrayList<>();
+        for (int i = 1; i <= num; i++) {
+            dtos.add(HabitsDateEnrollmentDto.builder().enrollDate(LocalDate.of(2020, 12, i))
+                .habitAssigns(Collections.emptyList()).build());
+        }
+
+        when(userService.findById(any())).thenReturn(userVO);
+
+        when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
+            eq(LocalDate.of(2020, 12, 1)), eq(LocalDate.of(2020, 12, num))))
+                .thenReturn(Collections.emptyList());
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+
+        assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
+            LocalDate.of(2020, 12, 1), LocalDate.of(2020, 12, num),
             "en"));
     }
 

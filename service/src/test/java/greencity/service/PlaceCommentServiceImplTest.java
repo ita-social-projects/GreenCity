@@ -49,6 +49,8 @@ class PlaceCommentServiceImplTest {
     private Authentication authentication;
     @InjectMocks
     private PlaceCommentServiceImpl placeCommentService;
+    @Mock
+    private UserService userService;
 
     @Test
     void findByIdTest() {
@@ -64,6 +66,7 @@ class PlaceCommentServiceImplTest {
 
     @Test
     void deleteByIdTest() {
+        String accessToken = "Token";
         UserVO userVO = ModelUtils.getUserVO();
         Comment comment = ModelUtils.getComment();
         when(placeCommentRepo.findById(anyLong())).thenReturn(Optional.of(comment));
@@ -72,6 +75,8 @@ class PlaceCommentServiceImplTest {
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getName()).thenReturn("email");
         when(restClient.findByEmail("email")).thenReturn(userVO);
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+
         placeCommentService.deleteById(1L);
         verify(placeCommentRepo, times(1)).delete(comment);
     }
