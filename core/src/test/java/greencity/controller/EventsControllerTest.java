@@ -681,4 +681,13 @@ class EventsControllerTest {
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);
     }
+
+    @Test
+    @SneakyThrows
+    void getAllEventsAddressesTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses"))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAllEventsAddresses();
+    }
 }
