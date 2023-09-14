@@ -296,7 +296,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
         }
-
+        userService.updateUserRating(UserUpdateScoreType.LIKE_COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
         eventCommentRepo.save(comment);
     }
 

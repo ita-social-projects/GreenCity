@@ -215,6 +215,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
+        userService.updateUserRating(UserUpdateScoreType.LIKE_COMMENT_OR_REPLY.getPoints(),userVO.getEmail());
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 
