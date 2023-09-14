@@ -422,7 +422,7 @@ class HabitAssignServiceImplTest {
         when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
-            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 30),
+            LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
             "en"));
     }
 
