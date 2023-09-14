@@ -70,6 +70,7 @@ class EventCommentServiceImplTest {
     private UserService userService;
     @Mock
     HttpServletRequest httpServletRequest;
+
     @Test
     void save() {
         UserVO userVO = getUserVO();

@@ -96,7 +96,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
 
         return addEventCommentDtoResponse;
     }
@@ -308,7 +308,8 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
+                accessToken));
 
         eventCommentRepo.save(comment);
     }

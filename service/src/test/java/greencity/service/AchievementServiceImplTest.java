@@ -71,6 +71,7 @@ class AchievementServiceImplTest {
     private UserService userService;
     @Mock
     HttpServletRequest httpServletRequest;
+
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());

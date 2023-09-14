@@ -242,23 +242,26 @@ public class AchievementServiceImpl implements AchievementService {
         switch (size) {
             case 5:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_5_ACHIEVEMENTS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_5_ACHIEVEMENTS, userVO,
+                        accessToken));
                 break;
             case 10:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_10_ACHIEVEMENTS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_10_ACHIEVEMENTS, userVO,
+                        accessToken));
                 break;
             case 15:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_15_ACHIEVEMENTS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_15_ACHIEVEMENTS, userVO,
+                        accessToken));
                 break;
             case 20:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_20_ACHIEVEMENTS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_20_ACHIEVEMENTS, userVO,
+                        accessToken));
                 break;
             default:
         }
-
     }
 
     private List<AchievementNotification> setAchievementNotifications(

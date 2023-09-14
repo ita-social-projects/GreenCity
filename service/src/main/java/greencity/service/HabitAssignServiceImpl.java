@@ -901,15 +901,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         switch (dateSize) {
             case 14:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS, userVO,
+                        accessToken));
                 break;
             case 21:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS, userVO,
+                        accessToken));
                 break;
             case 30:
                 CompletableFuture.runAsync(
-                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS, userVO, accessToken));
+                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS, userVO,
+                        accessToken));
                 break;
             default:
         }

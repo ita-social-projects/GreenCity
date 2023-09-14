@@ -79,7 +79,6 @@ public class UserServiceImpl implements UserService {
             () -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL));
     }
 
-
     /**
      * Updates last activity time for a given user.
      *

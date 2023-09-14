@@ -97,10 +97,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
                 AchievementCategoryType.ECO_NEWS, 0));
-        UserVO user=userService.findByEmail(email);
+        UserVO user = userService.findByEmail(email);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user, accessToken));
 
         return ecoNewsDto;
     }

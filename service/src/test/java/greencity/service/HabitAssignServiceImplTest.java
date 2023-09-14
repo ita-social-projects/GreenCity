@@ -128,7 +128,6 @@ class HabitAssignServiceImplTest {
     @Mock
     HttpServletRequest httpServletRequest;
 
-
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
