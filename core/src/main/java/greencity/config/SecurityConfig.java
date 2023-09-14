@@ -153,6 +153,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS,
                 EVENTS + "/event/{eventId}",
                 EVENTS + "/getAllSubscribers/{eventId}",
+                EVENTS + "/addresses",
                 "/language",
                 "/search",
                 "/search/econews",

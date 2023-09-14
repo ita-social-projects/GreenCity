@@ -176,6 +176,13 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events, user.getId());
     }
 
+    @Override
+    public Set<AddressDto> getAllEventsAddresses() {
+        return eventRepo.findAll().stream().map(event -> modelMapper
+            .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+            .collect(Collectors.toSet());
+    }
+
     private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
         int startIndex = page.getPageNumber() * page.getPageSize();
         int endIndex = Math.min(startIndex + page.getPageSize(), allEvents.size());
