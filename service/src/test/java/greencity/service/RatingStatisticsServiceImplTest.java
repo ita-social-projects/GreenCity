@@ -1,5 +1,5 @@
 package greencity.service;
-
+import greencity.enums.RatingCalculationEnum;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
@@ -7,7 +7,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
-import greencity.annotations.RatingCalculationEnum;
+import greencity.enums.RatingCalculationEnum;
 import greencity.filters.RatingStatisticsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.RatingStatisticsRepo;
@@ -46,14 +46,14 @@ class RatingStatisticsServiceImplTest {
 
     private final RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO
         .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingCalculationEnum(RatingCalculationEnum.ADD_ECO_NEWS).build();
+        .ratingCalculationEnum(RatingCalculationEnum.CREATE_NEWS).build();
 
     private final RatingStatistics ratingStatistics = RatingStatistics
         .builder().id(1L).createDate(defaultTime).pointsChanged(1.0).rating(5.0)
-        .ratingCalculationEnum(greencity.annotations.RatingCalculationEnum.ADD_ECO_NEWS).build();
+        .ratingCalculationEnum(RatingCalculationEnum.CREATE_NEWS).build();
 
     private final RatingStatisticsDto ratingStatisticsDto = new RatingStatisticsDto(1L, defaultTime,
-        RatingCalculationEnum.ADD_ECO_NEWS,
+        RatingCalculationEnum.CREATE_NEWS,
         1.0f, 5.0f, UserVO.builder().build());
 
     private final Page<RatingStatistics> ratingStatisticsPage = Page.empty(pageable);

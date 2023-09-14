@@ -122,6 +122,8 @@ class HabitAssignServiceImplTest {
     private ShoppingListItemService shoppingListItemService;
     @Mock
     private CustomShoppingListItemService customShoppingListItemService;
+    @Mock
+    private UserService userService;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 

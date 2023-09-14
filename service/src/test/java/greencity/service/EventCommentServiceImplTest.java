@@ -65,7 +65,8 @@ class EventCommentServiceImplTest {
     RestClient restClient;
     @InjectMocks
     private EventCommentServiceImpl eventCommentService;
-
+    @Mock
+    private UserService userService;
     @Test
     void save() {
         UserVO userVO = getUserVO();

@@ -65,7 +65,8 @@ class EcoNewsCommentServiceImplTest {
     EcoNewsRepo ecoNewsRepo;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
-
+    @Mock
+    private UserService userService;
     private String token = "token";
 
     @Test

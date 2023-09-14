@@ -78,7 +78,8 @@ class EcoNewsServiceImplTest {
 
     @Mock
     EcoNewsSearchRepo ecoNewsSearchRepo;
-
+    @Mock
+    private UserService userService;
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
