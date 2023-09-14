@@ -15,12 +15,6 @@ import java.util.Optional;
 
 public interface UserService {
     /**
-     * Updates an employee's rating information using the provided UserRatingDto.
-     *
-     */
-    void updateUserRating(long add, String email);
-
-    /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
      *
      * @param email - {@link UserVO}'s email

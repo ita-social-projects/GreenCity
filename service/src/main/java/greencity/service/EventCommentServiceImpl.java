@@ -30,9 +30,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Service
 @AllArgsConstructor
@@ -43,6 +47,8 @@ public class EventCommentServiceImpl implements EventCommentService {
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RestClient restClient;
+    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final HttpServletRequest httpServletRequest;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -87,7 +93,11 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
-        userService.updateUserRating(RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
+
         return addEventCommentDtoResponse;
     }
 
@@ -296,7 +306,10 @@ public class EventCommentServiceImpl implements EventCommentService {
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
         }
-        userService.updateUserRating(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO, accessToken));
+
         eventCommentRepo.save(comment);
     }
 

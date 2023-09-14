@@ -19,12 +19,14 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -36,6 +38,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Service
 @AllArgsConstructor
@@ -50,6 +56,8 @@ public class AchievementServiceImpl implements AchievementService {
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
     private final AchievementTranslationRepo achievementTranslationRepo;
+    private final HttpServletRequest httpServletRequest;
+    private final RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}
@@ -229,24 +237,28 @@ public class AchievementServiceImpl implements AchievementService {
         achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
         UserVO userVO = userService.findById(id);
         RatingCalculationEnum scoreType = null;
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
         switch (size) {
             case 5:
-                scoreType = RatingCalculationEnum.FIRST_5_ACHIEVEMENTS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_5_ACHIEVEMENTS, userVO, accessToken));
                 break;
             case 10:
-                scoreType = RatingCalculationEnum.FIRST_10_ACHIEVEMENTS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_10_ACHIEVEMENTS, userVO, accessToken));
                 break;
             case 15:
-                scoreType = RatingCalculationEnum.FIRST_15_ACHIEVEMENTS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_15_ACHIEVEMENTS, userVO, accessToken));
                 break;
             case 20:
-                scoreType = RatingCalculationEnum.FIRST_20_ACHIEVEMENTS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_20_ACHIEVEMENTS, userVO, accessToken));
                 break;
             default:
         }
-        if (scoreType != null) {
-            userService.updateUserRating(scoreType.getRatingPoints(), userVO.getEmail());
-        }
+
     }
 
     private List<AchievementNotification> setAchievementNotifications(

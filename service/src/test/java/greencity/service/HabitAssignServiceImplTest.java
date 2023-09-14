@@ -125,6 +125,8 @@ class HabitAssignServiceImplTest {
     @Mock
     private UserService userService;
 
+
+
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
@@ -408,6 +410,7 @@ class HabitAssignServiceImplTest {
                     new HabitEnrollDto(1L, "", "", false),
                     new HabitEnrollDto(2L, "", "", false)))
                 .build());
+        when(userService.findById(any())).thenReturn(userVO);
 
         when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))

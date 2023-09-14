@@ -83,7 +83,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        userService.updateUserRating(RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
+        CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
+
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -215,7 +217,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
         }
-        userService.updateUserRating(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY.getRatingPoints(), userVO.getEmail());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO, accessToken));
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
 

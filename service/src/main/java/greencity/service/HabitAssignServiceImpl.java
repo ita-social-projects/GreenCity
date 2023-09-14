@@ -75,6 +75,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
+
 /**
  * Implementation of {@link HabitAssignService}.
  */
@@ -96,6 +100,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
+    private final HttpServletRequest httpServletRequest;
+    private final greencity.rating.RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}
@@ -887,25 +893,25 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .habitAssigns(new ArrayList<>())
                 .build())
             .collect(Collectors.toList());
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
         UserVO userVO = userService.findById(userId);
         int dateSize = dates.size();
-        RatingCalculationEnum scoreType = null;
         switch (dateSize) {
             case 14:
-                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS, userVO, accessToken));
                 break;
             case 21:
-                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS, userVO, accessToken));
                 break;
             case 30:
-                scoreType = RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS;
+                CompletableFuture.runAsync(
+                        () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS, userVO, accessToken));
                 break;
             default:
-        }
-        if (scoreType != null) {
-            userService.updateUserRating(scoreType.getRatingPoints(), userVO.getEmail());
         }
 
         return dtos;
