@@ -45,6 +45,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
+
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
     @Mock
@@ -67,7 +69,8 @@ class AchievementServiceImplTest {
     private AchievementTranslationRepo achievementTranslationRepo;
     @Mock
     private UserService userService;
-
+    @Mock
+    HttpServletRequest httpServletRequest;
     @Test
     void findAllWithEmptyListTest() {
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
@@ -251,6 +254,11 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
+
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+
         achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),

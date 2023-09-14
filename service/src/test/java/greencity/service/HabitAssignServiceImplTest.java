@@ -60,6 +60,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -124,7 +125,8 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemService customShoppingListItemService;
     @Mock
     private UserService userService;
-
+    @Mock
+    HttpServletRequest httpServletRequest;
 
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
@@ -415,6 +417,8 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
                 .thenReturn(habitAssignList);
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),

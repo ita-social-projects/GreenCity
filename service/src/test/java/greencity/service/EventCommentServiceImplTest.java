@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -67,7 +68,8 @@ class EventCommentServiceImplTest {
     private EventCommentServiceImpl eventCommentService;
     @Mock
     private UserService userService;
-
+    @Mock
+    HttpServletRequest httpServletRequest;
     @Test
     void save() {
         UserVO userVO = getUserVO();
@@ -90,6 +92,8 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
         doNothing().when(restClient).sendNewEventComment(any());
+        String accessToken = "Token";
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());
@@ -422,6 +426,10 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         EventComment comment = getEventComment();
+        String accessToken = "Token";
+
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
+
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
@@ -438,6 +446,9 @@ class EventCommentServiceImplTest {
         EventComment comment = getEventComment();
         comment.setCurrentUserLiked(true);
         comment.getUsersLiked().add(user);
+        String accessToken = "Token";
+
+        when(httpServletRequest.getHeader("Authorization")).thenReturn(accessToken);
 
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
