@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.ToString;
 
 @Getter
-@ToString
 public enum RatingCalculationEnum {
     ACQUIRED_HABIT_14_DAYS(20),
 
@@ -59,9 +58,9 @@ public enum RatingCalculationEnum {
 
     UNDO_FIRST_20_ACHIEVEMENTS(-50);
 
-    private final long ratingPoints;
+    private final float ratingPoints;
 
-    RatingCalculationEnum(int ratingPoints) {
+    RatingCalculationEnum(float ratingPoints) {
         this.ratingPoints = ratingPoints;
     }
 }

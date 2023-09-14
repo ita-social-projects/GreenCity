@@ -82,7 +82,7 @@ class RatingStatisticsSpecificationTest {
     @BeforeEach
     void setUp() {
         RatingStatisticsViewDto ratingStatisticsViewDto =
-            new RatingStatisticsViewDto("2", "COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
+            new RatingStatisticsViewDto("2", "UNLIKE_COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
 
         criteriaList = new ArrayList<>();
         criteriaList.add(
@@ -139,7 +139,7 @@ class RatingStatisticsSpecificationTest {
 
         when(criteriaBuilderMock.disjunction()).thenReturn(predicateMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.COMMENT_OR_REPLY))
+        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY))
             .thenReturn(andEventNamePredicate);
 
         when(criteriaBuilderMock.or(predicateMock, andEventNamePredicate)).thenReturn(andEventNamePredicate);
