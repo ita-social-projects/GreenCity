@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.RatingCalculationEnum;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -82,7 +81,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.ECO_NEWS_COMMENT, 0));
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
         userService.updateUserRating(UserUpdateScoreType.COMMENT_OR_REPLY.getPoints(), userVO.getEmail());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
@@ -172,7 +171,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         comment.setStatus(CommentStatus.DELETED);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO, accessToken));
         ecoNewsCommentRepo.save(comment);
     }
 

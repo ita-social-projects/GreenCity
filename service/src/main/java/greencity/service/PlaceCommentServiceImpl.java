@@ -1,6 +1,5 @@
 package greencity.service;
-
-import greencity.annotations.RatingCalculationEnum;
+import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
@@ -89,7 +88,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         });
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
 
@@ -106,7 +105,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         UserVO userVO = restClient.findByEmail(authentication.getName());
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO, accessToken));
     }
 
     /**

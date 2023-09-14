@@ -1,8 +1,11 @@
 package greencity.enums;
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public enum RatingCalculationEnum {
     ACQUIRED_HABIT_14_DAYS(20),
 
@@ -56,9 +59,9 @@ public enum RatingCalculationEnum {
 
     UNDO_FIRST_20_ACHIEVEMENTS(-50);
 
-    private final long points;
+    private final long ratingPoints;
 
-    RatingCalculationEnum(int points) {
-        this.points = points;
+    RatingCalculationEnum(int ratingPoints) {
+        this.ratingPoints = ratingPoints;
     }
 }

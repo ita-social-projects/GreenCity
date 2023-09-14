@@ -1,11 +1,11 @@
 package greencity.rating;
 
-import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
 import greencity.entity.User;
+import greencity.enums.RatingCalculationEnum;
 import greencity.service.RatingStatisticsService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
