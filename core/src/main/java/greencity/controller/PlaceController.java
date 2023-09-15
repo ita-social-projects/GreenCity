@@ -401,4 +401,22 @@ public class PlaceController {
         @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.addPlaceFromUi(dto, principal.getName()));
     }
+
+    /**
+     * The method which returns all places.
+     *
+     * @return pageableDto of {@link AdminPlaceDto}.
+     * @author Olena Sotnik.
+     */
+    @ApiOperation(value = "Get all places")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageable
+    @GetMapping("all")
+    public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@ApiIgnore Pageable page) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page));
+    }
 }
