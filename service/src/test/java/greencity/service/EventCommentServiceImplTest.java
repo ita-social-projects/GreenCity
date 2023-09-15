@@ -19,6 +19,7 @@ import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -65,6 +67,12 @@ class EventCommentServiceImplTest {
     RestClient restClient;
     @InjectMocks
     private EventCommentServiceImpl eventCommentService;
+    @Mock
+    private UserService userService;
+    @Mock
+    HttpServletRequest httpServletRequest;
+    @Mock
+    private RatingCalculation ratingCalculation;
 
     @Test
     void save() {
@@ -420,6 +428,7 @@ class EventCommentServiceImplTest {
         UserVO userVO = getUserVO();
         User user = getUser();
         EventComment comment = getEventComment();
+
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
 
@@ -436,7 +445,6 @@ class EventCommentServiceImplTest {
         EventComment comment = getEventComment();
         comment.setCurrentUserLiked(true);
         comment.getUsersLiked().add(user);
-
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.of(comment));
 
         eventCommentService.like(commentId, userVO);

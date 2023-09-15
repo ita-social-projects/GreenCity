@@ -45,6 +45,7 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -55,11 +56,14 @@ import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -122,6 +126,11 @@ class HabitAssignServiceImplTest {
     private ShoppingListItemService shoppingListItemService;
     @Mock
     private CustomShoppingListItemService customShoppingListItemService;
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -544,9 +553,9 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
-
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getUser().setId(userId);
+        habitAssign.setWorkingDays(10);
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
 
@@ -813,13 +822,14 @@ class HabitAssignServiceImplTest {
     void cancelHabitAssign() {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-
+        habitAssign.setWorkingDays(10);
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
 
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
         assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
 
         verify(habitAssignRepo).save(habitAssign);
