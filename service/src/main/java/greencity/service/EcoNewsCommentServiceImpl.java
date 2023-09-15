@@ -171,7 +171,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             comment.getComments().forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
         comment.setStatus(CommentStatus.DELETED);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
         ecoNewsCommentRepo.save(comment);
@@ -207,7 +206,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public void like(Long id, UserVO userVO) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);

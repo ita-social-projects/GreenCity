@@ -87,7 +87,6 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);

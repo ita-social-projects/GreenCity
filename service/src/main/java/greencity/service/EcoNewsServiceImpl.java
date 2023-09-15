@@ -428,7 +428,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user));
         CompletableFuture.runAsync(() -> achievementCalculation

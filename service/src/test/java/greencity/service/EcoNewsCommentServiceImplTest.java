@@ -230,7 +230,6 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         EcoNewsComment comment = verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -244,7 +243,6 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -255,7 +253,6 @@ class EcoNewsCommentServiceImplTest {
         UserVO userVO = getUserVO();
         user.setRole(Role.ROLE_ADMIN);
         Long commentId = 1L;
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
 

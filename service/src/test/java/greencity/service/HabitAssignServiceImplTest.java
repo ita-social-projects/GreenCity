@@ -830,8 +830,6 @@ class HabitAssignServiceImplTest {
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
 
-        when(httpServletRequest.getHeader("Authorization")).thenReturn("Token");
-
         when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
         assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
 

@@ -994,7 +994,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS + habitId));
         habitAssignToCancel.setStatus(HabitAssignStatus.CANCELLED);
         UserVO userVO = userService.findById(userId);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
             CompletableFuture.runAsync(
@@ -1019,7 +1018,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         UserVO userVO = userService.findById(userId);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
             CompletableFuture.runAsync(
