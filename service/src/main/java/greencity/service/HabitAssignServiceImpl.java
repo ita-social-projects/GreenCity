@@ -896,27 +896,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
-        UserVO userVO = userService.findById(userId);
-        int dateSize = dates.size();
-        switch (dateSize) {
-            case 14:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_14_DAYS, userVO,
-                        accessToken));
-                break;
-            case 21:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_21_DAYS, userVO,
-                        accessToken));
-                break;
-            case 30:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ACQUIRED_HABIT_30_PLUS_DAYS, userVO,
-                        accessToken));
-                break;
-            default:
-        }
-
         return dtos;
     }
 

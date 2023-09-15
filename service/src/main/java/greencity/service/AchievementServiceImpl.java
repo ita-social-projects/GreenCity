@@ -235,32 +235,6 @@ public class AchievementServiceImpl implements AchievementService {
     public void calculateAchievements(Long id, AchievementType achievementType,
         AchievementCategoryType achievementCategory, Integer size) {
         achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
-        UserVO userVO = userService.findById(id);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-
-        switch (size) {
-            case 5:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_5_ACHIEVEMENTS, userVO,
-                        accessToken));
-                break;
-            case 10:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_10_ACHIEVEMENTS, userVO,
-                        accessToken));
-                break;
-            case 15:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_15_ACHIEVEMENTS, userVO,
-                        accessToken));
-                break;
-            case 20:
-                CompletableFuture.runAsync(
-                    () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.FIRST_20_ACHIEVEMENTS, userVO,
-                        accessToken));
-                break;
-            default:
-        }
     }
 
     private List<AchievementNotification> setAchievementNotifications(
