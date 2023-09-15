@@ -78,10 +78,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
 import javax.servlet.http.HttpServletRequest;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 /**
  * Implementation of {@link HabitAssignService}.
