@@ -37,10 +37,7 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.*;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -64,6 +61,7 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -103,6 +101,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
     private final HttpServletRequest httpServletRequest;
+    private final UserService userService;
+    private final RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}
@@ -708,6 +708,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .enrollDate(date).habitAssign(habitAssign).build();
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
+        UserVO userVO = userService.findById(userId);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO,
+                accessToken));
         return buildHabitAssignDto(habitAssign, language);
     }
 
@@ -798,7 +803,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
-
+        UserVO userVO = userService.findById(userId);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
+                accessToken));
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
