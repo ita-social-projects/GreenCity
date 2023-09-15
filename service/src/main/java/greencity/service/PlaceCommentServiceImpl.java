@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
