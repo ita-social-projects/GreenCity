@@ -97,14 +97,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final ShoppingListItemTranslationRepo shoppingListItemTranslationRepo;
     private final HabitStatusCalendarRepo habitStatusCalendarRepo;
     private final ShoppingListItemService shoppingListItemService;
-    private final UserService userService;
     private final CustomShoppingListItemService customShoppingListItemService;
     private final HabitStatisticService habitStatisticService;
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
     private final HttpServletRequest httpServletRequest;
-    private final greencity.rating.RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}

@@ -15,18 +15,15 @@ import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
-import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
-import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -39,10 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 @Service
 @AllArgsConstructor
 @EnableCaching
@@ -52,12 +45,9 @@ public class AchievementServiceImpl implements AchievementService {
     private final RestClient restClient;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
-    private final UserService userService;
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
     private final AchievementTranslationRepo achievementTranslationRepo;
-    private final HttpServletRequest httpServletRequest;
-    private final RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}
