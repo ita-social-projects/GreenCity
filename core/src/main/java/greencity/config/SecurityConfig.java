@@ -256,6 +256,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{placeId}/comments",
                 "/place/propose",
                 "/place/save/favorite/",
+                "/place/all",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST,
                 "/user/{userId}/habit",
@@ -318,8 +319,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments",
                 "/comments/{id}",
                 "/user/all",
-                "/user/roles",
-                "/place/all")
+                "/user/roles")
             .hasAnyRole(ADMIN, MODERATOR)
             .antMatchers(HttpMethod.POST,
                 "/place/filter/predicate")
