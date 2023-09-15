@@ -17,9 +17,11 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +41,11 @@ import java.util.stream.Collectors;
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
+    private UserService userService;
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RestClient restClient;
+    private final RatingCalculation ratingCalculation;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -85,6 +90,10 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
+
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
+
         return addEventCommentDtoResponse;
     }
 
@@ -229,6 +238,9 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
+
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user));
         eventCommentRepo.save(eventComment);
     }
 
@@ -290,10 +302,13 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
         }
-
         eventCommentRepo.save(comment);
     }
 

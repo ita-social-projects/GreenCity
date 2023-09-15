@@ -1,7 +1,7 @@
 package greencity.filters;
 
 import static org.mockito.Mockito.*;
-import greencity.annotations.RatingCalculationEnum;
+import greencity.enums.RatingCalculationEnum;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
@@ -82,7 +82,7 @@ class RatingStatisticsSpecificationTest {
     @BeforeEach
     void setUp() {
         RatingStatisticsViewDto ratingStatisticsViewDto =
-            new RatingStatisticsViewDto("2", "ADD_COMMENT", "1", "", "2021-01-12", "2021-01-13", "", "50");
+            new RatingStatisticsViewDto("2", "UNLIKE_COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
 
         criteriaList = new ArrayList<>();
         criteriaList.add(
@@ -139,7 +139,7 @@ class RatingStatisticsSpecificationTest {
 
         when(criteriaBuilderMock.disjunction()).thenReturn(predicateMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.ADD_COMMENT))
+        when(criteriaBuilderMock.equal(pathRatingStatisticsEnumMock, RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY))
             .thenReturn(andEventNamePredicate);
 
         when(criteriaBuilderMock.or(predicateMock, andEventNamePredicate)).thenReturn(andEventNamePredicate);

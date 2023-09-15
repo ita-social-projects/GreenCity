@@ -26,6 +26,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsRepo;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -78,6 +79,11 @@ class EcoNewsServiceImplTest {
 
     @Mock
     EcoNewsSearchRepo ecoNewsSearchRepo;
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
