@@ -178,8 +178,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Set<AddressDto> getAllEventsAddresses() {
-        return eventRepo.findAll().stream().map(event -> modelMapper
-            .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+        return eventRepo.findAll().stream()
+            .filter(event -> Objects.nonNull(event.getDates().get(event.getDates().size() - 1).getAddress()))
+            .map(event -> modelMapper
+                .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
             .collect(Collectors.toSet());
     }
 
