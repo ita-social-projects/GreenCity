@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +28,8 @@ class RatingCalculationTest {
     private RatingStatisticsService ratingStatisticsService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private RatingCalculation ratingCalculation;
@@ -55,12 +59,11 @@ class RatingCalculationTest {
             .createDate(now)
             .pointsChanged(rating.getRatingPoints())
             .build();
-        String accessToken = "token";
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        doNothing().when(restClient).save(userVO, accessToken);
+        doNothing().when(restClient).save(userVO, null);
         when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         verify(ratingStatisticsService).save(ratingStatisticsVO);
 
     }

@@ -89,7 +89,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         });
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
 
@@ -104,10 +104,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO,
-                accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
     }
 
     /**

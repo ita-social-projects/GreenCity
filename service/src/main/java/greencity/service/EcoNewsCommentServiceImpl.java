@@ -82,9 +82,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(userVO.getId(), AchievementType.INCREMENT,
                 AchievementCategoryType.ECO_NEWS_COMMENT, 0));
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO, accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
 
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
@@ -174,8 +173,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         comment.setStatus(CommentStatus.DELETED);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO,
-                accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
         ecoNewsCommentRepo.save(comment);
     }
 
@@ -216,14 +214,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO,
-                    accessToken));
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
             CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO,
-                    accessToken));
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

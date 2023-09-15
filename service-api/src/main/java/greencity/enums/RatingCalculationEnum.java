@@ -24,9 +24,9 @@ public enum RatingCalculationEnum {
 
     UNDO_SHARE_NEWS(-20);
 
-    private final long ratingPoints;
+    private final int ratingPoints;
 
-    RatingCalculationEnum(long ratingPoints) {
+    RatingCalculationEnum(int ratingPoints) {
         this.ratingPoints = ratingPoints;
     }
 }

@@ -37,8 +37,11 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.*;
-
+import greencity.enums.AchievementType;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementCategoryType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -711,8 +714,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO,
-                accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return buildHabitAssignDto(habitAssign, language);
     }
 
@@ -804,10 +806,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
-                accessToken));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
@@ -998,8 +998,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
             CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
-                    accessToken));
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
         }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
@@ -1023,8 +1023,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
             CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
-                    accessToken));
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
