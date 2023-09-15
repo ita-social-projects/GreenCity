@@ -65,7 +65,7 @@ public class AchievementCalculation {
      */
     public void calculateAchievement(Long userId, AchievementType type,
         AchievementCategoryType category, Integer count) {
-        AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.getCategory());
+        AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
         count = checkType(type, userActionVO, count);
@@ -104,7 +104,7 @@ public class AchievementCalculation {
             UserAchievement achievement = userAchievement.get();
             achievement.setAchievementStatus(ACTIVE);
             userAchievementRepo.save(achievement);
-            calculateAchievement(user.getId(), INCREMENT, AchievementCategoryType.ACHIEVEMENTS, 0);
+            calculateAchievement(user.getId(), INCREMENT, AchievementCategoryType.ACHIEVEMENT, 0);
         }
     }
 

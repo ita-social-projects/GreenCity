@@ -56,7 +56,7 @@ class AchievementCalculationTest {
         AchievementVO achievementVO = ModelUtils.getAchievementVO();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
-        when(achievementCategoryService.findByName(AchievementCategoryType.ECO_NEWS.getCategory()))
+        when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
         when(userActionService.updateUserActions(userActionVO)).thenReturn(userActionVO);
@@ -64,9 +64,9 @@ class AchievementCalculationTest {
         when(achievementService.findByCategoryIdAndCondition(1L, 1)).thenReturn(achievementVO);
         when(modelMapper.map(userVOAchievement, User.class)).thenReturn(user);
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
-        when(achievementCategoryService.findByName("Achievements")).thenReturn(achievementCategoryVO2);
+        when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO2);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 2L)).thenReturn(userActionVO2);
-        achievementCalculation.calculateAchievement(1L, type, AchievementCategoryType.ECO_NEWS, 1);
+        achievementCalculation.calculateAchievement(1L, type, AchievementCategoryType.CREATE_NEWS, 1);
         verify(userAchievementRepo).save(userAchievement);
     }
 }

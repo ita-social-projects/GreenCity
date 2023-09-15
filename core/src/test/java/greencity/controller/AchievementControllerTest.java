@@ -50,10 +50,10 @@ class AchievementControllerTest {
         mockMvc.perform(post(achievementLink + "/calculate-achievement"
             + "?id=" + 1L
             + "&setter=" + AchievementType.INCREMENT
-            + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
+            + "&socialNetwork=" + AchievementCategoryType.CREATE_NEWS
             + "&size=" + 1)).andExpect(status().isOk());
         verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
-            AchievementCategoryType.ECO_NEWS, 1);
+            AchievementCategoryType.CREATE_NEWS, 1);
     }
 
     @Test

@@ -748,12 +748,12 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(userId, AchievementType.COMPARISON,
-                AchievementCategoryType.HABIT_STREAK, habitStreak));
+                AchievementCategoryType.HABIT, habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
             CompletableFuture.runAsync(() -> achievementCalculation
-                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT_STREAK, 0));
+                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT, 0));
         }
         habitAssignRepo.save(habitAssign);
     }
