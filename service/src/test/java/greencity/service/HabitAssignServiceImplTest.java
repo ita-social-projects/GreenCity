@@ -45,6 +45,7 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -129,6 +130,8 @@ class HabitAssignServiceImplTest {
     private UserService userService;
     @Mock
     HttpServletRequest httpServletRequest;
+    @Mock
+    private RatingCalculation ratingCalculation;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
