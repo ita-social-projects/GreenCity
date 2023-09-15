@@ -128,8 +128,7 @@ class HabitAssignServiceImplTest {
     private CustomShoppingListItemService customShoppingListItemService;
     @Mock
     private UserService userService;
-    @Mock
-    HttpServletRequest httpServletRequest;
+
     @Mock
     private RatingCalculation ratingCalculation;
 
@@ -554,9 +553,9 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
-
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getUser().setId(userId);
+        habitAssign.setWorkingDays(10);
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
 

@@ -712,7 +712,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
         UserVO userVO = userService.findById(userId);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return buildHabitAssignDto(habitAssign, language);
