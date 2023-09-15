@@ -993,6 +993,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS + habitId));
         habitAssignToCancel.setStatus(HabitAssignStatus.CANCELLED);
+        UserVO userVO = userService.findById(userId);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
+                    accessToken));
+        }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
     }
@@ -1009,6 +1017,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        UserVO userVO = userService.findById(userId);
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO,
+                    accessToken));
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
