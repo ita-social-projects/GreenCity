@@ -19,6 +19,7 @@ import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,8 @@ class EventCommentServiceImplTest {
     private UserService userService;
     @Mock
     HttpServletRequest httpServletRequest;
+    @Mock
+    private RatingCalculation ratingCalculation;
 
     @Test
     void save() {

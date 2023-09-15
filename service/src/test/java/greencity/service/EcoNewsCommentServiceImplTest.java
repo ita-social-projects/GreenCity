@@ -27,6 +27,7 @@ import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -67,6 +68,8 @@ class EcoNewsCommentServiceImplTest {
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
     @Mock
     private UserService userService;
+    @Mock
+    private RatingCalculation ratingCalculation;
     private String token = "token";
 
     @Test
