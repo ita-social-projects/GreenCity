@@ -172,6 +172,10 @@
     <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-tag_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-languages-Spodaryk.xml"/>
-    <include file="db/changelog/logs/ch-add-column-econewscomment-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-column-achievements-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-achievement-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
+
 </databaseChangeLog>
 

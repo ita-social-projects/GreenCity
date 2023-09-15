@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="Oksana Spodaryk" author="Spodaryk-21">
+    <changeSet id="Spodaryk-21" author="Oksana Spodaryk">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="achievement_categories"/>
         </preConditions>
