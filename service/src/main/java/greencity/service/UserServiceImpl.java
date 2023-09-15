@@ -8,7 +8,10 @@ import greencity.dto.user.*;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.WrongEmailException;
+import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.UserRepo;
 
 import java.sql.Timestamp;
