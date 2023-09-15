@@ -903,7 +903,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                 .habitAssigns(new ArrayList<>())
                 .build())
             .collect(Collectors.toList());
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
         return dtos;

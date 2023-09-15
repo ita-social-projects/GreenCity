@@ -3,10 +3,10 @@ package greencity.enums;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RatingCalculationEnumTest {
+class RatingCalculationEnumTest {
 
     @Test
-    public void testEnumValues() {
+    void testEnumValues() {
         RatingCalculationEnum[] expected = {
             RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS,
             RatingCalculationEnum.CREATE_NEWS,
@@ -29,7 +29,7 @@ public class RatingCalculationEnumTest {
     }
 
     @Test
-    public void testEnumValueOf() {
+    void testEnumValueOf() {
         for (RatingCalculationEnum value : RatingCalculationEnum.values()) {
             assertEquals(value, RatingCalculationEnum.valueOf(value.name()),
                 "Enum valueOf does not match for " + value.name());
@@ -37,7 +37,7 @@ public class RatingCalculationEnumTest {
     }
 
     @Test
-    public void testRatingPoints() {
+    void testRatingPoints() {
         assertEquals(1, RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS.getRatingPoints());
         assertEquals(20, RatingCalculationEnum.CREATE_NEWS.getRatingPoints());
         assertEquals(2, RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints());
