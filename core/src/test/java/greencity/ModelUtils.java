@@ -599,7 +599,7 @@ public class ModelUtils {
     public static AchievementVO getAchievementVO() {
         return new AchievementVO(1L, getAchievementTranslationVOS(),
             Collections.singletonList(new UserAchievementVO()),
-            new AchievementCategoryVO(1L, "name", null, null), 1);
+            new AchievementCategoryVO(1L, "name", null, null) );
     }
 
     public static UserShoppingListItem getUserShoppingListItem() {

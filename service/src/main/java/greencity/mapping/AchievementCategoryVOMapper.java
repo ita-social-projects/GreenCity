@@ -19,7 +19,6 @@ public class AchievementCategoryVOMapper extends AbstractConverter<AchievementCa
             .achievementList(achievementCategory.getAchievementList().stream()
                 .map(achievement -> AchievementVO.builder()
                     .id(achievement.getId())
-                    .condition(achievement.getCondition())
                     .build())
                 .collect(Collectors.toList()))
             .userActions(achievementCategory.getUserActions().stream().map(userAction -> UserActionVO.builder()

@@ -32,7 +32,6 @@ public class AchievementVOMapper extends AbstractConverter<Achievement, Achievem
                 .id(achievement.getAchievementCategory().getId())
                 .name(achievement.getAchievementCategory().getName())
                 .build())
-            .condition(achievement.getCondition())
             .build();
     }
 }

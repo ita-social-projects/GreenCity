@@ -189,7 +189,6 @@ public class AchievementServiceImpl implements AchievementService {
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
         setTranslations(achievement, achievementManagementDto);
-        achievement.setCondition(achievementManagementDto.getCondition());
         Achievement updated = achievementRepo.save(achievement);
         return modelMapper.map(updated, AchievementPostDto.class);
     }

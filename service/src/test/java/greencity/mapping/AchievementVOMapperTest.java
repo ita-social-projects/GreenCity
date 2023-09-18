@@ -44,7 +44,6 @@ class AchievementVOMapperTest {
                 .id(achievement.getAchievementCategory().getId())
                 .name(achievement.getAchievementCategory().getName())
                 .build())
-            .condition(achievement.getCondition())
             .build();
 
         assertEquals(expected, achievementVOMapper.convert(achievement));

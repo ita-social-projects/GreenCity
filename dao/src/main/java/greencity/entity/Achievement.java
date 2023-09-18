@@ -41,6 +41,4 @@ public class Achievement {
     @ManyToOne
     private AchievementCategory achievementCategory;
 
-    @Column(nullable = false)
-    private Integer condition;
 }
