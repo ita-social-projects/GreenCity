@@ -22,9 +22,9 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
     @Query("SELECT DISTINCT a FROM Achievement a "
         + "JOIN AchievementTranslation at on at.achievement.id = a.id "
         + "WHERE CONCAT(a.id,'') LIKE LOWER(CONCAT('%', :query, '%')) "
-        + "OR LOWER(at.title) LIKE LOWER(CONCAT('%', :query, '%'))"
-        + "OR LOWER(at.description) LIKE LOWER(CONCAT('%', :query, '%'))"
-        + "OR LOWER(at.message) LIKE LOWER(CONCAT('%', :query, '%'))"
+//        + "OR LOWER(at.title) LIKE LOWER(CONCAT('%', :query, '%'))"
+//        + "OR LOWER(at.description) LIKE LOWER(CONCAT('%', :query, '%'))"
+//        + "OR LOWER(at.message) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR LOWER(a.achievementCategory.name) LIKE LOWER(CONCAT('%', :query, '%'))"
         + "OR CONCAT(a.condition, ' ') LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Achievement> searchAchievementsBy(Pageable paging, String query);

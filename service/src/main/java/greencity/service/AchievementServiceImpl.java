@@ -232,9 +232,9 @@ public class AchievementServiceImpl implements AchievementService {
         translationList.forEach(translation -> {
             achievementNotifications.add(AchievementNotification.builder()
                 .id(translation.getId())
-                .title(translation.getTitle())
-                .description(translation.getDescription())
-                .message(translation.getMessage())
+//                .title(translation.getTitle())
+//                .description(translation.getDescription())
+//                .message(translation.getMessage())
                 .build());
             UserAchievement userAchievement = userAchievementRepo
                 .getUserAchievementByIdAndAchievementId(userId, translation.getAchievement().getId());
@@ -249,12 +249,12 @@ public class AchievementServiceImpl implements AchievementService {
             .forEach(achievementTranslation -> {
                 AchievementTranslationVO achievementTranslationVO = achievementManagementDto
                     .getTranslations().stream()
-                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
-                        .equals(achievementTranslation.getLanguage().getCode()))
+//                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
+//                        .equals(achievementTranslation.getLanguage().getCode()))
                     .findFirst().get();
-                achievementTranslation.setTitle(achievementTranslationVO.getTitle());
-                achievementTranslation.setDescription(achievementTranslationVO.getDescription());
-                achievementTranslation.setMessage(achievementTranslationVO.getMessage());
+//                achievementTranslation.setTitle(achievementTranslationVO.getTitle());
+//                achievementTranslation.setDescription(achievementTranslationVO.getDescription());
+//                achievementTranslation.setMessage(achievementTranslationVO.getMessage());
             });
     }
 }

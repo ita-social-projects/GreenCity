@@ -22,4 +22,7 @@ public class AchievementVO {
 
     @NotEmpty
     private AchievementCategoryVO achievementCategory;
+
+    @NotEmpty
+    private Integer condition;
 }

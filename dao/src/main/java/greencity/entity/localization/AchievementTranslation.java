@@ -20,17 +20,11 @@ public class AchievementTranslation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Language language;
 
     @Column(nullable = false, length = 300)
-    private String title;
-
+    private String name;
     @Column(nullable = false, length = 300)
-    private String description;
-
-    @Column(nullable = false, length = 300)
-    private String message;
+    private String nameEng;
 
     @ManyToOne
     private Achievement achievement;

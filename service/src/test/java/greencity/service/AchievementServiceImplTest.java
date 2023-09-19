@@ -229,13 +229,13 @@ class AchievementServiceImplTest {
             .singletonList(AchievementTranslation.builder()
                 .id(1L)
                 .achievement(achievement)
-                .message("test")
-                .description("test")
-                .title("test")
-                .language(Language.builder()
-                    .id(1L)
-                    .code("ua")
-                    .build())
+//                .message("test")
+//                .description("test")
+//                .title("test")
+//                .language(Language.builder()
+//                    .id(1L)
+//                    .code("ua")
+//                    .build())
                 .build());
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         when(restClient.findById(1L)).thenReturn(userVO);

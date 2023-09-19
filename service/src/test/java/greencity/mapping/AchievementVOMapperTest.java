@@ -28,13 +28,13 @@ class AchievementVOMapperTest {
 
         achievement.getTranslations().forEach(achievementTranslation -> list.add(AchievementTranslationVO.builder()
             .id(achievementTranslation.getId())
-            .title(achievementTranslation.getTitle())
-            .description(achievementTranslation.getDescription())
-            .message(achievementTranslation.getMessage())
-            .language(LanguageVO.builder()
-                .id(achievementTranslation.getLanguage().getId())
-                .code(achievementTranslation.getLanguage().getCode())
-                .build())
+//            .title(achievementTranslation.getTitle())
+//            .description(achievementTranslation.getDescription())
+//            .message(achievementTranslation.getMessage())
+//            .language(LanguageVO.builder()
+//                .id(achievementTranslation.getLanguage().getId())
+//                .code(achievementTranslation.getLanguage().getCode())
+//                .build())
             .build()));
 
         AchievementVO expected = AchievementVO.builder()

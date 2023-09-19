@@ -14,8 +14,13 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode
 public class AchievementCategoryVO {
-
+    @NotEmpty
+    private Long id;
 
     @NotEmpty
     private String name;
+
+    private List<AchievementVO> achievementList;
+
+    private List<UserActionVO> userActions;
 }
