@@ -38,7 +38,6 @@ import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 
@@ -747,13 +746,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, AchievementType.COMPARISON,
+            .calculateAchievement(userId,
                 AchievementCategoryType.HABIT, habitStreak));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
-            CompletableFuture.runAsync(() -> achievementCalculation
-                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT, 0));
         }
         habitAssignRepo.save(habitAssign);
     }

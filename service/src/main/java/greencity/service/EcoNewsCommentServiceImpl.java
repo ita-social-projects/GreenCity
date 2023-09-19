@@ -16,7 +16,6 @@ import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -80,7 +79,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             }
         }
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userVO.getId(), AchievementType.INCREMENT,
+            .calculateAchievement(userVO.getId(),
                 AchievementCategoryType.COMMENT_OR_REPLY, 0));
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(

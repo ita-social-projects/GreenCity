@@ -18,7 +18,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.enums.Role;
 import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
@@ -81,7 +80,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
+            .calculateAchievement(toSave.getAuthor().getId(),
                 AchievementCategoryType.CREATE_NEWS, 0));
         return addEcoNewsDtoResponse;
     }
@@ -99,7 +98,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
+            .calculateAchievement(toSave.getAuthor().getId(),
                 AchievementCategoryType.CREATE_NEWS, 0));
         return ecoNewsDto;
     }
@@ -428,8 +427,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT,
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, 0));
+            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY, 0));
     }
 
     /**

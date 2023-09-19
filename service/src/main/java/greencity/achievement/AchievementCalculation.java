@@ -11,7 +11,6 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static greencity.enums.AchievementStatus.ACTIVE;
-import static greencity.enums.AchievementType.INCREMENT;
 
 @Component
 public class AchievementCalculation {
@@ -75,17 +73,16 @@ public class AchievementCalculation {
      * Method that changing user actions. {@link greencity.entity.UserAction}
      *
      * @param userId   of {@link User}
-     * @param type     of action
      * @param category {@link AchievementCategoryType}
      * @param count    number of specific actions
      * @author Orest Mamchuk
      */
-    public void calculateAchievement(Long userId, AchievementType type,
+    public void calculateAchievement(Long userId,
         AchievementCategoryType category, Integer count) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
-        count = checkType(type, userActionVO, count);
+        count = checkCount( userActionVO);
         userActionService.updateUserActions(userActionVO);
         checkAchievements(achievementCategoryVO.getId(), count, userId);
     }
@@ -124,35 +121,21 @@ public class AchievementCalculation {
             achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategory.getId());
-        int countAchievement = checkType(INCREMENT, userActionVO, count);
-        calculateAchievement(userId, INCREMENT, AchievementCategoryType.ACHIEVEMENT, countAchievement);
+        int countAchievement = checkCount( userActionVO);
+        calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, countAchievement);
 
     }
 
     /**
      * Method check achievement type.
      *
-     * @param type  of action
-     * @param count number of specific actions
      * @return count action
      */
-    private int checkType(AchievementType type, UserActionVO userActionVO, Integer count) {
-        switch (type) {
-            case INCREMENT:
-                count = userActionVO.getCount() + 1;
+    private int checkCount( UserActionVO userActionVO) {
+
+              int  count = userActionVO.getCount() + 1;
                 userActionVO.setCount(count);
-                break;
-            case SETTER:
-                userActionVO.setCount(count);
-                break;
-            case COMPARISON:
-                if (userActionVO.getCount() < count) {
-                    userActionVO.setCount(count);
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + type);
-        }
+
         return count;
     }
 }

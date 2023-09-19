@@ -14,7 +14,6 @@ import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
 import greencity.entity.localization.AchievementTranslation;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -221,9 +220,9 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public void calculateAchievements(Long id, AchievementType achievementType,
+    public void calculateAchievements(Long id,
         AchievementCategoryType achievementCategory, Integer size) {
-        achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
+        achievementCalculation.calculateAchievement(id, achievementCategory, size);
     }
 
     private List<AchievementNotification> setAchievementNotifications(

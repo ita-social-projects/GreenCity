@@ -9,9 +9,9 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.repository.UserAchievementRepo;
 import greencity.service.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -42,9 +42,8 @@ class AchievementCalculationTest {
     @InjectMocks
     private AchievementCalculation achievementCalculation;
 
-    @ParameterizedTest(name = "{index} => type=''{0}''")
-    @EnumSource(AchievementType.class)
-    void calculateAchievement(AchievementType type) {
+@Test
+    void calculateAchievement() {
         AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
         AchievementCategoryVO achievementCategoryVO2 = ModelUtils.getAchievementCategoryVO();
         achievementCategoryVO2.setId(2L);
@@ -66,7 +65,7 @@ class AchievementCalculationTest {
         when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO2);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 2L)).thenReturn(userActionVO2);
-        achievementCalculation.calculateAchievement(1L, type, AchievementCategoryType.CREATE_NEWS, 1);
+        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, 1);
         verify(userAchievementRepo).save(userAchievement);
     }
 }
