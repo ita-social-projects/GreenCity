@@ -411,7 +411,6 @@ public class PlaceController {
     @ApiOperation(value = "Get all places")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageable
