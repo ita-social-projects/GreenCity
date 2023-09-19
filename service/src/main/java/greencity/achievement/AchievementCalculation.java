@@ -57,9 +57,9 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         ModelMapper modelMapper,
         UserAchievementRepo userAchievementRepo,
-                                  UserRepo userRepo,
-                                  AchievementRepo achievementRepo,
-                                  AchievementCategoryRepo achievementCategoryRepo) {
+        UserRepo userRepo,
+        AchievementRepo achievementRepo,
+        AchievementCategoryRepo achievementCategoryRepo) {
         this.restClient = restClient;
         this.userActionService = userActionService;
         this.achievementService = achievementService;
@@ -101,27 +101,29 @@ public class AchievementCalculation {
     private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
-            changeAchievementStatus(userId, achievementCategoryId,count);
+            changeAchievementStatus(userId, achievementCategoryId, count);
         }
     }
 
     /**
      * Method that changing achievement status.
      *
-     * @param userId          {@link User}
+     * @param userId {@link User}
      * @author Orest Mamchuk
      */
-    private void changeAchievementStatus(Long userId, Long achievementCategoryId,int count) {
-           Achievement achievement=achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId,count).get();
-            UserAchievement userAchievement =UserAchievement.builder()
-                    .achievement(achievement)
-                    .user(userRepo.findById(userId).get())
-                    .achievementStatus(ACTIVE)
-                    .build();
+    private void changeAchievementStatus(Long userId, Long achievementCategoryId, int count) {
+        Achievement achievement =
+            achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count).get();
+        UserAchievement userAchievement = UserAchievement.builder()
+            .achievement(achievement)
+            .user(userRepo.findById(userId).get())
+            .achievementStatus(ACTIVE)
+            .build();
         userAchievementRepo.save(userAchievement);
-        AchievementCategory achievementCategory=achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
+        AchievementCategory achievementCategory =
+            achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
-                userId, achievementCategory.getId());
+            userId, achievementCategory.getId());
         int countAchievement = checkType(INCREMENT, userActionVO, count);
         calculateAchievement(userId, INCREMENT, AchievementCategoryType.ACHIEVEMENT, countAchievement);
 

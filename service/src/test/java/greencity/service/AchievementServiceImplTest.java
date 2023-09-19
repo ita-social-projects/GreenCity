@@ -249,7 +249,7 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType. CREATE_NEWS, 1);
+        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.CREATE_NEWS, 1);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
             any(AchievementType.class),

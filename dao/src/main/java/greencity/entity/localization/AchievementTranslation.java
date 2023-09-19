@@ -20,7 +20,6 @@ public class AchievementTranslation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false, length = 300)
     private String name;
     @Column(nullable = false, length = 300)

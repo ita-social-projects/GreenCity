@@ -428,7 +428,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.LIKE_COMMENT_OR_REPLY, 0));
+            .calculateAchievement(user.getId(), AchievementType.INCREMENT,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, 0));
     }
 
     /**
