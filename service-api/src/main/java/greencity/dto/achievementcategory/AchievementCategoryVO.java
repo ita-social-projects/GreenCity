@@ -19,8 +19,4 @@ public class AchievementCategoryVO {
 
     @NotEmpty
     private String name;
-
-    private List<AchievementVO> achievementList;
-
-    private List<UserActionVO> userActions;
 }

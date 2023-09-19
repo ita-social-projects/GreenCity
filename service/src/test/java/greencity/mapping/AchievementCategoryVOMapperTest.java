@@ -22,21 +22,10 @@ class AchievementCategoryVOMapperTest {
 
     @Test
     void convert() {
-        AchievementCategory achievementCategory = new AchievementCategory(1L, "Name",
-            Collections.singletonList(ModelUtils.getAchievement()),
-            Collections.singletonList(ModelUtils.getUserAction()));
+        AchievementCategory achievementCategory = new AchievementCategory(1L, "Name");
         AchievementCategoryVO achievementCategoryVO = AchievementCategoryVO.builder()
             .id(achievementCategory.getId())
             .name(achievementCategory.getName())
-            .achievementList(achievementCategory.getAchievementList().stream()
-                .map(achievement -> AchievementVO.builder()
-                    .id(achievement.getId())
-                    .build())
-                .collect(Collectors.toList()))
-            .userActions(achievementCategory.getUserActions().stream().map(userAction -> UserActionVO.builder()
-                .id(userAction.getId())
-                .build())
-                .collect(Collectors.toList()))
             .build();
         assertEquals(achievementCategoryVO, achievementCategoryVOMapper.convert(achievementCategory));
     }

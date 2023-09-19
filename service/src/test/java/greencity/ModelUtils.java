@@ -1383,7 +1383,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", null, null);
+        return new AchievementCategory(1L, "Name");
     }
 
     public static AchievementVO getAchievementVO() {
@@ -1403,7 +1403,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category", null, null);
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
