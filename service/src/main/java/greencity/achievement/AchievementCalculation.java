@@ -2,14 +2,20 @@ package greencity.achievement;
 
 import greencity.client.RestClient;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
+import greencity.entity.Achievement;
+import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
+import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
@@ -18,6 +24,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static greencity.enums.AchievementStatus.ACTIVE;
 import static greencity.enums.AchievementType.INCREMENT;
@@ -30,6 +38,9 @@ public class AchievementCalculation {
     private AchievementCategoryService achievementCategoryService;
     private final ModelMapper modelMapper;
     private UserAchievementRepo userAchievementRepo;
+    private final UserRepo userRepo;
+    private final AchievementRepo achievementRepo;
+    private final AchievementCategoryRepo achievementCategoryRepo;
 
     /**
      * Constructor for {@link AchievementCalculation}.
@@ -45,13 +56,19 @@ public class AchievementCalculation {
         @Lazy AchievementService achievementService,
         AchievementCategoryService achievementCategoryService,
         ModelMapper modelMapper,
-        UserAchievementRepo userAchievementRepo) {
+        UserAchievementRepo userAchievementRepo,
+                                  UserRepo userRepo,
+                                  AchievementRepo achievementRepo,
+                                  AchievementCategoryRepo achievementCategoryRepo) {
         this.restClient = restClient;
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
         this.modelMapper = modelMapper;
         this.userAchievementRepo = userAchievementRepo;
+        this.userRepo = userRepo;
+        this.achievementRepo = achievementRepo;
+        this.achievementCategoryRepo = achievementCategoryRepo;
     }
 
     /**
@@ -82,30 +99,32 @@ public class AchievementCalculation {
      * @author Orest Mamchuk
      */
     private void checkAchievements(Long achievementCategoryId, Integer count, Long userId) {
-        UserVOAchievement userForAchievement = restClient.findUserForAchievement(userId);
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
-            changeAchievementStatus(modelMapper.map(userForAchievement, User.class), achievementVO);
+            changeAchievementStatus(userId, achievementCategoryId,count);
         }
     }
 
     /**
      * Method that changing achievement status.
      *
-     * @param user          {@link User}
-     * @param achievementVO {@link AchievementVO}
+     * @param userId          {@link User}
      * @author Orest Mamchuk
      */
-    private void changeAchievementStatus(User user, AchievementVO achievementVO) {
-        Optional<UserAchievement> userAchievement = user.getUserAchievements().stream()
-            .filter(userAchievement1 -> userAchievement1.getAchievement().getId().equals(achievementVO.getId()))
-            .findFirst();
-        if (userAchievement.isPresent()) {
-            UserAchievement achievement = userAchievement.get();
-            achievement.setAchievementStatus(ACTIVE);
-            userAchievementRepo.save(achievement);
-            calculateAchievement(user.getId(), INCREMENT, AchievementCategoryType.ACHIEVEMENT, 0);
-        }
+    private void changeAchievementStatus(Long userId, Long achievementCategoryId,int count) {
+           Achievement achievement=achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId,count).get();
+            UserAchievement userAchievement =UserAchievement.builder()
+                    .achievement(achievement)
+                    .user(userRepo.findById(userId).get())
+                    .achievementStatus(ACTIVE)
+                    .build();
+        userAchievementRepo.save(userAchievement);
+        AchievementCategory achievementCategory=achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
+        UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
+                userId, achievementCategory.getId());
+        int countAchievement = checkType(INCREMENT, userActionVO, count);
+        calculateAchievement(userId, INCREMENT, AchievementCategoryType.ACHIEVEMENT, countAchievement);
+
     }
 
     /**

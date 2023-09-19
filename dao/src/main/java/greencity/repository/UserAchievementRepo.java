@@ -4,6 +4,7 @@ import greencity.entity.UserAchievement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 
 @Repository
 public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long> {
@@ -16,4 +17,7 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
      */
     @Query(value = "FROM UserAchievement u WHERE u.user.id =:userId AND u.achievement.id =:achievementId")
     UserAchievement getUserAchievementByIdAndAchievementId(Long userId, Long achievementId);
+
+    List<UserAchievement> getUserAchievementByUserId(Long userId);
+
 }
