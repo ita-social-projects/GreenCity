@@ -16,20 +16,20 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AddCustomHabitDtoRequestTest {
+class AddUpdateCustomHabitDtoResponseTest {
 
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("provideFieldsAndValidValues")
-    void validComplexityInAddCustomHabitDtoRequestTest(Integer complexity) {
-        var dto = AddCustomHabitDtoRequest.builder()
+    void validComplexityInAddCustomHabitDtoResponseTest(Integer complexity) {
+        var dto = AddUpdateCustomHabitDtoResponse.builder()
             .complexity(complexity)
             .build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+        Set<ConstraintViolation<AddUpdateCustomHabitDtoResponse>> constraintViolations =
             validator.validate(dto);
 
         assertTrue(constraintViolations.isEmpty());
@@ -38,30 +38,30 @@ class AddCustomHabitDtoRequestTest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("provideFieldsAndInvalidValues")
-    void invalidComplexityInAddCustomHabitDtoRequestTest(Integer complexity) {
-        var dto = AddCustomHabitDtoRequest.builder()
+    void invalidComplexityInAddCustomHabitDtoResponseTest(Integer complexity) {
+        var dto = AddUpdateCustomHabitDtoResponse.builder()
             .complexity(complexity)
             .build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+        Set<ConstraintViolation<AddUpdateCustomHabitDtoResponse>> constraintViolations =
             validator.validate(dto);
 
         assertEquals(1, constraintViolations.size());
     }
 
     @Test
-    void invalidComplexityIsNullInAddCustomHabitDtoRequestTest() {
-        var dto = AddCustomHabitDtoRequest.builder()
+    void invalidComplexityIsNullInAddCustomHabitDtoResponseTest() {
+        var dto = AddUpdateCustomHabitDtoResponse.builder()
             .complexity(null)
             .build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+        Set<ConstraintViolation<AddUpdateCustomHabitDtoResponse>> constraintViolations =
             validator.validate(dto);
 
         assertEquals(1, constraintViolations.size());
@@ -83,33 +83,18 @@ class AddCustomHabitDtoRequestTest {
             Arguments.of(0));
     }
 
-    @Test
-    void invalidNumberOfTagsIdNullInAddCustomHabitDtoRequestTest() {
-        var dto = AddCustomHabitDtoRequest.builder()
-            .tagIds(null)
-            .build();
-
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        final Validator validator = factory.getValidator();
-
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
-            validator.validate(dto);
-
-        assertEquals(1, constraintViolations.size());
-    }
-
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("provideFieldsAndValidValuesForTagsIds")
-    void validNumberOfTagsIdsInAddCustomHabitDtoRequestTest(Set<Long> tagIds) {
-        var dto = AddCustomHabitDtoRequest.builder()
+    void validNumberOfTagsIdsInAddCustomHabitDtoResponseTest(Set<Long> tagIds) {
+        var dto = AddUpdateCustomHabitDtoResponse.builder()
             .tagIds(tagIds)
             .build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+        Set<ConstraintViolation<AddUpdateCustomHabitDtoResponse>> constraintViolations =
             validator.validate(dto);
 
         assertEquals(1, constraintViolations.size());
@@ -118,15 +103,15 @@ class AddCustomHabitDtoRequestTest {
     @SneakyThrows
     @ParameterizedTest
     @MethodSource("provideFieldsAndInvalidValuesForTagsIds")
-    void invalidNumberOfTagsIdsInAddCustomHabitDtoRequestTest(Set<Long> tagIds) {
-        var dto = AddCustomHabitDtoRequest.builder()
+    void invalidNumberOfTagsIdsInAddCustomHabitDtoResponseTest(Set<Long> tagIds) {
+        var dto = AddUpdateCustomHabitDtoResponse.builder()
             .tagIds(tagIds)
             .build();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         final Validator validator = factory.getValidator();
 
-        Set<ConstraintViolation<AddCustomHabitDtoRequest>> constraintViolations =
+        Set<ConstraintViolation<AddUpdateCustomHabitDtoResponse>> constraintViolations =
             validator.validate(dto);
 
         assertEquals(2, constraintViolations.size());

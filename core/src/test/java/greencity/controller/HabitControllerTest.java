@@ -3,7 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
@@ -281,7 +282,7 @@ class HabitControllerTest {
 
     @Test
     void postCustomHabit() throws Exception {
-        AddCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+        AddUpdateCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
@@ -306,5 +307,23 @@ class HabitControllerTest {
             .andExpect(status().isOk());
 
         verify(habitService).getFriendsAssignedToHabitProfilePictures(habitId, null);
+    }
+
+    @Test
+    void updateCustomHabit() throws Exception {
+        Long habitId = 1L;
+        AddUpdateCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+
+        String requestedJson = objectMapper.writeValueAsString(dto);
+
+        mockMvc.perform(put(habitLink + "/update/{habitId}", habitId)
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestedJson))
+            .andExpect(status().isOk());
+
+        verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), null);
     }
 }

@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
@@ -110,15 +110,17 @@ public interface HabitService {
     List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method to save {@link AddCustomHabitDtoResponse}.
+     * Method to save {@link AddUpdateCustomHabitDtoResponse}.
      *
-     * @param addCustomHabitDtoRequest dto with {@link AddCustomHabitDtoRequest}
+     * @param addCustomHabitDtoRequest dto with
+     *                                 {@link AddUpdateCustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
      * @param userEmail                {@link String} - user email.
-     * @return {@link AddCustomHabitDtoResponse} instance.
+     * @return {@link AddUpdateCustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
+    AddUpdateCustomHabitDtoResponse addCustomHabit(AddUpdateCustomHabitDtoRequest addCustomHabitDtoRequest,
+        MultipartFile image,
         String userEmail);
 
     /**
@@ -130,4 +132,16 @@ public interface HabitService {
      * @return List of friends' profile pictures.
      */
     List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
+
+    /**
+     * Method to update {@link AddUpdateCustomHabitDtoResponse}.
+     *
+     * @param customHabitDtoRequest dto with {@link AddUpdateCustomHabitDtoRequest}
+     *                              entered info about field that need to edit.
+     * @param userEmail             {@link String} - user email.
+     * @return {@link AddUpdateCustomHabitDtoResponse} instance.
+     * @author Olena Sotnik.
+     */
+    AddUpdateCustomHabitDtoResponse updateCustomHabit(AddUpdateCustomHabitDtoRequest customHabitDtoRequest,
+        Long habitId, String userEmail, MultipartFile image);
 }

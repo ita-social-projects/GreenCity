@@ -31,7 +31,7 @@ import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -113,6 +113,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -737,8 +738,8 @@ public class ModelUtils {
             .build())).tags(List.of("first", "second", "third")).build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddUpdateCustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -766,5 +767,10 @@ public class ModelUtils {
             .statuses(null)
             .tags(null)
             .build();
+    }
+
+    public static Habit getHabitWithCustom() {
+        return Habit.builder().id(1L).image("image.png")
+            .complexity(1).isCustomHabit(true).tags(Set.of(getTag())).build();
     }
 }

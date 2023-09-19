@@ -61,8 +61,8 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
@@ -218,6 +218,7 @@ public class ModelUtils {
     public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
     public static String SHOPPING_LIST_TEXT = "buy a shopper";
     public static String HABIT_ITEM = "Item";
+    public static String HABIT_DEFAULT_IMAGE = "img/habit-default.png";
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -2800,8 +2801,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return AddUpdateCustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2826,8 +2827,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return AddUpdateCustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -2847,8 +2848,30 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
+        return AddUpdateCustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .defaultDuration(7)
+            .image(HABIT_DEFAULT_IMAGE)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
+                    .languageCode("ua")
+                    .name(HABIT_TRANSLATION_NAME)
+                    .build()))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static AddUpdateCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return AddUpdateCustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(2)
             .customShoppingListItemDto(List.of(

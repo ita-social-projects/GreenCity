@@ -274,6 +274,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity",
                 "/user/profile",
                 EVENTS + "/update",
+                "/habit/update/{habitId}",
                 HABIT_ASSIGN_ID + "/update-habit-duration",
                 "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
                 HABIT_ASSIGN_ID + "/allUserAndCustomList",
