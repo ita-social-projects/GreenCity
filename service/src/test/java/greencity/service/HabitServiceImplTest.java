@@ -60,9 +60,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -981,5 +979,27 @@ class HabitServiceImplTest {
         verify(habitRepo).save(any());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(habitTranslationRepo).findAllByHabit(habit);
+    }
+
+    @Test
+    void updateCustomHabitThrowsUserHasNoPermissionToAccessExceptionWithDiffrentUserId() {
+        CustomHabitDtoRequest customHabitDtoRequest =
+                ModelUtils.getAddCustomHabitDtoRequestWithImage();
+        User user = ModelUtils.getTestUser();
+        String email = user.getEmail();
+        user.setRole(Role.ROLE_USER);
+
+        Habit habit = ModelUtils.getCustomHabitForServiceTest();
+        habit.setUserId(1L);
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+
+        assertThrows(UserHasNoPermissionToAccessException.class,
+                () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
+
+        assertNotEquals(user.getId(), habit.getUserId());
+        verify(userRepo).findByEmail(anyString());
+        verify(habitRepo).findById(anyLong());
     }
 }
