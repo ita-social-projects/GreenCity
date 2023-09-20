@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,10 +48,9 @@ class AchievementControllerTest {
     void calculateAchievements() throws Exception {
         mockMvc.perform(post(achievementLink + "/calculate-achievement"
             + "?id=" + 1L
-            + "&setter=" + AchievementType.INCREMENT
             + "&socialNetwork=" + AchievementCategoryType.CREATE_NEWS
             + "&size=" + 1)).andExpect(status().isOk());
-        verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
+        verify(achievementService).calculateAchievements(1L,
             AchievementCategoryType.CREATE_NEWS, 1);
     }
 

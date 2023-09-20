@@ -152,9 +152,9 @@ class AchievementServiceImplTest {
         achievement.setTranslations(Collections.singletonList(achievementTranslation));
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-        AchievementTranslationVO achievementTranslationVO = ModelUtils.getAchievementTranslationVO();
-        achievementManagementDto.setTranslations(Collections.singletonList(achievementTranslationVO));
-        achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationVO()));
+        AchievementTranslationDto AchievementTranslationDto = ModelUtils.getAchievementTranslationDto();
+        achievementManagementDto.setTranslations(Collections.singletonList(AchievementTranslationDto));
+        achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationDto()));
         when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
@@ -228,13 +228,6 @@ class AchievementServiceImplTest {
             .singletonList(AchievementTranslation.builder()
                 .id(1L)
                 .achievement(achievement)
-//                .message("test")
-//                .description("test")
-//                .title("test")
-//                .language(Language.builder()
-//                    .id(1L)
-//                    .code("ua")
-//                    .build())
                 .build());
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         when(restClient.findById(1L)).thenReturn(userVO);
@@ -248,7 +241,7 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L,  AchievementCategoryType.CREATE_NEWS, 1);
+        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, 1);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
             any(AchievementCategoryType.class),

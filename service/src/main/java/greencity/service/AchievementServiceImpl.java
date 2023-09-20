@@ -246,14 +246,14 @@ public class AchievementServiceImpl implements AchievementService {
     private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {
         achievement.getTranslations()
             .forEach(achievementTranslation -> {
-                AchievementTranslationVO achievementTranslationVO = achievementManagementDto
+                AchievementTranslationDto AchievementTranslationDto = achievementManagementDto
                     .getTranslations().stream()
 //                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
 //                        .equals(achievementTranslation.getLanguage().getCode()))
                     .findFirst().get();
-//                achievementTranslation.setTitle(achievementTranslationVO.getTitle());
-//                achievementTranslation.setDescription(achievementTranslationVO.getDescription());
-//                achievementTranslation.setMessage(achievementTranslationVO.getMessage());
+//                achievementTranslation.setTitle(AchievementTranslationDto.getTitle());
+//                achievementTranslation.setDescription(AchievementTranslationDto.getDescription());
+//                achievementTranslation.setMessage(AchievementTranslationDto.getMessage());
             });
     }
 }

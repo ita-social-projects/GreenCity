@@ -6,7 +6,6 @@ import greencity.dto.achievement.AchievementNotification;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.user.UserVO;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -76,10 +75,9 @@ public class AchievementController {
     })
     @PostMapping("/calculate-achievement")
     public ResponseEntity<HttpStatus> calculateAchievements(@RequestParam Long id,
-        @RequestParam AchievementType setter,
         @RequestParam AchievementCategoryType socialNetwork,
         @RequestParam int size) {
-        achievementService.calculateAchievements(id, setter, socialNetwork, size);
+        achievementService.calculateAchievements(id, socialNetwork, size);
         return ResponseEntity.ok().build();
     }
 }

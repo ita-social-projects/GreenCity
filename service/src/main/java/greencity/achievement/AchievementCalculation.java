@@ -82,7 +82,7 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
-        count = checkCount( userActionVO);
+        count = checkCount(userActionVO);
         userActionService.updateUserActions(userActionVO);
         checkAchievements(achievementCategoryVO.getId(), count, userId);
     }
@@ -121,7 +121,7 @@ public class AchievementCalculation {
             achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategory.getId());
-        int countAchievement = checkCount( userActionVO);
+        int countAchievement = checkCount(userActionVO);
         calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, countAchievement);
 
     }
@@ -131,10 +131,10 @@ public class AchievementCalculation {
      *
      * @return count action
      */
-    private int checkCount( UserActionVO userActionVO) {
+    private int checkCount(UserActionVO userActionVO) {
 
-              int  count = userActionVO.getCount() + 1;
-                userActionVO.setCount(count);
+        int count = userActionVO.getCount() + 1;
+        userActionVO.setCount(count);
 
         return count;
     }

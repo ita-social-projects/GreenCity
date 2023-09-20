@@ -9,14 +9,11 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class AchievementTranslationVO {
+public class AchievementTranslationDto {
     private Long id;
 
-    private LanguageVO language;
+    private String name;
 
-    private String title;
+    private String nameEng;
 
-    private String description;
-
-    private String message;
 }

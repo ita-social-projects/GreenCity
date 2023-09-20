@@ -42,7 +42,7 @@ class AchievementCalculationTest {
     @InjectMocks
     private AchievementCalculation achievementCalculation;
 
-@Test
+    @Test
     void calculateAchievement() {
         AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
         AchievementCategoryVO achievementCategoryVO2 = ModelUtils.getAchievementCategoryVO();

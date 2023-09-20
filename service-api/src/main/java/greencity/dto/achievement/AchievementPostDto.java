@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class AchievementPostDto {
-    private List<AchievementTranslationVO> translations;
+    private List<AchievementTranslationDto> translations;
 
     private AchievementCategoryDto achievementCategory;
 

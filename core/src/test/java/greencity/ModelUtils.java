@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementTranslationDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
@@ -581,11 +581,11 @@ public class ModelUtils {
         return new ShoppingListItemPostDto(getLanguageTranslationsDTOs(), new ShoppingListItemRequestDto(1L));
     }
 
-    public static List<AchievementTranslationVO> getAchievementTranslationVOS() {
+    public static List<AchievementTranslationDto> getAchievementTranslationDtoS() {
         return Arrays.asList(
-            new AchievementTranslationVO(1L, getLanguageVO(), "title", "description", "message"),
-            new AchievementTranslationVO(2L, getLanguageVO(), "title", "description", "message"),
-            new AchievementTranslationVO(3L, getLanguageVO(), "title", "description", "message"));
+            new AchievementTranslationDto(1L, "title", "description"),
+            new AchievementTranslationDto(2L, "title", "description"),
+            new AchievementTranslationDto(3L, "title", "description"));
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
@@ -593,12 +593,11 @@ public class ModelUtils {
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(getAchievementTranslationVOS(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto(getAchievementTranslationDtoS(), getAchievementCategoryDto(), 1);
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, getAchievementTranslationVOS(),
-            Collections.singletonList(new UserAchievementVO()),
+        return new AchievementVO(1L, getAchievementTranslationDtoS(),
             new AchievementCategoryVO(1L, "name"), 1);
     }
 

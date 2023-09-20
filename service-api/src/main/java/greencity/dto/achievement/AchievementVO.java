@@ -16,9 +16,7 @@ import java.util.List;
 public class AchievementVO {
     private Long id;
 
-    private List<AchievementTranslationVO> translations;
-
-    private List<UserAchievementVO> userAchievements;
+    private List<AchievementTranslationDto> translations;
 
     @NotEmpty
     private AchievementCategoryVO achievementCategory;

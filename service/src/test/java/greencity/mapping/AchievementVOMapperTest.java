@@ -3,7 +3,7 @@ package greencity.mapping;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import greencity.ModelUtils;
-import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementTranslationDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageVO;
@@ -23,11 +23,12 @@ class AchievementVOMapperTest {
 
     @Test
     void convert() {
-        List<AchievementTranslationVO> list = new ArrayList<>();
+        List<AchievementTranslationDto> list = new ArrayList<>();
         Achievement achievement = ModelUtils.getAchievement();
 
-        achievement.getTranslations().forEach(achievementTranslation -> list.add(AchievementTranslationVO.builder()
+        achievement.getTranslations().forEach(achievementTranslation -> list.add(AchievementTranslationDto.builder()
             .id(achievementTranslation.getId())
+
 //            .title(achievementTranslation.getTitle())
 //            .description(achievementTranslation.getDescription())
 //            .message(achievementTranslation.getMessage())

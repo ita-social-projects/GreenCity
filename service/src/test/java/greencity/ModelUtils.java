@@ -9,7 +9,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
+import greencity.dto.achievement.AchievementTranslationDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -1387,7 +1387,7 @@ public class ModelUtils {
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L, Collections.emptyList(), new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
@@ -1398,8 +1398,8 @@ public class ModelUtils {
         return new AchievementCategoryDto("Test");
     }
 
-    public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
+    public static AchievementTranslationDto getAchievementTranslationDto() {
+        return new AchievementTranslationDto(1L, "Title", "Description");
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
