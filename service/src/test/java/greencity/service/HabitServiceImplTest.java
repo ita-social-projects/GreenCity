@@ -984,7 +984,7 @@ class HabitServiceImplTest {
     @Test
     void updateCustomHabitThrowsUserHasNoPermissionToAccessExceptionWithDiffrentUserId() {
         CustomHabitDtoRequest customHabitDtoRequest =
-                ModelUtils.getAddCustomHabitDtoRequestWithImage();
+            ModelUtils.getAddCustomHabitDtoRequestWithImage();
         User user = ModelUtils.getTestUser();
         String email = user.getEmail();
         user.setRole(Role.ROLE_USER);
@@ -996,7 +996,7 @@ class HabitServiceImplTest {
         when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
 
         assertThrows(UserHasNoPermissionToAccessException.class,
-                () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
+            () -> habitService.updateCustomHabit(customHabitDtoRequest, 1L, email, null));
 
         assertNotEquals(user.getId(), habit.getUserId());
         verify(userRepo).findByEmail(anyString());
