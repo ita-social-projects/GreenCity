@@ -21,10 +21,12 @@ import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
+import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.AddEcoNewsMessage;
+
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -209,6 +211,13 @@ public class ModelUtils {
             .image("")
             .defaultDuration(14)
             .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static SendEventCreationNotification getSendEventCreationNotification() {
+        return SendEventCreationNotification.builder()
+            .email("test@gmail.com")
+            .messageBody("You have successfully created event")
             .build();
     }
 }

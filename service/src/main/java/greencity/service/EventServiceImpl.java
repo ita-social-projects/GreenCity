@@ -28,6 +28,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.SendEventCreationNotification;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +103,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-
+        sendEmailNotification(savedEvent, organizer);
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -779,5 +780,20 @@ public class EventServiceImpl implements EventService {
 
     private EventDto buildEventDto(Event event) {
         return modelMapper.map(event, EventDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Olena Sotnik.
+     */
+    public void sendEmailNotification(Event event, User user) {
+        String message = "Dear, " + user.getFirstName() + "!"
+            + "\nYou have successfully created an event: " + event.getTitle();
+        SendEventCreationNotification notification = SendEventCreationNotification.builder()
+            .email(user.getEmail())
+            .messageBody(message)
+            .build();
+        restClient.sendEventCreationNotification(notification);
     }
 }
