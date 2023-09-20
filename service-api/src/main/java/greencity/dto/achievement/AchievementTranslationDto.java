@@ -11,10 +11,7 @@ import lombok.*;
 @Builder
 public class AchievementTranslationDto {
     private Long id;
-
     private String name;
-
     private String nameEng;
     private Long achievement_id;
-
 }

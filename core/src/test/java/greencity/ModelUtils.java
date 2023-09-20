@@ -583,9 +583,9 @@ public class ModelUtils {
 
     public static List<AchievementTranslationDto> getAchievementTranslationDtoS() {
         return Arrays.asList(
-            new AchievementTranslationDto(1L, "title", "description"),
-            new AchievementTranslationDto(2L, "title", "description"),
-            new AchievementTranslationDto(3L, "title", "description"));
+            new AchievementTranslationDto(1L, "title", "description",1L),
+            new AchievementTranslationDto(2L, "title", "description",1L),
+            new AchievementTranslationDto(3L, "title", "description",1L));
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {

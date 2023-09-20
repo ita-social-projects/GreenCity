@@ -1399,7 +1399,7 @@ public class ModelUtils {
     }
 
     public static AchievementTranslationDto getAchievementTranslationDto() {
-        return new AchievementTranslationDto(1L, "Title", "Description");
+        return new AchievementTranslationDto(1L, "Title", "Description",1L);
     }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
