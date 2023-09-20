@@ -7,8 +7,8 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
-import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
@@ -216,23 +216,23 @@ public class HabitController {
     /**
      * Method for creating Custom Habit.
      *
-     * @param request {@link AddUpdateCustomHabitDtoRequest} - new custom habit dto.
-     * @return dto {@link AddUpdateCustomHabitDtoResponse}
+     * @param request {@link CustomHabitDtoRequest} - new custom habit dto.
+     * @return dto {@link CustomHabitDtoResponse}
      *
      * @author Lilia Mokhnatska.
      */
     @ApiOperation(value = "Add new custom habit.")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddUpdateCustomHabitDtoResponse.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CustomHabitDtoResponse.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
     @PostMapping(value = "/custom",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<AddUpdateCustomHabitDtoResponse> addCustomHabit(
-        @RequestPart @Valid AddUpdateCustomHabitDtoRequest request,
+    public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
+        @RequestPart @Valid CustomHabitDtoRequest request,
         @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity
@@ -268,23 +268,23 @@ public class HabitController {
     /**
      * Method for updating Custom Habit.
      *
-     * @param request {@link AddUpdateCustomHabitDtoRequest} - custom habit dto.
-     * @return dto {@link AddUpdateCustomHabitDtoResponse}
+     * @param request {@link CustomHabitDtoRequest} - custom habit dto.
+     * @return dto {@link CustomHabitDtoResponse}
      *
      * @author Olena Sotnik.
      */
     @ApiOperation(value = "Update new custom habit.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = AddUpdateCustomHabitDtoResponse.class),
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CustomHabitDtoResponse.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping(value = "/update/{habitId}")
-    public ResponseEntity<AddUpdateCustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-        @RequestBody @Valid AddUpdateCustomHabitDtoRequest request, @ApiIgnore Principal principal,
-        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
+    public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
+                                                                    @RequestBody @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
+                                                                    @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
     }

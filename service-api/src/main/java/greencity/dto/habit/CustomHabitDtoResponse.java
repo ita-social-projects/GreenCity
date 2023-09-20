@@ -24,7 +24,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AddUpdateCustomHabitDtoResponse {
+public class CustomHabitDtoResponse {
     private Long id;
     private Long userId;
     private String image;

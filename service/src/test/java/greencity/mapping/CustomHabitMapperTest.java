@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.entity.Habit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@ class CustomHabitMapperTest {
 
     @Test
     void convertTest() {
-        AddUpdateCustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequest();
+        CustomHabitDtoRequest addCustomHabitDtoRequest = ModelUtils.getAddCustomHabitDtoRequest();
 
         Habit expected = Habit.builder()
             .complexity(addCustomHabitDtoRequest.getComplexity())

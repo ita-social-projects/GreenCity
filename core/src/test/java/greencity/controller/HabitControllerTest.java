@@ -3,7 +3,7 @@ package greencity.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
@@ -282,7 +282,7 @@ class HabitControllerTest {
 
     @Test
     void postCustomHabit() throws Exception {
-        AddUpdateCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+        CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
@@ -312,7 +312,7 @@ class HabitControllerTest {
     @Test
     void updateCustomHabit() throws Exception {
         Long habitId = 1L;
-        AddUpdateCustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+        CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 

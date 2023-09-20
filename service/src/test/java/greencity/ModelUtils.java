@@ -61,8 +61,8 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
-import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
@@ -2801,8 +2801,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddUpdateCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2827,8 +2827,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
-        return AddUpdateCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -2848,8 +2848,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
-        return AddUpdateCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -2870,8 +2870,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddUpdateCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddUpdateCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(2)
             .customShoppingListItemDto(List.of(

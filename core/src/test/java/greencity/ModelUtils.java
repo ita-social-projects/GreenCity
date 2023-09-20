@@ -31,7 +31,7 @@ import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -738,8 +738,8 @@ public class ModelUtils {
             .build())).tags(List.of("first", "second", "third")).build();
     }
 
-    public static AddUpdateCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddUpdateCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()

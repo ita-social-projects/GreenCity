@@ -3,8 +3,8 @@ package greencity.service;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
-import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -303,8 +303,8 @@ public class HabitServiceImpl implements HabitService {
 
     @Transactional
     @Override
-    public AddUpdateCustomHabitDtoResponse addCustomHabit(
-        AddUpdateCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
+    public CustomHabitDtoResponse addCustomHabit(
+            CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
 
@@ -325,15 +325,15 @@ public class HabitServiceImpl implements HabitService {
     }
 
     /**
-     * Method that build {@link AddUpdateCustomHabitDtoResponse} from {@link Habit}.
+     * Method that build {@link CustomHabitDtoResponse} from {@link Habit}.
      *
      * @param habit  {@link Habit}
      * @param userId {@link Long}
-     * @return {@link AddUpdateCustomHabitDtoResponse}
+     * @return {@link CustomHabitDtoResponse}
      * @author Lilia Mokhnatska
      */
-    private AddUpdateCustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
-        AddUpdateCustomHabitDtoResponse response = modelMapper.map(habit, AddUpdateCustomHabitDtoResponse.class);
+    private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
+        CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
         response.setCustomShoppingListItemDto(customShoppingListResponseDtoMapper
             .mapAllToList(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
@@ -361,8 +361,8 @@ public class HabitServiceImpl implements HabitService {
 
     @Transactional
     @Override
-    public AddUpdateCustomHabitDtoResponse updateCustomHabit(AddUpdateCustomHabitDtoRequest habitDto,
-        Long habitId, String userEmail, MultipartFile image) {
+    public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto,
+                                                    Long habitId, String userEmail, MultipartFile image) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
         Habit toUpdate = habitRepo.findById(habitId)
@@ -373,7 +373,7 @@ public class HabitServiceImpl implements HabitService {
         return buildAddCustomHabitDtoResponse(updatedHabit, user.getId());
     }
 
-    private void enhanceHabitWithNewData(Habit toUpdate, AddUpdateCustomHabitDtoRequest habitDto,
+    private void enhanceHabitWithNewData(Habit toUpdate, CustomHabitDtoRequest habitDto,
         User user, MultipartFile image) {
         if (Objects.nonNull(habitDto.getComplexity())) {
             toUpdate.setComplexity(habitDto.getComplexity());
@@ -399,7 +399,7 @@ public class HabitServiceImpl implements HabitService {
         }
     }
 
-    private void saveHabitTranslationListsToHabitTranslationRepo(AddUpdateCustomHabitDtoRequest habitDto, Habit habit) {
+    private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
         List<HabitTranslation> habitTranslationListForUa = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
         habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
@@ -414,17 +414,17 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(
-        AddUpdateCustomHabitDtoRequest habitDto) {
+        CustomHabitDtoRequest habitDto) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations());
     }
 
-    private void setTagsIdsToHabit(AddUpdateCustomHabitDtoRequest habitDto, Habit habit) {
+    private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
         habit.setTags(habitDto.getTagIds().stream().map(tagId -> tagsRepo.findById(tagId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId)))
             .collect(Collectors.toSet()));
     }
 
-    private void setCustomShoppingListItemToHabit(AddUpdateCustomHabitDtoRequest habitDto, Habit habit, User user) {
+    private void setCustomShoppingListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
         List<CustomShoppingListItem> customShoppingListItems =
             customShoppingListMapper.mapAllToList(habitDto.getCustomShoppingListItemDto());
         customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setHabit(habit));

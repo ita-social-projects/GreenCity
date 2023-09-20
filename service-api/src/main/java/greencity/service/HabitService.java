@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
-import greencity.dto.habit.AddUpdateCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
@@ -110,18 +110,18 @@ public interface HabitService {
     List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method to save {@link AddUpdateCustomHabitDtoResponse}.
+     * Method to save {@link CustomHabitDtoResponse}.
      *
      * @param addCustomHabitDtoRequest dto with
-     *                                 {@link AddUpdateCustomHabitDtoRequest}
+     *                                 {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
      * @param userEmail                {@link String} - user email.
-     * @return {@link AddUpdateCustomHabitDtoResponse} instance.
+     * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    AddUpdateCustomHabitDtoResponse addCustomHabit(AddUpdateCustomHabitDtoRequest addCustomHabitDtoRequest,
-        MultipartFile image,
-        String userEmail);
+    CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest,
+                                          MultipartFile image,
+                                          String userEmail);
 
     /**
      * Retrieves the list of profile pictures of the user's friends (which have
@@ -134,14 +134,14 @@ public interface HabitService {
     List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
 
     /**
-     * Method to update {@link AddUpdateCustomHabitDtoResponse}.
+     * Method to update {@link CustomHabitDtoResponse}.
      *
-     * @param customHabitDtoRequest dto with {@link AddUpdateCustomHabitDtoRequest}
+     * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                              entered info about field that need to edit.
      * @param userEmail             {@link String} - user email.
-     * @return {@link AddUpdateCustomHabitDtoResponse} instance.
+     * @return {@link CustomHabitDtoResponse} instance.
      * @author Olena Sotnik.
      */
-    AddUpdateCustomHabitDtoResponse updateCustomHabit(AddUpdateCustomHabitDtoRequest customHabitDtoRequest,
-        Long habitId, String userEmail, MultipartFile image);
+    CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest,
+                                             Long habitId, String userEmail, MultipartFile image);
 }

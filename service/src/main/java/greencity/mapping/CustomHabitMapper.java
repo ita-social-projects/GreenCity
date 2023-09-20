@@ -1,14 +1,14 @@
 package greencity.mapping;
 
-import greencity.dto.habit.AddUpdateCustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.entity.Habit;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CustomHabitMapper extends AbstractConverter<AddUpdateCustomHabitDtoRequest, Habit> {
+public class CustomHabitMapper extends AbstractConverter<CustomHabitDtoRequest, Habit> {
     @Override
-    public Habit convert(AddUpdateCustomHabitDtoRequest addCustomHabitDtoRequest) {
+    public Habit convert(CustomHabitDtoRequest addCustomHabitDtoRequest) {
         return Habit.builder()
             .image(addCustomHabitDtoRequest.getImage())
             .complexity(addCustomHabitDtoRequest.getComplexity())
