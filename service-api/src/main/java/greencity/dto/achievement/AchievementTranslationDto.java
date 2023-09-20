@@ -15,5 +15,6 @@ public class AchievementTranslationDto {
     private String name;
 
     private String nameEng;
+    private Long achievement_id;
 
 }
