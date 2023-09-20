@@ -166,7 +166,6 @@ import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
@@ -443,7 +442,7 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
+
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -453,7 +452,7 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
+                     
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -1417,11 +1416,11 @@ public class ModelUtils {
     }
 
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO() );
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE, false);
+        return new UserAchievement(1L, getUser(), getAchievement(),  false);
     }
 
     public static UserAction getUserAction() {
@@ -1699,7 +1698,7 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-                            .achievementStatus(AchievementStatus.ACTIVE)
+                             
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1709,7 +1708,7 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-                            .achievementStatus(AchievementStatus.INACTIVE)
+                             
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1777,7 +1776,7 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
+                     
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1787,7 +1786,7 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
+                     
                     .user(UserVO.builder()
                         .id(1L)
                         .build())

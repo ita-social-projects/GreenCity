@@ -2,8 +2,6 @@ package greencity.achievement;
 
 import greencity.client.RestClient;
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
@@ -22,11 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static greencity.enums.AchievementStatus.ACTIVE;
 
 @Component
 public class AchievementCalculation {
@@ -113,7 +106,6 @@ public class AchievementCalculation {
         UserAchievement userAchievement = UserAchievement.builder()
             .achievement(achievement)
             .user(userRepo.findById(userId).get())
-            .achievementStatus(ACTIVE)
             .build();
         userAchievementRepo.save(userAchievement);
         AchievementCategory achievementCategory =

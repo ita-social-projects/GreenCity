@@ -7,17 +7,4 @@ import greencity.entity.User;
 
 import java.util.List;
 
-public interface AchievementTranslationRepo extends JpaRepository<AchievementTranslation, Long> {
-    /**
-     * Method finding achievements with status active and no notify.
-     *
-     * @param userId of {@link User}
-     * @param langId of {@link Long}
-     * @return list {@link AchievementTranslation}
-     */
-    @Query(nativeQuery = true, value = "SELECT * FROM achievement_translations t inner join user_achievements u "
-        + "on t.achievement_id = u.achievement_id WHERE "
-        + "u.user_id =:userId AND u.achievement_status = 'ACTIVE' "
-        + "AND u.notified = FALSE ;")
-    List<AchievementTranslation> findAchievementsWithStatusActive(Long userId, Long langId);
-}
+public interface AchievementTranslationRepo extends JpaRepository<AchievementTranslation, Long> { }

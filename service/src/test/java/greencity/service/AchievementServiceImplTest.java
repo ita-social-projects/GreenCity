@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,6 +65,8 @@ class AchievementServiceImplTest {
     private AchievementServiceImpl achievementService;
     @Mock
     private AchievementTranslationRepo achievementTranslationRepo;
+    @Mock
+    private UserRepo userRepo;
 
     @Test
     void findAllWithEmptyListTest() {
@@ -123,6 +126,8 @@ class AchievementServiceImplTest {
         List<UserActionVO> userActionVOS = new ArrayList<>();
         userActionVOS.add(userActionVO);
         userVO.setUserActions(userActionVOS);
+        achievementVO.setTranslations(Arrays.asList(ModelUtils.getAchievementTranslationDto()));
+        achievementPostDto.setTranslations(Arrays.asList(ModelUtils.getAchievementTranslationDto()));
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
         when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);

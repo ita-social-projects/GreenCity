@@ -178,5 +178,6 @@
     <include file="db/changelog/logs/ch-drop-column-achievement_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-column-achievement_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-achievement_translations-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-user_achievements-Spodaryk.xml"/>
 </databaseChangeLog>
 
