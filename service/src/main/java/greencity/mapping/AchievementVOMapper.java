@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.achievement.AchievementTranslationDto;
+ 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.language.LanguageVO;
@@ -14,17 +14,11 @@ import org.springframework.stereotype.Component;
 public class AchievementVOMapper extends AbstractConverter<Achievement, AchievementVO> {
     @Override
     protected AchievementVO convert(Achievement achievement) {
-        List<AchievementTranslationDto> list = new ArrayList<>();
-        achievement.getTranslations()
-            .forEach(achievementTranslation -> list.add(AchievementTranslationDto.builder()
-                .id(achievementTranslation.getId())
-                .name(achievementTranslation.getName())
-                .nameEng(achievementTranslation.getNameEng())
-                            .achievement_id(achievementTranslation.getAchievement().getId())
-                .build()));
         return AchievementVO.builder()
             .id(achievement.getId())
-            .translations(list)
+                .name(achievement.getName())
+                .nameEng(achievement.getNameEng())
+                .condition(achievement.getCondition())
             .achievementCategory(AchievementCategoryVO.builder()
                 .id(achievement.getAchievementCategory().getId())
                 .name(achievement.getAchievementCategory().getName())

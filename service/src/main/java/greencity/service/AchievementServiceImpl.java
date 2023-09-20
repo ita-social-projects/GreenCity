@@ -12,13 +12,13 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
-import greencity.entity.localization.AchievementTranslation;
+ 
 import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-import greencity.repository.AchievementTranslationRepo;
+
 import greencity.repository.UserAchievementRepo;
 
 import java.util.ArrayList;
@@ -46,7 +46,6 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
-    private final AchievementTranslationRepo achievementTranslationRepo;
 
     /**
      * {@inheritDoc}
@@ -58,7 +57,6 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
-        achievement.getTranslations().forEach(adviceTranslation -> adviceTranslation.setAchievement(achievement));
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
@@ -187,7 +185,6 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = achievementRepo.findById(achievementManagementDto.getId())
             .orElseThrow(() -> new NotUpdatedException(ErrorMessage.ACHIEVEMENT_NOT_FOUND_BY_ID
                 + achievementManagementDto.getId()));
-        setTranslations(achievement, achievementManagementDto);
         Achievement updated = achievementRepo.save(achievement);
         return modelMapper.map(updated, AchievementPostDto.class);
     }
@@ -213,37 +210,5 @@ public class AchievementServiceImpl implements AchievementService {
     public void calculateAchievements(Long id,
         AchievementCategoryType achievementCategory) {
         achievementCalculation.calculateAchievement(id, achievementCategory);
-    }
-
-    private List<AchievementNotification> setAchievementNotifications(
-        List<AchievementNotification> achievementNotifications,
-        List<AchievementTranslation> translationList, Long userId) {
-        translationList.forEach(translation -> {
-            achievementNotifications.add(AchievementNotification.builder()
-                .id(translation.getId())
-//                .title(translation.getTitle())
-//                .description(translation.getDescription())
-//                .message(translation.getMessage())
-                .build());
-            UserAchievement userAchievement = userAchievementRepo
-                .getUserAchievementByIdAndAchievementId(userId, translation.getAchievement().getId());
-            userAchievement.setNotified(true);
-            userAchievementRepo.save(userAchievement);
-        });
-        return achievementNotifications;
-    }
-
-    private void setTranslations(Achievement achievement, AchievementManagementDto achievementManagementDto) {
-        achievement.getTranslations()
-            .forEach(achievementTranslation -> {
-                AchievementTranslationDto AchievementTranslationDto = achievementManagementDto
-                    .getTranslations().stream()
-//                    .filter(newTranslation -> newTranslation.getLanguage().getCode()
-//                        .equals(achievementTranslation.getLanguage().getCode()))
-                    .findFirst().get();
-//                achievementTranslation.setTitle(AchievementTranslationDto.getTitle());
-//                achievementTranslation.setDescription(AchievementTranslationDto.getDescription());
-//                achievementTranslation.setMessage(AchievementTranslationDto.getMessage());
-            });
     }
 }

@@ -4,6 +4,213 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="Spodaryk-23" author="Oksana Spodaryk">
-        <sqlFile path="db/functions/insert-values-achievements.sql"  splitStatements="false" endDelimiter="\n"/>
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="achievements"/>
+        </preConditions>
+
+        <delete tableName="achievements"/>
+
+        <insert tableName="achievements">
+            <column name="title" value="ACQUIRED_HABIT_14_DAYS"/>
+            <column name="name" value="Набуття звички протягом 14 днів"/>
+            <column name="name_eng" value="Acquired habit 14 days"/>
+            <column name="score" value="20"/>
+        </insert>
+
+        <insert tableName="achievements">
+            <column name="title" value="ACQUIRED_HABIT_21_DAYS"/>
+            <column name="name" value="Набуття звички протягом 21 днів"/>
+            <column name="name_eng" value="Acquired habit 21 days"/>
+            <column name="score" value="30"/>
+        </insert>
+
+        <insert tableName="achievements">
+            <column name="title" value="ACQUIRED_HABIT_30_DAYS"/>
+            <column name="name" value="Набуття звички протягом 30 днів"/>
+            <column name="name_eng" value="Acquired habit 30 days"/>
+            <column name="score" value="40"/>
+        </insert>
+
+
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_1_NEWS"/>
+            <column name="name" value="Створено 1 новину"/>
+            <column name="name_eng" value="Created 1 news"/>
+            <column name="score" value="1"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_5_NEWS"/>
+            <column name="name" value="Створено 5 новин"/>
+            <column name="name_eng" value="Created 5 news"/>
+            <column name="score" value="5"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_10_NEWS"/>
+            <column name="name" value="Створено 10 новин"/>
+            <column name="name_eng" value="Created 10 news"/>
+            <column name="score" value="10"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_25_NEWS"/>
+            <column name="name" value="Створено 25 новин"/>
+            <column name="name_eng" value="Created 25 news"/>
+            <column name="score" value="25"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_50_NEWS"/>
+            <column name="name" value="Створено 50 новин"/>
+            <column name="name_eng" value="Created 50 news"/>
+            <column name="score" value="50"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="CREATED_100_NEWS"/>
+            <column name="name" value="Створено 100 новин"/>
+            <column name="name_eng" value="Created 100 news"/>
+            <column name="score" value="100"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="name" value="Коментування або відповідь 1 раз"/>
+            <column name="name_eng" value="Comment or reply 1 time"/>
+            <column name="score" value="1"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="name" value="Коментування або відповідь 5 разів"/>
+            <column name="name_eng" value="Comment or reply 5 times"/>
+            <column name="score" value="5"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="name" value="Коментування або відповідь 10 разів"/>
+            <column name="name_eng" value="Comment or reply 10 times"/>
+            <column name="score" value="10"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="name" value="Коментування або відповідь 25 разів"/>
+            <column name="name_eng" value="Comment or reply 25 times"/>
+            <column name="score" value="25"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="name" value="Коментування або відповідь 50 разів"/>
+            <column name="name_eng" value="Comment or reply 50 times"/>
+            <column name="score" value="50"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="name" value="Коментування або відповідь 100 разів"/>
+            <column name="name_eng" value="Comment or reply 100 times"/>
+            <column name="score" value="100"/>
+        </insert>
+        <!-- LIKE_COMMENT_OR_REPLY Achievements -->
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_1_TIMES"/>
+            <column name="name" value="Лайкнуто коментар або відповідь 1 раз"/>
+            <column name="name_eng" value="Liked a comment or reply 1 time"/>
+            <column name="score" value="1"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_5_TIMES"/>
+            <column name="name" value="Лайкнуто коментарі або відповіді 5 разів"/>
+            <column name="name_eng" value="Liked comments or replies 5 times"/>
+            <column name="score" value="5"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_10_TIMES"/>
+            <column name="name" value="Лайкнуто коментарі або відповіді 10 разів"/>
+            <column name="name_eng" value="Liked comments or replies 10 times"/>
+            <column name="score" value="10"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_25_TIMES"/>
+            <column name="name" value="Лайкнуто коментарі або відповіді 25 разів"/>
+            <column name="name_eng" value="Liked comments or replies 25 times"/>
+            <column name="score" value="25"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_50_TIMES"/>
+            <column name="name" value="Лайкнуто коментарі або відповіді 50 разів"/>
+            <column name="name_eng" value="Liked comments or replies 50 times"/>
+            <column name="score" value="50"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="LIKE_COMMENT_OR_REPLY_100_TIMES"/>
+            <column name="name" value="Лайкнуто коментарі або відповіді 100 разів"/>
+            <column name="name_eng" value="Liked comments or replies 100 times"/>
+            <column name="score" value="100"/>
+        </insert>
+
+        <!-- SHARE_NEWS Achievements -->
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_1_TIMES"/>
+            <column name="name" value="Поділено новину 1 раз"/>
+            <column name="name_eng" value="Shared news 1 time"/>
+            <column name="score" value="1"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_5_TIMES"/>
+            <column name="name" value="Поділено новини 5 разів"/>
+            <column name="name_eng" value="Shared news 5 times"/>
+            <column name="score" value="5"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_10_TIMES"/>
+            <column name="name" value="Поділено новини 10 разів"/>
+            <column name="name_eng" value="Shared news 10 times"/>
+            <column name="score" value="10"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_25_TIMES"/>
+            <column name="name" value="Поділено новини 25 разів"/>
+            <column name="name_eng" value="Shared news 25 times"/>
+            <column name="score" value="25"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_50_TIMES"/>
+            <column name="name" value="Поділено новини 50 разів"/>
+            <column name="name_eng" value="Shared news 50 times"/>
+            <column name="score" value="50"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="SHARE_NEWS_100_TIMES"/>
+            <column name="name" value="Поділено новини 100 разів"/>
+            <column name="name_eng" value="Shared news 100 times"/>
+            <column name="score" value="100"/>
+        </insert>
+
+        <!-- FIRST_x_ACHIEVEMENTS -->
+        <insert tableName="achievements">
+            <column name="title" value="FIRST_5_ACHIEVEMENTS"/>
+            <column name="name" value="Перші 5 досягнень"/>
+            <column name="name_eng" value="First 5 Achievements"/>
+            <column name="score" value="10"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="FIRST_10_ACHIEVEMENTS"/>
+            <column name="name" value="Перші 10 досягнень"/>
+            <column name="name_eng" value="First 10 Achievements"/>
+            <column name="score" value="25"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="FIRST_25_ACHIEVEMENTS"/>
+            <column name="name" value="Перші 25 досягнень"/>
+            <column name="name_eng" value="First 25 Achievements"/>
+            <column name="score" value="50"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="FIRST_50_ACHIEVEMENTS"/>
+            <column name="name" value="Перші 50 досягнень"/>
+            <column name="name_eng" value="First 50 Achievements"/>
+            <column name="score" value="100"/>
+        </insert>
+        <insert tableName="achievements">
+            <column name="title" value="FIRST_100_ACHIEVEMENTS"/>
+            <column name="name" value="Перші 100 досягнень"/>
+            <column name="name_eng" value="First 100 Achievements"/>
+            <column name="score" value="200"/>
+        </insert>
+
     </changeSet>
 </databaseChangeLog>

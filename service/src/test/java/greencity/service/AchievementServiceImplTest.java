@@ -14,7 +14,7 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.Language;
 import greencity.entity.UserAchievement;
-import greencity.entity.localization.AchievementTranslation;
+ 
 import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -23,7 +23,7 @@ import greencity.repository.AchievementRepo;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import greencity.repository.AchievementTranslationRepo;
+ 
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
@@ -63,8 +63,6 @@ class AchievementServiceImplTest {
     private AchievementCalculation achievementCalculation;
     @InjectMocks
     private AchievementServiceImpl achievementService;
-    @Mock
-    private AchievementTranslationRepo achievementTranslationRepo;
     @Mock
     private UserRepo userRepo;
 
@@ -126,8 +124,6 @@ class AchievementServiceImplTest {
         List<UserActionVO> userActionVOS = new ArrayList<>();
         userActionVOS.add(userActionVO);
         userVO.setUserActions(userActionVOS);
-        achievementVO.setTranslations(Arrays.asList(ModelUtils.getAchievementTranslationDto()));
-        achievementPostDto.setTranslations(Arrays.asList(ModelUtils.getAchievementTranslationDto()));
         when(modelMapper.map(achievementPostDto, Achievement.class)).thenReturn(achievement);
         when(achievementCategoryService.findByName("Test")).thenReturn(achievementCategoryVO);
         when(modelMapper.map(achievementCategoryVO, AchievementCategory.class)).thenReturn(achievementCategory);
@@ -153,14 +149,9 @@ class AchievementServiceImplTest {
     @Test
     void updateTest() {
         Achievement achievement = ModelUtils.getAchievement();
-        AchievementTranslation achievementTranslation = ModelUtils.getAchievementTranslation();
-        achievement.setTranslations(Collections.singletonList(achievementTranslation));
-        AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
+     AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-        AchievementTranslationDto AchievementTranslationDto = ModelUtils.getAchievementTranslationDto();
-        achievementManagementDto.setTranslations(Collections.singletonList(AchievementTranslationDto));
-        achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationDto()));
-        when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
+       when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
         AchievementPostDto expected = achievementService.update(achievementManagementDto);

@@ -1,6 +1,6 @@
 package greencity.entity;
 
-import greencity.entity.localization.AchievementTranslation;
+ 
 
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -32,8 +32,13 @@ public class Achievement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
-    private List<AchievementTranslation> translations;
+    @Column(nullable = false, length = 300)
+    private String title;
+
+    @Column(nullable = false, length = 300)
+    private String name;
+    @Column(nullable = false, length = 300)
+    private String nameEng;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "achievement", fetch = FetchType.LAZY)
     private List<UserAchievement> userAchievements;

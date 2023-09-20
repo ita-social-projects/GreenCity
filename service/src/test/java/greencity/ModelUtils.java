@@ -9,7 +9,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationDto;
+ 
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -162,7 +162,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-import greencity.entity.localization.AchievementTranslation;
+ 
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
@@ -1378,7 +1378,7 @@ public class ModelUtils {
 
     public static Achievement getAchievement() {
         return new Achievement(1L,
-               null,
+                "Test","Test",   "Test",
                 Collections.emptyList(),
             new AchievementCategory(), 1);
     }
@@ -1388,20 +1388,17 @@ public class ModelUtils {
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, Collections.emptyList(), new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L,"Test","Test",new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto(getAchievementCategoryDto(), 1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
         return new AchievementCategoryDto("Test");
     }
 
-    public static AchievementTranslationDto getAchievementTranslationDto() {
-        return new AchievementTranslationDto(1L, "Title", "Description",1L);
-    }
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
         return new AchievementCategoryVO(1L, "Category");
@@ -1411,9 +1408,6 @@ public class ModelUtils {
         return new AchievementManagementDto(1L);
     }
 
-    public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L, "Title", "Description", getAchievement());
-    }
 
     public static UserAchievementVO getUserAchievementVO() {
         return new UserAchievementVO(1L, getUserVO(), getAchievementVO() );

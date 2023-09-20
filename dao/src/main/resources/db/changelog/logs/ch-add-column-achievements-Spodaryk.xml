@@ -15,7 +15,21 @@
                 <constraints nullable="true"/>
             </column>
         </addColumn>
-
+        <addColumn tableName="achievements">
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="achievements">
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="achievements">
+            <column name="name_eng" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
         <addColumn tableName="achievements">
             <column name="score" type="INT">
                 <constraints nullable="true"/>
