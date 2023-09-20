@@ -746,8 +746,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId,
-                AchievementCategoryType.HABIT, habitStreak));
+            .calculateAchievement(userId, AchievementCategoryType.HABIT));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);

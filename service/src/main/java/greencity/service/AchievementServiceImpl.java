@@ -205,24 +205,14 @@ public class AchievementServiceImpl implements AchievementService {
         return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<AchievementNotification> findAchievementsWithStatusActive(Long userId) {
-        UserVO user = restClient.findById(userId);
-        List<AchievementTranslation> translationList = achievementTranslationRepo
-            .findAchievementsWithStatusActive(userId, user.getLanguageVO().getId());
-        return setAchievementNotifications(new ArrayList<>(), translationList, userId);
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void calculateAchievements(Long id,
-        AchievementCategoryType achievementCategory, Integer size) {
-        achievementCalculation.calculateAchievement(id, achievementCategory, size);
+        AchievementCategoryType achievementCategory) {
+        achievementCalculation.calculateAchievement(id, achievementCategory);
     }
 
     private List<AchievementNotification> setAchievementNotifications(

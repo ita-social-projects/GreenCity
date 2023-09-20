@@ -90,15 +90,7 @@ public interface AchievementService {
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
 
     /**
-     * Method notifies of the achievement.
-     *
-     * @param userId of {@link UserVO}
-     * @return list {@link AchievementNotification}
-     */
-    List<AchievementNotification> findAchievementsWithStatusActive(Long userId);
-
-    /**
      * Method for achievement Calculation.
      */
-    void calculateAchievements(Long id, AchievementCategoryType achievementCategory, Integer size);
+    void calculateAchievements(Long id, AchievementCategoryType achievementCategory);
 }

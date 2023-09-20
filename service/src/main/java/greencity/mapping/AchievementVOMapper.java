@@ -20,6 +20,7 @@ public class AchievementVOMapper extends AbstractConverter<Achievement, Achievem
                 .id(achievementTranslation.getId())
                 .name(achievementTranslation.getName())
                 .nameEng(achievementTranslation.getNameEng())
+                            .achievement_id(achievementTranslation.getAchievement().getId())
                 .build()));
         return AchievementVO.builder()
             .id(achievement.getId())

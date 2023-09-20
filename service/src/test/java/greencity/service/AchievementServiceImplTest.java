@@ -208,43 +208,11 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
     }
-
-    @Test
-    void findAchievementsWithStatusActive() {
-        List<AchievementNotification> achievementNotifications =
-            Collections.singletonList(AchievementNotification.builder()
-                .id(1L)
-                .message("test")
-                .description("test")
-                .title("test")
-                .build());
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setLanguageVO(LanguageVO.builder()
-            .id(1L)
-            .code("ua")
-            .build());
-        Achievement achievement = ModelUtils.getAchievement();
-        List<AchievementTranslation> achievementTranslations = Collections
-            .singletonList(AchievementTranslation.builder()
-                .id(1L)
-                .achievement(achievement)
-                .build());
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        when(restClient.findById(1L)).thenReturn(userVO);
-        when(achievementTranslationRepo.findAchievementsWithStatusActive(1L, 1L))
-            .thenReturn(achievementTranslations);
-        when(userAchievementRepo.getUserAchievementByIdAndAchievementId(1L, 1L)).thenReturn(userAchievement);
-        userAchievement.setNotified(true);
-        when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
-        assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
-    }
-
     @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, 1);
+        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
-            any(AchievementCategoryType.class),
-            anyInt());
+            any(AchievementCategoryType.class));
     }
 }

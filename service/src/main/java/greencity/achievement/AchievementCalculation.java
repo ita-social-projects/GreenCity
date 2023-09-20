@@ -74,15 +74,14 @@ public class AchievementCalculation {
      *
      * @param userId   of {@link User}
      * @param category {@link AchievementCategoryType}
-     * @param count    number of specific actions
      * @author Orest Mamchuk
      */
     public void calculateAchievement(Long userId,
-        AchievementCategoryType category, Integer count) {
+        AchievementCategoryType category) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
-        count = checkCount(userActionVO);
+      Integer  count = checkCount(userActionVO);
         userActionService.updateUserActions(userActionVO);
         checkAchievements(achievementCategoryVO.getId(), count, userId);
     }
@@ -121,8 +120,7 @@ public class AchievementCalculation {
             achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategory.getId());
-        int countAchievement = checkCount(userActionVO);
-        calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, countAchievement);
+        calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT);
 
     }
 

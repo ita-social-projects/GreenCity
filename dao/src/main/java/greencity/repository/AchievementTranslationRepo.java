@@ -17,7 +17,7 @@ public interface AchievementTranslationRepo extends JpaRepository<AchievementTra
      */
     @Query(nativeQuery = true, value = "SELECT * FROM achievement_translations t inner join user_achievements u "
         + "on t.achievement_id = u.achievement_id WHERE "
-        + "u.user_id =:userId AND t.language_id =:langId AND u.achievement_status = 'ACTIVE' "
+        + "u.user_id =:userId AND u.achievement_status = 'ACTIVE' "
         + "AND u.notified = FALSE ;")
     List<AchievementTranslation> findAchievementsWithStatusActive(Long userId, Long langId);
 }

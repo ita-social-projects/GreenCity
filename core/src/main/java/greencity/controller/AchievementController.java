@@ -48,23 +48,6 @@ public class AchievementController {
     }
 
     /**
-     * Method notifies of the achievement.
-     *
-     * @param userId of {@link UserVO}
-     * @return list {@link AchievementNotification}
-     */
-    @ApiOperation(value = "Get all the achievements that need to notify.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-    })
-    @GetMapping("/notification/{userId}")
-    public ResponseEntity<List<AchievementNotification>> getNotification(@PathVariable Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAchievementsWithStatusActive(userId));
-    }
-
-    /**
      * Method for achievement calculation.
      */
     @ApiOperation(value = "Calculate achievements.")
@@ -75,9 +58,8 @@ public class AchievementController {
     })
     @PostMapping("/calculate-achievement")
     public ResponseEntity<HttpStatus> calculateAchievements(@RequestParam Long id,
-        @RequestParam AchievementCategoryType socialNetwork,
-        @RequestParam int size) {
-        achievementService.calculateAchievements(id, socialNetwork, size);
+        @RequestParam AchievementCategoryType socialNetwork) {
+        achievementService.calculateAchievements(id, socialNetwork);
         return ResponseEntity.ok().build();
     }
 }

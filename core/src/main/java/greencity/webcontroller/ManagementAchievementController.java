@@ -53,22 +53,6 @@ public class ManagementAchievementController {
         return "core/management_achievement";
     }
 
-    /**
-     * Method for creating {@link AchievementVO}.
-     *
-     * @param achievementPostDto dto for {@link AchievementVO} entity.
-     * @return {@link GenericResponseDto} with of operation and errors fields.
-     * @author Orest Mamchuk
-     */
-    @PostMapping
-    @ResponseBody
-    public GenericResponseDto saveAchievement(@Valid @RequestBody AchievementPostDto achievementPostDto,
-        BindingResult bindingResult) {
-        if (!bindingResult.hasErrors()) {
-            achievementService.save(achievementPostDto);
-        }
-        return buildGenericResponseDto(bindingResult);
-    }
 
     /**
      * Method which deteles {@link AchievementVO} by given id.

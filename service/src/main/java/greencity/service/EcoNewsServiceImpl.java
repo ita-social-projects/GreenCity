@@ -81,7 +81,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS, 0));
+                AchievementCategoryType.CREATE_NEWS));
         return addEcoNewsDtoResponse;
     }
 
@@ -99,7 +99,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS, 0));
+                AchievementCategoryType.CREATE_NEWS));
         return ecoNewsDto;
     }
 
@@ -427,7 +427,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY, 0));
+            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY));
     }
 
     /**

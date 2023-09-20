@@ -48,17 +48,8 @@ class AchievementControllerTest {
     void calculateAchievements() throws Exception {
         mockMvc.perform(post(achievementLink + "/calculate-achievement"
             + "?id=" + 1L
-            + "&socialNetwork=" + AchievementCategoryType.CREATE_NEWS
-            + "&size=" + 1)).andExpect(status().isOk());
+            + "&socialNetwork=" + AchievementCategoryType.CREATE_NEWS)).andExpect(status().isOk());
         verify(achievementService).calculateAchievements(1L,
-            AchievementCategoryType.CREATE_NEWS, 1);
+            AchievementCategoryType.CREATE_NEWS);
     }
-
-    @Test
-    void getNotificationTest() throws Exception {
-        mockMvc.perform(get(achievementLink
-            + "/notification/{userId}", 1)).andExpect(status().isOk());
-        verify(achievementService).findAchievementsWithStatusActive(1L);
-    }
-
 }

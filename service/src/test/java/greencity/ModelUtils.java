@@ -1378,7 +1378,9 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L, Collections.singletonList(getAchievementTranslation()), Collections.emptyList(),
+        return new Achievement(1L,
+               null,
+                Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
