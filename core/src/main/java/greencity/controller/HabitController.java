@@ -283,8 +283,8 @@ public class HabitController {
     })
     @PutMapping(value = "/update/{habitId}")
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-                                                                    @RequestBody @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
-                                                                    @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
+        @RequestBody @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
+        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
     }

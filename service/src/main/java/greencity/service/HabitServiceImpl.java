@@ -304,7 +304,7 @@ public class HabitServiceImpl implements HabitService {
     @Transactional
     @Override
     public CustomHabitDtoResponse addCustomHabit(
-            CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
+        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
 
@@ -361,8 +361,8 @@ public class HabitServiceImpl implements HabitService {
 
     @Transactional
     @Override
-    public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto,
-                                                    Long habitId, String userEmail, MultipartFile image) {
+    public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto, Long habitId,
+        String userEmail, MultipartFile image) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
         Habit toUpdate = habitRepo.findById(habitId)

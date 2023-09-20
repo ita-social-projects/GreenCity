@@ -112,16 +112,15 @@ public interface HabitService {
     /**
      * Method to save {@link CustomHabitDtoResponse}.
      *
-     * @param addCustomHabitDtoRequest dto with
-     *                                 {@link CustomHabitDtoRequest}
+     * @param addCustomHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
      * @param userEmail                {@link String} - user email.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
     CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest,
-                                          MultipartFile image,
-                                          String userEmail);
+        MultipartFile image,
+        String userEmail);
 
     /**
      * Retrieves the list of profile pictures of the user's friends (which have
@@ -136,12 +135,12 @@ public interface HabitService {
     /**
      * Method to update {@link CustomHabitDtoResponse}.
      *
-     * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest}
-     *                              entered info about field that need to edit.
+     * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest} entered
+     *                              info about field that need to edit.
      * @param userEmail             {@link String} - user email.
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Olena Sotnik.
      */
     CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest,
-                                             Long habitId, String userEmail, MultipartFile image);
+        Long habitId, String userEmail, MultipartFile image);
 }
