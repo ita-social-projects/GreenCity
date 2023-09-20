@@ -413,8 +413,7 @@ public class HabitServiceImpl implements HabitService {
         habitTranslationRepo.saveAll(habitTranslationListForEn);
     }
 
-    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(
-        CustomHabitDtoRequest habitDto) {
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto) {
         return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations());
     }
 

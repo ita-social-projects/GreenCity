@@ -194,12 +194,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static greencity.enums.UserStatus.ACTIVATED;
 
@@ -2845,6 +2840,19 @@ public class ModelUtils {
                     .name(HABIT_TRANSLATION_NAME)
                     .build()))
             .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithTagsForServiceTest() {
+        return CustomHabitDtoRequest.builder()
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithComplexityAndDuration() {
+        return CustomHabitDtoRequest.builder()
+            .complexity(2)
+            .defaultDuration(7)
             .build();
     }
 
