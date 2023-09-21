@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.UserAction;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,9 +51,11 @@ public class UserActionServiceImpl implements UserActionService {
         UserAction userAction = userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
         if (userAction == null) {
             userAction = UserAction.builder()
-                .user(userRepo.findById(userId).get())
+                .user(userRepo.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
                 .count(0)
-                .achievementCategory(achievementCategoryRepo.findById(categoryId).get())
+                .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
+                    () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
                 .build();
             userActionRepo.save(userAction);
         }

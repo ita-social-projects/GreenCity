@@ -1,6 +1,7 @@
 package greencity.achievement;
 
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
@@ -19,6 +20,8 @@ import greencity.service.UserActionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.NoSuchElementException;
 
 @Component
 public class AchievementCalculation {
@@ -102,10 +105,13 @@ public class AchievementCalculation {
      */
     private void changeAchievementStatus(Long userId, Long achievementCategoryId, int count) {
         Achievement achievement =
-            achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count).get();
+            achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
+                .orElseThrow(() -> new NoSuchElementException(
+                    ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
         UserAchievement userAchievement = UserAchievement.builder()
             .achievement(achievement)
-            .user(userRepo.findById(userId).get())
+            .user(userRepo.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
             .build();
         userAchievementRepo.save(userAchievement);
         calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT);
