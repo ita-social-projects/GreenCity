@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.Builder;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -24,4 +25,6 @@ public class AchievementCategory {
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
+    @OneToMany(mappedBy = "achievementCategory")
+    private List<Achievement> achievementList;
 }

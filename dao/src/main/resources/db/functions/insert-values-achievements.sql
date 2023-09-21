@@ -47,7 +47,7 @@ VALUES ('ACQUIRED_HABIT_14_DAYS', 'Набуття звички протягом 
        ('ACQUIRED_HABIT_30_DAYS', 'Набуття звички протягом 30 днів', 'Acquired habit 30 days', 40, habit_id, 30);
 
 INSERT INTO achievements(title, name, name_eng, score, achievement_category_id, condition)
-VALUES ('CREATED_1_NEWS', 'Створено 1 новину', 'Created 1 newі', 10, create_news_id, 5),
+VALUES ('CREATED_1_NEWS', 'Створено перший новину', 'Created first news', 10, create_news_id, 1),
        ('CREATED_5_NEWS', 'Створено 5 новин', 'Created 5 news', 10, create_news_id, 5),
        ('CREATED_10_NEWS', 'Створено 10 новин', 'Created 10 news', 10, create_news_id, 10),
        ('CREATED_25_NEWS', 'Створено 25 новин', 'Created 25 news', 10, create_news_id, 25),
@@ -55,7 +55,7 @@ VALUES ('CREATED_1_NEWS', 'Створено 1 новину', 'Created 1 newі', 
        ('CREATED_100_NEWS', 'Створено 100 новин', 'Created 100 news', 10, create_news_id, 100);
 
 INSERT INTO achievements(title, name, name_eng, score, achievement_category_id, condition)
-VALUES ('COMMENT_OR_REPLY_1_TIMES', 'Коментування або відповідь 1 раз', 'Comment or reply 1 time', 1,
+VALUES ('COMMENT_OR_REPLY_1_TIMES', 'Коментування або відповідь перший раз', 'Comment or reply first time', 1,
         comment_or_reply_id, 1),
        ('COMMENT_OR_REPLY_5_TIMES', 'Коментування або відповідь 5 разів', 'Comment or reply 5 times', 5,
         comment_or_reply_id, 5),
@@ -69,7 +69,7 @@ VALUES ('COMMENT_OR_REPLY_1_TIMES', 'Коментування або відпо�
         comment_or_reply_id, 100);
 
 INSERT INTO achievements(title, name, name_eng, score, achievement_category_id, condition)
-VALUES ('LIKE_COMMENT_OR_REPLY_1_TIMES', 'Лайкнуто коментар або відповідь 1 раз', 'Liked a comment or reply 1 time', 1,
+VALUES ('LIKE_COMMENT_OR_REPLY_1_TIMES', 'Лайкнуто коментар або відповідь перший раз', 'Liked a comment or reply first time', 1,
         like_comment_or_reply_id, 1),
        ('LIKE_COMMENT_OR_REPLY_5_TIMES', 'Лайкнуто коментарі або відповіді 5 разів',
         'Liked comments or replies 5 times', 5, like_comment_or_reply_id, 5),
@@ -83,12 +83,12 @@ VALUES ('LIKE_COMMENT_OR_REPLY_1_TIMES', 'Лайкнуто коментар аб
         'Liked comments or replies 100 times', 100, like_comment_or_reply_id, 100);
 
 INSERT INTO achievements(title, name, name_eng, score, achievement_category_id, condition)
-VALUES ('SHARE_NEWS_1_TIMES', 'Поділено новину 1 раз', 'Shared news 1 time', 1, share_news_id, 1),
-       ('SHARE_NEWS_5_TIMES', 'Поділено новини 5 разів', 'Shared news 5 times', 5, share_news_id, 5),
-       ('SHARE_NEWS_10_TIMES', 'Поділено новини 10 разів', 'Shared news 10 times', 10, share_news_id, 10),
-       ('SHARE_NEWS_25_TIMES', 'Поділено новини 25 разів', 'Shared news 25 times', 25, share_news_id, 25),
-       ('SHARE_NEWS_50_TIMES', 'Поділено новини 50 разів', 'Shared news 50 times', 50, share_news_id, 50),
-       ('SHARE_NEWS_100_TIMES', 'Поділено новини 100 разів', 'Shared news 100 times', 100, share_news_id, 100);
+VALUES ('SHARE_NEWS_1_TIMES', 'Поширено новину перший раз', 'Shared news first time', 1, share_news_id, 1),
+       ('SHARE_NEWS_5_TIMES', 'Поширено новини 5 разів', 'Shared news 5 times', 5, share_news_id, 5),
+       ('SHARE_NEWS_10_TIMES', 'Поширено новини 10 разів', 'Shared news 10 times', 10, share_news_id, 10),
+       ('SHARE_NEWS_25_TIMES', 'Поширено новини 25 разів', 'Shared news 25 times', 25, share_news_id, 25),
+       ('SHARE_NEWS_50_TIMES', 'Поширено новини 50 разів', 'Shared news 50 times', 50, share_news_id, 50),
+       ('SHARE_NEWS_100_TIMES', 'Поширено новини 100 разів', 'Shared news 100 times', 100, share_news_id, 100);
 
 INSERT INTO achievements(title, name, name_eng, score, achievement_category_id, condition)
 VALUES ('FIRST_5_ACHIEVEMENTS', 'Перші 5 досягнень', 'First 5 Achievements', 10, achievement_id, 5),
