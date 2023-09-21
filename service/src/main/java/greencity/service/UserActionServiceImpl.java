@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;

@@ -11,7 +11,6 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.UserAchievement;
 
 import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.NotDeletedException;
@@ -21,7 +20,6 @@ import greencity.repository.AchievementRepo;
 
 import greencity.repository.UserAchievementRepo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +42,6 @@ public class AchievementServiceImpl implements AchievementService {
     private final RestClient restClient;
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
-    private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
 
     /**

@@ -1,12 +1,10 @@
 package greencity.achievement;
 
-import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
@@ -17,7 +15,6 @@ import greencity.repository.UserRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
-import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -25,43 +22,34 @@ import java.util.NoSuchElementException;
 
 @Component
 public class AchievementCalculation {
-    private RestClient restClient;
     private UserActionService userActionService;
     private AchievementService achievementService;
     private AchievementCategoryService achievementCategoryService;
-    private final ModelMapper modelMapper;
     private UserAchievementRepo userAchievementRepo;
     private final UserRepo userRepo;
     private final AchievementRepo achievementRepo;
-    private final AchievementCategoryRepo achievementCategoryRepo;
 
     /**
      * Constructor for {@link AchievementCalculation}.
      * 
-     * @param restClient                 {@link RestClient}
      * @param userActionService          {@link UserActionService}
      * @param achievementService         {@link AchievementService}
      * @param achievementCategoryService {@link AchievementCategoryService}
-     * @param modelMapper                {@link ModelMapper}
      */
-    public AchievementCalculation(RestClient restClient,
+    public AchievementCalculation(
         UserActionService userActionService,
         @Lazy AchievementService achievementService,
         AchievementCategoryService achievementCategoryService,
-        ModelMapper modelMapper,
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
         AchievementRepo achievementRepo,
         AchievementCategoryRepo achievementCategoryRepo) {
-        this.restClient = restClient;
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
-        this.modelMapper = modelMapper;
         this.userAchievementRepo = userAchievementRepo;
         this.userRepo = userRepo;
         this.achievementRepo = achievementRepo;
-        this.achievementCategoryRepo = achievementCategoryRepo;
     }
 
     /**

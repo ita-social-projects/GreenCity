@@ -41,7 +41,6 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.RatingCalculationEnum;
-import greencity.enums.AchievementCategoryType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -100,7 +99,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
-    private final HttpServletRequest httpServletRequest;
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
 

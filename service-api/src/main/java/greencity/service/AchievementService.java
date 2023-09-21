@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
-import greencity.dto.user.UserVO;
 import greencity.enums.AchievementCategoryType;
 import org.springframework.data.domain.Pageable;
 
