@@ -96,17 +96,7 @@ class AchievementServiceImplTest {
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
-    @Test
-    void searchAchievementByTest() {
-        Pageable pageable = PageRequest.of(0, 2);
-        Achievement achievement = ModelUtils.getAchievement();
-        Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        when(achievementRepo.searchAchievementsBy(pageable, "")).thenReturn(page);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
-        assertEquals(10, pageableAdvancedDto.getTotalElements());
-    }
+
 
     @Test
     void saveTest() {

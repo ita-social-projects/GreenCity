@@ -15,6 +15,7 @@ import java.util.List;
 @Builder
 public class AchievementVO {
     private Long id;
+    private String title;
 
     private String name;
     private String nameEng;

@@ -57,6 +57,10 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
+achievement.setTitle(achievementPostDto.getTitle());
+        achievement.setName(achievementPostDto.getName());
+        achievement.setNameEng(achievementPostDto.getNameEng());
+
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
@@ -211,4 +215,5 @@ public class AchievementServiceImpl implements AchievementService {
         AchievementCategoryType achievementCategory) {
         achievementCalculation.calculateAchievement(id, achievementCategory);
     }
+
 }

@@ -1388,11 +1388,11 @@ public class ModelUtils {
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L,"Test","Test",new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L,"Test","Test","Test",new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("Test","Test","Test",getAchievementCategoryDto(), 1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {

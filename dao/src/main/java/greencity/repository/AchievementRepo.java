@@ -11,22 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
-    /**
-     * Method returns {@link Achievement} by search query and page.
-     *
-     * @param paging {@link Pageable}.
-     * @param query  query to search.
-     * @return list of {@link Achievement}.
-     * @author Orest Mamchuk
-     */
-    @Query("SELECT DISTINCT a FROM Achievement a "
-        + "JOIN AchievementTranslation at on at.achievement.id = a.id "
-        + "WHERE CONCAT(a.id,'') LIKE LOWER(CONCAT('%', :query, '%')) "
-//        + "OR LOWER(at.title) LIKE LOWER(CONCAT('%', :query, '%'))"
-//        + "OR LOWER(at.description) LIKE LOWER(CONCAT('%', :query, '%'))"
-//        + "OR LOWER(at.message) LIKE LOWER(CONCAT('%', :query, '%'))"
-        + "OR LOWER(a.achievementCategory.name) LIKE LOWER(CONCAT('%', :query, '%'))"
-        + "OR CONCAT(a.condition, ' ') LIKE LOWER(CONCAT('%', :query, '%'))")
+
     Page<Achievement> searchAchievementsBy(Pageable paging, String query);
 
     /**

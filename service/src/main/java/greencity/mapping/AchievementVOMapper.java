@@ -3,10 +3,7 @@ package greencity.mapping;
  
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.language.LanguageVO;
 import greencity.entity.Achievement;
-import java.util.ArrayList;
-import java.util.List;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +13,8 @@ public class AchievementVOMapper extends AbstractConverter<Achievement, Achievem
     protected AchievementVO convert(Achievement achievement) {
         return AchievementVO.builder()
             .id(achievement.getId())
+                .condition(achievement.getCondition())
+                .title(achievement.getTitle())
                 .name(achievement.getName())
                 .nameEng(achievement.getNameEng())
                 .condition(achievement.getCondition())
