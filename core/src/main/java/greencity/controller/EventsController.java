@@ -9,6 +9,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.AddressDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
@@ -338,5 +339,21 @@ public class EventsController {
     @GetMapping("/getAllSubscribers/{eventId}")
     public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventAttenders(eventId));
+    }
+
+    /**
+     * Method for getting all events addresses.
+     *
+     * @return a set of {@link AddressDto} instance.
+     * @author Olena Sotnik.
+     */
+    @ApiOperation(value = "Get all events addresses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("/addresses")
+    public ResponseEntity<Set<AddressDto>> getAllEventsAddresses() {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventsAddresses());
     }
 }

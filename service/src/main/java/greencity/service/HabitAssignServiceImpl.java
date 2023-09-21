@@ -38,9 +38,11 @@ import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementType;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementCategoryType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -63,6 +65,7 @@ import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssign
 import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
@@ -76,6 +79,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -97,6 +101,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
+    private final HttpServletRequest httpServletRequest;
+    private final UserService userService;
+    private final RatingCalculation ratingCalculation;
 
     /**
      * {@inheritDoc}
@@ -702,6 +709,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .enrollDate(date).habitAssign(habitAssign).build();
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
+        UserVO userVO = userService.findById(userId);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return buildHabitAssignDto(habitAssign, language);
     }
 
@@ -789,7 +799,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
-
+        UserVO userVO = userService.findById(userId);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
@@ -887,7 +899,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .collect(Collectors.toList());
 
         habitAssignsBetweenDates.forEach(habitAssign -> buildHabitsDateEnrollmentDto(habitAssign, language, dtos));
-
         return dtos;
     }
 
@@ -976,6 +987,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS + habitId));
         habitAssignToCancel.setStatus(HabitAssignStatus.CANCELLED);
+        UserVO userVO = userService.findById(userId);
+
+        for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
+        }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
     }
@@ -992,6 +1010,13 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        UserVO userVO = userService.findById(userId);
+
+        for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());

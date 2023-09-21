@@ -1,10 +1,10 @@
 package greencity.filters;
 
-import greencity.annotations.RatingCalculationEnum;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.enums.RatingCalculationEnum;
 import lombok.NoArgsConstructor;
 import javax.persistence.criteria.*;
 import java.util.Arrays;

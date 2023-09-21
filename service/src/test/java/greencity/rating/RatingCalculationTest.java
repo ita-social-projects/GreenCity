@@ -1,7 +1,7 @@
 package greencity.rating;
 
 import greencity.ModelUtils;
-import greencity.annotations.RatingCalculationEnum;
+import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +28,8 @@ class RatingCalculationTest {
     private RatingStatisticsService ratingStatisticsService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private RatingCalculation ratingCalculation;
@@ -33,7 +37,7 @@ class RatingCalculationTest {
     @Test
     void ratingCalculation() {
 
-        RatingCalculationEnum rating = RatingCalculationEnum.ADD_COMMENT;
+        RatingCalculationEnum rating = RatingCalculationEnum.COMMENT_OR_REPLY;
         User user = ModelUtils.getUser();
         user.setRating(1D);
         UserVO userVO = ModelUtils.getUserVO();
@@ -41,7 +45,7 @@ class RatingCalculationTest {
         ZonedDateTime now = ZonedDateTime.now();
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
-            .rating(userVO.getRating() + RatingCalculationEnum.ADD_COMMENT.getRatingPoints())
+            .rating(userVO.getRating() + RatingCalculationEnum.COMMENT_OR_REPLY.getRatingPoints())
             .ratingCalculationEnum(rating)
             .user(user)
             .pointsChanged(rating.getRatingPoints())
@@ -50,17 +54,16 @@ class RatingCalculationTest {
         RatingStatisticsVO ratingStatisticsVO = RatingStatisticsVO.builder()
             .id(1L)
             .rating(userVO.getRating())
-            .ratingCalculationEnum(RatingCalculationEnum.ADD_COMMENT)
+            .ratingCalculationEnum(RatingCalculationEnum.COMMENT_OR_REPLY)
             .user(userVO)
             .createDate(now)
             .pointsChanged(rating.getRatingPoints())
             .build();
-        String accessToken = "token";
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        doNothing().when(restClient).save(userVO, accessToken);
+        doNothing().when(restClient).save(userVO, null);
         when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         verify(ratingStatisticsService).save(ratingStatisticsVO);
 
     }

@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -43,6 +45,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import javax.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
@@ -64,6 +68,11 @@ class AchievementServiceImplTest {
     private AchievementServiceImpl achievementService;
     @Mock
     private UserRepo userRepo;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    HttpServletRequest httpServletRequest;
 
     @Test
     void findAllWithEmptyListTest() {
