@@ -4,6 +4,7 @@ import greencity.entity.Achievement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -19,6 +20,10 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @param query  The search query string to filter achievements.
      * @return A Page of Achievement objects that match the search query.
      */
+    @Query("SELECT DISTINCT a FROM Achievement a "
+        + "WHERE CONCAT(a.id,'') LIKE LOWER(CONCAT('%', :query, '%')) "
+        + "OR LOWER(a.achievementCategory.name) LIKE LOWER(CONCAT('%', :query, '%'))"
+        + "OR CONCAT(a.condition, ' ') LIKE LOWER(CONCAT('%', :query, '%'))")
     Page<Achievement> searchAchievementsBy(Pageable paging, String query);
 
     /**
