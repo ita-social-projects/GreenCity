@@ -80,7 +80,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(userVO.getId(),
                 AchievementCategoryType.COMMENT_OR_REPLY));
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
