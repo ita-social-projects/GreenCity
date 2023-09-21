@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class AchievementPostDto {
-private String title;
+    private String title;
     private String name;
     private String nameEng;
 

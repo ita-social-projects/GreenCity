@@ -19,5 +19,4 @@ public class UserAchievementVO {
 
     @NotEmpty
     private AchievementVO achievement;
-
 }

@@ -25,5 +25,4 @@ public class AchievementCategory {
 
     @Column(nullable = false, unique = true, length = 100)
     private String name;
-
 }

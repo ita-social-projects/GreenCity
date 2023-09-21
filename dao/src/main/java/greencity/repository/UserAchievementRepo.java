@@ -18,6 +18,12 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
     @Query(value = "FROM UserAchievement u WHERE u.user.id =:userId AND u.achievement.id =:achievementId")
     UserAchievement getUserAchievementByIdAndAchievementId(Long userId, Long achievementId);
 
+    /**
+     * Retrieves a list of UserAchievement objects associated with a given user ID.
+     *
+     * @param userId The unique identifier of the user for whom to fetch the
+     *               achievements.
+     * @return A list of UserAchievement objects related to the specified user ID.
+     */
     List<UserAchievement> getUserAchievementByUserId(Long userId);
-
 }

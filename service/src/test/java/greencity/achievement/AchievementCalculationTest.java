@@ -74,7 +74,6 @@ class AchievementCalculationTest {
 //        when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
 //        when(achievementCategoryRepo.findByName(anyString())).thenReturn(ModelUtils.getAchievementCategory());
 
-
         achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS);
     }
 }

@@ -9,7 +9,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
- 
+
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -162,7 +162,7 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
- 
+
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
@@ -452,7 +452,7 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                     
+
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -1378,8 +1378,8 @@ public class ModelUtils {
 
     public static Achievement getAchievement() {
         return new Achievement(1L,
-                "Test","Test",   "Test",
-                Collections.emptyList(),
+            "Test", "Test", "Test",
+            Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
@@ -1388,17 +1388,16 @@ public class ModelUtils {
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L,"Test","Test","Test",new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L, "Test", "Test", "Test", new AchievementCategoryVO(), 1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto("Test","Test","Test",getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("Test", "Test", "Test", getAchievementCategoryDto(), 1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
         return new AchievementCategoryDto("Test");
     }
-
 
     public static AchievementCategoryVO getAchievementCategoryVO() {
         return new AchievementCategoryVO(1L, "Category");
@@ -1408,13 +1407,12 @@ public class ModelUtils {
         return new AchievementManagementDto(1L);
     }
 
-
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO() );
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO());
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(),  false);
+        return new UserAchievement(1L, getUser(), getAchievement(), false);
     }
 
     public static UserAction getUserAction() {
@@ -1692,7 +1690,7 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-                             
+
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1702,7 +1700,7 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-                             
+
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1770,7 +1768,7 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                     
+
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1780,7 +1778,7 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                     
+
                     .user(UserVO.builder()
                         .id(1L)
                         .build())

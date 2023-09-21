@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
- 
+
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -586,11 +585,11 @@ public class ModelUtils {
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto( "Test","Test","Test",getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("Test", "Test", "Test", getAchievementCategoryDto(), 1);
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, "Test", "Test","Test",
+        return new AchievementVO(1L, "Test", "Test", "Test",
             new AchievementCategoryVO(1L, "name"), 1);
     }
 

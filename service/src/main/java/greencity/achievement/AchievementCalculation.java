@@ -20,7 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class AchievementCalculation {
     private RestClient restClient;
@@ -74,7 +73,8 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
             userId, achievementCategoryVO.getId());
-      Integer  count = checkCount(userActionVO);
+        int count = userActionVO.getCount() + 1;
+        userActionVO.setCount(count);
         userActionService.updateUserActions(userActionVO);
         checkAchievements(achievementCategoryVO.getId(), count, userId);
     }
@@ -108,24 +108,6 @@ public class AchievementCalculation {
             .user(userRepo.findById(userId).get())
             .build();
         userAchievementRepo.save(userAchievement);
-        AchievementCategory achievementCategory =
-            achievementCategoryRepo.findByName(AchievementCategoryType.ACHIEVEMENT.toString());
-        UserActionVO userActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(
-            userId, achievementCategory.getId());
         calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT);
-
-    }
-
-    /**
-     * Method check achievement type.
-     *
-     * @return count action
-     */
-    private int checkCount(UserActionVO userActionVO) {
-
-        int count = userActionVO.getCount() + 1;
-        userActionVO.setCount(count);
-
-        return count;
     }
 }

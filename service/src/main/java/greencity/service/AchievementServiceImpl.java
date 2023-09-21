@@ -12,7 +12,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.UserAchievement;
- 
+
 import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -57,7 +57,7 @@ public class AchievementServiceImpl implements AchievementService {
         Achievement achievement = modelMapper.map(achievementPostDto, Achievement.class);
         AchievementCategoryVO achievementCategoryVO =
             achievementCategoryService.findByName(achievementPostDto.getAchievementCategory().getName());
-achievement.setTitle(achievementPostDto.getTitle());
+        achievement.setTitle(achievementPostDto.getTitle());
         achievement.setName(achievementPostDto.getName());
         achievement.setNameEng(achievementPostDto.getNameEng());
 
@@ -206,7 +206,6 @@ achievement.setTitle(achievementPostDto.getTitle());
         return achievement != null ? modelMapper.map(achievement, AchievementVO.class) : null;
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -215,5 +214,4 @@ achievement.setTitle(achievementPostDto.getTitle());
         AchievementCategoryType achievementCategory) {
         achievementCalculation.calculateAchievement(id, achievementCategory);
     }
-
 }

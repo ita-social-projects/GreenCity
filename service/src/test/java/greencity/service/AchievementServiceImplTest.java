@@ -14,7 +14,7 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 import greencity.entity.Language;
 import greencity.entity.UserAchievement;
- 
+
 import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -23,7 +23,6 @@ import greencity.repository.AchievementRepo;
 import java.util.*;
 import java.util.stream.Collectors;
 
- 
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
@@ -96,8 +95,6 @@ class AchievementServiceImplTest {
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
-
-
     @Test
     void saveTest() {
         Achievement achievement = ModelUtils.getAchievement();
@@ -139,9 +136,9 @@ class AchievementServiceImplTest {
     @Test
     void updateTest() {
         Achievement achievement = ModelUtils.getAchievement();
-     AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
+        AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-       when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
+        when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
         AchievementPostDto expected = achievementService.update(achievementManagementDto);
@@ -194,6 +191,7 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
     }
+
     @Test
     void calculateAchievement() {
         achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS);
