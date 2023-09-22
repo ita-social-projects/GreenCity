@@ -62,7 +62,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
         EcoNewsComment ecoNewsComment = modelMapper.map(addEcoNewsCommentDtoRequest, EcoNewsComment.class);
-        ecoNewsComment.setUser(modelMapper.map(userVO, User.class));
+        User user=modelMapper.map(userVO, User.class);
+        ecoNewsComment.setUser(user);
         ecoNewsComment.setEcoNews(modelMapper.map(ecoNewsVO, EcoNews.class));
         if (addEcoNewsCommentDtoRequest.getParentCommentId() != 0) {
             EcoNewsComment parentComment =
@@ -79,6 +80,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
+
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
 
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
@@ -167,8 +169,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         }
         comment.setStatus(CommentStatus.DELETED);
         CompletableFuture.runAsync(
+                () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                        AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
+        CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
         ecoNewsCommentRepo.save(comment);
+
     }
 
     /**
@@ -207,10 +213,16 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             CompletableFuture.runAsync(
+                    () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE));
+            CompletableFuture.runAsync(
                 () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
+            CompletableFuture.runAsync(
+                    () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN));
             CompletableFuture.runAsync(
                 () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
         }

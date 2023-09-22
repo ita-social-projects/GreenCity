@@ -332,6 +332,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         CompletableFuture.runAsync(
                 () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_NEWS, user));
+        CompletableFuture.runAsync(
+                () ->   achievementCalculation.calculateAchievement(user.getId(),
+                        AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE));
+
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
 
@@ -436,7 +440,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
         CompletableFuture
-                .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user));
+                .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, user));
+        CompletableFuture.runAsync(
+                () ->   achievementCalculation.calculateAchievement(user.getId(),
+                        AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE));
     }
 
     @Override

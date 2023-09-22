@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -15,9 +16,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
-import greencity.enums.CommentStatus;
-import greencity.enums.Role;
-import greencity.enums.RatingCalculationEnum;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -46,6 +45,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final EventRepo eventRepo;
     private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
+    private  AchievementCalculation achievementCalculation;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -93,7 +93,9 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
-
+        CompletableFuture.runAsync(
+                () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                        AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
         return addEventCommentDtoResponse;
     }
 
@@ -241,6 +243,10 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user));
+        CompletableFuture.runAsync(
+                () ->   achievementCalculation.calculateAchievement(user.getId(),
+                        AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
+
         eventCommentRepo.save(eventComment);
     }
 
@@ -304,8 +310,15 @@ public class EventCommentServiceImpl implements EventCommentService {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             CompletableFuture.runAsync(
                 () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
+            CompletableFuture.runAsync(
+                    () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE));
+
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            CompletableFuture.runAsync(
+                    () ->   achievementCalculation.calculateAchievement(userVO.getId(),
+                            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN));
             CompletableFuture.runAsync(
                 () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
         }
