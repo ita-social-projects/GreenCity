@@ -2,13 +2,12 @@ package greencity.achievement;
 
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementAction;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
@@ -22,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -66,7 +64,7 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
-        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS);
+        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         assertEquals(count + 1, userActionVO.getCount());
     }
 }

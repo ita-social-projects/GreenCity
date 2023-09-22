@@ -45,19 +45,4 @@ public class AchievementController {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
     }
 
-    /**
-     * Method for achievement calculation.
-     */
-    @ApiOperation(value = "Calculate achievements.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-    })
-    @PostMapping("/calculate-achievement")
-    public ResponseEntity<HttpStatus> calculateAchievements(@RequestParam Long id,
-        @RequestParam AchievementCategoryType socialNetwork) {
-        achievementService.calculateAchievements(id, socialNetwork);
-        return ResponseEntity.ok().build();
-    }
 }

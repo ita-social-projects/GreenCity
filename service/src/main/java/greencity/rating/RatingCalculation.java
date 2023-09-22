@@ -43,4 +43,24 @@ public class RatingCalculation {
             .build();
         ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
     }
+    /**
+     * Method that calculates the user rating.
+     *
+     * @param rating of {@link RatingCalculationEnum}
+     * @param userVo of {@link UserVO}
+     */
+    public void ratingCalculation(RatingCalculationEnum rating, int points, UserVO userVo) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        User user = modelMapper.map(userVo, User.class);
+        userVo.setRating(userVo.getRating() +points);
+        restClient.save(userVo, accessToken);
+        RatingStatistics ratingStatistics = RatingStatistics
+                .builder()
+                .rating(userVo.getRating())
+                .ratingCalculationEnum(rating)
+                .user(user)
+                .pointsChanged(rating.getRatingPoints())
+                .build();
+        ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
+    }
 }

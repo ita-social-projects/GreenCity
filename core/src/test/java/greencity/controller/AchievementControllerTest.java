@@ -44,12 +44,4 @@ class AchievementControllerTest {
         verify(achievementService).findAll();
     }
 
-    @Test
-    void calculateAchievements() throws Exception {
-        mockMvc.perform(post(achievementLink + "/calculate-achievement"
-            + "?id=" + 1L
-            + "&socialNetwork=" + AchievementCategoryType.CREATE_NEWS)).andExpect(status().isOk());
-        verify(achievementService).calculateAchievements(1L,
-            AchievementCategoryType.CREATE_NEWS);
-    }
 }

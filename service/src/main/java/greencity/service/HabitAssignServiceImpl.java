@@ -37,10 +37,8 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.HabitAssignStatus;
-import greencity.enums.ShoppingListItemStatus;
-import greencity.enums.RatingCalculationEnum;
+import greencity.enums.*;
+
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -77,7 +75,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -753,7 +750,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, AchievementCategoryType.HABIT));
+            .calculateAchievement(userId, AchievementCategoryType.HABIT, AchievementAction.ASSIGN));
 
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);

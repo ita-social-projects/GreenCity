@@ -7,21 +7,18 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.Language;
-import greencity.entity.UserAchievement;
 
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserRepo;
@@ -31,8 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -203,9 +198,9 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS);
+        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
-            any(AchievementCategoryType.class));
+            any(AchievementCategoryType.class), AchievementAction.ASSIGN);
     }
 }

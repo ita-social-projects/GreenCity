@@ -16,11 +16,7 @@ import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementCategoryType;
-import greencity.enums.Role;
-import greencity.enums.CommentStatus;
-import greencity.enums.TagType;
-import greencity.enums.RatingCalculationEnum;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -82,7 +78,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS));
+                AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
         return addEcoNewsDtoResponse;
     }
 
@@ -100,7 +96,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
         CompletableFuture.runAsync(() -> achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS));
+                AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
         UserVO user = userService.findByEmail(email);
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user));
@@ -430,7 +426,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         CompletableFuture
             .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user));
         CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY));
+            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN));
     }
 
     /**

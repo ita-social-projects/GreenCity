@@ -13,12 +13,11 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-
-import greencity.repository.UserAchievementRepo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -208,7 +207,7 @@ public class AchievementServiceImpl implements AchievementService {
      */
     @Override
     public void calculateAchievements(Long id,
-        AchievementCategoryType achievementCategory) {
-        achievementCalculation.calculateAchievement(id, achievementCategory);
+                                      AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
+        achievementCalculation.calculateAchievement(id, achievementCategory, achievementAction);
     }
 }
