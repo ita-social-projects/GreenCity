@@ -64,7 +64,7 @@ class MySpecificationTest {
     @Test
     void getDataRangePredicate() {
         RatingStatisticsViewDto ratingStatisticsViewDto =
-            new RatingStatisticsViewDto("2", "ADD_COMMENT", "1", "", "2021-01-12", "2021-01-13", "", "50");
+            new RatingStatisticsViewDto("2", "COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
         SearchCriteria onlyThisMethod = SearchCriteria.builder()
             .key(RatingStatistics_.CREATE_DATE)
             .type("dateRange")

@@ -28,6 +28,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.SendEventCreationNotification;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +103,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-
+        sendEmailNotification(savedEvent.getTitle(), organizer.getFirstName(), organizer.getEmail());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -156,7 +157,7 @@ public class EventServiceImpl implements EventService {
         User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
         List<Event> allEvents = getAllFilteredEventsAndSortedByIdDesc(
             eventRepo.findAll(), user.getId(), filterEventDto);
-        Page<Event> eventPage = new PageImpl<>(allEvents, page, allEvents.size());
+        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, allEvents), page, allEvents.size());
         return buildPageableAdvancedDto(eventPage);
     }
 
@@ -165,7 +166,7 @@ public class EventServiceImpl implements EventService {
         Pageable page, String email, String userLatitude, String userLongitude, String eventType) {
         User attender = modelMapper.map(restClient.findByEmail(email), User.class);
         List<Event> events = sortUserEventsByEventType(eventType, attender, userLatitude, userLongitude);
-        Page<Event> eventPage = new PageImpl<>(events, page, events.size());
+        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage, attender.getId());
     }
 
@@ -176,13 +177,28 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(events, user.getId());
     }
 
+    @Override
+    public Set<AddressDto> getAllEventsAddresses() {
+        return eventRepo.findAll().stream()
+            .filter(event -> Objects.nonNull(event.getDates().get(event.getDates().size() - 1).getAddress()))
+            .map(event -> modelMapper
+                .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+            .collect(Collectors.toSet());
+    }
+
+    private List<Event> getEventsForCurrentPage(Pageable page, List<Event> allEvents) {
+        int startIndex = page.getPageNumber() * page.getPageSize();
+        int endIndex = Math.min(startIndex + page.getPageSize(), allEvents.size());
+        return allEvents.subList(startIndex, endIndex);
+    }
+
     private List<Event> sortUserEventsByEventType(
         String eventType, User attender, String userLatitude, String userLongitude) {
-        if (eventType.equalsIgnoreCase("ONLINE")) {
+        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("ONLINE")) {
             return getOnlineUserEventsSortedByDate(attender);
         }
 
-        if (eventType.equalsIgnoreCase("OFFLINE")) {
+        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("OFFLINE")) {
             return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                 ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                 : getOfflineUserEventsSortedByDate(attender);
@@ -764,5 +780,20 @@ public class EventServiceImpl implements EventService {
 
     private EventDto buildEventDto(Event event) {
         return modelMapper.map(event, EventDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Olena Sotnik.
+     */
+    public void sendEmailNotification(String eventTitle, String userName, String email) {
+        String message = "Dear, " + userName + "!"
+            + "\nYou have successfully created an event: " + eventTitle;
+        SendEventCreationNotification notification = SendEventCreationNotification.builder()
+            .email(email)
+            .messageBody(message)
+            .build();
+        restClient.sendEventCreationNotification(notification);
     }
 }

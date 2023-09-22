@@ -15,6 +15,7 @@ import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.message.SendChangePlaceStatusEmailMessage;
+import greencity.message.SendEventCreationNotification;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 
@@ -572,5 +573,18 @@ class RestClientTest {
             }))
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
         assertEquals(expected, restClient.findAllUsersCities());
+    }
+
+    @Test
+    void sendEventCreationNotificationTest() {
+        SendEventCreationNotification notification = ModelUtils.getSendEventCreationNotification();
+        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
+        when(restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendEventCreationNotification(notification);
+
+        verify(restTemplate).exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

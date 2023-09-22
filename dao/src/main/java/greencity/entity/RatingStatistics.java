@@ -1,8 +1,9 @@
 package greencity.entity;
 
-import greencity.annotations.RatingCalculationEnum;
 import java.time.ZonedDateTime;
 import javax.persistence.*;
+
+import greencity.enums.RatingCalculationEnum;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 

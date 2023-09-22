@@ -27,6 +27,7 @@ import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -65,7 +66,10 @@ class EcoNewsCommentServiceImplTest {
     EcoNewsRepo ecoNewsRepo;
     @InjectMocks
     private EcoNewsCommentServiceImpl ecoNewsCommentService;
-
+    @Mock
+    private UserService userService;
+    @Mock
+    private RatingCalculation ratingCalculation;
     private String token = "token";
 
     @Test
@@ -226,7 +230,6 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         EcoNewsComment comment = verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -240,7 +243,6 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         ecoNewsCommentService.deleteById(commentId, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
@@ -251,7 +253,6 @@ class EcoNewsCommentServiceImplTest {
         UserVO userVO = getUserVO();
         user.setRole(Role.ROLE_ADMIN);
         Long commentId = 1L;
-        when(httpServletRequest.getHeader("Authorization")).thenReturn(token);
         when(ecoNewsCommentRepo.findById(commentId))
             .thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
 
