@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -84,6 +85,10 @@ class EcoNewsServiceImplTest {
 
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementService achievementService;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -178,7 +183,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(tagVOList,
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
-
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
