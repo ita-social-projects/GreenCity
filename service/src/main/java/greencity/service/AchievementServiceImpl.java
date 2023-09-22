@@ -207,7 +207,7 @@ public class AchievementServiceImpl implements AchievementService {
      */
     @Override
     public void calculateAchievements(Long id,
-                                      AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
+        AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
         achievementCalculation.calculateAchievement(id, achievementCategory, achievementAction);
     }
 }

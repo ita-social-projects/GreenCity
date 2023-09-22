@@ -202,6 +202,6 @@ class AchievementServiceImplTest {
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
             any(AchievementCategoryType.class),
-              eq( AchievementAction.ASSIGN));
+            eq(AchievementAction.ASSIGN));
     }
 }

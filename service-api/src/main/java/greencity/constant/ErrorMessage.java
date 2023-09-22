@@ -1,8 +1,8 @@
 package greencity.constant;
 
 public final class ErrorMessage {
-    public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME=
-            "RatingCalculationEnum with such name does not exist: ";
+    public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME =
+        "RatingCalculationEnum with such name does not exist: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom shopping list item with such id does not exist.";
     public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";

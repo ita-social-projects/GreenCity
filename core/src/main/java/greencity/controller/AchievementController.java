@@ -44,5 +44,4 @@ public class AchievementController {
     public ResponseEntity<List<AchievementVO>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
     }
-
 }

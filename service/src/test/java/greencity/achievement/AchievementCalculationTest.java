@@ -54,6 +54,7 @@ class AchievementCalculationTest {
     private AchievementCalculation achievementCalculation;
     @Mock
     private UserService userService;
+
     @Test
     void calculateAchievement() {
         AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();

@@ -44,5 +44,4 @@ public class RatingCalculation {
             .build();
         ratingStatisticsService.save(modelMapper.map(ratingStatistics, RatingStatisticsVO.class));
     }
-
 }

@@ -1,6 +1,7 @@
 package greencity.enums;
 
 import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import lombok.Getter;
 
@@ -88,11 +89,18 @@ public enum RatingCalculationEnum {
         this.ratingPoints = ratingPoints;
     }
 
+    /**
+     * Finds the RatingCalculationEnum object corresponding to the given name.
+     *
+     * @param name The name of the enum to find.
+     * @return The found RatingCalculationEnum object.
+     * @throws NotFoundException if the enum by the given name does not exist.
+     */
     public static RatingCalculationEnum findEnumByName(String name) {
         try {
             return RatingCalculationEnum.valueOf(name);
         } catch (IllegalArgumentException e) {
-           throw  new NotUpdatedException(ErrorMessage.RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME+name);
+            throw new NotFoundException(ErrorMessage.RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME + name);
         }
     }
 }

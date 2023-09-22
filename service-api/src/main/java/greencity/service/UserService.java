@@ -14,7 +14,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-     void save(UserVO userVO);
+    /**
+     * Saves the provided UserVO object into the repository after mapping it to a
+     * User entity. This method uses ModelMapper to convert the UserVO object into a
+     * User entity and then saves it using the User repository.
+     *
+     * @param userVO The user value object containing the user details to be saved.
+     * @see UserVO
+     */
+    void save(UserVO userVO);
+
     /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
      *

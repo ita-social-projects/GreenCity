@@ -49,7 +49,8 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private ModelMapper modelMapper;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
-private AchievementCalculation achievementCalculation;
+    private AchievementCalculation achievementCalculation;
+
     /**
      * {@inheritDoc}
      *
@@ -92,8 +93,8 @@ private AchievementCalculation achievementCalculation;
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
         CompletableFuture.runAsync(
-                () ->   achievementCalculation.calculateAchievement(userVO.getId(),
-                        AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
+            () -> achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
 
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
@@ -112,9 +113,8 @@ private AchievementCalculation achievementCalculation;
         CompletableFuture.runAsync(
             () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
         CompletableFuture.runAsync(
-                () ->   achievementCalculation.calculateAchievement(userVO.getId(),
-                        AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
-
+            () -> achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
     }
 
     /**
