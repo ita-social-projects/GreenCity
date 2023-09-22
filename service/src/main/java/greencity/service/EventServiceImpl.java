@@ -103,7 +103,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        sendEmailNotification(savedEvent, organizer);
+        sendEmailNotification(savedEvent.getTitle(), organizer.getFirstName(), organizer.getEmail());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -787,11 +787,11 @@ public class EventServiceImpl implements EventService {
      *
      * @author Olena Sotnik.
      */
-    public void sendEmailNotification(Event event, User user) {
-        String message = "Dear, " + user.getFirstName() + "!"
-            + "\nYou have successfully created an event: " + event.getTitle();
+    public void sendEmailNotification(String eventTitle, String userName, String email) {
+        String message = "Dear, " + userName + "!"
+            + "\nYou have successfully created an event: " + eventTitle;
         SendEventCreationNotification notification = SendEventCreationNotification.builder()
-            .email(user.getEmail())
+            .email(email)
             .messageBody(message)
             .build();
         restClient.sendEventCreationNotification(notification);
