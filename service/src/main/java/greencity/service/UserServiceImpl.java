@@ -41,6 +41,14 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     @Value("300000")
     private long timeAfterLastActivity;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void save(UserVO userVO) {
+   User user=modelMapper.map(userVO, User.class);
+      userRepo.save(user);
+    }
 
     /**
      * {@inheritDoc}

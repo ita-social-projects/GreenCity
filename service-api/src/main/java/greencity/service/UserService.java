@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
+     void save(UserVO userVO);
     /**
      * Method that allow you to find not 'DEACTIVATED' {@link UserVO} by email.
      *
