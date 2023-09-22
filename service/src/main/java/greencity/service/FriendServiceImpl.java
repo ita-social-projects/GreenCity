@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterRecommendedNotFriendsYet;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
@@ -114,6 +115,39 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
             users.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private PageableDto<UserFriendDto> getAllFilteredUsersByCity(long userId, @Nullable String name, Pageable pageable){
+        User user = userRepo.findById(userId).orElseThrow(
+                () -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
+        if (user.getCity() == null){
+            throw new NotFoundException(ErrorMessage.USER_CITY_IS_EMPTY);
+        }
+        PageableDto<UserFriendDto> allUsersExceptMainUserAndUsersFriend = findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable);
+        Page<User> users = userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        List<UserFriendDto> userFriendDtoList =
+                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent())
+                        .stream()
+                        .filter(u -> u.getCity() != null && u.getCity().equals(user.getCity()))
+                        .collect(Collectors.toList());
+        allUsersExceptMainUserAndUsersFriend.setPage(userFriendDtoList);
+        return allUsersExceptMainUserAndUsersFriend;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PageableDto<UserFriendDto> getFilteredNotFriendsYet(long userId, @Nullable String name, Pageable pageable,
+                                                        FilterRecommendedNotFriendsYet filterRecommendedNotFriendsYet) {
+        if (!filterRecommendedNotFriendsYet.getCity()){
+            return findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable);
+        } else {
+        return getAllFilteredUsersByCity(userId, name, pageable);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ import greencity.annotations.ApiPageable;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterRecommendedNotFriendsYet;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
@@ -143,7 +144,7 @@ public class FriendController {
     }
 
     /**
-     * Method to find {@link UserFriendDto}s that are not friend for current
+     * Method to find {@link UserFriendDto}s that are not friend or same city for current
      * user(except current user).
      *
      * @param userVO user.
@@ -161,12 +162,13 @@ public class FriendController {
     @GetMapping("/not-friends-yet")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
-        @ApiIgnore Pageable page,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @RequestParam(required = false) @Nullable String name) {
+            @ApiIgnore Pageable page,
+            @ApiIgnore @CurrentUser UserVO userVO,
+            @RequestParam(required = false) @Nullable String name,
+            FilterRecommendedNotFriendsYet filterRecommendedNotFriendsYet) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
+            .body(friendService.getFilteredNotFriendsYet(userVO.getId(), name, page, filterRecommendedNotFriendsYet));
     }
 
     /**

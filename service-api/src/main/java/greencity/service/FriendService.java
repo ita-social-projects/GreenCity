@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.filter.FilterRecommendedNotFriendsYet;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
@@ -68,6 +69,19 @@ public interface FriendService {
      */
     PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(long userId, @Nullable String name,
         Pageable pageable);
+
+    /**
+     *
+     * @param userId   user id.
+     * @param name     filtering name
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     *
+     */
+    PageableDto<UserFriendDto> getFilteredNotFriendsYet(long userId, @Nullable String name, Pageable pageable,
+                                                        FilterRecommendedNotFriendsYet filterRecommendedNotFriendsYet);
 
     /**
      * Method to find {@link UserFriendDto}s which sent request to user with userId.
