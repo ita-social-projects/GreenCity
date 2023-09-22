@@ -1,5 +1,7 @@
 package greencity.enums;
 
+import greencity.constant.ErrorMessage;
+import greencity.exception.exceptions.NotUpdatedException;
 import lombok.Getter;
 
 @Getter
@@ -14,7 +16,6 @@ public enum RatingCalculationEnum {
     DELETE_COMMENT_OR_REPLY(-2),
     UNLIKE_COMMENT_OR_REPLY(-10),
     UNDO_SHARE_NEWS(-20),
-
     ACQUIRED_HABIT_14_DAYS(20),
     ACQUIRED_HABIT_21_DAYS(30),
     ACQUIRED_HABIT_30_DAYS(40),
@@ -80,7 +81,6 @@ public enum RatingCalculationEnum {
     UNDO_FIRST_50_ACHIEVEMENTS(-100),
     UNDO_FIRST_100_ACHIEVEMENTS(-200);
 
-
     private final int ratingPoints;
 
     RatingCalculationEnum(int ratingPoints) {
@@ -91,8 +91,7 @@ public enum RatingCalculationEnum {
         try {
             return RatingCalculationEnum.valueOf(name);
         } catch (IllegalArgumentException e) {
-            return null; // повертаємо null, якщо елемент не знайдений
+           throw  new NotUpdatedException(ErrorMessage.RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME+name);
         }
     }
-
 }
