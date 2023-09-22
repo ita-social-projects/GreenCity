@@ -201,6 +201,7 @@ class AchievementServiceImplTest {
         achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
-            any(AchievementCategoryType.class), AchievementAction.ASSIGN);
+            any(AchievementCategoryType.class),
+              eq( AchievementAction.ASSIGN));
     }
 }

@@ -8,6 +8,7 @@ import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.RatingCalculationEnum;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,9 +48,12 @@ class AchievementCalculationTest {
     private UserRepo userRepo;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
+    @Mock
+    private RatingCalculationEnum ratingCalculationEnum;
     @InjectMocks
     private AchievementCalculation achievementCalculation;
-
+    @Mock
+    private UserService userService;
     @Test
     void calculateAchievement() {
         AchievementCategoryVO achievementCategoryVO = ModelUtils.getAchievementCategoryVO();
@@ -64,6 +69,7 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
         achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         assertEquals(count + 1, userActionVO.getCount());
     }

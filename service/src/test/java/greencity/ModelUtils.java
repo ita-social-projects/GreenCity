@@ -1384,7 +1384,7 @@ public class ModelUtils {
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name");
+        return new AchievementCategory(1L, "Name",Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
@@ -1408,7 +1408,7 @@ public class ModelUtils {
     }
 
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO());
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(),true);
     }
 
     public static UserAchievement getUserAchievement() {

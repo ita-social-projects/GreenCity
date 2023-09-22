@@ -50,7 +50,7 @@ public class AchievementCalculation {
             UserAchievementRepo userAchievementRepo,
             UserRepo userRepo,
             AchievementRepo achievementRepo,
-            AchievementCategoryRepo achievementCategoryRepo, RatingCalculation ratingCalculation) {
+            AchievementCategoryRepo achievementCategoryRepo, RatingCalculation ratingCalculation,UserService userService) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -58,6 +58,7 @@ public class AchievementCalculation {
         this.userRepo = userRepo;
         this.achievementRepo = achievementRepo;
         this.ratingCalculation = ratingCalculation;
+        this.userService = userService;
     }
 
     /**
