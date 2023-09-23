@@ -579,12 +579,12 @@ class RestClientTest {
     void sendEventCreationNotificationTest() {
         SendEventCreationNotification notification = ModelUtils.getSendEventCreationNotification();
         HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
-        when(restTemplate.exchange(greenCityUserServerAddress
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));
         restClient.sendEventCreationNotification(notification);
 
-        verify(restTemplate).exchange(greenCityUserServerAddress
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }
