@@ -1,7 +1,12 @@
 package greencity.client;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
-import greencity.dto.user.*;
+import greencity.dto.user.UserVO;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementUpdateDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserManagementViewDto;
+import greencity.dto.user.UserManagementVO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -19,7 +24,11 @@ import greencity.message.SendEventCreationNotification;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -252,7 +261,6 @@ class RestClientTest {
         String[] test = new String[] {"test", "test"};
         List<String> listString = Arrays.asList(test);
         Gson gson = new Gson();
-        String json = gson.toJson(listString);
         headers.set(AUTHORIZATION, accessToken);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
@@ -512,7 +520,7 @@ class RestClientTest {
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER_SEARCH + RestTemplateLinks.PAGE + pageable.getPageNumber()
             + RestTemplateLinks.SIZE + pageable.getPageSize()
-            + RestTemplateLinks.SORT + "", HttpMethod.POST, entity,
+            + RestTemplateLinks.SORT, HttpMethod.POST, entity,
             new ParameterizedTypeReference<PageableAdvancedDto<UserManagementVO>>() {
             })).thenReturn(ResponseEntity.ok(userAdvancedDto));
         assertEquals(userAdvancedDto, restClient.search(pageable, userViewDto));
