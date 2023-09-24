@@ -2,7 +2,6 @@ package greencity.enums;
 
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotUpdatedException;
 import lombok.Getter;
 
 @Getter

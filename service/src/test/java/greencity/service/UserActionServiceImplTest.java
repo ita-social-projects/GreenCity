@@ -1,9 +1,15 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
+import greencity.entity.AchievementCategory;
 import greencity.entity.UserAction;
+import greencity.exception.exceptions.BadCategoryRequestException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.UserActionRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,10 +17,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserActionServiceImplTest {
@@ -23,7 +31,11 @@ class UserActionServiceImplTest {
     @Mock
     private UserActionRepo userActionRepo;
     @Mock
+    private UserRepo userRepo;
+    @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
 
     @Test
     void updateUserActions() {
@@ -49,6 +61,37 @@ class UserActionServiceImplTest {
         when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(userAction);
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
         assertEquals(userActionVO, userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L));
+    }
+
+    @Test
+    void findUserActionByUserId_NoSuchCategory() {
+        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(null);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
+        assertThrows(NoSuchElementException.class,
+            () -> userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L));
+    }
+
+    @Test
+    void findUserActionByUserIdNull() {
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(null);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievementCategory()));
+        UserAction userAction = UserAction.builder()
+            .user(ModelUtils.getUser())
+            .achievementCategory(AchievementCategory.builder()
+                .id(1L)
+                .name("Name")
+                .achievementList(Collections.emptyList())
+                .build())
+            .count(0)
+            .build();
+
+        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
+        UserActionVO resultUserActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L);
+        assertEquals(userActionVO, resultUserActionVO);
+        verify(userActionRepo, times(1)).save(any());
+
     }
 
     @Test
