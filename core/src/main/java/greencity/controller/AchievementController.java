@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
-import greencity.enums.AchievementCategoryType;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

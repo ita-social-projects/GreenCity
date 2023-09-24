@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
-
 @Component
 @AllArgsConstructor
 public class RatingCalculation {

@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 public class AchievementCalculation {
