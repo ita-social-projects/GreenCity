@@ -705,10 +705,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
         UserVO userVO = userService.findById(userId);
         CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
+                () -> achievementCalculation.calculateAchievement(userVO.getId(),
+                        AchievementCategoryType.HABIT, AchievementAction.ASSIGN));
         CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.HABIT, AchievementAction.ASSIGN));
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
 
         return buildHabitAssignDto(habitAssign, language);
     }
