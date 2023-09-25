@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -24,6 +25,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -100,6 +102,10 @@ class EventServiceImplTest {
 
     @InjectMocks
     EventServiceImpl eventService;
+    @Mock
+    RatingCalculation ratingCalculation;
+    @Mock
+    AchievementCalculation achievementCalculation;
 
     @Test
     void save() {

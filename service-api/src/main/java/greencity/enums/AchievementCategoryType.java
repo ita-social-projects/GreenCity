@@ -9,5 +9,7 @@ public enum AchievementCategoryType {
     LIKE_COMMENT_OR_REPLY,
     SHARE_NEWS,
     HABIT,
-    ACHIEVEMENT
+    ACHIEVEMENT,
+    CREATE_EVENT,
+    JOIN_EVENT
 }

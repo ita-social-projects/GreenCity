@@ -328,7 +328,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_NEWS, user);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user.getId(),
             AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
@@ -434,7 +434,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, user);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
         achievementCalculation.calculateAchievement(user.getId(),
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }

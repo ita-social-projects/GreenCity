@@ -236,7 +236,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, user);
         achievementCalculation.calculateAchievement(user.getId(),
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
@@ -301,7 +301,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             achievementCalculation.calculateAchievement(userVO.getId(),
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {

@@ -168,7 +168,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         comment.setStatus(CommentStatus.DELETED);
         achievementCalculation.calculateAchievement(userVO.getId(),
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
         ecoNewsCommentRepo.save(comment);
     }
 
@@ -209,7 +209,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             achievementCalculation.calculateAchievement(userVO.getId(),
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
