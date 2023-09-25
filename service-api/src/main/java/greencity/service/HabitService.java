@@ -118,8 +118,7 @@ public interface HabitService {
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest,
-        MultipartFile image,
+    CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
         String userEmail);
 
     /**
@@ -141,6 +140,6 @@ public interface HabitService {
      * @return {@link CustomHabitDtoResponse} instance.
      * @author Olena Sotnik.
      */
-    CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest,
-        Long habitId, String userEmail, MultipartFile image);
+    CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
+        String userEmail, MultipartFile image);
 }

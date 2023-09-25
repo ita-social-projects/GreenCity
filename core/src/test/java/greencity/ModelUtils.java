@@ -768,9 +768,4 @@ public class ModelUtils {
             .tags(null)
             .build();
     }
-
-    public static Habit getHabitWithCustom() {
-        return Habit.builder().id(1L).image("image.png")
-            .complexity(1).isCustomHabit(true).tags(Set.of(getTag())).build();
-    }
 }
