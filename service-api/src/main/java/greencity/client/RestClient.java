@@ -11,6 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.message.SendEventCreationNotification;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -550,5 +551,19 @@ public class RestClient {
             .findFirst()
             .map(Cookie::getValue).orElse(null);
         return token == null ? null : "Bearer " + token;
+    }
+
+    /**
+     * Method to send email notification about event creation to GreenCityUser.
+     *
+     * @param notification {@link SendEventCreationNotification} has message for
+     *                     sending email to user about event creation status.
+     * @author Olena Sotnik.
+     */
+    public void sendEventCreationNotification(SendEventCreationNotification notification) {
+        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
+        restTemplate.exchange(greenCityUserServerAddress
+            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class)
+            .getBody();
     }
 }
