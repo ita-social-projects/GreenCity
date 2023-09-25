@@ -41,5 +41,13 @@
             <column name="id" value="6"/>
             <column name="name" value="ACHIEVEMENT"/>
         </insert>
+        <insert tableName="achievement_categories">
+            <column name="id" value="7"/>
+            <column name="name" value="CREATE_EVENT"/>
+        </insert>
+        <insert tableName="achievement_categories">
+            <column name="id" value="8"/>
+            <column name="name" value="JOIN_EVENT"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>
