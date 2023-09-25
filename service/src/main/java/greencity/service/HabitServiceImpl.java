@@ -367,7 +367,7 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
         Habit toUpdate = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + habitId));
-        checkAccessForAdminAndModerator(user, toUpdate);
+        checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);
         enhanceHabitWithNewData(toUpdate, habitDto, user, image);
         Habit updatedHabit = habitRepo.save(toUpdate);
         return buildAddCustomHabitDtoResponse(updatedHabit, user.getId());
@@ -432,7 +432,7 @@ public class HabitServiceImpl implements HabitService {
         habit.setCustomShoppingListItems(customShoppingListItems);
     }
 
-    private void checkAccessForAdminAndModerator(User user, Habit habit) {
+    private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
         if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_MODERATOR
             && !user.getId().equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);

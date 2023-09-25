@@ -9,13 +9,10 @@ import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
 
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
-import java.util.Optional;
+import java.util.*;
 
 import greencity.service.TagsService;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +33,9 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
@@ -310,20 +309,33 @@ class HabitControllerTest {
     }
 
     @Test
-    void updateCustomHabit() throws Exception {
+    @SneakyThrows
+    void updateCustomHabit() {
         Long habitId = 1L;
+        byte[] imageContent = "sampleImageData".getBytes();
+        MockMultipartFile imageFile = new MockMultipartFile("image", imageContent);
         CustomHabitDtoRequest dto = ModelUtils.getAddCustomHabitDtoRequest();
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
 
         String requestedJson = objectMapper.writeValueAsString(dto);
+        MockMultipartFile jsonFile = new MockMultipartFile("request", "",
+            "application/json", requestedJson.getBytes());
 
-        mockMvc.perform(put(habitLink + "/update/{habitId}", habitId)
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(habitLink + "/update/{habitId}", habitId);
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+        mockMvc.perform(builder
+            .file(jsonFile)
+            .file(imageFile)
             .principal(principal)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestedJson))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), null);
+        verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
     }
 }

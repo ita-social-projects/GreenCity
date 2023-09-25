@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -226,8 +225,7 @@ public class HabitController {
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CustomHabitDtoResponse.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping(value = "/custom",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -278,12 +276,11 @@ public class HabitController {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = CustomHabitDtoResponse.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @PutMapping(value = "/update/{habitId}")
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-        @RequestBody @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
+        @RequestPart @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
         @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
