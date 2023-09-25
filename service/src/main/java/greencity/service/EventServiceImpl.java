@@ -178,8 +178,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Set<AddressDto> getAllEventsAddresses() {
-        return eventRepo.findAll().stream().map(event -> modelMapper
-            .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+        return eventRepo.findAll().stream()
+            .flatMap(event -> event.getDates().stream()
+                .map(EventDateLocation::getAddress)
+                .filter(Objects::nonNull)
+                .map(eventAddress -> modelMapper.map(eventAddress, AddressDto.class)))
             .collect(Collectors.toSet());
     }
 
@@ -609,14 +612,12 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> filterByLocation(List<Event> events, List<String> locations) {
-        List<Event> filteredByLocation = new ArrayList<>();
-        for (Event event : events) {
-            Address eventLocation = event.getDates().get(event.getDates().size() - 1).getAddress();
-            if (eventLocation != null && locations.contains(eventLocation.getCityEn())) {
-                filteredByLocation.add(event);
-            }
-        }
-        return filteredByLocation;
+        return events.stream().filter(event -> event.getDates().stream()
+            .map(EventDateLocation::getAddress)
+            .filter(Objects::nonNull)
+            .map(Address::getCityEn)
+            .anyMatch(locations::contains))
+            .collect(Collectors.toList());
     }
 
     private List<Event> filterByStatus(List<Event> events, List<String> statuses, Long userId) {

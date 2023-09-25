@@ -1375,6 +1375,6 @@ class EventServiceImplTest {
         assertTrue(actualAddresses.contains(expectedAddressDto));
 
         verify(eventRepo).findAll();
-        verify(modelMapper).map(address, AddressDto.class);
+        verify(modelMapper, times(2)).map(address, AddressDto.class);
     }
 }
