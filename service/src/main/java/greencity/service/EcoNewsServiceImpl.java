@@ -78,9 +78,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
-        CompletableFuture.runAsync(() -> achievementCalculation
+        achievementCalculation
             .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
+                AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
         return addEcoNewsDtoResponse;
     }
 
@@ -330,11 +331,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_NEWS, user));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(user.getId(),
-                AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_NEWS, user);
+        achievementCalculation.calculateAchievement(user.getId(),
+            AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
@@ -424,11 +423,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
-        CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user));
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
-                AchievementAction.ASSIGN));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+            AchievementAction.ASSIGN);
     }
 
     /**
@@ -440,11 +437,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
-        CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, user));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(user.getId(),
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user.getId(),
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     @Override

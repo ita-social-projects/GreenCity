@@ -90,11 +90,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
@@ -110,11 +108,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     /**

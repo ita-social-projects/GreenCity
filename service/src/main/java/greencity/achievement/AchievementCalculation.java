@@ -161,7 +161,7 @@ public class AchievementCalculation {
 
         RatingCalculationEnum reason = RatingCalculationEnum.findEnumByName("UNDO_" + achievement.getTitle());
         UserVO user = userService.findById(userId);
-            ratingCalculation.ratingCalculation(reason, user);
+        ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.delete(userAchievement);
         calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
     }

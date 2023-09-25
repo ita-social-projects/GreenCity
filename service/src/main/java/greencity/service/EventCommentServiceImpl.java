@@ -90,12 +90,9 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
-
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         return addEventCommentDtoResponse;
     }
 
@@ -240,12 +237,9 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
-
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(user.getId(),
-                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user.getId(),
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         eventCommentRepo.save(eventComment);
     }
@@ -308,18 +302,14 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
-            CompletableFuture.runAsync(
-                () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO);
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            CompletableFuture.runAsync(
-                () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN));
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
         eventCommentRepo.save(comment);
     }

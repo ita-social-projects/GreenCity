@@ -704,11 +704,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
         UserVO userVO = userService.findById(userId);
-        CompletableFuture.runAsync(
-                () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                        AchievementCategoryType.HABIT, AchievementAction.ASSIGN));
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO);
 
         return buildHabitAssignDto(habitAssign, language);
     }
@@ -753,9 +751,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userId, AchievementCategoryType.HABIT, AchievementAction.ASSIGN));
-
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
         }
@@ -798,11 +793,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO));
-        CompletableFuture.runAsync(
-            () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.HABIT, AchievementAction.DELETE));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.HABIT, AchievementAction.DELETE);
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
@@ -991,12 +984,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
 
         for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                    userVO));
-            CompletableFuture.runAsync(
-                () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                    AchievementCategoryType.HABIT, AchievementAction.DELETE));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                userVO);
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.HABIT, AchievementAction.DELETE);
         }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
@@ -1018,12 +1009,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
 
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                    userVO));
-            CompletableFuture.runAsync(
-                () -> achievementCalculation.calculateAchievement(userVO.getId(),
-                    AchievementCategoryType.HABIT, AchievementAction.DELETE));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                userVO);
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.HABIT, AchievementAction.DELETE);
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
