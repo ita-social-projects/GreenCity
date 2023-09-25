@@ -127,14 +127,15 @@ class EcoNewsServiceImplTest {
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         addEcoNewsDtoRequest.setImage(imageToEncode);
-
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
 
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 

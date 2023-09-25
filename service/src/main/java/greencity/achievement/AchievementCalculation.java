@@ -48,8 +48,7 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
-        AchievementRepo achievementRepo,
-        AchievementCategoryRepo achievementCategoryRepo, RatingCalculation ratingCalculation, UserService userService) {
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -136,10 +135,7 @@ public class AchievementCalculation {
             .build();
         RatingCalculationEnum reason = RatingCalculationEnum.findEnumByName(achievement.getTitle());
         UserVO user = userService.findById(userId);
-
-        if (reason != null) {
-            ratingCalculation.ratingCalculation(reason, user);
-        }
+        ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.save(userAchievement);
         calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
     }
