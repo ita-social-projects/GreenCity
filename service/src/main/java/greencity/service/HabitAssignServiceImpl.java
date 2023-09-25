@@ -47,7 +47,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -702,7 +701,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(date).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
         UserVO userVO = userService.findById(userId);
         achievementCalculation.calculateAchievement(userVO.getId(),
             AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
@@ -740,7 +739,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar, Long userId) {
+        HabitStatusCalendar habitCalendar) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
