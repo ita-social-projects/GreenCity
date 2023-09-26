@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="Spodaryk-25" author="Oksana Spodaryk">
-        <sqlFile path="db/functions/delete-values-employee_authorities.sql"/>
+    <changeSet id="Spodaryk-26" author="Oksana Spodaryk">
+        <sqlFile path="db/functions/delete-values-positions_authorities.sql"/>
     </changeSet>
 </databaseChangeLog>
