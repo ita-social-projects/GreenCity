@@ -24,7 +24,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class AddCustomHabitDtoRequest {
+public class CustomHabitDtoRequest {
     @Min(value = 1, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     @Max(value = 3, message = ServiceValidationConstants.HABIT_COMPLEXITY)
     @NotNull(message = ServiceValidationConstants.HABIT_COMPLEXITY)

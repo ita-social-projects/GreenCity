@@ -78,6 +78,7 @@ public final class ErrorMessage {
     public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
     public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
         "The specification value does not exist by this id: ";
+    public static final String CUSTOM_HABIT_NOT_FOUND = "Custom habit does not exist by id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
     public static final String LOCATION_IS_PRESENT = "Location is present.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";

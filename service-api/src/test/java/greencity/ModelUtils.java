@@ -7,8 +7,8 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -195,8 +195,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(1)
             .image("")
             .defaultDuration(14)
@@ -204,8 +204,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(1)
             .image("")
