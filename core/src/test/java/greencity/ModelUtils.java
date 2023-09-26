@@ -585,11 +585,13 @@ public class ModelUtils {
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto("Test", "Test", "Test", getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(), 1);
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, "Test", "Test", "Test",
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days",
             new AchievementCategoryVO(1L, "name"), 1);
     }
 
