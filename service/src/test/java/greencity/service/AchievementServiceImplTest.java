@@ -13,7 +13,8 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
+
+import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
@@ -198,10 +199,11 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
         verify(achievementCalculation).calculateAchievement(
             anyLong(),
+            any(AchievementType.class),
             any(AchievementCategoryType.class),
-            eq(AchievementAction.ASSIGN));
+            anyInt());
     }
 }

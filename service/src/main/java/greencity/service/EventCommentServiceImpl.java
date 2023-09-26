@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -16,7 +15,9 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
-import greencity.enums.*;
+import greencity.enums.CommentStatus;
+import greencity.enums.Role;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +46,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final EventRepo eventRepo;
     private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
-    private AchievementCalculation achievementCalculation;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -89,9 +90,10 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
-            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
+
         return addEventCommentDtoResponse;
     }
 
@@ -236,10 +238,9 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.getComments()
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user.getId(),
-            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, user));
         eventCommentRepo.save(eventComment);
     }
 
@@ -301,14 +302,12 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
         }
         eventCommentRepo.save(comment);
     }
