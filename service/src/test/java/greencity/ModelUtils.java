@@ -1393,7 +1393,8 @@ public class ModelUtils {
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto("Test", "Test", "Test", getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", getAchievementCategoryDto(),
+            1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
