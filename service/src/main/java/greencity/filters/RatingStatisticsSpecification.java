@@ -63,7 +63,7 @@ public class RatingStatisticsSpecification implements MySpecification<RatingStat
         SearchCriteria searchCriteria) {
         List<RatingCalculationEnum> enumValues = Arrays.asList(RatingCalculationEnum.values());
         List<RatingCalculationEnum> selectedEnums = enumValues.stream()
-            .filter(x -> x.toString().toLowerCase().contains(((String) searchCriteria.getValue()).toLowerCase()))
+            .filter(x -> x.toString().toLowerCase().equals(((String) searchCriteria.getValue()).toLowerCase()))
             .collect(Collectors.toList());
 
         Predicate predicate = criteriaBuilder.disjunction();
