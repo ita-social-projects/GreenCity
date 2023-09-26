@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.message.SendEventCreationNotification;
+import greencity.security.jwt.JwtTool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -36,19 +38,42 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
-@RequiredArgsConstructor
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;
-    @Setter
-    @Value("${greencityuser.server.address}")
-    private String greenCityUserServerAddress;
+    private final String greenCityUserServerAddress;
     private final HttpServletRequest httpServletRequest;
+    private final JwtTool jwtTool;
+    private final String systemEmail;
+
+    /**
+     * Constructs a new instance of the RestClient class.
+     *
+     * @param restTemplate               The RestTemplate to be used for making HTTP
+     *                                   requests to GreenCityUser.
+     * @param greenCityUserServerAddress The address of the GreenCityUser server.
+     * @param httpServletRequest         The HttpServletRequest object contains data
+     *                                   related to the current http request.
+     * @param jwtTool                    The JwtTool is used to create JWT tokens
+     *                                   for system requests to GreenCityUser.
+     * @param systemEmail                The system email address used to creat JWT
+     *                                   tokens for system requests to
+     *                                   GreenCityUser.
+     */
+    public RestClient(RestTemplate restTemplate,
+        @Value("${greencityuser.server.address}") String greenCityUserServerAddress,
+        HttpServletRequest httpServletRequest,
+        JwtTool jwtTool,
+        @Value("${spring.liquibase.parameters.service-email}") String systemEmail) {
+        this.restTemplate = restTemplate;
+        this.greenCityUserServerAddress = greenCityUserServerAddress;
+        this.httpServletRequest = httpServletRequest;
+        this.jwtTool = jwtTool;
+        this.systemEmail = systemEmail;
+    }
 
     /**
      * Method for getting all users by their {@link EmailNotification}.
@@ -390,7 +415,7 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void addEcoNews(EcoNewsForSendEmailDto message) {
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EcoNewsForSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
@@ -421,8 +446,8 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendReport(SendReportEmailMessage reportEmailMessage) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(reportEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class)
@@ -450,8 +475,10 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void changePlaceStatus(SendChangePlaceStatusEmailMessage changePlaceStatusEmailMessage) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<SendChangePlaceStatusEmailMessage> entity =
-            new HttpEntity<>(changePlaceStatusEmailMessage, new HttpHeaders());
+            new HttpEntity<>(changePlaceStatusEmailMessage, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class)
             .getBody();
@@ -465,7 +492,9 @@ public class RestClient {
      * @author Taras Kavkalo
      */
     public void sendHabitNotification(SendHabitNotification sendHabitNotification) {
-        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, new HttpHeaders());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<SendHabitNotification> entity = new HttpEntity<>(sendHabitNotification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class)
             .getBody();
@@ -534,12 +563,22 @@ public class RestClient {
      * @return {@link HttpEntity}
      */
     private HttpHeaders setHeader() {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        String accessToken = null;
         Cookie[] cookies = httpServletRequest.getCookies();
         String uri = httpServletRequest.getRequestURI();
+
         if (cookies != null && uri.startsWith("/management")) {
             accessToken = getTokenFromCookies(cookies);
         }
+
+        if (StringUtils.isEmpty(accessToken)) {
+            accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        }
+
+        if (StringUtils.isEmpty(accessToken)) {
+            accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
+        }
+
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         return headers;

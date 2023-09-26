@@ -121,6 +121,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             .createdDate(addEventCommentDtoResponse.getCreatedDate())
             .organizer(eventAuthorDto)
             .email(organizer.getEmail())
+            .eventId(event.getId())
             .build();
         restClient.sendNewEventComment(dto);
     }

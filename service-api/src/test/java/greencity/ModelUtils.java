@@ -26,6 +26,9 @@ import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendReportEmailMessage;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -76,6 +79,13 @@ public class ModelUtils {
             .email("test@gmail.com")
             .name("taras")
             .build();
+    }
+
+    public static HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer accessToken");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
     public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
@@ -134,6 +144,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .author(ModelUtils.getEventCommentAuthorDto())
             .text("text")
+            .eventId(1L)
             .build();
     }
 
