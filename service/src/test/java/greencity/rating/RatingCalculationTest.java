@@ -9,6 +9,8 @@ import greencity.entity.RatingStatistics;
 import greencity.entity.User;
 import greencity.service.RatingStatisticsService;
 import java.time.ZonedDateTime;
+
+import greencity.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,11 +30,11 @@ class RatingCalculationTest {
     private RatingStatisticsService ratingStatisticsService;
     @Mock
     private ModelMapper modelMapper;
-    @Mock
-    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private RatingCalculation ratingCalculation;
+    @Mock
+    private UserService userService;
 
     @Test
     void ratingCalculation() {
@@ -60,7 +62,6 @@ class RatingCalculationTest {
             .pointsChanged(rating.getRatingPoints())
             .build();
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        doNothing().when(restClient).save(userVO, null);
         when(modelMapper.map(ratingStatistics, RatingStatisticsVO.class)).thenReturn(ratingStatisticsVO);
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
