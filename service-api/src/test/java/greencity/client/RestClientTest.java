@@ -53,8 +53,8 @@ class RestClientTest {
     private HttpServletRequest httpServletRequest;
     @Mock
     private java.lang.Object Object;
-    private final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
-    private final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
+    private static final String GREEN_CITY_USER_ADDRESS = "https://www.greencity.com.ua";
+    private static final String SYSTEM_EMAIL = "test-service-mail@greencity.ua";
     private RestClient restClient;
     @Mock
     private JwtTool jwtTool;
@@ -153,7 +153,8 @@ class RestClientTest {
     @Test
     void updateRole() {
         // given
-        UserRoleDto userRoleDto = new UserRoleDto();
+        Role newRole = Role.ROLE_MODERATOR;
+        UserRoleDto userRoleDto = new UserRoleDto(newRole);
         String url = GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER + "/1/role";
         String accessToken = "accessToken";
@@ -164,7 +165,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
 
         // when
-        restClient.updateRole(1L, any());
+        restClient.updateRole(1L, newRole);
 
         // then
         verify(restTemplate).exchange(url, HttpMethod.PATCH, entity, Object.class);
@@ -228,7 +229,6 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         UserVO userVO = ModelUtils.getUserVO();
         Cookie[] cookies = new Cookie[] {new Cookie("accessToken", "testToken")};
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(null);
         when(httpServletRequest.getCookies()).thenReturn(cookies);
         when(httpServletRequest.getRequestURI()).thenReturn("/management");
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS

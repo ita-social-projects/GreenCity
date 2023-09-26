@@ -38,7 +38,6 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-import lombok.Setter;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
@@ -564,12 +563,16 @@ public class RestClient {
      * @return {@link HttpEntity}
      */
     private HttpHeaders setHeader() {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        String accessToken = null;
         Cookie[] cookies = httpServletRequest.getCookies();
         String uri = httpServletRequest.getRequestURI();
 
         if (cookies != null && uri.startsWith("/management")) {
             accessToken = getTokenFromCookies(cookies);
+        }
+
+        if (StringUtils.isEmpty(accessToken)) {
+            accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         }
 
         if (StringUtils.isEmpty(accessToken)) {
