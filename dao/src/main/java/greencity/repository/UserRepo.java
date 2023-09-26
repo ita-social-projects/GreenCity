@@ -284,7 +284,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
         + "      UNION "
         + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
-        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%')) ")
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
+        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
     Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
 
     /**
