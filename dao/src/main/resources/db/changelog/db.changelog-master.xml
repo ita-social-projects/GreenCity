@@ -175,5 +175,7 @@
     <include file="db/changelog/logs/ch-add-column-achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-drop-column-user_achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-table-achievement_translations-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-values-employee_authorities-mapping-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-values-positions_authorities-mapping-Spodaryk.xml"/>
 </databaseChangeLog>
 

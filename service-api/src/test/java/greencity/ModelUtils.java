@@ -7,8 +7,8 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -26,6 +26,9 @@ import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendReportEmailMessage;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -76,6 +79,13 @@ public class ModelUtils {
             .email("test@gmail.com")
             .name("taras")
             .build();
+    }
+
+    public static HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer accessToken");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
     public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
@@ -134,6 +144,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .author(ModelUtils.getEventCommentAuthorDto())
             .text("text")
+            .eventId(1L)
             .build();
     }
 
@@ -195,8 +206,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(1)
             .image("")
             .defaultDuration(14)
@@ -204,8 +215,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(1)
             .image("")
