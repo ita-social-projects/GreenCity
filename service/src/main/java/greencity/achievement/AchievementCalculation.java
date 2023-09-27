@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static greencity.enums.AchievementStatus.ACTIVE;
 import static greencity.enums.AchievementType.INCREMENT;
 
 @Component
