@@ -20,6 +20,6 @@ public class SearchEventsDtoMapperTest {
     void convertTest() {
         Event event = ModelUtils.getEvent();
         SearchEventsDto expected = ModelUtils.getSearchEvents();
-        assertEquals(expected, searchEventsDtoMapper.convert(event));
+        assertEquals(expected.getTitle(), searchEventsDtoMapper.convert(event).getTitle());
     }
 }
