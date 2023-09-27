@@ -30,6 +30,8 @@ class SearchControllerTest {
     private static final String mainSearchLink = "/search";
     private static final String ecoNewsSearchLinkPart = "/econews";
 
+    private static final String eventsSearchLinkPart = "/events";
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(searchController)
@@ -48,6 +50,14 @@ class SearchControllerTest {
     void searchEcoNewsTest() throws Exception {
         mockMvc.perform(get(mainSearchLink +
             ecoNewsSearchLinkPart + "?searchQuery={query}", "Eco news title")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void searchEventsTest() throws Exception {
+        mockMvc.perform(get(mainSearchLink +
+            eventsSearchLinkPart + "?searchQuery={query}", "Events title")
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }

@@ -1,7 +1,16 @@
-CREATE OR REPLACE FUNCTION public.fn_searcheconews(
+CREATE OR REPLACE FUNCTION public.fn_searcheconews (
     search_query text, language_code text
 )
-    RETURNS TABLE(id bigint, creation_date timestamp with time zone, image_path character varying, author_id bigint, text character varying, title character varying, source character varying)
+    RETURNS TABLE(
+                     id bigint,
+                     creation_date timestamp with time zone,
+                     image_path character varying,
+                     author_id bigint,
+                     text character varying,
+                     title character varying,
+                     source character varying,
+                     short_info character varying
+                 )
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE
@@ -15,7 +24,8 @@ BEGIN
                         en.author_id,
                         en.text,
                         en.title,
-                        en.source
+                        en.source,
+                        en.short_info
         FROM eco_news en
                  JOIN public.eco_news_tags et on en.id=et.eco_news_id
                  JOIN public.tag_translations tg on tg.tag_id=et.tags_id
