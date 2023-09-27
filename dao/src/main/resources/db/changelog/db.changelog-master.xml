@@ -175,5 +175,6 @@
     <include file="db/changelog/logs/ch-delete-values-employee_authorities-mapping-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-values-positions_authorities-mapping-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-values-_authorities-mapping-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-insert-values-admin_authorities-Spodaryk.xml"/>
 </databaseChangeLog>
 
