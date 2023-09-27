@@ -1,6 +1,5 @@
 package greencity.rating;
 
-import greencity.client.RestClient;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
