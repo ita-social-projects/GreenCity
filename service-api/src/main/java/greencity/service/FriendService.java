@@ -90,4 +90,7 @@ public interface FriendService {
      * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
      */
     PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable);
+
+    PageableDto<UserFriendDto> findAllUsersByFriendsOfFriends(long userId, @Nullable String name,
+                                                                        Pageable pageable);
 }
