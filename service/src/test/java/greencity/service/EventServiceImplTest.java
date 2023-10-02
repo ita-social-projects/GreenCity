@@ -829,8 +829,6 @@ class EventServiceImplTest {
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(List.of());
-        when(eventRepo.findFavoritesAmongEventIds(List.of(), user.getId())).thenReturn(events);
-        when(eventRepo.findSubscribedAmongEventIds(List.of(), user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getRelatedToUserEvents(pageRequest, principal.getName());
@@ -841,8 +839,6 @@ class EventServiceImplTest {
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
             }.getType());
-        verify(eventRepo).findFavoritesAmongEventIds(List.of(), user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(List.of(), user.getId());
     }
 
     @Test
@@ -1375,6 +1371,6 @@ class EventServiceImplTest {
         assertTrue(actualAddresses.contains(expectedAddressDto));
 
         verify(eventRepo).findAll();
-        verify(modelMapper).map(address, AddressDto.class);
+        verify(modelMapper,times(2)).map(address, AddressDto.class);
     }
 }
