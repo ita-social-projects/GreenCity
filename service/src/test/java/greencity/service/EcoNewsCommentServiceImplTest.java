@@ -222,6 +222,9 @@ class EcoNewsCommentServiceImplTest {
         assertEquals(4, allReplies.getTotalElements());
         assertEquals(1, allReplies.getCurrentPage());
         assertEquals(1, allReplies.getPage().size());
+        verify(ecoNewsCommentRepo).findAllByParentCommentId(parentCommentId);
+        verify(ecoNewsCommentRepo).findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
+        verify(modelMapper).map(ecoNewsCommentChild, EcoNewsCommentDto.class);
     }
 
     @Test
@@ -239,6 +242,8 @@ class EcoNewsCommentServiceImplTest {
 
         assertThrows(NotFoundException.class,
             () -> ecoNewsCommentService.findAllReplies(pageable, parentCommentId, userVO));
+
+        verify(ecoNewsCommentRepo).findAllByParentCommentId(parentCommentId);
     }
 
     @Test
