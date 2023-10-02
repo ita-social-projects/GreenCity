@@ -108,7 +108,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        sendEmailNotification(savedEvent.getTitle(), organizer.getFirstName(), organizer.getEmail());
+        sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
