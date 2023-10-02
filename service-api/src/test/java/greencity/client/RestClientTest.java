@@ -7,9 +7,6 @@ import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserManagementViewDto;
 import greencity.dto.user.UserManagementVO;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.constant.RestTemplateLinks;
@@ -42,8 +39,19 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.*;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RestClientTest {
@@ -585,8 +593,12 @@ class RestClientTest {
 
     @Test
     void sendEventCreationNotificationTest() {
+        String accessToken = "Bearer null";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         SendEventCreationNotification notification = ModelUtils.getSendEventCreationNotification();
-        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
+        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class))
                 .thenReturn(ResponseEntity.ok(Object));

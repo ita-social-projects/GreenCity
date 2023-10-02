@@ -1,6 +1,11 @@
 package greencity.client;
 
-import greencity.dto.user.*;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserManagementUpdateDto;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserManagementViewDto;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import java.util.Arrays;
 import java.util.List;
@@ -600,9 +605,10 @@ public class RestClient {
      * @author Olena Sotnik.
      */
     public void sendEventCreationNotification(SendEventCreationNotification notification) {
-        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, new HttpHeaders());
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class)
-            .getBody();
+            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
     }
 }
