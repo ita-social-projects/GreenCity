@@ -126,6 +126,8 @@ public final class ErrorMessage {
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID =
+        "The comment with entered parent_comment_id doesn't exist";
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";

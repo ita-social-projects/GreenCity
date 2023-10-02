@@ -202,12 +202,14 @@ class EcoNewsCommentServiceImplTest {
         int pageSize = 3;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         UserVO userVO = getUserVO();
-        User user = getUser();
         Long parentCommentId = 1L;
         EcoNewsComment ecoNewsCommentChild = ModelUtils.getEcoNewsComment();
         ecoNewsCommentChild.setParentComment(ModelUtils.getEcoNewsComment());
         ecoNewsCommentChild.setUsersLiked(new HashSet<>());
         Page<EcoNewsComment> pages = new PageImpl<>(Collections.singletonList(ecoNewsCommentChild), pageable, 1);
+
+        when(ecoNewsCommentRepo.findAllByParentCommentId(parentCommentId))
+            .thenReturn(Optional.of(List.of(ecoNewsCommentChild)));
 
         when(ecoNewsCommentRepo.findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId))
             .thenReturn(pages);
@@ -220,6 +222,23 @@ class EcoNewsCommentServiceImplTest {
         assertEquals(4, allReplies.getTotalElements());
         assertEquals(1, allReplies.getCurrentPage());
         assertEquals(1, allReplies.getPage().size());
+    }
+
+    @Test
+    void findAllRepliesThrewException() {
+        int pageNumber = 1;
+        int pageSize = 3;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        UserVO userVO = getUserVO();
+        Long parentCommentId = 1L;
+        EcoNewsComment ecoNewsCommentChild = ModelUtils.getEcoNewsComment();
+        ecoNewsCommentChild.setParentComment(ModelUtils.getEcoNewsComment());
+        ecoNewsCommentChild.setUsersLiked(new HashSet<>());
+
+        when(ecoNewsCommentRepo.findAllByParentCommentId(parentCommentId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+            () -> ecoNewsCommentService.findAllReplies(pageable, parentCommentId, userVO));
     }
 
     @Test

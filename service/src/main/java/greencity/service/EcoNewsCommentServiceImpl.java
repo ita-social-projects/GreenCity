@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -132,6 +133,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
+        Optional<List<EcoNewsComment>> checkExistComment = ecoNewsCommentRepo.findAllByParentCommentId(parentCommentId);
+        if (checkExistComment.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID);
+        }
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
