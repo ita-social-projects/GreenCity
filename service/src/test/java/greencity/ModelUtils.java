@@ -96,7 +96,9 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
@@ -3056,6 +3058,23 @@ public class ModelUtils {
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
+    }
+
+    public static SearchNewsDto getSearchNews() {
+        return SearchNewsDto.builder().id(1L).title("title").tags(Collections.singletonList("tag")).build();
+    }
+
+    public static SearchEventsDto getSearchEvents() {
+        return SearchEventsDto.builder().id(1L).title("Title").tags(new ArrayList<>()).build();
+    }
+
+    public static SearchResponseDto getSearchResponseDto() {
+        return SearchResponseDto.builder()
+            .ecoNews(List.of(getSearchNews()))
+            .events(List.of(getSearchEvents()))
+            .countOfEcoNewsResults(4L)
+            .countOfEventsResults(4L)
             .build();
     }
 }

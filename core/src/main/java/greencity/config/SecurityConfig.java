@@ -157,6 +157,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/language",
                 "/search",
                 "/search/econews",
+                "/search/events",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
