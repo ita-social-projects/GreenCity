@@ -89,15 +89,6 @@ class EcoNewsControllerTest {
     }
 
     @Test
-    void uploadImageTest() throws Exception {
-        MockMultipartFile image = new MockMultipartFile("data", "filename.txt",
-            "text/plain", "some xml".getBytes());
-        mockMvc.perform(MockMvcRequestBuilders.multipart(ecoNewsLink + uploadImageLink)
-            .file(image)).andExpect(status().isCreated());
-        verify(ecoNewsService).uploadImage(isNull());
-    }
-
-    @Test
     void saveTest() throws Exception {
         Principal principal = Mockito.mock(Principal.class);
         when(principal.getName()).thenReturn("Olivia.Johnson@gmail.com");

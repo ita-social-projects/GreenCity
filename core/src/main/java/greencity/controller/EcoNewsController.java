@@ -86,63 +86,6 @@ public class EcoNewsController {
     }
 
     /**
-     * Method for uploading eco news image.
-     *
-     * @param image - eco news image
-     * @return image path
-     */
-    @ApiOperation(value = "Upload image for eco news.")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
-            response = String.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadImage(
-        @ApiParam(value = "Image of eco news") @ImageValidation MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.uploadImage(image));
-    }
-
-    /**
-     * Method for uploading eco news images.
-     *
-     * @param images - array of eco news images
-     * @return array of images path
-     */
-    @ApiOperation(value = "Upload array of images for eco news.")
-    @ResponseStatus(value = HttpStatus.CREATED)
-    @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED,
-            response = String.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
-    })
-    @PostMapping(path = "/uploadImages", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String[]> uploadImages(
-        @ApiParam(value = "Array of eco news images") MultipartFile[] images) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-            ecoNewsService.uploadImages(images));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @ApiOperation(value = "Delete image")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 403, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @DeleteMapping("/deleteImage")
-    public void deleteImage(@RequestParam String imagePath) {
-        fileService.delete(imagePath);
-    }
-
-    /**
      * Method for updating {@link EcoNewsVO}.
      *
      * @param updateEcoNewsDto - dto for {@link EcoNewsVO} entity.
@@ -151,7 +94,6 @@ public class EcoNewsController {
     @ApiOperation(value = "Update eco news")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsGenericDto.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
         @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
     })
 
