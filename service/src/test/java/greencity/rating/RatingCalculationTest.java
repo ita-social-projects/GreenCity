@@ -65,6 +65,6 @@ class RatingCalculationTest {
         when(ratingStatisticsService.save(ratingStatisticsVO)).thenReturn(ratingStatisticsVO);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         verify(ratingStatisticsService).save(ratingStatisticsVO);
-
+        verify(userService).save(userVO);
     }
 }

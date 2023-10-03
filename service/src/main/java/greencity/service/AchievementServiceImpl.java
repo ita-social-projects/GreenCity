@@ -48,6 +48,7 @@ public class AchievementServiceImpl implements AchievementService {
     private UserAchievementRepo userAchievementRepo;
     private AchievementCalculation achievementCalculation;
     private final AchievementTranslationRepo achievementTranslationRepo;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -77,7 +78,7 @@ public class AchievementServiceImpl implements AchievementService {
             }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
-            restClient.save(userVO);
+            userService.save(userVO);
         });
         return achievementVO;
     }
