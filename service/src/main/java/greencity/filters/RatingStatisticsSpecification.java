@@ -12,7 +12,6 @@ import javax.persistence.criteria.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class RatingStatisticsSpecification implements MySpecification<RatingStatistics> {
