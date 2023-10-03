@@ -193,7 +193,7 @@ public class FriendController {
             @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
+                .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), name, page));
     }
 
     /**
