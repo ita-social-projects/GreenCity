@@ -482,6 +482,7 @@ class HabitAssignServiceImplTest {
         verify(habitStatusCalendarRepo).findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign);
         verify(habitStatusCalendarRepo).delete(habitStatusCalendar);
         verify(habitAssignRepo).save(habitAssign);
+        verify(userService).findById(any());
     }
 
     @Test
@@ -570,6 +571,7 @@ class HabitAssignServiceImplTest {
         verify(userShoppingListItemRepo).deleteShoppingListItemsByHabitAssignId(habitAssignId);
         verify(customShoppingListItemRepo).deleteCustomShoppingListItemsByHabitId(habitId);
         verify(habitAssignRepo).delete(habitAssign);
+        verify(userService).findById(any());
     }
 
     @Test
@@ -896,6 +898,7 @@ class HabitAssignServiceImplTest {
         assertEquals(1, habitAssign.getWorkingDays());
         assertEquals(habitAssignDto, actualDto);
 
+        verify(userService).findById(any());
         verify(habitAssignRepo).findById(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);

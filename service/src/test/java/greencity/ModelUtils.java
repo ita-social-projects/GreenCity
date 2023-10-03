@@ -9,7 +9,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -162,7 +161,6 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
@@ -178,7 +176,6 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -452,7 +449,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -1378,22 +1374,24 @@ public class ModelUtils {
 
     public static Achievement getAchievement() {
         return new Achievement(1L,
-            "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS",
+            "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", Collections.emptyList());
+        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(),
             1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto("CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", getAchievementCategoryDto(),
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
             1);
     }
 
@@ -1702,7 +1700,6 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1770,7 +1767,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
