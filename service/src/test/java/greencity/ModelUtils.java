@@ -443,7 +443,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
