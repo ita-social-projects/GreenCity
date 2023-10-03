@@ -838,7 +838,7 @@ class HabitServiceImplTest {
         verify(habitRepo).save(any());
         verify(customHabitMapper).convert(customHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(3)).mapAllToList(List.of(habitTranslationDto));
+        verify(habitTranslationMapper, times(2)).mapAllToList(List.of(habitTranslationDto));
         verify(languageRepo, times(2)).findByCode(anyString());
         verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(anyLong(), anyLong());
         verify(customShoppingListMapper).mapAllToList(anyList());
@@ -895,7 +895,7 @@ class HabitServiceImplTest {
 
         verify(habitRepo).findById(anyLong());
         verify(userRepo).findByEmail(user.getEmail());
-        verify(habitTranslationMapper, times(3))
+        verify(habitTranslationMapper, times(2))
             .mapAllToList(customHabitDtoRequest.getHabitTranslations());
         verify(languageRepo, times(2)).findByCode(anyString());
     }
