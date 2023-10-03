@@ -382,10 +382,11 @@ public class HabitServiceImpl implements HabitService {
             toUpdate.setDefaultDuration(habitDto.getDefaultDuration());
         }
         if (isNotEmpty(habitDto.getHabitTranslations())) {
-            toUpdate.setHabitTranslations(mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto));
+            habitTranslationRepo.deleteAllByHabit(toUpdate);
             saveHabitTranslationListsToHabitTranslationRepo(habitDto, toUpdate);
         }
         if (isNotEmpty(habitDto.getCustomShoppingListItemDto())) {
+            customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(toUpdate.getId());
             setCustomShoppingListItemToHabit(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
