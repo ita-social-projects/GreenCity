@@ -172,5 +172,7 @@
     <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-tag_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-languages-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
 </databaseChangeLog>
 

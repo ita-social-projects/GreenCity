@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Midianyi-1" author="Yurii Midianyi">
+        <addColumn tableName="users">
+            <column name="user_location" type="int"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="Midianyi-3" author="Yurii Midianyi">
+        <addColumn tableName="users">
+            <column name="location_id" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="users"
+                                 baseColumnNames="location_id"
+                                 constraintName="fk_location_id"
+                                 referencedTableName="user_location"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>
