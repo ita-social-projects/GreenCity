@@ -6,6 +6,9 @@
         <delete tableName="habit_shopping_list_items">
             <where>shopping_list_item_id=21</where>
         </delete>
+        <delete tableName="user_shopping_list">
+            <where>shopping_list_item_id=21</where>
+        </delete>
         <delete tableName="shopping_list_item_translations">
             <where>shopping_list_item_id=21</where>
         </delete>
