@@ -17,7 +17,6 @@ import java.util.List;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.SingularAttribute;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -81,7 +80,9 @@ class RatingStatisticsSpecificationTest {
     private SingularAttribute<User, String> email;
 
     private RatingStatisticsSpecification ratingStatisticsSpecification;
-    RatingStatisticsViewDto ratingStatisticsViewDto;
+
+    private RatingStatisticsViewDto ratingStatisticsViewDto;
+
     private List<SearchCriteria> criteriaList;
 
     void initRatingStatisticsViewDto(String id, String eventName, String userId, String userEmail, String startDate,
