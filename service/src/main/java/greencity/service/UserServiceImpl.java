@@ -47,8 +47,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void save(UserVO userVO) {
-        User user = modelMapper.map(userVO, User.class);
-        userRepo.save(user);
+        userRepo.save(modelMapper.map(userVO, User.class));
     }
 
     /**

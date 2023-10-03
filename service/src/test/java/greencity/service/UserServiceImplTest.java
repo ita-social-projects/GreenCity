@@ -81,7 +81,7 @@ class UserServiceImplTest {
     void saveTest() {
         userService.save(userVO);
         verify(modelMapper).map(userVO, User.class);
-        verify(userRepo, times(1)).save(any());
+        verify(userRepo).save(any());
     }
 
     @Test
