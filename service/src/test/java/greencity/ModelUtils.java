@@ -3039,6 +3039,12 @@ public class ModelUtils {
             .build();
     }
 
+    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("CLOSED"))
+            .build();
+    }
+
     public static FilterEventDto getFilterEventDtoWithSomeFilters() {
         return FilterEventDto.builder()
             .eventTime(List.of("PAST"))

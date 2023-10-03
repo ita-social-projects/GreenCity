@@ -62,15 +62,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
@@ -1320,6 +1312,52 @@ class EventServiceImplTest {
         verify(eventRepo).findAll();
         verify(restClient).findByEmail(principal.getName());
         verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getAllFilteredEventsWithAnonymousUser() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Principal nullPrincipal = null;
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, nullPrincipal, ModelUtils.getFilterEventDtoWithClosedStatus());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(1, actual);
+
+        verify(eventRepo).findAll();
+    }
+
+    @Test
+    void getAllFilteredEventsWithAnonymousUserAndClosedStatus() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Principal nullPrincipal = null;
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, nullPrincipal, ModelUtils.getFilterEventDtoWithStatuses());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+    }
+
+    @Test
+    void getAllFilteredEventsWithNullFilterEventDtoAndAnonymousUser() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        ;
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, null, null);
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(1, actual);
+
+        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
     }
 
     @Test
