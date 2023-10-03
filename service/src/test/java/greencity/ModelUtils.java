@@ -1690,7 +1690,6 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1776,7 +1775,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
