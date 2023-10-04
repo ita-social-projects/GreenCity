@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -54,6 +55,8 @@ class PlaceCommentServiceImplTest {
     private UserService userService;
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @Test
     void findByIdTest() {

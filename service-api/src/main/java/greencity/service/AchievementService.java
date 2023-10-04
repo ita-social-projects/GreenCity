@@ -2,8 +2,8 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
-import greencity.dto.user.UserVO;
 import greencity.enums.AchievementCategoryType;
+
 import greencity.enums.AchievementType;
 import org.springframework.data.domain.Pageable;
 
@@ -89,14 +89,6 @@ public interface AchievementService {
      * @author Orest Mamchuk
      */
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
-
-    /**
-     * Method notifies of the achievement.
-     *
-     * @param userId of {@link UserVO}
-     * @return list {@link AchievementNotification}
-     */
-    List<AchievementNotification> findAchievementsWithStatusActive(Long userId);
 
     /**
      * Method for achievement Calculation.

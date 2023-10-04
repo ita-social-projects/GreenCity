@@ -111,9 +111,6 @@ class ManagementAchievementControllerTest {
 
     @Test
     void saveAchievementTest() throws Exception {
-//        String accessToken = "accessToken";
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(AUTHORIZATION, accessToken);
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         String content = objectMapper.writeValueAsString(achievementPostDto);
         this.mockMvc.perform(post(link)

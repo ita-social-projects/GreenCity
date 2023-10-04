@@ -25,7 +25,7 @@ public class RatingCalculation {
 
     /**
      * Method that calculates the user rating.
-     * 
+     *
      * @param rating of {@link RatingCalculationEnum}
      * @param userVo of {@link UserVO}
      */
