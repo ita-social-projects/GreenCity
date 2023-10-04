@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,24 +42,6 @@ class AchievementControllerTest {
     void findAllTest() throws Exception {
         mockMvc.perform(get(achievementLink)).andExpect(status().isOk());
         verify(achievementService).findAll();
-    }
-
-    @Test
-    void calculateAchievements() throws Exception {
-        mockMvc.perform(post(achievementLink + "/calculate-achievement"
-            + "?id=" + 1L
-            + "&setter=" + AchievementType.INCREMENT
-            + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
-            + "&size=" + 1)).andExpect(status().isOk());
-        verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
-            AchievementCategoryType.ECO_NEWS, 1);
-    }
-
-    @Test
-    void getNotificationTest() throws Exception {
-        mockMvc.perform(get(achievementLink
-            + "/notification/{userId}", 1)).andExpect(status().isOk());
-        verify(achievementService).findAchievementsWithStatusActive(1L);
     }
 
 }

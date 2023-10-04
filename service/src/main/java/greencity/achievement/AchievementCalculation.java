@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static greencity.enums.AchievementStatus.ACTIVE;
 import static greencity.enums.AchievementType.INCREMENT;
 
 @Component
@@ -33,7 +32,7 @@ public class AchievementCalculation {
 
     /**
      * Constructor for {@link AchievementCalculation}.
-     * 
+     *
      * @param restClient                 {@link RestClient}
      * @param userActionService          {@link UserActionService}
      * @param achievementService         {@link AchievementService}
@@ -102,7 +101,6 @@ public class AchievementCalculation {
             .findFirst();
         if (userAchievement.isPresent()) {
             UserAchievement achievement = userAchievement.get();
-            achievement.setAchievementStatus(ACTIVE);
             userAchievementRepo.save(achievement);
             calculateAchievement(user.getId(), INCREMENT, AchievementCategoryType.ACHIEVEMENTS, 0);
         }
