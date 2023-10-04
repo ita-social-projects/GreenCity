@@ -5,6 +5,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -14,6 +15,7 @@ import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -30,6 +32,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.SendEventCreationNotification;
 import greencity.repository.EventRepo;
+import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -42,6 +45,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +75,7 @@ public class EventServiceImpl implements EventService {
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
+    private final EventsSearchRepo eventsSearchRepo;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
 
@@ -103,7 +108,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        sendEmailNotification(savedEvent.getTitle(), organizer.getFirstName(), organizer.getEmail());
+        sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -795,5 +800,29 @@ public class EventServiceImpl implements EventService {
             .messageBody(message)
             .build();
         restClient.sendEventCreationNotification(notification);
+    }
+
+    @Override
+    public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
+        Page<Event> page = eventsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    @Override
+    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
+        Page<Event> page = eventsSearchRepo.find(pageable, searchQuery, languageCode);
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    private PageableDto<SearchEventsDto> getSearchNewsDtoPageableDto(Page<Event> page) {
+        List<SearchEventsDto> searchEventsDtos = page.stream()
+            .map(events -> modelMapper.map(events, SearchEventsDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            searchEventsDtos,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
     }
 }

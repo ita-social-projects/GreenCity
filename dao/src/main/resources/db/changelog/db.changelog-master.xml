@@ -172,5 +172,11 @@
     <include file="db/changelog/logs/ch-delete-from-fact_of_the_day_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-tag_translations-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-delete-from-languages-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-values-employee_authorities-mapping-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-delete-values-positions_authorities-mapping-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-values-_authorities-mapping-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-insert-values-admin_authorities-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-update-fact-of-the-day-translation-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-update-values-shopping-list-items-Mokhnatska.xml"/>
 </databaseChangeLog>
 

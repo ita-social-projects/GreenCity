@@ -111,4 +111,18 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
     List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Method returns {@link Event} by search queryand language code.
+     *
+     * @param pageable     {@link Pageable}
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return Page of {@link Event} instances
+     * @author Anton Bondar
+     */
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searchevents "
+        + "( :searchQuery, :languageCode) ")
+    Page<Event> searchEvents(Pageable pageable, String searchQuery, String languageCode);
 }

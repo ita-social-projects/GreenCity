@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
@@ -8,6 +9,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.search.SearchEventsDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
@@ -168,4 +170,27 @@ public interface EventService {
      * @author Olena Sotnik.
      */
     Set<AddressDto> getAllEventsAddresses();
+
+    /**
+     * Method for getting Events by searchQuery.
+     *
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return PageableDto of {@link SearchEventsDto} instances
+     * @author Anton Bondar
+     */
+    PageableDto<SearchEventsDto> search(String searchQuery, String languageCode);
+
+    /**
+     * Method for getting Events by searchQuery.
+     *
+     * @param pageable     {@link Pageable}
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return PageableDto of {@link SearchEventsDto} instances
+     * @author Anton Bondar
+     */
+    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
 }
