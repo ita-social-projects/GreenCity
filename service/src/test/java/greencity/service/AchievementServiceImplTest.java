@@ -120,6 +120,7 @@ class AchievementServiceImplTest {
 
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
+        verify(userService).save(userVO);
     }
 
     @Test

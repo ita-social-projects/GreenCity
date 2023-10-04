@@ -453,38 +453,6 @@ class RestClientTest {
     }
 
     @Test
-    void save() {
-        UserVO userVO = ModelUtils.getUserVO();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
-        when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-        restClient.save(userVO);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);
-    }
-
-    @Test
-    void saveTest() {
-        UserVO userVO = ModelUtils.getUserVO();
-        String accessToken = "accessToken";
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, accessToken);
-        HttpEntity<UserVO> entity = new HttpEntity<>(userVO, headers);
-        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class)).thenReturn(ResponseEntity.ok(Object));
-        restClient.save(userVO, accessToken);
-
-        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.USER, HttpMethod.POST, entity, Object.class);
-
-    }
-
-    @Test
     void findUserForManagementByPage() {
         String accessToken = "accessToken";
         HttpHeaders headers = new HttpHeaders();
