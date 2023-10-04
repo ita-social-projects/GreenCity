@@ -82,7 +82,6 @@ class UserVOMapperTest {
             .userAchievements(expected.getUserAchievements() != null ? expected.getUserAchievements()
                 .stream().map(userAchievement -> UserAchievement.builder()
                     .id(userAchievement.getId())
-                    .achievementStatus(userAchievement.getAchievementStatus())
                     .user(User.builder()
                         .id(userAchievement.getUser().getId())
                         .build())

@@ -3,6 +3,7 @@ package greencity.service;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +71,9 @@ class EcoNewsCommentServiceImplTest {
     private UserService userService;
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
+
     private String token = "token";
 
     @Test

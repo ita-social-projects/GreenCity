@@ -161,7 +161,7 @@ public final class ErrorMessage {
         "Count of tags should be at least one but not more three";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
-    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The achievement does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST =
         "Can`t convert To Multipart Image. Bad inputed image string : ";

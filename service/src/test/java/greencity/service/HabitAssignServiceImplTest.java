@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -131,6 +132,9 @@ class HabitAssignServiceImplTest {
 
     @Mock
     private RatingCalculation ratingCalculation;
+
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -469,6 +473,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
             .thenReturn(habitStatusCalendar);
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         habitAssignService.unenrollHabit(habitAssignId, userId, date);
         assertEquals(0, habitAssign.getHabitStatusCalendars().size());
@@ -477,6 +482,7 @@ class HabitAssignServiceImplTest {
         verify(habitStatusCalendarRepo).findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign);
         verify(habitStatusCalendarRepo).delete(habitStatusCalendar);
         verify(habitAssignRepo).save(habitAssign);
+        verify(userService).findById(any());
     }
 
     @Test
@@ -558,12 +564,14 @@ class HabitAssignServiceImplTest {
         habitAssign.setWorkingDays(10);
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
         verify(userShoppingListItemRepo).deleteShoppingListItemsByHabitAssignId(habitAssignId);
         verify(customShoppingListItemRepo).deleteCustomShoppingListItemsByHabitId(habitId);
         verify(habitAssignRepo).delete(habitAssign);
+        verify(userService).findById(any());
     }
 
     @Test
@@ -884,11 +892,13 @@ class HabitAssignServiceImplTest {
                 .thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         HabitAssignDto actualDto = habitAssignService.enrollHabit(habitAssignId, userId, localDate, language);
         assertEquals(1, habitAssign.getWorkingDays());
         assertEquals(habitAssignDto, actualDto);
 
+        verify(userService).findById(any());
         verify(habitAssignRepo).findById(habitAssignId);
         verify(modelMapper).map(habitAssign, HabitAssignVO.class);
         verify(habitStatusCalendarService).findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO);

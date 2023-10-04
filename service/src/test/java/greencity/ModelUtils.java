@@ -9,7 +9,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -164,11 +163,9 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
@@ -181,7 +178,6 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -446,7 +442,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -456,7 +451,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -1381,48 +1375,46 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L, Collections.singletonList(getAchievementTranslation()), Collections.emptyList(),
+        return new Achievement(1L,
+            "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
+            Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", null, null);
+        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(),
+            1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
         return new AchievementCategoryDto("Test");
     }
 
-    public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
-    }
-
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category", null, null);
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
         return new AchievementManagementDto(1L);
     }
 
-    public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", null);
-    }
-
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), true);
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE, false);
+        return new UserAchievement(1L, getUser(), getAchievement(), false);
     }
 
     public static UserAction getUserAction() {
@@ -1700,7 +1692,6 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-                            .achievementStatus(AchievementStatus.ACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1710,7 +1701,6 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-                            .achievementStatus(AchievementStatus.INACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1778,7 +1768,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1788,7 +1777,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())

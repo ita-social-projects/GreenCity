@@ -7,33 +7,22 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.Language;
-import greencity.entity.UserAchievement;
-import greencity.entity.localization.AchievementTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-
 import java.util.*;
-import java.util.stream.Collectors;
-
-import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
-
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -68,7 +57,8 @@ class AchievementServiceImplTest {
     @InjectMocks
     private AchievementServiceImpl achievementService;
     @Mock
-    private AchievementTranslationRepo achievementTranslationRepo;
+    private UserRepo userRepo;
+
     @Mock
     private UserService userService;
     @Mock
@@ -101,18 +91,6 @@ class AchievementServiceImplTest {
         when(achievementRepo.findAll(pageable)).thenReturn(pages);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.findAll(pageable);
-        assertEquals(10, pageableAdvancedDto.getTotalElements());
-    }
-
-    @Test
-    void searchAchievementByTest() {
-        Pageable pageable = PageRequest.of(0, 2);
-        Achievement achievement = ModelUtils.getAchievement();
-        Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        when(achievementRepo.searchAchievementsBy(pageable, "")).thenReturn(page);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
         assertEquals(10, pageableAdvancedDto.getTotalElements());
     }
 
@@ -158,13 +136,8 @@ class AchievementServiceImplTest {
     @Test
     void updateTest() {
         Achievement achievement = ModelUtils.getAchievement();
-        AchievementTranslation achievementTranslation = ModelUtils.getAchievementTranslation();
-        achievement.setTranslations(Collections.singletonList(achievementTranslation));
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-        AchievementTranslationVO achievementTranslationVO = ModelUtils.getAchievementTranslationVO();
-        achievementManagementDto.setTranslations(Collections.singletonList(achievementTranslationVO));
-        achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationVO()));
         when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
@@ -217,43 +190,6 @@ class AchievementServiceImplTest {
         when(achievementRepo.findByAchievementCategoryIdAndCondition(1L, 1)).thenReturn(Optional.of(achievement));
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         assertEquals(achievementVO, achievementService.findByCategoryIdAndCondition(1L, 1));
-    }
-
-    @Test
-    void findAchievementsWithStatusActive() {
-        List<AchievementNotification> achievementNotifications =
-            Collections.singletonList(AchievementNotification.builder()
-                .id(1L)
-                .message("test")
-                .description("test")
-                .title("test")
-                .build());
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setLanguageVO(LanguageVO.builder()
-            .id(1L)
-            .code("ua")
-            .build());
-        Achievement achievement = ModelUtils.getAchievement();
-        List<AchievementTranslation> achievementTranslations = Collections
-            .singletonList(AchievementTranslation.builder()
-                .id(1L)
-                .achievement(achievement)
-                .message("test")
-                .description("test")
-                .title("test")
-                .language(Language.builder()
-                    .id(1L)
-                    .code("ua")
-                    .build())
-                .build());
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        when(restClient.findById(1L)).thenReturn(userVO);
-        when(achievementTranslationRepo.findAchievementsWithStatusActive(1L, 1L))
-            .thenReturn(achievementTranslations);
-        when(userAchievementRepo.getUserAchievementByIdAndAchievementId(1L, 1L)).thenReturn(userAchievement);
-        userAchievement.setNotified(true);
-        when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
-        assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
     }
 
     @Test
