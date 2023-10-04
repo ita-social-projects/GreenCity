@@ -43,6 +43,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
     private AchievementCalculation achievementCalculation;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
