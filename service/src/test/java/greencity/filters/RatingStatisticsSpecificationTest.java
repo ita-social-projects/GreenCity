@@ -1,18 +1,22 @@
 package greencity.filters;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+
 import greencity.enums.RatingCalculationEnum;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.entity.RatingStatistics;
 import greencity.entity.RatingStatistics_;
 import greencity.entity.User;
 import greencity.entity.User_;
+import greencity.exception.exceptions.NotFoundException;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.SingularAttribute;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -77,13 +81,17 @@ class RatingStatisticsSpecificationTest {
 
     private RatingStatisticsSpecification ratingStatisticsSpecification;
 
+    private RatingStatisticsViewDto ratingStatisticsViewDto;
+
     private List<SearchCriteria> criteriaList;
 
-    @BeforeEach
-    void setUp() {
-        RatingStatisticsViewDto ratingStatisticsViewDto =
-            new RatingStatisticsViewDto("2", "UNLIKE_COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
+    void initRatingStatisticsViewDto(String id, String eventName, String userId, String userEmail, String startDate,
+        String endDate, String pointsChanged, String curentRating) {
+        ratingStatisticsViewDto = new RatingStatisticsViewDto(id, eventName, userId, userEmail, startDate, endDate,
+            pointsChanged, curentRating);
+    }
 
+    void init() {
         criteriaList = new ArrayList<>();
         criteriaList.add(
             SearchCriteria.builder()
@@ -124,7 +132,8 @@ class RatingStatisticsSpecificationTest {
 
     @Test
     void toPredicate() {
-
+        initRatingStatisticsViewDto("2", "UNLIKE_COMMENT_OR_REPLY", "1", "", "2021-01-12", "2021-01-13", "", "50");
+        init();
         when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
 
         when(ratingStatisticsRootMock.get("id")).thenReturn(pathRatingStatisticsIdMock);
@@ -178,6 +187,28 @@ class RatingStatisticsSpecificationTest {
         verify(criteriaBuilderMock).and(andEventNamePredicate, andUserIdPredicate);
         verify(criteriaBuilderMock).and(andUserIdPredicate, andDataRangePredicate);
         verify(criteriaBuilderMock).and(andDataRangePredicate, andCurrentRatingPredicate);
+
+    }
+
+    @Test
+    void toPredicate_exceptionTest() {
+        initRatingStatisticsViewDto("2", "NOTREAL", "1", "", "2021-01-12", "2021-01-13", "", "50");
+        init();
+        when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+
+        when(ratingStatisticsRootMock.get("id")).thenReturn(pathRatingStatisticsIdMock);
+
+        when(criteriaBuilderMock.equal(pathRatingStatisticsIdMock, criteriaList.get(0).getValue()))
+            .thenReturn(andIdNumericPredicate);
+
+        when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
+
+        assertThrows(NotFoundException.class, () -> ratingStatisticsSpecification.toPredicate(ratingStatisticsRootMock,
+            criteriaQueryMock, criteriaBuilderMock));
+        verify(criteriaBuilderMock).and(predicateMock, andIdNumericPredicate);
+        verify(criteriaBuilderMock).equal(pathRatingStatisticsIdMock, criteriaList.get(0).getValue());
+        verify(ratingStatisticsRootMock).get("id");
+        verify(criteriaBuilderMock).conjunction();
 
     }
 }
