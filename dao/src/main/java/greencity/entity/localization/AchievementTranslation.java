@@ -4,6 +4,7 @@ import greencity.entity.Achievement;
 import greencity.entity.Language;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+
 import javax.persistence.*;
 
 @Entity
