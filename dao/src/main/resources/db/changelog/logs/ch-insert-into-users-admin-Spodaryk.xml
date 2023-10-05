@@ -22,7 +22,4 @@
             <column name="phone_number" value="+380979797979"/>
         </insert>
     </changeSet>
-    <changeSet id="Spodaryk-29" author="Oksana Spodaryk">
-        <sqlFile path="db/functions/insert-values-admin.sql"/>
-    </changeSet>
 </databaseChangeLog>
