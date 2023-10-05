@@ -14,6 +14,14 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
+
+
+
+
+
+
+
+
 @Component
 @AllArgsConstructor
 public class RatingCalculation {
