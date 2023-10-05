@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> {
@@ -23,15 +21,6 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
      */
     Page<EcoNewsComment> findAllByParentCommentIsNullAndEcoNewsIdOrderByCreatedDateDesc(Pageable pageable,
         Long ecoNewsId);
-
-    /**
-     * Method returns all replies to comment, specified by parentCommentId.
-     *
-     * @param parentCommentId id of comment, replies to which we get.
-     * @return all replies to comment, specified by parentCommentId.
-     */
-    @Query("SELECT ec from EcoNewsComment ec where ec.parentComment.id = :parentCommentId ")
-    Optional<List<EcoNewsComment>> findAllByParentCommentId(Long parentCommentId);
 
     /**
      * Method returns all replies to comment, specified by parentCommentId and by
