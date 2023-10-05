@@ -325,6 +325,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
                 CommentStatus.DELETED);
+        if (pages.isEmpty()) {
+            throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID);
+        }
         UserVO user = userVO == null ? UserVO.builder().build() : userVO;
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
             .stream()

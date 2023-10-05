@@ -524,4 +524,23 @@ class EcoNewsCommentServiceImplTest {
         PageableDto<EcoNewsCommentDto> actual = ecoNewsCommentService.findAllActiveReplies(pageRequest, 1L, userVO);
         assertEquals(pageableDto, actual);
     }
+
+    @Test
+    void findAllActiveRepliesThrowException() {
+        UserVO userVO = ModelUtils.getUserVO();
+        List<EcoNewsComment> ecoNewsComments1 = List.of();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Page<EcoNewsComment> page1 = new PageImpl<>(ecoNewsComments1, pageRequest, ecoNewsComments1.size());
+
+        when(ecoNewsCommentRepo
+            .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 11111L,
+                CommentStatus.DELETED))
+                    .thenReturn(page1);
+
+        assertThrows(NotFoundException.class,
+            () -> ecoNewsCommentService.findAllActiveReplies(pageRequest, 11111L, userVO));
+
+        verify(ecoNewsCommentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest,
+            11111L, CommentStatus.DELETED);
+    }
 }
