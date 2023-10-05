@@ -80,7 +80,7 @@ class UserActionServiceImplTest {
             .user(ModelUtils.getUser())
             .achievementCategory(AchievementCategory.builder()
                 .id(1L)
-                .name("Name")
+                .name("HABIT")
                 .achievementList(Collections.emptyList())
                 .build())
             .count(0)
@@ -89,7 +89,7 @@ class UserActionServiceImplTest {
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
         UserActionVO resultUserActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L);
         assertEquals(userActionVO, resultUserActionVO);
-        verify(userActionRepo, times(1)).save(any());
+        verify(userActionRepo).save(any());
 
     }
 
