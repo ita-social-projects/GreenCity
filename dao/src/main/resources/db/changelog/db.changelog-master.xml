@@ -181,5 +181,7 @@
     <include file="db/changelog/logs/ch-insert-values-admin_authorities-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-update-fact-of-the-day-translation-Mokhnatska.xml"/>
     <include file="db/changelog/logs/ch-update-values-shopping-list-items-Mokhnatska.xml"/>
+    <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
+    <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
 </databaseChangeLog>
 
