@@ -3,7 +3,9 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.UserAction;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.UserActionRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +26,10 @@ class UserActionServiceImplTest {
     private UserActionRepo userActionRepo;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
 
     @Test
     void updateUserActions() {
