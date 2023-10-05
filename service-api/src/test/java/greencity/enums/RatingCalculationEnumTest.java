@@ -11,19 +11,19 @@ class RatingCalculationEnumTest {
     @Test
     void testFindEnumByNameValidName() {
         assertEquals(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS,
-            RatingCalculationEnum.findEnumByName("DAYS_OF_HABIT_IN_PROGRESS"));
-        assertEquals(RatingCalculationEnum.CREATE_NEWS, RatingCalculationEnum.findEnumByName("CREATE_NEWS"));
+            RatingCalculationEnum.findByName("DAYS_OF_HABIT_IN_PROGRESS"));
+        assertEquals(RatingCalculationEnum.CREATE_NEWS, RatingCalculationEnum.findByName("CREATE_NEWS"));
     }
 
     @Test
     void testFindEnumByNameInvalidName() {
-        assertThrows(NotFoundException.class, () -> RatingCalculationEnum.findEnumByName("INVALID_NAME"));
+        assertThrows(NotFoundException.class, () -> RatingCalculationEnum.findByName("INVALID_NAME"));
     }
 
     @Test
     void testErrorMessageOnNotFound() {
         NotFoundException exception =
-            assertThrows(NotFoundException.class, () -> RatingCalculationEnum.findEnumByName("INVALID_NAME"));
+            assertThrows(NotFoundException.class, () -> RatingCalculationEnum.findByName("INVALID_NAME"));
         assertEquals(ErrorMessage.RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME + "INVALID_NAME", exception.getMessage());
     }
 }

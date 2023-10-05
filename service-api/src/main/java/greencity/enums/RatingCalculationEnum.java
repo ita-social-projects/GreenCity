@@ -124,7 +124,7 @@ public enum RatingCalculationEnum {
      * @return The found RatingCalculationEnum object.
      * @throws NotFoundException if the enum by the given name does not exist.
      */
-    public static RatingCalculationEnum findEnumByName(String name) {
+    public static RatingCalculationEnum findByName(String name) {
         try {
             return RatingCalculationEnum.valueOf(name);
         } catch (IllegalArgumentException e) {

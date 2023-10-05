@@ -132,7 +132,7 @@ public class AchievementCalculation {
             .user(userRepo.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
             .build();
-        RatingCalculationEnum reason = RatingCalculationEnum.findEnumByName(achievement.getTitle());
+        RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
         UserVO user = userService.findById(userId);
         ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.save(userAchievement);
@@ -158,7 +158,7 @@ public class AchievementCalculation {
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
             .build();
 
-        RatingCalculationEnum reason = RatingCalculationEnum.findEnumByName("UNDO_" + achievement.getTitle());
+        RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
         UserVO user = userService.findById(userId);
         ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.delete(userAchievement);
