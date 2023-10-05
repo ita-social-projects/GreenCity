@@ -14,7 +14,7 @@ import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.enums.AchievementAction;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.enums.RatingCalculationEnum;
@@ -34,8 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,7 +65,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
         EcoNewsComment ecoNewsComment = modelMapper.map(addEcoNewsCommentDtoRequest, EcoNewsComment.class);
-        ecoNewsComment.setUser(modelMapper.map(userVO, User.class));
+        User user = modelMapper.map(userVO, User.class);
+        ecoNewsComment.setUser(user);
         ecoNewsComment.setEcoNews(modelMapper.map(ecoNewsVO, EcoNews.class));
         if (addEcoNewsCommentDtoRequest.getParentCommentId() != 0) {
             EcoNewsComment parentComment =
@@ -79,11 +78,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
         }
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(userVO.getId(), AchievementType.INCREMENT,
-                AchievementCategoryType.ECO_NEWS_COMMENT, 0));
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO));
+        achievementCalculation
+            .calculateAchievement(userVO.getId(),
+                AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
 
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
@@ -133,10 +132,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public PageableDto<EcoNewsCommentDto> findAllReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
-        Optional<List<EcoNewsComment>> checkExistComment = ecoNewsCommentRepo.findAllByParentCommentId(parentCommentId);
-        if (checkExistComment.isEmpty()) {
-            throw new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID);
-        }
         Page<EcoNewsComment> pages = ecoNewsCommentRepo
             .findAllByParentCommentIdOrderByCreatedDateDesc(pageable, parentCommentId);
         List<EcoNewsCommentDto> ecoNewsCommentDtos = pages
@@ -175,8 +170,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             comment.getComments().forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
         comment.setStatus(CommentStatus.DELETED);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT_OR_REPLY, userVO));
+        achievementCalculation.calculateAchievement(userVO.getId(),
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
         ecoNewsCommentRepo.save(comment);
     }
 
@@ -215,13 +211,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNLIKE_COMMENT_OR_REPLY, userVO));
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO));
+            achievementCalculation.calculateAchievement(userVO.getId(),
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

@@ -3,8 +3,7 @@ package greencity.service;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.enums.AchievementCategoryType;
-
-import greencity.enums.AchievementType;
+import greencity.enums.AchievementAction;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -93,6 +92,6 @@ public interface AchievementService {
     /**
      * Method for achievement Calculation.
      */
-    void calculateAchievements(Long id, AchievementType achievementType,
-        AchievementCategoryType achievementCategory, Integer size);
+    void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
+        AchievementAction achievementAction);
 }
