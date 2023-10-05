@@ -2838,9 +2838,23 @@ public class ModelUtils {
             .build();
     }
 
-    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithTagsForServiceTest() {
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
         return CustomHabitDtoRequest.builder()
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(null)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
             .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomShoppingListItem getCustomShoppingListItemForUpdate() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
             .build();
     }
 
