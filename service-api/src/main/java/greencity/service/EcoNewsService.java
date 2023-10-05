@@ -259,20 +259,20 @@ public interface EcoNewsService {
     Boolean checkNewsIsLikedByUser(Long id, UserVO user);
 
     /**
-     * Method for getting some fields in eco news by id.
-     *
-     * @param id - {@link Long} eco news id.
-     * @return dto {@link EcoNewContentSourceDto}.
-     */
-    EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id);
-
-    /**
      * Method to upload news images.
      *
      * @param images - array of eco news images
      * @return array of images path
      */
     String[] uploadImages(MultipartFile[] images);
+
+    /**
+     * Method for getting some fields in eco news by id.
+     *
+     * @param id - {@link Long} eco news id.
+     * @return dto {@link EcoNewContentSourceDto}.
+     */
+    EcoNewContentSourceDto getContentAndSourceForEcoNewsById(Long id);
 
     /**
      * Method for getting list of users who liked post by post id.
