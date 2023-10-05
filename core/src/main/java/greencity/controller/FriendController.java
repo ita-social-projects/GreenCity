@@ -170,8 +170,8 @@ public class FriendController {
     }
 
     /**
-     * Method to find friends of friends that are not friend for current
-     * user(except current user).
+     * Method to find friends of friends that are not friend for current user(except
+     * current user).
      *
      * @param userVO user.
      *
@@ -179,17 +179,17 @@ public class FriendController {
      */
     @ApiOperation(value = "Find recommended friends of friends that are not friend for current users")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/recommended-friends-of-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersByFriendsOfFriends(
-            @ApiIgnore Pageable page,
-            @ApiIgnore @CurrentUser UserVO userVO) {
+        @ApiIgnore Pageable page,
+        @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), page));
+            .status(HttpStatus.OK)
+            .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), page));
     }
 
     /**

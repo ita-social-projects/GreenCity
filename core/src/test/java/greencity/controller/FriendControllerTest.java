@@ -137,8 +137,8 @@ class FriendControllerTest {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(get(FRIEND_LINK + "/recommended-friends-of-friends")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
         verify(friendService).findAllUsersByFriendsOfFriends(userVO.getId(), PageRequest.of(0, 20));
