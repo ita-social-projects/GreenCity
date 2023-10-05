@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -73,6 +74,8 @@ class EventCommentServiceImplTest {
     HttpServletRequest httpServletRequest;
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @Test
     void save() {

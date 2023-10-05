@@ -2,17 +2,16 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -26,8 +25,8 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
-import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -57,8 +56,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static greencity.ModelUtils.TEST_USER_VO;
-import static greencity.ModelUtils.getEvent;
-import static greencity.ModelUtils.getSearchEvents;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -103,11 +100,12 @@ class EventServiceImplTest {
     @Mock
     UserRepo userRepo;
 
-    @Mock
-    EventsSearchRepo eventsSearchRepo;
-
     @InjectMocks
     EventServiceImpl eventService;
+    @Mock
+    RatingCalculation ratingCalculation;
+    @Mock
+    AchievementCalculation achievementCalculation;
 
     @Test
     void save() {
@@ -1384,41 +1382,5 @@ class EventServiceImplTest {
 
         verify(eventRepo).findAll();
         verify(modelMapper).map(address, AddressDto.class);
-    }
-
-    @Test
-    void searchEventsTest() {
-        SearchEventsDto searchEventsDto = getSearchEvents();
-        Event event = getEvent();
-        var pageableDto = new PageableDto<>(Collections.singletonList(searchEventsDto), 4, 1, 2);
-        var page = new PageImpl<>(Collections.singletonList(event), PageRequest.of(1, 3), 1);
-
-        when(eventsSearchRepo.find(PageRequest.of(0, 3), "query", "ua")).thenReturn(page);
-        when(modelMapper.map(event, SearchEventsDto.class)).thenReturn(searchEventsDto);
-
-        PageableDto<SearchEventsDto> actual = eventService.search("query", "ua");
-
-        assertEquals(pageableDto, actual);
-        verify(eventsSearchRepo).find(PageRequest.of(0, 3), "query", "ua");
-        verify(modelMapper).map(event, SearchEventsDto.class);
-    }
-
-    @Test
-    void searchAllEventsTest() {
-        SearchEventsDto searchEventsDto = ModelUtils.getSearchEvents();
-        Event event = getEvent();
-        var pageableDto = new PageableDto<>(Collections.singletonList(searchEventsDto), 3, 1, 2);
-
-        Pageable pageable = PageRequest.of(1, 2);
-        Page<Event> page = new PageImpl<>(Collections.singletonList(event), pageable, 2);
-
-        when(eventsSearchRepo.find(PageRequest.of(1, 2), "query", "ua")).thenReturn(page);
-        when(modelMapper.map(event, SearchEventsDto.class)).thenReturn(searchEventsDto);
-
-        PageableDto<SearchEventsDto> actual = eventService.search(pageable, "query", "ua");
-
-        assertEquals(pageableDto.getTotalElements(), actual.getTotalElements());
-        verify(eventsSearchRepo).find(PageRequest.of(1, 2), "query", "ua");
-        verify(modelMapper).map(event, SearchEventsDto.class);
     }
 }
