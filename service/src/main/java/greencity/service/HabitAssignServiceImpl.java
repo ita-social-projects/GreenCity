@@ -37,8 +37,11 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.*;
-
+import greencity.enums.AchievementAction;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementCategoryType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
