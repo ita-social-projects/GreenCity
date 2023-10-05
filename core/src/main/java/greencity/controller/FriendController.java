@@ -170,30 +170,26 @@ public class FriendController {
     }
 
     /**
-     * Method to find {@link UserFriendDto}s that are not friend for current
+     * Method to find friends of friends that are not friend for current
      * user(except current user).
      *
      * @param userVO user.
-     * @param name   filtering name.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find all users that are not friend for current users")
+    @ApiOperation(value = "Find recommended friends of friends that are not friend for current users")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/not-friends-yet-friends-of-friends")
+    @GetMapping("/recommended-friends-of-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersByFriendsOfFriends(
             @ApiIgnore Pageable page,
-            @ApiIgnore @CurrentUser UserVO userVO,
-            @RequestParam(required = false) @Nullable String name) {
+            @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), name, page));
+                .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), page));
     }
 
     /**

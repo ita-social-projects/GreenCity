@@ -120,9 +120,7 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findAllUsersByFriendsOfFriends(long userId,
-                                                                               @Nullable String name, Pageable pageable) {
-        Objects.requireNonNull(pageable);
+    public PageableDto<UserFriendDto> findAllUsersByFriendsOfFriends(long userId, Pageable pageable) {
         validateUserExistence(userId);
         Page<User> users =
                 userRepo.getRecommendedFriendsOfFriends(userId, pageable);
