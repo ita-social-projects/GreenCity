@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
@@ -110,15 +110,15 @@ public interface HabitService {
     List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method to save {@link AddCustomHabitDtoResponse}.
+     * Method to save {@link CustomHabitDtoResponse}.
      *
-     * @param addCustomHabitDtoRequest dto with {@link AddCustomHabitDtoRequest}
+     * @param addCustomHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
      * @param userEmail                {@link String} - user email.
-     * @return {@link AddCustomHabitDtoResponse} instance.
+     * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
+    CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
         String userEmail);
 
     /**
@@ -130,4 +130,16 @@ public interface HabitService {
      * @return List of friends' profile pictures.
      */
     List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
+
+    /**
+     * Method to update {@link CustomHabitDtoResponse}.
+     *
+     * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest} entered
+     *                              info about field that need to edit.
+     * @param userEmail             {@link String} - user email.
+     * @return {@link CustomHabitDtoResponse} instance.
+     * @author Olena Sotnik.
+     */
+    CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
+        String userEmail, MultipartFile image);
 }

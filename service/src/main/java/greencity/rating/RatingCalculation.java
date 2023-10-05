@@ -1,6 +1,5 @@
 package greencity.rating;
 
-import greencity.client.RestClient;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.RatingStatistics;
@@ -12,28 +11,16 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-
-
-
-
-
-
-
 @Component
 @AllArgsConstructor
 public class RatingCalculation {
-    private RestClient restClient;
     private RatingStatisticsService ratingStatisticsService;
     private final ModelMapper modelMapper;
-    private final HttpServletRequest httpServletRequest;
     private UserService userService;
 
     /**
      * Method that calculates the user rating.
-     * 
+     *
      * @param rating of {@link RatingCalculationEnum}
      * @param userVo of {@link UserVO}
      */

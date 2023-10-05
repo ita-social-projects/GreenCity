@@ -13,7 +13,8 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementAction;
+
+import greencity.enums.AchievementType;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
@@ -42,6 +43,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final AchievementCategoryService achievementCategoryService;
     private final UserActionService userActionService;
     private AchievementCalculation achievementCalculation;
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -74,7 +76,7 @@ public class AchievementServiceImpl implements AchievementService {
             }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
-            restClient.save(userVO);
+            userService.save(userVO);
         });
         return achievementVO;
     }
@@ -206,8 +208,8 @@ public class AchievementServiceImpl implements AchievementService {
      * {@inheritDoc}
      */
     @Override
-    public void calculateAchievements(Long id,
-        AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
-        achievementCalculation.calculateAchievement(id, achievementCategory, achievementAction);
+    public void calculateAchievements(Long id, AchievementType achievementType,
+        AchievementCategoryType achievementCategory, Integer size) {
+        achievementCalculation.calculateAchievement(id, achievementType, achievementCategory, size);
     }
 }

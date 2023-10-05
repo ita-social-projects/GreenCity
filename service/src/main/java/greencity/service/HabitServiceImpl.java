@@ -3,8 +3,8 @@ package greencity.service;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
@@ -15,7 +15,9 @@ import greencity.entity.HabitAssign;
 import greencity.entity.HabitTranslation;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.mapping.CustomHabitMapper;
 import greencity.mapping.CustomShoppingListMapper;
@@ -27,11 +29,11 @@ import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import greencity.repository.CustomShoppingListItemRepo;
@@ -47,6 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * Implementation of {@link HabitService}.
@@ -300,10 +303,11 @@ public class HabitServiceImpl implements HabitService {
 
     @Transactional
     @Override
-    public AddCustomHabitDtoResponse addCustomHabit(
-        AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
+    public CustomHabitDtoResponse addCustomHabit(
+        CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image, String userEmail) {
         User user = userRepo.findByEmail(userEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
         if (StringUtils.isNotBlank(addCustomHabitDtoRequest.getImage())) {
             image = fileService.convertToMultipartImage(addCustomHabitDtoRequest.getImage());
         }
@@ -312,48 +316,24 @@ public class HabitServiceImpl implements HabitService {
         } else {
             addCustomHabitDtoRequest.setImage(DEFAULT_TITLE_IMAGE_PATH);
         }
-
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
-        Set<Long> tagIds = addCustomHabitDtoRequest.getTagIds();
-
-        habit.setTags(tagIds.stream().map(tagId -> tagsRepo.findById(tagId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId))).collect(Collectors.toSet()));
-
-        List<HabitTranslation> habitTranslationListForUa =
-            habitTranslationMapper.mapAllToList((addCustomHabitDtoRequest.getHabitTranslations()));
-        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
-        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("ua")
-                .orElseThrow(NoSuchElementException::new)));
-        habitTranslationRepo.saveAll(habitTranslationListForUa);
-
-        List<HabitTranslation> habitTranslationListForEn =
-            habitTranslationMapper.mapAllToList((addCustomHabitDtoRequest.getHabitTranslations()));
-        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
-        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
-            languageRepo.findByCode("en")
-                .orElseThrow(NoSuchElementException::new)));
-        habitTranslationRepo.saveAll(habitTranslationListForEn);
-
-        List<CustomShoppingListItem> customShoppingListItems =
-            customShoppingListMapper.mapAllToList(addCustomHabitDtoRequest.getCustomShoppingListItemDto());
-        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setHabit(habit));
-        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setUser(user));
-        customShoppingListItemRepo.saveAll(customShoppingListItems);
+        setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
+        saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
+        setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
         return buildAddCustomHabitDtoResponse(habit, user.getId());
     }
 
     /**
-     * Method that build {@link AddCustomHabitDtoResponse} from {@link Habit}.
+     * Method that build {@link CustomHabitDtoResponse} from {@link Habit}.
      *
      * @param habit  {@link Habit}
      * @param userId {@link Long}
-     * @return {@link AddCustomHabitDtoResponse}
+     * @return {@link CustomHabitDtoResponse}
      * @author Lilia Mokhnatska
      */
-    private AddCustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
-        AddCustomHabitDtoResponse response = modelMapper.map(habit, AddCustomHabitDtoResponse.class);
+    private CustomHabitDtoResponse buildAddCustomHabitDtoResponse(Habit habit, Long userId) {
+        CustomHabitDtoResponse response = modelMapper.map(habit, CustomHabitDtoResponse.class);
 
         response.setCustomShoppingListItemDto(customShoppingListResponseDtoMapper
             .mapAllToList(customShoppingListItemRepo.findAllByUserIdAndHabitId(userId, habit.getId())));
@@ -377,5 +357,86 @@ public class HabitServiceImpl implements HabitService {
         List<User> users = userRepo.getFriendsAssignedToHabit(userId, habitId);
         return users.stream().map(user -> modelMapper.map(user, UserProfilePictureDto.class))
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest habitDto, Long habitId,
+        String userEmail, MultipartFile image) {
+        User user = userRepo.findByEmail(userEmail)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+        Habit toUpdate = habitRepo.findById(habitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + habitId));
+        checkAccessForAdminAndModeratorAndByUserId(user, toUpdate);
+        enhanceHabitWithNewData(toUpdate, habitDto, user, image);
+        Habit updatedHabit = habitRepo.save(toUpdate);
+        return buildAddCustomHabitDtoResponse(updatedHabit, user.getId());
+    }
+
+    private void enhanceHabitWithNewData(Habit toUpdate, CustomHabitDtoRequest habitDto,
+        User user, MultipartFile image) {
+        if (Objects.nonNull(habitDto.getComplexity())) {
+            toUpdate.setComplexity(habitDto.getComplexity());
+        }
+        if (Objects.nonNull(habitDto.getDefaultDuration())) {
+            toUpdate.setDefaultDuration(habitDto.getDefaultDuration());
+        }
+        if (isNotEmpty(habitDto.getHabitTranslations())) {
+            habitTranslationRepo.deleteAllByHabit(toUpdate);
+            saveHabitTranslationListsToHabitTranslationRepo(habitDto, toUpdate);
+        }
+        if (isNotEmpty(habitDto.getCustomShoppingListItemDto())) {
+            customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(toUpdate.getId());
+            setCustomShoppingListItemToHabit(habitDto, toUpdate, user);
+        }
+        if (StringUtils.isNotBlank(habitDto.getImage())) {
+            image = fileService.convertToMultipartImage(habitDto.getImage());
+        }
+        if (image != null) {
+            toUpdate.setImage(fileService.upload(image));
+        }
+        if (isNotEmpty(habitDto.getTagIds())) {
+            setTagsIdsToHabit(habitDto, toUpdate);
+        }
+    }
+
+    private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
+        List<HabitTranslation> habitTranslationListForUa = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setHabit(habit));
+        habitTranslationListForUa.forEach(habitTranslation -> habitTranslation.setLanguage(
+            languageRepo.findByCode("ua").orElseThrow(NoSuchElementException::new)));
+        habitTranslationRepo.saveAll(habitTranslationListForUa);
+
+        List<HabitTranslation> habitTranslationListForEn = mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto);
+        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setHabit(habit));
+        habitTranslationListForEn.forEach(habitTranslation -> habitTranslation.setLanguage(
+            languageRepo.findByCode("en").orElseThrow(NoSuchElementException::new)));
+        habitTranslationRepo.saveAll(habitTranslationListForEn);
+    }
+
+    private List<HabitTranslation> mapHabitTranslationFromAddCustomHabitDtoRequest(CustomHabitDtoRequest habitDto) {
+        return habitTranslationMapper.mapAllToList(habitDto.getHabitTranslations());
+    }
+
+    private void setTagsIdsToHabit(CustomHabitDtoRequest habitDto, Habit habit) {
+        habit.setTags(habitDto.getTagIds().stream().map(tagId -> tagsRepo.findById(tagId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.TAG_NOT_FOUND + tagId)))
+            .collect(Collectors.toSet()));
+    }
+
+    private void setCustomShoppingListItemToHabit(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomShoppingListItem> customShoppingListItems =
+            customShoppingListMapper.mapAllToList(habitDto.getCustomShoppingListItemDto());
+        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setHabit(habit));
+        customShoppingListItems.forEach(customShoppingListItem -> customShoppingListItem.setUser(user));
+        customShoppingListItemRepo.saveAll(customShoppingListItems);
+        habit.setCustomShoppingListItems(customShoppingListItems);
+    }
+
+    private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
+        if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_MODERATOR
+            && !user.getId().equals(habit.getUserId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
     }
 }

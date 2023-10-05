@@ -1,11 +1,11 @@
 package greencity.service;
 
 import com.google.maps.model.LatLng;
-import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
@@ -15,8 +15,8 @@ import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
-import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -24,13 +24,15 @@ import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.event.Address;
-import greencity.enums.*;
+import greencity.enums.EventType;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.rating.RatingCalculation;
 import greencity.message.SendEventCreationNotification;
 import greencity.repository.EventRepo;
+import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -43,6 +45,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,10 +75,9 @@ public class EventServiceImpl implements EventService {
     private final TagsService tagService;
     private final GoogleApiService googleApiService;
     private final UserService userService;
+    private final EventsSearchRepo eventsSearchRepo;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
-    private final RatingCalculation ratingCalculation;
-    private final AchievementCalculation achievementCalculation;
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
@@ -106,11 +108,7 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        achievementCalculation.calculateAchievement(organizer.getId(),
-            AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT,
-            modelMapper.map(organizer, UserVO.class));
-        sendEmailNotification(savedEvent.getTitle(), organizer.getFirstName(), organizer.getEmail());
+        sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -128,10 +126,6 @@ public class EventServiceImpl implements EventService {
         if (toDelete.getOrganizer().getId().equals(user.getId()) || user.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
             eventRepo.delete(toDelete);
-            achievementCalculation.calculateAchievement(user.getId(),
-                AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT,
-                modelMapper.map(user, UserVO.class));
         } else {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
@@ -299,10 +293,6 @@ public class EventServiceImpl implements EventService {
         User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
         checkAttenderToJoinTheEvent(event, currentUser);
         event.getAttenders().add(currentUser);
-        achievementCalculation.calculateAchievement(currentUser.getId(),
-            AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT,
-            modelMapper.map(currentUser, UserVO.class));
         eventRepo.save(event);
     }
 
@@ -810,5 +800,29 @@ public class EventServiceImpl implements EventService {
             .messageBody(message)
             .build();
         restClient.sendEventCreationNotification(notification);
+    }
+
+    @Override
+    public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {
+        Page<Event> page = eventsSearchRepo.find(PageRequest.of(0, 3), searchQuery, languageCode);
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    @Override
+    public PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode) {
+        Page<Event> page = eventsSearchRepo.find(pageable, searchQuery, languageCode);
+        return getSearchNewsDtoPageableDto(page);
+    }
+
+    private PageableDto<SearchEventsDto> getSearchNewsDtoPageableDto(Page<Event> page) {
+        List<SearchEventsDto> searchEventsDtos = page.stream()
+            .map(events -> modelMapper.map(events, SearchEventsDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            searchEventsDtos,
+            page.getTotalElements(),
+            page.getPageable().getPageNumber(),
+            page.getTotalPages());
     }
 }

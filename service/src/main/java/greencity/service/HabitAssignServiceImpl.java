@@ -37,8 +37,11 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.User;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
-import greencity.enums.*;
-
+import greencity.enums.AchievementType;
+import greencity.enums.HabitAssignStatus;
+import greencity.enums.ShoppingListItemStatus;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementCategoryType;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +50,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,6 +78,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Implementation of {@link HabitAssignService}.
@@ -95,6 +100,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     private final HabitStatusCalendarService habitStatusCalendarService;
     private final AchievementCalculation achievementCalculation;
     private final ModelMapper modelMapper;
+    private final HttpServletRequest httpServletRequest;
     private final UserService userService;
     private final RatingCalculation ratingCalculation;
 
@@ -701,12 +707,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
             .enrollDate(date).habitAssign(habitAssign).build();
 
-        updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
+        updateHabitAssignAfterEnroll(habitAssign, habitCalendar, userId);
         UserVO userVO = userService.findById(userId);
-        achievementCalculation.calculateAchievement(userVO.getId(),
-            AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO);
-
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return buildHabitAssignDto(habitAssign, language);
     }
 
@@ -739,7 +743,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
      * @param habitAssign {@link HabitAssign} instance.
      */
     private void updateHabitAssignAfterEnroll(HabitAssign habitAssign,
-        HabitStatusCalendar habitCalendar) {
+        HabitStatusCalendar habitCalendar, Long userId) {
         habitAssign.setWorkingDays(habitAssign.getWorkingDays() + 1);
         habitAssign.setLastEnrollmentDate(ZonedDateTime.now());
 
@@ -750,8 +754,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         int habitStreak = countNewHabitStreak(habitAssign.getHabitStatusCalendars());
         habitAssign.setHabitStreak(habitStreak);
+        CompletableFuture.runAsync(() -> achievementCalculation
+            .calculateAchievement(userId, AchievementType.COMPARISON,
+                AchievementCategoryType.HABIT_STREAK, habitStreak));
+
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+            CompletableFuture.runAsync(() -> achievementCalculation
+                .calculateAchievement(userId, AchievementType.INCREMENT, AchievementCategoryType.HABIT_STREAK, 0));
         }
         habitAssignRepo.save(habitAssign);
     }
@@ -792,9 +802,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         deleteHabitStatusCalendar(date, habitAssign);
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
-            AchievementCategoryType.HABIT, AchievementAction.DELETE);
+        CompletableFuture.runAsync(
+            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO));
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
@@ -983,10 +992,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
 
         for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
         }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
@@ -1008,10 +1016,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
 
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+            CompletableFuture.runAsync(
+                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
+                    userVO));
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());

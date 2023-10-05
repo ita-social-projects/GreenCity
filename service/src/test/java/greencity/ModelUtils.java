@@ -9,7 +9,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -61,8 +60,8 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
@@ -96,7 +95,9 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
@@ -162,7 +163,6 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
@@ -178,7 +178,6 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -217,6 +216,7 @@ public class ModelUtils {
     public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
     public static String SHOPPING_LIST_TEXT = "buy a shopper";
     public static String HABIT_ITEM = "Item";
+    public static String HABIT_DEFAULT_IMAGE = "img/habit-default.png";
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -442,7 +442,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -452,7 +451,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -1378,22 +1376,25 @@ public class ModelUtils {
 
     public static Achievement getAchievement() {
         return new Achievement(1L,
-            "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS",
+            "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
             Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", Collections.emptyList());
+        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(),
             1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto("Test", "Test", "Test", getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
@@ -1691,7 +1692,6 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1701,7 +1701,6 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1769,7 +1768,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1779,7 +1777,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -2794,8 +2791,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2820,8 +2817,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -2841,8 +2838,43 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithTagsForServiceTest() {
+        return CustomHabitDtoRequest.builder()
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithComplexityAndDuration() {
+        return CustomHabitDtoRequest.builder()
+            .complexity(2)
+            .defaultDuration(7)
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
+        return CustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .defaultDuration(7)
+            .image(HABIT_DEFAULT_IMAGE)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
+                    .languageCode("ua")
+                    .name(HABIT_TRANSLATION_NAME)
+                    .build()))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(2)
             .customShoppingListItemDto(List.of(
@@ -3014,6 +3046,23 @@ public class ModelUtils {
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
+    }
+
+    public static SearchNewsDto getSearchNews() {
+        return SearchNewsDto.builder().id(1L).title("title").tags(Collections.singletonList("tag")).build();
+    }
+
+    public static SearchEventsDto getSearchEvents() {
+        return SearchEventsDto.builder().id(1L).title("Title").tags(new ArrayList<>()).build();
+    }
+
+    public static SearchResponseDto getSearchResponseDto() {
+        return SearchResponseDto.builder()
+            .ecoNews(List.of(getSearchNews()))
+            .events(List.of(getSearchEvents()))
+            .countOfEcoNewsResults(4L)
+            .countOfEventsResults(4L)
             .build();
     }
 }
