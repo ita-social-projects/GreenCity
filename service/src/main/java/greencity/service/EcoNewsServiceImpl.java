@@ -609,6 +609,17 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
+     * Method to upload news images.
+     *
+     * @param images - array of eco news images
+     * @return array of images path
+     */
+    @Override
+    public String[] uploadImages(MultipartFile[] images) {
+        return Arrays.stream(images).map(fileService::upload).toArray(String[]::new);
+    }
+
+    /**
      * * This method used for build {@link SearchCriteria} depends on
      * {@link RatingStatisticsViewDto}.
      *

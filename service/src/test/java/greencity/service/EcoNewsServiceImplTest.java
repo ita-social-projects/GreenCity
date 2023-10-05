@@ -700,6 +700,13 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void uploadImages() {
+        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
+        ecoNewsService.uploadImages(multipartFiles);
+        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
+    }
+
+    @Test
     void getContentAndSourceForEcoNewsByIdException() {
         assertThrows(NotFoundException.class, () -> ecoNewsService.getContentAndSourceForEcoNewsById(1L));
     }
