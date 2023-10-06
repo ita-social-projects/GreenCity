@@ -906,7 +906,7 @@ class HabitServiceImplTest {
             habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@email.com", image));
 
         verify(customShoppingListItemRepo, times(2)).findAllByUserIdAndHabitId(2L, 1L);
-        // verify(customShoppingListItemRepo).save(any());
+        verify(customShoppingListItemRepo).save(any());
         verify(habitRepo).findById(anyLong());
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(any());
