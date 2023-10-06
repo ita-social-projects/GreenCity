@@ -386,8 +386,8 @@ public class HabitServiceImpl implements HabitService {
             updateHabitTranslationsForCustomHabit(habitDto, toUpdate);
         }
         if (isNotEmpty(habitDto.getCustomShoppingListItemDto())) {
-            saveNewCustomShoppingListItemsToUpdate(habitDto, toUpdate, user);
             updateExistingCustomShoppingListItems(habitDto, toUpdate, user);
+            saveNewCustomShoppingListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
             image = fileService.convertToMultipartImage(habitDto.getImage());
