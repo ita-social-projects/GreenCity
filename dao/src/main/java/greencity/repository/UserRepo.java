@@ -303,7 +303,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "             SELECT friend_id FROM users_friends WHERE user_id = :userId) AND status = 'FRIEND' "
         + "        UNION "
         + "        SELECT friend_id FROM users_friends WHERE user_id IN( "
-        + "            SELECT user_id FROM users_friends WHERE friend_id = :userId ) AND status = 'FRIEND')")
+        + "            SELECT friend_id FROM users_friends WHERE user_id = :userId ) AND status = 'FRIEND'"
+        + "        UNION "
+        + "        SELECT user_id FROM users_friends WHERE friend_id IN("
+        + "            SELECT user_id FROM users_friends WHERE friend_id = :userId) and status = 'FRIEND')")
     Page<User> getRecommendedFriendsOfFriends(Long userId, Pageable pageable);
 
     /**
