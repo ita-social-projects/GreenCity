@@ -432,13 +432,17 @@ public class HabitServiceImpl implements HabitService {
     }
 
     private void updateHabitTranslationsForCustomHabit(CustomHabitDtoRequest habitDto, Habit habit) {
-        HabitTranslationDto habitTranslationDto = habitDto.getHabitTranslations().get(0);
-        List<HabitTranslation> habitTranslations = habitTranslationRepo.findAllByHabit(habit);
-        habitTranslations.forEach(habitTranslation -> {
-            habitTranslation.setName(habitTranslationDto.getName());
-            habitTranslation.setDescription(habitTranslationDto.getDescription());
-            habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
-        });
+        Optional<HabitTranslationDto> habitTranslationDtoOptional = habitDto.getHabitTranslations().stream()
+            .findFirst();
+        if (habitTranslationDtoOptional.isPresent()) {
+            HabitTranslationDto habitTranslationDto = habitTranslationDtoOptional.get();
+            List<HabitTranslation> habitTranslations = habitTranslationRepo.findAllByHabit(habit);
+            habitTranslations.forEach(habitTranslation -> {
+                habitTranslation.setName(habitTranslationDto.getName());
+                habitTranslation.setDescription(habitTranslationDto.getDescription());
+                habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
+            });
+        }
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {
