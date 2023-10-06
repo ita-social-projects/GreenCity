@@ -427,8 +427,7 @@ public class HabitServiceImpl implements HabitService {
 
         customShoppingListItemRepo.deleteAll(customShoppingListItems.stream()
             .filter(item -> habitDto.getCustomShoppingListItemDto().stream()
-                .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())
-                    || Objects.isNull(item.getId())))
+                .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())))
             .collect(Collectors.toList()));
     }
 
