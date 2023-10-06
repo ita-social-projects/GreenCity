@@ -596,17 +596,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * Method to upload news image.
+     * Returns {@link EcoNewsSpecification} for entered filter parameters.
      *
-     * @param image - eco news image
-     * @return imagePath
+     * @param ecoNewsViewDto contains data from filters
      */
-    @Override
-    public String uploadImage(MultipartFile image) {
-        if (image != null) {
-            return fileService.upload(image);
-        }
-        return null;
+    public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
+        return new EcoNewsSpecification(searchCriteria);
     }
 
     /**
@@ -618,16 +614,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public String[] uploadImages(MultipartFile[] images) {
         return Arrays.stream(images).map(fileService::upload).toArray(String[]::new);
-    }
-
-    /**
-     * Returns {@link EcoNewsSpecification} for entered filter parameters.
-     *
-     * @param ecoNewsViewDto contains data from filters
-     */
-    public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
-        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
-        return new EcoNewsSpecification(searchCriteria);
     }
 
     /**
