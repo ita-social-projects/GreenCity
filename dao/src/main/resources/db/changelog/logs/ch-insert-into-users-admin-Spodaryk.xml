@@ -4,19 +4,15 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
     <changeSet id="Spodaryk-28" author="Oksana Spodaryk">
         <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="1">
-                SELECT COUNT(*) FROM users WHERE email = 'admin.greencity@starmaker.email';
-            </sqlCheck>
+            <not>
+                <sqlCheck expectedResult="1">
+                    SELECT COUNT(*) FROM users WHERE email = 'admin.greencity@starmaker.email';
+                </sqlCheck>
+            </not>
         </preConditions>
 
-        <delete tableName="users">
-                <where>email = 'admin.greencity@starmaker.email'</where>
-            </delete>
-    </changeSet>
-    <changeSet id="Spodaryk-29" author="Oksana Spodaryk">
-
-    <insert tableName="users">
-            <column name = "date_of_registration" value="1970-01-01 00:00:00.000000"/>
+        <insert tableName="users">
+            <column name="date_of_registration" value="1970-01-01 00:00:00.000000"/>
             <column name="email" value="admin.greencity@starmaker.email"/>
             <column name="email_notification" value="0"/>
             <column name="name" value="GREENCITY"/>
