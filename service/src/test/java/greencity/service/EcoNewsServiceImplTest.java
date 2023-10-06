@@ -696,20 +696,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void uploadImage() {
-        MultipartFile multipartFile = ModelUtils.getFile();
-        ecoNewsService.uploadImage(multipartFile);
-        verify(fileService).upload(multipartFile);
-    }
-
-    @Test
-    void uploadImages() {
-        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
-        ecoNewsService.uploadImages(multipartFiles);
-        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
-    }
-
-    @Test
     void getContentAndSourceForEcoNewsById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -717,6 +703,13 @@ class EcoNewsServiceImplTest {
         ecoNewsService.getContentAndSourceForEcoNewsById(1L);
 
         verify(ecoNewsRepo).findById(1L);
+    }
+
+    @Test
+    void uploadImages() {
+        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
+        ecoNewsService.uploadImages(multipartFiles);
+        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
     }
 
     @Test
