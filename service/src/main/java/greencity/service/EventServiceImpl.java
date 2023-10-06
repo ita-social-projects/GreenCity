@@ -159,9 +159,10 @@ public class EventServiceImpl implements EventService {
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             events = getAllFilteredAndSortedIfUserLoggedIn(events, user.getId(), filterEventDto);
-        } else {
-            events = getAllFilteredAndSortedIfAnonymousUser(events, filterEventDto);
+            Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
+            return buildPageableAdvancedDto(eventPage, user.getId());
         }
+        events = getAllFilteredAndSortedIfAnonymousUser(events, filterEventDto);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage);
     }
