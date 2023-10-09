@@ -16,8 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -572,7 +570,7 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersByFriendsOfFriends() {
+    void findRecommendedFriends() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -588,7 +586,7 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersByFriendsOfFriends(userId, pageable);
+            friendService.findRecommendedFriends(userId, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());

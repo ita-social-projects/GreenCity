@@ -182,14 +182,14 @@ public class FriendController {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("/recommended-friends-of-friends")
+    @GetMapping("/recommended-friends")
     @ApiPageable
-    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersByFriendsOfFriends(
+    public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
         @ApiIgnore Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersByFriendsOfFriends(userVO.getId(), page));
+            .body(friendService.findRecommendedFriends(userVO.getId(), page));
     }
 
     /**
