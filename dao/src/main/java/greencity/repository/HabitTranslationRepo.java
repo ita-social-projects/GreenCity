@@ -123,8 +123,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(Pageable pageable,
-        List<String> tags, String languageCode,
-        List<Long> availableUsersIds);
+        List<String> tags, String languageCode, List<Long> availableUsersIds);
 
     /**
      * Method that find all habit's translations by tags, complexities, language
@@ -312,8 +311,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(Pageable pageable,
-        List<String> tags,
-        Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
+        List<String> tags, Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
 
     /**
      * Method that find all habit's translations in case when isCustomHabit true,
