@@ -19,6 +19,7 @@ import greencity.service.AchievementService;
 import greencity.service.UserActionService;
 import greencity.service.UserService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.NoSuchElementException;
@@ -33,6 +34,7 @@ public class AchievementCalculation {
     private final UserRepo userRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
+    private SimpMessagingTemplate messagingTemplate;
 
     /**
      * Constructor for {@link AchievementCalculation}.
@@ -47,7 +49,9 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
-        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService) {
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService,
+        SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -77,6 +81,8 @@ public class AchievementCalculation {
         userActionService.updateUserActions(userActionVO);
 
         checkAchievements(achievementCategoryVO.getId(), count, userId, achievementAction);
+        messagingTemplate
+            .convertAndSend("/topic/" + userId + "/notifications", count);
     }
 
     /**

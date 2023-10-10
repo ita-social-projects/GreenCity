@@ -26,6 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import greencity.entity.Achievement;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.util.Collections;
 import java.util.Optional;
 
@@ -62,6 +64,8 @@ class AchievementCalculationTest {
     private UserService userService;
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @Test
     void calculateAchievement_reasonNull() {
