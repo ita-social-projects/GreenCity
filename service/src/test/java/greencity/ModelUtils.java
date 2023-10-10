@@ -3032,7 +3032,7 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("FUTURE", "PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("OPEN", "CLOSED", "JOINED", "CREATED", "SAVED"))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
@@ -3047,7 +3047,7 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("JOINED", "CREATED", "SAVED"))
             .build();
     }
 
@@ -3077,6 +3077,12 @@ public class ModelUtils {
             .events(List.of(getSearchEvents()))
             .countOfEcoNewsResults(4L)
             .countOfEventsResults(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("CLOSED"))
             .build();
     }
 }

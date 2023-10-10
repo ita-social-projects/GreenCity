@@ -35,6 +35,7 @@ import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
@@ -154,15 +155,20 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAllFilteredEvents(
-        Pageable page, Principal principal, FilterEventDto filterEventDto) {
-        if (filterEventDto == null || principal == null) {
+    public PageableAdvancedDto<EventDto> getAllFilteredEvents(Pageable page, Principal principal,
+        FilterEventDto filterEventDto) {
+        if (filterEventDto == null) {
             return getAll(page, principal);
         }
-        User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-        List<Event> allEvents = getAllFilteredEventsAndSortedByIdDesc(
-            eventRepo.findAll(), user.getId(), filterEventDto);
-        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, allEvents), page, allEvents.size());
+        List<Event> events = eventRepo.findAll();
+        if (principal != null) {
+            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            events = getAllFilteredAndSortedIfUserLoggedIn(events, user.getId(), filterEventDto);
+            Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
+            return buildPageableAdvancedDto(eventPage, user.getId());
+        }
+        events = getAllFilteredAndSortedIfAnonymousUser(events, filterEventDto);
+        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage);
     }
 
@@ -184,10 +190,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Set<AddressDto> getAllEventsAddresses() {
-        return eventRepo.findAll().stream()
-            .filter(event -> Objects.nonNull(event.getDates().get(event.getDates().size() - 1).getAddress()))
-            .map(event -> modelMapper
-                .map((event.getDates().get(event.getDates().size() - 1).getAddress()), AddressDto.class))
+        return eventRepo.findAllEventsAddresses().stream()
+            .map(eventAddress -> modelMapper.map(eventAddress, AddressDto.class))
             .collect(Collectors.toSet());
     }
 
@@ -566,41 +570,42 @@ public class EventServiceImpl implements EventService {
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 
-    private List<Event> getAllFilteredEventsAndSortedByIdDesc(
+    private List<Event> getAllFilteredAndSortedIfUserLoggedIn(
         List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
+        List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
+
+        if (isNotEmpty(filterEventDto.getStatuses())) {
+            filtered = filterByAllStatuses(filtered, filterEventDto.getStatuses(), userId);
+        }
+        return getSortedListByEventId(filtered);
+    }
+
+    private List<Event> getAllFilteredAndSortedIfAnonymousUser(
+        List<Event> allEvents, FilterEventDto filterEventDto) {
+        List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
+
+        if (isNotEmpty(filterEventDto.getStatuses())) {
+            filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
+        }
+        return getSortedListByEventId(filtered);
+    }
+
+    private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
         List<Event> filtered = getEventsByEventTimeCondition(allEvents, filterEventDto.getEventTime());
 
         if (isNotEmpty(filterEventDto.getCities())) {
             filtered = filterByLocation(filtered, filterEventDto.getCities());
         }
-        if (isNotEmpty(filterEventDto.getStatuses())) {
-            filtered = filterByStatus(getEventsByCitiesAndEventTimeConditions(
-                allEvents, filtered, filterEventDto), filterEventDto.getStatuses(), userId);
-        }
         if (isNotEmpty(filterEventDto.getTags())) {
-            filtered = filterByTags(getEventsByCitiesAndEventTimeAndStatusesConditions(
-                allEvents, filtered, filterEventDto), filterEventDto.getTags());
+            filtered = filterByTags(filtered, filterEventDto.getTags());
         }
-        return getSortedListByEventId(filtered);
+        return filtered;
     }
 
     private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, List<String> eventTimes) {
         return (isNotEmpty(eventTimes))
             ? filterByTime(allEvents, eventTimes)
             : allEvents;
-    }
-
-    private List<Event> getEventsByCitiesAndEventTimeConditions(
-        List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
-        return (isNotEmpty(filterEventDto.getCities()))
-            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
-    }
-
-    private List<Event> getEventsByCitiesAndEventTimeAndStatusesConditions(
-        List<Event> allEvents, List<Event> filtered, FilterEventDto filterEventDto) {
-        return (isNotEmpty(filterEventDto.getStatuses()))
-            || (isNotEmpty(filterEventDto.getCities()))
-            || (isNotEmpty(filterEventDto.getEventTime())) ? filtered : allEvents;
     }
 
     private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
@@ -617,17 +622,16 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<Event> filterByLocation(List<Event> events, List<String> locations) {
-        List<Event> filteredByLocation = new ArrayList<>();
-        for (Event event : events) {
-            Address eventLocation = event.getDates().get(event.getDates().size() - 1).getAddress();
-            if (eventLocation != null && locations.contains(eventLocation.getCityEn())) {
-                filteredByLocation.add(event);
-            }
-        }
-        return filteredByLocation;
+        return events.stream()
+            .filter(event -> event.getDates().stream()
+                .map(EventDateLocation::getAddress)
+                .filter(Objects::nonNull)
+                .map(Address::getCityEn)
+                .anyMatch(locations::contains))
+            .collect(Collectors.toList());
     }
 
-    private List<Event> filterByStatus(List<Event> events, List<String> statuses, Long userId) {
+    private List<Event> filterByAllStatuses(List<Event> events, List<String> statuses, Long userId) {
         List<Event> filteredByStatus = new ArrayList<>();
         for (String status : statuses) {
             if (status.trim().equalsIgnoreCase("OPEN")) {
@@ -636,14 +640,27 @@ public class EventServiceImpl implements EventService {
             if (status.trim().equalsIgnoreCase("CLOSED")) {
                 filteredByStatus.addAll(getClosedEvents(events));
             }
-            if (status.trim().equalsIgnoreCase("SUBSCRIBED")) {
-                filteredByStatus.addAll(getSubscribedEvents(events, userId));
+            if (status.trim().equalsIgnoreCase("JOINED")) {
+                filteredByStatus.addAll(getJoinedEvents(events, userId));
             }
             if (status.trim().equalsIgnoreCase("CREATED")) {
                 filteredByStatus.addAll(getCreatedEvents(events, userId));
             }
             if (status.trim().equalsIgnoreCase("SAVED")) {
                 filteredByStatus.addAll(getSavedEvents(events, userId));
+            }
+        }
+        return filteredByStatus;
+    }
+
+    private List<Event> filterByStatusOpenClosed(List<Event> events, List<String> statuses) {
+        List<Event> filteredByStatus = new ArrayList<>();
+        for (String status : statuses) {
+            if (status.trim().equalsIgnoreCase("OPEN")) {
+                filteredByStatus.addAll(getOpenEvents(events));
+            }
+            if (status.trim().equalsIgnoreCase("CLOSED")) {
+                filteredByStatus.addAll(getClosedEvents(events));
             }
         }
         return filteredByStatus;
@@ -681,7 +698,7 @@ public class EventServiceImpl implements EventService {
         return events.stream().filter(event -> !event.isOpen()).collect(Collectors.toList());
     }
 
-    private List<Event> getSubscribedEvents(List<Event> events, Long userId) {
+    private List<Event> getJoinedEvents(List<Event> events, Long userId) {
         return events.stream().filter(event -> event.getAttenders().stream().map(User::getId)
             .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
     }
@@ -724,8 +741,10 @@ public class EventServiceImpl implements EventService {
             new TypeToken<List<EventDto>>() {
             }.getType());
 
-        setSubscribes(eventDtos, userId);
-        setFollowers(eventDtos, userId);
+        if (CollectionUtils.isNotEmpty(eventDtos)) {
+            setSubscribes(eventDtos, userId);
+            setFollowers(eventDtos, userId);
+        }
 
         return new PageableAdvancedDto<>(
             eventDtos,

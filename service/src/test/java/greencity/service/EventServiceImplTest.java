@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
-import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -25,7 +24,6 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -102,10 +100,6 @@ class EventServiceImplTest {
 
     @InjectMocks
     EventServiceImpl eventService;
-    @Mock
-    RatingCalculation ratingCalculation;
-    @Mock
-    AchievementCalculation achievementCalculation;
 
     @Test
     void save() {
@@ -847,8 +841,7 @@ class EventServiceImplTest {
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
             }.getType());
-        verify(eventRepo).findFavoritesAmongEventIds(List.of(), user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(List.of(), user.getId());
+        verify(eventRepo).findRelatedEventsByUser(pageRequest, user.getId());
     }
 
     @Test
@@ -1333,6 +1326,49 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getAllFilteredEventsWithAnonymousUser() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(1, actual);
+
+        verify(eventRepo).findAll();
+    }
+
+    @Test
+    void getAllFilteredEventsWithAnonymousUserAndClosedStatus() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        when(eventRepo.findAll()).thenReturn(events);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, null, ModelUtils.getFilterEventDtoWithStatuses());
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(0, actual);
+
+        verify(eventRepo).findAll();
+    }
+
+    @Test
+    void getAllFilteredEventsWithNullFilterEventDtoAndAnonymousUser() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+            pageRequest, null, null);
+        long actual = eventDtoPageableAdvancedDto.getTotalElements();
+        assertEquals(1, actual);
+
+        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
+    }
+
+    @Test
     void getAllFavoriteEventsByUserTest() {
         User user = ModelUtils.getUser();
         Pageable pageable = PageRequest.of(0, 20);
@@ -1372,7 +1408,7 @@ class EventServiceImplTest {
         Set<AddressDto> expectedAddresses = Set.of(expectedAddressDto);
         Address address = event.getDates().get(event.getDates().size() - 1).getAddress();
 
-        when(eventRepo.findAll()).thenReturn(List.of(event));
+        when(eventRepo.findAllEventsAddresses()).thenReturn(Set.of(address));
         when(modelMapper.map(address, AddressDto.class)).thenReturn(expectedAddressDto);
 
         Set<AddressDto> actualAddresses = eventService.getAllEventsAddresses();
@@ -1380,7 +1416,7 @@ class EventServiceImplTest {
         assertEquals(expectedAddresses, actualAddresses);
         assertTrue(actualAddresses.contains(expectedAddressDto));
 
-        verify(eventRepo).findAll();
+        verify(eventRepo).findAllEventsAddresses();
         verify(modelMapper).map(address, AddressDto.class);
     }
 }
