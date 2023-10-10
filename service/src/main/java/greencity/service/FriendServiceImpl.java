@@ -8,6 +8,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -105,8 +106,12 @@ public class FriendServiceImpl implements FriendService {
 
         validateUserExistence(userId);
         name = name == null ? "" : name;
-        Page<User> users =
-            userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        Page<User> users;
+        if (pageable.getSort().isEmpty()) {
+            users = userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
