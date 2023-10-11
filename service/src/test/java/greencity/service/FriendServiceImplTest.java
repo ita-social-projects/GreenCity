@@ -780,6 +780,22 @@ class FriendServiceImplTest {
     }
 
     @Test
+    void findAllFriendsOfUserWhenUnsupportedSortExceptionTest() {
+        long userId = 1L;
+        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
+        String name = "vi";
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            friendService.findAllFriendsOfUser(1L,
+                name, pageable);
+        });
+
+        verify(userRepo).existsById(1L);
+    }
+
+    @Test
     void findAllFriendsOfUserWhenUserNotFoundTest() {
         long userId = 1L;
         String name = "vi";
