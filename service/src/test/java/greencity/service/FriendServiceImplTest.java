@@ -9,6 +9,7 @@ import greencity.entity.User;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -534,6 +536,21 @@ class FriendServiceImplTest {
         verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, name, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendUnsupportedSortExceptionTest() {
+        long userId = 1L;
+
+        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
+        String name = "vi";
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            friendService.findAllUsersExceptMainUserAndUsersFriend(1L,
+                name, pageable);
+        });
     }
 
     @Test
