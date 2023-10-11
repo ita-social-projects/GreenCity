@@ -128,4 +128,14 @@ public interface UserService {
      * @param criteria value which we used to filter users.
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
+
+    /**
+     * Method that update user's rating.
+     *
+     * @param userId current user's id.
+     * @param rating rating.
+     *
+     * @author Anton Bondar.
+     */
+    void updateUserRating(Long userId, Double rating);
 }

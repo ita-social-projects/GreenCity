@@ -336,4 +336,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
         + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%'))")
     Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
+
+    /**
+     * Method that update user's rating.
+     *
+     * @param userId current user's id.
+     * @param rating rating.
+     *
+     * @author Anton Bondar.
+     */
+    @Modifying
+    @Query(nativeQuery = true, value = "UPDATE users SET rating = :rating WHERE id = :userId")
+    void updateUserRating(Long userId, Double rating);
 }

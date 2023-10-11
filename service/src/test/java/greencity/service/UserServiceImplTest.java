@@ -10,9 +10,11 @@ import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadUpdateRequestException;
+import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import org.junit.jupiter.api.Test;
@@ -36,12 +38,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static greencity.ModelUtils.*;
+import static greencity.ModelUtils.TEST_EMAIL;
+import static greencity.ModelUtils.TEST_EMAIL_2;
+import static greencity.ModelUtils.TEST_USER;
+import static greencity.ModelUtils.TEST_USER_ROLE_USER;
+import static greencity.ModelUtils.TEST_USER_STATUS_DTO;
+import static greencity.ModelUtils.TEST_USER_VO;
+import static greencity.ModelUtils.TEST_USER_VO_ROLE_USER;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.CREATED;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
@@ -276,5 +295,24 @@ class UserServiceImplTest {
         // then
         assertTrue(allUsersByCriteria.getPage().contains(userManagementVO));
         verify(userRepo, times(1)).findAllManagementVo(any(UserFilter.class), eq(pageable));
+    }
+
+    @Test
+    void updateUserRatingTest() {
+        User user = ModelUtils.getUser();
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        doNothing().when(userRepo).updateUserRating(1L, 6.0d);
+
+        userService.updateUserRating(1L, 6.0d);
+
+        verify(userRepo).findById(1L);
+        verify(userRepo).updateUserRating(1L, 6.0d);
+    }
+
+    @Test
+    void updateUserRatingsThrowsNotFoundExceptionTest() {
+        when(userRepo.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class, ()-> userService.updateUserRating(1L, 6.0d));
+        verify(userRepo).findById(1L);
     }
 }
