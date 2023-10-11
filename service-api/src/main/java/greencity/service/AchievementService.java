@@ -6,9 +6,12 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import org.springframework.data.domain.Pageable;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface AchievementService {
+    public List<AchievementVO> findAllByUserID(String principalEmail);
+
     /**
      * Method for finding all the achievements.
      *

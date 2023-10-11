@@ -12,6 +12,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
+import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -19,9 +20,11 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -43,6 +46,7 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private AchievementCalculation achievementCalculation;
     private UserService userService;
+    private final UserAchievementRepo userAchievementRepo;
 
     /**
      * {@inheritDoc}
@@ -88,7 +92,21 @@ public class AchievementServiceImpl implements AchievementService {
     @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
     @Override
     public List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
+        return userAchievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Oksana Spodaryk
+     */
+    @Override
+    public List<AchievementVO> findAllByUserID(String principalEmail) {
+        User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
+        return userAchievementRepo.getUserAchievementByUserId(currentUser.getId())
             .stream()
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
