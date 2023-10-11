@@ -312,7 +312,7 @@ class UserServiceImplTest {
     @Test
     void updateUserRatingsThrowsNotFoundExceptionTest() {
         when(userRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, ()-> userService.updateUserRating(1L, 6.0d));
+        assertThrows(NotFoundException.class, () -> userService.updateUserRating(1L, 6.0d));
         verify(userRepo).findById(1L);
     }
 }
