@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Validated
@@ -240,5 +242,21 @@ public class FriendController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
+    }
+
+    @ApiOperation(value = "Get all mutual friends for current user")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/mutual-friends")
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
+            @RequestParam Long friendId,
+            @ApiIgnore @CurrentUser UserVO userVO,
+            @ApiIgnore Pageable page){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
     }
 }
