@@ -48,6 +48,8 @@ public class AchievementServiceImpl implements AchievementService {
     private AchievementCalculation achievementCalculation;
     private UserService userService;
     private final UserAchievementRepo userAchievementRepo;
+    private static final String ACHIEVED = "ACHIEVED";
+    private static final String UNACHIEVED = "UNACHIEVED";
 
     /**
      * {@inheritDoc}
@@ -115,14 +117,12 @@ public class AchievementServiceImpl implements AchievementService {
     public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
         User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
         Long userId = currentUser.getId();
-        if (achievementStatus != null) {
-            if (achievementStatus.equals("ACHIEVED")) {
-                return findAllAchieved(userId);
-            } else if (achievementStatus.equals("UNACHIEVED")) {
-                List<AchievementVO> unAchievedList = findAll();
-                unAchievedList.removeAll(findAllAchieved(userId));
-                return unAchievedList;
-            }
+        if (ACHIEVED.equals(achievementStatus)) {
+            return findAllAchieved(userId);
+        } else if (UNACHIEVED.equals(achievementStatus)) {
+            return achievementRepo.searchAchievementsUnAchieved(userId).stream()
+                .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+                .collect(Collectors.toList());
         }
         return findAll();
     }
