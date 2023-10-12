@@ -44,10 +44,10 @@ public class AchievementController {
     })
     @GetMapping("")
     public ResponseEntity<List<AchievementVO>> getAll(@ApiIgnore Principal principal,
-        @ApiParam(value = "Available values : UNACHIEVED, UNACHIEVED."
+        @ApiParam(value = "Available values : ACHIEVED, UNACHIEVED."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) String achievementStatus) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(achievementService.findAllByType(achievementStatus, principal.getName()));
+            .body(achievementService.findAllByType(principal.getName(), achievementStatus));
     }
 }
