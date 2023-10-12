@@ -16,7 +16,6 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
 import greencity.entity.User;
-import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -55,6 +54,35 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      *
+     * @author Yuriy Olkhovskyi
+     */
+    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
+    @Override
+    public List<AchievementVO> findAll() {
+        return achievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
+        Page<Achievement> pages = achievementRepo.findAll(page);
+        List<AchievementVO> achievementVOS = pages
+            .stream()
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .collect(Collectors.toList());
+        return createPageable(achievementVOS, pages);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @author Orest Mamchuk
      */
     @Override
@@ -65,7 +93,6 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setTitle(achievementPostDto.getTitle());
         achievement.setName(achievementPostDto.getName());
         achievement.setNameEng(achievementPostDto.getNameEng());
-
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
@@ -91,20 +118,6 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
-     */
-    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
-    @Override
-    public List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @author Oksana Spodaryk
      */
     @Override
@@ -121,21 +134,6 @@ public class AchievementServiceImpl implements AchievementService {
             .map(Optional::get)
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
-        Page<Achievement> pages = achievementRepo.findAll(page);
-        List<AchievementVO> achievementVOS = pages
-            .stream()
-            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-            .collect(Collectors.toList());
-        return createPageable(achievementVOS, pages);
     }
 
     private PageableAdvancedDto<AchievementVO> createPageable(List<AchievementVO> achievementVOS,
