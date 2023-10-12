@@ -10,7 +10,16 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AchievementService {
-    public List<AchievementVO> findAllByUserID(String principalEmail);
+    /**
+     * Retrieves a list of achievements associated with a user identified by the
+     * provided email.
+     *
+     * @param principalEmail The email address of the user whose achievements are to
+     *                       be fetched.
+     * @return A list of {@link AchievementVO} representing the achievements of the
+     *         user. The list can be empty if the user has no achievements.
+     */
+    List<AchievementVO> findAllByUserID(String principalEmail);
 
     /**
      * Method for finding all the achievements.

@@ -16,6 +16,7 @@ import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
 import greencity.entity.User;
+import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -23,7 +24,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
-import java.security.Principal;
+import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
     @Override
     public List<AchievementVO> findAll() {
-        return userAchievementRepo.findAll()
+        return achievementRepo.findAll()
             .stream()
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
@@ -106,11 +107,19 @@ public class AchievementServiceImpl implements AchievementService {
      *
      * @author Oksana Spodaryk
      */
+
     @Override
     public List<AchievementVO> findAllByUserID(String principalEmail) {
         User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
-        return userAchievementRepo.getUserAchievementByUserId(currentUser.getId())
+        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(currentUser.getId())
             .stream()
+            .map(userAchievement -> userAchievement.getAchievement().getId())
+            .collect(Collectors.toList());
+        return achievemnetsId
+            .stream()
+            .map(achievementRepo::findById)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
     }
