@@ -340,17 +340,20 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method to find mutual friends with friendId for current user with userId.
      *
-     * @param userId        current user's id.
-     * @param friendId      friend id.
-     * @param pageable      current page.
+     * @param userId   current user's id.
+     * @param friendId friend id.
+     * @param pageable current page.
      *
      * @return {@link Page} of {@link User}.
      */
-    @Query(nativeQuery = true, value = "SELECT *\n" +
-            "FROM users u\n" +
-            "WHERE u.id IN (SELECT friend_id FROM users_friends WHERE user_id = :userId\n" +
-            "             union select user_id from users_friends where friend_id = :userId)\n" +
-            "  AND u.id IN (SELECT friend_id FROM users_friends  WHERE user_id = :friendId\n" +
-            "   union select user_id from users_friends where users_friends.friend_id = :friendId)")
+    @Query(nativeQuery = true, value = "SELECT * FROM users u"
+        + " WHERE u.id IN ("
+        + "       SELECT friend_id FROM users_friends WHERE user_id = :userId"
+        + "       UNION "
+        + "       SELECT user_id from users_friends WHERE friend_id = :userId)"
+        + "  AND u.id IN ("
+        + "       SELECT friend_id FROM users_friends  WHERE user_id = :friendId AND status = 'FRIEND'"
+        + "       UNION "
+        + "       SELECT user_id FROM users_friends WHERE users_friends.friend_id = :friendId AND status = 'FRIEND')")
     Page<User> getMutualFriends(Long userId, Long friendId, Pageable pageable);
 }

@@ -617,6 +617,7 @@ class FriendServiceImplTest {
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }
+
     @Test
     void getMutualFriendsTest() {
         long userId = 1L;
@@ -630,12 +631,13 @@ class FriendServiceImplTest {
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.existsById(friendId)).thenReturn(true);
-        when(userRepo.getMutualFriends(userId, friendId,pageable)).thenReturn(userPage);
-        when(customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+        when(userRepo.getMutualFriends(userId, friendId, pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-                friendService.getMutualFriends(userId, friendId,pageable);
+            friendService.getMutualFriends(userId, friendId, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());
@@ -662,7 +664,6 @@ class FriendServiceImplTest {
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
         verify(customUserRepo, never()).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(anyLong(), any());
     }
-
 
     @Test
     void findAllUsersExceptMainUserAndUsersFriendWhenPageableIsNullTest() {

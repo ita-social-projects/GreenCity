@@ -143,14 +143,14 @@ public class FriendServiceImpl implements FriendService {
         validateUserAndFriendExistence(userId, friendId);
         validateUserAndFriendNotSamePerson(userId, friendId);
         Page<User> users =
-                userRepo.getMutualFriends(userId, friendId, pageable);
+            userRepo.getMutualFriends(userId, friendId, pageable);
         List<UserFriendDto> userFriendDtoList =
-                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-                userFriendDtoList,
-                users.getTotalElements(),
-                users.getPageable().getPageNumber(),
-                users.getTotalPages());
+            userFriendDtoList,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     /**

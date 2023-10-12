@@ -254,17 +254,17 @@ public class FriendController {
      */
     @ApiOperation(value = "Get all mutual friends for current user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/mutual-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
-            @RequestParam Long friendId,
-            @ApiIgnore @CurrentUser UserVO userVO,
-            @ApiIgnore Pageable page){
+        @RequestParam Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @ApiIgnore Pageable page) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
+            .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
     }
 }

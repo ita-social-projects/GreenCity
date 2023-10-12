@@ -149,11 +149,11 @@ class FriendControllerTest {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(get(FRIEND_LINK + "/mutual-friends?friendId=1")
-                        .principal(principal))
-                .andExpect(status().isOk());
+            .principal(principal))
+            .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).getMutualFriends(userVO.getId(), 1L ,PageRequest.of(0, 20));
+        verify(friendService).getMutualFriends(userVO.getId(), 1L, PageRequest.of(0, 20));
     }
 
     @Test
