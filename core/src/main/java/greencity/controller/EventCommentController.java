@@ -10,6 +10,7 @@ import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.service.EventCommentService;
 import io.swagger.annotations.ApiOperation;
@@ -34,12 +35,11 @@ public class EventCommentController {
     private final EventCommentService eventCommentService;
 
     /**
-     * Method for creating {@link greencity.dto.eventcomment.EventCommentVO}.
+     * Method for creating {@link EventCommentVO}.
      *
-     * @param eventId id of {@link greencity.dto.event.EventVO} to add comment to.
-     * @param request - dto for {@link greencity.dto.eventcomment.EventCommentVO}
-     *                entity.
-     * @return dto {@link greencity.dto.eventcomment.AddEventCommentDtoResponse}
+     * @param eventId id of {@link EventVO} to add comment to.
+     * @param request dto for {@link EventCommentVO} entity.
+     * @return dto {@link AddEventCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
     @ResponseStatus(value = HttpStatus.CREATED)

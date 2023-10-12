@@ -180,7 +180,12 @@ public class FriendServiceImpl implements FriendService {
 
         validateUserExistence(userId);
         name = name == null ? "" : name;
-        Page<User> users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+        Page<User> users;
+        if (pageable.getSort().isEmpty()) {
+            users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         userFriendDtoList.forEach(friend -> friend.setFriendStatus("FRIEND"));
