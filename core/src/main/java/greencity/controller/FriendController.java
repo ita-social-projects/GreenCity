@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -161,7 +162,7 @@ public class FriendController {
     @GetMapping("/not-friends-yet")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
-        @ApiIgnore Pageable page,
+        @ApiIgnore @PageableDefault Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO,
         @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
