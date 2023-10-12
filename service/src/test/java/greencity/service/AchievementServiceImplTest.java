@@ -12,6 +12,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
+import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -71,19 +72,24 @@ class AchievementServiceImplTest {
 
     @Test
     void findAllWithEmptyListTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "");
         assertTrue(findAllResult.isEmpty());
     }
 
     @Test
     void findAllWithOneValueInRepoTest() {
         Achievement achievement = ModelUtils.getAchievement();
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
         when(modelMapper.map(achievement, AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "");
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
@@ -97,6 +103,38 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.findAll(pageable);
         assertEquals(10, pageableAdvancedDto.getTotalElements());
+    }
+
+    @Test
+    void findAllACHIEVEDInRepoTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(userAchievementRepo.getUserAchievementByUserId(anyLong()))
+            .thenReturn(Arrays.asList(ModelUtils.getUserAchievement()));
+        when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievement()));
+        when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "ACHIEVED");
+        assertEquals(1L, (long) findAllResult.get(0).getId());
+        verify(userService).findByEmail("email@gmail.com");
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
+        verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
+        verify(modelMapper).map(ModelUtils.getAchievement(), AchievementVO.class);
+    }
+
+    @Test
+    void findAllUNACHIEVEDInRepoTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(achievementRepo.searchAchievementsUnAchieved(anyLong()))
+            .thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "UNACHIEVED");
+        assertEquals(1L, (long) findAllResult.get(0).getId());
+        verify(userService).findByEmail("email@gmail.com");
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
+        verify(achievementRepo).searchAchievementsUnAchieved(anyLong());
     }
 
     @Test

@@ -10,13 +10,6 @@ import java.util.List;
 
 public interface AchievementService {
     /**
-     * Method for finding all the achievements.
-     *
-     * @return list of all{@link AchievementDTO}.
-     */
-    List<AchievementVO> findAll();
-
-    /**
      * Find {@link AchievementVO} for management by page .
      *
      * @param page a value with pageable configuration.
@@ -94,4 +87,17 @@ public interface AchievementService {
      */
     void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
         AchievementAction achievementAction);
+
+    /**
+     * Retrieves a list of achievements based on the given type and the principal's
+     * email.
+     *
+     * @param principalEmail    The email of the principal (usually the logged-in
+     *                          user) for whom the achievements need to be fetched.
+     * @param achievementStatus The status of the achievements to filter by (e.g.,
+     *                          "ACHIEVED", "UNACHIEVED").
+     * @return List AchievementVO Returns a list of achievements matching the given
+     *         criteria.
+     */
+    List<AchievementVO> findAllByType(String principalEmail, String achievementStatus);
 }
