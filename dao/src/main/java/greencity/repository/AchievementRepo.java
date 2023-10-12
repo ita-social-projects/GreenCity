@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -35,4 +36,17 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @author Orest Mamchuk
      */
     Optional<Achievement> findByAchievementCategoryIdAndCondition(Long achievementCategoryId, Integer condition);
+
+    /**
+     * Searches for achievements that have not yet been achieved by the specified
+     * user.
+     *
+     * @param userId The ID of the user for whom to find unachieved achievements.
+     * @return A list of achievements that the user has not yet achieved.
+     */
+    @Query(value = "SELECT * from achievements "
+        + "where id not in (select achievement_id "
+        + "                 from user_achievements "
+        + "                 where user_id = :userId)", nativeQuery = true)
+    List<Achievement> searchAchievementsUnAchieved(Long userId);
 }
