@@ -47,11 +47,11 @@ public class AchievementController {
     }
 
     /**
-     * Method returns all achievements, available for achieving.
+     * Method returns all achievements, achieved by user.
      *
      * @return list of {@link AchievementDTO}
      */
-    @ApiOperation(value = "Get all achievements.")
+    @ApiOperation(value = "Get all achievements by user.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
