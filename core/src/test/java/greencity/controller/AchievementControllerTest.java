@@ -46,13 +46,7 @@ class AchievementControllerTest {
 
     @Test
     void findAllTest() throws Exception {
-        mockMvc.perform(get(achievementLink)).andExpect(status().isOk());
-        verify(achievementService).findAll();
-    }
-
-    @Test
-    void findAllByUserIDTest() throws Exception {
-        mockMvc.perform(get(achievementLink + "/achieved").principal(principal)).andExpect(status().isOk());
-        verify(achievementService).findAllByUserEmail(anyString());
+        mockMvc.perform(get(achievementLink).principal(principal)).andExpect(status().isOk());
+        verify(achievementService).findAllByType(null, "test@gmail.com");
     }
 }

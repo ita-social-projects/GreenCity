@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -89,20 +88,6 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
-     */
-    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
-    @Override
-    public List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @author Orest Mamchuk
      */
     @Override
@@ -115,15 +100,34 @@ public class AchievementServiceImpl implements AchievementService {
         return createPageable(achievementVOS, pages);
     }
 
+    private List<AchievementVO> findAll() {
+        return achievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
+    }
+
     /**
      * {@inheritDoc}
      *
      * @author Oksana Spodaryk
      */
     @Override
-    public List<AchievementVO> findAllByUserEmail(String principalEmail) {
+    public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
         User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
-        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(currentUser.getId())
+        Long userId = currentUser.getId();
+        if (achievementStatus.equals("ACHIEVED")) {
+            return findAllAchieved(userId);
+        } else if (achievementStatus.equals("UNACHIEVED")) {
+            List<AchievementVO> unAchievedList = findAll();
+            unAchievedList.removeAll(findAllAchieved(userId));
+            return unAchievedList;
+        }
+        return findAll();
+    }
+
+    private List<AchievementVO> findAllAchieved(Long userId) {
+        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(userId)
             .stream()
             .map(userAchievement -> userAchievement.getAchievement().getId())
             .collect(Collectors.toList());

@@ -5,6 +5,7 @@ import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
@@ -35,30 +36,18 @@ public class AchievementController {
      *
      * @return list of {@link AchievementDTO}
      */
-    @ApiOperation(value = "Get all achievements.")
+    @ApiOperation(value = "Get all achievements by type.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("")
-    public ResponseEntity<List<AchievementVO>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
-    }
-
-    /**
-     * Method returns all achievements, achieved by user.
-     *
-     * @return list of {@link AchievementDTO}
-     */
-    @ApiOperation(value = "Get all achievements by user.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-    })
-    @GetMapping("/achieved")
-    public ResponseEntity<List<AchievementVO>> getAllAchievementsByUserID(@ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAllByUserEmail(principal.getName()));
+    public ResponseEntity<List<AchievementVO>> getAll(@ApiIgnore Principal principal,
+        @ApiParam(value = "Available values : UNACHIEVED, UNACHIEVED."
+            + " Leave this field empty if you need items with any status") @RequestParam(
+                required = false) String achievementStatus) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(achievementService.findAllByType(achievementStatus, principal.getName()));
     }
 }
