@@ -117,9 +117,9 @@ public class AchievementServiceImpl implements AchievementService {
     public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
         User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
         Long userId = currentUser.getId();
-        if (ACHIEVED.equals(achievementStatus)) {
+        if (ACHIEVED.equalsIgnoreCase(achievementStatus)) {
             return findAllAchieved(userId);
-        } else if (UNACHIEVED.equals(achievementStatus)) {
+        } else if (UNACHIEVED.equalsIgnoreCase(achievementStatus)) {
             return achievementRepo.searchAchievementsUnAchieved(userId).stream()
                 .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
                 .collect(Collectors.toList());

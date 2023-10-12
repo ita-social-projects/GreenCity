@@ -63,4 +63,18 @@ class AchievementControllerTest {
             .andExpect(status().isOk());
         verify(achievementService).findAllByType("test@gmail.com", "UNACHIEVED");
     }
+
+    @Test
+    void findAllAchievedIgnoreCaseTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "AchieVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "AchieVED");
+    }
+
+    @Test
+    void findAllUnAchievedIgnoreCaseTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "unAchieVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "unAchieVED");
+    }
 }
