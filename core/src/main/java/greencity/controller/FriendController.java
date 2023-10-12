@@ -244,6 +244,14 @@ public class FriendController {
             .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
     }
 
+    /**
+     * The method returns mutual friends for the current user.
+     *
+     * @param friendId friend id.
+     * @param userVO   current user.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
     @ApiOperation(value = "Get all mutual friends for current user")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),

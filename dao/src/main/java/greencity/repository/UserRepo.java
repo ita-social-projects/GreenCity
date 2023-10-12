@@ -337,6 +337,15 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%'))")
     Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
 
+    /**
+     * Method to find mutual friends with friendId for current user with userId.
+     *
+     * @param userId        current user's id.
+     * @param friendId      friend id.
+     * @param pageable      current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
     @Query(nativeQuery = true, value = "SELECT *\n" +
             "FROM users u\n" +
             "WHERE u.id IN (SELECT friend_id FROM users_friends WHERE user_id = :userId\n" +

@@ -139,15 +139,13 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public PageableDto<UserFriendDto> getMutualFriends(Long id, Long friendId, Pageable pageable) {
-        validateUserAndFriendExistence(id, friendId);
-        if (id.equals(friendId)){
-          throw new BadRequestException(ErrorMessage.INVALID_FRIEND_ID);
-        }
+    public PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable) {
+        validateUserAndFriendExistence(userId, friendId);
+        validateUserAndFriendNotSamePerson(userId, friendId);
         Page<User> users =
-                userRepo.getMutualFriends(id, friendId, pageable);
+                userRepo.getMutualFriends(userId, friendId, pageable);
         List<UserFriendDto> userFriendDtoList =
-                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(id, users.getContent());
+                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
                 userFriendDtoList,
                 users.getTotalElements(),

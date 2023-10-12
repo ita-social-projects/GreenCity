@@ -102,5 +102,15 @@ public interface FriendService {
      */
     PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable);
 
-    PageableDto<UserFriendDto> getMutualFriends(Long id, Long friendId, Pageable pageable);
+    /**
+     * Method find mutual friends for current user.
+     *
+     * @param userId   user id.
+     * @param friendId friend id.
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable);
 }
