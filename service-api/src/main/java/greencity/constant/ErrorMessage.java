@@ -196,7 +196,6 @@ public final class ErrorMessage {
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
-    public static final String INVALID_FRIEND_ID = "Friend cannot have the same Id as a user";
 
     private ErrorMessage() {
     }
