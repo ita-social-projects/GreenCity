@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
-import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
