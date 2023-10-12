@@ -110,7 +110,7 @@ class AchievementServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
 
-        List<AchievementVO> findAllResult = achievementService.findAllByUserID("email@gmail.com");
+        List<AchievementVO> findAllResult = achievementService.findAllByUserEmail("email@gmail.com");
         assertEquals(findAllResult, Arrays.asList(ModelUtils.getAchievementVO()));
 
         verify(userService).findByEmail("email@gmail.com");

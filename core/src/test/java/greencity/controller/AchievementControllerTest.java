@@ -53,6 +53,6 @@ class AchievementControllerTest {
     @Test
     void findAllByUserIDTest() throws Exception {
         mockMvc.perform(get(achievementLink + "/achieved").principal(principal)).andExpect(status().isOk());
-        verify(achievementService).findAllByUserID(anyString());
+        verify(achievementService).findAllByUserEmail(anyString());
     }
 }

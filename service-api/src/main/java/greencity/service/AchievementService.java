@@ -104,5 +104,5 @@ public interface AchievementService {
      * @return A list of {@link AchievementVO} representing the achievements of the
      *         user. The list can be empty if the user has no achievements.
      */
-    List<AchievementVO> findAllByUserID(String principalEmail);
+    List<AchievementVO> findAllByUserEmail(String principalEmail);
 }

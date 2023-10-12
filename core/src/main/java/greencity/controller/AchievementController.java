@@ -59,6 +59,6 @@ public class AchievementController {
     })
     @GetMapping("/achieved")
     public ResponseEntity<List<AchievementVO>> getAllAchievementsByUserID(@ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAllByUserID(principal.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAllByUserEmail(principal.getName()));
     }
 }
