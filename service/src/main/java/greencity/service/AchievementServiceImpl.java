@@ -54,35 +54,6 @@ public class AchievementServiceImpl implements AchievementService {
     /**
      * {@inheritDoc}
      *
-     * @author Yuriy Olkhovskyi
-     */
-    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
-    @Override
-    public List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Orest Mamchuk
-     */
-    @Override
-    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
-        Page<Achievement> pages = achievementRepo.findAll(page);
-        List<AchievementVO> achievementVOS = pages
-            .stream()
-            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
-            .collect(Collectors.toList());
-        return createPageable(achievementVOS, pages);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @author Orest Mamchuk
      */
     @Override
@@ -113,6 +84,35 @@ public class AchievementServiceImpl implements AchievementService {
             userService.updateUserRating(userVO.getId(), userVO.getRating());
         });
         return achievementVO;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Yuriy Olkhovskyi
+     */
+    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
+    @Override
+    public List<AchievementVO> findAll() {
+        return achievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Orest Mamchuk
+     */
+    @Override
+    public PageableAdvancedDto<AchievementVO> findAll(Pageable page) {
+        Page<Achievement> pages = achievementRepo.findAll(page);
+        List<AchievementVO> achievementVOS = pages
+            .stream()
+            .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
+            .collect(Collectors.toList());
+        return createPageable(achievementVOS, pages);
     }
 
     /**
