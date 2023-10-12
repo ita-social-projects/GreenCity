@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,6 +14,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,5 +45,13 @@ public class AchievementController {
     @GetMapping("")
     public ResponseEntity<List<AchievementVO>> getAll() {
         return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
+    }
+
+    /**
+     * Method to like/dislike comment and count likes.
+     */
+    @MessageMapping("/achieve")
+    public void achieve(@Payload Long userId) {
+        achievementService.achieve(userId);
     }
 }

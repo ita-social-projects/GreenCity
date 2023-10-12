@@ -34,7 +34,6 @@ public class AchievementCalculation {
     private final UserRepo userRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
-    private SimpMessagingTemplate messagingTemplate;
 
     /**
      * Constructor for {@link AchievementCalculation}.
@@ -49,9 +48,7 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
-        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService,
-        SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -81,8 +78,6 @@ public class AchievementCalculation {
         userActionService.updateUserActions(userActionVO);
 
         checkAchievements(achievementCategoryVO.getId(), count, userId, achievementAction);
-        messagingTemplate
-            .convertAndSend("/topic/" + userId + "/notifications", count);
     }
 
     /**

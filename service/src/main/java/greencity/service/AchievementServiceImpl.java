@@ -12,6 +12,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
+import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -22,6 +23,7 @@ import greencity.repository.AchievementRepo;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,6 +31,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +46,21 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private AchievementCalculation achievementCalculation;
     private UserService userService;
+    private SimpMessagingTemplate messagingTemplate;
+    private final UserAchievementRepo userAchievementRepo;
+
+    @Override
+    @Transactional
+    public void achieve(Long userId) {
+        List<UserAchievement> userAchievements =
+            userAchievementRepo.getUserAchievementByUserId(userId)
+                .stream()
+                .filter(userAchievement -> !userAchievement.isNotified())
+                .collect(Collectors.toList());
+        String result = userAchievements.isEmpty() ? "No notification" : "New notification";
+        messagingTemplate
+            .convertAndSend("/topic/notifications", result);
+    }
 
     /**
      * {@inheritDoc}

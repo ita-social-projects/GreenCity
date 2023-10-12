@@ -94,4 +94,9 @@ public interface AchievementService {
      */
     void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
         AchievementAction achievementAction);
+
+    /**
+     * Method for achieve.
+     */
+    void achieve(Long userId);
 }
