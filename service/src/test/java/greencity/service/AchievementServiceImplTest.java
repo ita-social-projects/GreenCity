@@ -12,6 +12,7 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
+import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
@@ -97,6 +98,26 @@ class AchievementServiceImplTest {
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.findAll(pageable);
         assertEquals(10, pageableAdvancedDto.getTotalElements());
+    }
+
+    @Test
+    void findAllByUserIDTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(userAchievementRepo.getUserAchievementByUserId(anyLong()))
+            .thenReturn(Arrays.asList(ModelUtils.getUserAchievement()));
+        when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievement()));
+        when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+
+        List<AchievementVO> findAllResult = achievementService.findAllByUserID("email@gmail.com");
+        assertEquals(findAllResult, Arrays.asList(ModelUtils.getAchievementVO()));
+
+        verify(userService).findByEmail("email@gmail.com");
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
+        verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
+        verify(modelMapper).map(ModelUtils.getAchievement(), AchievementVO.class);
+
     }
 
     @Test

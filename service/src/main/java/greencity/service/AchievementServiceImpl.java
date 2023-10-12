@@ -107,7 +107,6 @@ public class AchievementServiceImpl implements AchievementService {
      *
      * @author Oksana Spodaryk
      */
-
     @Override
     public List<AchievementVO> findAllByUserID(String principalEmail) {
         User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);

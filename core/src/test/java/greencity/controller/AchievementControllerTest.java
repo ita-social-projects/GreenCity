@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.enums.AchievementCategoryType;
+import greencity.repository.AchievementRepo;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,10 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.security.Principal;
+
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AchievementControllerTest {
     private static final String achievementLink = "/achievements";
     private MockMvc mockMvc;
+    private final Principal principal = getPrincipal();
 
     @InjectMocks
     private AchievementController achievementController;
@@ -44,4 +50,9 @@ class AchievementControllerTest {
         verify(achievementService).findAll();
     }
 
+    @Test
+    void findAllByUserIDTest() throws Exception {
+        mockMvc.perform(get(achievementLink + "/achieved").principal(principal)).andExpect(status().isOk());
+        verify(achievementService).findAllByUserID(anyString());
+    }
 }
