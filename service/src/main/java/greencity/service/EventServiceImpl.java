@@ -64,8 +64,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -157,17 +155,27 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> getAllFilteredEvents(Pageable page, Principal principal,
         FilterEventDto filterEventDto) {
-        if (filterEventDto == null) {
+        if (Objects.isNull(filterEventDto)) {
             return getAll(page, principal);
         }
         List<Event> events = eventRepo.findAll();
         if (principal != null) {
-            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
-            events = getAllFilteredAndSortedIfUserLoggedIn(events, user.getId(), filterEventDto);
-            Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
-            return buildPageableAdvancedDto(eventPage, user.getId());
+            return getFilteredForAnonymousUser(events, page, principal, filterEventDto);
         }
-        events = getAllFilteredAndSortedIfAnonymousUser(events, filterEventDto);
+        return getFilteredForLoggedInUser(events, page, filterEventDto);
+    }
+
+    private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
+        Principal principal, FilterEventDto filterEventDto) {
+        long userId = modelMapper.map(restClient.findByEmail(principal.getName()), User.class).getId();
+        events = getAllFilteredAndSorted(events, userId, filterEventDto);
+        Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
+        return buildPageableAdvancedDto(eventPage, userId);
+    }
+
+    private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
+        FilterEventDto filterEventDto) {
+        events = getAllFilteredAndSorted(events, null, filterEventDto);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage);
     }
@@ -570,40 +578,37 @@ public class EventServiceImpl implements EventService {
             .max(event.getDates().stream().map(EventDateLocation::getFinishDate).collect(Collectors.toList()));
     }
 
-    private List<Event> getAllFilteredAndSortedIfUserLoggedIn(
+    private List<Event> getAllFilteredAndSorted(
         List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
         List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
 
-        if (isNotEmpty(filterEventDto.getStatuses())) {
-            filtered = filterByAllStatuses(filtered, filterEventDto.getStatuses(), userId);
+        if (userId != null) {
+            if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
+                filtered = filterByAllStatuses(filtered, filterEventDto.getStatuses(), userId);
+            }
+        } else {
+            if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
+                filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
+            }
         }
-        return getSortedListByEventId(filtered);
-    }
 
-    private List<Event> getAllFilteredAndSortedIfAnonymousUser(
-        List<Event> allEvents, FilterEventDto filterEventDto) {
-        List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
-
-        if (isNotEmpty(filterEventDto.getStatuses())) {
-            filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
-        }
         return getSortedListByEventId(filtered);
     }
 
     private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
         List<Event> filtered = getEventsByEventTimeCondition(allEvents, filterEventDto.getEventTime());
 
-        if (isNotEmpty(filterEventDto.getCities())) {
+        if (CollectionUtils.isNotEmpty(filterEventDto.getCities())) {
             filtered = filterByLocation(filtered, filterEventDto.getCities());
         }
-        if (isNotEmpty(filterEventDto.getTags())) {
+        if (CollectionUtils.isNotEmpty(filterEventDto.getTags())) {
             filtered = filterByTags(filtered, filterEventDto.getTags());
         }
         return filtered;
     }
 
     private List<Event> getEventsByEventTimeCondition(List<Event> allEvents, List<String> eventTimes) {
-        return (isNotEmpty(eventTimes))
+        return (CollectionUtils.isNotEmpty(eventTimes))
             ? filterByTime(allEvents, eventTimes)
             : allEvents;
     }
@@ -611,10 +616,10 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
         List<Event> filteredByTime = new ArrayList<>();
         for (String time : eventTimes) {
-            if (time.trim().equalsIgnoreCase("FUTURE")) {
+            if ("FUTURE".equalsIgnoreCase(time)) {
                 filteredByTime.addAll(getFutureEvents(events));
             }
-            if (time.trim().equalsIgnoreCase("PAST")) {
+            if ("PAST".equalsIgnoreCase(time)) {
                 filteredByTime.addAll(getPastEvents(events));
             }
         }
@@ -634,19 +639,19 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByAllStatuses(List<Event> events, List<String> statuses, Long userId) {
         List<Event> filteredByStatus = new ArrayList<>();
         for (String status : statuses) {
-            if (status.trim().equalsIgnoreCase("OPEN")) {
+            if ("OPEN".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getOpenEvents(events));
             }
-            if (status.trim().equalsIgnoreCase("CLOSED")) {
+            if ("CLOSED".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getClosedEvents(events));
             }
-            if (status.trim().equalsIgnoreCase("JOINED")) {
+            if ("JOINED".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getJoinedEvents(events, userId));
             }
-            if (status.trim().equalsIgnoreCase("CREATED")) {
+            if ("CREATED".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getCreatedEvents(events, userId));
             }
-            if (status.trim().equalsIgnoreCase("SAVED")) {
+            if ("SAVED".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getSavedEvents(events, userId));
             }
         }
@@ -656,10 +661,10 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByStatusOpenClosed(List<Event> events, List<String> statuses) {
         List<Event> filteredByStatus = new ArrayList<>();
         for (String status : statuses) {
-            if (status.trim().equalsIgnoreCase("OPEN")) {
+            if ("OPEN".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getOpenEvents(events));
             }
-            if (status.trim().equalsIgnoreCase("CLOSED")) {
+            if ("CLOSED".equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getClosedEvents(events));
             }
         }
@@ -669,13 +674,13 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByTags(List<Event> events, List<String> tags) {
         List<Event> filteredByTags = new ArrayList<>();
         for (String eventTag : tags) {
-            if (eventTag.trim().equalsIgnoreCase("ECONOMIC")) {
+            if ("ECONOMIC".equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEconomicEvents(events));
             }
-            if (eventTag.trim().equalsIgnoreCase("ENVIRONMENTAL")) {
+            if ("ENVIRONMENTAL".equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEnvironmentalEvents(events));
             }
-            if (eventTag.trim().equalsIgnoreCase("SOCIAL")) {
+            if ("SOCIAL".equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getSocialEvents(events));
             }
         }
