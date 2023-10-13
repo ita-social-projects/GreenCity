@@ -51,9 +51,9 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Override
     @Transactional
-    public void achieve(Long userId) {
+    public void achieve(ActionDto user) {
         List<UserAchievement> userAchievements =
-            userAchievementRepo.getUserAchievementByUserId(userId)
+            userAchievementRepo.getUserAchievementByUserId(user.getUserId())
                 .stream()
                 .filter(userAchievement -> !userAchievement.isNotified())
                 .collect(Collectors.toList());

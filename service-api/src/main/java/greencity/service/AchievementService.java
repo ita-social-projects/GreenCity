@@ -98,5 +98,5 @@ public interface AchievementService {
     /**
      * Method for achieve.
      */
-    void achieve(Long userId);
+    void achieve(ActionDto user);
 }

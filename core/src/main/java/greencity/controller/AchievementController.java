@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
@@ -51,7 +52,7 @@ public class AchievementController {
      * Method to like/dislike comment and count likes.
      */
     @MessageMapping("/achieve")
-    public void achieve(@Payload Long userId) {
-        achievementService.achieve(userId);
+    public void achieve(@Payload ActionDto user) {
+        achievementService.achieve(user);
     }
 }
