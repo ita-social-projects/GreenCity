@@ -59,7 +59,7 @@ public class AchievementServiceImpl implements AchievementService {
                 .collect(Collectors.toList());
         String result = userAchievements.isEmpty() ? "No notification" : "New notification";
         messagingTemplate
-            .convertAndSend("/topic/notifications", result);
+            .convertAndSend("/topic/notification", result);
     }
 
     /**
