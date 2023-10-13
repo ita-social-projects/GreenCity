@@ -246,7 +246,8 @@ public class FriendController {
     /**
      * The method returns mutual friends for the current user.
      *
-     * @param friendId friend id.
+     * @param friendId The id of the friend for whom you want to find mutual
+     *                 friends.
      * @param userVO   current user.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.

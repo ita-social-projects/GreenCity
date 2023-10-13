@@ -103,7 +103,7 @@ public interface FriendService {
     PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable);
 
     /**
-     * Method find mutual friends for current user.
+     * Method that finds mutual friends for user.
      *
      * @param userId   user id.
      * @param friendId friend id.
