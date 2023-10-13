@@ -1,7 +1,7 @@
 package greencity.controller;
 
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.repository.AchievementRepo;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,10 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.security.Principal;
+
+import static greencity.ModelUtils.getPrincipal;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AchievementControllerTest {
     private static final String achievementLink = "/achievements";
     private MockMvc mockMvc;
+    private final Principal principal = getPrincipal();
 
     @InjectMocks
     private AchievementController achievementController;
@@ -41,26 +46,35 @@ class AchievementControllerTest {
 
     @Test
     void findAllTest() throws Exception {
-        mockMvc.perform(get(achievementLink)).andExpect(status().isOk());
-        verify(achievementService).findAll();
+        mockMvc.perform(get(achievementLink).principal(principal)).andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", null);
     }
 
     @Test
-    void calculateAchievements() throws Exception {
-        mockMvc.perform(post(achievementLink + "/calculate-achievement"
-            + "?id=" + 1L
-            + "&setter=" + AchievementType.INCREMENT
-            + "&socialNetwork=" + AchievementCategoryType.ECO_NEWS
-            + "&size=" + 1)).andExpect(status().isOk());
-        verify(achievementService).calculateAchievements(1L, AchievementType.INCREMENT,
-            AchievementCategoryType.ECO_NEWS, 1);
+    void findAllAchievedTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "ACHIEVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "ACHIEVED");
     }
 
     @Test
-    void getNotificationTest() throws Exception {
-        mockMvc.perform(get(achievementLink
-            + "/notification/{userId}", 1)).andExpect(status().isOk());
-        verify(achievementService).findAchievementsWithStatusActive(1L);
+    void findAllUnAchievedTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "UNACHIEVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "UNACHIEVED");
     }
 
+    @Test
+    void findAllAchievedIgnoreCaseTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "AchieVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "AchieVED");
+    }
+
+    @Test
+    void findAllUnAchievedIgnoreCaseTest() throws Exception {
+        mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "unAchieVED"))
+            .andExpect(status().isOk());
+        verify(achievementService).findAllByType("test@gmail.com", "unAchieVED");
+    }
 }

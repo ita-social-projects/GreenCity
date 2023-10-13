@@ -129,7 +129,19 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), null, PageRequest.of(0, 20));
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), null, PageRequest.of(0, 10));
+    }
+
+    @Test
+    void findRecommendedFriends() throws Exception {
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(get(FRIEND_LINK + "/recommended-friends")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).findRecommendedFriends(userVO.getId(), PageRequest.of(0, 20));
     }
 
     @Test

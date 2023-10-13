@@ -816,10 +816,6 @@ class HabitServiceImplTest {
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(habitRepo.save(customHabitMapper.convert(customHabitDtoRequest))).thenReturn(habit);
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
-            .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.of(languageEn));
         when(customShoppingListItemRepo.findAllByUserIdAndHabitId(anyLong(), anyLong()))
             .thenReturn(List.of(customShoppingListItem));
         when(customShoppingListMapper.mapAllToList(List.of(customShoppingListItemResponseDto)))
@@ -838,13 +834,11 @@ class HabitServiceImplTest {
         verify(habitRepo).save(any());
         verify(customHabitMapper).convert(customHabitDtoRequest);
         verify(tagsRepo).findById(20L);
-        verify(habitTranslationMapper, times(3)).mapAllToList(List.of(habitTranslationDto));
-        verify(languageRepo, times(2)).findByCode(anyString());
-        verify(customShoppingListItemRepo).findAllByUserIdAndHabitId(anyLong(), anyLong());
+        verify(customShoppingListItemRepo, times(2)).findAllByUserIdAndHabitId(anyLong(), anyLong());
         verify(customShoppingListMapper).mapAllToList(anyList());
         verify(modelMapper).map(habit, CustomHabitDtoResponse.class);
         verify(customShoppingListResponseDtoMapper).mapAllToList(List.of(customShoppingListItem));
-        verify(habitTranslationRepo).findAllByHabit(habit);
+        verify(habitTranslationRepo, times(2)).findAllByHabit(habit);
         verify(habitTranslationDtoMapper).mapAllToList(habitTranslationList);
     }
 
@@ -860,44 +854,6 @@ class HabitServiceImplTest {
 
         verify(userRepo).findByEmail("user@gmail.com");
         verify(customHabitMapper).convert(customHabitDtoRequest);
-    }
-
-    @Test
-    void updateCustomHabitNoSuchElementExceptionWithNotExistingLanguageCodes() throws IOException {
-        User user = ModelUtils.getUser();
-        user.setRole(Role.ROLE_MODERATOR);
-        Tag tag = ModelUtils.getTagHabitForServiceTest();
-        Language languageUa = ModelUtils.getLanguageUa();
-        Habit habit = ModelUtils.getCustomHabitForServiceTest();
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
-        habit.setTags(Set.of(tag));
-        habit.setUserId(1L);
-        habit.setImage(imageToEncode);
-
-        CustomHabitDtoRequest customHabitDtoRequest =
-            ModelUtils.getAddCustomHabitDtoRequestForServiceTest();
-        customHabitDtoRequest.setImage(ModelUtils.HABIT_DEFAULT_IMAGE);
-
-        HabitTranslationDto habitTranslationDto = ModelUtils.getHabitTranslationDto();
-        habitTranslationDto.setLanguageCode("ua");
-        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationForServiceTest();
-
-        when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
-        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-        when(habitTranslationMapper.mapAllToList(List.of(habitTranslationDto)))
-            .thenReturn(List.of(habitTranslationUa));
-        when(languageRepo.findByCode("ua")).thenReturn(Optional.of(languageUa));
-        when(languageRepo.findByCode("en")).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () -> habitService.updateCustomHabit(
-            customHabitDtoRequest, 1L, "taras@gmail.com", image));
-
-        verify(habitRepo).findById(anyLong());
-        verify(userRepo).findByEmail(user.getEmail());
-        verify(habitTranslationMapper, times(3))
-            .mapAllToList(customHabitDtoRequest.getHabitTranslations());
-        verify(languageRepo, times(2)).findByCode(anyString());
     }
 
     @Test
@@ -921,7 +877,7 @@ class HabitServiceImplTest {
     }
 
     @Test
-    void updateCustomHabitWithOneParameterToUpdateTest() throws IOException {
+    void updateCustomHabitWithNewCustomShoppingListItemToUpdateTest() throws IOException {
         User user = ModelUtils.getTestUser();
         user.setRole(Role.ROLE_ADMIN);
         Tag tag = ModelUtils.getTagHabitForServiceTest();
@@ -930,10 +886,15 @@ class HabitServiceImplTest {
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         habit.setUserId(1L);
         habit.setImage(imageToEncode);
+        CustomShoppingListItem newItem = ModelUtils.getCustomShoppingListItemForUpdate();
+        newItem.setId(null);
 
-        CustomHabitDtoRequest customHabitDtoRequest = ModelUtils.getСustomHabitDtoRequestWithTagsForServiceTest();
+        CustomHabitDtoRequest customHabitDtoRequest = ModelUtils
+            .getСustomHabitDtoRequestWithNewCustomShoppingListItem();
         CustomHabitDtoResponse customHabitDtoResponse = ModelUtils.getAddCustomHabitDtoResponse();
-
+        when(customShoppingListMapper.mapAllToList(any()))
+            .thenReturn(List.of(newItem));
+        when(customShoppingListItemRepo.save(any())).thenReturn(ModelUtils.getCustomShoppingListItemForUpdate());
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.findById(1L)).thenReturn(Optional.of(habit));
         when(tagsRepo.findById(20L)).thenReturn(Optional.of(tag));
@@ -944,6 +905,8 @@ class HabitServiceImplTest {
         assertEquals(customHabitDtoResponse,
             habitService.updateCustomHabit(customHabitDtoRequest, 1L, "user@email.com", image));
 
+        verify(customShoppingListItemRepo, times(2)).findAllByUserIdAndHabitId(2L, 1L);
+        verify(customShoppingListItemRepo).save(any());
         verify(habitRepo).findById(anyLong());
         verify(userRepo).findByEmail(user.getEmail());
         verify(habitRepo).save(any());

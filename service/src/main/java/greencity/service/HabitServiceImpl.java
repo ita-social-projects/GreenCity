@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitDto;
+import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
@@ -382,11 +383,11 @@ public class HabitServiceImpl implements HabitService {
             toUpdate.setDefaultDuration(habitDto.getDefaultDuration());
         }
         if (isNotEmpty(habitDto.getHabitTranslations())) {
-            toUpdate.setHabitTranslations(mapHabitTranslationFromAddCustomHabitDtoRequest(habitDto));
-            saveHabitTranslationListsToHabitTranslationRepo(habitDto, toUpdate);
+            updateHabitTranslationsForCustomHabit(habitDto, toUpdate);
         }
         if (isNotEmpty(habitDto.getCustomShoppingListItemDto())) {
-            setCustomShoppingListItemToHabit(habitDto, toUpdate, user);
+            updateExistingCustomShoppingListItems(habitDto, toUpdate, user);
+            saveNewCustomShoppingListItemsToUpdate(habitDto, toUpdate, user);
         }
         if (StringUtils.isNotBlank(habitDto.getImage())) {
             image = fileService.convertToMultipartImage(habitDto.getImage());
@@ -397,6 +398,48 @@ public class HabitServiceImpl implements HabitService {
         if (isNotEmpty(habitDto.getTagIds())) {
             setTagsIdsToHabit(habitDto, toUpdate);
         }
+    }
+
+    private void saveNewCustomShoppingListItemsToUpdate(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomShoppingListItem> customShoppingListItems = customShoppingListMapper
+            .mapAllToList(habitDto.getCustomShoppingListItemDto());
+
+        customShoppingListItems.stream()
+            .filter(item -> Objects.isNull(item.getId()))
+            .forEach(customShoppingListItem -> {
+                customShoppingListItem.setHabit(habit);
+                customShoppingListItem.setUser(user);
+                customShoppingListItemRepo.save(customShoppingListItem);
+            });
+    }
+
+    private void updateExistingCustomShoppingListItems(CustomHabitDtoRequest habitDto, Habit habit, User user) {
+        List<CustomShoppingListItem> customShoppingListItems = customShoppingListItemRepo
+            .findAllByUserIdAndHabitId(user.getId(), habit.getId());
+
+        customShoppingListItems.stream()
+            .forEach(item -> habitDto.getCustomShoppingListItemDto().stream()
+                .filter(itemToUpdate -> item.getId().equals(itemToUpdate.getId()))
+                .forEach(itemToUpdate -> {
+                    item.setStatus(itemToUpdate.getStatus());
+                    item.setText(itemToUpdate.getText());
+                }));
+
+        customShoppingListItemRepo.deleteAll(customShoppingListItems.stream()
+            .filter(item -> habitDto.getCustomShoppingListItemDto().stream()
+                .noneMatch(itemToUpdate -> item.getId().equals(itemToUpdate.getId())))
+            .collect(Collectors.toList()));
+    }
+
+    private void updateHabitTranslationsForCustomHabit(CustomHabitDtoRequest habitDto, Habit habit) {
+        Optional<HabitTranslationDto> habitTranslationDtoOptional = habitDto.getHabitTranslations().stream()
+            .findFirst();
+        habitTranslationDtoOptional.ifPresent(habitTranslationDto -> habitTranslationRepo.findAllByHabit(habit)
+            .forEach(habitTranslation -> {
+                habitTranslation.setName(habitTranslationDto.getName());
+                habitTranslation.setDescription(habitTranslationDto.getDescription());
+                habitTranslation.setHabitItem(habitTranslationDto.getHabitItem());
+            }));
     }
 
     private void saveHabitTranslationListsToHabitTranslationRepo(CustomHabitDtoRequest habitDto, Habit habit) {

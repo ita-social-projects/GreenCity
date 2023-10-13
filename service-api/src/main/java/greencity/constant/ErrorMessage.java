@@ -1,6 +1,8 @@
 package greencity.constant;
 
 public final class ErrorMessage {
+    public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME =
+        "RatingCalculationEnum with such name does not exist: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom shopping list item with such id does not exist.";
     public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";
@@ -126,6 +128,8 @@ public final class ErrorMessage {
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID =
+        "The comment with entered parent_comment_id doesn't exist";
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
@@ -157,7 +161,9 @@ public final class ErrorMessage {
         "Count of tags should be at least one but not more three";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
-    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The achievement does not exist by this id: ";
+    public static final String ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID =
+        "The achievement category does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST =
         "Can`t convert To Multipart Image. Bad inputed image string : ";

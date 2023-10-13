@@ -4,12 +4,16 @@ import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.UserFilterDto;
-import greencity.dto.user.*;
+import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserRoleDto;
+import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.BadUpdateRequestException;
 import greencity.exception.exceptions.LowRoleLevelException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.UserRepo;
@@ -41,6 +45,14 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     @Value("300000")
     private long timeAfterLastActivity;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void save(UserVO userVO) {
+        userRepo.save(modelMapper.map(userVO, User.class));
+    }
 
     /**
      * {@inheritDoc}
@@ -225,6 +237,15 @@ public class UserServiceImpl implements UserService {
             listOfUsers.getTotalElements(),
             listOfUsers.getPageable().getPageNumber(),
             listOfUsers.getTotalPages());
+    }
+
+    @Override
+    @Transactional
+    public void updateUserRating(Long userId, Double rating) {
+        if (userRepo.findById(userId).isEmpty()) {
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
+        }
+        userRepo.updateUserRating(userId, rating);
     }
 
     private UserFilterDto createUserFilterDto(String criteria, String role, String status) {

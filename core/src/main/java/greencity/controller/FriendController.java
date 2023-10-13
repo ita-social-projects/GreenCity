@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -161,12 +162,35 @@ public class FriendController {
     @GetMapping("/not-friends-yet")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
-        @ApiIgnore Pageable page,
+        @ApiIgnore @PageableDefault Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO,
         @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
+    }
+
+    /**
+     * Method to find friends of friends that are not friend for current user(except
+     * current user).
+     *
+     * @param userVO user.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    @ApiOperation(value = "Find recommended friends of friends that are not friend for current users")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+    })
+    @GetMapping("/recommended-friends")
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
+        @ApiIgnore Pageable page,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.findRecommendedFriends(userVO.getId(), page));
     }
 
     /**

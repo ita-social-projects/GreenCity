@@ -157,6 +157,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/language",
                 "/search",
                 "/search/econews",
+                "/search/events",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
@@ -228,6 +229,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/search",
                 "/habit/{habitId}/friends/profile-pictures",
                 FRIENDS + "/not-friends-yet",
+                FRIENDS + "/recommended-friends",
                 FRIENDS + "/friendRequests",
                 FRIENDS)
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)

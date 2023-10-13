@@ -66,7 +66,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :language) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE ( h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) or h.isCustomHabit = false )")
+        + "WHERE ( h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) or h.isCustomHabit = false ) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByLanguageCode(Pageable pageable, String language, List<Long> availableUsersIds);
 
     /**
@@ -95,7 +96,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "JOIN h.tags AS t "
         + "WHERE t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
     /**
@@ -118,10 +120,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE((h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) OR (h.isCustomHabit = false ))"
         + " AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(Pageable pageable,
-        List<String> tags, String languageCode,
-        List<Long> availableUsersIds);
+        List<String> tags, String languageCode, List<Long> availableUsersIds);
 
     /**
      * Method that find all habit's translations by tags, complexities, language
@@ -144,7 +146,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "JOIN h.tags AS t "
         + "WHERE h.isCustomHabit = false AND h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByDifferentParametersIsCustomHabitFalse(Pageable pageable, List<String> tags,
         Optional<List<Integer>> complexities, String languageCode);
 
@@ -170,7 +173,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE h.isCustomHabit = true AND h.userId IN (:availableUsersIds) "
         + "AND h.complexity IN (:complexities) AND t.id IN"
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByDifferentParametersIsCustomHabitTrue(Pageable pageable, List<String> tags,
         Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
 
@@ -189,7 +193,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = true AND h.userId IN (:availableUsersIds))")
+        + "WHERE h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomHabitTrueAndLanguageCode(Pageable pageable,
         String languageCode, List<Long> availableUsersIds);
 
@@ -208,7 +213,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = false)")
+        + "WHERE h.isCustomHabit = false) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomFalseHabitAndLanguageCode(Pageable pageable, String languageCode);
 
     /**
@@ -227,7 +233,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (( h.isCustomHabit = true AND h.userId IN (:availableUsersIds )) OR (h.isCustomHabit = false)) "
-        + "AND h.complexity IN (:complexities))")
+        + "AND h.complexity IN (:complexities)) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(Pageable pageable,
         Optional<List<Integer>> complexities,
         String languageCode, List<Long> availableUsersIds);
@@ -251,7 +258,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "JOIN h.tags AS t "
         + "WHERE h.isCustomHabit = true AND h.userId IN (:availableUsersIds) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndIsCustomHabitTrueAndLanguageCode(Pageable pageable, List<String> tags,
         String languageCode, List<Long> availableUsersIds);
 
@@ -274,7 +282,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "JOIN h.tags AS t "
         + "WHERE h.isCustomHabit = false AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndIsCustomHabitFalseAndLanguageCode(Pageable pageable, List<String> tags,
         String languageCode);
 
@@ -299,10 +308,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE ((h.isCustomHabit = true AND h.userId IN (:availableUsersIds)) OR (h.isCustomHabit = false )) "
         + "AND h.complexity IN (:complexities) AND  t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags)))")
+        + "WHERE lower(tt.name) IN (:tags))) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(Pageable pageable,
-        List<String> tags,
-        Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
+        List<String> tags, Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
 
     /**
      * Method that find all habit's translations in case when isCustomHabit true,
@@ -321,7 +330,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE h.isCustomHabit = true AND h.userId IN (:availableUsersIds) "
-        + "AND h.complexity IN (:complexities))")
+        + "AND h.complexity IN (:complexities)) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(Pageable pageable,
         Optional<List<Integer>> complexities, String languageCode, List<Long> availableUsersIds);
 
@@ -341,7 +351,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = false AND h.complexity IN (:complexities))")
+        + "WHERE h.isCustomHabit = false AND h.complexity IN (:complexities)) "
+        + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(Pageable pageable,
         Optional<List<Integer>> complexities, String languageCode);
 

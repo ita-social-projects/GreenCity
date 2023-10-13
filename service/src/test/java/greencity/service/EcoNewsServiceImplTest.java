@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -84,6 +85,10 @@ class EcoNewsServiceImplTest {
 
     @Mock
     private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementService achievementService;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
@@ -122,14 +127,15 @@ class EcoNewsServiceImplTest {
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         addEcoNewsDtoRequest.setImage(imageToEncode);
-
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
 
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
@@ -178,7 +184,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(tagVOList,
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
-
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
@@ -690,20 +696,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void uploadImage() {
-        MultipartFile multipartFile = ModelUtils.getFile();
-        ecoNewsService.uploadImage(multipartFile);
-        verify(fileService).upload(multipartFile);
-    }
-
-    @Test
-    void uploadImages() {
-        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
-        ecoNewsService.uploadImages(multipartFiles);
-        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
-    }
-
-    @Test
     void getContentAndSourceForEcoNewsById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -711,6 +703,13 @@ class EcoNewsServiceImplTest {
         ecoNewsService.getContentAndSourceForEcoNewsById(1L);
 
         verify(ecoNewsRepo).findById(1L);
+    }
+
+    @Test
+    void uploadImages() {
+        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
+        ecoNewsService.uploadImages(multipartFiles);
+        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
     }
 
     @Test
