@@ -591,7 +591,6 @@ public class EventServiceImpl implements EventService {
                 filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
             }
         }
-
         return getSortedListByEventId(filtered);
     }
 
