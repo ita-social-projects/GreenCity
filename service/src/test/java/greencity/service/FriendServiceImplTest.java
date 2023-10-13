@@ -645,6 +645,12 @@ class FriendServiceImplTest {
         assertEquals(totalElements, pageableDto.getTotalElements());
         assertEquals(totalElements, pageableDto.getTotalPages());
         assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).getMutualFriends(userId, friendId, pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
     }
 
     @Test
