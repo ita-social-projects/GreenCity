@@ -174,5 +174,7 @@
     <include file="db/changelog/logs/ch-delete-from-languages-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-city-in-users-table-Midianyi.xml"/>
+
 </databaseChangeLog>
 

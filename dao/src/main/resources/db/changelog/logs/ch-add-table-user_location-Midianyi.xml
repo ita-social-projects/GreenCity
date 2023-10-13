@@ -6,7 +6,7 @@
 
     <changeSet id="Midianyi-2" author="Yurii Midianyi">
         <createTable tableName="user_location">
-            <column name="id" type="BIGINT">
+            <column name="id" autoIncrement="true" type="BIGINT">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="city_en" type="VARCHAR(255)" />
