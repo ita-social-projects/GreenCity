@@ -138,6 +138,20 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalPages());
     }
 
+    @Override
+    public PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable) {
+        validateUserAndFriends(userId, friendId);
+        Page<User> users =
+            userRepo.getMutualFriends(userId, friendId, pageable);
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+        return new PageableDto<>(
+            userFriendDtoList,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -179,6 +193,11 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
             users.getTotalPages());
+    }
+
+    private void validateUserAndFriends(Long userId, Long friendId) {
+        validateUserAndFriendExistence(userId, friendId);
+        validateUserAndFriendNotSamePerson(userId, friendId);
     }
 
     private void validateUserAndFriendExistence(long userId, long friendId) {
