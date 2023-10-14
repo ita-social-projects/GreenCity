@@ -338,6 +338,26 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
 
     /**
+     * Method to find mutual friends with friendId for current user with userId.
+     *
+     * @param userId   current user's id.
+     * @param friendId friend id.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u"
+        + " WHERE u.id IN ("
+        + "       SELECT friend_id FROM users_friends WHERE user_id = :userId"
+        + "       UNION "
+        + "       SELECT user_id from users_friends WHERE friend_id = :userId)"
+        + "  AND u.id IN ("
+        + "       SELECT friend_id FROM users_friends  WHERE user_id = :friendId AND status = 'FRIEND'"
+        + "       UNION "
+        + "       SELECT user_id FROM users_friends WHERE users_friends.friend_id = :friendId AND status = 'FRIEND')")
+    Page<User> getMutualFriends(Long userId, Long friendId, Pageable pageable);
+
+    /**
      * Method that update user's rating.
      *
      * @param userId current user's id.

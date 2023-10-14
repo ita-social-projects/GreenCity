@@ -230,6 +230,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/{habitId}/friends/profile-pictures",
                 FRIENDS + "/not-friends-yet",
                 FRIENDS + "/recommended-friends",
+                FRIENDS + "/mutual-friends",
                 FRIENDS + "/friendRequests",
                 FRIENDS)
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
