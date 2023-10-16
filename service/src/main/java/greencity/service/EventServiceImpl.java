@@ -80,6 +80,8 @@ public class EventServiceImpl implements EventService {
 
     private static final String FUTURE_EVENT = "FUTURE";
     private static final String PAST_EVENT = "PAST";
+    private static final String ONLINE_EVENT = "ONLINE";
+    private static final String OFFLINE_EVENT = "OFFLINE";
     private static final String OPEN_STATUS = "OPEN";
     private static final String CLOSED_STATUS = "CLOSED";
     private static final String JOINED_STATUS = "JOINED";
@@ -88,8 +90,6 @@ public class EventServiceImpl implements EventService {
     private static final String ECONOMIC_TAG = "ECONOMIC";
     private static final String ENVIRONMENTAL_TAG = "ENVIRONMENTAL";
     private static final String SOCIAL_TAG = "SOCIAL";
-    private static final String ONLINE_EVENT = "ONLINE";
-    private static final String OFFLINE_EVENT = "OFFLINE";
 
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
