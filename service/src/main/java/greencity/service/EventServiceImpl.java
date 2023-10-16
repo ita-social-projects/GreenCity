@@ -86,7 +86,7 @@ public class EventServiceImpl implements EventService {
     private static final String CREATED_STATUS = "CREATED";
     private static final String SAVED_STATUS = "SAVED";
     private static final String ECONOMIC_TAG = "ECONOMIC";
-    private static final String ENVIRONMENT_TAG = "ENVIRONMENT";
+    private static final String ENVIRONMENTAL_TAG = "ENVIRONMENTAL";
     private static final String SOCIAL_TAG = "SOCIAL";
     private static final String ONLINE_EVENT = "ONLINE";
     private static final String OFFLINE_EVENT = "OFFLINE";
@@ -690,7 +690,7 @@ public class EventServiceImpl implements EventService {
             if (ECONOMIC_TAG.equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEconomicEvents(events));
             }
-            if (ENVIRONMENT_TAG.equalsIgnoreCase(eventTag)) {
+            if (ENVIRONMENTAL_TAG.equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEnvironmentalEvents(events));
             }
             if (SOCIAL_TAG.equalsIgnoreCase(eventTag)) {
