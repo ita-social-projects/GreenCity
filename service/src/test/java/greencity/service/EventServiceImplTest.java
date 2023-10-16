@@ -1199,7 +1199,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithAllFilters() {
+    void getEventsWithAllFilters() {
         List<Event> events = List.of(ModelUtils.getEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
@@ -1209,7 +1209,7 @@ class EventServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
         when(eventRepo.findAll()).thenReturn(events);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDto());
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
@@ -1220,7 +1220,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithSomeFilters() {
+    void getEventsWithSomeFilters() {
         List<Event> events = List.of(ModelUtils.getSecondEvent(), ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
@@ -1230,7 +1230,7 @@ class EventServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
         when(eventRepo.findAll()).thenReturn(events);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithSomeFilters());
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
@@ -1241,7 +1241,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithNullFilters() {
+    void getEventsWithoutFilters() {
         List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
@@ -1252,7 +1252,7 @@ class EventServiceImplTest {
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(expected);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, null, null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
@@ -1267,7 +1267,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithFilterEventDtoWithCities() {
+    void getEventsWithFilterEventDtoWithCities() {
         List<Event> events = List.of(ModelUtils.getSecondEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
@@ -1281,7 +1281,7 @@ class EventServiceImplTest {
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(expected);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithCities());
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
@@ -1298,7 +1298,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithFilterEventDtoWithTags() {
+    void getEventsWithFilterEventDtoWithTags() {
         List<Event> events = List.of(ModelUtils.getEventWithTags());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
@@ -1312,7 +1312,7 @@ class EventServiceImplTest {
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(expected);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithTags());
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
@@ -1328,7 +1328,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithNullEventTime() {
+    void getEventsWithNullEventTime() {
         List<Event> events = List.of(ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
@@ -1338,7 +1338,7 @@ class EventServiceImplTest {
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
         when(eventRepo.findAll()).thenReturn(events);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithOpenStatus());
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
@@ -1349,7 +1349,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithAnonymousUser() {
+    void getEventsFilteredWithAnonymousUser() {
         List<Event> events = List.of(ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
@@ -1359,7 +1359,7 @@ class EventServiceImplTest {
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(expected);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus());
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
@@ -1374,12 +1374,12 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithAnonymousUserAndClosedStatus() {
+    void getEventsFilteredWithAnonymousUserAndClosedStatus() {
         List<Event> events = List.of(ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         when(eventRepo.findAll()).thenReturn(events);
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, null, ModelUtils.getFilterEventDtoWithOpenStatus());
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
@@ -1388,7 +1388,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFilteredEventsWithNullFilterEventDtoAndAnonymousUser() {
+    void getEventsWithoutFilterEventDtoAndAnonymousUser() {
         List<Event> events = List.of(ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
@@ -1398,7 +1398,7 @@ class EventServiceImplTest {
         when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
 
-        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAllFilteredEvents(
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, null, null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();

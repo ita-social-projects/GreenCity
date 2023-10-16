@@ -78,6 +78,19 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
 
+    private static final String FUTURE_EVENT = "FUTURE";
+    private static final String PAST_EVENT = "PAST";
+    private static final String OPEN_STATUS = "OPEN";
+    private static final String CLOSED_STATUS = "CLOSED";
+    private static final String JOINED_STATUS = "JOINED";
+    private static final String CREATED_STATUS = "CREATED";
+    private static final String SAVED_STATUS = "SAVED";
+    private static final String ECONOMIC_TAG = "ECONOMIC";
+    private static final String ENVIRONMENT_TAG = "ENVIRONMENT";
+    private static final String SOCIAL_TAG = "SOCIAL";
+    private static final String ONLINE_EVENT = "ONLINE";
+    private static final String OFFLINE_EVENT = "OFFLINE";
+
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
@@ -138,7 +151,6 @@ public class EventServiceImpl implements EventService {
             User currentUser = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildEventDto(event, currentUser.getId());
         }
-
         return buildEventDto(event);
     }
 
@@ -153,19 +165,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getAllFilteredEvents(Pageable page, Principal principal,
-        FilterEventDto filterEventDto) {
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto) {
         if (Objects.isNull(filterEventDto)) {
             return getAll(page, principal);
         }
-        List<Event> events = eventRepo.findAll();
-        if (principal != null) {
-            return getFilteredForAnonymousUser(events, page, principal, filterEventDto);
-        }
-        return getFilteredForLoggedInUser(events, page, filterEventDto);
+        return getAllFiltered(principal, page, filterEventDto);
     }
 
-    private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
+    private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
+        FilterEventDto filterEventDto) {
+        List<Event> events = eventRepo.findAll();
+        return principal != null
+            ? getFilteredForLoggedInUser(events, page, principal, filterEventDto)
+            : getFilteredForAnonymousUser(events, page, filterEventDto);
+    }
+
+    private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
         Principal principal, FilterEventDto filterEventDto) {
         long userId = modelMapper.map(restClient.findByEmail(principal.getName()), User.class).getId();
         events = getAllFilteredAndSorted(events, userId, filterEventDto);
@@ -173,7 +188,7 @@ public class EventServiceImpl implements EventService {
         return buildPageableAdvancedDto(eventPage, userId);
     }
 
-    private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
+    private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
         FilterEventDto filterEventDto) {
         events = getAllFilteredAndSorted(events, null, filterEventDto);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
@@ -211,14 +226,15 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> sortUserEventsByEventType(
         String eventType, User attender, String userLatitude, String userLongitude) {
-        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("ONLINE")) {
-            return getOnlineUserEventsSortedByDate(attender);
-        }
-
-        if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("OFFLINE")) {
-            return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
-                ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
-                : getOfflineUserEventsSortedByDate(attender);
+        if (StringUtils.isNotBlank(eventType)) {
+            if (ONLINE_EVENT.equalsIgnoreCase(eventType)) {
+                return getOnlineUserEventsSortedByDate(attender);
+            }
+            if (OFFLINE_EVENT.equalsIgnoreCase(eventType)) {
+                return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
+                    ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
+                    : getOfflineUserEventsSortedByDate(attender);
+            }
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
             .collect(Collectors.toList());
@@ -582,16 +598,13 @@ public class EventServiceImpl implements EventService {
         List<Event> allEvents, Long userId, FilterEventDto filterEventDto) {
         List<Event> filtered = getFilteredByEventTimeAndCitiesAndTags(allEvents, filterEventDto);
 
-        if (userId != null) {
-            if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
+        if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
+            if (userId != null) {
                 filtered = filterByAllStatuses(filtered, filterEventDto.getStatuses(), userId);
-            }
-        } else {
-            if (CollectionUtils.isNotEmpty(filterEventDto.getStatuses())) {
+            } else {
                 filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
             }
         }
-
         return getSortedListByEventId(filtered);
     }
 
@@ -616,10 +629,10 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByTime(List<Event> events, List<String> eventTimes) {
         List<Event> filteredByTime = new ArrayList<>();
         for (String time : eventTimes) {
-            if ("FUTURE".equalsIgnoreCase(time)) {
+            if (FUTURE_EVENT.equalsIgnoreCase(time)) {
                 filteredByTime.addAll(getFutureEvents(events));
             }
-            if ("PAST".equalsIgnoreCase(time)) {
+            if (PAST_EVENT.equalsIgnoreCase(time)) {
                 filteredByTime.addAll(getPastEvents(events));
             }
         }
@@ -639,19 +652,19 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByAllStatuses(List<Event> events, List<String> statuses, Long userId) {
         List<Event> filteredByStatus = new ArrayList<>();
         for (String status : statuses) {
-            if ("OPEN".equalsIgnoreCase(status)) {
+            if (OPEN_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getOpenEvents(events));
             }
-            if ("CLOSED".equalsIgnoreCase(status)) {
+            if (CLOSED_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getClosedEvents(events));
             }
-            if ("JOINED".equalsIgnoreCase(status)) {
+            if (JOINED_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getJoinedEvents(events, userId));
             }
-            if ("CREATED".equalsIgnoreCase(status)) {
+            if (CREATED_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getCreatedEvents(events, userId));
             }
-            if ("SAVED".equalsIgnoreCase(status)) {
+            if (SAVED_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getSavedEvents(events, userId));
             }
         }
@@ -661,10 +674,10 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByStatusOpenClosed(List<Event> events, List<String> statuses) {
         List<Event> filteredByStatus = new ArrayList<>();
         for (String status : statuses) {
-            if ("OPEN".equalsIgnoreCase(status)) {
+            if (OPEN_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getOpenEvents(events));
             }
-            if ("CLOSED".equalsIgnoreCase(status)) {
+            if (CLOSED_STATUS.equalsIgnoreCase(status)) {
                 filteredByStatus.addAll(getClosedEvents(events));
             }
         }
@@ -674,13 +687,13 @@ public class EventServiceImpl implements EventService {
     private List<Event> filterByTags(List<Event> events, List<String> tags) {
         List<Event> filteredByTags = new ArrayList<>();
         for (String eventTag : tags) {
-            if ("ECONOMIC".equalsIgnoreCase(eventTag)) {
+            if (ECONOMIC_TAG.equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEconomicEvents(events));
             }
-            if ("ENVIRONMENTAL".equalsIgnoreCase(eventTag)) {
+            if (ENVIRONMENT_TAG.equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getEnvironmentalEvents(events));
             }
-            if ("SOCIAL".equalsIgnoreCase(eventTag)) {
+            if (SOCIAL_TAG.equalsIgnoreCase(eventTag)) {
                 filteredByTags.addAll(getSocialEvents(events));
             }
         }
