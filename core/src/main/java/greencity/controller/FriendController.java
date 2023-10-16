@@ -129,7 +129,7 @@ public class FriendController {
      *
      * @param userId user id.
      *
-     * @return {@link UserManagementDto list}.
+     * @return {@link PageableDto} of {@link UserManagementDto}.
      * @author Orest Mamchuk
      */
     @ApiOperation(value = "Get all user friends")
@@ -139,8 +139,13 @@ public class FriendController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserManagementDto>> findUserFriendsByUserId(@PathVariable long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.findUserFriendsByUserId(userId));
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserManagementDto>> findUserFriendsByUserId(
+        @ApiIgnore @PageableDefault Pageable page,
+        @PathVariable long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.findUserFriendsByUserId(page, userId));
     }
 
     /**
