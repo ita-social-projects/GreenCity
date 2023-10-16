@@ -117,7 +117,7 @@ class FriendControllerTest {
         mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
             .andExpect(status().isOk());
 
-        verify(friendService).findUserFriendsByUserId(userId);
+        verify(friendService).findUserFriendsByUserId(PageRequest.of(0, 10), userId);
     }
 
     @Test
