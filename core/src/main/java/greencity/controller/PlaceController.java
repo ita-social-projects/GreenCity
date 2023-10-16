@@ -48,8 +48,8 @@ public class PlaceController {
     /**
      * Autowired PlaceService instance.
      */
-    private PlaceService placeService;
-    private ModelMapper modelMapper;
+    private final PlaceService placeService;
+    private final ModelMapper modelMapper;
 
     /**
      * The controller which returns new proposed {@code Place} from user.
@@ -172,7 +172,6 @@ public class PlaceController {
     })
     @PostMapping("/getListPlaceLocationByMapsBounds")
     public ResponseEntity<List<PlaceByBoundsDto>> getListPlaceLocationByMapsBounds(
-
         @Valid @RequestBody FilterPlaceDto filterPlaceDto) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(placeService.findPlacesByMapsBounds(filterPlaceDto));
@@ -415,7 +414,8 @@ public class PlaceController {
     })
     @ApiPageable
     @GetMapping("all")
-    public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@ApiIgnore Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page));
+    public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(
+        @ApiIgnore Pageable page, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, principal.getName()));
     }
 }

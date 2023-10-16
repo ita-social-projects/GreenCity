@@ -1,17 +1,15 @@
 package greencity.service;
 
+import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import greencity.entity.*;
+import greencity.repository.FavoritePlaceRepo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -46,13 +44,6 @@ import greencity.dto.place.PlaceUpdateDto;
 import greencity.dto.place.PlaceVO;
 import greencity.dto.place.UpdatePlaceStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.Category;
-import greencity.entity.DiscountValue;
-import greencity.entity.Location;
-import greencity.entity.OpeningHours;
-import greencity.entity.Place;
-import greencity.entity.Specification;
-import greencity.entity.User;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -66,6 +57,7 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
@@ -90,6 +82,7 @@ public class PlaceServiceImpl implements PlaceService {
     private CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
+    private final FavoritePlaceRepo favoritePlaceRepo;
 
     /**
      * {@inheritDoc}
@@ -295,15 +288,19 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      *
      * @author Olena Petryshak.
+     * @author Olena Sotnik.
+     *
      */
     @Override
-    public PageableDto<AdminPlaceDto> findAll(Pageable pageable) {
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, String email) {
         log.info(LogMessage.IN_FIND_ALL);
 
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos =
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
-
+        if (!CollectionUtils.isEmpty(placeDtos) && !email.isBlank()) {
+            setIsFavoriteToAdminPlaceDto(placeDtos, email);
+        }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
 
@@ -582,5 +579,16 @@ public class PlaceServiceImpl implements PlaceService {
             .lat(ukrLang.geometry.location.lat)
             .lng(ukrLang.geometry.location.lng)
             .build();
+    }
+
+    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
+        List<FavoritePlace> favoritePlaces = favoritePlaceRepo.findAllByUserEmail(email);
+        placeDtos.forEach(dto -> {
+            boolean isFavorite = favoritePlaces.stream()
+                .anyMatch(favoritePlace -> Objects.nonNull(dto.getLocation())
+                    && dto.getLocation().getLat().equals(favoritePlace.getPlace().getLocation().getLat())
+                    && dto.getLocation().getLng().equals(favoritePlace.getPlace().getLocation().getLng()));
+            dto.setFavorite(isFavorite);
+        });
     }
 }

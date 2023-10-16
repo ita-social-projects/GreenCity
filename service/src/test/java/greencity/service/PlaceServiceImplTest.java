@@ -41,9 +41,12 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
+import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
+
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -172,13 +175,15 @@ class PlaceServiceImplTest {
     private GoogleApiService googleApiService;
     @Mock
     UserRepo userRepo;
+    @Mock
+    private FavoritePlaceRepo favoritePlaceRepo;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
-            locationService, specificationService, restClient, openingHoursService, discountService,
-            notificationService, zoneId, proposePlaceMapper, categoryRepo, googleApiService, userRepo);
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
+            specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo);
     }
 
     @Test
@@ -402,6 +407,7 @@ class PlaceServiceImplTest {
     @Test
     void findAllPageableTest() {
         Pageable pageable = PageRequest.of(0, 1);
+        Principal principal = ModelUtils.getPrincipal();
         Place place = ModelUtils.getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(pageable)).thenReturn(pages);
@@ -409,7 +415,7 @@ class PlaceServiceImplTest {
             pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> result =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        assertEquals(result, placeService.findAll(pageable));
+        assertEquals(result, placeService.findAll(pageable, null));
         verify(placeRepo).findAll(pageable);
     }
 

@@ -14,6 +14,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@Builder
 public class AdminPlaceDto {
     private Long id;
     private String name;
@@ -23,4 +24,5 @@ public class AdminPlaceDto {
     private PlaceAuthorDto author;
     private PlaceStatus status;
     private LocalDateTime modifiedDate;
+    private boolean isFavorite;
 }

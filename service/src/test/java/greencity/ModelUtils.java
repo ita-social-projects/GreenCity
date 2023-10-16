@@ -89,12 +89,7 @@ import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
-import greencity.dto.place.AddPlaceDto;
-import greencity.dto.place.FilterPlaceCategory;
-import greencity.dto.place.PlaceAddDto;
-import greencity.dto.place.PlaceByBoundsDto;
-import greencity.dto.place.PlaceResponse;
-import greencity.dto.place.PlaceVO;
+import greencity.dto.place.*;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
@@ -112,16 +107,7 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
-import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.UserFilterDtoRequest;
-import greencity.dto.user.UserFilterDtoResponse;
-import greencity.dto.user.UserManagementVO;
-import greencity.dto.user.UserShoppingListItemAdvanceDto;
-import greencity.dto.user.UserShoppingListItemResponseDto;
-import greencity.dto.user.UserShoppingListItemVO;
-import greencity.dto.user.UserStatusDto;
-import greencity.dto.user.UserVO;
+import greencity.dto.user.*;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -3061,6 +3047,18 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
+    }
+
+    public static AdminPlaceDto getAdminPlaceDto() {
+        return AdminPlaceDto.builder()
+                .id(1L)
+                .name("TestPlace")
+                .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
+                .openingHoursList(new ArrayList<>())
+                .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
+                .status(PlaceStatus.APPROVED)
+                .modifiedDate(LocalDateTime.now())
+                .build();
     }
 
     public static SearchNewsDto getSearchNews() {

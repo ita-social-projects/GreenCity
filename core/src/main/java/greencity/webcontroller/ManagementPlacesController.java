@@ -48,7 +48,8 @@ public class ManagementPlacesController {
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
         @ApiIgnore Pageable pageable) {
         PageableDto<AdminPlaceDto> allPlaces =
-            query == null || query.isEmpty() ? placeService.findAll(pageable) : placeService.searchBy(pageable, query);
+            query == null || query.isEmpty() ? placeService.findAll(pageable, "")
+                : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
         model.addAttribute("categoryList", categoryService.findAllCategoryDto());
         List<String> discountSpecifications = specificationService.findAllSpecificationDto().stream().map(
