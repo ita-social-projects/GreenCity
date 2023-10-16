@@ -1838,6 +1838,29 @@ public class ModelUtils {
         return event;
     }
 
+    public static Event getEventWithTags() {
+        Event event = new Event();
+        Set<User> followers = new HashSet<>();
+        Tag tag1 = getEventTag();
+        tag1.setId(12L);
+        followers.add(getUser());
+        event.setOpen(true);
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setFollowers(followers);
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(tag1));
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
+        return event;
+    }
+
     public static Event getCloseEvent() {
         Event event = new Event();
         event.setOpen(false);
@@ -3032,12 +3055,12 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("FUTURE", "PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("OPEN", "CLOSED", "JOINED", "CREATED", "SAVED"))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
 
-    public static FilterEventDto getFilterEventDtoWithStatuses() {
+    public static FilterEventDto getFilterEventDtoWithOpenStatus() {
         return FilterEventDto.builder()
             .statuses(List.of("OPEN"))
             .build();
@@ -3047,13 +3070,13 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("JOINED", "CREATED", "SAVED"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithCities() {
         return FilterEventDto.builder()
-            .cities(List.of("Kyiv", "Lviv", "Odessa"))
+            .cities(List.of("Kyiv", "Lviv", "City"))
             .build();
     }
 
@@ -3077,6 +3100,12 @@ public class ModelUtils {
             .events(List.of(getSearchEvents()))
             .countOfEcoNewsResults(4L)
             .countOfEventsResults(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("CLOSED"))
             .build();
     }
 }
