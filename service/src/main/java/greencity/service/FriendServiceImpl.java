@@ -89,11 +89,22 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserManagementDto> findUserFriendsByUserId(long userId) {
+    public PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId) {
         validateUserExistence(userId);
-        List<User> friends = userRepo.getAllUserFriends(userId);
-        return friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
-            .collect(Collectors.toList());
+        Page<User> friends;
+        if (pageable.getSort().isEmpty()) {
+            friends = userRepo.getAllUserFriendsPage(pageable, userId);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
+        List<UserManagementDto> friendList =
+            friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            friendList,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
     }
 
     /**

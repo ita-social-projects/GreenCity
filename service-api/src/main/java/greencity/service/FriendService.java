@@ -5,10 +5,9 @@ import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
 
 public interface FriendService {
     /**
@@ -50,9 +49,9 @@ public interface FriendService {
      *
      * @param userId user id
      *
-     * @return {@link List} of {@link UserManagementDto} instances.
+     * @return {@link Page} of {@link UserManagementDto} instances.
      */
-    List<UserManagementDto> findUserFriendsByUserId(long userId);
+    PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId);
 
     /**
      * Method find all users except current user and his friends.
