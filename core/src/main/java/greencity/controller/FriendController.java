@@ -7,6 +7,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -190,10 +191,11 @@ public class FriendController {
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
         @ApiIgnore Pageable page,
+        @RequestParam(required = false) RecommendedFriendsType recommendedFriendsType,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findRecommendedFriends(userVO.getId(), page));
+            .body(friendService.findRecommendedFriends(userVO.getId(), recommendedFriendsType ,page));
     }
 
     /**

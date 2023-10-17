@@ -5,6 +5,7 @@ import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -99,7 +100,7 @@ public interface FriendService {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable);
+    PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType recommendedFriendsType, Pageable pageable);
 
     /**
      * Method that finds mutual friends for user.

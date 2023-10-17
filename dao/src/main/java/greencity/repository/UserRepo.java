@@ -381,4 +381,10 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query(nativeQuery = true, value = "UPDATE users SET rating = :rating WHERE id = :userId")
     void updateUserRating(Long userId, Double rating);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+            +"WHERE u.id != :userId AND u.id IN("
+            +"SELECT user_id FROM habit_assign WHERE status = 'ACQUIRED' OR status = 'INPROGRESS')")
+    Page<User> findRecommendedFriendsByHabits(long userId, Pageable pageable);
+
 }

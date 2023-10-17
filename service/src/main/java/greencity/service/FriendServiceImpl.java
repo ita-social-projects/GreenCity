@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -136,17 +137,21 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable) {
+    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType recommendedFriendsType, Pageable pageable) {
         validateUserExistence(userId);
-        Page<User> users =
-            userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+        Page<User> users;
+        if (recommendedFriendsType == RecommendedFriendsType.FRIEND_OF_FRIEND) {
+             users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+        } else if (recommendedFriendsType == RecommendedFriendsType.HABIT) {
+             users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        }else return findAllUsersExceptMainUserAndUsersFriend(userId, null, pageable);
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-            userFriendDtoList,
-            users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            users.getTotalPages());
+                userFriendDtoList,
+                users.getTotalElements(),
+                users.getPageable().getPageNumber(),
+                users.getTotalPages());
     }
 
     @Override
