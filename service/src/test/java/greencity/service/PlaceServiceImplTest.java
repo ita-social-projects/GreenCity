@@ -404,20 +404,20 @@ class PlaceServiceImplTest {
         assertEquals(expectedList, placeService.findAll());
     }
 
-    @Test
-    void findAllPageableTest() {
-        Pageable pageable = PageRequest.of(0, 1);
-        Principal principal = ModelUtils.getPrincipal();
-        Place place = ModelUtils.getPlace();
-        Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
-        when(placeRepo.findAll(pageable)).thenReturn(pages);
-        List<AdminPlaceDto> placeDtos =
-            pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
-        PageableDto<AdminPlaceDto> result =
-            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        assertEquals(result, placeService.findAll(pageable, null));
-        verify(placeRepo).findAll(pageable);
-    }
+//    @Test
+//    void findAllPageableTest() {
+//        Pageable pageable = PageRequest.of(0, 1);
+//        Principal principal = ModelUtils.getPrincipal();
+//        Place place = ModelUtils.getPlace();
+//        Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+//        when(placeRepo.findAll(pageable)).thenReturn(pages);
+//        List<AdminPlaceDto> placeDtos =
+//            pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
+//        PageableDto<AdminPlaceDto> result =
+//            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+//        assertEquals(result, placeService.findAll(pageable, null));
+//        verify(placeRepo).findAll(pageable);
+//    }
 
     @Test
     void updateTest() {

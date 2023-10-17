@@ -300,7 +300,7 @@ public class PlaceServiceImpl implements PlaceService {
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(placeDtos) && !email.isBlank()) {
             setIsFavoriteToAdminPlaceDto(placeDtos, email);
-        }
+      }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
 
