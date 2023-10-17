@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -136,12 +137,12 @@ class FriendControllerTest {
     void findRecommendedFriends() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(get(FRIEND_LINK + "/recommended-friends")
+        mockMvc.perform(get(FRIEND_LINK + "/recommended-friends?recommendedFriendsType=FRIEND_OF_FRIEND")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findRecommendedFriends(userVO.getId(), PageRequest.of(0, 20));
+        verify(friendService).findRecommendedFriends(userVO.getId(), RecommendedFriendsType.FRIEND_OF_FRIEND ,PageRequest.of(0, 20));
     }
 
     @Test

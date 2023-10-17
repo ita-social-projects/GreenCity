@@ -144,7 +144,7 @@ public class FriendServiceImpl implements FriendService {
              users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
         } else if (recommendedFriendsType == RecommendedFriendsType.HABIT) {
              users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
-        }else return findAllUsersExceptMainUserAndUsersFriend(userId, null, pageable);
+        }else users = userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
         List<UserFriendDto> userFriendDtoList =
                 customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
