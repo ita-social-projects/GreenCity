@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -125,4 +127,12 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searchevents "
         + "( :searchQuery, :languageCode) ")
     Page<Event> searchEvents(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Get all events addresses.
+     *
+     * @author Olena Sotnik.
+     */
+    @Query(value = "SELECT edl.address FROM Event e LEFT JOIN e.dates edl WHERE edl.address IS NOT NULL")
+    Set<Address> findAllEventsAddresses();
 }

@@ -476,32 +476,47 @@ class FriendServiceImplTest {
     @Test
     void findUserFriendsByUserIdTest() {
         long userId = 1L;
-        List<User> users = List.of(ModelUtils.getUser());
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> users = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, 1);
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.getAllUserFriends(userId)).thenReturn(users);
+        when(userRepo.getAllUserFriendsPage(pageable, userId)).thenReturn(users);
 
-        friendService.findUserFriendsByUserId(userId);
+        friendService.findUserFriendsByUserId(pageable, userId);
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUserFriends(userId);
-        verify(modelMapper).map(users.get(0), UserManagementDto.class);
+        verify(userRepo).getAllUserFriendsPage(pageable, userId);
+        verify(modelMapper).map(users.getContent().get(0), UserManagementDto.class);
     }
 
     @Test
     void findUserFriendsByUserIdWhenUserNotFoundTest() {
         long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
         when(userRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> friendService.findUserFriendsByUserId(userId));
+            () -> friendService.findUserFriendsByUserId(pageable, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
         verify(userRepo).existsById(userId);
         verify(userRepo, never()).getAllUserFriends(anyLong());
         verify(modelMapper, never()).map(anyLong(), any());
+    }
+
+    @Test
+    void findUserFriendsByUserIdWhenUnsupportedSortExceptionTest() {
+        long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class,
+            () -> friendService.findUserFriendsByUserId(pageable, userId));
+
+        verify(userRepo).existsById(userId);
     }
 
     @Test
@@ -614,6 +629,41 @@ class FriendServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(userRepo).getRecommendedFriendsOfFriends(userId, pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void getMutualFriendsTest() {
+        long userId = 1L;
+        long friendId = 2L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.getMutualFriends(userId, friendId, pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.getMutualFriends(userId, friendId, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).getMutualFriends(userId, friendId, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }

@@ -117,7 +117,7 @@ class FriendControllerTest {
         mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
             .andExpect(status().isOk());
 
-        verify(friendService).findUserFriendsByUserId(userId);
+        verify(friendService).findUserFriendsByUserId(PageRequest.of(0, 10), userId);
     }
 
     @Test
@@ -142,6 +142,18 @@ class FriendControllerTest {
 
         verify(userService).findByEmail(principal.getName());
         verify(friendService).findRecommendedFriends(userVO.getId(), PageRequest.of(0, 20));
+    }
+
+    @Test
+    void getMutualFriendsTest() throws Exception {
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(get(FRIEND_LINK + "/mutual-friends?friendId=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).getMutualFriends(userVO.getId(), 1L, PageRequest.of(0, 20));
     }
 
     @Test

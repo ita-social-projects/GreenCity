@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
-
 @Validated
 @AllArgsConstructor
 @RestController
@@ -129,7 +127,7 @@ public class FriendController {
      *
      * @param userId user id.
      *
-     * @return {@link UserManagementDto list}.
+     * @return {@link PageableDto} of {@link UserManagementDto}.
      * @author Orest Mamchuk
      */
     @ApiOperation(value = "Get all user friends")
@@ -139,8 +137,13 @@ public class FriendController {
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserManagementDto>> findUserFriendsByUserId(@PathVariable long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.findUserFriendsByUserId(userId));
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserManagementDto>> findUserFriendsByUserId(
+        @ApiIgnore @PageableDefault Pageable page,
+        @PathVariable long userId) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.findUserFriendsByUserId(page, userId));
     }
 
     /**
@@ -240,5 +243,30 @@ public class FriendController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
+    }
+
+    /**
+     * The method returns mutual friends for the current user.
+     *
+     * @param friendId The id of the friend for whom you want to find mutual
+     *                 friends.
+     * @param userVO   current user.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    @ApiOperation(value = "Get all mutual friends for current user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/mutual-friends")
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
+        @RequestParam Long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO,
+        @ApiIgnore Pageable page) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
     }
 }
