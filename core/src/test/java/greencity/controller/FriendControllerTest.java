@@ -142,7 +142,8 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findRecommendedFriends(userVO.getId(), RecommendedFriendsType.FRIEND_OF_FRIEND ,PageRequest.of(0, 20));
+        verify(friendService).findRecommendedFriends(userVO.getId(), RecommendedFriendsType.FRIEND_OF_FRIEND,
+            PageRequest.of(0, 20));
     }
 
     @Test

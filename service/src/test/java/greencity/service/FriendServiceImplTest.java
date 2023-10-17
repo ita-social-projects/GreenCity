@@ -647,11 +647,11 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
         when(
-                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-                friendService.findRecommendedFriends(userId, null, pageable);
+            friendService.findRecommendedFriends(userId, null, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());
@@ -661,9 +661,9 @@ class FriendServiceImplTest {
         assertEquals(page, pageableDto.getCurrentPage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUsersExceptMainUserAndFriends(userId,"", pageable);
+        verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, "", pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
-                userPage.getContent());
+            userPage.getContent());
     }
 
     @Test
@@ -679,11 +679,11 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.findRecommendedFriendsByHabits(userId, pageable)).thenReturn(userPage);
         when(
-                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-                friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABIT, pageable);
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABIT, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());
@@ -695,7 +695,7 @@ class FriendServiceImplTest {
         verify(userRepo).existsById(userId);
         verify(userRepo).findRecommendedFriendsByHabits(userId, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
-                userPage.getContent());
+            userPage.getContent());
     }
 
     @Test

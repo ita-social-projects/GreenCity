@@ -137,21 +137,24 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType recommendedFriendsType, Pageable pageable) {
+    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType recommendedFriendsType,
+        Pageable pageable) {
         validateUserExistence(userId);
         Page<User> users;
         if (recommendedFriendsType == RecommendedFriendsType.FRIEND_OF_FRIEND) {
-             users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+            users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
         } else if (recommendedFriendsType == RecommendedFriendsType.HABIT) {
-             users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
-        }else users = userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+            users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        } else {
+            users = userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+        }
         List<UserFriendDto> userFriendDtoList =
-                customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
-                userFriendDtoList,
-                users.getTotalElements(),
-                users.getPageable().getPageNumber(),
-                users.getTotalPages());
+            userFriendDtoList,
+            users.getTotalElements(),
+            users.getPageable().getPageNumber(),
+            users.getTotalPages());
     }
 
     @Override
