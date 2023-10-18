@@ -140,21 +140,22 @@ public class FriendServiceImpl implements FriendService {
     public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type,
         Pageable pageable) {
         validateUserExistence(userId);
-        Page<User> users;
+        Page<User> mutualFriends;
         if (type == RecommendedFriendsType.FRIENDS_OF_FRIENDS) {
-            users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+            mutualFriends = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
         } else if (type == RecommendedFriendsType.HABITS) {
-            users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+            mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else {
-            users = getAllUsersExceptMainUserAndFriends(userId, pageable);
+            mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+                mutualFriends.getContent());
         return new PageableDto<>(
             userFriendDtoList,
-            users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            users.getTotalPages());
+            mutualFriends.getTotalElements(),
+            mutualFriends.getPageable().getPageNumber(),
+            mutualFriends.getTotalPages());
     }
 
     @Override
