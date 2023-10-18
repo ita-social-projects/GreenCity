@@ -733,19 +733,22 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> getSocialEvents(List<Event> events) {
         return events.stream().filter(event -> event.getTags().stream()
-            .anyMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 12L))
+            .anyMatch(tag -> tag.getTagTranslations().stream()
+                .anyMatch(tagTranslation -> tagTranslation.getName().equalsIgnoreCase(SOCIAL_TAG))))
             .collect(Collectors.toList());
     }
 
     private List<Event> getEnvironmentalEvents(List<Event> events) {
         return events.stream().filter(event -> event.getTags().stream()
-            .anyMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 13L))
+            .anyMatch(tag -> tag.getTagTranslations().stream()
+                .anyMatch(tagTranslation -> tagTranslation.getName().equalsIgnoreCase(ENVIRONMENTAL_TAG))))
             .collect(Collectors.toList());
     }
 
     private List<Event> getEconomicEvents(List<Event> events) {
         return events.stream().filter(event -> event.getTags().stream()
-            .anyMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 14L))
+            .anyMatch(tag -> tag.getTagTranslations().stream()
+                .anyMatch(tagTranslation -> tagTranslation.getName().equalsIgnoreCase(ECONOMIC_TAG))))
             .collect(Collectors.toList());
     }
 
