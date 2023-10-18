@@ -175,11 +175,11 @@ public class FriendController {
     }
 
     /**
-     * Method to find recommended friends for current user(except current user) by
-     * type.
+     * Method to find recommended friends for current user by type.
      *
-     * @param userVO                 user.
-     * @param recommendedFriendsType type to find recommended friends
+     * @param userVO user.
+     * @param type   type to find recommended friends Supported values:
+     *               "FRIENDS_OF_FRIENDS", "HABITS".
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
@@ -192,11 +192,11 @@ public class FriendController {
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
         @ApiIgnore Pageable page,
-        @RequestParam(required = false) RecommendedFriendsType recommendedFriendsType,
+        @RequestParam(required = false) RecommendedFriendsType type,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findRecommendedFriends(userVO.getId(), recommendedFriendsType, page));
+            .body(friendService.findRecommendedFriends(userVO.getId(), type, page));
     }
 
     /**

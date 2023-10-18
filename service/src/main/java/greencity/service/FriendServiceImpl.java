@@ -137,16 +137,16 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType recommendedFriendsType,
+    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type,
         Pageable pageable) {
         validateUserExistence(userId);
         Page<User> users;
-        if (recommendedFriendsType == RecommendedFriendsType.FRIEND_OF_FRIEND) {
+        if (type == RecommendedFriendsType.FRIENDS_OF_FRIENDS) {
             users = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
-        } else if (recommendedFriendsType == RecommendedFriendsType.HABIT) {
+        } else if (type == RecommendedFriendsType.HABITS) {
             users = userRepo.findRecommendedFriendsByHabits(userId, pageable);
         } else {
-            users = userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+            users = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
@@ -212,6 +212,10 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
             users.getTotalPages());
+    }
+
+    private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
+        return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {

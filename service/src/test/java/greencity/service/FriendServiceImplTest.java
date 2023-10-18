@@ -619,7 +619,7 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findRecommendedFriends(userId, RecommendedFriendsType.FRIEND_OF_FRIEND, pageable);
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.FRIENDS_OF_FRIENDS, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());
@@ -683,7 +683,7 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABIT, pageable);
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABITS, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());

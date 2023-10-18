@@ -1,6 +1,6 @@
 package greencity.enums;
 
 public enum RecommendedFriendsType {
-    FRIEND_OF_FRIEND,
-    HABIT
+    FRIENDS_OF_FRIENDS,
+    HABITS
 }
