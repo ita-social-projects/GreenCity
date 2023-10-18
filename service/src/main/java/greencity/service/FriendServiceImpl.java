@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -136,17 +137,25 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable) {
+    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type,
+        Pageable pageable) {
         validateUserExistence(userId);
-        Page<User> users =
-            userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+        Page<User> mutualFriends;
+        if (type == RecommendedFriendsType.FRIENDS_OF_FRIENDS) {
+            mutualFriends = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+        } else if (type == RecommendedFriendsType.HABITS) {
+            mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        } else {
+            mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
+        }
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+                mutualFriends.getContent());
         return new PageableDto<>(
             userFriendDtoList,
-            users.getTotalElements(),
-            users.getPageable().getPageNumber(),
-            users.getTotalPages());
+            mutualFriends.getTotalElements(),
+            mutualFriends.getPageable().getPageNumber(),
+            mutualFriends.getTotalPages());
     }
 
     @Override
@@ -204,6 +213,10 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
             users.getTotalPages());
+    }
+
+    private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
+        return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
     }
 
     private void validateUserAndFriends(Long userId, Long friendId) {
