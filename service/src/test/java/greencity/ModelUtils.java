@@ -1860,7 +1860,7 @@ public class ModelUtils {
             ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getKyivAddress(), null));
         event.setDates(dates);
-        event.setTags(List.of(tag1, tag2, tag3));
+        event.setTags(List.of(tag1, tag2, tag3, getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
