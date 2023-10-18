@@ -1204,6 +1204,10 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
         Principal principal = ModelUtils.getPrincipal();
+        List<EventDto> expected = List.of(ModelUtils.getEventDto());
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(expected);
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
@@ -1212,7 +1216,8 @@ class EventServiceImplTest {
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDto());
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(0, actual);
+        assertEquals(1, actual);
+        assertEquals(expected, eventDtoPageableAdvancedDto.getPage());
 
         verify(eventRepo).findAll();
         verify(restClient).findByEmail(principal.getName());
