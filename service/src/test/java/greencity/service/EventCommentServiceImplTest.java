@@ -34,12 +34,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 import static greencity.ModelUtils.getEventComment;
@@ -76,6 +78,9 @@ class EventCommentServiceImplTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @Test
     void save() {
@@ -502,5 +507,37 @@ class EventCommentServiceImplTest {
             assertThrows(NotFoundException.class, () -> eventCommentService.countLikes(commentId, userVO));
 
         assertEquals(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId, notFoundException.getMessage());
+    }
+
+    @Test
+    void eventCommentLikeAndCountTest() {
+        var amountCommentLikesDto = getAmountCommentLikesDto();
+
+        EventComment eventComment = getEventComment();
+        eventComment.setUsersLiked(new HashSet<>());
+
+        when(eventCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.of(eventComment));
+        doNothing().when(messagingTemplate).convertAndSend("/topic/"
+            + amountCommentLikesDto.getId() + "/eventComment", amountCommentLikesDto);
+
+        eventCommentService.eventCommentLikeAndCount(amountCommentLikesDto);
+
+        verify(eventCommentRepo).findById(1L);
+        verify(messagingTemplate).convertAndSend("/topic/"
+            + amountCommentLikesDto.getId() + "/eventComment", amountCommentLikesDto);
+    }
+
+    @Test
+    void eventCommentLikeAndCountThatDoesntExistsThrowBadRequestExceptionTest() {
+        var amountCommentLikesDto = getAmountCommentLikesDto();
+
+        when(eventCommentRepo.findById(amountCommentLikesDto.getId())).thenReturn(Optional.empty());
+
+        BadRequestException badRequestException =
+            assertThrows(BadRequestException.class,
+                () -> eventCommentService.eventCommentLikeAndCount(amountCommentLikesDto));
+
+        assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, badRequestException.getMessage());
+        verify(eventCommentRepo).findById(amountCommentLikesDto.getId());
     }
 }

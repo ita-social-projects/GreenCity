@@ -20,6 +20,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -232,5 +234,15 @@ public class EventCommentController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(eventCommentService.countLikes(commentId, user));
+    }
+
+    /**
+     * Method to like/dislike comment and count likes.
+     *
+     * @param amountCommentLikesDto dto with id and count likes for comments.
+     */
+    @MessageMapping("/eventCommentLikeAndCount")
+    public void likeAndCount(@Payload AmountCommentLikesDto amountCommentLikesDto) {
+        eventCommentService.eventCommentLikeAndCount(amountCommentLikesDto);
     }
 }

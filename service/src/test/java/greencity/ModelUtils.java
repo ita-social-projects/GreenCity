@@ -33,6 +33,7 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
@@ -3106,6 +3107,13 @@ public class ModelUtils {
     public static FilterEventDto getFilterEventDtoWithClosedStatus() {
         return FilterEventDto.builder()
             .statuses(List.of("CLOSED"))
+            .build();
+    }
+
+    public static AmountCommentLikesDto getAmountCommentLikesDto() {
+        return AmountCommentLikesDto.builder()
+            .id(1L)
+            .amountLikes(2)
             .build();
     }
 }
