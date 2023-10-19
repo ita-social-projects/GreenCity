@@ -24,5 +24,5 @@ public class AdminPlaceDto {
     private PlaceAuthorDto author;
     private PlaceStatus status;
     private LocalDateTime modifiedDate;
-    private boolean isFavorite;
+    private Boolean isFavorite;
 }

@@ -3051,14 +3051,14 @@ public class ModelUtils {
 
     public static AdminPlaceDto getAdminPlaceDto() {
         return AdminPlaceDto.builder()
-                .id(1L)
-                .name("TestPlace")
-                .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
-                .openingHoursList(new ArrayList<>())
-                .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
-                .status(PlaceStatus.APPROVED)
-                .modifiedDate(LocalDateTime.now())
-                .build();
+            .id(1L)
+            .name("TestPlace")
+            .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
+            .openingHoursList(new ArrayList<>())
+            .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
+            .status(PlaceStatus.APPROVED)
+            .modifiedDate(LocalDateTime.now())
+            .build();
     }
 
     public static SearchNewsDto getSearchNews() {

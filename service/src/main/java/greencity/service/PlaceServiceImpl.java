@@ -1,14 +1,24 @@
 package greencity.service;
 
-import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import greencity.entity.*;
+import greencity.entity.Category;
+import greencity.entity.DiscountValue;
+import greencity.entity.Location;
+import greencity.entity.OpeningHours;
+import greencity.entity.Place;
+import greencity.entity.Specification;
+import greencity.entity.User;
 import greencity.repository.FavoritePlaceRepo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -79,7 +89,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
     private final ProposePlaceService proposePlaceService;
-    private CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
     private final FavoritePlaceRepo favoritePlaceRepo;
@@ -300,7 +310,7 @@ public class PlaceServiceImpl implements PlaceService {
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(placeDtos) && !email.isBlank()) {
             setIsFavoriteToAdminPlaceDto(placeDtos, email);
-      }
+        }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
 
@@ -582,13 +592,11 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
-        List<FavoritePlace> favoritePlaces = favoritePlaceRepo.findAllByUserEmail(email);
+        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(email);
         placeDtos.forEach(dto -> {
-            boolean isFavorite = favoritePlaces.stream()
-                .anyMatch(favoritePlace -> Objects.nonNull(dto.getLocation())
-                    && dto.getLocation().getLat().equals(favoritePlace.getPlace().getLocation().getLat())
-                    && dto.getLocation().getLng().equals(favoritePlace.getPlace().getLocation().getLng()));
-            dto.setFavorite(isFavorite);
+            boolean isFavorite = favoritePlacesLocationIds.stream()
+                .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
+            dto.setIsFavorite(isFavorite);
         });
     }
 }
