@@ -4,7 +4,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
 import greencity.enums.PlaceStatus;
-
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;

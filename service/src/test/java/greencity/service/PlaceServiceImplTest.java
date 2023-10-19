@@ -426,7 +426,7 @@ class PlaceServiceImplTest {
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos = new ArrayList<>();
         PageableDto<AdminPlaceDto> expected =
-                new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
         PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
 
         assertEquals(expected, actual);

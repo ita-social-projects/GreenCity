@@ -414,8 +414,8 @@ public class PlaceController {
     })
     @ApiPageable
     @GetMapping("all")
-    public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(
-        @ApiIgnore Pageable page, @ApiIgnore Principal principal) {
+    public ResponseEntity<PageableDto<AdminPlaceDto>> getAllPlaces(@ApiIgnore Pageable page,
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK).body(placeService.findAll(page, principal.getName()));
     }
 }
