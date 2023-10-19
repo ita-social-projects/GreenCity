@@ -402,12 +402,13 @@ public class PlaceController {
     }
 
     /**
-     * The method which returns all places.
+     * The method which returns all places with info if place isFavorite for
+     * loggedIn User.
      *
      * @return pageableDto of {@link AdminPlaceDto}.
      * @author Olena Sotnik.
      */
-    @ApiOperation(value = "Get all places")
+    @ApiOperation(value = "Get all places with info if place isFavorite")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
