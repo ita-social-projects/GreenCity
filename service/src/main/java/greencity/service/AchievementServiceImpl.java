@@ -60,7 +60,7 @@ public class AchievementServiceImpl implements AchievementService {
         System.out
             .println("USER_ID -" + user.getUserId() + "| userAchievements.isEmpty() " + userAchievements.isEmpty());
         messagingTemplate
-            .convertAndSend("/topic/" + user.getUserId() + "/notification", userAchievements.isEmpty());
+            .convertAndSend("/topic/4/notification", !userAchievements.isEmpty());
     }
 
     /**
