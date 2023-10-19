@@ -420,6 +420,20 @@ class PlaceServiceImplTest {
     }
 
     @Test
+    void findAllPageableWithEmptyListTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Place> pages = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(placeRepo.findAll(pageable)).thenReturn(pages);
+        List<AdminPlaceDto> placeDtos = new ArrayList<>();
+        PageableDto<AdminPlaceDto> expected =
+                new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+
+        assertEquals(expected, actual);
+        verify(placeRepo).findAll(pageable);
+    }
+
+    @Test
     void findAllWithPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
         Principal principal = ModelUtils.getPrincipal();
