@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
     private AchievementCalculation achievementCalculation;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -340,5 +342,18 @@ public class EventCommentServiceImpl implements EventCommentService {
             .isLiked(isLiked)
             .amountLikes(comment.getUsersLiked().size())
             .build();
+    }
+
+    @Override
+    public void eventCommentLikeAndCount(AmountCommentLikesDto amountCommentLikesDto) {
+        EventComment comment = eventCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
+            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+        amountCommentLikesDto.setLiked(isLiked);
+        int size = comment.getUsersLiked().size();
+        amountCommentLikesDto.setAmountLikes(size);
+        messagingTemplate.convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/eventComment",
+            amountCommentLikesDto);
     }
 }
