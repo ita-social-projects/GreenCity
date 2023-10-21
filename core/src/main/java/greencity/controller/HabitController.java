@@ -5,7 +5,6 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
-import greencity.constant.ErrorMessage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.CustomHabitDtoRequest;
