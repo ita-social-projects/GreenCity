@@ -241,6 +241,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public void calculateAchievements(Long id,
         AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
-        achievementCalculation.calculateAchievement(id, achievementCategory, achievementAction);
+        UserVO userVO=userService.findById(id);
+        achievementCalculation.calculateAchievement(userVO, achievementCategory, achievementAction);
     }
 }

@@ -62,21 +62,21 @@ public class AchievementCalculation {
      * Calculate and handle achievements for a user based on specified category and
      * status.
      *
-     * @param userId            The user ID for whom the achievement is to be
+     * @param user            The user ID for whom the achievement is to be
      *                          calculated.
      * @param category          The category type of the achievement.
      * @param achievementAction The status of the achievement (ASSIGN, DELETE,
      *                          etc.).
      */
-    public void calculateAchievement(Long userId, AchievementCategoryType category,
+    public void calculateAchievement(UserVO user, AchievementCategoryType category,
         AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO =
-            userActionService.findUserActionByUserIdAndAchievementCategory(userId, achievementCategoryVO.getId());
+            userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVO.getId());
         int count = updateCount(userActionVO, achievementAction);
         userActionService.updateUserActions(userActionVO);
 
-        checkAchievements(achievementCategoryVO.getId(), count, userId, achievementAction);
+        checkAchievements(achievementCategoryVO.getId(), count, user, achievementAction);
     }
 
     /**
@@ -98,18 +98,18 @@ public class AchievementCalculation {
      *
      * @param achievementCategoryId The ID of the achievement category.
      * @param count                 The count of user actions for the achievement.
-     * @param userId                The user ID for whom the achievement is to be
+     * @param user                The user ID for whom the achievement is to be
      *                              checked.
      * @param achievementAction     The status of the achievement.
      */
-    private void checkAchievements(Long achievementCategoryId, Integer count, Long userId,
+    private void checkAchievements(Long achievementCategoryId, Integer count, UserVO user,
         AchievementAction achievementAction) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             if (achievementAction.equals(AchievementAction.ASSIGN)) {
-                saveAchievementToUser(userId, achievementCategoryId, count);
+                saveAchievementToUser(user, achievementCategoryId, count);
             } else {
-                deleteAchievementFromUser(userId, achievementCategoryId, count);
+                deleteAchievementFromUser(user, achievementCategoryId, count);
             }
         }
     }
@@ -117,36 +117,35 @@ public class AchievementCalculation {
     /**
      * Save an achievement to a user's record.
      *
-     * @param userId                The user ID.
+     * @param user          The user ID.
      * @param achievementCategoryId The achievement category ID.
      * @param count                 The count of user actions for the achievement.
      */
 
-    private void saveAchievementToUser(Long userId, Long achievementCategoryId, int count) {
+    private void saveAchievementToUser(UserVO user, Long achievementCategoryId, int count) {
         Achievement achievement =
             achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
                 .orElseThrow(() -> new NoSuchElementException(
                     ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
         UserAchievement userAchievement = UserAchievement.builder()
             .achievement(achievement)
-            .user(userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
+            .user(userRepo.findById(user.getId())
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId())))
             .build();
         RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
-        UserVO user = userService.findById(userId);
         ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.save(userAchievement);
-        calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+        calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
     }
 
     /**
      * Delete an achievement from a user's record.
      *
-     * @param userId                The user ID.
+     * @param user                The user ID.
      * @param achievementCategoryId The achievement category ID.
      * @param count                 The count of user actions for the achievement.
      */
-    private void deleteAchievementFromUser(Long userId, Long achievementCategoryId, int count) {
+    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId, int count) {
         Achievement achievement =
             achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
                 .orElseThrow(() -> new NoSuchElementException(
@@ -154,14 +153,13 @@ public class AchievementCalculation {
 
         UserAchievement userAchievement = UserAchievement.builder()
             .achievement(achievement)
-            .user(userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
+            .user(userRepo.findById(user.getId())
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId())))
             .build();
 
         RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
-        UserVO user = userService.findById(userId);
         ratingCalculation.ratingCalculation(reason, user);
         userAchievementRepo.delete(userAchievement);
-        calculateAchievement(userId, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+        calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
     }
 }

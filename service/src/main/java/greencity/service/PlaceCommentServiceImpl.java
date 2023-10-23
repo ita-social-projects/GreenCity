@@ -90,7 +90,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setPlace(place);
         });
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
+        achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
 
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
@@ -108,7 +108,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
+        achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
