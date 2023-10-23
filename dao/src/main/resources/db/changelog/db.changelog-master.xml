@@ -184,6 +184,8 @@
     <include file="db/changelog/logs/ch-add-values-achievement_categories-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-add-value-achievements-Spodaryk.xml"/>
     <include file="db/changelog/logs/ch-insert-into-users-admin-Spodaryk.xml"/>
-
+    <include file="db/changelog/logs/ch-add-table-user_location-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
+    <include file="db/changelog/logs/ch-drop-column-city-in-users-table-Midianyi.xml"/>
 </databaseChangeLog>
 

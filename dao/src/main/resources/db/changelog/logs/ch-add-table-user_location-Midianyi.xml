@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="Midianyi-2" author="Yurii Midianyi">
+        <createTable tableName="user_location">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="city_en" type="VARCHAR(255)" />
+            <column name="city_ua" type="VARCHAR(255)" />
+            <column name="region_en" type="VARCHAR(255)" />
+            <column name="region_ua" type="VARCHAR(255)" />
+            <column name="country_en" type="VARCHAR(255)" />
+            <column name="country_ua" type="VARCHAR(255)" />
+            <column name="latitude" type="DOUBLE" />
+            <column name="longitude" type="DOUBLE" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
