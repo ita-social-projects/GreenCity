@@ -344,7 +344,14 @@ public class EventCommentServiceImpl implements EventCommentService {
             .build();
     }
 
+    /**
+     * Method returns count of likes to certain {@link EventComment} specified by
+     * id.
+     *
+     * @param amountCommentLikesDto dto with id and count likes for comments.
+     */
     @Override
+    @Transactional
     public void eventCommentLikeAndCount(AmountCommentLikesDto amountCommentLikesDto) {
         EventComment comment = eventCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
             () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
