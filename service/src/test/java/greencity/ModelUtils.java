@@ -414,7 +414,6 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)

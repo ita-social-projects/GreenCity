@@ -183,9 +183,6 @@ public class User {
     @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "city")
-    private String city;
-
     @Column(name = "user_credo")
     private String userCredo;
 

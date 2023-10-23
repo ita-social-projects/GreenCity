@@ -51,7 +51,6 @@ class UserVOMapperTest {
             .refreshTokenKey(expected.getRefreshTokenKey())
             .dateOfRegistration(expected.getDateOfRegistration())
             .profilePicturePath(expected.getProfilePicturePath())
-            .city(expected.getCity())
             .showShoppingList(expected.getShowShoppingList())
             .showEcoPlace(expected.getShowEcoPlace())
             .showLocation(expected.getShowLocation())
