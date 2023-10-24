@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.constant.HttpStatuses;
 import greencity.exception.exceptions.*;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
@@ -178,6 +179,19 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handles IllegalArgumentException.
+     *
+     * @return Error message "Bad Request".
+     * @author Volodymyr Mladonov
+     */
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<Object> handleException(IllegalArgumentException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
+    /**
      * Method intercept exception {@link BadRequestException}.
      *
      * @param ex      Exception witch should be intercepted.
@@ -202,7 +216,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
      *         exception.
      * @author Marian Milian
      */
-
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
