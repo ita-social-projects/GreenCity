@@ -27,6 +27,7 @@ import org.modelmapper.ModelMapper;
 
 import greencity.entity.Achievement;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,35 +86,8 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
 
-//        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(1L,
-//            AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
-    }
-
-    @Test
-    void calculateAchievement_UNDO_reasonNull() {
-        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
-        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
-        User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
-        achievement.setTitle("Bla bla");
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS___", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
-                1);
-        when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
-            .thenReturn(achievementCategoryVO);
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
-            .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementService.findByCategoryIdAndCondition(2L, -1)).thenReturn(achievementVO);
-
-//        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(1L,
-//            AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE));
+        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
     }
 
     @Test
@@ -137,32 +111,26 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
-//        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.ASSIGN);
         assertEquals(2, userActionVO.getCount());
     }
 
     @Test
     void calculateAchievement_UNDO() {
         AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
-        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
         UserVO userVO = ModelUtils.getUserVO();
         UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
         User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
-            .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
-        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementService.findByCategoryIdAndCondition(2L, -1)).thenReturn(achievementVO);
-//        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
+        when(achievementCategoryRepo.findByName(("ACHIEVEMENT"))).thenReturn(ModelUtils.getAchievementCategory());
+        when(achievementRepo.findUnAchieved(anyLong(), any())).thenReturn(List.of(ModelUtils.getAchievement()));
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.DELETE);
         assertEquals(-2, userActionVO.getCount());
     }
 
@@ -181,7 +149,8 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
-//        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        achievementCalculation.calculateAchievement(ModelUtils.getUserVO(), AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.ASSIGN);
         assertEquals(count + 1, userActionVO.getCount());
     }
 }

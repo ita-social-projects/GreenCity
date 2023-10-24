@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -18,11 +19,14 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -39,6 +43,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +104,14 @@ class EventServiceImplTest {
 
     @InjectMocks
     EventServiceImpl eventService;
+    @Mock
+    AchievementCalculation achievementCalculation;
+    @Mock
+    RatingCalculation ratingCalculation;
+    @Mock
+    SimpMessagingTemplate messagingTemplate;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
 
     @Test
     void save() {
@@ -173,7 +186,7 @@ class EventServiceImplTest {
         assertTrue(resultEventDto.isSubscribed());
         assertTrue(resultEventDto.isFavorite());
 
-        verify(restClient).findByEmail(user.getEmail());
+        verify(restClient, times(3)).findByEmail(user.getEmail());
         verify(eventRepo).save(eventWithoutCoordinates);
         verify(tagService).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
             TagType.EVENT);
