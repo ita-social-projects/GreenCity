@@ -28,6 +28,7 @@ import org.modelmapper.ModelMapper;
 import greencity.entity.Achievement;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -114,6 +115,27 @@ class AchievementCalculationTest {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.ASSIGN);
         assertEquals(2, userActionVO.getCount());
+    }
+
+    @Test
+    void calculateAchievement_UserNotFound() {
+        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
+        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
+        UserVO userVO = ModelUtils.getUserVO();
+        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        user.setUserAchievements(Collections.singletonList(userAchievement));
+        AchievementVO achievementVO =
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+        when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
+        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
+        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
+            .thenReturn(Optional.of(achievement));
+        assertThrows(NoSuchElementException.class, () -> achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
     }
 
     @Test

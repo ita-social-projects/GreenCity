@@ -15,12 +15,10 @@ import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
 import greencity.repository.UserRepo;
-import greencity.repository.UserActionRepo;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
-import greencity.service.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -77,7 +75,7 @@ public class AchievementCalculation {
         int count = updateCount(userActionVO, achievementAction);
         userActionService.updateUserActions(userActionVO);
         if (achievementAction.equals(AchievementAction.ASSIGN)) {
-            saveAchievementToUser(user, achievementCategoryVO.getId(), count, achievementAction);
+            saveAchievementToUser(user, achievementCategoryVO.getId(), count);
         } else {
             deleteAchievementFromUser(user, achievementCategoryVO.getId());
         }
@@ -90,8 +88,7 @@ public class AchievementCalculation {
         return count;
     }
 
-    private void saveAchievementToUser(UserVO user, Long achievementCategoryId, int count,
-        AchievementAction achievementAction) {
+    private void saveAchievementToUser(UserVO user, Long achievementCategoryId, int count) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
