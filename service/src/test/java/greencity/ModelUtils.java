@@ -96,6 +96,7 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
@@ -123,6 +124,7 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -3083,6 +3085,18 @@ public class ModelUtils {
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
+    }
+
+    public static AdminPlaceDto getAdminPlaceDto() {
+        return AdminPlaceDto.builder()
+            .id(1L)
+            .name("TestPlace")
+            .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
+            .openingHoursList(new ArrayList<>())
+            .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
+            .status(PlaceStatus.APPROVED)
+            .modifiedDate(LocalDateTime.now())
             .build();
     }
 

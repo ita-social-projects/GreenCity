@@ -53,6 +53,7 @@ import greencity.entity.OpeningHours;
 import greencity.entity.Place;
 import greencity.entity.Specification;
 import greencity.entity.User;
+import greencity.repository.FavoritePlaceRepo;
 import greencity.enums.PlaceStatus;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
@@ -66,6 +67,7 @@ import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
@@ -87,9 +89,10 @@ public class PlaceServiceImpl implements PlaceService {
     private final NotificationService notificationService;
     private final ZoneId datasourceTimezone;
     private final ProposePlaceService proposePlaceService;
-    private CategoryRepo categoryRepo;
+    private final CategoryRepo categoryRepo;
     private final GoogleApiService googleApiService;
     private final UserRepo userRepo;
+    private final FavoritePlaceRepo favoritePlaceRepo;
 
     /**
      * {@inheritDoc}
@@ -295,15 +298,19 @@ public class PlaceServiceImpl implements PlaceService {
      * {@inheritDoc}
      *
      * @author Olena Petryshak.
+     * @author Olena Sotnik.
+     *
      */
     @Override
-    public PageableDto<AdminPlaceDto> findAll(Pageable pageable) {
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, String email) {
         log.info(LogMessage.IN_FIND_ALL);
 
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos =
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
-
+        if (!CollectionUtils.isEmpty(placeDtos) && !email.isBlank()) {
+            setIsFavoriteToAdminPlaceDto(placeDtos, email);
+        }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }
 
@@ -582,5 +589,14 @@ public class PlaceServiceImpl implements PlaceService {
             .lat(ukrLang.geometry.location.lat)
             .lng(ukrLang.geometry.location.lng)
             .build();
+    }
+
+    private void setIsFavoriteToAdminPlaceDto(List<AdminPlaceDto> placeDtos, String email) {
+        List<Long> favoritePlacesLocationIds = favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(email);
+        placeDtos.forEach(dto -> {
+            boolean isFavorite = favoritePlacesLocationIds.stream()
+                .anyMatch(locationId -> locationId.equals(dto.getLocation().getId()));
+            dto.setIsFavorite(isFavorite);
+        });
     }
 }
