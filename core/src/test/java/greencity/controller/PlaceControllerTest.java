@@ -88,7 +88,7 @@ class PlaceControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
-    private Principal principal = getPrincipal();
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
@@ -600,11 +600,11 @@ class PlaceControllerTest {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        this.mockMvc.perform(get(placeLink + "/all?page=0&&size=5"))
+        this.mockMvc.perform(get(placeLink + "/all?page=0&&size=5")
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .findAll(pageable);
+            .findAll(pageable, "test@gmail.com");
     }
-
 }
