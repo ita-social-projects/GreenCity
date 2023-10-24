@@ -93,7 +93,7 @@ public interface PlaceService {
     List<PlaceVO> findAll();
 
     /**
-     * Find all places from DB for loggedIn User.
+     * Find all places from DB for User with current email.
      *
      * @param pageable {@link Pageable}.
      * @param email    - String that represents loggedIn User email to show if place
