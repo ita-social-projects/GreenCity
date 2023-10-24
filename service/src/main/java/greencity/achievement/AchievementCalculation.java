@@ -12,7 +12,11 @@ import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.RatingCalculationEnum;
 import greencity.rating.RatingCalculation;
-import greencity.repository.*;
+import greencity.repository.AchievementRepo;
+import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
+import greencity.repository.UserActionRepo;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
@@ -28,20 +32,15 @@ import java.util.NoSuchElementException;
 public class AchievementCalculation {
     private UserActionService userActionService;
     private AchievementService achievementService;
-    private UserService userService;
     private AchievementCategoryService achievementCategoryService;
     private UserAchievementRepo userAchievementRepo;
     private final UserRepo userRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
-    private final UserActionRepo userActionRepo;
     private final AchievementCategoryRepo achievementCategoryRepo;
 
     /**
      * Constructor for initializing the required services and repositories.
-     *
-     * @param userActionService  Service for user actions.
-     * @param achievementService Service for achievements. ... other parameters ...
      */
     public AchievementCalculation(
         UserActionService userActionService,
@@ -49,8 +48,7 @@ public class AchievementCalculation {
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
-        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, UserService userService,
-        UserActionRepo userActionRepo,
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation,
         AchievementCategoryRepo achievementCategoryRepo) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
@@ -59,8 +57,6 @@ public class AchievementCalculation {
         this.userRepo = userRepo;
         this.achievementRepo = achievementRepo;
         this.ratingCalculation = ratingCalculation;
-        this.userService = userService;
-        this.userActionRepo = userActionRepo;
         this.achievementCategoryRepo = achievementCategoryRepo;
     }
 
@@ -98,22 +94,20 @@ public class AchievementCalculation {
         AchievementAction achievementAction) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
-            if (achievementAction.equals(AchievementAction.ASSIGN)) {
-                Achievement achievement =
-                    achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
-                        .orElseThrow(() -> new NoSuchElementException(
-                            ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
-                UserAchievement userAchievement = UserAchievement.builder()
-                    .achievement(achievement)
-                    .user(userRepo.findById(user.getId())
-                        .orElseThrow(
-                            () -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId())))
-                    .build();
-                RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
-                ratingCalculation.ratingCalculation(reason, user);
-                userAchievementRepo.save(userAchievement);
-                calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
-            }
+            Achievement achievement =
+                achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
+                    .orElseThrow(() -> new NoSuchElementException(
+                        ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
+            UserAchievement userAchievement = UserAchievement.builder()
+                .achievement(achievement)
+                .user(userRepo.findById(user.getId())
+                    .orElseThrow(
+                        () -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId())))
+                .build();
+            RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
+            ratingCalculation.ratingCalculation(reason, user);
+            userAchievementRepo.save(userAchievement);
+            calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
         }
     }
 

@@ -64,12 +64,9 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @param userId The ID of the user for whom to find unachieved achievements.
      * @return A list of achievements that the user has not yet achieved.
      */
-    @Query(value = "Select a.*"
-        + "from user_achievements as uach"
-        + "         join achievements a on uach.achievement_id = a.id"
-        + "         join user_actions ua on a.achievement_category_id = ua.achievement_category_id"
-        + "where uach.user_id =:userId"
-        + "  and ua.count < a.condition;",
-        nativeQuery = true)
+    @Query(value = "SELECT * from achievements "
+        + "where id not in (select achievement_id "
+        + "                 from user_achievements "
+        + "                 where user_id = :userId)", nativeQuery = true)
     List<Achievement> searchAchievementsUnAchieved(Long userId);
 }
