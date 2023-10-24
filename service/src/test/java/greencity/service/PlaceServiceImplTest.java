@@ -401,6 +401,10 @@ class PlaceServiceImplTest {
         when(modelMapper.map(list, new TypeToken<List<PlaceVO>>() {
         }.getType())).thenReturn(expectedList);
         assertEquals(expectedList, placeService.findAll());
+
+        verify(placeRepo).findAll();
+        verify(modelMapper).map(list, new TypeToken<List<PlaceVO>>() {
+        }.getType());
     }
 
     @Test
@@ -452,7 +456,9 @@ class PlaceServiceImplTest {
 
         assertEquals(expected, actual);
         assertEquals(expected.getIsFavorite(), actual.getIsFavorite());
+
         verify(placeRepo).findAll(pageable);
+        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserEmail(principal.getName());
     }
 
     @Test
