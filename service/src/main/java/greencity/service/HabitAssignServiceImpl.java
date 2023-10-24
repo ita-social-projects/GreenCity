@@ -134,7 +134,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         checkStatusInProgressExists(habitId, userVO);
 
         User user = modelMapper.map(userVO, User.class);
-
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
@@ -150,7 +149,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
             if (!allShoppingListItemId.isEmpty()) {
                 List<ShoppingListItem> shoppingList =
-                        shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
                 saveUserShoppingListItems(shoppingList, habitAssign);
             }
         }
