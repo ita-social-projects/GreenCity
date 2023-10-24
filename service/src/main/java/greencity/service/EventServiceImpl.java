@@ -1,6 +1,7 @@
 package greencity.service;
 
 import com.google.maps.model.LatLng;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -17,6 +18,7 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -24,13 +26,12 @@ import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.event.Address;
-import greencity.enums.EventType;
-import greencity.enums.Role;
-import greencity.enums.TagType;
+import greencity.enums.*;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.SendEventCreationNotification;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
@@ -78,6 +79,9 @@ public class EventServiceImpl implements EventService {
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
 
+    private final RatingCalculation ratingCalculation;
+    private final AchievementCalculation achievementCalculation;
+
     private static final String FUTURE_EVENT = "FUTURE";
     private static final String PAST_EVENT = "PAST";
     private static final String ONLINE_EVENT = "ONLINE";
@@ -94,6 +98,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
+        UserVO userVO=restClient.findByEmail(email);
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
@@ -121,12 +126,16 @@ public class EventServiceImpl implements EventService {
 
         Event savedEvent = eventRepo.save(toSave);
         sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
         return buildEventDto(savedEvent, organizer.getId());
     }
 
     @Override
     public void delete(Long eventId, String email) {
-        User user = modelMapper.map(restClient.findByEmail(email), User.class);
+        UserVO userVO=restClient.findByEmail(email);
+        User user = modelMapper.map(userVO, User.class);
         Event toDelete = eventRepo.getOne(eventId);
         List<String> eventImages = new ArrayList<>();
         eventImages.add(toDelete.getTitleImage());
@@ -141,6 +150,9 @@ public class EventServiceImpl implements EventService {
         } else {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
     }
 
     @Override

@@ -21,6 +21,7 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +45,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
-    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
 
