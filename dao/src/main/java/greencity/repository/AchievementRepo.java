@@ -12,6 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
+    @Query(value = "SELECT ach.* "
+            + "FROM user_actions AS ua "
+            + "JOIN user_achievements uach ON ua.user_id = uach.user_id "
+            + "JOIN achievements AS ach ON ach.id = uach.achievement_id "
+            + "WHERE ua.count < ach.condition "
+            + "AND ua.user_id = :userId "
+            + "AND ach.achievement_category_id = :achievementCategoryId", nativeQuery = true)
+    List<Achievement> findUnAchieved(Long userId,Long achievementCategoryId);
+
     /**
      * Searches for achievements based on a query string and returns a paginated
      * result.
@@ -44,9 +53,11 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @param userId The ID of the user for whom to find unachieved achievements.
      * @return A list of achievements that the user has not yet achieved.
      */
-    @Query(value = "SELECT * from achievements "
-        + "where id not in (select achievement_id "
-        + "                 from user_achievements "
-        + "                 where user_id = :userId)", nativeQuery = true)
+    @Query(value = "Select a.*" +
+            "from user_achievements as uach" +
+            "         join achievements a on uach.achievement_id = a.id" +
+            "         join user_actions ua on a.achievement_category_id = ua.achievement_category_id" +
+            "where uach.user_id =:userId" +
+            "  and ua.count < a.condition;", nativeQuery = true)
     List<Achievement> searchAchievementsUnAchieved(Long userId);
 }
