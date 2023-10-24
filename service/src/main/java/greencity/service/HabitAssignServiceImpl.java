@@ -145,13 +145,11 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
         } else {
-            List<Long> allShoppingListItemId = shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
+            List<ShoppingListItem> shoppingList =
+                shoppingListItemRepo.getShoppingListByListOfId(
+                    shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId));
             habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
-            if (!allShoppingListItemId.isEmpty()) {
-                List<ShoppingListItem> shoppingList =
-                        shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
-                saveUserShoppingListItems(shoppingList, habitAssign);
-            }
+            saveUserShoppingListItems(shoppingList, habitAssign);
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
