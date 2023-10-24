@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
-    @Query(value = "Select ach.* from achievements as ach " +
-            "join user_achievements uach on ach.id = uach.achievement_id " +
-            "join user_actions ua on ua.count < ach.condition and ua.achievement_category_id=:achievementCategoryId " +
-            "where uach.user_id=:userId", nativeQuery = true)
+    @Query(value = "Select ach.* from achievements as ach\n" +
+            "            join user_achievements uach on ach.id = uach.achievement_id\n" +
+            "            join user_actions ua on ua.count < ach.condition\n" +
+            "            where uach.user_id=:userId and ach.achievement_category_id=:achievementCategoryId", nativeQuery = true)
     List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId);
 
 

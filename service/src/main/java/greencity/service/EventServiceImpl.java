@@ -330,9 +330,13 @@ public class EventServiceImpl implements EventService {
     public void addAttender(Long eventId, String email) {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+        UserVO userVO=restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
         checkAttenderToJoinTheEvent(event, currentUser);
         event.getAttenders().add(currentUser);
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
     }
 
@@ -351,11 +355,15 @@ public class EventServiceImpl implements EventService {
     public void removeAttender(Long eventId, String email) {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        User currentUser = modelMapper.map(restClient.findByEmail(email), User.class);
+       UserVO userVO=restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
 
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);
         eventRepo.save(event);
     }
 
