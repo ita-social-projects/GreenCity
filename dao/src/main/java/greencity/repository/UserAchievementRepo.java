@@ -29,17 +29,17 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
      * @return A list of UserAchievement objects related to the specified user ID.
      */
     List<UserAchievement> getUserAchievementByUserId(Long userId);
-    /**
-     * Retrieves a list of UserAchievement objects associated with a given user ID.
-     *
-     * @param userId The unique identifier of the user for whom to fetch the
-     *               achievements.
-     * @return A list of UserAchievement objects related to the specified user ID.
-     */
-@Transactional
-    @Modifying
-    @Query(value = "DELETE from user_achievements" +
-            "    where user_id=:userId and achievement_id=:achievementId", nativeQuery = true)
-    void deleteByUserAndAchievemntId(Long userId, Long achievementId);
 
+    /**
+     * Deletes a user's achievement record based on the provided user ID and
+     * achievement ID.
+     *
+     * @param userId        The unique identifier of the user.
+     * @param achievementId The unique identifier of the achievement to be deleted.
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE from user_achievements"
+        + "where user_id=:userId and achievement_id=:achievementId", nativeQuery = true)
+    void deleteByUserAndAchievemntId(Long userId, Long achievementId);
 }

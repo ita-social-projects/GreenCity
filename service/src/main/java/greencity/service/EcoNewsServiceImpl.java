@@ -80,7 +80,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
-        UserVO userVO=userService.findById(toSave.getAuthor().getId());
+        UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
@@ -531,12 +531,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
             achievementCalculation.calculateAchievement(userVO,
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
             achievementCalculation.calculateAchievement(userVO,
-                    AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }

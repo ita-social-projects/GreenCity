@@ -78,7 +78,6 @@ public class EventServiceImpl implements EventService {
     private final EventsSearchRepo eventsSearchRepo;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
-
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
 
@@ -98,7 +97,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
-        UserVO userVO=restClient.findByEmail(email);
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
@@ -126,15 +124,15 @@ public class EventServiceImpl implements EventService {
 
         Event savedEvent = eventRepo.save(toSave);
         sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
-        achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        achievementCalculation.calculateAchievement(restClient.findByEmail(email),
+            AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, restClient.findByEmail(email));
         return buildEventDto(savedEvent, organizer.getId());
     }
 
     @Override
     public void delete(Long eventId, String email) {
-        UserVO userVO=restClient.findByEmail(email);
+        UserVO userVO = restClient.findByEmail(email);
         User user = modelMapper.map(userVO, User.class);
         Event toDelete = eventRepo.getOne(eventId);
         List<String> eventImages = new ArrayList<>();
@@ -151,7 +149,7 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
+            AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
     }
 
@@ -330,12 +328,12 @@ public class EventServiceImpl implements EventService {
     public void addAttender(Long eventId, String email) {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-        UserVO userVO=restClient.findByEmail(email);
+        UserVO userVO = restClient.findByEmail(email);
         User currentUser = modelMapper.map(userVO, User.class);
         checkAttenderToJoinTheEvent(event, currentUser);
         event.getAttenders().add(currentUser);
         achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
+            AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
     }
@@ -355,14 +353,14 @@ public class EventServiceImpl implements EventService {
     public void removeAttender(Long eventId, String email) {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
-       UserVO userVO=restClient.findByEmail(email);
+        UserVO userVO = restClient.findByEmail(email);
         User currentUser = modelMapper.map(userVO, User.class);
 
         event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
             .collect(Collectors.toSet()));
 
         achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
+            AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);
         eventRepo.save(event);
     }

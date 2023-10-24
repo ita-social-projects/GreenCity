@@ -12,12 +12,25 @@ import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
-    @Query(value = "Select ach.* from achievements as ach\n" +
-            "            join user_achievements uach on ach.id = uach.achievement_id\n" +
-            "            join user_actions ua on ua.count < ach.condition\n" +
-            "            where uach.user_id=:userId and ach.achievement_category_id=:achievementCategoryId", nativeQuery = true)
+    /**
+     * Retrieves a list of achievements that a specific user hasn't achieved yet
+     * within a specified achievement category. The method identifies unachieved
+     * achievements by comparing user actions count with the conditions of
+     * achievements and by checking if a user already has the achievement in the
+     * user_achievements table.
+     *
+     * @param userId                The unique identifier of the user.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category.
+     * @return A list of Achievement objects that the user hasn't achieved within
+     *         the specified category.
+     */
+    @Query(value = "Select ach.* from achievements as ach"
+        + "            join user_achievements uach on ach.id = uach.achievement_id"
+        + "            join user_actions ua on ua.count < ach.condition"
+        + "            where uach.user_id=:userId and ach.achievement_category_id=:achievementCategoryId",
+        nativeQuery = true)
     List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId);
-
 
     /**
      * Searches for achievements based on a query string and returns a paginated
@@ -51,11 +64,12 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @param userId The ID of the user for whom to find unachieved achievements.
      * @return A list of achievements that the user has not yet achieved.
      */
-    @Query(value = "Select a.*" +
-            "from user_achievements as uach" +
-            "         join achievements a on uach.achievement_id = a.id" +
-            "         join user_actions ua on a.achievement_category_id = ua.achievement_category_id" +
-            "where uach.user_id =:userId" +
-            "  and ua.count < a.condition;", nativeQuery = true)
+    @Query(value = "Select a.*"
+        + "from user_achievements as uach"
+        + "         join achievements a on uach.achievement_id = a.id"
+        + "         join user_actions ua on a.achievement_category_id = ua.achievement_category_id"
+        + "where uach.user_id =:userId"
+        + "  and ua.count < a.condition;",
+        nativeQuery = true)
     List<Achievement> searchAchievementsUnAchieved(Long userId);
 }
