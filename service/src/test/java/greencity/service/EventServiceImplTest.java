@@ -1303,7 +1303,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getEventsWithFilterEventDtoWithTags() {
+    void getEventsWithFilterEventDtoWithTagsAndWrongTag() {
         List<Event> events = List.of(ModelUtils.getEventWithTags());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();

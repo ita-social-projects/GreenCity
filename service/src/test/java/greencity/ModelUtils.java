@@ -3086,7 +3086,7 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
             .build();
     }
 
