@@ -686,7 +686,7 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> filterByTags(List<Event> events, List<String> tags) {
         List<Event> filteredByTags = new ArrayList<>();
-        tags.stream().filter(Objects::nonNull).map(String::toUpperCase).forEach(tag -> {
+        tags.stream().filter(Objects::nonNull).forEach(tag -> {
             switch (tag) {
                 case ECONOMIC_TAG:
                     filteredByTags.addAll(getEventsByTagName(events, ECONOMIC_TAG));
