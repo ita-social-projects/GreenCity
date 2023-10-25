@@ -223,7 +223,23 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+
+        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(any());
         assertEquals(habitAssignManagementDto, actual);
+    }
+
+    @Test
+    void assignDefaultHabitForUserWithEmptyShoppingList() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId()))
+                .thenReturn(Collections.emptyList());
+        HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(any());
     }
 
     @Test
