@@ -416,6 +416,8 @@ class EventServiceImplTest {
         assertEquals(updatedEventDto, eventDto);
         assertTrue(updatedEventDto.isFavorite());
         assertTrue(updatedEventDto.isSubscribed());
+
+        verify(restClient, times(2)).findByEmail(anyString());
     }
 
     @ParameterizedTest
@@ -448,6 +450,7 @@ class EventServiceImplTest {
         when(eventRepo.getOne(any())).thenReturn(event);
         Long eventId = event.getId();
         assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
+        verify(restClient).findByEmail(userEmail);
     }
 
     @Test
@@ -1086,11 +1089,11 @@ class EventServiceImplTest {
         event.setAttenders(userSet);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
         when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.getUserVO());
-        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(user);
 
         eventService.removeAttender(event.getId(), user.getEmail());
 
         verify(eventRepo).save(event);
+        verify(restClient).findByEmail(user.getEmail());
     }
 
     @Test

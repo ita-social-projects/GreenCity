@@ -242,5 +242,6 @@ class AchievementServiceImplTest {
             eq(ModelUtils.getUserVO()),
             any(AchievementCategoryType.class),
             eq(AchievementAction.ASSIGN));
+        verify(userService).findById(anyLong());
     }
 }

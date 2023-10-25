@@ -6,7 +6,6 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
-import greencity.entity.AchievementCategory;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
@@ -15,7 +14,6 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
@@ -24,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,11 +33,14 @@ public class AchievementCalculation {
     private AchievementService achievementService;
     private AchievementCategoryService achievementCategoryService;
     private UserAchievementRepo userAchievementRepo;
-    private final UserRepo userRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final ModelMapper modelMapper;
+    /**
+     * The unique identifier for the achievement with the name "ACHIEVEMENT".
+     */
+    private Long achievementId;
 
     /**
      * Constructor for initializing the required services and repositories.
@@ -48,18 +50,21 @@ public class AchievementCalculation {
         @Lazy AchievementService achievementService,
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
-        UserRepo userRepo,
         AchievementRepo achievementRepo, RatingCalculation ratingCalculation,
         AchievementCategoryRepo achievementCategoryRepo, ModelMapper modelMapper) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
         this.userAchievementRepo = userAchievementRepo;
-        this.userRepo = userRepo;
         this.achievementRepo = achievementRepo;
         this.ratingCalculation = ratingCalculation;
         this.achievementCategoryRepo = achievementCategoryRepo;
         this.modelMapper = modelMapper;
+    }
+
+    @PostConstruct
+    private void initAchievementId() {
+        this.achievementId = achievementCategoryRepo.findByName("ACHIEVEMENT").getId();
     }
 
     /**
@@ -76,18 +81,25 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO =
             userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVO.getId());
-        int count = updateCount(userActionVO, achievementAction);
-        userActionService.updateUserActions(userActionVO);
-        if (achievementAction.equals(AchievementAction.ASSIGN)) {
+        if (AchievementAction.ASSIGN.equals(achievementAction)) {
+            int count = incrementCount(userActionVO);
+            userActionService.updateUserActions(userActionVO);
             saveAchievementToUser(user, achievementCategoryVO.getId(), count);
-        } else if (achievementAction.equals(AchievementAction.DELETE)) {
+        } else if (AchievementAction.DELETE.equals(achievementAction)) {
+            decrementCount(userActionVO);
+            userActionService.updateUserActions(userActionVO);
             deleteAchievementFromUser(user, achievementCategoryVO.getId());
         }
     }
 
-    private int updateCount(UserActionVO userActionVO, AchievementAction achievementAction) {
-        int count = achievementAction.equals(AchievementAction.ASSIGN) ? userActionVO.getCount() + 1
-            : userActionVO.getCount() - 1;
+    private int incrementCount(UserActionVO userActionVO) {
+        int count = userActionVO.getCount() + 1;
+        userActionVO.setCount(count);
+        return count;
+    }
+
+    private int decrementCount(UserActionVO userActionVO) {
+        int count = userActionVO.getCount() - 1;
         userActionVO.setCount(count);
         return count;
     }
@@ -99,10 +111,9 @@ public class AchievementCalculation {
                 achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
                     .orElseThrow(() -> new NoSuchElementException(
                         ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
-            User user = modelMapper.map(userVO, User.class);
             UserAchievement userAchievement = UserAchievement.builder()
                 .achievement(achievement)
-                .user(user)
+                .user(modelMapper.map(userVO, User.class))
                 .build();
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
             ratingCalculation.ratingCalculation(reason, userVO);
@@ -116,17 +127,12 @@ public class AchievementCalculation {
             achievementRepo.findUnAchieved(user.getId(), achievementCategoryId);
         achievements.forEach(achievement -> {
             RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
-            AchievementCategory achievementCategory = achievementCategoryRepo.findByName("ACHIEVEMENT");
             UserActionVO userActionVO =
-                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(),
-                    achievementCategory.getId());
-            updateCount(userActionVO, AchievementAction.DELETE);
+                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementId);
+            decrementCount(userActionVO);
             userActionService.updateUserActions(userActionVO);
             ratingCalculation.ratingCalculation(reason, user);
-            Long achievementId = achievement.getId();
-            Long userId = user.getId();
-
-            userAchievementRepo.deleteByUserAndAchievemntId(userId, achievementId);
+            userAchievementRepo.deleteByUserAndAchievemntId(user.getId(), achievement.getId());
         });
     }
 }
