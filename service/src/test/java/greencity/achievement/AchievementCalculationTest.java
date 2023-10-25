@@ -26,10 +26,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import greencity.entity.Achievement;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -149,21 +147,33 @@ class AchievementCalculationTest {
     @Test
     void calculateAchievement_UNDO() {
         AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
+        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
         UserVO userVO = ModelUtils.getUserVO();
         UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
         User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
         UserAchievement userAchievement = ModelUtils.getUserAchievement();
         user.setUserAchievements(Collections.singletonList(userAchievement));
+        AchievementVO achievementVO =
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findUnAchieved(anyLong(), any())).thenReturn(List.of(ModelUtils.getAchievement()));
+        when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
+        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
+        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
+
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.DELETE);
-        assertEquals(-2, userActionVO.getCount());
+
+        assertEquals(0, userActionVO.getCount());
         verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
         verify(userActionService, times(2)).findUserActionByUserIdAndAchievementCategory(any(), any());
-        verify(achievementRepo).findUnAchieved(anyLong(), any());
+        verify(achievementRepo).findUnAchieved(1L, 1L);
+        verify(achievementRepo).findUnAchieved(1L, 2L);
+        verify(achievementCategoryService).findByName("ACHIEVEMENT");
+        verify(achievementCategoryService).findByName("CREATE_NEWS");
     }
 
     @Test

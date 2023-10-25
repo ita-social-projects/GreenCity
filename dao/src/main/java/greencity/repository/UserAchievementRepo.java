@@ -36,7 +36,7 @@ public interface UserAchievementRepo extends JpaRepository<UserAchievement, Long
      * @param achievementId The unique identifier of the achievement to be deleted.
      */
     @Modifying
-    @Query(value = "DELETE from user_achievements"
-        + "where user_id=:userId and achievement_id=:achievementId", nativeQuery = true)
-    void deleteByUserAndAchievemntId(Long userId, Long achievementId);
+    @Query(value = "DELETE FROM user_achievements "
+        + "WHERE user_id = :userId AND achievement_id = :achievementId", nativeQuery = true)
+    void deleteByUserAndAchievementId(Long userId, Long achievementId);
 }

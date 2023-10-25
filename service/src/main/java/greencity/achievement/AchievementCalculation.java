@@ -22,7 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -37,7 +36,6 @@ public class AchievementCalculation {
     private final RatingCalculation ratingCalculation;
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final ModelMapper modelMapper;
-
 
     /**
      * Constructor for initializing the required services and repositories.
@@ -59,7 +57,6 @@ public class AchievementCalculation {
         this.modelMapper = modelMapper;
     }
 
-
     /**
      * Calculates the achievement based on the user's action.
      *
@@ -74,30 +71,19 @@ public class AchievementCalculation {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         UserActionVO userActionVO =
             userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVO.getId());
+        int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);
+        ;
+        userActionVO.setCount(count > 0 ? count : 0);
+        userActionService.updateUserActions(userActionVO);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
-            int count = incrementCount(userActionVO);
-            userActionService.updateUserActions(userActionVO);
-            saveAchievementToUser(user, achievementCategoryVO.getId(), count);
+            saveAchievementToUser(user, achievementCategoryVO.getId(), count, userActionVO);
         } else if (AchievementAction.DELETE.equals(achievementAction)) {
-            decrementCount(userActionVO);
-            userActionService.updateUserActions(userActionVO);
-            deleteAchievementFromUser(user, achievementCategoryVO.getId());
+            deleteAchievementFromUser(user, achievementCategoryVO.getId(), userActionVO);
         }
     }
 
-    private int incrementCount(UserActionVO userActionVO) {
-        int count = userActionVO.getCount() + 1;
-        userActionVO.setCount(count);
-        return count;
-    }
-
-    private int decrementCount(UserActionVO userActionVO) {
-        int count = userActionVO.getCount() - 1;
-        userActionVO.setCount(count);
-        return count;
-    }
-
-    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count) {
+    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count,
+        UserActionVO userActionVO) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
@@ -115,18 +101,16 @@ public class AchievementCalculation {
         }
     }
 
-    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId) {
+    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId, UserActionVO userActionVO) {
         List<Achievement> achievements =
             achievementRepo.findUnAchieved(user.getId(), achievementCategoryId);
-        achievements.forEach(achievement -> {
-            RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
-            UserActionVO userActionVO =
-                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievement.getAchievementCategory().getId());
-            decrementCount(userActionVO);
-            userActionService.updateUserActions(userActionVO);
-            ratingCalculation.ratingCalculation(reason, user);
-            userAchievementRepo.deleteByUserAndAchievemntId(user.getId(), achievement.getId());
-        });
-        calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+        if (!achievements.isEmpty()) {
+            achievements.forEach(achievement -> {
+                RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
+                ratingCalculation.ratingCalculation(reason, user);
+                userAchievementRepo.deleteByUserAndAchievementId(user.getId(), achievement.getId());
+            });
+            calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
+        }
     }
 }
