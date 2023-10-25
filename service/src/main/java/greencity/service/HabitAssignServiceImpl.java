@@ -201,9 +201,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
-
         setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
             habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
+        saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
         habitAssignRepo.save(habitAssign);
 
@@ -216,6 +216,19 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         return habitAssignManagementDtoList;
+    }
+
+    private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
+        User user, Habit habit) {
+        if (!CollectionUtils.isEmpty(saveList)) {
+            saveList.forEach(item -> {
+                CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
+                customShoppingListItem.setUser(user);
+                customShoppingListItem.setHabit(habit);
+                user.getCustomShoppingListItems().add(customShoppingListItem);
+                customShoppingListItemRepo.save(customShoppingListItem);
+            });
+        }
     }
 
     private void assignFriendsForCustomHabit(Habit habit,

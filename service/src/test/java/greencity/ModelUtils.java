@@ -99,10 +99,7 @@ import greencity.dto.place.PlaceVO;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
-import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
+import greencity.dto.shoppinglistitem.*;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -560,6 +557,10 @@ public class ModelUtils {
             .text("TEXT")
             .status(ShoppingListItemStatus.INPROGRESS)
             .build();
+    }
+
+    public static CustomShoppingListItemSaveRequestDto getCustomShoppingListItemSaveRequestDto() {
+        return CustomShoppingListItemSaveRequestDto.builder().text("TEXT").build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {

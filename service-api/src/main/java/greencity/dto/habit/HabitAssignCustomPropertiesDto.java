@@ -1,5 +1,6 @@
 package greencity.dto.habit;
 
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -18,4 +19,5 @@ import java.util.List;
 public class HabitAssignCustomPropertiesDto {
     private HabitAssignPropertiesDto habitAssignPropertiesDto;
     private List<Long> friendsIdsList;
+    private List<CustomShoppingListItemSaveRequestDto> customShoppingListItemList;
 }
