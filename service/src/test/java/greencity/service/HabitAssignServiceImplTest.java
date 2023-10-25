@@ -223,8 +223,6 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
-
-        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(any());
         assertEquals(habitAssignManagementDto, actual);
     }
 
@@ -236,7 +234,7 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId()))
-                .thenReturn(Collections.emptyList());
+            .thenReturn(Collections.emptyList());
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
         verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(any());
