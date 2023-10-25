@@ -37,10 +37,7 @@ public class AchievementCalculation {
     private final RatingCalculation ratingCalculation;
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final ModelMapper modelMapper;
-    /**
-     * The unique identifier for the achievement with the name "ACHIEVEMENT".
-     */
-    private Long achievementId;
+
 
     /**
      * Constructor for initializing the required services and repositories.
@@ -62,10 +59,6 @@ public class AchievementCalculation {
         this.modelMapper = modelMapper;
     }
 
-    @PostConstruct
-    private void initAchievementId() {
-        this.achievementId = achievementCategoryRepo.findByName("ACHIEVEMENT").getId();
-    }
 
     /**
      * Calculates the achievement based on the user's action.
@@ -128,11 +121,12 @@ public class AchievementCalculation {
         achievements.forEach(achievement -> {
             RatingCalculationEnum reason = RatingCalculationEnum.findByName("UNDO_" + achievement.getTitle());
             UserActionVO userActionVO =
-                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementId);
+                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievement.getAchievementCategory().getId());
             decrementCount(userActionVO);
             userActionService.updateUserActions(userActionVO);
             ratingCalculation.ratingCalculation(reason, user);
             userAchievementRepo.deleteByUserAndAchievemntId(user.getId(), achievement.getId());
         });
+        calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
     }
 }
