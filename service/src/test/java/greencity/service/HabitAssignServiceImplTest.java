@@ -241,6 +241,20 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
+    void assignDefaultHabitForUserWithNotEmptyShoppingList() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(anyLong()))
+            .thenReturn(Arrays.asList(2L, 3L, 4L));
+        HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+        verify(shoppingListItemRepo, times(1)).getShoppingListByListOfId(any());
+    }
+
+    @Test
     void assignDefaultHabitForUserThatWasCancelled() {
         habitAssign.setStatus(HabitAssignStatus.CANCELLED);
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
