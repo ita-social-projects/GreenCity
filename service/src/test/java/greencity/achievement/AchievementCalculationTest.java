@@ -83,7 +83,6 @@ class AchievementCalculationTest {
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
         when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
             .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
 
@@ -108,34 +107,13 @@ class AchievementCalculationTest {
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
         when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
             .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.ASSIGN);
         assertEquals(2, userActionVO.getCount());
-    }
-
-    @Test
-    void calculateAchievement_UserNotFound() {
-        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
-        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
-        User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
-        when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
-        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
-            .thenReturn(Optional.of(achievement));
-        assertThrows(NoSuchElementException.class, () -> achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
     }
 
     @Test

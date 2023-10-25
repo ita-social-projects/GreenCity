@@ -105,11 +105,11 @@ class EventServiceImplTest {
     @InjectMocks
     EventServiceImpl eventService;
     @Mock
-    AchievementCalculation achievementCalculation;
+    private AchievementCalculation achievementCalculation;
     @Mock
-    RatingCalculation ratingCalculation;
+    private RatingCalculation ratingCalculation;
     @Mock
-    SimpMessagingTemplate messagingTemplate;
+    private SimpMessagingTemplate messagingTemplate;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
 
@@ -186,7 +186,7 @@ class EventServiceImplTest {
         assertTrue(resultEventDto.isSubscribed());
         assertTrue(resultEventDto.isFavorite());
 
-        verify(restClient, times(3)).findByEmail(user.getEmail());
+        verify(restClient).findByEmail(user.getEmail());
         verify(eventRepo).save(eventWithoutCoordinates);
         verify(tagService).findTagsWithAllTranslationsByNamesAndType(addEventDtoWithoutCoordinates.getTags(),
             TagType.EVENT);
@@ -422,10 +422,9 @@ class EventServiceImplTest {
     @MethodSource("provideUserVOForDeleteEventTest")
     void delete(UserVO userVO, User user) {
         Event event = ModelUtils.getEvent();
-        when(modelMapper.map(restClient.findByEmail(userVO.getEmail()), User.class))
-            .thenReturn(user);
         when(eventRepo.getOne(any())).thenReturn(event);
         doNothing().when(fileService).delete(any());
+        when(restClient.findByEmail(userVO.getEmail())).thenReturn(userVO);
 
         eventService.delete(event.getId(), userVO.getEmail());
 
@@ -441,12 +440,12 @@ class EventServiceImplTest {
 
     @Test
     void deleteWithException() {
+        UserVO userVO = ModelUtils.getUserVO();
+        String userEmail = userVO.getEmail();
+        userVO.setId(33L);
         Event event = ModelUtils.getEvent();
-        User user = ModelUtils.getUser();
-        user.setId(2L);
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
+        when(restClient.findByEmail(userEmail)).thenReturn(userVO);
         when(eventRepo.getOne(any())).thenReturn(event);
-        String userEmail = ModelUtils.getUserVO().getEmail();
         Long eventId = event.getId();
         assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
     }
@@ -1086,7 +1085,8 @@ class EventServiceImplTest {
         userSet.add(user);
         event.setAttenders(userSet);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
+        when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(user);
 
         eventService.removeAttender(event.getId(), user.getEmail());
 

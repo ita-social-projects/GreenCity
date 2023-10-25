@@ -26,7 +26,12 @@ import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.event.Address;
-import greencity.enums.*;
+import greencity.enums.EventType;
+import greencity.enums.TagType;
+import greencity.enums.Role;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.AchievementAction;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -100,7 +105,8 @@ public class EventServiceImpl implements EventService {
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
         Event toSave = modelMapper.map(addEventDtoRequest, Event.class);
         toSave.setCreationDate(LocalDate.now());
-        User organizer = modelMapper.map(restClient.findByEmail(email), User.class);
+        UserVO userVO = restClient.findByEmail(email);
+        User organizer = modelMapper.map(userVO, User.class);
         toSave.setOrganizer(organizer);
         if (images != null && images.length > 0 && images[0] != null) {
             toSave.setTitleImage(fileService.upload(images[0]));
@@ -124,16 +130,15 @@ public class EventServiceImpl implements EventService {
 
         Event savedEvent = eventRepo.save(toSave);
         sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
-        achievementCalculation.calculateAchievement(restClient.findByEmail(email),
-            AchievementCategoryType.CREATE_EVENT, AchievementAction.ASSIGN);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, restClient.findByEmail(email));
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
+            AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
         return buildEventDto(savedEvent, organizer.getId());
     }
 
     @Override
     public void delete(Long eventId, String email) {
         UserVO userVO = restClient.findByEmail(email);
-        User user = modelMapper.map(userVO, User.class);
         Event toDelete = eventRepo.getOne(eventId);
         List<String> eventImages = new ArrayList<>();
         eventImages.add(toDelete.getTitleImage());
@@ -142,7 +147,7 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList()));
         }
 
-        if (toDelete.getOrganizer().getId().equals(user.getId()) || user.getRole() == Role.ROLE_ADMIN) {
+        if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
             eventRepo.delete(toDelete);
         } else {
@@ -354,11 +359,8 @@ public class EventServiceImpl implements EventService {
         Event event =
             eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         UserVO userVO = restClient.findByEmail(email);
-        User currentUser = modelMapper.map(userVO, User.class);
-
-        event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(currentUser.getId()))
+        event.setAttenders(event.getAttenders().stream().filter(user -> !user.getId().equals(userVO.getId()))
             .collect(Collectors.toSet()));
-
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.JOIN_EVENT, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_JOIN_EVENT, userVO);

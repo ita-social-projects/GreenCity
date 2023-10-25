@@ -7,6 +7,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
+import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
@@ -19,6 +20,7 @@ import greencity.repository.AchievementCategoryRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,7 @@ public class AchievementCalculation {
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCategoryRepo achievementCategoryRepo;
+    private final ModelMapper modelMapper;
 
     /**
      * Constructor for initializing the required services and repositories.
@@ -47,7 +50,7 @@ public class AchievementCalculation {
         UserAchievementRepo userAchievementRepo,
         UserRepo userRepo,
         AchievementRepo achievementRepo, RatingCalculation ratingCalculation,
-        AchievementCategoryRepo achievementCategoryRepo) {
+        AchievementCategoryRepo achievementCategoryRepo, ModelMapper modelMapper) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -56,6 +59,7 @@ public class AchievementCalculation {
         this.achievementRepo = achievementRepo;
         this.ratingCalculation = ratingCalculation;
         this.achievementCategoryRepo = achievementCategoryRepo;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -76,7 +80,7 @@ public class AchievementCalculation {
         userActionService.updateUserActions(userActionVO);
         if (achievementAction.equals(AchievementAction.ASSIGN)) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count);
-        } else {
+        } else if (achievementAction.equals(AchievementAction.DELETE)) {
             deleteAchievementFromUser(user, achievementCategoryVO.getId());
         }
     }
@@ -88,23 +92,22 @@ public class AchievementCalculation {
         return count;
     }
 
-    private void saveAchievementToUser(UserVO user, Long achievementCategoryId, int count) {
+    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
                 achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
                     .orElseThrow(() -> new NoSuchElementException(
                         ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
+            User user = modelMapper.map(userVO, User.class);
             UserAchievement userAchievement = UserAchievement.builder()
                 .achievement(achievement)
-                .user(userRepo.findById(user.getId())
-                    .orElseThrow(
-                        () -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + user.getId())))
+                .user(user)
                 .build();
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
-            ratingCalculation.ratingCalculation(reason, user);
+            ratingCalculation.ratingCalculation(reason, userVO);
             userAchievementRepo.save(userAchievement);
-            calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
+            calculateAchievement(userVO, AchievementCategoryType.ACHIEVEMENT, AchievementAction.ASSIGN);
         }
     }
 
