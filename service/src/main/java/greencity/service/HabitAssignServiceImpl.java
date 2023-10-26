@@ -223,8 +223,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                     user.getCustomShoppingListItems().add(customShoppingListItem);
                     customShoppingListItemRepo.save(customShoppingListItem);
                 } else {
-                    throw new CustomShoppingListItemNotSavedException(
-                        ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + customShoppingListItem.getText());
+                    throw new CustomShoppingListItemNotSavedException(String.format(
+                        ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_EXISTS, customShoppingListItem.getText()));
                 }
             });
         }

@@ -107,6 +107,8 @@ public final class ErrorMessage {
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
         "This CustomShoppingListItem(s) already exist(s): ";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_EXISTS =
+        "The CustomShoppingListItem with text: %s already exists";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND =
         "CustomShoppingListItem(s) with this id not found: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
