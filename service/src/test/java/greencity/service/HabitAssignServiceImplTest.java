@@ -426,7 +426,7 @@ class HabitAssignServiceImplTest {
             + ModelUtils.getCustomShoppingListItem().getText();
 
         CustomShoppingListItemNotSavedException exception = assertThrows(CustomShoppingListItemNotSavedException.class,
-            () -> habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+            () -> habitAssignService.assignCustomHabitForUser(1L, userVO,
                 habitAssignCustomPropertiesDtoWithCustomShoppingListItem));
         assertEquals(expectedErrorMessage, exception.getMessage());
 
