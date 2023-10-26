@@ -422,10 +422,13 @@ class HabitAssignServiceImplTest {
             .thenReturn(ModelUtils.getCustomShoppingListItem());
         when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
         when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        String expectedErrorMessage = ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED
+            + ModelUtils.getCustomShoppingListItem().getText();
 
-        assertThrows(CustomShoppingListItemNotSavedException.class,
+        CustomShoppingListItemNotSavedException exception = assertThrows(CustomShoppingListItemNotSavedException.class,
             () -> habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
                 habitAssignCustomPropertiesDtoWithCustomShoppingListItem));
+        assertEquals(expectedErrorMessage, exception.getMessage());
 
         verify(modelMapper).map(userVO, User.class);
         verify(habitAssignRepo).findAllByUserId(userVO.getId());
