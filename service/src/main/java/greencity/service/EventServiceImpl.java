@@ -686,17 +686,21 @@ public class EventServiceImpl implements EventService {
 
     private List<Event> filterByTags(List<Event> events, List<String> tags) {
         List<Event> filteredByTags = new ArrayList<>();
-        for (String eventTag : tags) {
-            if (ECONOMIC_TAG.equalsIgnoreCase(eventTag)) {
-                filteredByTags.addAll(getEconomicEvents(events));
+        tags.stream().filter(Objects::nonNull).forEach(tag -> {
+            switch (tag) {
+                case ECONOMIC_TAG:
+                    filteredByTags.addAll(getEventsByTagName(events, ECONOMIC_TAG));
+                    break;
+                case ENVIRONMENTAL_TAG:
+                    filteredByTags.addAll(getEventsByTagName(events, ENVIRONMENTAL_TAG));
+                    break;
+                case SOCIAL_TAG:
+                    filteredByTags.addAll(getEventsByTagName(events, SOCIAL_TAG));
+                    break;
+                default:
+                    break;
             }
-            if (ENVIRONMENTAL_TAG.equalsIgnoreCase(eventTag)) {
-                filteredByTags.addAll(getEnvironmentalEvents(events));
-            }
-            if (SOCIAL_TAG.equalsIgnoreCase(eventTag)) {
-                filteredByTags.addAll(getSocialEvents(events));
-            }
-        }
+        });
         return filteredByTags;
     }
 
@@ -731,21 +735,11 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList()).contains(userId)).collect(Collectors.toList());
     }
 
-    private List<Event> getSocialEvents(List<Event> events) {
+    private List<Event> getEventsByTagName(final List<Event> events, final String tag) {
         return events.stream().filter(event -> event.getTags().stream()
-            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 12L))
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> getEnvironmentalEvents(List<Event> events) {
-        return events.stream().filter(event -> event.getTags().stream()
-            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 13L))
-            .collect(Collectors.toList());
-    }
-
-    private List<Event> getEconomicEvents(List<Event> events) {
-        return events.stream().filter(event -> event.getTags().stream()
-            .allMatch(tag -> tag.getType().equals(TagType.EVENT) && tag.getId() == 14L))
+            .map(Tag::getTagTranslations)
+            .flatMap(Collection::stream)
+            .anyMatch(tagTranslation -> tag.equalsIgnoreCase(tagTranslation.getName())))
             .collect(Collectors.toList());
     }
 
