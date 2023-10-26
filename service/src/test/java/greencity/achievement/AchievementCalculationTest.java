@@ -27,7 +27,9 @@ import org.modelmapper.ModelMapper;
 
 import greencity.entity.Achievement;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

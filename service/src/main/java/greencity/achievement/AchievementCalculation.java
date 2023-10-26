@@ -14,7 +14,6 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.UserAchievementRepo;
-import greencity.repository.AchievementCategoryRepo;
 import greencity.service.AchievementCategoryService;
 import greencity.service.AchievementService;
 import greencity.service.UserActionService;
