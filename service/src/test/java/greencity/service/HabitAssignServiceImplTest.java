@@ -36,16 +36,7 @@ import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.InvalidStatusException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
-import greencity.exception.exceptions.UserHasNoFriendWithIdException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.exception.exceptions.*;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -410,6 +401,27 @@ class HabitAssignServiceImplTest {
         verify(habitRepo).findById(habit.getId());
         verify(modelMapper).map(habitAssign, HabitAssignManagementDto.class);
         verify(habitAssignRepo, times(2)).save(any());
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsCustomShoppingListItemNotSavedException() {
+        user.setCustomShoppingListItems(List.of(ModelUtils.getCustomShoppingListItem()));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class))
+            .thenReturn(ModelUtils.getCustomShoppingListItem());
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+
+        assertThrows(CustomShoppingListItemNotSavedException.class,
+            () -> habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+                habitAssignCustomPropertiesDtoWithCustomShoppingListItem));
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitAssignRepo).findAllByUserId(userVO.getId());
+        verify(modelMapper).map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class);
+        verify(habitRepo).findById(habit.getId());
+        verify(habitAssignRepo).save(any());
     }
 
     @Test

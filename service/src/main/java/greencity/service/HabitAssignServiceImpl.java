@@ -53,16 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.InvalidStatusException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
-import greencity.exception.exceptions.UserHasNoFriendWithIdException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.exception.exceptions.*;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
@@ -223,10 +214,18 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (!CollectionUtils.isEmpty(saveList)) {
             saveList.forEach(item -> {
                 CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
-                customShoppingListItem.setUser(user);
-                customShoppingListItem.setHabit(habit);
-                user.getCustomShoppingListItems().add(customShoppingListItem);
-                customShoppingListItemRepo.save(customShoppingListItem);
+                List<CustomShoppingListItem> duplicates = user.getCustomShoppingListItems().stream()
+                    .filter(userItem -> userItem.getText().equals(customShoppingListItem.getText()))
+                    .collect(Collectors.toList());
+                if (duplicates.isEmpty()) {
+                    customShoppingListItem.setUser(user);
+                    customShoppingListItem.setHabit(habit);
+                    user.getCustomShoppingListItems().add(customShoppingListItem);
+                    customShoppingListItemRepo.save(customShoppingListItem);
+                } else {
+                    throw new CustomShoppingListItemNotSavedException(
+                        ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + customShoppingListItem.getText());
+                }
             });
         }
     }
