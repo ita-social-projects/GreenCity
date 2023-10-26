@@ -53,7 +53,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import greencity.exception.exceptions.*;
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.InvalidStatusException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.ShoppingListItemNotFoundException;
+import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
+import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
+import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
+import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
 import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
