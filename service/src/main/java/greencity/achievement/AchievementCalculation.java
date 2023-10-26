@@ -34,7 +34,6 @@ public class AchievementCalculation {
     private UserAchievementRepo userAchievementRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
-    private final AchievementCategoryRepo achievementCategoryRepo;
     private final ModelMapper modelMapper;
 
     /**
@@ -45,15 +44,13 @@ public class AchievementCalculation {
         @Lazy AchievementService achievementService,
         AchievementCategoryService achievementCategoryService,
         UserAchievementRepo userAchievementRepo,
-        AchievementRepo achievementRepo, RatingCalculation ratingCalculation,
-        AchievementCategoryRepo achievementCategoryRepo, ModelMapper modelMapper) {
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, ModelMapper modelMapper) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
         this.userAchievementRepo = userAchievementRepo;
         this.achievementRepo = achievementRepo;
         this.ratingCalculation = ratingCalculation;
-        this.achievementCategoryRepo = achievementCategoryRepo;
         this.modelMapper = modelMapper;
     }
 
@@ -72,18 +69,16 @@ public class AchievementCalculation {
         UserActionVO userActionVO =
             userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVO.getId());
         int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);
-        ;
         userActionVO.setCount(count > 0 ? count : 0);
         userActionService.updateUserActions(userActionVO);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
-            saveAchievementToUser(user, achievementCategoryVO.getId(), count, userActionVO);
+            saveAchievementToUser(user, achievementCategoryVO.getId(), count);
         } else if (AchievementAction.DELETE.equals(achievementAction)) {
-            deleteAchievementFromUser(user, achievementCategoryVO.getId(), userActionVO);
+            deleteAchievementFromUser(user, achievementCategoryVO.getId());
         }
     }
 
-    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count,
-        UserActionVO userActionVO) {
+    private void saveAchievementToUser(UserVO userVO, Long achievementCategoryId, int count) {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
@@ -101,7 +96,7 @@ public class AchievementCalculation {
         }
     }
 
-    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId, UserActionVO userActionVO) {
+    private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId) {
         List<Achievement> achievements =
             achievementRepo.findUnAchieved(user.getId(), achievementCategoryId);
         if (!achievements.isEmpty()) {

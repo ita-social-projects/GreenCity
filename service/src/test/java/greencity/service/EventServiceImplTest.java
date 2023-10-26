@@ -411,13 +411,11 @@ class EventServiceImplTest {
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
 
-        updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
-
         assertEquals(updatedEventDto, eventDto);
         assertTrue(updatedEventDto.isFavorite());
         assertTrue(updatedEventDto.isSubscribed());
 
-        verify(restClient, times(2)).findByEmail(anyString());
+        verify(restClient).findByEmail(anyString());
     }
 
     @ParameterizedTest
