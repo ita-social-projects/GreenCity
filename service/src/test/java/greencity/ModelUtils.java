@@ -1845,6 +1845,10 @@ public class ModelUtils {
         Set<User> followers = new HashSet<>();
         Tag tag1 = getEventTag();
         tag1.setId(12L);
+        Tag tag2 = getEventTag();
+        tag2.setId(13L);
+        Tag tag3 = getEventTag();
+        tag3.setId(14L);
         followers.add(getUser());
         event.setOpen(true);
         event.setDescription("Description");
@@ -1858,7 +1862,7 @@ public class ModelUtils {
             ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getKyivAddress(), null));
         event.setDates(dates);
-        event.setTags(List.of(tag1));
+        event.setTags(List.of(tag1, tag2, tag3));
         event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
@@ -3084,7 +3088,7 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
             .build();
     }
 
