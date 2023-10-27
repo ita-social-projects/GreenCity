@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
@@ -18,11 +19,14 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
+import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
+import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import lombok.SneakyThrows;
@@ -39,6 +43,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +104,14 @@ class EventServiceImplTest {
 
     @InjectMocks
     EventServiceImpl eventService;
+    @Mock
+    private AchievementCalculation achievementCalculation;
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
 
     @Test
     void save() {
@@ -398,21 +411,20 @@ class EventServiceImplTest {
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
 
-        updatedEventDto = eventService.update(eventToUpdateDto, ModelUtils.getUser().getEmail(), null);
-
         assertEquals(updatedEventDto, eventDto);
         assertTrue(updatedEventDto.isFavorite());
         assertTrue(updatedEventDto.isSubscribed());
+
+        verify(restClient).findByEmail(anyString());
     }
 
     @ParameterizedTest
     @MethodSource("provideUserVOForDeleteEventTest")
     void delete(UserVO userVO, User user) {
         Event event = ModelUtils.getEvent();
-        when(modelMapper.map(restClient.findByEmail(userVO.getEmail()), User.class))
-            .thenReturn(user);
         when(eventRepo.getOne(any())).thenReturn(event);
         doNothing().when(fileService).delete(any());
+        when(restClient.findByEmail(userVO.getEmail())).thenReturn(userVO);
 
         eventService.delete(event.getId(), userVO.getEmail());
 
@@ -428,14 +440,15 @@ class EventServiceImplTest {
 
     @Test
     void deleteWithException() {
+        UserVO userVO = ModelUtils.getUserVO();
+        String userEmail = userVO.getEmail();
+        userVO.setId(33L);
         Event event = ModelUtils.getEvent();
-        User user = ModelUtils.getUser();
-        user.setId(2L);
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
+        when(restClient.findByEmail(userEmail)).thenReturn(userVO);
         when(eventRepo.getOne(any())).thenReturn(event);
-        String userEmail = ModelUtils.getUserVO().getEmail();
         Long eventId = event.getId();
         assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
+        verify(restClient).findByEmail(userEmail);
     }
 
     @Test
@@ -1073,11 +1086,12 @@ class EventServiceImplTest {
         userSet.add(user);
         event.setAttenders(userSet);
         when(eventRepo.findById(any())).thenReturn(Optional.of(event));
-        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class)).thenReturn(user);
+        when(restClient.findByEmail(user.getEmail())).thenReturn(ModelUtils.getUserVO());
 
         eventService.removeAttender(event.getId(), user.getEmail());
 
         verify(eventRepo).save(event);
+        verify(restClient).findByEmail(user.getEmail());
     }
 
     @Test

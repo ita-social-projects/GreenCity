@@ -26,8 +26,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import greencity.entity.Achievement;
+
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,39 +83,16 @@ class AchievementCalculationTest {
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
         when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
             .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
 
-        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(1L,
+        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN));
-    }
-
-    @Test
-    void calculateAchievement_UNDO_reasonNull() {
-        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
-        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
-        UserVO userVO = ModelUtils.getUserVO();
-        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
-        User user = ModelUtils.getUser();
-        Achievement achievement = ModelUtils.getAchievement();
-        achievement.setTitle("Bla bla");
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        user.setUserAchievements(Collections.singletonList(userAchievement));
-        AchievementVO achievementVO =
-            new AchievementVO(1L, "CREATED_5_NEWS___", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(),
-                1);
-        when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
-            .thenReturn(achievementCategoryVO);
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
-            .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementService.findByCategoryIdAndCondition(2L, -1)).thenReturn(achievementVO);
-
-        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(1L,
-            AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE));
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService).findUserActionByUserIdAndAchievementCategory(any(), any());
+        verify(achievementRepo).findByAchievementCategoryIdAndCondition(anyLong(), any());
+        verify(achievementCategoryService).findByName("CREATE_NEWS");
+        verify(achievementService).findByCategoryIdAndCondition(2L, 1);
     }
 
     @Test
@@ -133,12 +112,38 @@ class AchievementCalculationTest {
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
         when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
             .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
-        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.ASSIGN);
         assertEquals(2, userActionVO.getCount());
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService, times(2)).findUserActionByUserIdAndAchievementCategory(any(), any());
+        verify(achievementRepo).findByAchievementCategoryIdAndCondition(anyLong(), any());
+        verify(achievementCategoryService).findByName("ACHIEVEMENT");
+        verify(achievementCategoryService).findByName("CREATE_NEWS");
+        verify(modelMapper).map(userVO, User.class);
+        verify(achievementService).findByCategoryIdAndCondition(2L, 1);
+    }
+
+    @Test
+    void calculateAchievement_Null_AchievementAction() {
+        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
+        UserVO userVO = ModelUtils.getUserVO();
+        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, 0);
+        User user = ModelUtils.getUser();
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        user.setUserAchievements(Collections.singletonList(userAchievement));
+        when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
+            .thenReturn(achievementCategoryVO);
+        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            null);
+        assertEquals(0, userActionVO.getCount());
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService).findUserActionByUserIdAndAchievementCategory(any(), any());
     }
 
     @Test
@@ -156,14 +161,21 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
-        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
-            .thenReturn(Optional.of(achievement));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
         when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
-        when(achievementService.findByCategoryIdAndCondition(2L, -1)).thenReturn(achievementVO);
-        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
-        assertEquals(-2, userActionVO.getCount());
+        when(achievementRepo.findUnAchieved(1L, 2L)).thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(achievementRepo.findUnAchieved(1L, 1L)).thenReturn(Collections.emptyList());
+
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.DELETE);
+
+        assertEquals(0, userActionVO.getCount());
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService, times(2)).findUserActionByUserIdAndAchievementCategory(any(), any());
+        verify(achievementRepo).findUnAchieved(1L, 1L);
+        verify(achievementRepo).findUnAchieved(1L, 2L);
+        verify(achievementCategoryService).findByName("ACHIEVEMENT");
+        verify(achievementCategoryService).findByName("CREATE_NEWS");
     }
 
     @Test
@@ -181,7 +193,10 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
             .thenReturn(achievementCategoryVO);
         when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(userActionVO);
-        achievementCalculation.calculateAchievement(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        achievementCalculation.calculateAchievement(ModelUtils.getUserVO(), AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.ASSIGN);
         assertEquals(count + 1, userActionVO.getCount());
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService).findUserActionByUserIdAndAchievementCategory(1L, 1L);
     }
 }

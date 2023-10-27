@@ -80,9 +80,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
+        UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
-            .calculateAchievement(toSave.getAuthor().getId(),
-                AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+            .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
         return addEcoNewsDtoResponse;
     }
@@ -101,7 +101,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
         UserVO user = userService.findByEmail(email);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
-        achievementCalculation.calculateAchievement(toSave.getAuthor().getId(),
+        achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         return ecoNewsDto;
     }
@@ -334,7 +334,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_NEWS, user);
-        achievementCalculation.calculateAchievement(user.getId(),
+        achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
 
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
@@ -426,7 +426,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user.getId(), AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+        achievementCalculation.calculateAchievement(user, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
             AchievementAction.ASSIGN);
     }
 
@@ -440,7 +440,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user.getId(),
+        achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
@@ -530,8 +530,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         }
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));

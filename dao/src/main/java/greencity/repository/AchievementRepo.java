@@ -13,6 +13,26 @@ import java.util.Optional;
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
     /**
+     * Retrieves a list of achievements that a specific user hasn't achieved yet
+     * within a specified achievement category. The method identifies unachieved
+     * achievements by comparing user actions count with the conditions of
+     * achievements and by checking if a user already has the achievement in the
+     * user_achievements table.
+     *
+     * @param userId                The unique identifier of the user.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category.
+     * @return A list of Achievement objects that the user hasn't achieved within
+     *         the specified category.
+     */
+    @Query(value = "Select ach.* from achievements as ach"
+        + "            join user_achievements uach on ach.id = uach.achievement_id"
+        + "            join user_actions ua on ua.count < ach.condition"
+        + "            where uach.user_id=:userId and ach.achievement_category_id=:achievementCategoryId",
+        nativeQuery = true)
+    List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId);
+
+    /**
      * Searches for achievements based on a query string and returns a paginated
      * result.
      *
