@@ -236,10 +236,12 @@ class AchievementServiceImplTest {
 
     @Test
     void calculateAchievement() {
+        when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
         achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         verify(achievementCalculation).calculateAchievement(
-            anyLong(),
+            eq(ModelUtils.getUserVO()),
             any(AchievementCategoryType.class),
             eq(AchievementAction.ASSIGN));
+        verify(userService).findById(anyLong());
     }
 }

@@ -21,6 +21,7 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +45,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final AchievementCalculation achievementCalculation;
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
-    private final greencity.rating.RatingCalculation ratingCalculation;
+    private final RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
 
@@ -79,7 +80,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             }
         }
         achievementCalculation
-            .calculateAchievement(userVO.getId(),
+            .calculateAchievement(userVO,
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
 
@@ -173,7 +174,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             comment.getComments().forEach(c -> c.setStatus(CommentStatus.DELETED));
         }
         comment.setStatus(CommentStatus.DELETED);
-        achievementCalculation.calculateAchievement(userVO.getId(),
+        achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
         ecoNewsCommentRepo.save(comment);
@@ -214,15 +215,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         EcoNewsCommentVO ecoNewsCommentVO = modelMapper.map(comment, EcoNewsCommentVO.class);
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
-                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }
