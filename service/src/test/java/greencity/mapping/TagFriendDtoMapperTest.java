@@ -12,7 +12,7 @@ import static greencity.ModelUtils.getTagUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class TagFriendDtoMapperTest {
+class TagFriendDtoMapperTest {
     @InjectMocks
     TagFriendDtoMapper mapper;
 
