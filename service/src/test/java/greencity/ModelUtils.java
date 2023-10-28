@@ -116,6 +116,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.TagFriendDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -3131,6 +3132,22 @@ public class ModelUtils {
         return AmountCommentLikesDto.builder()
             .id(1L)
             .amountLikes(2)
+            .build();
+    }
+
+    public static User getTagUser() {
+        return User.builder()
+            .id(1L)
+            .name("Test")
+            .profilePicturePath("Pic")
+            .build();
+    }
+
+    public static TagFriendDto getTagFriendDto() {
+        return TagFriendDto.builder()
+            .friendId(1L)
+            .friendName("Test")
+            .profilePicture("Pic")
             .build();
     }
 }

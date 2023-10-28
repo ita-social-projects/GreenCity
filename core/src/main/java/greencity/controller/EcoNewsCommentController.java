@@ -1,17 +1,26 @@
 package greencity.controller;
 
-import greencity.annotations.*;
-import io.swagger.annotations.*;
+import greencity.annotations.ApiPageable;
+import greencity.annotations.ApiPageableWithoutSort;
+import greencity.annotations.CurrentUser;
 
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.*;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.user.TagFriendDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 
 import javax.validation.constraints.NotBlank;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Validated
 @AllArgsConstructor
@@ -36,7 +46,7 @@ public class EcoNewsCommentController {
      *
      * @param econewsId id of {@link EcoNewsVO} to add comment to.
      * @param request   - dto for {@link EcoNewsCommentVO} entity.
-     * @return dto {@link greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse}
+     * @return dto {@link AddEcoNewsCommentDtoResponse}
      */
     @ApiOperation(value = "Add comment.")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -221,5 +231,21 @@ public class EcoNewsCommentController {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(ecoNewsCommentService.findAllActiveReplies(pageable, parentCommentId, user));
+    }
+
+    /**
+     * Method for getting all friends available to tag in comment.
+     *
+     * @param searchQuery friend name you want to tag.
+     * @param userVO      current user {@link UserVO}.
+     *
+     * @return list of {@link TagFriendDto} friends.
+     * @author Anton Bondar
+     */
+    @MessageMapping("/getAllFriendsToTagInComment")
+    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(@RequestParam String searchQuery,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(ecoNewsCommentService.searchFriends(searchQuery, userVO.getId()));
     }
 }
