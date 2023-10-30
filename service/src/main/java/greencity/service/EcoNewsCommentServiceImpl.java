@@ -9,6 +9,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -26,6 +28,7 @@ import greencity.repository.EcoNewsCommentRepo;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -48,15 +51,15 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
+    private final UserRepo userRepo;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
      *
-     * @param econewsId                   id of {@link greencity.entity.EcoNews} to
-     *                                    which we save comment.
-     * @param addEcoNewsCommentDtoRequest dto with
-     *                                    {@link greencity.entity.EcoNewsComment}
-     *                                    text, parentCommentId.
+     * @param econewsId                   id of {@link EcoNews} to which we save
+     *                                    comment.
+     * @param addEcoNewsCommentDtoRequest dto with {@link EcoNewsComment} text,
+     *                                    parentCommentId.
      * @param userVO                      {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
@@ -93,8 +96,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * Method returns all comments to certain ecoNews specified by ecoNewsId.
      *
      * @param userVO    current {@link User}
-     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we
-     *                  search for comments
+     * @param ecoNewsId specifies {@link EcoNews} to which we search for comments
      * @return all comments to certain ecoNews specified by ecoNewsId.
      */
     @Override
@@ -126,8 +128,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to
-     *                        which we search for replies
+     * @param parentCommentId specifies {@link EcoNewsComment} to which we search
+     *                        for replies
      * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      */
@@ -156,10 +158,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to mark {@link greencity.entity.EcoNewsComment} specified by id as
-     * deleted.
+     * Method to mark {@link EcoNewsComment} specified by id as deleted.
      *
-     * @param id     of {@link greencity.entity.EcoNewsComment} to delete.
+     * @param id     of {@link EcoNewsComment} to delete.
      * @param userVO current {@link User} that wants to delete.
      */
     @Override
@@ -181,11 +182,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to change the existing {@link greencity.entity.EcoNewsComment}.
+     * Method to change the existing {@link EcoNewsComment}.
      *
-     * @param text   new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id     to specify {@link greencity.entity.EcoNewsComment} that user
-     *               wants to change.
+     * @param text   new text of {@link EcoNewsComment}.
+     * @param id     to specify {@link EcoNewsComment} that user wants to change.
      * @param userVO current {@link User} that wants to change.
      */
     @Override
@@ -202,10 +202,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to like or dislike {@link greencity.entity.EcoNewsComment} specified
-     * by id.
+     * Method to like or dislike {@link EcoNewsComment} specified by id.
      *
-     * @param id     of {@link greencity.entity.EcoNewsComment} to like/dislike.
+     * @param id     of {@link EcoNewsComment} to like/dislike.
      * @param userVO current {@link User} that wants to like/dislike.
      */
     @Override
@@ -223,8 +222,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method returns count of likes to certain
-     * {@link greencity.entity.EcoNewsComment} specified by id.
+     * Method returns count of likes to certain {@link EcoNewsComment} specified by
+     * id.
      *
      * @param amountCommentLikesDto dto with id and count likes for comments.
      */
@@ -243,7 +242,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to count replies to certain {@link greencity.entity.EcoNewsComment}.
+     * Method to count replies to certain {@link EcoNewsComment}.
      *
      * @param id specifies parent comment to all replies
      * @return amount of replies
@@ -257,10 +256,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to count not deleted comments to certain
-     * {@link greencity.entity.EcoNews}.
+     * Method to count not deleted comments to certain {@link EcoNews}.
      *
-     * @param ecoNewsId to specify {@link greencity.entity.EcoNews}
+     * @param ecoNewsId to specify {@link EcoNews}
      * @return amount of comments
      */
     @Override
@@ -270,12 +268,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method to get all active comments to {@link greencity.entity.EcoNews}
-     * specified by ecoNewsId.
+     * Method to get all active comments to {@link EcoNews} specified by ecoNewsId.
      *
      * @param pageable  page of news.
-     * @param ecoNewsId specifies {@link greencity.entity.EcoNews} to which we
-     *                  search for comments
+     * @param ecoNewsId specifies {@link EcoNews} to which we search for comments
      * @return all active comments to certain ecoNews specified by ecoNewsId.
      * @author Taras Dovganyuk
      */
@@ -310,8 +306,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method returns all replies to certain comment specified by parentCommentId.
      *
-     * @param parentCommentId specifies {@link greencity.entity.EcoNewsComment} to
-     *                        which we search for replies
+     * @param parentCommentId specifies {@link EcoNewsComment} to which we search
+     *                        for replies
      * @param userVO          current {@link User}
      * @return all replies to certain comment specified by parentCommentId.
      * @author Taras Dovganyuk
@@ -340,5 +336,24 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
             pages.getTotalPages());
+    }
+
+    /**
+     * Method that allow you to search Fiends by name.
+     *
+     * @param searchFriend dto with current user ID and search query
+     *                     {@link SearchFriendDto}.
+     *
+     * @return list of {@link TagFriendDto} friends.
+     * @author Anton Bondar
+     */
+    @Override
+    @Transactional
+    public List<TagFriendDto> searchFriends(SearchFriendDto searchFriend) {
+        List<User> users = userRepo.searchFriends(searchFriend.getCurrentUserId(), searchFriend.getSearchQuery());
+        return users
+            .stream()
+            .map(u -> modelMapper.map(u, TagFriendDto.class))
+            .collect(Collectors.toList());
     }
 }
