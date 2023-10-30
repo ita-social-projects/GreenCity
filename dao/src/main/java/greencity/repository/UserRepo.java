@@ -398,8 +398,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     /**
      * Method to search User's friends by name.
      *
-     * @param searchQuery   - friend name you want to search.
      * @param currentUserId current user ID {@link Long}.
+     * @param searchQuery   friend name you want to search {@link String}.
      *
      * @return list of {@link User} friends.
      * @author Anton Bondar
