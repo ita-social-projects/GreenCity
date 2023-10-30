@@ -243,7 +243,7 @@ public class EcoNewsCommentController {
      * @author Anton Bondar
      */
     @MessageMapping("/getAllFriendsToTagInComment")
-    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(@RequestParam String searchQuery,
+    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(@Payload String searchQuery,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ecoNewsCommentService.searchFriends(searchQuery, userVO.getId()));
