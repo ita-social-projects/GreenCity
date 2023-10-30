@@ -236,17 +236,15 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method for getting all friends available to tag in comment.
+     * Method for getting all friends (related to current user) available to tag in
+     * comment.
      *
      * @param searchFriend dto with current user ID and search query
      *                     {@link SearchFriendDto}.
-     *
-     * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
     @MessageMapping("/getAllFriendsToTagInComment")
-    @SendTo("/topic/getAllFriendsToTagInComment")
-    public List<TagFriendDto> getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
-        return ecoNewsCommentService.searchFriends(searchFriend);
+    public void getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
+        ecoNewsCommentService.searchFriends(searchFriend);
     }
 }

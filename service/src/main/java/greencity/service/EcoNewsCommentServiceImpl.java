@@ -339,21 +339,20 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method that allow you to search Fiends by name.
+     * Method that allow you to search friends (related to current user) by name.
      *
      * @param searchFriend dto with current user ID and search query
      *                     {@link SearchFriendDto}.
-     *
-     * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
     @Override
     @Transactional
-    public List<TagFriendDto> searchFriends(SearchFriendDto searchFriend) {
-        List<User> users = userRepo.searchFriends(searchFriend.getCurrentUserId(), searchFriend.getSearchQuery());
-        return users
-            .stream()
-            .map(u -> modelMapper.map(u, TagFriendDto.class))
-            .collect(Collectors.toList());
+    public void searchFriends(SearchFriendDto searchFriend) {
+        List<TagFriendDto> friends =
+            userRepo.searchFriends(searchFriend.getCurrentUserId(), searchFriend.getSearchQuery())
+                .stream()
+                .map(u -> modelMapper.map(u, TagFriendDto.class))
+                .collect(Collectors.toList());
+        messagingTemplate.convertAndSend("/topic/" + searchFriend.getCurrentUserId() + "/searchFriends", friends);
     }
 }
