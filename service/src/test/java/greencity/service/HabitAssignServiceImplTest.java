@@ -237,7 +237,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Collections.emptyList());
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
-        verify(shoppingListItemRepo, times(0)).getShoppingListByListOfId(any());
+        verify(shoppingListItemRepo, never()).getShoppingListByListOfId(any());
     }
 
     @Test
@@ -251,7 +251,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Arrays.asList(2L, 3L, 4L));
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
-        verify(shoppingListItemRepo, times(1)).getShoppingListByListOfId(any());
+        verify(shoppingListItemRepo).getShoppingListByListOfId(any());
     }
 
     @Test
