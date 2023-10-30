@@ -58,6 +58,7 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.friends.SearchFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
@@ -116,6 +117,7 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -3131,6 +3133,29 @@ public class ModelUtils {
         return AmountCommentLikesDto.builder()
             .id(1L)
             .amountLikes(2)
+            .build();
+    }
+
+    public static User getTagUser() {
+        return User.builder()
+            .id(1L)
+            .name("Test")
+            .profilePicturePath("Pic")
+            .build();
+    }
+
+    public static TagFriendDto getTagFriendDto() {
+        return TagFriendDto.builder()
+            .friendId(1L)
+            .friendName("Test")
+            .profilePicture("Pic")
+            .build();
+    }
+
+    public static SearchFriendDto getSearchFriendDto() {
+        return SearchFriendDto.builder()
+            .currentUserId(1L)
+            .searchQuery("Test")
             .build();
     }
 }

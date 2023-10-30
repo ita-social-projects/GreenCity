@@ -173,6 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/filter")
             .permitAll()
             .antMatchers(HttpMethod.GET,
+                "/econews/comments/getAllFriendsToTagInComment",
                 "/achievements",
                 "/advices/random/{habitId}",
                 "/advices",

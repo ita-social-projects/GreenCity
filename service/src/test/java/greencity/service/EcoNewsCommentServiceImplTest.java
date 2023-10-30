@@ -1,16 +1,25 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getSearchFriendDto;
+import static greencity.ModelUtils.getTagFriendDto;
+import static greencity.ModelUtils.getTagUser;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.dto.friends.TagFriendDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
@@ -37,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 
 import greencity.repository.EcoNewsRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,6 +83,9 @@ class EcoNewsCommentServiceImplTest {
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementCalculation achievementCalculation;
+
+    @Mock
+    private UserRepo userRepo;
 
     private String token = "token";
 
@@ -542,5 +555,19 @@ class EcoNewsCommentServiceImplTest {
 
         verify(ecoNewsCommentRepo).findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest,
             11111L, CommentStatus.DELETED);
+    }
+
+    @Test
+    void searchFriendsTest() {
+        var user = getTagUser();
+        var tagFriendDto = getTagFriendDto();
+        var searchFriendDto = getSearchFriendDto();
+        when(userRepo.searchFriends(1L, "Test")).thenReturn(List.of(user));
+        when(modelMapper.map(user, TagFriendDto.class)).thenReturn(tagFriendDto);
+
+        ecoNewsCommentService.searchFriends(searchFriendDto);
+
+        verify(userRepo).searchFriends(1L, "Test");
+        verify(modelMapper).map(user, TagFriendDto.class);
     }
 }
