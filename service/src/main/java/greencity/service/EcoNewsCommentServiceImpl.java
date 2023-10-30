@@ -9,7 +9,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -340,16 +341,16 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method that allow you to search Fiends by name.
      *
-     * @param searchQuery   friend name you want to search.
-     * @param currentUserId current user ID {@link Long}.
+     * @param searchFriend dto with current user ID and search query
+     *                     {@link SearchFriendDto}.
      *
      * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
     @Override
     @Transactional
-    public List<TagFriendDto> searchFriends(String searchQuery, Long currentUserId) {
-        List<User> users = userRepo.searchFriends(searchQuery, currentUserId);
+    public List<TagFriendDto> searchFriends(SearchFriendDto searchFriend) {
+        List<User> users = userRepo.searchFriends(searchFriend.getCurrentUserId(), searchFriend.getSearchQuery());
         return users
             .stream()
             .map(u -> modelMapper.map(u, TagFriendDto.class))

@@ -7,7 +7,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 
@@ -121,11 +122,11 @@ public interface EcoNewsCommentService {
     /**
      * Method that allow you to search Fiends by name.
      *
-     * @param searchQuery   friend name you want to search.
-     * @param currentUserId current user ID {@link Long}.
+     * @param searchFriend dto with current user ID and search query
+     *                     {@link SearchFriendDto}.
      *
      * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
-    List<TagFriendDto> searchFriends(String searchQuery, Long currentUserId);
+    List<TagFriendDto> searchFriends(SearchFriendDto searchFriend);
 }

@@ -1,12 +1,13 @@
 package greencity.service;
 
+import static greencity.ModelUtils.getSearchFriendDto;
 import static greencity.ModelUtils.getTagFriendDto;
 import static greencity.ModelUtils.getTagUser;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
@@ -560,12 +561,13 @@ class EcoNewsCommentServiceImplTest {
     void searchFriendsTest() {
         var user = getTagUser();
         var tagFriendDto = getTagFriendDto();
-        when(userRepo.searchFriends("Test", 1L)).thenReturn(List.of(user));
+        var searchFriendDto = getSearchFriendDto();
+        when(userRepo.searchFriends(1L, "Test")).thenReturn(List.of(user));
         when(modelMapper.map(user, TagFriendDto.class)).thenReturn(tagFriendDto);
 
-        ecoNewsCommentService.searchFriends("Test", 1L);
+        ecoNewsCommentService.searchFriends(searchFriendDto);
 
-        verify(userRepo).searchFriends("Test", 1L);
+        verify(userRepo).searchFriends(1L, "Test");
         verify(modelMapper).map(user, TagFriendDto.class);
     }
 }

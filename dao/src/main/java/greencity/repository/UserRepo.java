@@ -407,5 +407,5 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true, value = "SELECT * FROM users u WHERE u.id "
         + "IN (SELECT friend_id AS id FROM users_friends WHERE user_id = :currentUserId AND status = 'FRIEND' "
         + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
-    List<User> searchFriends(String searchQuery, Long currentUserId);
+    List<User> searchFriends(Long currentUserId, String searchQuery);
 }

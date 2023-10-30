@@ -1,4 +1,4 @@
-package greencity.dto.user;
+package greencity.dto.friends;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

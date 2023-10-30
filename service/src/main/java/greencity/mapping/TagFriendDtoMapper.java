@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.entity.User;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

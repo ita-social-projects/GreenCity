@@ -12,7 +12,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.user.TagFriendDto;
+import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 
@@ -237,17 +238,15 @@ public class EcoNewsCommentController {
     /**
      * Method for getting all friends available to tag in comment.
      *
-     * @param searchQuery friend name you want to tag.
-     * @param userVO      current user {@link UserVO}.
+     * @param searchFriend dto with current user ID and search query
+     *                     {@link SearchFriendDto}.
      *
      * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
     @MessageMapping("/getAllFriendsToTagInComment")
     @SendTo("/topic/getAllFriendsToTagInComment")
-    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(String searchQuery,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(ecoNewsCommentService.searchFriends(searchQuery, userVO.getId()));
+    public List<TagFriendDto> getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
+        return ecoNewsCommentService.searchFriends(searchFriend);
     }
 }
