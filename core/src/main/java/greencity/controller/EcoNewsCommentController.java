@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -243,7 +244,8 @@ public class EcoNewsCommentController {
      * @author Anton Bondar
      */
     @MessageMapping("/getAllFriendsToTagInComment")
-    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(@Payload String searchQuery,
+    @SendTo("/topic/getAllFriendsToTagInComment")
+    public ResponseEntity<List<TagFriendDto>> getAllFriendsToTagInComment(String searchQuery,
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ecoNewsCommentService.searchFriends(searchQuery, userVO.getId()));
