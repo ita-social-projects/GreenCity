@@ -13,7 +13,6 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.friends.SearchFriendDto;
-import greencity.dto.friends.TagFriendDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 
@@ -28,13 +27,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Validated
 @AllArgsConstructor
@@ -236,17 +242,15 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method for getting all friends available to tag in comment.
+     * Method for getting all friends (related to current user) available to tag in
+     * comment.
      *
      * @param searchFriend dto with current user ID and search query
      *                     {@link SearchFriendDto}.
-     *
-     * @return list of {@link TagFriendDto} friends.
      * @author Anton Bondar
      */
     @MessageMapping("/getAllFriendsToTagInComment")
-    @SendTo("/topic/getAllFriendsToTagInComment")
-    public List<TagFriendDto> getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
-        return ecoNewsCommentService.searchFriends(searchFriend);
+    public void getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
+        ecoNewsCommentService.searchFriends(searchFriend);
     }
 }
