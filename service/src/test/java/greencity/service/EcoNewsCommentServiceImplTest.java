@@ -558,7 +558,7 @@ class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    void searchFriendsTest() {
+    void searchUsersTest() {
         var user = getTagUser();
         var userTagDto = getUserTagDto();
         var userSearchDto = getUserSearchDto();
@@ -569,6 +569,22 @@ class EcoNewsCommentServiceImplTest {
         ecoNewsCommentService.searchUsers(userSearchDto);
 
         verify(userRepo).searchUsers("Test");
+        verify(modelMapper).map(user, UserTagDto.class);
+    }
+
+    @Test
+    void searchUsersWithNullSearchQueryTest() {
+        var user = getTagUser();
+        var userTagDto = getUserTagDto();
+        var userSearchDto = getUserSearchDto();
+        userSearchDto.setSearchQuery(null);
+
+        when(userRepo.findAll()).thenReturn(List.of(user));
+        when(modelMapper.map(user, UserTagDto.class)).thenReturn(userTagDto);
+
+        ecoNewsCommentService.searchUsers(userSearchDto);
+
+        verify(userRepo).findAll();
         verify(modelMapper).map(user, UserTagDto.class);
     }
 }
