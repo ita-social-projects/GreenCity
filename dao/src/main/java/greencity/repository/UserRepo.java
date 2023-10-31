@@ -396,16 +396,14 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> findRecommendedFriendsByHabits(long userId, Pageable pageable);
 
     /**
-     * Method to search User's friends by name.
+     * Method that allow you to search users by name.
      *
-     * @param currentUserId current user ID {@link Long}.
-     * @param searchQuery   friend name you want to search {@link String}.
+     * @param searchQuery username you want to search {@link String}.
      *
-     * @return list of {@link User} friends.
+     * @return list of {@link User} users.
      * @author Anton Bondar
      */
-    @Query(nativeQuery = true, value = "SELECT * FROM users u WHERE u.id "
-        + "IN (SELECT friend_id AS id FROM users_friends WHERE user_id = :currentUserId AND status = 'FRIEND' "
-        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
-    List<User> searchFriends(Long currentUserId, String searchQuery);
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM users u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    List<User> searchUsers(String searchQuery);
 }

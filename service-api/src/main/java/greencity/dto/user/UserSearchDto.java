@@ -1,4 +1,4 @@
-package greencity.dto.friends;
+package greencity.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class SearchFriendDto {
+public class UserSearchDto {
     private Long currentUserId;
     private String searchQuery;
 }
