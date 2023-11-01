@@ -1,4 +1,4 @@
-package greencity.dto.friends;
+package greencity.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,8 @@ import lombok.ToString;
 @Builder
 @EqualsAndHashCode
 @ToString
-public class TagFriendDto {
-    private Long friendId;
-    private String friendName;
+public class UserTagDto {
+    private Long userId;
+    private String userName;
     private String profilePicture;
 }

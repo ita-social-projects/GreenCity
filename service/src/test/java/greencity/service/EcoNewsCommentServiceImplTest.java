@@ -1,13 +1,13 @@
 package greencity.service;
 
-import static greencity.ModelUtils.getSearchFriendDto;
-import static greencity.ModelUtils.getTagFriendDto;
 import static greencity.ModelUtils.getTagUser;
 import static greencity.ModelUtils.getUser;
+import static greencity.ModelUtils.getUserSearchDto;
+import static greencity.ModelUtils.getUserTagDto;
 import static greencity.ModelUtils.getUserVO;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.dto.friends.TagFriendDto;
+import greencity.dto.user.UserTagDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import javax.servlet.http.HttpServletRequest;
@@ -558,16 +558,33 @@ class EcoNewsCommentServiceImplTest {
     }
 
     @Test
-    void searchFriendsTest() {
+    void searchUsersTest() {
         var user = getTagUser();
-        var tagFriendDto = getTagFriendDto();
-        var searchFriendDto = getSearchFriendDto();
-        when(userRepo.searchFriends(1L, "Test")).thenReturn(List.of(user));
-        when(modelMapper.map(user, TagFriendDto.class)).thenReturn(tagFriendDto);
+        var userTagDto = getUserTagDto();
+        var userSearchDto = getUserSearchDto();
 
-        ecoNewsCommentService.searchFriends(searchFriendDto);
+        when(userRepo.searchUsers("Test")).thenReturn(List.of(user));
+        when(modelMapper.map(user, UserTagDto.class)).thenReturn(userTagDto);
 
-        verify(userRepo).searchFriends(1L, "Test");
-        verify(modelMapper).map(user, TagFriendDto.class);
+        ecoNewsCommentService.searchUsers(userSearchDto);
+
+        verify(userRepo).searchUsers("Test");
+        verify(modelMapper).map(user, UserTagDto.class);
+    }
+
+    @Test
+    void searchUsersWithNullSearchQueryTest() {
+        var user = getTagUser();
+        var userTagDto = getUserTagDto();
+        var userSearchDto = getUserSearchDto();
+        userSearchDto.setSearchQuery(null);
+
+        when(userRepo.findAll()).thenReturn(List.of(user));
+        when(modelMapper.map(user, UserTagDto.class)).thenReturn(userTagDto);
+
+        ecoNewsCommentService.searchUsers(userSearchDto);
+
+        verify(userRepo).findAll();
+        verify(modelMapper).map(user, UserTagDto.class);
     }
 }

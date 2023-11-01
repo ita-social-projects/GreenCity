@@ -58,7 +58,6 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
 import greencity.dto.filter.FilterEventDto;
-import greencity.dto.friends.SearchFriendDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
@@ -117,7 +116,8 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.friends.TagFriendDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -1834,7 +1834,7 @@ public class ModelUtils {
             getKyivAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2050, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
@@ -3144,16 +3144,16 @@ public class ModelUtils {
             .build();
     }
 
-    public static TagFriendDto getTagFriendDto() {
-        return TagFriendDto.builder()
-            .friendId(1L)
-            .friendName("Test")
+    public static UserTagDto getUserTagDto() {
+        return UserTagDto.builder()
+            .userId(1L)
+            .userName("Test")
             .profilePicture("Pic")
             .build();
     }
 
-    public static SearchFriendDto getSearchFriendDto() {
-        return SearchFriendDto.builder()
+    public static UserSearchDto getUserSearchDto() {
+        return UserSearchDto.builder()
             .currentUserId(1L)
             .searchQuery("Test")
             .build();
