@@ -9,8 +9,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.friends.SearchFriendDto;
-import greencity.dto.friends.TagFriendDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -339,20 +339,23 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method that allow you to search friends (related to current user) by name.
+     * Method that allow you to search users by name.
      *
-     * @param searchFriend dto with current user ID and search query
-     *                     {@link SearchFriendDto}.
+     * @param searchUsers dto with current user ID and search query
+     *                    {@link UserSearchDto}.
+     *
      * @author Anton Bondar
      */
     @Override
     @Transactional
-    public void searchFriends(SearchFriendDto searchFriend) {
-        List<TagFriendDto> friends =
-            userRepo.searchFriends(searchFriend.getCurrentUserId(), searchFriend.getSearchQuery())
-                .stream()
-                .map(u -> modelMapper.map(u, TagFriendDto.class))
-                .collect(Collectors.toList());
-        messagingTemplate.convertAndSend("/topic/" + searchFriend.getCurrentUserId() + "/searchFriends", friends);
+    public void searchUsers(UserSearchDto searchUsers) {
+        List<User> users = searchUsers.getSearchQuery() == null ? userRepo.findAll()
+            : userRepo.searchUsers(searchUsers.getSearchQuery());
+
+        List<UserTagDto> usersToTag = users.stream()
+            .map(u -> modelMapper.map(u, UserTagDto.class))
+            .collect(Collectors.toList());
+
+        messagingTemplate.convertAndSend("/topic/" + searchUsers.getCurrentUserId() + "/searchUsers", usersToTag);
     }
 }

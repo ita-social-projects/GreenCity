@@ -7,7 +7,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 
@@ -117,12 +117,12 @@ public interface EcoNewsCommentService {
     PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
 
     /**
-     * Method that allow you to search friends (related to current user) by name.
+     * Method that allow you to search users by name.
      *
-     * @param searchFriend dto with current user ID and search query
-     *                     {@link SearchFriendDto}.
+     * @param searchUsers dto with current user ID and search query
+     *                    {@link UserSearchDto}.
      *
      * @author Anton Bondar
      */
-    void searchFriends(SearchFriendDto searchFriend);
+    void searchUsers(UserSearchDto searchUsers);
 }

@@ -12,7 +12,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
-import greencity.dto.friends.SearchFriendDto;
+import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 
@@ -242,15 +242,14 @@ public class EcoNewsCommentController {
     }
 
     /**
-     * Method for getting all friends (related to current user) available to tag in
-     * comment.
+     * Method for getting all users available to tag in comment by search query.
      *
-     * @param searchFriend dto with current user ID and search query
-     *                     {@link SearchFriendDto}.
+     * @param searchUsers dto with current user ID and search query
+     *                    {@link UserSearchDto}.
      * @author Anton Bondar
      */
-    @MessageMapping("/getAllFriendsToTagInComment")
-    public void getAllFriendsToTagInComment(@Payload SearchFriendDto searchFriend) {
-        ecoNewsCommentService.searchFriends(searchFriend);
+    @MessageMapping("/getUsersToTagInComment")
+    public void getUsersToTagInComment(@Payload UserSearchDto searchUsers) {
+        ecoNewsCommentService.searchUsers(searchUsers);
     }
 }
