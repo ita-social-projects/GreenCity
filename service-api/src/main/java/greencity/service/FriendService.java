@@ -114,4 +114,13 @@ public interface FriendService {
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
     PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable);
+
+    /**
+     * Delete user's request to be a friend by friendId.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     * @author Marian Datsko
+     */
+    void deleteRequestOfCurrentUserToFriend(long userId, long friendId);
 }

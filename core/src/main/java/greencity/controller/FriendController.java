@@ -272,4 +272,27 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
     }
+
+    /**
+     * Method for canceling a request that the current user has sent before to user
+     * with friendId.
+     *
+     * @param friendId id user friend.
+     * @param userVO   {@link UserVO} user.
+     * @author Lilia Mokhnatska
+     */
+    @ApiOperation(value = "Delete user's request to friend")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/{friendId}/cancelRequest")
+    public ResponseEntity<ResponseEntity.BodyBuilder> cancelRequest(
+        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        friendService.deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

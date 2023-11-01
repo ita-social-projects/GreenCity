@@ -215,6 +215,19 @@ public class FriendServiceImpl implements FriendService {
             users.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteRequestOfCurrentUserToFriend(long userId, long friendId) {
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriendNotExists(userId, friendId);
+        validateFriendRequestSentByFriend(userId, friendId);
+        userRepo.canselUserRequestToFriend(userId, friendId);
+    }
+
     private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
         return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
     }
