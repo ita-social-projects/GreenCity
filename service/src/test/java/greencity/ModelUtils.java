@@ -1834,7 +1834,7 @@ public class ModelUtils {
             getKyivAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2050, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
