@@ -88,6 +88,7 @@ import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.AddPlaceDto;
@@ -3043,7 +3044,8 @@ public class ModelUtils {
         return UserFriendDto.builder()
             .id(1L)
             .name("name")
-            .city("city")
+            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
             .rating(10.0)
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
