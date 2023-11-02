@@ -940,4 +940,121 @@ class FriendServiceImplTest {
         verify(userRepo, never()).findAllFriendsOfUser(anyLong(), anyString(), any());
         verify(customUserRepo, never()).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(anyLong(), any());
     }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(true);
+
+        friendService.deleteRequestOfCurrentUserToFriend(userId, friendId);
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
+        verify(userRepo).canselUserRequestToFriend(userId, friendId);
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUserIdEqualFriendIdTest() {
+        long userId = 1L;
+        long friendId = 1L;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.OWN_USER_ID + friendId, exception.getMessage());
+
+        verify(userRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).deleteUserFriendById(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUserNotFoundTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenFriendNotFoundTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUsersIsAlreadyFriendsTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_EXISTS + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenRequestIsNotMadeTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_REQUEST_NOT_SENT, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
 }

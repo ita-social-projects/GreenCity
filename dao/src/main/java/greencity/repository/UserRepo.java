@@ -258,6 +258,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     void declineFriendRequest(Long userId, Long friendId);
 
     /**
+     * Decline friend request.
+     *
+     * @param userId   The ID of the user who want to cancel his request.
+     * @param friendId The ID of the friend to whom request was send before.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "DELETE FROM users_friends WHERE user_id = :userId AND friend_id = :friendId")
+    void canselUserRequestToFriend(Long userId, Long friendId);
+
+    /**
      * Get all user friends.
      *
      * @param userId The ID of the user.
