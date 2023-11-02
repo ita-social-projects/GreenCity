@@ -1,7 +1,6 @@
 package greencity.entity;
 
 import greencity.dto.friends.UserFriendDto;
-import greencity.dto.location.UserLocationDto;
 import greencity.dto.user.RegistrationStatisticsDtoResponse;
 import greencity.entity.event.Event;
 import greencity.enums.EmailNotification;
@@ -14,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
