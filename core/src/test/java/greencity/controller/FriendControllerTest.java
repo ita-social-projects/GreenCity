@@ -182,4 +182,18 @@ class FriendControllerTest {
         verify(userService).findByEmail(principal.getName());
         verify(friendService).findAllFriendsOfUser(userVO.getId(), name, PageRequest.of(0, 20));
     }
+
+    @Test
+    void cancelRequestTest() throws Exception {
+        long friendId = 1L;
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/cancelRequest", friendId)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
+    }
 }
