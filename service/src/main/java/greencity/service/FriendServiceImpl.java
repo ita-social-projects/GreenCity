@@ -224,7 +224,7 @@ public class FriendServiceImpl implements FriendService {
         validateUserAndFriendNotSamePerson(userId, friendId);
         validateUserAndFriendExistence(userId, friendId);
         validateFriendNotExists(userId, friendId);
-        validateFriendRequestSentByFriend(userId, friendId);
+        validateFriendRequestSentByCurrentUser(userId, friendId);
         userRepo.canselUserRequestToFriend(userId, friendId);
     }
 
@@ -262,6 +262,12 @@ public class FriendServiceImpl implements FriendService {
 
     private void validateFriendRequestSentByFriend(long userId, long friendId) {
         if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
+            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
+        }
+    }
+
+    private void validateFriendRequestSentByCurrentUser(long userId, long friendId) {
+        if (!userRepo.isFriendRequestedByCurrentUser(userId, friendId)) {
             throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
         }
     }

@@ -949,14 +949,14 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
-        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(true);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(true);
 
         friendService.deleteRequestOfCurrentUserToFriend(userId, friendId);
 
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriend(userId, friendId);
-        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
         verify(userRepo).canselUserRequestToFriend(userId, friendId);
     }
 
@@ -1037,14 +1037,14 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void deleteRequestOfCurrentUserToFriendWhenRequestIsAlreadyMadeTest() {
+    void deleteRequestOfCurrentUserToFriendWhenRequestIsNotMadeTest() {
         long userId = 1L;
         long friendId = 2L;
 
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
-        when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
             () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
@@ -1054,7 +1054,7 @@ class FriendServiceImplTest {
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriend(userId, friendId);
-        verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
         verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
     }
 }
