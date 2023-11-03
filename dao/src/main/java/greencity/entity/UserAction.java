@@ -26,4 +26,7 @@ public class UserAction {
 
     @Column(name = "count")
     private Integer count = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Habit habit;
 }
