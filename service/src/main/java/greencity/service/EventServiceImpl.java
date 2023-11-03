@@ -876,4 +876,9 @@ public class EventServiceImpl implements EventService {
             page.getPageable().getPageNumber(),
             page.getTotalPages());
     }
+
+    @Override
+    public Long getAmountOfPublishedEventsByUserId(Long userId) {
+        return eventRepo.getAmountOfPublishedEventsByUserId(userId);
+    }
 }

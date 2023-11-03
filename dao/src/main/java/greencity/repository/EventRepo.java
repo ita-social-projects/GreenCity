@@ -135,4 +135,15 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(value = "SELECT edl.address FROM Event e LEFT JOIN e.dates edl WHERE edl.address IS NOT NULL")
     Set<Address> findAllEventsAddresses();
+
+    /**
+     * Method returns count of all events where user is organizer.
+     *
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of published by user events.
+     *
+     * @author Olena Sotnik
+     */
+    @Query(value = "SELECT COUNT(e.id) FROM Event e WHERE e.organizer =:userId")
+    Long getAmountOfPublishedEventsByUserId(Long userId);
 }

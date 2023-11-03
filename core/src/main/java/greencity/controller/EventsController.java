@@ -355,4 +355,18 @@ public class EventsController {
     public ResponseEntity<Set<AddressDto>> getAllEventsAddresses() {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventsAddresses());
     }
+
+    /**
+     * The method finds count of published events by current user.
+     *
+     * @param userId {@link Long} id of logged in user.
+     * @return {@link Long} count of published events by current user.
+     *
+     * @author Olena Sotnik
+     */
+    @ApiOperation(value = "Finds count of published events by user")
+    @GetMapping("/published/count")
+    public ResponseEntity<Long> findAmountOfPublishedEvents(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAmountOfPublishedEventsByUserId(userId));
+    }
 }

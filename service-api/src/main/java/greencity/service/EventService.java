@@ -192,4 +192,14 @@ public interface EventService {
      * @author Anton Bondar
      */
     PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Method for getting amount of published events by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of published events by user id.
+     *
+     * @author Olena Sotnik
+     */
+    Long getAmountOfPublishedEventsByUserId(Long userId);
 }

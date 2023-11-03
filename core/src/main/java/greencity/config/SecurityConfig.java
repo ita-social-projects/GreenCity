@@ -222,6 +222,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/myEvents/createdEvents",
                 EVENTS + "/myEvents/relatedEvents",
                 EVENTS + "/getAllFavoriteEvents",
+                EVENTS + "/published/count",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
                 "/habit/assign/{habitAssignId}/allUserAndCustomList",
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
