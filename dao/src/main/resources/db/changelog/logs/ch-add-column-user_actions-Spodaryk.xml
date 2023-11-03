@@ -8,6 +8,11 @@
                 <columnExists tableName="user_actions" columnName="habit_id"/>
             </not>
         </preConditions>
+        <addColumn tableName="user_actions">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
         <addForeignKeyConstraint baseColumnNames="habit_id"
                                  baseTableName="user_actions"
                                  constraintName="fk_user_actions_habit"

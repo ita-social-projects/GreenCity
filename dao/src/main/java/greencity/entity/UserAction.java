@@ -28,5 +28,6 @@ public class UserAction {
     private Integer count = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "habit_id", nullable = true)
     private Habit habit;
 }
