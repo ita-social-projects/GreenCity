@@ -357,16 +357,17 @@ public class EventsController {
     }
 
     /**
-     * The method finds count of published events by current user.
+     * The method finds count of events organized and attended by user id.
      *
-     * @param userId {@link Long} id of logged in user.
-     * @return {@link Long} count of published events by current user.
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of organized and attended events by user id.
      *
      * @author Olena Sotnik
      */
-    @ApiOperation(value = "Finds count of published events by user")
-    @GetMapping("/published/count")
-    public ResponseEntity<Long> findAmountOfPublishedEvents(@RequestParam Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAmountOfPublishedEventsByUserId(userId));
+    @ApiOperation(value = "Finds amount of events where user is organizer or attender")
+    @GetMapping("/userEvents/count")
+    public ResponseEntity<Long> findAmountOfOrganizedAndAttendedEvents(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getAmountOfOrganizedAndAttendedEventsByUserId(userId));
     }
 }

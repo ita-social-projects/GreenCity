@@ -6,7 +6,6 @@ import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
@@ -14,14 +13,12 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -1484,10 +1481,10 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAmountOfPublishedNewsByUserIdTest() {
-        when(eventRepo.getAmountOfPublishedEventsByUserId(1L)).thenReturn(100L);
-        Long actual = eventService.getAmountOfPublishedEventsByUserId(1L);
+    void getAmountOfOrganizedAndAttendedNewsByUserIdTest() {
+        when(eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(1L)).thenReturn(100L);
+        Long actual = eventService.getAmountOfOrganizedAndAttendedEventsByUserId(1L);
         assertEquals(100L, actual);
-        verify(eventRepo).getAmountOfPublishedEventsByUserId(anyLong());
+        verify(eventRepo).getAmountOfOrganizedAndAttendedEventsByUserId(anyLong());
     }
 }

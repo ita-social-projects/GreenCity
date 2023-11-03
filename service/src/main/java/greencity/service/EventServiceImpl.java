@@ -878,7 +878,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Long getAmountOfPublishedEventsByUserId(Long userId) {
-        return eventRepo.getAmountOfPublishedEventsByUserId(userId);
+    public Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId) {
+        return eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(userId);
     }
 }
