@@ -3,13 +3,11 @@ package greencity.repository.impl;
 import greencity.ModelUtils;
 import greencity.dto.friends.UserFriendDto;
 import greencity.entity.User;
-import greencity.exception.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;

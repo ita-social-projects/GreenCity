@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
@@ -28,6 +27,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
@@ -61,11 +61,19 @@ import java.util.Set;
                     @ColumnResult(name = "id", type = Long.class),
                     @ColumnResult(name = "name", type = String.class),
                     @ColumnResult(name = "email", type = String.class),
-                    @ColumnResult(name = "city", type = String.class),
                     @ColumnResult(name = "rating", type = Double.class),
+                    @ColumnResult(name = "ulId", type = Long.class),
+                    @ColumnResult(name = "cityEn", type = String.class),
+                    @ColumnResult(name = "cityUa", type = String.class),
+                    @ColumnResult(name = "regionEn", type = String.class),
+                    @ColumnResult(name = "regionUa", type = String.class),
+                    @ColumnResult(name = "countryEn", type = String.class),
+                    @ColumnResult(name = "countryUa", type = String.class),
+                    @ColumnResult(name = "latitude", type = Double.class),
+                    @ColumnResult(name = "longitude", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
-                    @ColumnResult(name = "chatId", type = Long.class),
+                    @ColumnResult(name = "chatId", type = Long.class)
                 })
         })
 })
@@ -77,31 +85,33 @@ import java.util.Set;
         resultSetMapping = "monthsStatisticsMapping"),
     @NamedNativeQuery(name = "User.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser",
         query = "with current_user_friends as ("
-            + "SELECT user_id AS id "
+            + "SELECT user_id "
             + "    FROM users_friends "
             + "    WHERE friend_id = :userId AND status = 'FRIEND' "
             + "    UNION "
-            + "    SELECT friend_id AS id "
+            + "    SELECT friend_id "
             + "    FROM users_friends "
-            + "    WHERE user_id = :userId AND status = 'FRIEND' "
-            + ") "
-            + "SELECT *, (SELECT count(*) "
+            + "    WHERE user_id = :userId AND status = 'FRIEND')"
+            + "SELECT u.id, u.name, u.email, u.rating, ul.id AS ulId, ul.city_en AS cityEn, ul.city_ua AS cityUa, "
+            + "ul.region_en AS regionEn, ul.region_ua AS regionUa, ul.country_en AS countryEn, "
+            + "ul.country_ua AS countryUa, ul.latitude, ul.longitude, (SELECT count(*) "
             + "        FROM users_friends uf1 "
-            + "        WHERE uf1.user_id in (SELECT id FROM current_user_friends) "
+            + "        WHERE uf1.user_id in (SELECT u.id FROM current_user_friends) "
             + "          and uf1.friend_id = u.id "
             + "          and uf1.status = 'FRIEND' "
             + "           or "
-            + "         uf1.friend_id in (SELECT id FROM current_user_friends) "
+            + "         uf1.friend_id in (SELECT u.id FROM current_user_friends) "
             + "          and uf1.user_id = u.id "
             + "          and uf1.status = 'FRIEND') as mutualFriends, "
-            + "       u.profile_picture           as profilePicturePath, "
+            + "       u.profile_picture as profilePicturePath, "
             + "       (SELECT p.room_id "
             + "       FROM chat_rooms_participants p"
             + "       WHERE p.participant_id IN (u.id, :userId) "
             + "       GROUP BY p.room_id "
             + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
-            + " FROM users u "
-            + " WHERE u.id IN (:users)",
+            + "FROM users u "
+            + "LEFT JOIN user_location ul ON u.user_location = ul.id "
+            + "WHERE u.id IN (:users)",
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
@@ -161,6 +171,10 @@ public class User {
 
     @Column(name = "profile_picture")
     private String profilePicturePath;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_location")
+    private UserLocation userLocation;
 
     @ManyToMany(mappedBy = "usersLikedNews")
     private Set<EcoNews> ecoNewsLiked;
