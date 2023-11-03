@@ -174,7 +174,7 @@ public class HabitServiceImpl implements HabitService {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage =
-                    habitTranslationRepo.findAllCustomByDifferentParametersByUserIdAndStatusRequested(pageable,
+                    habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
                         lowerCaseTags, complexities, languageCode, habitIdsRequested, userId);
             } else {
                 habitTranslationsPage =
@@ -185,7 +185,8 @@ public class HabitServiceImpl implements HabitService {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage =
-                    habitTranslationRepo.findAllCustomByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
+                    habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
+                        pageable,
                         complexities, languageCode, habitIdsRequested, userId);
             } else {
                 habitTranslationsPage =
@@ -200,7 +201,7 @@ public class HabitServiceImpl implements HabitService {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage = habitTranslationRepo
-                    .findAllByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
+                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
                         lowerCaseTags, languageCode, habitIdsRequested, userId);
             } else {
                 habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable,
@@ -214,7 +215,7 @@ public class HabitServiceImpl implements HabitService {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage =
-                    habitTranslationRepo.findAllCustomHabitsByUserIdAndStatusRequestedByLanguageCode(pageable,
+                    habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
                         languageCode, habitIdsRequested, userId);
             } else {
                 habitTranslationsPage = habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable,

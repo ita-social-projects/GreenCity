@@ -15,7 +15,6 @@ import org.springframework.data.jpa.repository.Query;
  * @author Volodymyr Turko
  */
 public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Long> {
-
     /**
      * Method return {@link Optional} of {@link HabitTranslation}.
      *
@@ -139,7 +138,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
-    Page<HabitTranslation> findAllCustomByDifferentParametersByUserIdAndStatusRequested(Pageable pageable,
+    Page<HabitTranslation> findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(Pageable pageable,
         List<String> tags, Optional<List<Integer>> complexities, String languageCode,
         List<Long> habitIdsRequested, Long userId);
 
@@ -165,7 +164,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId))) "
         + "ORDER BY ht.habit.id DESC")
-    Page<HabitTranslation> findAllCustomHabitsByUserIdAndStatusRequestedByLanguageCode(Pageable pageable,
+    Page<HabitTranslation> findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
         String languageCode, List<Long> habitIdsRequested, Long userId);
 
     /**
@@ -241,7 +240,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
-    Page<HabitTranslation> findAllByTagsAndLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
+    Page<HabitTranslation> findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
         List<String> tags, String languageCode, List<Long> habitIdsRequested, Long userId);
 
     /**
@@ -325,7 +324,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
         + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
-    Page<HabitTranslation> findAllCustomByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
+    Page<HabitTranslation> findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
         Optional<List<Integer>> complexities, String languageCode, List<Long> habitIdsRequested, Long userId);
 
     /**
