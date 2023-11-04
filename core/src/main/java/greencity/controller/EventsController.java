@@ -365,6 +365,12 @@ public class EventsController {
      * @author Olena Sotnik
      */
     @ApiOperation(value = "Finds amount of events where user is organizer or attender")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
     @GetMapping("/userEvents/count")
     public ResponseEntity<Long> findAmountOfOrganizedAndAttendedEvents(@RequestParam Long userId) {
         return ResponseEntity.status(HttpStatus.OK)
