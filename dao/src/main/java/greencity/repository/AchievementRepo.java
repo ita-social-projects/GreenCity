@@ -29,6 +29,36 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "from achievements as ach\n"
         + "where\n"
         + "    ach.id in\n"
+        + "      (SELECT achievement_id from user_achievements uach where uach.user_id = :userId) and uach.hab\n"
+        + "  and\n"
+        + "    ach.condition > (SELECT ua.count\n"
+        + "                                      from user_actions ua\n"
+        + "                                      where ua.user_id = :userId and\n"
+        + "                                            ua.achievement_category_id=:achievementCategoryId)\n"
+        + "and\n"
+        + "    ach.achievement_category_id=:achievementCategoryId"
+        + "and\n"
+        + "    ach.habit_id=:habitId",
+        nativeQuery = true)
+    List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId, Long habitId);
+
+    /**
+     * Retrieves a list of achievements that a specific user hasn't achieved yet
+     * within a specified achievement category. The method identifies unachieved
+     * achievements by comparing user actions count with the conditions of
+     * achievements and by checking if a user already has the achievement in the
+     * user_achievements table.
+     *
+     * @param userId                The unique identifier of the user.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category.
+     * @return A list of Achievement objects that the user hasn't achieved within
+     *         the specified category.
+     */
+    @Query(value = "Select ach.*\n"
+        + "from achievements as ach\n"
+        + "where\n"
+        + "    ach.id in\n"
         + "      (SELECT achievement_id from user_achievements uach where uach.user_id = :userId)\n"
         + "  and\n"
         + "    ach.condition > (SELECT ua.count\n"

@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
+import greencity.dto.habit.HabitVO;
 
 public interface UserActionService {
     /**
@@ -32,4 +33,16 @@ public interface UserActionService {
      * @author Orest Mamchuk
      */
     UserActionVO save(UserActionVO userActionVO);
+
+    /**
+     * Method finds {@link UserActionVO} by userId, achievementCategoryId, and
+     * habitId.
+     *
+     * @param userId     the ID of {@link UserVO}
+     * @param categoryId the ID of {@link AchievementCategoryVO}
+     * @param habitId    the ID of {@link HabitVO}
+     * @return UserAction {@link UserActionVO}
+     * @author Oksana Spodaryk
+     */
+    UserActionVO findUserActionByUserIdAndAchievementCategoryAndHabitId(Long userId, Long categoryId, Long habitId);
 }

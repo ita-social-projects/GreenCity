@@ -2,8 +2,10 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.useraction.UserActionVO;
+import greencity.entity.Habit;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.UserActionRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class UserActionServiceImpl implements UserActionService {
     private final ModelMapper modelMapper;
     private final UserRepo userRepo;
     private final AchievementCategoryRepo achievementCategoryRepo;
+    private final HabitRepo habitRepo;
 
     /**
      * {@inheritDoc}
@@ -59,6 +62,31 @@ public class UserActionServiceImpl implements UserActionService {
             userActionRepo.save(userAction);
         }
         return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Oksana Spodaryk
+     */
+    @Transactional
+    @Override
+    public UserActionVO findUserActionByUserIdAndAchievementCategoryAndHabitId(Long userId, Long categoryId,
+        Long habitId) {
+        UserAction userAction =
+            userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId, categoryId, habitId);
+        if (userAction == null) {
+            userAction = UserAction.builder()
+                .user(userRepo.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
+                .count(0)
+                .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
+                    () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
+                .habit(habitRepo.findById(habitId).get())
+                .build();
+            userActionRepo.save(userAction);
+        }
+        return modelMapper.map(userAction, UserActionVO.class);
     }
 
     @Override
