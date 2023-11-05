@@ -690,4 +690,14 @@ class EventsControllerTest {
 
         verify(eventService).getAllEventsAddresses();
     }
+
+    @Test
+    @SneakyThrows
+    void findAmountOfOrganizedAndAttendedEvents() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/userEvents/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAmountOfOrganizedAndAttendedEventsByUserId(1L);
+    }
 }

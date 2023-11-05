@@ -19,7 +19,6 @@ import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventImages;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -1479,5 +1478,13 @@ class EventServiceImplTest {
 
         verify(eventRepo).findAllEventsAddresses();
         verify(modelMapper).map(address, AddressDto.class);
+    }
+
+    @Test
+    void getAmountOfOrganizedAndAttendedNewsByUserIdTest() {
+        when(eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(1L)).thenReturn(100L);
+        Long actual = eventService.getAmountOfOrganizedAndAttendedEventsByUserId(1L);
+        assertEquals(100L, actual);
+        verify(eventRepo).getAmountOfOrganizedAndAttendedEventsByUserId(anyLong());
     }
 }
