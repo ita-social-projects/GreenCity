@@ -139,7 +139,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public void delete(Long eventId, String email) {
         UserVO userVO = restClient.findByEmail(email);
-        Event toDelete = eventRepo.getOne(eventId);
+        Event toDelete =
+            eventRepo.findById(eventId).orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
         List<String> eventImages = new ArrayList<>();
         eventImages.add(toDelete.getTitleImage());
         if (toDelete.getAdditionalImages() != null) {
