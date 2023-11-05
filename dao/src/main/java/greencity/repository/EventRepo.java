@@ -146,6 +146,6 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      */
     @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT e.id) FROM events e "
         + "LEFT JOIN events_attenders att ON e.id = att.event_id "
-        + "WHERE att.user_id = :userId OR e.organizer = :userId")
+        + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
     Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 }
