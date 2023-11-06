@@ -254,7 +254,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Query(nativeQuery = true,
-        value = "DELETE FROM users_friends WHERE user_id = :friendId AND friend_id = :userId")
+        value = "UPDATE users_friends SET  status = 'REJECTED' WHERE user_id = :friendId AND friend_id = :userId")
     void declineFriendRequest(Long userId, Long friendId);
 
     /**

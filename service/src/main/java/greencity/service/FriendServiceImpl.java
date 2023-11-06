@@ -5,6 +5,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.enums.FriendStatus;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -206,7 +207,7 @@ public class FriendServiceImpl implements FriendService {
         }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
-        userFriendDtoList.forEach(friend -> friend.setFriendStatus("FRIEND"));
+        userFriendDtoList.forEach(friend -> friend.setFriendStatus(FriendStatus.FRIEND));
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),

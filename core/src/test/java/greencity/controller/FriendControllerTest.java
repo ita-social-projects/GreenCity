@@ -103,7 +103,7 @@ class FriendControllerTest {
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/declineFriend", friendId)
+        mockMvc.perform(patch(FRIEND_LINK + "/{friendId}/declineFriend", friendId)
             .principal(principal))
             .andExpect(status().isOk());
 
