@@ -419,35 +419,47 @@ class EventServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("provideUserVOForDeleteEventTest")
-    void delete(UserVO userVO, User user) {
+    void deleteEventTest(UserVO userVO) {
         Event event = ModelUtils.getEvent();
-        when(eventRepo.getOne(any())).thenReturn(event);
-        doNothing().when(fileService).delete(any());
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(restClient.findByEmail(userVO.getEmail())).thenReturn(userVO);
 
         eventService.delete(event.getId(), userVO.getEmail());
 
+        verify(eventRepo).findById(1L);
+        verify(restClient).findByEmail(userVO.getEmail());
         verify(eventRepo).delete(event);
     }
 
     private static Stream<Arguments> provideUserVOForDeleteEventTest() {
         return Stream.of(
             Arguments.of(ModelUtils.getUserVO(), ModelUtils.getUser()),
-            Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(999L),
-                ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(999L)));
+            Arguments.of(ModelUtils.getUserVO().setRole(Role.ROLE_ADMIN).setId(1L),
+                ModelUtils.getUser().setRole(Role.ROLE_ADMIN).setId(1L)));
     }
 
     @Test
-    void deleteWithException() {
+    void deleteEventThrowsNotFoundExceptionTest() {
+        when(eventRepo.findById(1L)).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.delete(1L, "test@mail.com"));
+        verify(eventRepo).findById(1L);
+    }
+
+    @Test
+    void deleteEventThrowsBadRequestExceptionTest() {
         UserVO userVO = ModelUtils.getUserVO();
         String userEmail = userVO.getEmail();
         userVO.setId(33L);
         Event event = ModelUtils.getEvent();
+
         when(restClient.findByEmail(userEmail)).thenReturn(userVO);
-        when(eventRepo.getOne(any())).thenReturn(event);
+        when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
+
         Long eventId = event.getId();
         assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
+
         verify(restClient).findByEmail(userEmail);
+        verify(eventRepo).findById(1L);
     }
 
     @Test
