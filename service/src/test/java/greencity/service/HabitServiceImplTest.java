@@ -138,7 +138,6 @@ class HabitServiceImplTest {
         verify(habitTranslationRepo).findByHabitAndLanguageCode(habit, "en");
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
-
     }
 
     @Test()
@@ -186,10 +185,10 @@ class HabitServiceImplTest {
         HabitDto habitDto = ModelUtils.getHabitDto();
         habitDto.setIsCustomHabit(true);
         UserVO userVO = ModelUtils.getUserVO();
-        List<Long> habitIdsRequested = List.of(1L);
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(habitIdsRequested);
+        List<Long> requestedCustomHabitIds = List.of(1L);
+        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable, "en",
-            habitIdsRequested, userVO.getId())).thenReturn(habitTranslationPage);
+            requestedCustomHabitIds, userVO.getId())).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
@@ -261,8 +260,8 @@ class HabitServiceImplTest {
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
 
-        List<Long> habitIdsRequested = List.of(1L);
-        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(habitIdsRequested);
+        List<Long> requestedCustomHabitIds = List.of(1L);
+        when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId)).thenReturn(requestedCustomHabitIds);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(ModelUtils.getHabitWithCustom()));
@@ -294,7 +293,7 @@ class HabitServiceImplTest {
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
                 habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, complexities, "en", habitIdsRequested, userId);
+                    lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
             } else {
                 habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
                     complexities, "en");
@@ -302,7 +301,7 @@ class HabitServiceImplTest {
         } else if (isCustomHabit.isPresent() && tags.isPresent()) {
             if (isCustomHabit.get()) {
                 habitTranslationRepo.findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    lowerCaseTags, "en", habitIdsRequested, userId);
+                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
             } else {
                 habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags,
                     "en");
@@ -310,27 +309,27 @@ class HabitServiceImplTest {
         } else if (isCustomHabit.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
                 habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", habitIdsRequested, userId);
+                    complexities, "en", requestedCustomHabitIds, userId);
             } else {
                 habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
                     "en");
             }
         } else if (complexities.isPresent() && tags.isPresent()) {
             habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                lowerCaseTags, complexities, "en", habitIdsRequested, userId);
+                lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
         } else if (isCustomHabit.isPresent()) {
             if (isCustomHabit.get()) {
                 habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                    "en", habitIdsRequested, userId);
+                    "en", requestedCustomHabitIds, userId);
             } else {
                 habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
             }
         } else if (tags.isPresent()) {
             habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                lowerCaseTags, "en", habitIdsRequested, userId);
+                lowerCaseTags, "en", requestedCustomHabitIds, userId);
         } else if (complexities.isPresent()) {
             habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                complexities, "en", habitIdsRequested, userId);
+                complexities, "en", requestedCustomHabitIds, userId);
         }
 
         assertEquals(pageableDto, habitService.getAllByDifferentParameters(ModelUtils.getUserVO(), pageable, tags,
@@ -344,7 +343,7 @@ class HabitServiceImplTest {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo, times(2))
                     .findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, complexities, "en", habitIdsRequested, userId);
+                        lowerCaseTags, complexities, "en", requestedCustomHabitIds, userId);
             } else {
                 verify(habitTranslationRepo, times(2))
                     .findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags, complexities,
@@ -354,7 +353,7 @@ class HabitServiceImplTest {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo, times(2))
                     .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
-                        lowerCaseTags, "en", habitIdsRequested, userId);
+                        lowerCaseTags, "en", requestedCustomHabitIds, userId);
             } else {
                 verify(habitTranslationRepo, times(2))
                     .findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable, lowerCaseTags, "en");
@@ -363,7 +362,7 @@ class HabitServiceImplTest {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo, times(2))
                     .findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable, complexities,
-                        "en", habitIdsRequested, userId);
+                        "en", requestedCustomHabitIds, userId);
             } else {
                 verify(habitTranslationRepo, times(2))
                     .findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable, complexities,
@@ -372,12 +371,12 @@ class HabitServiceImplTest {
         } else if (complexities.isPresent() && tags.isPresent()) {
             verify(habitTranslationRepo, times(2))
                 .findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable, lowerCaseTags,
-                    complexities, "en", habitIdsRequested, userId);
+                    complexities, "en", requestedCustomHabitIds, userId);
         } else if (isCustomHabit.isPresent()) {
             if (isCustomHabit.get()) {
                 verify(habitTranslationRepo, times(2))
                     .findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable, "en",
-                        habitIdsRequested, userId);
+                        requestedCustomHabitIds, userId);
             } else {
                 verify(habitTranslationRepo, times(2))
                     .findAllByIsCustomFalseHabitAndLanguageCode(pageable, "en");
@@ -385,11 +384,11 @@ class HabitServiceImplTest {
         } else if (tags.isPresent()) {
             verify(habitTranslationRepo, times(2))
                 .findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
-                    lowerCaseTags, "en", habitIdsRequested, userId);
+                    lowerCaseTags, "en", requestedCustomHabitIds, userId);
         } else if (complexities.isPresent()) {
             verify(habitTranslationRepo, times(2))
                 .findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
-                    complexities, "en", habitIdsRequested, userId);
+                    complexities, "en", requestedCustomHabitIds, userId);
         }
     }
 

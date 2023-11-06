@@ -58,12 +58,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that finds by language code and tags all default, custom habit's
      * translations of current user or by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}
-     * @param tags              {@link List} of {@link String} tags
-     * @param languageCode      language code {@link String}
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
-     * @param userId            {@link Long} id of current user.
+     * @param pageable                {@link Pageable}
+     * @param tags                    {@link List} of {@link String} tags
+     * @param languageCode            language code {@link String}
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
+     * @param userId                  {@link Long} id of current user.
      *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
@@ -76,14 +76,14 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId))  "
+        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId))  "
         + "OR (h.isCustomHabit = false)) "
         + "AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(Pageable pageable,
-        List<String> tags, String languageCode, List<Long> habitIdsRequested, Long userId);
+        List<String> tags, String languageCode, List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that find all habit's translations by tags, complexities, language
@@ -115,12 +115,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that finds all custom habit's translations of current user or by habit
      * assign status REQUESTED by tags, complexities, language code.
      *
-     * @param pageable          {@link Pageable}.
-     * @param tags              {@link List} of {@link String}.
-     * @param complexities      {@link List} of {@link Integer}.
-     * @param languageCode      language code {@link String}.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param tags                    {@link List} of {@link String}.
+     * @param complexities            {@link List} of {@link Integer}.
+     * @param languageCode            language code {@link String}.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -133,24 +133,24 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
+        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "AND h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(Pageable pageable,
         List<String> tags, Optional<List<Integer>> complexities, String languageCode,
-        List<Long> habitIdsRequested, Long userId);
+        List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that finds all custom habit's translations of current user or by habit
      * assign status REQUESTED by language code.
      *
-     * @param pageable          {@link Pageable}.
-     * @param languageCode      language code {@link String}.
-     * @param userId            {@link Long} id of current user.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param languageCode            language code {@link String}.
+     * @param userId                  {@link Long} id of current user.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -162,10 +162,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId))) "
+        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
-        String languageCode, List<Long> habitIdsRequested, Long userId);
+        String languageCode, List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that find all habit's translations by language code in case when
@@ -190,12 +190,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that finds by complexities and language code all default, custom
      * habit's translations of current user or by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}.
-     * @param complexities      {@link List} of {@link Integer}.
-     * @param languageCode      language code {@link String}.
-     * @param userId            {@link Long} id of current user.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param complexities            {@link List} of {@link Integer}.
+     * @param languageCode            language code {@link String}.
+     * @param userId                  {@link Long} id of current user.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -207,23 +207,23 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
+        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "OR (h.isCustomHabit = false)) "
         + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
-        Optional<List<Integer>> complexities, String languageCode, List<Long> habitIdsRequested, Long userId);
+        Optional<List<Integer>> complexities, String languageCode, List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that finds by tags and language code all default, custom habit's
      * translations of current user or by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}.
-     * @param tags              {@link List} of {@link String} tags.
-     * @param languageCode      language code {@link String}.
-     * @param userId            {@link Long} id of current user.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param tags                    {@link List} of {@link String} tags.
+     * @param languageCode            language code {@link String}.
+     * @param userId                  {@link Long} id of current user.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -236,12 +236,12 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) AND t.id IN "
+        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) AND t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
-        List<String> tags, String languageCode, List<Long> habitIdsRequested, Long userId);
+        List<String> tags, String languageCode, List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that find all habit's translations by tags,and language code in case
@@ -271,13 +271,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that finds by tags, complexities and language code all default, custom
      * habit's translations of current user or by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}.
-     * @param tags              {@link List} of {@link String}.
-     * @param complexities      {@link List} of {@link Integer}.
-     * @param languageCode      language code {@link String}.
-     * @param userId            {@link Long} id of current user.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param tags                    {@link List} of {@link String}.
+     * @param complexities            {@link List} of {@link Integer}.
+     * @param languageCode            language code {@link String}.
+     * @param userId                  {@link Long} id of current user.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -290,26 +290,27 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
+        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "OR (h.isCustomHabit = false)) "
         + "AND h.complexity IN (:complexities) AND  t.id IN "
         + "(SELECT tt.tag FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
-        List<String> tags, Optional<List<Integer>> complexities, String languageCode, List<Long> habitIdsRequested,
+        List<String> tags, Optional<List<Integer>> complexities, String languageCode,
+        List<Long> requestedCustomHabitIds,
         Long userId);
 
     /**
      * Method that finds by complexities and language code all custom habit's
      * translations of current user or by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}.
-     * @param complexities      {@link List} of {@link Integer}.
-     * @param languageCode      language code {@link String}.
-     * @param userId            {@link Long} id of current user.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
+     * @param pageable                {@link Pageable}.
+     * @param complexities            {@link List} of {@link Integer}.
+     * @param languageCode            language code {@link String}.
+     * @param userId                  {@link Long} id of current user.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
      *
      * @author Lilia Mokhnatska
@@ -321,11 +322,11 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
+        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
-        Optional<List<Integer>> complexities, String languageCode, List<Long> habitIdsRequested, Long userId);
+        Optional<List<Integer>> complexities, String languageCode, List<Long> requestedCustomHabitIds, Long userId);
 
     /**
      * Method that find all habit's translations by in case when isCustomHabit false
@@ -361,11 +362,11 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method that finds by language all default, custom habits of current user or
      * by habit assign status REQUESTED.
      *
-     * @param pageable          {@link Pageable}.
-     * @param language          code language.
-     * @param habitIdsRequested {@link List} of {@link Long} habit ids with habit
-     *                          assign status REQUESTED.
-     * @param userId            {@link Long} id of current user.
+     * @param pageable                {@link Pageable}.
+     * @param language                code language.
+     * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
+     *                                habit assign status REQUESTED.
+     * @param userId                  {@link Long} id of current user.
      * @return {@link Page} of {@link HabitTranslation}`s.
      *
      * @author Olena Sotnik
@@ -376,9 +377,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :language) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:habitIdsRequested) OR h.userId = :userId)) "
+        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "OR h.isCustomHabit = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(Pageable pageable, String language,
-        List<Long> habitIdsRequested, Long userId);
+        List<Long> requestedCustomHabitIds, Long userId);
 }
