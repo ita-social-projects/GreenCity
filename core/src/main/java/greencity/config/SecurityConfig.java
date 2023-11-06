@@ -299,7 +299,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture",
-                FRIENDS + "/{friendId}/acceptFriend")
+                FRIENDS + "/{friendId}/acceptFriend",
+                FRIENDS + "/{friendId}/declineFriend")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
@@ -318,8 +319,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
                 FRIENDS + "/{friendId}",
-                FRIENDS + "/{friendId}/cancelRequest",
-                FRIENDS + "/{friendId}/declineFriend")
+                FRIENDS + "/{friendId}/cancelRequest")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
