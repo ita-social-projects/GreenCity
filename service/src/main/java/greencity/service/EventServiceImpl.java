@@ -152,7 +152,7 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             eventRepo.delete(toDelete);
         } else {
-            throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
