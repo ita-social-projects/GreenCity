@@ -456,7 +456,7 @@ class EventServiceImplTest {
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
 
         Long eventId = event.getId();
-        assertThrows(BadRequestException.class, () -> eventService.delete(eventId, userEmail));
+        assertThrows(UserHasNoPermissionToAccessException.class, () -> eventService.delete(eventId, userEmail));
 
         verify(restClient).findByEmail(userEmail);
         verify(eventRepo).findById(1L);
