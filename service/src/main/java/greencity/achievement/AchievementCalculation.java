@@ -6,7 +6,6 @@ import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
-import greencity.entity.Habit;
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
@@ -44,12 +43,12 @@ public class AchievementCalculation {
      * Constructor for initializing the required services and repositories.
      */
     public AchievementCalculation(
-            UserActionService userActionService,
-            @Lazy AchievementService achievementService,
-            AchievementCategoryService achievementCategoryService,
-            UserAchievementRepo userAchievementRepo,
-            AchievementRepo achievementRepo, RatingCalculation ratingCalculation, ModelMapper modelMapper,
-            HabitRepo habitRepo) {
+        UserActionService userActionService,
+        @Lazy AchievementService achievementService,
+        AchievementCategoryService achievementCategoryService,
+        UserAchievementRepo userAchievementRepo,
+        AchievementRepo achievementRepo, RatingCalculation ratingCalculation, ModelMapper modelMapper,
+        HabitRepo habitRepo) {
         this.userActionService = userActionService;
         this.achievementService = achievementService;
         this.achievementCategoryService = achievementCategoryService;
@@ -70,7 +69,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-                                     AchievementAction achievementAction) {
+        AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
@@ -78,16 +77,6 @@ public class AchievementCalculation {
         } else if (AchievementAction.DELETE.equals(achievementAction)) {
             deleteAchievementFromUser(user, achievementCategoryVO.getId(), null);
         }
-    }
-
-    private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
-                                      AchievementAction achievementAction, Long habitId) {
-        UserActionVO userActionVO =
-                userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId);
-        int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);
-        userActionVO.setCount(count > 0 ? count : 0);
-        userActionService.updateUserActions(userActionVO);
-        return count;
     }
 
     /**
@@ -100,7 +89,7 @@ public class AchievementCalculation {
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
-                                     AchievementAction achievementAction, Long habitId) {
+        AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
@@ -114,22 +103,16 @@ public class AchievementCalculation {
         AchievementVO achievementVO = achievementService.findByCategoryIdAndCondition(achievementCategoryId, count);
         if (achievementVO != null) {
             Achievement achievement =
-                    achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
-                            .orElseThrow(() -> new NoSuchElementException(
-                                    ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
-            UserAchievement userAchievement = null;
+                achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
+                    .orElseThrow(() -> new NoSuchElementException(
+                        ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
+            UserAchievement userAchievement = UserAchievement.builder()
+                .achievement(achievement)
+                .user(modelMapper.map(userVO, User.class))
+                .build();
             if (habitId != null) {
-                userAchievement = UserAchievement.builder()
-                        .achievement(achievement)
-                        .user(modelMapper.map(userVO, User.class))
-                        .habit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
-                                ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)))
-                        .build();
-            } else {
-                userAchievement = UserAchievement.builder()
-                        .achievement(achievement)
-                        .user(modelMapper.map(userVO, User.class))
-                        .build();
+                userAchievement.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
+                    ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
             }
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
             ratingCalculation.ratingCalculation(reason, userVO);
@@ -142,9 +125,9 @@ public class AchievementCalculation {
         List<Achievement> achievements = new ArrayList<>();
         if (habitId != null) {
             achievements =
-                    achievementRepo.findUnAchieved(user.getId(), achievementCategoryId, habitId);
+                achievementRepo.findUnAchieved(user.getId(), achievementCategoryId, habitId);
         } else {
-            achievementRepo.findUnAchieved(user.getId(), achievementCategoryId);
+            achievements = achievementRepo.findUnAchieved(user.getId(), achievementCategoryId);
         }
         if (!achievements.isEmpty()) {
             achievements.forEach(achievement -> {
@@ -154,5 +137,15 @@ public class AchievementCalculation {
             });
             calculateAchievement(user, AchievementCategoryType.ACHIEVEMENT, AchievementAction.DELETE);
         }
+    }
+
+    private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
+        AchievementAction achievementAction, Long habitId) {
+        UserActionVO userActionVO =
+            userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId);
+        int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);
+        userActionVO.setCount(count > 0 ? count : 0);
+        userActionService.updateUserActions(userActionVO);
+        return count;
     }
 }
