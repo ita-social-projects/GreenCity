@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.enums.FriendStatus;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -834,7 +835,7 @@ class FriendServiceImplTest {
         long totalElements = 50;
         Pageable pageable = PageRequest.of(page, size);
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
-        expectedResult.setFriendStatus("FRIEND");
+        expectedResult.setFriendStatus(FriendStatus.FRIEND);
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
         String name = "vi";
 

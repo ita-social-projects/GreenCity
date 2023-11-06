@@ -1,6 +1,7 @@
 package greencity.dto.friends;
 
 import greencity.dto.location.UserLocationDto;
+import greencity.enums.FriendStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class UserFriendDto {
     private Long mutualFriends;
     private String profilePicturePath;
     private Long chatId;
-    private String friendStatus;
+    private FriendStatus friendStatus;
     private UserLocationDto userLocationDto;
 
     /**

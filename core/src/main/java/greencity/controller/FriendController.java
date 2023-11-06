@@ -103,7 +103,8 @@ public class FriendController {
     }
 
     /**
-     * Method for declining friend request from user.
+     * Method for declining friend request from user. Change status from REQUEST to
+     * REJECTED.
      *
      * @param friendId id user friend.
      * @param userVO   {@link UserVO} user.
@@ -115,7 +116,7 @@ public class FriendController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
     })
-    @DeleteMapping("/{friendId}/declineFriend")
+    @PatchMapping("/{friendId}/declineFriend")
     public ResponseEntity<Object> declineFriendRequest(
         @ApiParam("Friend's id. Cannot be empty.") @PathVariable long friendId,
         @ApiIgnore @CurrentUser UserVO userVO) {
