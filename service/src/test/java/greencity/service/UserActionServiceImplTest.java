@@ -101,7 +101,7 @@ class UserActionServiceImplTest {
     @Test
     void findUserActionByUserIdAndAchievementCategoryAndHabitId() {
         UserActionVO userActionVO = ModelUtils.getUserActionVO();
-        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(null);
+        when(userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(1L, 1L, 1L)).thenReturn(null);
         when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
         when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievementCategory()));
         UserAction userAction = UserAction.builder()
@@ -111,6 +111,7 @@ class UserActionServiceImplTest {
                 .name("HABIT")
                 .achievementList(Collections.emptyList())
                 .build())
+            .habit(ModelUtils.getHabit())
             .count(0)
             .build();
         when(habitRepo.findById(1L)).thenReturn(Optional.of(ModelUtils.getHabit()));
@@ -119,7 +120,11 @@ class UserActionServiceImplTest {
             userActionService.findUserActionByUserIdAndAchievementCategoryAndHabitId(1L, 1L, 1L);
         assertEquals(userActionVO, resultUserActionVO);
         verify(userActionRepo).save(any());
-
+        verify(habitRepo).findById(1L);
+        verify(modelMapper).map(userAction, UserActionVO.class);
+        verify(userActionRepo).findByUserIdAndAchievementCategoryIdAndHabitId(1L, 1L, 1L);
+        verify(userRepo).findById(anyLong());
+        verify(achievementCategoryRepo).findById(anyLong());
     }
 
     @Test
