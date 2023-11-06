@@ -3,8 +3,10 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
+import greencity.entity.Habit;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.HabitRepo;
 import greencity.repository.UserActionRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ class UserActionServiceImplTest {
     private ModelMapper modelMapper;
     @Mock
     private UserRepo userRepo;
+    @Mock
+    private HabitRepo habitRepo;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
 
@@ -89,6 +93,30 @@ class UserActionServiceImplTest {
 
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
         UserActionVO resultUserActionVO = userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L);
+        assertEquals(userActionVO, resultUserActionVO);
+        verify(userActionRepo).save(any());
+
+    }
+
+    @Test
+    void findUserActionByUserIdAndAchievementCategoryAndHabitId() {
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(null);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievementCategory()));
+        UserAction userAction = UserAction.builder()
+            .user(ModelUtils.getUser())
+            .achievementCategory(AchievementCategory.builder()
+                .id(1L)
+                .name("HABIT")
+                .achievementList(Collections.emptyList())
+                .build())
+            .count(0)
+            .build();
+        when(habitRepo.findById(1L)).thenReturn(Optional.of(ModelUtils.getHabit()));
+        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
+        UserActionVO resultUserActionVO =
+            userActionService.findUserActionByUserIdAndAchievementCategoryAndHabitId(1L, 1L, 1L);
         assertEquals(userActionVO, resultUserActionVO);
         verify(userActionRepo).save(any());
 

@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
