@@ -71,7 +71,7 @@ public class AchievementCalculation {
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
         AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
-        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
+        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, null);
         } else if (AchievementAction.DELETE.equals(achievementAction)) {
@@ -86,12 +86,13 @@ public class AchievementCalculation {
      *                          calculated.
      * @param category          The category of the achievement.
      * @param achievementAction The type of action (e.g., ASSIGN, DELETE).
+     * @param habitId           The ID of the habit related to the achievement.
      */
     @Transactional
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
         AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
-        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
+        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
         if (AchievementAction.ASSIGN.equals(achievementAction)) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, habitId);
         } else if (AchievementAction.DELETE.equals(achievementAction)) {
@@ -122,7 +123,7 @@ public class AchievementCalculation {
     }
 
     private void deleteAchievementFromUser(UserVO user, Long achievementCategoryId, Long habitId) {
-        List<Achievement> achievements = new ArrayList<>();
+        List<Achievement> achievements;
         if (habitId != null) {
             achievements =
                 achievementRepo.findUnAchieved(user.getId(), achievementCategoryId, habitId);
@@ -140,7 +141,7 @@ public class AchievementCalculation {
     }
 
     private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
-        AchievementAction achievementAction, Long habitId) {
+        AchievementAction achievementAction) {
         UserActionVO userActionVO =
             userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId);
         int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);

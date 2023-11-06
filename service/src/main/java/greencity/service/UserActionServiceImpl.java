@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.useraction.UserActionVO;
-import greencity.entity.Habit;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
@@ -82,7 +81,8 @@ public class UserActionServiceImpl implements UserActionService {
                 .count(0)
                 .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
                     () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
-                .habit(habitRepo.findById(habitId).get())
+                .habit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
+                    ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)))
                 .build();
             userActionRepo.save(userAction);
         }
