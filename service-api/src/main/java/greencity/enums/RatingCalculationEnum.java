@@ -13,7 +13,7 @@ public enum RatingCalculationEnum {
     SHARE_NEWS(20),
     CREATE_EVENT(40),
     JOIN_EVENT(20),
-    ENROLL_HABIT(5),
+    COMPLETE_HABIT(5),
 
     UNDO_DAYS_OF_HABIT_IN_PROGRESS(-1),
     UNDO_CREATE_NEWS(-30),
@@ -22,7 +22,7 @@ public enum RatingCalculationEnum {
     UNDO_SHARE_NEWS(-20),
     UNDO_CREATE_EVENT(-40),
     UNDO_JOIN_EVENT(-20),
-    UNDO_ENROLL_HABIT(5),
+    UNDO_COMPLETE_HABIT(5),
 
     ACQUIRED_HABIT_14_DAYS(20),
     ACQUIRED_HABIT_21_DAYS(30),

@@ -217,7 +217,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
                 habitAssignManagementDtoList);
         }
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMPLETE_HABIT, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
         return habitAssignManagementDtoList;
@@ -759,7 +759,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
             UserVO userVO = modelMapper.map(habitAssign.getUser(), UserVO.class);
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.COMPLETE_HABIT, userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
         }
@@ -1026,7 +1026,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
         habitAssignRepo.delete(habitAssign);
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_ENROLL_HABIT, userVO);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMPLETE_HABIT, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.HABIT, AchievementAction.DELETE);
     }
