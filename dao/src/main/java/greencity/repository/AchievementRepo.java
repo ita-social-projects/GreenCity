@@ -25,21 +25,18 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @return A list of Achievement objects that the user hasn't achieved within
      *         the specified category.
      */
-    @Query(value = "Select ach.*\n"
-        + "from achievements as ach\n"
-        + "where\n"
-        + "    ach.id in\n"
-        + "      (SELECT achievement_id from user_achievements uach where uach.user_id = :userId) and uach.hab\n"
-        + "  and\n"
-        + "    ach.condition > (SELECT ua.count\n"
-        + "                                      from user_actions ua\n"
-        + "                                      where ua.user_id = :userId and\n"
-        + "                                            ua.achievement_category_id=:achievementCategoryId)\n"
-        + "and\n"
-        + "    ach.achievement_category_id=:achievementCategoryId"
-        + "and\n"
-        + "    ach.habit_id=:habitId",
-        nativeQuery = true)
+    @Query(value = "Select ach.* "
+        + "from achievements as ach "
+        + "where ach.id in "
+        + "      (SELECT achievement_id "
+        + "       from user_achievements uach "
+        + "       where uach.user_id = :userId) "
+        + "  and ach.condition > (SELECT ua.count "
+        + "                       from user_actions ua "
+        + "                       where ua.user_id = :userId "
+        + "                         and ua.achievement_category_id = :achievementCategoryId) "
+        + "  and ach.achievement_category_id = :achievementCategoryId "
+        + "  and ach.habit_id = :habitId", nativeQuery = true)
     List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId, Long habitId);
 
     /**
