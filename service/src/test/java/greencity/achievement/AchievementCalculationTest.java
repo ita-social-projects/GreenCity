@@ -122,8 +122,10 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
+
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
             AchievementAction.ASSIGN);
+
         assertEquals(2, userActionVO.getCount());
         verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
         verify(userActionService, times(2)).findUserAction(any(), any());
