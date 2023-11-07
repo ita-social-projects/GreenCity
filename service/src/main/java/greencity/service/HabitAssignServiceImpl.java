@@ -710,7 +710,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
         UserVO userVO = userService.findById(userId);
         achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.ACQUIRED_HABIT_DAYS, AchievementAction.ASSIGN);
+            AchievementCategoryType.ACQUIRED_HABIT_DAYS, AchievementAction.ASSIGN, habitAssign.getHabit().getId());
         ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO);
 
         return buildHabitAssignDto(habitAssign, language);
@@ -761,7 +761,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             UserVO userVO = modelMapper.map(habitAssign.getUser(), UserVO.class);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.COMPLETE_HABIT, userVO);
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
+                AchievementCategoryType.HABIT, AchievementAction.ASSIGN, habitAssign.getHabit().getId());
         }
         habitAssignRepo.save(habitAssign);
     }
@@ -803,8 +803,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
-        achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.ACQUIRED_HABIT_DAYS, AchievementAction.DELETE);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.ACQUIRED_HABIT_DAYS,
+            AchievementAction.DELETE, habitAssign.getHabit().getId());
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 

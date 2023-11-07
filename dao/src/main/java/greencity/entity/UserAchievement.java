@@ -26,4 +26,8 @@ public class UserAchievement {
 
     @Column
     private boolean notified;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "habit_id", nullable = true)
+    private Habit habit;
 }
