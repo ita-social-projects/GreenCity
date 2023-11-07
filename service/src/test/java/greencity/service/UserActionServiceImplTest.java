@@ -5,6 +5,8 @@ import greencity.dto.useraction.UserActionVO;
 import greencity.entity.AchievementCategory;
 import greencity.entity.Habit;
 import greencity.entity.UserAction;
+import greencity.exception.exceptions.BadRequestException;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.UserActionRepo;
@@ -77,8 +79,20 @@ class UserActionServiceImplTest {
     }
 
     @Test
+    void findUserAction_null() {
+        when(userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(1L, 1L, 1L)).thenReturn(null);
+        assertEquals(null, userActionService.findUserAction(1L, 1L, 1L));
+    }
+
+    @Test
+    void findUserAction_null2() {
+        when(userActionRepo.findByUserIdAndAchievementCategoryId(1L, 1L)).thenReturn(null);
+        assertEquals(null, userActionService.findUserAction(1L, 1L));
+    }
+
+    @Test
     void createUserActionByUserId_NoSuchCategory() {
-        assertThrows(NoSuchElementException.class,
+        assertThrows(NotFoundException.class,
             () -> userActionService.createUserAction(1L, 1L, null));
     }
 
@@ -129,6 +143,21 @@ class UserActionServiceImplTest {
         verify(userActionRepo).save(any());
         verify(habitRepo).findById(3L);
         verify(modelMapper).map(userAction, UserActionVO.class);
+        verify(userRepo).findById(anyLong());
+        verify(achievementCategoryRepo).findById(anyLong());
+    }
+
+    @Test
+    void createUserActionAndHabitId_NullHabit() {
+        Habit habit = ModelUtils.getHabit();
+        habit.setId(3L);
+        AchievementCategory achievementCategory = ModelUtils.getAchievementCategory();
+        achievementCategory.setId(2L);
+        when(userRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getUser()));
+        when(achievementCategoryRepo.findById(anyLong())).thenReturn(Optional.of(achievementCategory));
+
+        assertThrows(NotFoundException.class, () -> userActionService.createUserAction(1L, 2L, 3L));
+
         verify(userRepo).findById(anyLong());
         verify(achievementCategoryRepo).findById(anyLong());
     }
