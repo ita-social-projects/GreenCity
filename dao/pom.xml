@@ -16,7 +16,7 @@
     <properties>
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
         <liquibase.version>3.8.4</liquibase.version>
-        <postgresql.version>42.2.5</postgresql.version>
+        <postgresql.version>42.4.1</postgresql.version>
         <testcontainers.version>1.15.0-rc2</testcontainers.version>
     </properties>
 
