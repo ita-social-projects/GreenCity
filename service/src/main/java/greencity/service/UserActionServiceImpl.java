@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.useraction.UserActionVO;
+import greencity.entity.Habit;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
@@ -24,6 +25,12 @@ public class UserActionServiceImpl implements UserActionService {
     private final AchievementCategoryRepo achievementCategoryRepo;
     private final HabitRepo habitRepo;
 
+    @Override
+    public UserActionVO save(UserActionVO userActionVO) {
+        UserAction save = userActionRepo.save(modelMapper.map(userActionVO, UserAction.class));
+        return modelMapper.map(save, UserActionVO.class);
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -44,23 +51,13 @@ public class UserActionServiceImpl implements UserActionService {
     /**
      * {@inheritDoc}
      *
-     * @author Orest Mamchuk
+     * @author Oksana Spodaryk
      */
     @Transactional
     @Override
-    public UserActionVO findUserActionByUserIdAndAchievementCategory(Long userId, Long categoryId) {
+    public UserActionVO findUserAction(Long userId, Long categoryId) {
         UserAction userAction = userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
-        if (userAction == null) {
-            userAction = UserAction.builder()
-                .user(userRepo.findById(userId)
-                    .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
-                .count(0)
-                .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
-                    () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
-                .build();
-            userActionRepo.save(userAction);
-        }
-        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
+        return modelMapper.map(userAction, UserActionVO.class);
     }
 
     /**
@@ -74,24 +71,32 @@ public class UserActionServiceImpl implements UserActionService {
         Long habitId) {
         UserAction userAction =
             userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId, categoryId, habitId);
-        if (userAction == null) {
-            userAction = UserAction.builder()
-                .user(userRepo.findById(userId)
-                    .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
-                .count(0)
-                .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
-                    () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
-                .habit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
-                    ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)))
-                .build();
-            userActionRepo.save(userAction);
-        }
         return modelMapper.map(userAction, UserActionVO.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @author Oksana Spodaryk
+     */
     @Override
-    public UserActionVO save(UserActionVO userActionVO) {
-        UserAction save = userActionRepo.save(modelMapper.map(userActionVO, UserAction.class));
-        return modelMapper.map(save, UserActionVO.class);
+    public UserActionVO createUserAction(Long userId, Long categoryId, Long habitId) {
+        UserAction userAction = initUserAction(userId, categoryId);
+        if (habitId != null) {
+            userAction.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
+                ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
+        }
+        userActionRepo.save(userAction);
+        return modelMapper.map(userAction, UserActionVO.class);
+    }
+
+    private UserAction initUserAction(Long userId, Long categoryId) {
+        return UserAction.builder()
+            .user(userRepo.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
+            .count(0)
+            .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
+                () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
+            .build();
     }
 }
