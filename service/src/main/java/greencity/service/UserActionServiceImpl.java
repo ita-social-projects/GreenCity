@@ -70,7 +70,7 @@ public class UserActionServiceImpl implements UserActionService {
      */
     @Transactional
     @Override
-    public UserActionVO findUserActionByUserIdAndAchievementCategoryAndHabitId(Long userId, Long categoryId,
+    public UserActionVO findUserAction(Long userId, Long categoryId,
         Long habitId) {
         UserAction userAction =
             userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId, categoryId, habitId);
