@@ -141,9 +141,12 @@ public class AchievementCalculation {
 
     private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
         AchievementAction achievementAction, Long habitId) {
-        UserActionVO userActionVO = habitId == null
-            ? (userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId))
-            : (userActionService.findUserAction(user.getId(), achievementCategoryVOId, habitId));
+        UserActionVO userActionVO =
+            habitId == null ? (userActionService.findUserAction(user.getId(), achievementCategoryVOId))
+                : (userActionService.findUserAction(user.getId(), achievementCategoryVOId, habitId));
+        if (userActionVO == null) {
+            userActionService.createUserAction(user.getId(), achievementCategoryVOId, habitId);
+        }
         int count = userActionVO.getCount() + ((AchievementAction.ASSIGN == achievementAction) ? 1 : -1);
         count = Math.max(count, 0);
         userActionVO.setCount(count);
