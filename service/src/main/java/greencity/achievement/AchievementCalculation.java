@@ -71,9 +71,9 @@ public class AchievementCalculation {
         AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
-        if (AchievementAction.ASSIGN.equals(achievementAction)) {
+        if (AchievementAction.ASSIGN == achievementAction) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, null);
-        } else if (AchievementAction.DELETE.equals(achievementAction)) {
+        } else if (AchievementAction.DELETE == achievementAction) {
             deleteAchievementFromUser(user, achievementCategoryVO.getId(), null);
         }
     }
@@ -92,9 +92,9 @@ public class AchievementCalculation {
         AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
         int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
-        if (AchievementAction.ASSIGN.equals(achievementAction)) {
+        if (AchievementAction.ASSIGN == achievementAction) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, habitId);
-        } else if (AchievementAction.DELETE.equals(achievementAction)) {
+        } else if (AchievementAction.DELETE == achievementAction) {
             deleteAchievementFromUser(user, achievementCategoryVO.getId(), habitId);
         }
     }
@@ -143,7 +143,7 @@ public class AchievementCalculation {
         AchievementAction achievementAction) {
         UserActionVO userActionVO =
             userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId);
-        int count = userActionVO.getCount() + (AchievementAction.ASSIGN.equals(achievementAction) ? 1 : -1);
+        int count = userActionVO.getCount() + ((AchievementAction.ASSIGN == achievementAction) ? 1 : -1);
         userActionVO.setCount(count > 0 ? count : 0);
         userActionService.updateUserActions(userActionVO);
         return count;
