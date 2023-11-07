@@ -31,6 +31,7 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "    SELECT achievement_id "
         + "    FROM user_achievements uach "
         + "    WHERE uach.user_id = :userId"
+        + "    AND uach.habit_id = :habitId"
         + ") "
         + "AND ach.condition > ("
         + "    SELECT ua.count "
@@ -38,8 +39,7 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
         + "    WHERE ua.user_id = :userId "
         + "    AND ua.achievement_category_id = :achievementCategoryId"
         + ") "
-        + "AND ach.achievement_category_id = :achievementCategoryId "
-        + "AND ach.habit_id = :habitId",
+        + "AND ach.achievement_category_id = :achievementCategoryId ",
         nativeQuery = true)
     List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId, Long habitId);
 
