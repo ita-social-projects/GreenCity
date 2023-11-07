@@ -160,6 +160,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssignManagementDto habitAssignManagementDto =
             modelMapper.map(habitAssign, HabitAssignManagementDto.class);
         habitAssignManagementDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
         return habitAssignManagementDto;
     }
 
@@ -216,7 +219,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             assignFriendsForCustomHabit(habit, userVO.getId(), habitAssignCustomPropertiesDto,
                 habitAssignManagementDtoList);
         }
-
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
         return habitAssignManagementDtoList;
     }
 
@@ -1021,6 +1026,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
         habitAssignRepo.delete(habitAssign);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_ENROLL_HABIT, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.HABIT, AchievementAction.DELETE);
     }
 
     /**
