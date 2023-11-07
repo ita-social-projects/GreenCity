@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.useraction.UserActionVO;
-import greencity.entity.Habit;
 import greencity.entity.UserAction;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.HabitRepo;
