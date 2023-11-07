@@ -27,7 +27,7 @@ public class UserActionServiceImpl implements UserActionService {
     @Override
     public UserActionVO save(UserActionVO userActionVO) {
         UserAction save = userActionRepo.save(modelMapper.map(userActionVO, UserAction.class));
-        return modelMapper.map(save, UserActionVO.class);
+        return save != null ? modelMapper.map(save, UserActionVO.class) : null;
     }
 
     /**
@@ -56,7 +56,7 @@ public class UserActionServiceImpl implements UserActionService {
     @Override
     public UserActionVO findUserAction(Long userId, Long categoryId) {
         UserAction userAction = userActionRepo.findByUserIdAndAchievementCategoryId(userId, categoryId);
-        return modelMapper.map(userAction, UserActionVO.class);
+        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
     }
 
     /**
@@ -70,7 +70,7 @@ public class UserActionServiceImpl implements UserActionService {
         Long habitId) {
         UserAction userAction =
             userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(userId, categoryId, habitId);
-        return modelMapper.map(userAction, UserActionVO.class);
+        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
     }
 
     /**
@@ -92,6 +92,6 @@ public class UserActionServiceImpl implements UserActionService {
                 ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
         }
         userActionRepo.save(userAction);
-        return modelMapper.map(userAction, UserActionVO.class);
+        return userAction != null ? modelMapper.map(userAction, UserActionVO.class) : null;
     }
 }
