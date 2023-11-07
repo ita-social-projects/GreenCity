@@ -27,7 +27,7 @@ public class UserActionServiceImpl implements UserActionService {
     @Override
     public UserActionVO save(UserActionVO userActionVO) {
         UserAction save = userActionRepo.save(modelMapper.map(userActionVO, UserAction.class));
-        return save != null ? modelMapper.map(save, UserActionVO.class) : null;
+        return modelMapper.map(save, UserActionVO.class);
     }
 
     /**

@@ -66,7 +66,14 @@ class UserActionServiceImplTest {
         when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
         assertEquals(userActionVO, userActionService.findUserAction(1L, 1L));
     }
-
+    @Test
+    void findUserAction() {
+        UserAction userAction = ModelUtils.getUserAction();
+        UserActionVO userActionVO = ModelUtils.getUserActionVO();
+        when(userActionRepo.findByUserIdAndAchievementCategoryIdAndHabitId(1L, 1L,1L)).thenReturn(userAction);
+        when(modelMapper.map(userAction, UserActionVO.class)).thenReturn(userActionVO);
+        assertEquals(userActionVO, userActionService.findUserAction(1L, 1L,1L));
+    }
     @Test
     void createUserActionByUserId_NoSuchCategory() {
         assertThrows(NoSuchElementException.class,
