@@ -799,7 +799,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         UserVO userVO = userService.findById(userId);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
         achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.HABIT, AchievementAction.DELETE);
+            AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
