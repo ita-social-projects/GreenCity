@@ -32,7 +32,6 @@ import org.modelmapper.ModelMapper;
 import greencity.entity.Achievement;
 
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Arrays;
 
@@ -136,6 +135,39 @@ class AchievementCalculationTest {
     }
 
     @Test
+    void calculateAchievement_CountNegetive() {
+        AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
+        AchievementCategoryVO achievementCategoryVO2 = new AchievementCategoryVO(2L, "CREATE_NEWS");
+        UserVO userVO = ModelUtils.getUserVO();
+        UserActionVO userActionVO = new UserActionVO(1L, userVO, achievementCategoryVO, -100);
+        User user = ModelUtils.getUser();
+        Achievement achievement = ModelUtils.getAchievement();
+        UserAchievement userAchievement = ModelUtils.getUserAchievement();
+        user.setUserAchievements(Collections.singletonList(userAchievement));
+        AchievementVO achievementVO =
+            new AchievementVO(1L, "CREATED_5_NEWS", "CREATED_5_NEWS", "CREATED_5_NEWS", new AchievementCategoryVO(), 1);
+        when(achievementCategoryService.findByName(AchievementCategoryType.CREATE_NEWS.name()))
+            .thenReturn(achievementCategoryVO);
+        when(userActionService.findUserActionByUserIdAndAchievementCategory(any(), any())).thenReturn(userActionVO);
+        when(achievementRepo.findByAchievementCategoryIdAndCondition(anyLong(), any()))
+            .thenReturn(Optional.of(achievement));
+        when(achievementCategoryService.findByName("ACHIEVEMENT")).thenReturn(achievementCategoryVO);
+        when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(achievementService.findByCategoryIdAndCondition(2L, 0)).thenReturn(achievementVO);
+        achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS,
+            AchievementAction.ASSIGN);
+        assertEquals(1, userActionVO.getCount());
+        verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
+        verify(userActionService, times(2)).findUserActionByUserIdAndAchievementCategory(any(), any());
+        verify(achievementRepo).findByAchievementCategoryIdAndCondition(anyLong(), any());
+        verify(achievementCategoryService).findByName("ACHIEVEMENT");
+        verify(achievementCategoryService).findByName("CREATE_NEWS");
+        verify(modelMapper).map(userVO, User.class);
+        verify(achievementService).findByCategoryIdAndCondition(2L, 0);
+    }
+
+    @Test
     void calculateAchievement_Null_AchievementAction() {
         AchievementCategoryVO achievementCategoryVO = new AchievementCategoryVO(1L, "ACHIEVEMENT");
         UserVO userVO = ModelUtils.getUserVO();
@@ -228,7 +260,7 @@ class AchievementCalculationTest {
         when(achievementCategoryService.findByName("CREATE_NEWS")).thenReturn(achievementCategoryVO2);
         when(achievementService.findByCategoryIdAndCondition(2L, 1)).thenReturn(achievementVO);
 
-        assertThrows(NoSuchElementException.class, () -> achievementCalculation.calculateAchievement(userVO,
+        assertThrows(NotFoundException.class, () -> achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN, 1L));
         verify(achievementCategoryService).findByName(AchievementCategoryType.CREATE_NEWS.name());
         verify(userActionService).findUserActionByUserIdAndAchievementCategory(any(), any());

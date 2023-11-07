@@ -11,6 +11,7 @@ import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.RatingCalculationEnum;
+import greencity.exception.exceptions.NotFoundException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementRepo;
 import greencity.repository.HabitRepo;
@@ -25,7 +26,6 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Component
 public class AchievementCalculation {
@@ -70,7 +70,7 @@ public class AchievementCalculation {
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
         AchievementAction achievementAction) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
-        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
+        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, null);
         if (AchievementAction.ASSIGN == achievementAction) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, null);
         } else if (AchievementAction.DELETE == achievementAction) {
@@ -91,7 +91,7 @@ public class AchievementCalculation {
     public void calculateAchievement(UserVO user, AchievementCategoryType category,
         AchievementAction achievementAction, Long habitId) {
         AchievementCategoryVO achievementCategoryVO = achievementCategoryService.findByName(category.name());
-        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction);
+        int count = updateUserActionCount(user, achievementCategoryVO.getId(), achievementAction, habitId);
         if (AchievementAction.ASSIGN == achievementAction) {
             saveAchievementToUser(user, achievementCategoryVO.getId(), count, habitId);
         } else if (AchievementAction.DELETE == achievementAction) {
@@ -104,14 +104,14 @@ public class AchievementCalculation {
         if (achievementVO != null) {
             Achievement achievement =
                 achievementRepo.findByAchievementCategoryIdAndCondition(achievementCategoryId, count)
-                    .orElseThrow(() -> new NoSuchElementException(
+                    .orElseThrow(() -> new NotFoundException(
                         ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + achievementCategoryId));
             UserAchievement userAchievement = UserAchievement.builder()
                 .achievement(achievement)
                 .user(modelMapper.map(userVO, User.class))
                 .build();
             if (habitId != null) {
-                userAchievement.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
+                userAchievement.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NotFoundException(
                     ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
             }
             RatingCalculationEnum reason = RatingCalculationEnum.findByName(achievement.getTitle());
@@ -140,11 +140,13 @@ public class AchievementCalculation {
     }
 
     private int updateUserActionCount(UserVO user, Long achievementCategoryVOId,
-        AchievementAction achievementAction) {
-        UserActionVO userActionVO =
-            userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId);
+        AchievementAction achievementAction, Long habitId) {
+        UserActionVO userActionVO = habitId == null
+            ? (userActionService.findUserActionByUserIdAndAchievementCategory(user.getId(), achievementCategoryVOId))
+            : (userActionService.findUserAction(user.getId(), achievementCategoryVOId, habitId));
         int count = userActionVO.getCount() + ((AchievementAction.ASSIGN == achievementAction) ? 1 : -1);
-        userActionVO.setCount(count > 0 ? count : 0);
+        count = Math.max(count, 0);
+        userActionVO.setCount(count);
         userActionService.updateUserActions(userActionVO);
         return count;
     }
