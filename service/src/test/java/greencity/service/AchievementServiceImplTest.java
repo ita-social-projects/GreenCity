@@ -159,7 +159,7 @@ class AchievementServiceImplTest {
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
+        when(userActionService.findUserAction(1L, 1L)).thenReturn(null);
 
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
