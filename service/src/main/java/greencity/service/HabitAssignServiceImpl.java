@@ -160,9 +160,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssignManagementDto habitAssignManagementDto =
             modelMapper.map(habitAssign, HabitAssignManagementDto.class);
         habitAssignManagementDto.setProgressNotificationHasDisplayed(habitAssign.getProgressNotificationHasDisplayed());
-        ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
-        achievementCalculation.calculateAchievement(userVO,
-            AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
+
         return habitAssignManagementDto;
     }
 
@@ -701,11 +699,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitAssign habitAssign = habitAssignRepo.findById(habitAssignId)
             .orElseThrow(() -> new NotFoundException(
                 ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + habitAssignId));
-
         if (!habitAssign.getUser().getId().equals(userId)) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-
         validateForEnroll(date, habitAssign);
 
         HabitStatusCalendar habitCalendar = HabitStatusCalendar.builder()
@@ -762,6 +758,10 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         habitAssign.setHabitStreak(habitStreak);
         if (isHabitAcquired(habitAssign)) {
             habitAssign.setStatus(HabitAssignStatus.ACQUIRED);
+            UserVO userVO = modelMapper.map(habitAssign.getUser(), UserVO.class);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.ENROLL_HABIT, userVO);
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
         }
         habitAssignRepo.save(habitAssign);
     }
@@ -996,7 +996,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+                AchievementCategoryType.ACQUIRED_HABIT_DAYS, AchievementAction.DELETE);
         }
         habitAssignRepo.save(habitAssignToCancel);
         return buildHabitAssignDto(habitAssignToCancel, "en");
@@ -1021,7 +1021,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+                AchievementCategoryType.ACQUIRED_HABIT_DAYS, AchievementAction.DELETE);
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
