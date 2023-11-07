@@ -188,5 +188,6 @@
     <include file="db/changelog/logs/ch-add-column-userLocation-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-drop-column-city-in-users-table-Midianyi.xml"/>
     <include file="db/changelog/logs/ch-update-online-link-column-length-Sotnik.xml"/>
+    <include file="db/changelog/logs/ch-add-column-user_actions-Spodaryk.xml"/>
 </databaseChangeLog>
 

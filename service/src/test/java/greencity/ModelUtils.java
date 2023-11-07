@@ -1419,11 +1419,11 @@ public class ModelUtils {
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), false);
+        return new UserAchievement(1L, getUser(), getAchievement(), false, getHabit());
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0, getHabit());
     }
 
     public static UserActionVO getUserActionVO() {

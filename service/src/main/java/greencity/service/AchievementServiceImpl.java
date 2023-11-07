@@ -72,7 +72,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<UserVO> all = restClient.findAll();
         all.forEach(userVO -> {
             UserActionVO userActionByUserIdAndAchievementCategory =
-                userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
+                userActionService.findUserAction(userVO.getId(),
                     achievementCategoryVO.getId());
             if (userActionByUserIdAndAchievementCategory == null) {
                 userActionVO.setAchievementCategory(achievementCategoryVO);
