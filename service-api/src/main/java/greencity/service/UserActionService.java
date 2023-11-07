@@ -44,5 +44,5 @@ public interface UserActionService {
      * @return UserAction {@link UserActionVO}
      * @author Oksana Spodaryk
      */
-    UserActionVO findUserActionByUserIdAndAchievementCategoryAndHabitId(Long userId, Long categoryId, Long habitId);
+    UserActionVO findUserAction(Long userId, Long categoryId, Long habitId);
 }
