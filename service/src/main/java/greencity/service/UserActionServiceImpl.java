@@ -81,22 +81,18 @@ public class UserActionServiceImpl implements UserActionService {
      */
     @Override
     public UserActionVO createUserAction(Long userId, Long categoryId, Long habitId) {
-        UserAction userAction = initUserAction(userId, categoryId);
-        if (habitId != null) {
-            userAction.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
-                ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
-        }
-        userActionRepo.save(userAction);
-        return modelMapper.map(userAction, UserActionVO.class);
-    }
-
-    private UserAction initUserAction(Long userId, Long categoryId) {
-        return UserAction.builder()
+        UserAction userAction = UserAction.builder()
             .user(userRepo.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId)))
             .count(0)
             .achievementCategory(achievementCategoryRepo.findById(categoryId).orElseThrow(
                 () -> new NoSuchElementException(ErrorMessage.ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID + categoryId)))
             .build();
+        if (habitId != null) {
+            userAction.setHabit(habitRepo.findById(habitId).orElseThrow(() -> new NoSuchElementException(
+                ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId)));
+        }
+        userActionRepo.save(userAction);
+        return modelMapper.map(userAction, UserActionVO.class);
     }
 }
