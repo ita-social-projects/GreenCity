@@ -66,7 +66,8 @@ public interface FriendService {
      *
      * @author Stepan Omeliukh
      */
-    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(long userId, @Nullable String name,
+    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
+        @Nullable String name,
         Pageable pageable);
 
     /**

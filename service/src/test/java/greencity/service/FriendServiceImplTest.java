@@ -521,7 +521,7 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserTest() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -539,7 +539,7 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable);
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, pageable);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -556,7 +556,7 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendUnsupportedSortExceptionTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserUnsupportedSortExceptionTest() {
         long userId = 1L;
 
         PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
@@ -565,13 +565,13 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(true);
 
         assertThrows(UnsupportedSortException.class, () -> {
-            friendService.findAllUsersExceptMainUserAndUsersFriend(1L,
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(1L,
                 name, pageable);
         });
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenNameIsNullTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenNameIsNullTest() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -588,7 +588,7 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriend(userId, null, pageable);
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, null, pageable);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -736,7 +736,7 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenUserNotFoundTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenUserNotFoundTest() {
         long userId = 1L;
         String name = "vi";
         Pageable pageable = PageRequest.of(0, 20);
@@ -744,7 +744,8 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable));
+            () -> friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name,
+                pageable));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -754,12 +755,12 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenPageableIsNullTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenPageableIsNullTest() {
         long userId = 1L;
         String name = "vi";
 
         assertThrows(NullPointerException.class,
-            () -> friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, null));
+            () -> friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, null));
 
         verify(userRepo, never()).existsById(anyLong());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());

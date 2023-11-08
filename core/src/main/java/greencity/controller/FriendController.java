@@ -167,13 +167,14 @@ public class FriendController {
     })
     @GetMapping("/not-friends-yet")
     @ApiPageable
-    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
+    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @ApiIgnore @PageableDefault Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO,
         @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), name,
+                page));
     }
 
     /**
