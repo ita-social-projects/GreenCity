@@ -288,8 +288,8 @@
                     <region>centralus</region>
                     <runtime>
                         <os>linux</os>
-                        <javaVersion>jre11</javaVersion>
-                        <webContainer>jre11</webContainer>
+                        <javaVersion>jre17</javaVersion>
+                        <webContainer>jre17</webContainer>
                     </runtime>
                     <deployment>
                         <resources>
