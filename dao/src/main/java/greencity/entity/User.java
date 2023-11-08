@@ -73,7 +73,8 @@ import java.util.Set;
                     @ColumnResult(name = "longitude", type = Double.class),
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
-                    @ColumnResult(name = "chatId", type = Long.class)
+                    @ColumnResult(name = "chatId", type = Long.class),
+                    @ColumnResult(name = "friendStatus", type = String.class)
                 })
         })
 })
@@ -108,7 +109,12 @@ import java.util.Set;
             + "       FROM chat_rooms_participants p"
             + "       WHERE p.participant_id IN (u.id, :userId) "
             + "       GROUP BY p.room_id "
-            + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId "
+            + "       HAVING COUNT(DISTINCT p.participant_id) = 2 LIMIT 1) as chatId, "
+            + "(SELECT uf2.status "
+            + "FROM users_friends uf2 "
+            + "WHERE ( uf2.user_id = :userId AND uf2.friend_id = u.id ) "
+            + "or ( uf2.user_id = u.id AND uf2.friend_id = :userId )"
+            + "LIMIT 1) as friendStatus "
             + "FROM users u "
             + "LEFT JOIN user_location ul ON u.user_location = ul.id "
             + "WHERE u.id IN (:users)",

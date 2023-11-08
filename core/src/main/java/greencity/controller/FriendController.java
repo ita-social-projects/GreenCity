@@ -157,7 +157,8 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find all users that are not friend for current users")
+    @ApiOperation(
+        value = "Find all users except current user and his friends and users who send request to current user")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -166,13 +167,14 @@ public class FriendController {
     })
     @GetMapping("/not-friends-yet")
     @ApiPageable
-    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriend(
+    public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
         @ApiIgnore @PageableDefault Pageable page,
         @ApiIgnore @CurrentUser UserVO userVO,
         @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(friendService.findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), name, page));
+            .body(friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), name,
+                page));
     }
 
     /**

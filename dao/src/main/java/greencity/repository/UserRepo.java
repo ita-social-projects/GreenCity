@@ -313,6 +313,29 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
 
     /**
+     * Method that finds all users except current user and his friends and users who
+     * send request to current user.
+     *
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id != :userId "
+        + "AND u.id NOT IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'REQUEST' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
+        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
+    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId, String filteringName,
+        Pageable pageable);
+
+    /**
      * Method that finds recommended friends of friends.
      *
      * @param userId   current user's id.

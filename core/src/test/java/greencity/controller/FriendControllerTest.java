@@ -130,7 +130,8 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), null, PageRequest.of(0, 10));
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), null,
+            PageRequest.of(0, 10));
     }
 
     @Test
