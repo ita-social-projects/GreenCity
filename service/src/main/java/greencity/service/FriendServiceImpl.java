@@ -120,7 +120,7 @@ public class FriendServiceImpl implements FriendService {
         name = name == null ? "" : name;
         Page<User> users;
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
@@ -207,7 +207,6 @@ public class FriendServiceImpl implements FriendService {
         }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
-        userFriendDtoList.forEach(friend -> friend.setFriendStatus(FriendStatus.FRIEND));
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),

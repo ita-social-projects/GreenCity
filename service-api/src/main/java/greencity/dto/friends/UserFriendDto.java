@@ -20,7 +20,7 @@ public class UserFriendDto {
     private Long mutualFriends;
     private String profilePicturePath;
     private Long chatId;
-    private FriendStatus friendStatus;
+    private String friendStatus;
     private UserLocationDto userLocationDto;
 
     /**
@@ -28,7 +28,8 @@ public class UserFriendDto {
      */
     public UserFriendDto(Long id, String name, String email, Double rating, Long ulId, String cityEn,
         String cityUa, String regionEn, String regionUa, String countryEn, String countryUa,
-        Double latitude, Double longitude, Long mutualFriends, String profilePicturePath, Long chatId) {
+        Double latitude, Double longitude, Long mutualFriends, String profilePicturePath, Long chatId,
+        String friendStatus) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -36,6 +37,7 @@ public class UserFriendDto {
         this.mutualFriends = mutualFriends;
         this.profilePicturePath = profilePicturePath;
         this.chatId = chatId;
+        this.friendStatus = friendStatus;
         this.userLocationDto =
             new UserLocationDto(ulId, cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, latitude, longitude);
     }
