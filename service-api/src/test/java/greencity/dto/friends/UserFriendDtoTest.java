@@ -17,10 +17,11 @@ class UserFriendDtoTest {
         Long mutualFriends = 2L;
         String profilePicture = "profilePicture";
         Long chatId = 4L;
+        String friendStatus = "FRIEND";
         UserFriendDto userFriendDto = new UserFriendDto(id, name, email, rating, uLocation.getId(),
             uLocation.getCityEn(), uLocation.getCityUa(), uLocation.getRegionEn(), uLocation.getRegionUa(),
             uLocation.getCountryEn(), uLocation.getCountryUa(), uLocation.getLatitude(), uLocation.getLongitude(),
-            mutualFriends, profilePicture, chatId);
+            mutualFriends, profilePicture, chatId, friendStatus);
 
         assertEquals(id, userFriendDto.getId());
         assertEquals(name, userFriendDto.getName());
@@ -29,5 +30,6 @@ class UserFriendDtoTest {
         assertEquals(mutualFriends, userFriendDto.getMutualFriends());
         assertEquals(profilePicture, userFriendDto.getProfilePicturePath());
         assertEquals(chatId, userFriendDto.getChatId());
+        assertEquals(friendStatus, userFriendDto.getFriendStatus());
     }
 }

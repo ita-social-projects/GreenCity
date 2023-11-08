@@ -5,7 +5,6 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
-import greencity.enums.FriendStatus;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -112,7 +111,7 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(long userId,
+    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
         @Nullable String name, Pageable pageable) {
         Objects.requireNonNull(pageable);
 
@@ -120,7 +119,7 @@ public class FriendServiceImpl implements FriendService {
         name = name == null ? "" : name;
         Page<User> users;
         if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
         } else {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
@@ -207,7 +206,6 @@ public class FriendServiceImpl implements FriendService {
         }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
-        userFriendDtoList.forEach(friend -> friend.setFriendStatus(FriendStatus.FRIEND));
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
