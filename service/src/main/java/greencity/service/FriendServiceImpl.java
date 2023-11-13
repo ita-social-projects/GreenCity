@@ -144,6 +144,8 @@ public class FriendServiceImpl implements FriendService {
             mutualFriends = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        } else if (type == RecommendedFriendsType.CITY) {
+            mutualFriends = userRepo.findRecommendedFriendsByCity("Львів", pageable);
         } else {
             mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }
