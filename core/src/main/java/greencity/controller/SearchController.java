@@ -5,6 +5,7 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.service.SearchService;
@@ -51,7 +52,7 @@ public class SearchController {
     }
 
     /**
-     * Method for search.
+     * Method for searching.
      *
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
@@ -70,5 +71,27 @@ public class SearchController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
+    }
+
+    /**
+     * Method for searching events.
+     *
+     * @param searchQuery query to search.
+     * @return PageableDto of {@link SearchEventsDto} instances.
+     * @author Anton Bondar
+     */
+    @ApiOperation(value = "Search Events.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 201, message = HttpStatuses.OK),
+        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/events")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<SearchEventsDto>> searchEvents(
+        @ApiIgnore Pageable pageable,
+        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
+        @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(searchService.searchAllEvents(pageable, searchQuery, locale.getLanguage()));
     }
 }

@@ -7,8 +7,8 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.dto.place.PlaceNotificationDto;
@@ -21,10 +21,15 @@ import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
-import greencity.message.AddEcoNewsMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendHabitNotification;
+import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
+import greencity.message.SendHabitNotification;
+import greencity.message.AddEcoNewsMessage;
+import greencity.message.SendReportEmailMessage;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -74,6 +79,13 @@ public class ModelUtils {
             .email("test@gmail.com")
             .name("taras")
             .build();
+    }
+
+    public static HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer accessToken");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
     public static NewsSubscriberResponseDto getNewsSubscriberResponseDto() {
@@ -132,6 +144,7 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .author(ModelUtils.getEventCommentAuthorDto())
             .text("text")
+            .eventId(1L)
             .build();
     }
 
@@ -154,11 +167,20 @@ public class ModelUtils {
     public static TagUaEnDto tagUaEnDto = TagUaEnDto.builder().id(1L).nameUa("Сщціальний").nameEn("Social").build();
 
     public static EventDto getEventDtoWithTag() {
-        return EventDto.builder().id(1L).tags(List.of(tagUaEnDto)).build();
+        return EventDto.builder()
+            .id(1L)
+            .countComments(2)
+            .likes(20)
+            .tags(List.of(tagUaEnDto))
+            .build();
     }
 
     public static EventDto getEventDtoWithoutTag() {
-        return EventDto.builder().id(1L).build();
+        return EventDto.builder()
+            .id(1L)
+            .countComments(2)
+            .likes(20)
+            .build();
     }
 
     public static UserShoppingListItemResponseDto getUserShoppingListItemResponseDto() {
@@ -184,8 +206,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(1)
             .image("")
             .defaultDuration(14)
@@ -193,13 +215,20 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(1)
             .image("")
             .defaultDuration(14)
             .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static SendEventCreationNotification getSendEventCreationNotification() {
+        return SendEventCreationNotification.builder()
+            .email("test@gmail.com")
+            .messageBody("You have successfully created event")
             .build();
     }
 }

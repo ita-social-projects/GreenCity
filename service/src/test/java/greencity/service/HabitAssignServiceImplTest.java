@@ -1,8 +1,10 @@
 package greencity.service;
 
 import greencity.ModelUtils;
+import greencity.achievement.AchievementCalculation;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
@@ -41,22 +43,28 @@ import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
+import greencity.exception.exceptions.UserHasNoFriendWithIdException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
+import greencity.rating.RatingCalculation;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.HabitRepo;
 import greencity.repository.HabitStatusCalendarRepo;
 import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
+import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -87,11 +95,14 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
     @Mock
     private HabitRepo habitRepo;
+    @Mock
+    private UserRepo userRepo;
     @Mock
     private HabitAssignRepo habitAssignRepo;
     @Mock
@@ -116,6 +127,14 @@ class HabitAssignServiceImplTest {
     private ShoppingListItemService shoppingListItemService;
     @Mock
     private CustomShoppingListItemService customShoppingListItemService;
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
+
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
@@ -140,7 +159,7 @@ class HabitAssignServiceImplTest {
 
     private User user = User.builder().id(1L).build();
 
-    private HabitAssign habitAssign = getHabitAssign();
+    private final HabitAssign habitAssign = getHabitAssign();
 
     private HabitAssign fullHabitAssign = getFullHabitAssign();
 
@@ -158,6 +177,12 @@ class HabitAssignServiceImplTest {
 
     private HabitAssignPropertiesDto habitAssignPropertiesDto =
         HabitAssignPropertiesDto.builder().duration(14).defaultShoppingListItems(List.of(1L)).build();
+
+    private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto =
+        HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(habitAssignPropertiesDto)
+            .friendsIdsList(List.of())
+            .build();
 
     private String language = "en";
 
@@ -199,6 +224,34 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
         HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
         assertEquals(habitAssignManagementDto, actual);
+    }
+
+    @Test
+    void assignDefaultHabitForUserWithEmptyShoppingList() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habit.getId()))
+            .thenReturn(Collections.emptyList());
+        HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+        verify(shoppingListItemRepo, never()).getShoppingListByListOfId(any());
+    }
+
+    @Test
+    void assignDefaultHabitForUserWithNotEmptyShoppingList() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(anyLong()))
+            .thenReturn(Arrays.asList(2L, 3L, 4L));
+        HabitAssignManagementDto actual = habitAssignService.assignDefaultHabitForUser(habit.getId(), userVO);
+        assertEquals(habitAssignManagementDto, actual);
+        verify(shoppingListItemRepo).getShoppingListByListOfId(any());
     }
 
     @Test
@@ -250,9 +303,111 @@ class HabitAssignServiceImplTest {
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsCancelled(habit.getId(), user.getId()))
             .thenReturn(habitAssign);
         when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual =
-            habitAssignService.assignCustomHabitForUser(habit.getId(), userVO, habitAssignPropertiesDto);
-        assertEquals(habitAssignManagementDto, actual);
+        List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+            habitAssignCustomPropertiesDto);
+        assertEquals(List.of(habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserWithFriend() {
+        User userFriend1 = User.builder().id(3L).build();
+
+        UserVO userVO1 = UserVO.builder().id(1L).build();
+
+        User user1 = User.builder().id(1L).userFriends(List.of(userFriend1)).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+
+        when(habitAssignRepo.findAllByUserId(userVO1.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO1, User.class)).thenReturn(user1);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
+        when(userRepo.isFriend(user1.getId(), userFriend1.getId())).thenReturn(true);
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO1, habitAssignCustomPropertiesDtoWithFriend);
+        assertEquals(List.of(habitAssignManagementDto, habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserWithFriendNullHabitAssign() {
+        UserVO userVO1 = UserVO.builder().id(1L).build();
+
+        User user1 = User.builder().id(1L).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .build();
+
+        when(habitAssignRepo.findAllByUserId(userVO1.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO1, User.class)).thenReturn(user1);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO1, habitAssignCustomPropertiesDtoWithFriend);
+
+        assertEquals(List.of(habitAssignManagementDto), actual);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).findById(anyLong());
+        verify(habitAssignRepo, times(2)).save(any(HabitAssign.class));
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsNotFoundException() {
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+
+        assertThrows(NotFoundException.class, () -> habitAssignService
+            .assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsUserHasNoFriendWithIdException() {
+
+        User userFriend1 = User.builder().id(3L).build();
+
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithFriend =
+            HabitAssignCustomPropertiesDto.builder()
+                .habitAssignPropertiesDto(habitAssignPropertiesDto)
+                .friendsIdsList(List.of(3L))
+                .build();
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        when(userRepo.findById(userFriend1.getId())).thenReturn(Optional.of(userFriend1));
+
+        assertThrows(UserHasNoFriendWithIdException.class,
+            () -> habitAssignService.assignCustomHabitForUser(1L, userVO, habitAssignCustomPropertiesDtoWithFriend));
+    }
+
+    @Test
+    void assignCustomHabitForUser() {
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        List<HabitAssignManagementDto> actual = habitAssignService
+            .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
+        assertEquals(List.of(habitAssignManagementDto), actual);
     }
 
     @Test
@@ -318,17 +473,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void assignCustomHabitForUser() {
-        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
-        when(modelMapper.map(userVO, User.class)).thenReturn(user);
-        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
-        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
-        HabitAssignManagementDto actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
-            habitAssignPropertiesDto);
-        assertEquals(habitAssignManagementDto, actual);
-    }
-
-    @Test
     void updateStatusByHabitAssignId() {
         when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssignRepo.save(habitAssign), HabitAssignManagementDto.class))
@@ -357,6 +501,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(habitStatusCalendarRepo.findHabitStatusCalendarByEnrollDateAndHabitAssign(date, habitAssign))
             .thenReturn(habitStatusCalendar);
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         habitAssignService.unenrollHabit(habitAssignId, userId, date);
         assertEquals(0, habitAssign.getHabitStatusCalendars().size());
@@ -441,11 +586,12 @@ class HabitAssignServiceImplTest {
         Long habitId = 1L;
         Long habitAssignId = 1L;
         Long userId = 2L;
-
         HabitAssign habitAssign = ModelUtils.getHabitAssign();
         habitAssign.getUser().setId(userId);
+        habitAssign.setWorkingDays(10);
 
         when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         habitAssignService.deleteHabitAssign(habitAssignId, userId);
 
@@ -710,13 +856,14 @@ class HabitAssignServiceImplTest {
     void cancelHabitAssign() {
         habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
         habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-
+        habitAssign.setWorkingDays(10);
         when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
 
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
         assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
 
         verify(habitAssignRepo).save(habitAssign);
@@ -724,13 +871,26 @@ class HabitAssignServiceImplTest {
 
     @Test
     void getByHabitAssignIdAndUserId() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
+        Long userId = 1L;
+        Long habitAssignId = 2L;
+        Long habitAuthorId = 3L;
+
+        habitAssign.setId(habitAssignId);
+        habitAssign.getHabit().setUserId(habitAuthorId);
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
+
+        when(habitAssignRepo.findById(habitAssignId)).thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
-        assertEquals(habitAssignDto, habitAssignService.getByHabitAssignIdAndUserId(1L, 1L, language));
-        verify(habitAssignRepo).findById(anyLong());
-        verify(modelMapper, times(2)).map(any(), any());
+
+        HabitAssignDto result = habitAssignService.getByHabitAssignIdAndUserId(habitAssignId, userId, language);
+
+        assertEquals(habitAssignDto, result);
+        assertEquals(habitAuthorId, result.getHabit().getUsersIdWhoCreatedCustomHabit());
+
+        verify(habitAssignRepo).findById(habitAssignId);
+        verify(modelMapper).map(habitAssign, HabitAssignDto.class);
+        verify(modelMapper).map(habitTranslation, HabitDto.class);
     }
 
     @Test
@@ -758,6 +918,7 @@ class HabitAssignServiceImplTest {
                 .thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
+        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
 
         HabitAssignDto actualDto = habitAssignService.enrollHabit(habitAssignId, userId, localDate, language);
         assertEquals(1, habitAssign.getWorkingDays());
@@ -1025,6 +1186,49 @@ class HabitAssignServiceImplTest {
         verify(habitRepo, times(0)).findById(anyLong());
         verify(habitAssignRepo, times(0)).findByHabitIdAndUserIdAndStatusIsCancelled(anyLong(), anyLong());
         verify(modelMapper, times(0)).map(any(), any());
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignTest() {
+        HabitAssign habitAssign = getHabitAssign();
+        HabitAssign habitAssign1 = getHabitAssign();
+        habitAssign.setStatus(HabitAssignStatus.REQUESTED);
+        habitAssign.setDuration(20);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
+            .thenReturn(Optional.of(habitAssign));
+        when(modelMapper.map(any(), any())).thenReturn(getHabitAssignUserDurationDto());
+
+        var result = habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 20);
+        assertEquals(20, result.getDuration());
+        assertEquals(HabitAssignStatus.INPROGRESS, result.getStatus());
+        verify(habitAssignRepo).findById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong());
+        verify(modelMapper).map(any(), any());
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignThrowNotFoundExceptionTest() {
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.empty());
+        var exception = assertThrows(NotFoundException.class,
+            () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
+        assertEquals(exception.getMessage(), ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID + 1L);
+        verify(habitAssignRepo).findById(anyLong());
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignThrowInvalidStatusExceptionTest() {
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
+        when(habitAssignRepo.findById(anyLong())).thenReturn(Optional.of(habitAssign));
+        when(habitAssignRepo.findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong()))
+            .thenReturn(Optional.empty());
+        var exception = assertThrows(InvalidStatusException.class,
+            () -> habitAssignService.updateStatusAndDurationOfHabitAssign(1L, 21L, 1));
+        assertEquals(ErrorMessage.HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS,
+            exception.getMessage());
+        verify(habitAssignRepo).findById(anyLong());
+        verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsRequested(anyLong(), anyLong());
     }
 
     @Test

@@ -2,21 +2,13 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
-import greencity.dto.user.UserVO;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.enums.AchievementAction;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface AchievementService {
-    /**
-     * Method for finding all the achievements.
-     *
-     * @return list of all{@link AchievementDTO}.
-     */
-    List<AchievementVO> findAll();
-
     /**
      * Find {@link AchievementVO} for management by page .
      *
@@ -91,16 +83,21 @@ public interface AchievementService {
     AchievementVO findByCategoryIdAndCondition(Long categoryId, Integer condition);
 
     /**
-     * Method notifies of the achievement.
-     *
-     * @param userId of {@link UserVO}
-     * @return list {@link AchievementNotification}
-     */
-    List<AchievementNotification> findAchievementsWithStatusActive(Long userId);
-
-    /**
      * Method for achievement Calculation.
      */
-    void calculateAchievements(Long id, AchievementType achievementType,
-        AchievementCategoryType achievementCategory, Integer size);
+    void calculateAchievements(Long id, AchievementCategoryType achievementCategory,
+        AchievementAction achievementAction);
+
+    /**
+     * Retrieves a list of achievements based on the given type and the principal's
+     * email.
+     *
+     * @param principalEmail    The email of the principal (usually the logged-in
+     *                          user) for whom the achievements need to be fetched.
+     * @param achievementStatus The status of the achievements to filter by (e.g.,
+     *                          "ACHIEVED", "UNACHIEVED").
+     * @return List AchievementVO Returns a list of achievements matching the given
+     *         criteria.
+     */
+    List<AchievementVO> findAllByType(String principalEmail, String achievementStatus);
 }

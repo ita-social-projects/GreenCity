@@ -1,8 +1,8 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
@@ -25,13 +25,14 @@ public interface HabitService {
     HabitDto getByIdAndLanguageCode(Long id, String languageCode);
 
     /**
-     * Method returns all {@code Habit}'s by language code.
+     * Method returns all default and custom which created by current user his
+     * friends {@code Habit}'s by language code.
      *
      * @param pageable - instance of {@link Pageable}.
      * @param language - language code.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(Pageable pageable, String language);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String language);
 
     /**
      * Method returns shopping list in specific language by habit id.
@@ -57,16 +58,16 @@ public interface HabitService {
      * Method that return all PageableDto of HabitDto by tags, isCustomHabit,
      * complexities, habitAssignStatus and language code.
      *
-     * @param pageable      {@link Pageable}
-     * @param tags          {@link List} of {@link String} tags
+     * @param pageable      {@link Pageable}.
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
-     * @param languageCode  language code {@link String}
+     * @param complexities  {@link List} of {@link Integer}.
+     * @param languageCode  language code {@link String}.
      *
      * @return {@link PageableDto} of {@link HabitDto}.
      * @author Lilia Mokhnatska
      */
-    PageableDto<HabitDto> getAllByDifferentParameters(Pageable pageable, Optional<List<String>> tags,
+    PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable, Optional<List<String>> tags,
         Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode);
 
     /**
@@ -109,15 +110,15 @@ public interface HabitService {
     List<Long> addAllShoppingListItemsByListOfId(Long habitId, List<Long> listId);
 
     /**
-     * Method to save {@link AddCustomHabitDtoResponse}.
+     * Method to save {@link CustomHabitDtoResponse}.
      *
-     * @param addCustomHabitDtoRequest dto with {@link AddCustomHabitDtoRequest}
+     * @param addCustomHabitDtoRequest dto with {@link CustomHabitDtoRequest}
      *                                 entered info about field that need to edit.
      * @param userEmail                {@link String} - user email.
-     * @return {@link AddCustomHabitDtoResponse} instance.
+     * @return {@link CustomHabitDtoResponse} instance.
      * @author Lilia Mokhnatska
      */
-    AddCustomHabitDtoResponse addCustomHabit(AddCustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
+    CustomHabitDtoResponse addCustomHabit(CustomHabitDtoRequest addCustomHabitDtoRequest, MultipartFile image,
         String userEmail);
 
     /**
@@ -129,4 +130,16 @@ public interface HabitService {
      * @return List of friends' profile pictures.
      */
     List<UserProfilePictureDto> getFriendsAssignedToHabitProfilePictures(Long habitId, Long userId);
+
+    /**
+     * Method to update {@link CustomHabitDtoResponse}.
+     *
+     * @param customHabitDtoRequest dto with {@link CustomHabitDtoRequest} entered
+     *                              info about field that need to edit.
+     * @param userEmail             {@link String} - user email.
+     * @return {@link CustomHabitDtoResponse} instance.
+     * @author Olena Sotnik.
+     */
+    CustomHabitDtoResponse updateCustomHabit(CustomHabitDtoRequest customHabitDtoRequest, Long habitId,
+        String userEmail, MultipartFile image);
 }

@@ -1,8 +1,13 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
-import greencity.dto.econewscomment.*;
 import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
+import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 
@@ -110,4 +115,14 @@ public interface EcoNewsCommentService {
      * @author Taras Dovganyuk
      */
     PageableDto<EcoNewsCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO user);
+
+    /**
+     * Method that allow you to search users by name.
+     *
+     * @param searchUsers dto with current user ID and search query
+     *                    {@link UserSearchDto}.
+     *
+     * @author Anton Bondar
+     */
+    void searchUsers(UserSearchDto searchUsers);
 }

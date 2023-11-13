@@ -9,6 +9,8 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.AddressDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.service.EventService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -54,6 +58,7 @@ public class EventsController {
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/create",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseEntity<EventDto> save(
@@ -100,7 +105,7 @@ public class EventsController {
     @PutMapping(value = "/update",
         consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseEntity<EventDto> update(
-        @ApiParam(required = true) @RequestPart UpdateEventDto eventDto,
+        @ApiParam(required = true, value = SwaggerExampleModel.UPDATE_EVENT) @RequestPart UpdateEventDto eventDto,
         @ApiIgnore Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -128,7 +133,7 @@ public class EventsController {
      * Method for getting pages of events.
      *
      * @return a page of {@link EventDto} instance.
-     * @author Max Bohonko.
+     * @author Max Bohonko, Olena Sotnik.
      */
     @ApiOperation(value = "Get all events")
     @ApiResponses(value = {
@@ -137,16 +142,17 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(@ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAll(pageable, principal));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal, FilterEventDto filterEventDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvents(pageable, principal, filterEventDto));
     }
 
     /**
-     * Method for getting pages of users events.
+     * Method for getting pages of users events sorted by dates if online and by
+     * closeness to coordinates of User if offline.
      *
      * @return a page of {@link EventDto} instance.
-     * @author Danylo Hlysnkyi.
+     * @author Danylo Hlysnkyi, Olena Sotnik.
      */
     @ApiOperation(value = "Get all users events")
     @ApiResponses(value = {
@@ -156,9 +162,34 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping("/myEvents")
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(@ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(pageable, principal.getName()));
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal,
+        @RequestParam(required = false) String eventType,
+        @RequestParam(required = false) String userLatitude,
+        @RequestParam(required = false) String userLongitude) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(
+            pageable, principal.getName(), userLatitude, userLongitude, eventType));
+    }
+
+    /**
+     * Method for getting all user's favorite events.
+     *
+     * @return a set of {@link EventDto} instance.
+     * @author Midianyi Yurii
+     */
+    @ApiOperation(value = "Get all user's favorite events")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/getAllFavoriteEvents")
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getAllFavoriteEventsByUser(
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getAllFavoriteEventsByUser(pageable, principal.getName()));
     }
 
     /**
@@ -307,5 +338,42 @@ public class EventsController {
     @GetMapping("/getAllSubscribers/{eventId}")
     public ResponseEntity<Set<EventAttenderDto>> getAllEventSubscribers(@PathVariable Long eventId) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventAttenders(eventId));
+    }
+
+    /**
+     * Method for getting all events addresses.
+     *
+     * @return a set of {@link AddressDto} instance.
+     * @author Olena Sotnik.
+     */
+    @ApiOperation(value = "Get all events addresses")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("/addresses")
+    public ResponseEntity<Set<AddressDto>> getAllEventsAddresses() {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventsAddresses());
+    }
+
+    /**
+     * The method finds count of events organized and attended by user id.
+     *
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of organized and attended events by user id.
+     *
+     * @author Olena Sotnik
+     */
+    @ApiOperation(value = "Finds amount of events where user is organizer or attender")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/userEvents/count")
+    public ResponseEntity<Long> findAmountOfOrganizedAndAttendedEvents(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getAmountOfOrganizedAndAttendedEventsByUserId(userId));
     }
 }

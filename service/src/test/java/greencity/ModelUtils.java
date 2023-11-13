@@ -9,7 +9,6 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievement.UserVOAchievement;
@@ -34,6 +33,7 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
@@ -57,8 +57,12 @@ import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.favoriteplace.FavoritePlaceVO;
+import greencity.dto.filter.FilterEventDto;
+import greencity.dto.friends.UserFriendDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.geocoding.AddressResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
@@ -66,8 +70,6 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
@@ -86,6 +88,7 @@ import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.AddPlaceDto;
@@ -94,7 +97,10 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.place.AdminPlaceDto;
+import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
+import greencity.dto.search.SearchResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
@@ -111,6 +117,8 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -119,6 +127,7 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -160,11 +169,9 @@ import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
 import greencity.entity.event.EventDateLocation;
 import greencity.entity.event.EventGrade;
-import greencity.entity.localization.AchievementTranslation;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementStatus;
 import greencity.enums.CommentStatus;
 import greencity.enums.EmailNotification;
 import greencity.enums.FactOfDayStatus;
@@ -177,7 +184,6 @@ import greencity.enums.TagType;
 import greencity.enums.UserStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -216,6 +222,7 @@ public class ModelUtils {
     public static String HABIT_TRANSLATION_DESCRIPTION = "Description";
     public static String SHOPPING_LIST_TEXT = "buy a shopper";
     public static String HABIT_ITEM = "Item";
+    public static String HABIT_DEFAULT_IMAGE = "img/habit-default.png";
 
     public static EventAttenderDto getEventAttenderDto() {
         return EventAttenderDto.builder().id(1L).name(TestConst.NAME).build();
@@ -287,6 +294,8 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
+            .subscribedEvents(new HashSet<>())
+            .favoriteEvents(new HashSet<>())
             .build();
     }
 
@@ -300,6 +309,22 @@ public class ModelUtils {
             .lastActivityTime(localDateTime)
             .verifyEmail(new VerifyEmail())
             .dateOfRegistration(localDateTime)
+            .build();
+    }
+
+    public static UserVO getTestUserVo() {
+        return UserVO.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("user@email.com")
+            .build();
+    }
+
+    public static User getTestUser() {
+        return User.builder()
+            .id(2L)
+            .role(Role.ROLE_USER)
+            .email("user@email.com")
             .build();
     }
 
@@ -394,7 +419,6 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -423,7 +447,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -433,7 +456,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(13L)
                         .build())
@@ -470,8 +492,16 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, zonedDateTime, TestConst.SITE, "source", "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().id(1L).text("test").build()),
+            "title", "text",
+            List.of(EcoNewsComment.builder().status(CommentStatus.ORIGINAL).id(1L).text("test").build()),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
+    }
+
+    public static EcoNewsComment getEcoNewsComment(CommentStatus commentStatus) {
+        return EcoNewsComment.builder()
+            .status(commentStatus)
+            .text("sdfs")
+            .build();
     }
 
     public static EcoNews getEcoNewsForMethodConvertTest() {
@@ -480,7 +510,11 @@ public class ModelUtils {
             List.of(TagTranslation.builder().name("Новини").language(Language.builder().code("ua").build()).build(),
                 TagTranslation.builder().name("News").language(Language.builder().code("en").build()).build()));
         return new EcoNews(1L, ZonedDateTime.now(), TestConst.SITE, null, "shortInfo", getUser(),
-            "title", "text", List.of(EcoNewsComment.builder().text("sdfs").build()),
+            "title", "text",
+            List.of(getEcoNewsComment(CommentStatus.EDITED),
+                getEcoNewsComment(CommentStatus.ORIGINAL),
+                getEcoNewsComment(CommentStatus.DELETED),
+                getEcoNewsComment(CommentStatus.DELETED)),
             Collections.singletonList(tag), Collections.emptySet(), Collections.emptySet());
     }
 
@@ -565,6 +599,7 @@ public class ModelUtils {
             .habit(Habit.builder()
                 .id(1L)
                 .image("")
+                .userId(2L)
                 .habitTranslations(Collections.singletonList(HabitTranslation.builder()
                     .id(1L)
                     .name("")
@@ -1050,6 +1085,7 @@ public class ModelUtils {
     public static EcoNewsComment getEcoNewsComment() {
         return EcoNewsComment.builder()
             .id(1L)
+            .status(CommentStatus.ORIGINAL)
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
@@ -1068,7 +1104,7 @@ public class ModelUtils {
                 .build())
             .modifiedDate(LocalDateTime.now())
             .text("I find this topic very useful!")
-            .deleted(false)
+            .status(CommentStatus.ORIGINAL)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<>(Arrays.asList(
@@ -1106,7 +1142,7 @@ public class ModelUtils {
                     .build())
                 .modifiedDate(LocalDateTime.now())
                 .text("I find this topic very useful!")
-                .deleted(false)
+                .status(CommentStatus.ORIGINAL)
                 .currentUserLiked(true)
                 .parentComment(null)
                 .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
@@ -1124,7 +1160,7 @@ public class ModelUtils {
                     .id(32L)
                     .build())
                 .build())
-            .deleted(false)
+            .status(CommentStatus.ORIGINAL)
             .currentUserLiked(true)
             .createdDate(LocalDateTime.of(2020, 11, 7, 12, 42))
             .usersLiked(new HashSet<>(Arrays.asList(
@@ -1250,8 +1286,6 @@ public class ModelUtils {
             HabitFactTranslationUpdateDto.builder().content("ua").factOfDayStatus(FactOfDayStatus.POTENTIAL)
                 .language(getLanguageDTO()).build(),
             HabitFactTranslationUpdateDto.builder().content("en").factOfDayStatus(FactOfDayStatus.POTENTIAL)
-                .language(getLanguageDTO()).build(),
-            HabitFactTranslationUpdateDto.builder().content("ru").factOfDayStatus(FactOfDayStatus.POTENTIAL)
                 .language(getLanguageDTO()).build()));
     }
 
@@ -1346,52 +1380,50 @@ public class ModelUtils {
     }
 
     public static Achievement getAchievement() {
-        return new Achievement(1L, Collections.singletonList(getAchievementTranslation()), Collections.emptyList(),
+        return new Achievement(1L,
+            "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів", "Acquired habit 14 days",
+            Collections.emptyList(),
             new AchievementCategory(), 1);
     }
 
     public static AchievementCategory getAchievementCategory() {
-        return new AchievementCategory(1L, "Name", null, null);
+        return new AchievementCategory(1L, "HABIT", Collections.emptyList());
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, Collections.emptyList(), Collections.emptyList(), new AchievementCategoryVO(), 1);
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", new AchievementCategoryVO(),
+            1);
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(Collections.emptyList(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(),
+            1);
     }
 
     public static AchievementCategoryDto getAchievementCategoryDto() {
         return new AchievementCategoryDto("Test");
     }
 
-    public static AchievementTranslationVO getAchievementTranslationVO() {
-        return new AchievementTranslationVO(1L, getLanguageVO(), "Title", "Description", "Message");
-    }
-
     public static AchievementCategoryVO getAchievementCategoryVO() {
-        return new AchievementCategoryVO(1L, "Category", null, null);
+        return new AchievementCategoryVO(1L, "Category");
     }
 
     public static AchievementManagementDto getAchievementManagementDto() {
         return new AchievementManagementDto(1L);
     }
 
-    public static AchievementTranslation getAchievementTranslation() {
-        return new AchievementTranslation(1L, getLanguage(), "Title", "Description", "Message", null);
-    }
-
     public static UserAchievementVO getUserAchievementVO() {
-        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), AchievementStatus.ACTIVE);
+        return new UserAchievementVO(1L, getUserVO(), getAchievementVO(), true);
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), AchievementStatus.ACTIVE, false);
+        return new UserAchievement(1L, getUser(), getAchievement(), false, getHabit());
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0, getHabit());
     }
 
     public static UserActionVO getUserActionVO() {
@@ -1428,8 +1460,8 @@ public class ModelUtils {
 
     public static EcoNewsCommentVO getEcoNewsCommentVO() {
         return new EcoNewsCommentVO(1L, "text", LocalDateTime.now(), LocalDateTime.now(), new EcoNewsCommentVO(),
-            new ArrayList<>(), getUserVO(), getEcoNewsVO(), false,
-            false, new HashSet<>());
+            new ArrayList<>(), getUserVO(), getEcoNewsVO(),
+            false, new HashSet<>(), CommentStatus.ORIGINAL);
     }
 
     public static EcoNewsDtoManagement getEcoNewsDtoManagement() {
@@ -1665,7 +1697,6 @@ public class ModelUtils {
                     .userAchievements(List.of(
                         UserAchievementVO.builder()
                             .id(47L)
-                            .achievementStatus(AchievementStatus.ACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1675,7 +1706,6 @@ public class ModelUtils {
                             .build(),
                         UserAchievementVO.builder()
                             .id(39L)
-                            .achievementStatus(AchievementStatus.INACTIVE)
                             .user(UserVO.builder()
                                 .id(1L)
                                 .build())
@@ -1743,7 +1773,6 @@ public class ModelUtils {
             .userAchievements(List.of(
                 UserAchievementVO.builder()
                     .id(47L)
-                    .achievementStatus(AchievementStatus.ACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1753,7 +1782,6 @@ public class ModelUtils {
                     .build(),
                 UserAchievementVO.builder()
                     .id(39L)
-                    .achievementStatus(AchievementStatus.INACTIVE)
                     .user(UserVO.builder()
                         .id(1L)
                         .build())
@@ -1802,16 +1830,43 @@ public class ModelUtils {
         event.setTitle("Title");
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
-            ZonedDateTime.of(2098, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2099, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
         dates.add(new EventDateLocation(2L, event,
-            ZonedDateTime.of(2099, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2100, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2050, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
+        return event;
+    }
+
+    public static Event getEventWithTags() {
+        Event event = new Event();
+        Set<User> followers = new HashSet<>();
+        Tag tag1 = getEventTag();
+        tag1.setId(12L);
+        Tag tag2 = getEventTag();
+        tag2.setId(13L);
+        Tag tag3 = getEventTag();
+        tag3.setId(14L);
+        followers.add(getUser());
+        event.setOpen(true);
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setFollowers(followers);
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(tag1, tag2, tag3));
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
 
@@ -1864,11 +1919,11 @@ public class ModelUtils {
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+            getAddress(), "/url"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
@@ -1877,7 +1932,6 @@ public class ModelUtils {
 
     public static Event getEventWithoutAddress() {
         Event event = new Event();
-
         event.setDescription("Description");
         event.setId(1L);
         event.setOrganizer(getUser());
@@ -1890,7 +1944,39 @@ public class ModelUtils {
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            null, null));
+            null, "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOnlineEvent() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2023, 10, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            null, "url/"));
+        event.setDates(dates);
+        event.setTags(List.of(getEventTag()));
+        return event;
+    }
+
+    public static Event getOfflineOnlineEventIfEventFinalDateToday() {
+        Event event = new Event();
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2023, 7, 11, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.now(),
+            getAddress(), "url/"));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
         return event;
@@ -1945,8 +2031,8 @@ public class ModelUtils {
 
     public static AddressDto getAddressDtoWithNullCityUa() {
         return AddressDto.builder()
-            .latitude(13.4567236)
-            .longitude(98.2354469)
+            .latitude(50.4567236)
+            .longitude(30.2354469)
             .streetUa("Вулиця")
             .streetEn("Street")
             .houseNumber("1B")
@@ -1987,6 +2073,38 @@ public class ModelUtils {
             .regionUa("Область")
             .regionEn("Oblast")
             .countryUa(null)
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getSecondAddressDtoCorrect() {
+        return AddressDto.builder()
+            .latitude(46.4567236)
+            .longitude(28.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Одеса")
+            .cityEn("Odessa")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
             .countryEn("Country")
             .build();
     }
@@ -2053,6 +2171,8 @@ public class ModelUtils {
     public static EventDto getEventDtoWithoutAddress() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2094,6 +2214,8 @@ public class ModelUtils {
     public static EventDto getEventDto() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2101,10 +2223,31 @@ public class ModelUtils {
                 .build())
             .title("Title")
             .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2023, 12, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                AddressDto.builder().build())))
+                getAddressDtoCorrect())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .isFavorite(false)
+            .isSubscribed(false)
+            .build();
+    }
+
+    public static EventDto getEventWithOdessaAddressDto() {
+        return EventDto.builder()
+            .id(2L)
+            .description("Description2")
+            .organizer(EventAuthorDto.builder()
+                .name("User2")
+                .id(2L)
+                .build())
+            .title("Title2")
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2024, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                "/url",
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2113,6 +2256,8 @@ public class ModelUtils {
     public static EventDto getSecondEventDto() {
         return EventDto.builder()
             .id(2L)
+            .countComments(2)
+            .likes(1)
             .description("Description2")
             .organizer(EventAuthorDto.builder()
                 .name("User2")
@@ -2123,7 +2268,7 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
-                AddressDto.builder().build())))
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2132,6 +2277,8 @@ public class ModelUtils {
     public static EventDto getEventWithoutAddressDto() {
         return EventDto.builder()
             .id(1L)
+            .countComments(2)
+            .likes(1)
             .description("Description")
             .organizer(EventAuthorDto.builder()
                 .name("User")
@@ -2143,6 +2290,27 @@ public class ModelUtils {
                 ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
                 "/url",
                 AddressDto.builder().build())))
+            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
+                .nameUa("Соціальний").build()))
+            .build();
+    }
+
+    public static EventDto getEventOfflineDto() {
+        return EventDto.builder()
+            .id(1L)
+            .description("Description")
+            .organizer(EventAuthorDto.builder()
+                .name("User")
+                .id(1L)
+                .build())
+            .title("Title")
+            .countComments(2)
+            .likes(1)
+            .dates(List.of(new EventDateLocationDto(1L, null,
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+                null,
+                getSecondAddressDtoCorrect())))
             .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
                 .nameUa("Соціальний").build()))
             .build();
@@ -2382,13 +2550,10 @@ public class ModelUtils {
             ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getAddress(), null));
-        dates.add(new EventDateLocation(2L, event,
-            ZonedDateTime.of(2002, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2002, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            getAddress(), null));
+        dates.add(getEventDateLocation());
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
-        event.setTitleImage(AppConstant.DEFAULT_HABIT_IMAGE);
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
 
@@ -2456,6 +2621,24 @@ public class ModelUtils {
             .build();
     }
 
+    public static Address getKyivAddress() {
+        return Address.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Країна")
+            .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
+            .build();
+    }
+
     public static EventDateLocation getEventDateLocation() {
         return EventDateLocation.builder()
             .id(1L)
@@ -2479,6 +2662,25 @@ public class ModelUtils {
             .regionEn("Oblast")
             .countryUa("Країна")
             .countryEn("Country")
+            .formattedAddressEn("Full formatted address")
+            .formattedAddressUa("Повна відформатована адреса")
+            .countryEn("Country")
+            .build();
+    }
+
+    public static AddressDto getKyivAddressDto() {
+        return AddressDto.builder()
+            .latitude(50.4567236)
+            .longitude(30.2354469)
+            .streetUa("Вулиця")
+            .streetEn("Street")
+            .houseNumber("1B")
+            .cityUa("Київ")
+            .cityEn("Kyiv")
+            .regionUa("Область")
+            .regionEn("Oblast")
+            .countryUa("Україна")
+            .countryEn("Ukraine")
             .formattedAddressEn("Full formatted address")
             .formattedAddressUa("Повна відформатована адреса")
             .countryEn("Country")
@@ -2534,6 +2736,20 @@ public class ModelUtils {
             .createdDate(LocalDateTime.now())
             .user(getUser())
             .event(getEvent())
+            .status(CommentStatus.ORIGINAL)
+            .comments(Arrays.asList(getSubEventComment()))
+            .build();
+    }
+
+    public static EventComment getSubEventComment() {
+        return EventComment.builder()
+            .id(4L)
+            .text("SubEventComment")
+            .status(CommentStatus.ORIGINAL)
+            .usersLiked(new HashSet<>())
+            .createdDate(LocalDateTime.now())
+            .user(getUser())
+            .event(getEvent())
             .build();
     }
 
@@ -2544,10 +2760,13 @@ public class ModelUtils {
             .id(1L)
             .text("Some comment")
             .createdDate(LocalDateTime.of(2023, 8, 25, 7, 10))
-            .deleted(false)
+            .status(CommentStatus.ORIGINAL)
             .user(user)
             .event(getEvent())
-            .parentComment(EventComment.builder().id(12L).build())
+            .parentComment(EventComment.builder()
+                .id(12L)
+                .status(CommentStatus.ORIGINAL)
+                .build())
             .comments(List.of(new EventComment(), new EventComment(), new EventComment()))
             .currentUserLiked(true)
             .usersLiked(Set.of(user, new User()))
@@ -2569,9 +2788,11 @@ public class ModelUtils {
     public static EventCommentDto getEventCommentDto() {
         return EventCommentDto.builder()
             .id(1L)
+            .status(CommentStatus.ORIGINAL.toString())
+
             .author(getEventCommentAuthorDto())
             .text("text")
-            .numberOfLikes(0)
+            .likes(0)
             .numberOfReplies(0)
             .currentUserLiked(false)
             .build();
@@ -2602,8 +2823,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .defaultDuration(7)
             .build();
@@ -2628,8 +2849,8 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestForServiceTest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -2649,8 +2870,57 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddCustomHabitDtoResponse getAddCustomHabitDtoResponse() {
-        return AddCustomHabitDtoResponse.builder()
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithNewCustomShoppingListItem() {
+        return CustomHabitDtoRequest.builder()
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(null)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomShoppingListItem getCustomShoppingListItemForUpdate() {
+        return CustomShoppingListItem.builder()
+            .id(1L)
+            .status(ShoppingListItemStatus.ACTIVE)
+            .text(SHOPPING_LIST_TEXT)
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getСustomHabitDtoRequestWithComplexityAndDuration() {
+        return CustomHabitDtoRequest.builder()
+            .complexity(2)
+            .defaultDuration(7)
+            .build();
+    }
+
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequestWithImage() {
+        return CustomHabitDtoRequest.builder()
+            .complexity(2)
+            .customShoppingListItemDto(List.of(
+                CustomShoppingListItemResponseDto.builder()
+                    .id(1L)
+                    .status(ShoppingListItemStatus.ACTIVE)
+                    .text(SHOPPING_LIST_TEXT)
+                    .build()))
+            .defaultDuration(7)
+            .image(HABIT_DEFAULT_IMAGE)
+            .habitTranslations(
+                List.of(HabitTranslationDto.builder()
+                    .description(HABIT_TRANSLATION_DESCRIPTION)
+                    .habitItem(HABIT_ITEM)
+                    .languageCode("ua")
+                    .name(HABIT_TRANSLATION_NAME)
+                    .build()))
+            .tagIds(Set.of(20L))
+            .build();
+    }
+
+    public static CustomHabitDtoResponse getAddCustomHabitDtoResponse() {
+        return CustomHabitDtoResponse.builder()
             .id(1L)
             .complexity(2)
             .customShoppingListItemDto(List.of(
@@ -2775,6 +3045,119 @@ public class ModelUtils {
             .id(2L)
             .text("item")
             .status(ShoppingListItemStatus.INPROGRESS)
+            .build();
+    }
+
+    public static UserFriendDto getUserFriendDto() {
+        return UserFriendDto.builder()
+            .id(1L)
+            .name("name")
+            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
+            .rating(10.0)
+            .mutualFriends(3L)
+            .profilePicturePath("path-to-picture")
+            .chatId(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDto() {
+        return FilterEventDto.builder()
+            .eventTime(List.of("FUTURE", "PAST"))
+            .cities(List.of("Kyiv"))
+            .statuses(List.of("OPEN", "CLOSED", "JOINED", "CREATED", "SAVED"))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithOpenStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("OPEN"))
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithSomeFilters() {
+        return FilterEventDto.builder()
+            .eventTime(List.of("PAST"))
+            .cities(List.of("Kyiv"))
+            .statuses(List.of("JOINED", "CREATED", "SAVED"))
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithCities() {
+        return FilterEventDto.builder()
+            .cities(List.of("Kyiv", "Lviv", "City"))
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithTags() {
+        return FilterEventDto.builder()
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
+            .build();
+    }
+
+    public static AdminPlaceDto getAdminPlaceDto() {
+        return AdminPlaceDto.builder()
+            .id(1L)
+            .name("TestPlace")
+            .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
+            .openingHoursList(new ArrayList<>())
+            .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
+            .status(PlaceStatus.APPROVED)
+            .modifiedDate(LocalDateTime.now())
+            .build();
+    }
+
+    public static SearchNewsDto getSearchNews() {
+        return SearchNewsDto.builder().id(1L).title("title").tags(Collections.singletonList("tag")).build();
+    }
+
+    public static SearchEventsDto getSearchEvents() {
+        return SearchEventsDto.builder().id(1L).title("Title").tags(new ArrayList<>()).build();
+    }
+
+    public static SearchResponseDto getSearchResponseDto() {
+        return SearchResponseDto.builder()
+            .ecoNews(List.of(getSearchNews()))
+            .events(List.of(getSearchEvents()))
+            .countOfEcoNewsResults(4L)
+            .countOfEventsResults(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("CLOSED"))
+            .build();
+    }
+
+    public static AmountCommentLikesDto getAmountCommentLikesDto() {
+        return AmountCommentLikesDto.builder()
+            .id(1L)
+            .amountLikes(2)
+            .build();
+    }
+
+    public static User getTagUser() {
+        return User.builder()
+            .id(1L)
+            .name("Test")
+            .profilePicturePath("Pic")
+            .build();
+    }
+
+    public static UserTagDto getUserTagDto() {
+        return UserTagDto.builder()
+            .userId(1L)
+            .userName("Test")
+            .profilePicture("Pic")
+            .build();
+    }
+
+    public static UserSearchDto getUserSearchDto() {
+        return UserSearchDto.builder()
+            .currentUserId(1L)
+            .searchQuery("Test")
             .build();
     }
 }

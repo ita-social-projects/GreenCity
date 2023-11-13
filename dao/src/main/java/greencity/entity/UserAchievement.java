@@ -1,6 +1,5 @@
 package greencity.entity;
 
-import greencity.enums.AchievementStatus;
 import javax.persistence.*;
 
 import lombok.*;
@@ -25,10 +24,10 @@ public class UserAchievement {
     @ManyToOne(fetch = FetchType.LAZY)
     private Achievement achievement;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private AchievementStatus achievementStatus = AchievementStatus.INACTIVE;
-
     @Column
     private boolean notified;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "habit_id", nullable = true)
+    private Habit habit;
 }

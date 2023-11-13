@@ -1,6 +1,8 @@
 package greencity.constant;
 
 public final class ErrorMessage {
+    public static final String RATING_CALCULATION_ENUM_NOT_FOUND_BY_NAME =
+        "RatingCalculationEnum with such name does not exist: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID =
         "Custom shopping list item with such id does not exist.";
     public static final String DUPLICATED_CUSTOM_SHOPPING_LIST_ITEM = "CustomShoppingListItems should be unique";
@@ -78,6 +80,7 @@ public final class ErrorMessage {
     public static final String HABIT_FACT_NOT_DELETED_BY_ID = "The habitfact does not deleted by id: ";
     public static final String SPECIFICATION_VALUE_NOT_FOUND_BY_ID =
         "The specification value does not exist by this id: ";
+    public static final String CUSTOM_HABIT_NOT_FOUND = "Custom habit does not exist by id: ";
     public static final String SPECIFICATION_NOT_FOUND_BY_NAME = "The specification does not exist by this name: ";
     public static final String LOCATION_IS_PRESENT = "Location is present.";
     public static final String PHOTO_IS_PRESENT = "Photo is present.";
@@ -98,6 +101,8 @@ public final class ErrorMessage {
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
+    public static final String FRIEND_REQUEST_ALREADY_SENT = "Friend request already exists between two users";
+    public static final String FRIEND_REQUEST_NOT_SENT = "Friend request is not exists";
     public static final String NOT_FOUND_REQUEST = "Not found friend request from user with id: ";
     public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
@@ -123,6 +128,8 @@ public final class ErrorMessage {
     public static final String PLACE_NOT_FOUND_BY_ID = "The place does not exist by this id: ";
     public static final String PLACE_STATUS_NOT_DIFFERENT = "Place with id: %d already has this status: %s";
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "The comment with entered id doesn't exist";
+    public static final String COMMENT_NOT_FOUND_BY_PARENT_COMMENT_ID =
+        "The comment with entered parent_comment_id doesn't exist";
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
@@ -148,13 +155,15 @@ public final class ErrorMessage {
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
     public static final String INVALID_DATE_RANGE = "The 'From' date must be earlier than the 'To' date";
-    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en', 'ua' or 'ru'";
+    public static final String SELECT_CORRECT_LANGUAGE = "Select correct language: 'en' or 'ua'";
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
         "Count of tags should be at least one but not more three";
     public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
-    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The name does not exist by this id: ";
+    public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The achievement does not exist by this id: ";
+    public static final String ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID =
+        "The achievement category does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST =
         "Can`t convert To Multipart Image. Bad inputed image string : ";
@@ -162,6 +171,8 @@ public final class ErrorMessage {
     public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
+    public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
+        "Habit assign status is not REQUESTED or user has not any assigned habits";
     public static final String INVALID_SORTING_VALUE = "Supported sort is: asc|desc";
 
     public static final String YOU_ARE_EVENT_ORGANIZER = "You're the organizer of this event";
@@ -183,7 +194,7 @@ public final class ErrorMessage {
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
     public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
-
+    public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
 
     private ErrorMessage() {

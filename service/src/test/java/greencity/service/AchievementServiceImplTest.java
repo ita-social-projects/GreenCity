@@ -7,25 +7,22 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.*;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-import greencity.dto.language.LanguageVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-import greencity.entity.Language;
-import greencity.entity.UserAchievement;
-import greencity.entity.localization.AchievementTranslation;
+
+import greencity.entity.User;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.enums.AchievementAction;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import greencity.repository.AchievementTranslationRepo;
 import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +41,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import javax.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
@@ -64,23 +63,33 @@ class AchievementServiceImplTest {
     @InjectMocks
     private AchievementServiceImpl achievementService;
     @Mock
-    private AchievementTranslationRepo achievementTranslationRepo;
+    private UserRepo userRepo;
+
+    @Mock
+    private UserService userService;
+    @Mock
+    HttpServletRequest httpServletRequest;
 
     @Test
     void findAllWithEmptyListTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(achievementRepo.findAll()).thenReturn(Collections.emptyList());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "");
         assertTrue(findAllResult.isEmpty());
     }
 
     @Test
     void findAllWithOneValueInRepoTest() {
         Achievement achievement = ModelUtils.getAchievement();
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(achievementRepo.findAll())
             .thenReturn(Collections.singletonList(achievement));
         when(modelMapper.map(achievement, AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
-        List<AchievementVO> findAllResult = achievementService.findAll();
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "");
         assertEquals(1L, (long) findAllResult.get(0).getId());
     }
 
@@ -97,15 +106,35 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    void searchAchievementByTest() {
-        Pageable pageable = PageRequest.of(0, 2);
-        Achievement achievement = ModelUtils.getAchievement();
-        Page<Achievement> page = new PageImpl<>(Collections.singletonList(achievement), pageable, 10);
-        AchievementVO achievementVO = ModelUtils.getAchievementVO();
-        when(achievementRepo.searchAchievementsBy(pageable, "")).thenReturn(page);
-        when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
-        PageableAdvancedDto<AchievementVO> pageableAdvancedDto = achievementService.searchAchievementBy(pageable, "");
-        assertEquals(10, pageableAdvancedDto.getTotalElements());
+    void findAllACHIEVEDInRepoTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(userAchievementRepo.getUserAchievementByUserId(anyLong()))
+            .thenReturn(Arrays.asList(ModelUtils.getUserAchievement()));
+        when(achievementRepo.findById(anyLong())).thenReturn(Optional.of(ModelUtils.getAchievement()));
+        when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "ACHIEVED");
+        assertEquals(1L, (long) findAllResult.get(0).getId());
+        verify(userService).findByEmail("email@gmail.com");
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
+        verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
+        verify(modelMapper).map(ModelUtils.getAchievement(), AchievementVO.class);
+    }
+
+    @Test
+    void findAllUNACHIEVEDInRepoTest() {
+        when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(achievementRepo.searchAchievementsUnAchieved(anyLong()))
+            .thenReturn(Arrays.asList(ModelUtils.getAchievement()));
+        when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
+            .thenReturn(ModelUtils.getAchievementVO());
+        List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "UNACHIEVED");
+        assertEquals(1L, (long) findAllResult.get(0).getId());
+        verify(userService).findByEmail("email@gmail.com");
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
+        verify(achievementRepo).searchAchievementsUnAchieved(anyLong());
     }
 
     @Test
@@ -130,7 +159,7 @@ class AchievementServiceImplTest {
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementVO.class)).thenReturn(achievementVO);
         when(restClient.findAll()).thenReturn(Collections.singletonList(userVO));
-        when(userActionService.findUserActionByUserIdAndAchievementCategory(1L, 1L)).thenReturn(null);
+        when(userActionService.findUserAction(1L, 1L)).thenReturn(null);
 
         AchievementVO expected = achievementService.save(achievementPostDto);
         assertEquals(expected, achievementVO);
@@ -149,13 +178,8 @@ class AchievementServiceImplTest {
     @Test
     void updateTest() {
         Achievement achievement = ModelUtils.getAchievement();
-        AchievementTranslation achievementTranslation = ModelUtils.getAchievementTranslation();
-        achievement.setTranslations(Collections.singletonList(achievementTranslation));
         AchievementPostDto achievementPostDto = ModelUtils.getAchievementPostDto();
         AchievementManagementDto achievementManagementDto = ModelUtils.getAchievementManagementDto();
-        AchievementTranslationVO achievementTranslationVO = ModelUtils.getAchievementTranslationVO();
-        achievementManagementDto.setTranslations(Collections.singletonList(achievementTranslationVO));
-        achievementPostDto.setTranslations(Collections.singletonList(ModelUtils.getAchievementTranslationVO()));
         when(achievementRepo.findById(1L)).thenReturn(Optional.of(achievement));
         when(achievementRepo.save(achievement)).thenReturn(achievement);
         when(modelMapper.map(achievement, AchievementPostDto.class)).thenReturn(achievementPostDto);
@@ -211,49 +235,13 @@ class AchievementServiceImplTest {
     }
 
     @Test
-    void findAchievementsWithStatusActive() {
-        List<AchievementNotification> achievementNotifications =
-            Collections.singletonList(AchievementNotification.builder()
-                .id(1L)
-                .message("test")
-                .description("test")
-                .title("test")
-                .build());
-        UserVO userVO = ModelUtils.getUserVO();
-        userVO.setLanguageVO(LanguageVO.builder()
-            .id(1L)
-            .code("ua")
-            .build());
-        Achievement achievement = ModelUtils.getAchievement();
-        List<AchievementTranslation> achievementTranslations = Collections
-            .singletonList(AchievementTranslation.builder()
-                .id(1L)
-                .achievement(achievement)
-                .message("test")
-                .description("test")
-                .title("test")
-                .language(Language.builder()
-                    .id(1L)
-                    .code("ua")
-                    .build())
-                .build());
-        UserAchievement userAchievement = ModelUtils.getUserAchievement();
-        when(restClient.findById(1L)).thenReturn(userVO);
-        when(achievementTranslationRepo.findAchievementsWithStatusActive(1L, 1L))
-            .thenReturn(achievementTranslations);
-        when(userAchievementRepo.getUserAchievementByIdAndAchievementId(1L, 1L)).thenReturn(userAchievement);
-        userAchievement.setNotified(true);
-        when(userAchievementRepo.save(userAchievement)).thenReturn(userAchievement);
-        assertEquals(achievementNotifications, achievementService.findAchievementsWithStatusActive(1L));
-    }
-
-    @Test
     void calculateAchievement() {
-        achievementService.calculateAchievements(1L, AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS, 1);
+        when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
+        achievementService.calculateAchievements(1L, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         verify(achievementCalculation).calculateAchievement(
-            anyLong(),
-            any(AchievementType.class),
+            eq(ModelUtils.getUserVO()),
             any(AchievementCategoryType.class),
-            anyInt());
+            eq(AchievementAction.ASSIGN));
+        verify(userService).findById(anyLong());
     }
 }

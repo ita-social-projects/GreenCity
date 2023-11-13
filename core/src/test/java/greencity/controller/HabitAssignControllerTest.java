@@ -3,7 +3,7 @@ package greencity.controller;
 import com.google.gson.Gson;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
-import greencity.dto.habit.HabitAssignPropertiesDto;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
@@ -87,6 +87,14 @@ class HabitAssignControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(habitAssignService).updateStatusByHabitAssignId(1L, habitAssignStatDto);
+    }
+
+    @Test
+    void updateStatusAndDurationOfHabitAssignTest() throws Exception {
+        mockMvc.perform(put(habitLink + "/{habitAssignId}/update-status-and-duration?duration=15", 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(habitAssignService).updateStatusAndDurationOfHabitAssign(1L, null, 15);
     }
 
     @Test
@@ -178,7 +186,7 @@ class HabitAssignControllerTest {
 
     @Test
     void assignCustom() throws Exception {
-        HabitAssignPropertiesDto propertiesDto = ModelUtils.getHabitAssignPropertiesDto();
+        HabitAssignCustomPropertiesDto propertiesDto = ModelUtils.getHabitAssignCustomPropertiesDto();
         Gson gson = new Gson();
         String json = gson.toJson(propertiesDto);
         UserVO userVO = new UserVO();

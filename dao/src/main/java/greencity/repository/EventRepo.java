@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -24,8 +27,8 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *
      * @return list of {@link Event} instances.
      */
-    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS att WHERE att.id = :userId ORDER BY e.id DESC")
-    Page<Event> findAllByAttender(Pageable page, Long userId);
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS att WHERE att.id = :userId")
+    List<Event> findAllByAttender(Long userId);
 
     /**
      * Method for getting events created by User.
@@ -90,4 +93,59 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      * @param organizer {@link User}.
      */
     List<Event> getAllByOrganizer(User organizer);
+
+    /**
+     * Get all user's favorite events by user id.
+     *
+     * @param userId {@link Long}.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE f.id = :userId")
+    Page<Event> findAllFavoritesByUser(Long userId, Pageable pageable);
+
+    /**
+     * Get subscribed events in given event ids by user id.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.attenders AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findSubscribedAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Get favorite events in given events by user id.
+     */
+    @Query(value = "SELECT e FROM Event e LEFT JOIN e.followers AS f WHERE e.id in :eventIds AND f.id = :userId")
+    List<Event> findFavoritesAmongEventIds(Collection<Long> eventIds, Long userId);
+
+    /**
+     * Method returns {@link Event} by search queryand language code.
+     *
+     * @param pageable     {@link Pageable}
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return Page of {@link Event} instances
+     * @author Anton Bondar
+     */
+    @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searchevents "
+        + "( :searchQuery, :languageCode) ")
+    Page<Event> searchEvents(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Get all events addresses.
+     *
+     * @author Olena Sotnik.
+     */
+    @Query(value = "SELECT edl.address FROM Event e LEFT JOIN e.dates edl WHERE edl.address IS NOT NULL")
+    Set<Address> findAllEventsAddresses();
+
+    /**
+     * Method returns count of all events where user is organizer or attender.
+     *
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of organized or attended by user events.
+     *
+     * @author Olena Sotnik
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT e.id) FROM events e "
+        + "LEFT JOIN events_attenders att ON e.id = att.event_id "
+        + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
+    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 }

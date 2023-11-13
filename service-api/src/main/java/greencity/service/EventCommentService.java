@@ -120,4 +120,13 @@ public interface EventCommentService {
      * @return amountCommentLikesDto dto with id and count likes for comments.
      */
     AmountCommentLikesDto countLikes(Long commentId, UserVO userVO);
+
+    /**
+     * Method returns count of likes to certain {@link EventCommentVO} specified by
+     * id.
+     *
+     * @param amountCommentLikesDto {@link AmountCommentLikesDto} dto with id and
+     *                              count likes for comments.
+     */
+    void eventCommentLikeAndCount(AmountCommentLikesDto amountCommentLikesDto);
 }

@@ -1,14 +1,17 @@
 package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
+import greencity.dto.event.AddressDto;
+import greencity.dto.event.EventVO;
+import greencity.dto.filter.FilterEventDto;
+import greencity.dto.search.SearchEventsDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.util.Set;
 
@@ -45,11 +48,19 @@ public interface EventService {
     PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal);
 
     /**
+     * Method for getting all Event instances filtered.
+     *
+     * @return List of {@link EventDto} instance.
+     */
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto);
+
+    /**
      * Method for getting all Event instances that user attended.
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email);
+    PageableAdvancedDto<EventDto> getAllUserEvents(Pageable page, String email, String latitude,
+        String longitude, String eventType);
 
     /**
      * Method for getting page of events which were created user.
@@ -87,7 +98,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     *
      * @author Anton Bondar.
      */
     void addToFavorites(Long eventId, String email);
@@ -97,7 +107,6 @@ public interface EventService {
      *
      * @param eventId - event id.
      * @param email   - user email.
-     *
      * @author Anton Bondar.
      */
     void removeFromFavorites(Long eventId, String email);
@@ -114,7 +123,6 @@ public interface EventService {
      * Update Event.
      *
      * @param email    - user that edits event
-     *
      * @param eventDto - new event information
      * @param images   - new images of event
      * @return EventDto
@@ -143,4 +151,55 @@ public interface EventService {
      * @param eventId - id of event
      */
     EventVO findById(Long eventId);
+
+    /**
+     * Method for getting all user's favorite events.
+     *
+     * @param pageable {@link Pageable}
+     * @param email    {@link String}
+     * @return a page of {@link EventDto} instance.
+     * @author Midianyi Yurii.
+     */
+    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
+
+    /**
+     * Method for getting all events' addresses.
+     *
+     * @return set of {@link AddressDto} instances.
+     * @author Olena Sotnik.
+     */
+    Set<AddressDto> getAllEventsAddresses();
+
+    /**
+     * Method for getting Events by searchQuery.
+     *
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return PageableDto of {@link SearchEventsDto} instances
+     * @author Anton Bondar
+     */
+    PageableDto<SearchEventsDto> search(String searchQuery, String languageCode);
+
+    /**
+     * Method for getting Events by searchQuery.
+     *
+     * @param pageable     {@link Pageable}
+     * @param searchQuery  query to search
+     * @param languageCode {@link String}
+     *
+     * @return PageableDto of {@link SearchEventsDto} instances
+     * @author Anton Bondar
+     */
+    PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Method for getting amount of events organized and attended by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of organized and attended events by user id.
+     *
+     * @author Olena Sotnik
+     */
+    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 }

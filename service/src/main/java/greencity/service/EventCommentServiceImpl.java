@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -15,16 +16,22 @@ import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
+import greencity.enums.CommentStatus;
 import greencity.enums.Role;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +44,13 @@ import java.util.stream.Collectors;
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
+    private UserService userService;
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RestClient restClient;
+    private final RatingCalculation ratingCalculation;
+    private AchievementCalculation achievementCalculation;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -78,12 +89,15 @@ public class EventCommentServiceImpl implements EventCommentService {
 
             eventComment.setParentComment(parentEventComment);
         }
-
+        eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         return addEventCommentDtoResponse;
     }
 
@@ -162,8 +176,8 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         Page<EventComment> pages =
-            eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndDeletedFalseOrderByCreatedDateDesc(pageable,
-                eventId);
+            eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndStatusNotOrderByCreatedDateDesc(pageable,
+                eventId, CommentStatus.DELETED);
 
         if (userVO != null) {
             pages.forEach(eventComment -> eventComment.setCurrentUserLiked(eventComment.getUsersLiked()
@@ -194,7 +208,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     @Transactional
     public void update(String commentText, Long id, UserVO userVO) {
-        EventComment eventComment = eventCommentRepo.findByIdAndDeletedFalse(id)
+        EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(eventComment.getUser().getId())) {
@@ -202,6 +216,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
 
         eventComment.setText(commentText);
+        eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }
 
@@ -216,17 +231,20 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public void delete(Long eventCommentId, UserVO user) {
         EventComment eventComment = eventCommentRepo
-            .findByIdAndDeletedFalse(eventCommentId)
+            .findByIdAndStatusNot(eventCommentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + eventCommentId));
 
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(eventComment.getUser().getId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-
-        eventComment.setDeleted(true);
+        eventComment.setStatus(CommentStatus.DELETED);
         if (eventComment.getComments() != null) {
-            eventComment.getComments().forEach(comment -> comment.setDeleted(true));
+            eventComment.getComments()
+                .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user,
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         eventCommentRepo.save(eventComment);
     }
@@ -243,7 +261,8 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public PageableDto<EventCommentDto> findAllActiveReplies(Pageable pageable, Long parentCommentId, UserVO userVO) {
         Page<EventComment> pages =
-            eventCommentRepo.findAllByParentCommentIdAndDeletedFalseOrderByCreatedDateDesc(pageable, parentCommentId);
+            eventCommentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
+                CommentStatus.DELETED);
 
         if (userVO != null) {
             pages.forEach(ec -> ec.setCurrentUserLiked(ec.getUsersLiked().stream()
@@ -269,10 +288,10 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public int countAllActiveReplies(Long parentCommentId) {
-        if (eventCommentRepo.findByIdAndDeletedFalse(parentCommentId).isEmpty()) {
+        if (eventCommentRepo.findByIdAndStatusNot(parentCommentId, CommentStatus.DELETED).isEmpty()) {
             throw new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId);
         }
-        return eventCommentRepo.countByParentCommentIdAndDeletedFalse(parentCommentId);
+        return eventCommentRepo.countByParentCommentIdAndStatusNot(parentCommentId, CommentStatus.DELETED);
     }
 
     /**
@@ -283,15 +302,20 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public void like(Long commentId, UserVO userVO) {
-        EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId)
+        EventComment comment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
 
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
-
         eventCommentRepo.save(comment);
     }
 
@@ -307,7 +331,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public AmountCommentLikesDto countLikes(Long commentId, UserVO userVO) {
-        EventComment comment = eventCommentRepo.findByIdAndDeletedFalse(commentId).orElseThrow(
+        EventComment comment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED).orElseThrow(
             () -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
 
         boolean isLiked =
@@ -318,5 +342,25 @@ public class EventCommentServiceImpl implements EventCommentService {
             .isLiked(isLiked)
             .amountLikes(comment.getUsersLiked().size())
             .build();
+    }
+
+    /**
+     * Method returns count of likes to certain {@link EventComment} specified by
+     * id.
+     *
+     * @param amountCommentLikesDto dto with id and count likes for comments.
+     */
+    @Override
+    @Transactional
+    public void eventCommentLikeAndCount(AmountCommentLikesDto amountCommentLikesDto) {
+        EventComment comment = eventCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
+            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+        amountCommentLikesDto.setLiked(isLiked);
+        int size = comment.getUsersLiked().size();
+        amountCommentLikesDto.setAmountLikes(size);
+        messagingTemplate.convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/eventComment",
+            amountCommentLikesDto);
     }
 }

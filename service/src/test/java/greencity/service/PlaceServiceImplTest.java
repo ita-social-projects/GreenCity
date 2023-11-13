@@ -12,7 +12,6 @@ import greencity.dto.category.CategoryDto;
 import greencity.dto.category.CategoryDtoResponse;
 import greencity.dto.discount.DiscountValueDto;
 import greencity.dto.discount.DiscountValueVO;
-import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.filter.FilterDistanceDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.location.LocationAddressAndGeoDto;
@@ -41,9 +40,12 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.PlaceStatusException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.CategoryRepo;
+import greencity.repository.FavoritePlaceRepo;
 import greencity.repository.PlaceRepo;
 import greencity.repository.UserRepo;
 import greencity.repository.options.PlaceFilter;
+
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -172,13 +174,15 @@ class PlaceServiceImplTest {
     private GoogleApiService googleApiService;
     @Mock
     UserRepo userRepo;
+    @Mock
+    private FavoritePlaceRepo favoritePlaceRepo;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
-        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService,
-            locationService, specificationService, restClient, openingHoursService, discountService,
-            notificationService, zoneId, proposePlaceMapper, categoryRepo, googleApiService, userRepo);
+        placeService = new PlaceServiceImpl(placeRepo, modelMapper, categoryService, locationService,
+            specificationService, restClient, openingHoursService, discountService, notificationService, zoneId,
+            proposePlaceMapper, categoryRepo, googleApiService, userRepo, favoritePlaceRepo);
     }
 
     @Test
@@ -397,20 +401,64 @@ class PlaceServiceImplTest {
         when(modelMapper.map(list, new TypeToken<List<PlaceVO>>() {
         }.getType())).thenReturn(expectedList);
         assertEquals(expectedList, placeService.findAll());
+
+        verify(placeRepo).findAll();
+        verify(modelMapper).map(list, new TypeToken<List<PlaceVO>>() {
+        }.getType());
     }
 
     @Test
-    void findAllPageableTest() {
+    void findAllPageableWithoutPrincipalTest() {
         Pageable pageable = PageRequest.of(0, 1);
         Place place = ModelUtils.getPlace();
         Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
         when(placeRepo.findAll(pageable)).thenReturn(pages);
         List<AdminPlaceDto> placeDtos =
             pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
-        PageableDto<AdminPlaceDto> result =
+        PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        assertEquals(result, placeService.findAll(pageable));
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+
+        assertEquals(expected, actual);
         verify(placeRepo).findAll(pageable);
+    }
+
+    @Test
+    void findAllPageableWithEmptyListTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Page<Place> pages = new PageImpl<>(new ArrayList<>(), pageable, 0);
+        when(placeRepo.findAll(pageable)).thenReturn(pages);
+        List<AdminPlaceDto> placeDtos = new ArrayList<>();
+        PageableDto<AdminPlaceDto> expected =
+            new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+
+        assertEquals(expected, actual);
+        verify(placeRepo).findAll(pageable);
+    }
+
+    @Test
+    void findAllWithPrincipalTest() {
+        Pageable pageable = PageRequest.of(0, 1);
+        Principal principal = ModelUtils.getPrincipal();
+        Place place = ModelUtils.getPlace();
+        Page<Place> pages = new PageImpl<>(Collections.singletonList(place), pageable, 1);
+
+        when(placeRepo.findAll(pageable)).thenReturn(pages);
+        when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(principal.getName()))
+            .thenReturn(Collections.singletonList(1L));
+
+        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal.getName());
+        AdminPlaceDto actual = resultPageableDto.getPage().get(0);
+
+        AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
+        expected.setIsFavorite(true);
+
+        assertEquals(expected, actual);
+        assertEquals(expected.getIsFavorite(), actual.getIsFavorite());
+
+        verify(placeRepo).findAll(pageable);
+        verify(favoritePlaceRepo).findAllFavoritePlaceLocationIdsByUserEmail(principal.getName());
     }
 
     @Test

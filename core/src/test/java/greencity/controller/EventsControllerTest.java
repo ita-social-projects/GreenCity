@@ -2,10 +2,12 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -113,7 +115,10 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAll(pageable, principal)).thenReturn(pageableAdvancedDto);
+        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+
+        when(eventService.getEvents(pageable, principal, filterEventDto))
+            .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
             .contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +127,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAll(pageable, principal);
+        verify(eventService).getEvents(pageable, principal, filterEventDto);
     }
 
     @Test
@@ -130,6 +135,7 @@ class EventsControllerTest {
     void getUserEventsTest() {
         int pageNumber = 0;
         int pageSize = 20;
+        String eventType = "";
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
@@ -139,16 +145,17 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getAllUserEvents(pageable, principal.getName())).thenReturn(pageableAdvancedDto);
+        when(eventService.getAllUserEvents(pageable, principal.getName(), "", "", eventType))
+            .thenReturn(pageableAdvancedDto);
 
-        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents")
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/myEvents?eventType=&userLatitude=&userLongitude=")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .principal(principal))
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllUserEvents(pageable, principal.getName());
+        verify(eventService).getAllUserEvents(pageable, principal.getName(), "", "", eventType);
     }
 
     @Test
@@ -492,6 +499,16 @@ class EventsControllerTest {
 
     @Test
     @SneakyThrows
+    void getAllFavoriteEventsByUserTest() {
+        Pageable pageable = PageRequest.of(0, 20);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllFavoriteEvents").principal(principal))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAllFavoriteEventsByUser(pageable, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
     void getAllEventSubscribersWithNotValidIdBadRequestTest() {
         String notValidId = "id";
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllSubscribers/{eventId}", notValidId))
@@ -516,6 +533,8 @@ class EventsControllerTest {
     private PageableAdvancedDto<EventDto> getPageableAdvancedDtoEventDto() {
         EventDto eventDto = EventDto.builder()
             .id(11L)
+            .countComments(2)
+            .likes(20)
             .title("Test-Title")
             .organizer(EventAuthorDto.builder()
                 .id(12L)
@@ -589,6 +608,7 @@ class EventsControllerTest {
     @SneakyThrows
     private UpdateEventDto getUpdateEventDto() {
         String json = "{\n" +
+            "    \"id\":0,\n" +
             "    \"title\":\"string\",\n" +
             "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
             "    \"open\":true,\n" +
@@ -660,5 +680,24 @@ class EventsControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         return objectMapper.readValue(json, EventDto.class);
+    }
+
+    @Test
+    @SneakyThrows
+    void getAllEventsAddressesTest() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/addresses"))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAllEventsAddresses();
+    }
+
+    @Test
+    @SneakyThrows
+    void findAmountOfOrganizedAndAttendedEvents() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/userEvents/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAmountOfOrganizedAndAttendedEventsByUserId(1L);
     }
 }

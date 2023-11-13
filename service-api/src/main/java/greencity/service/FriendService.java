@@ -1,12 +1,127 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
+import greencity.dto.friends.UserFriendDto;
+import greencity.dto.user.RecommendedFriendDto;
+import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
+
 public interface FriendService {
     /**
      * Delete user's friend by friendId.
      *
-     * @param userId   {@link Long}
-     * @param friendId {@link Long}
+     * @param userId   user id
+     * @param friendId friend id
      * @author Marian Datsko
      */
-    void deleteUserFriendById(Long userId, Long friendId);
+    void deleteUserFriendById(long userId, long friendId);
+
+    /**
+     * Add new friend by friendId.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     * @author Marian Datsko
+     */
+    void addNewFriend(long userId, long friendId);
+
+    /**
+     * Accept friend request {@link UserVO}.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     */
+    void acceptFriendRequest(long userId, long friendId);
+
+    /**
+     * Decline friend request {@link UserVO}.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     */
+    void declineFriendRequest(long userId, long friendId);
+
+    /**
+     * Method that finds user's friends by userId.
+     *
+     * @param userId user id
+     *
+     * @return {@link Page} of {@link UserManagementDto} instances.
+     */
+    PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId);
+
+    /**
+     * Method find all users except current user and his friends.
+     *
+     * @param userId   user id.
+     * @param name     filtering name.
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     *
+     * @author Stepan Omeliukh
+     */
+    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
+        @Nullable String name,
+        Pageable pageable);
+
+    /**
+     * Method to find {@link UserFriendDto}s which sent request to user with userId.
+     *
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     * @param userId   user id.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> getAllUserFriendRequests(long userId, Pageable pageable);
+
+    /**
+     * Method that finds all user's friends.
+     *
+     * @param userId   user id.
+     * @param name     filtering name.
+     * @param pageable pageable, must not be null.
+     *
+     * @return {@link PageableDto} of {@link RecommendedFriendDto} instances.
+     */
+    PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable);
+
+    /**
+     * Method find recommended friends for user by recommendation type.
+     *
+     * @param userId   user id.
+     * @param type     type to find recommended friends
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type, Pageable pageable);
+
+    /**
+     * Method that finds mutual friends for user.
+     *
+     * @param userId   user id.
+     * @param friendId friend id.
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable);
+
+    /**
+     * Delete user's request to be a friend by friendId.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     * @author Marian Datsko
+     */
+    void deleteRequestOfCurrentUserToFriend(long userId, long friendId);
 }

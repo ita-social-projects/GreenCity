@@ -7,8 +7,8 @@ import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
-import greencity.dto.habit.AddCustomHabitDtoResponse;
+import greencity.dto.habit.CustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoResponse;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
@@ -27,7 +27,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +37,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -78,7 +78,8 @@ public class HabitController {
     }
 
     /**
-     * Method finds all habits that available for tracking for specific language.
+     * Method finds all default and custom with created by current user and his
+     * friends habits that available for tracking for specific language.
      *
      * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
@@ -92,10 +93,11 @@ public class HabitController {
     @GetMapping("")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAll(
+        @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @ApiIgnore Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 
     /**
@@ -148,9 +150,9 @@ public class HabitController {
      *
      * @param locale        {@link Locale} with needed language code.
      * @param pageable      {@link Pageable} instance.
-     * @param tags          {@link Set} of {@link String}
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
+     * @param complexities  {@link List} of {@link Integer}.
      * @return Pageable of {@link HabitDto} instance.
      */
     @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexities.")
@@ -162,6 +164,7 @@ public class HabitController {
     @GetMapping("/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
+        @ApiIgnore @CurrentUser UserVO userVO,
         @ApiIgnore @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
@@ -169,7 +172,7 @@ public class HabitController {
         @ApiIgnore Pageable pageable) throws BadRequestException {
         if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                habitService.getAllByDifferentParameters(pageable, tags,
+                habitService.getAllByDifferentParameters(userVO, pageable, tags,
                     isCustomHabit, complexities, locale.getLanguage()));
         } else {
             throw new BadRequestException("You should enter at least one parameter");
@@ -180,9 +183,9 @@ public class HabitController {
      * Method checks if at least one of the input parameters (tags, isCustomHabit,
      * complexities) is present.
      *
-     * @param tags          {@link Set} of {@link String}
+     * @param tags          {@link List} of {@link String}.
      * @param isCustomHabit {@link Boolean} value.
-     * @param complexities  {@link Integer} value.
+     * @param complexities  {@link List} of {@link Integer}.
      *
      * @author Lilia Mokhnatska
      */
@@ -212,23 +215,22 @@ public class HabitController {
     /**
      * Method for creating Custom Habit.
      *
-     * @param request {@link AddCustomHabitDtoRequest} - new custom habit dto.
-     * @return dto {@link AddCustomHabitDtoResponse}
+     * @param request {@link CustomHabitDtoRequest} - new custom habit dto.
+     * @return dto {@link CustomHabitDtoResponse}
      *
      * @author Lilia Mokhnatska.
      */
     @ApiOperation(value = "Add new custom habit.")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddCustomHabitDtoResponse.class),
+        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CustomHabitDtoResponse.class),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping(value = "/custom",
         consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<AddCustomHabitDtoResponse> addCustomHabit(
-        @RequestPart @Valid AddCustomHabitDtoRequest request,
+    public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
+        @RequestPart @Valid CustomHabitDtoRequest request,
         @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @ApiIgnore Principal principal) {
         return ResponseEntity
@@ -259,5 +261,28 @@ public class HabitController {
         @ApiIgnore @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.getFriendsAssignedToHabitProfilePictures(habitId, userVO.getId()));
+    }
+
+    /**
+     * Method for updating Custom Habit.
+     *
+     * @param request {@link CustomHabitDtoRequest} - custom habit dto.
+     * @return dto {@link CustomHabitDtoResponse}
+     *
+     * @author Olena Sotnik.
+     */
+    @ApiOperation(value = "Update new custom habit.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CustomHabitDtoResponse.class),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PutMapping(value = "/update/{habitId}")
+    public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
+        @RequestPart @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
+        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
     }
 }

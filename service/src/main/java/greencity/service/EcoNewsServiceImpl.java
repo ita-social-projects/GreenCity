@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.RatingCalculationEnum;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
@@ -18,9 +17,11 @@ import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.AchievementType;
+import greencity.enums.AchievementAction;
 import greencity.enums.Role;
+import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -46,7 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -65,6 +65,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final List<String> languageCode = List.of("en", "ua");
+    private final UserService userService;
 
     /**
      * {@inheritDoc}
@@ -79,9 +80,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
         sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
-                AchievementCategoryType.ECO_NEWS, 0));
+        UserVO userVO = userService.findById(toSave.getAuthor().getId());
+        achievementCalculation
+            .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
         return addEcoNewsDtoResponse;
     }
 
@@ -97,9 +99,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
         EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         sendEmailDto(ecoNewsDto, toSave.getAuthor());
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(toSave.getAuthor().getId(), AchievementType.INCREMENT,
-                AchievementCategoryType.ECO_NEWS, 0));
+        UserVO user = userService.findByEmail(email);
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
+        achievementCalculation.calculateAchievement(user,
+            AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         return ecoNewsDto;
     }
 
@@ -230,8 +233,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     /**
      * {@inheritDoc}
      *
-     * @author Kovaliv Taras.
-     * @return
      */
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags) {
@@ -332,9 +333,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (user.getRole() != Role.ROLE_ADMIN && !user.getId().equals(ecoNewsVO.getAuthor().getId())) {
             throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_ECO_NEWS, user, accessToken));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_NEWS, user);
+        achievementCalculation.calculateAchievement(user,
+            AchievementCategoryType.CREATE_NEWS, AchievementAction.DELETE);
+
         ecoNewsRepo.deleteById(ecoNewsVO.getId());
     }
 
@@ -423,11 +425,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     public void likeComment(UserVO user, EcoNewsCommentVO comment) {
         comment.getUsersLiked().add(user);
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
-        CompletableFuture.runAsync(() -> achievementCalculation
-            .calculateAchievement(user.getId(), AchievementType.INCREMENT, AchievementCategoryType.ECO_NEWS_LIKE, 0));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user, AchievementCategoryType.LIKE_COMMENT_OR_REPLY,
+            AchievementAction.ASSIGN);
     }
 
     /**
@@ -438,10 +438,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @author Dovganyuk Taras
      */
     public void unlikeComment(UserVO user, EcoNewsCommentVO comment) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         comment.getUsersLiked().removeIf(u -> u.getId().equals(user.getId()));
-        CompletableFuture
-            .runAsync(() -> ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT, user, accessToken));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, user);
+        achievementCalculation.calculateAchievement(user,
+            AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     @Override
@@ -495,7 +495,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @return EcoNewsGenericDto
      */
     @CacheEvict(value = CacheConstants.NEWEST_ECO_NEWS_CACHE_NAME, allEntries = true)
@@ -530,8 +530,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         }
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
+            achievementCalculation.calculateAchievement(userVO,
+                AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+            ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
@@ -596,17 +602,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     /**
-     * Method to upload news image.
+     * Returns {@link EcoNewsSpecification} for entered filter parameters.
      *
-     * @param image - eco news image
-     * @return imagePath
+     * @param ecoNewsViewDto contains data from filters
      */
-    @Override
-    public String uploadImage(MultipartFile image) {
-        if (image != null) {
-            return fileService.upload(image);
-        }
-        return null;
+    public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
+        return new EcoNewsSpecification(searchCriteria);
     }
 
     /**
@@ -618,16 +620,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public String[] uploadImages(MultipartFile[] images) {
         return Arrays.stream(images).map(fileService::upload).toArray(String[]::new);
-    }
-
-    /**
-     * Returns {@link EcoNewsSpecification} for entered filter parameters.
-     *
-     * @param ecoNewsViewDto contains data from filters
-     */
-    public EcoNewsSpecification getSpecification(EcoNewsViewDto ecoNewsViewDto) {
-        List<SearchCriteria> searchCriteria = buildSearchCriteria(ecoNewsViewDto);
-        return new EcoNewsSpecification(searchCriteria);
     }
 
     /**
@@ -702,7 +694,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         User author = ecoNews.getAuthor();
         var ecoNewsAuthorDto = new EcoNewsAuthorDto(author.getId(), author.getName());
         int countOfComments = ecoNews.getEcoNewsComments() != null
-            ? (int) ecoNews.getEcoNewsComments().stream().filter(notDeleted -> !notDeleted.isDeleted()).count()
+            ? (int) ecoNews.getEcoNewsComments().stream()
+                .filter(ecoNewsComment -> !ecoNewsComment.getStatus().equals(CommentStatus.DELETED)).count()
             : 0;
         int countOfEcoNews = ecoNewsRepo.totalCountOfCreationNews();
         return EcoNewsGenericDto.builder()
@@ -787,9 +780,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             }.getType()));
         try {
             ecoNewsRepo.save(toSave);
-            String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-            CompletableFuture.runAsync(
-                () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_ECO_NEWS, byEmail, accessToken));
         } catch (DataIntegrityViolationException e) {
             throw new NotSavedException(ErrorMessage.ECO_NEWS_NOT_SAVED);
         }

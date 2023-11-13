@@ -1,8 +1,8 @@
 package greencity.service;
 
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
-import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitAssignVO;
@@ -42,13 +42,14 @@ public interface HabitAssignService {
     /**
      * Method for assigning {@code Habit} with custom properties.
      *
-     * @param habitId                  {@code Habit} id.
-     * @param user                     @link UserVO} id.
-     * @param habitAssignPropertiesDto {@link HabitAssignPropertiesDto} instance.
+     * @param habitId                        {@code Habit} id.
+     * @param user                           {@link UserVO} id.
+     * @param habitAssignCustomPropertiesDto {@link HabitAssignCustomPropertiesDto}
+     *                                       instance.
      * @return {@link HabitAssignManagementDto}.
      */
-    HabitAssignManagementDto assignCustomHabitForUser(Long habitId, UserVO user,
-        HabitAssignPropertiesDto habitAssignPropertiesDto);
+    List<HabitAssignManagementDto> assignCustomHabitForUser(Long habitId, UserVO user,
+        HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDto);
 
     /**
      * Method updates {@code HabitAssign} duration of habit assigned for user.
@@ -320,4 +321,13 @@ public interface HabitAssignService {
      * @param userId        {@link Long} item id.
      */
     void updateProgressNotificationHasDisplayed(Long habitAssignId, Long userId);
+
+    /**
+     * Method updates Duration and HabitAssignStatus from Requested to Inprogress.
+     *
+     *
+     * @param habitAssignId {@link Long} habit id.
+     * @param userId        {@link Long} item id.
+     */
+    HabitAssignUserDurationDto updateStatusAndDurationOfHabitAssign(Long habitAssignId, Long userId, Integer duration);
 }

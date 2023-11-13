@@ -1,8 +1,10 @@
 package greencity.service;
 
-import greencity.annotations.RatingCalculationEnum;
+import greencity.achievement.AchievementCalculation;
+import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.client.RestClient;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.comment.AddCommentDto;
@@ -18,7 +20,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserBlockedException;
 import greencity.repository.PlaceCommentRepo;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,7 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
     private ModelMapper modelMapper;
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
+    private AchievementCalculation achievementCalculation;
 
     /**
      * {@inheritDoc}
@@ -87,9 +89,10 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             photo.setComment(comment);
             photo.setPlace(place);
         });
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.ADD_COMMENT, userVO, accessToken));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+
         return modelMapper.map(placeCommentRepo.save(comment), CommentReturnDto.class);
     }
 
@@ -104,9 +107,9 @@ public class PlaceCommentServiceImpl implements PlaceCommentService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION)));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserVO userVO = restClient.findByEmail(authentication.getName());
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        CompletableFuture.runAsync(
-            () -> ratingCalculation.ratingCalculation(RatingCalculationEnum.DELETE_COMMENT, userVO, accessToken));
+        ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, userVO);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
     }
 
     /**

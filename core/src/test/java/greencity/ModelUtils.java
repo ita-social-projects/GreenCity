@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
-import greencity.dto.achievement.AchievementTranslationVO;
+
 import greencity.dto.achievement.AchievementVO;
-import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -26,10 +25,12 @@ import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
+import greencity.dto.filter.FilterEventDto;
+import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.UpdateUserShoppingListDto;
-import greencity.dto.habit.AddCustomHabitDtoRequest;
+import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactPostDto;
 import greencity.dto.habitfact.HabitFactTranslationUpdateDto;
@@ -111,6 +112,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -394,6 +396,7 @@ public class ModelUtils {
             .text("text")
             .createdDate(LocalDateTime.now())
             .modifiedDate(LocalDateTime.now())
+            .status(CommentStatus.ORIGINAL)
             .user(getUser())
             .ecoNews(getEcoNews())
             .build();
@@ -578,25 +581,19 @@ public class ModelUtils {
         return new ShoppingListItemPostDto(getLanguageTranslationsDTOs(), new ShoppingListItemRequestDto(1L));
     }
 
-    public static List<AchievementTranslationVO> getAchievementTranslationVOS() {
-        return Arrays.asList(
-            new AchievementTranslationVO(1L, getLanguageVO(), "title", "description", "message"),
-            new AchievementTranslationVO(2L, getLanguageVO(), "title", "description", "message"),
-            new AchievementTranslationVO(3L, getLanguageVO(), "title", "description", "message"));
-    }
-
     public static AchievementCategoryDto getAchievementCategoryDto() {
         return new AchievementCategoryDto("name");
     }
 
     public static AchievementPostDto getAchievementPostDto() {
-        return new AchievementPostDto(getAchievementTranslationVOS(), getAchievementCategoryDto(), 1);
+        return new AchievementPostDto("ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days", getAchievementCategoryDto(), 1);
     }
 
     public static AchievementVO getAchievementVO() {
-        return new AchievementVO(1L, getAchievementTranslationVOS(),
-            Collections.singletonList(new UserAchievementVO()),
-            new AchievementCategoryVO(1L, "name", null, null), 1);
+        return new AchievementVO(1L, "ACQUIRED_HABIT_14_DAYS", "Набуття звички протягом 14 днів",
+            "Acquired habit 14 days",
+            new AchievementCategoryVO(1L, "name"), 1);
     }
 
     public static UserShoppingListItem getUserShoppingListItem() {
@@ -633,6 +630,13 @@ public class ModelUtils {
         return HabitAssignPropertiesDto.builder()
             .defaultShoppingListItems(List.of(1L, 2L))
             .duration(20)
+            .build();
+    }
+
+    public static HabitAssignCustomPropertiesDto getHabitAssignCustomPropertiesDto() {
+        return HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(getHabitAssignPropertiesDto())
+            .friendsIdsList(List.of(1L, 2L))
             .build();
     }
 
@@ -727,8 +731,8 @@ public class ModelUtils {
             .build())).tags(List.of("first", "second", "third")).build();
     }
 
-    public static AddCustomHabitDtoRequest getAddCustomHabitDtoRequest() {
-        return AddCustomHabitDtoRequest.builder()
+    public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
+        return CustomHabitDtoRequest.builder()
             .complexity(2)
             .customShoppingListItemDto(List.of(
                 CustomShoppingListItemResponseDto.builder()
@@ -749,4 +753,12 @@ public class ModelUtils {
             .build();
     }
 
+    public static FilterEventDto getNullFilterEventDto() {
+        return FilterEventDto.builder()
+            .eventTime(null)
+            .cities(null)
+            .statuses(null)
+            .tags(null)
+            .build();
+    }
 }

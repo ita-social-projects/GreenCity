@@ -6,10 +6,12 @@ import static org.mockito.Mockito.*;
 
 import greencity.ModelUtils;
 import greencity.TestConst;
+import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
@@ -19,6 +21,8 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -26,7 +30,9 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.repository.EcoNewsRepo;
+import greencity.rating.RatingCalculation;
+import greencity.repository.*;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
@@ -34,7 +40,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
-import greencity.repository.EcoNewsSearchRepo;
 import lombok.SneakyThrows;
 
 import org.junit.jupiter.api.Test;
@@ -78,9 +83,35 @@ class EcoNewsServiceImplTest {
 
     @Mock
     EcoNewsSearchRepo ecoNewsSearchRepo;
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private RatingCalculation ratingCalculation;
+    @Mock
+    private AchievementService achievementService;
+    @Mock
+    private AchievementCalculation achievementCalculation;
 
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
+
+    @Mock
+    private UserActionService userActionService;
+
+    @Mock
+    private AchievementCategoryService achievementCategoryService;
+
+    @Mock
+    private UserAchievementRepo userAchievementRepo;
+    @Mock
+    private AchievementRepo achievementRepo;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
+    @Mock
+    private RatingCalculationEnum ratingCalculationEnum;
 
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private EcoNews ecoNews = ModelUtils.getEcoNews();
@@ -116,18 +147,20 @@ class EcoNewsServiceImplTest {
         MultipartFile image = ModelUtils.getFile();
         String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
         addEcoNewsDtoRequest.setImage(imageToEncode);
-
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
         when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
         List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
+        addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
-
+        when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
+        when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
+        verify(userService).findById(anyLong());
     }
 
     @Test
@@ -172,7 +205,7 @@ class EcoNewsServiceImplTest {
         when(modelMapper.map(tagVOList,
             new TypeToken<List<Tag>>() {
             }.getType())).thenReturn(tags);
-
+        when(userService.findByEmail(anyString())).thenReturn(ModelUtils.getUserVO());
         EcoNewsGenericDto actual = ecoNewsService.saveEcoNews(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(ecoNewsGenericDto, actual);
@@ -684,20 +717,6 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void uploadImage() {
-        MultipartFile multipartFile = ModelUtils.getFile();
-        ecoNewsService.uploadImage(multipartFile);
-        verify(fileService).upload(multipartFile);
-    }
-
-    @Test
-    void uploadImages() {
-        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
-        ecoNewsService.uploadImages(multipartFiles);
-        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
-    }
-
-    @Test
     void getContentAndSourceForEcoNewsById() {
         EcoNews ecoNews = ModelUtils.getEcoNews();
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -705,6 +724,13 @@ class EcoNewsServiceImplTest {
         ecoNewsService.getContentAndSourceForEcoNewsById(1L);
 
         verify(ecoNewsRepo).findById(1L);
+    }
+
+    @Test
+    void uploadImages() {
+        MultipartFile[] multipartFiles = {ModelUtils.getFile()};
+        ecoNewsService.uploadImages(multipartFiles);
+        Arrays.stream(multipartFiles).forEach(multipartFile -> verify(fileService).upload(multipartFile));
     }
 
     @Test

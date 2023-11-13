@@ -194,4 +194,250 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             + "user_id = :userId AND friend_id = :friendId OR "
             + "user_id = :friendId AND friend_id = :userId))")
     boolean isFriend(Long userId, Long friendId);
+
+    /**
+     * Checks if a friend request exists between two users.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend.
+     * @return {@code true} if a friend request exists between the two users,
+     *         {@code false} otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'REQUEST' AND ("
+            + "user_id = :userId AND friend_id = :friendId OR "
+            + "user_id = :friendId AND friend_id = :userId))")
+    boolean isFriendRequested(Long userId, Long friendId);
+
+    /**
+     * Checks if a friend requested by current user with userId.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend.
+     * @return {@code true} if a friend requested by current user, {@code false}
+     *         otherwise.
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT EXISTS(SELECT * FROM users_friends WHERE status = 'REQUEST' AND "
+            + "user_id = :userId AND friend_id = :friendId)")
+    boolean isFriendRequestedByCurrentUser(Long userId, Long friendId);
+
+    /**
+     * Adds a new friend for a user.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend to be added.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "INSERT INTO users_friends(user_id, friend_id, status, created_date) "
+            + "VALUES (:userId, :friendId, 'REQUEST', CURRENT_TIMESTAMP)")
+    void addNewFriend(Long userId, Long friendId);
+
+    /**
+     * Accept friend request.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend to be added.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "UPDATE users_friends SET status = 'FRIEND' "
+            + "WHERE user_id = :friendId AND friend_id = :userId")
+    void acceptFriendRequest(Long userId, Long friendId);
+
+    /**
+     * Decline friend request.
+     *
+     * @param userId   The ID of the user.
+     * @param friendId The ID of the friend to be declined.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "UPDATE users_friends SET  status = 'REJECTED' WHERE user_id = :friendId AND friend_id = :userId")
+    void declineFriendRequest(Long userId, Long friendId);
+
+    /**
+     * Decline friend request.
+     *
+     * @param userId   The ID of the user who want to cancel his request.
+     * @param friendId The ID of the friend to whom request was send before.
+     */
+    @Modifying
+    @Query(nativeQuery = true,
+        value = "DELETE FROM users_friends WHERE user_id = :userId AND friend_id = :friendId")
+    void canselUserRequestToFriend(Long userId, Long friendId);
+
+    /**
+     * Get all user friends.
+     *
+     * @param userId The ID of the user.
+     *
+     * @return list of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
+    List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Get all user friends.
+     *
+     * @param userId   The ID of the user.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id IN ( "
+        + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
+        + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'))")
+    Page<User> getAllUserFriendsPage(Pageable pageable, Long userId);
+
+    /**
+     * Method that finds all users except current user and his friends.
+     *
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id != :userId "
+        + "AND u.id NOT IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
+        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
+    Page<User> getAllUsersExceptMainUserAndFriends(Long userId, String filteringName, Pageable pageable);
+
+    /**
+     * Method that finds all users except current user and his friends and users who
+     * send request to current user.
+     *
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id != :userId "
+        + "AND u.id NOT IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'REQUEST' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', REPLACE(REPLACE(REPLACE(REPLACE(:filteringName, '&', '\\&'), "
+        + "'%', '\\%'), '_', '\\_'), '#', '\\#'), '%')) ")
+    Page<User> getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(Long userId, String filteringName,
+        Pageable pageable);
+
+    /**
+     * Method that finds recommended friends of friends.
+     *
+     * @param userId   current user's id.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT u.* FROM users  u "
+        + "WHERE u.id != :userId"
+        + " AND u.id IN ("
+        + "    SELECT user_id FROM users_friends"
+        + "        WHERE (friend_id IN (SELECT friend_id FROM users_friends WHERE user_id = :userId)"
+        + "        OR friend_id IN (SELECT user_id FROM users_friends WHERE friend_id = :userId)) AND status = 'FRIEND'"
+        + "      UNION"
+        + "    SELECT friend_id FROM users_friends"
+        + "      WHERE user_id IN (SELECT friend_id FROM users_friends WHERE user_id = :userId) AND status = 'FRIEND')")
+    Page<User> getRecommendedFriendsOfFriends(Long userId, Pageable pageable);
+
+    /**
+     * Method to find users which sent request to user with userId.
+     *
+     * @param pageable current page.
+     * @param userId   current user's id.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "       INNER JOIN users_friends ON u.id = users_friends.user_id "
+        + "       WHERE users_friends.friend_id = :userId AND users_friends.status = 'REQUEST' ")
+    Page<User> getAllUserFriendRequests(Long userId, Pageable pageable);
+
+    /**
+     * Method to find users which are friends to user with userId.
+     *
+     * @param userId        current user's id.
+     * @param filteringName name filter.
+     * @param pageable      current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id IN ("
+        + "      SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + "      UNION "
+        + "      SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND' "
+        + ") AND LOWER(u.name) LIKE LOWER(CONCAT('%', :filteringName, '%'))")
+    Page<User> findAllFriendsOfUser(Long userId, String filteringName, Pageable pageable);
+
+    /**
+     * Method to find mutual friends with friendId for current user with userId.
+     *
+     * @param userId   current user's id.
+     * @param friendId friend id.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u"
+        + " WHERE u.id IN ("
+        + "       SELECT friend_id FROM users_friends WHERE user_id = :userId"
+        + "       UNION "
+        + "       SELECT user_id from users_friends WHERE friend_id = :userId)"
+        + "  AND u.id IN ("
+        + "       SELECT friend_id FROM users_friends  WHERE user_id = :friendId AND status = 'FRIEND'"
+        + "       UNION "
+        + "       SELECT user_id FROM users_friends WHERE users_friends.friend_id = :friendId AND status = 'FRIEND')")
+    Page<User> getMutualFriends(Long userId, Long friendId, Pageable pageable);
+
+    /**
+     * Method that update user's rating.
+     *
+     * @param userId current user's id.
+     * @param rating rating.
+     *
+     * @author Anton Bondar.
+     */
+    @Modifying
+    @Query(nativeQuery = true, value = "UPDATE users SET rating = :rating WHERE id = :userId")
+    void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Method to find recommended friends for current user by habits.
+     *
+     * @param userId   current user's id.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users u "
+        + "WHERE u.id != :userId AND u.id IN("
+        + "SELECT user_id FROM habit_assign WHERE status = 'ACQUIRED' OR status = 'INPROGRESS')")
+    Page<User> findRecommendedFriendsByHabits(long userId, Pageable pageable);
+
+    /**
+     * Method that allow you to search users by name.
+     *
+     * @param searchQuery username you want to search {@link String}.
+     *
+     * @return list of {@link User} users.
+     * @author Anton Bondar
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT * FROM users u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    List<User> searchUsers(String searchQuery);
 }

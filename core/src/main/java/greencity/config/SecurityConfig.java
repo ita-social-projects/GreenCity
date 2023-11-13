@@ -97,8 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .authorizeRequests()
             .antMatchers("/", "/management/", "/management/login").permitAll()
-            .antMatchers("/management/**",
-                "/econews/comments/replies/{parentCommentId}")
+            .antMatchers("/management/**")
             .hasAnyRole(ADMIN)
             .antMatchers("/css/**",
                 "/img/**")
@@ -140,6 +139,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/econews/recommended",
                 "/econews/{id}",
                 "/econews/countLikes/{econewsId}",
+                "/econews/comments/replies/{parentCommentId}",
                 "/econews/comments/count/comments/{ecoNewsId}",
                 "/econews/comments/count/replies/{parentCommentId}",
                 "/econews/comments/count/likes",
@@ -153,14 +153,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS,
                 EVENTS + "/event/{eventId}",
                 EVENTS + "/getAllSubscribers/{eventId}",
+                EVENTS + "/addresses",
                 "/language",
                 "/search",
                 "/search/econews",
+                "/search/events",
                 "/user/emailNotifications",
                 "/user/activatedUsersAmount",
                 "/user/{userId}/habit/assign",
                 "/token",
-                "/socket/**")
+                "/socket/**",
+                FRIENDS + "/user/{userId}")
             .permitAll()
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
@@ -170,6 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/filter")
             .permitAll()
             .antMatchers(HttpMethod.GET,
+                "/econews/comments/getUsersToTagInComment",
                 "/achievements",
                 "/advices/random/{habitId}",
                 "/advices",
@@ -217,13 +221,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/myEvents",
                 EVENTS + "/myEvents/createdEvents",
                 EVENTS + "/myEvents/relatedEvents",
+                EVENTS + "/getAllFavoriteEvents",
+                EVENTS + "/userEvents/count",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
                 "/habit/assign/{habitAssignId}/allUserAndCustomList",
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
                 "/habit/assign/{habitAssignId}",
                 "/habit/tags/search",
                 "/habit/search",
-                "/habit/{habitId}/friends/profile-pictures")
+                "/habit/{habitId}/friends/profile-pictures",
+                FRIENDS + "/not-friends-yet",
+                FRIENDS + "/recommended-friends",
+                FRIENDS + "/mutual-friends",
+                FRIENDS + "/friendRequests",
+                FRIENDS)
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
@@ -250,6 +261,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/{placeId}/comments",
                 "/place/propose",
                 "/place/save/favorite/",
+                "/place/all",
                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                 USER_SHOPPING_LIST,
                 "/user/{userId}/habit",
@@ -258,7 +270,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/acceptFriend/{friendId}",
                 "/achievements/calculate-achievement",
                 "/habit/custom",
-                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items")
+                "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
+                FRIENDS + "/{friendId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PUT,
                 "/habit/statistic/{id}",
@@ -267,9 +280,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/ownSecurity",
                 "/user/profile",
                 EVENTS + "/update",
+                "/habit/update/{habitId}",
                 HABIT_ASSIGN_ID + "/update-habit-duration",
                 "/habit/assign/{habitAssignId}/updateProgressNotificationHasDisplayed",
-                HABIT_ASSIGN_ID + "/allUserAndCustomList")
+                HABIT_ASSIGN_ID + "/allUserAndCustomList",
+                "/habit/assign/{habitAssignId}/update-status-and-duration")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
@@ -283,7 +298,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
-                "/user/deleteProfilePicture")
+                "/user/deleteProfilePicture",
+                FRIENDS + "/{friendId}/acceptFriend",
+                FRIENDS + "/{friendId}/declineFriend")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
@@ -301,7 +318,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/removeFromFavorites/{eventId}",
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
-                FRIENDS + "/{friendId}")
+                FRIENDS + "/{friendId}",
+                FRIENDS + "/{friendId}/cancelRequest")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
@@ -344,6 +362,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/facts/{factId}",
                 "/comments")
             .hasAnyRole(ADMIN)
+            .antMatchers(HttpMethod.PATCH,
+                "/events/comments")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
+            .antMatchers(HttpMethod.POST,
+                "/events/comments/{eventId}")
+            .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .anyRequest().hasAnyRole(ADMIN)
             .and()
             .logout()

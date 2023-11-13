@@ -7,9 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -25,8 +25,8 @@ public class EventCommentDto {
     @Min(1)
     private Long id;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
+    @NotEmpty
+    private LocalDateTime modifiedDate;
 
     private EventCommentAuthorDto author;
 
@@ -34,7 +34,9 @@ public class EventCommentDto {
 
     private int numberOfReplies;
 
-    private int numberOfLikes;
+    private int likes;
 
     private boolean currentUserLiked = false;
+
+    private String status;
 }

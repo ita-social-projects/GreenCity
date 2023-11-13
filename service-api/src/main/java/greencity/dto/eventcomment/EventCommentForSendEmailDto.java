@@ -21,7 +21,11 @@ public class EventCommentForSendEmailDto {
 
     private LocalDateTime createdDate;
 
+    private LocalDateTime modifiedDate;
+
     private EventAuthorDto organizer;
 
     private String email;
+
+    private Long eventId;
 }
