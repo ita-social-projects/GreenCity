@@ -111,14 +111,27 @@ public class HabitServiceImpl implements HabitService {
     @Override
     public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String language) {
         long userId = userVO.getId();
-        List<Long> availableUsersIds =
-            userRepo.getAllUserFriends(userId).stream().map(user -> user.getId())
-                .collect(Collectors.toList());
-        availableUsersIds.add(userId);
+        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
+        checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         Page<HabitTranslation> habitTranslationPage =
-            habitTranslationRepo.findAllByLanguageCode(pageable, language, availableUsersIds);
+            habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable, language,
+                requestedCustomHabitIds, userId);
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
+    }
+
+    /**
+     * Method to check and add null value to {@link List} when it is empty in order
+     * to prevent exception in repository method's queries.
+     *
+     * @param emptyCollection - list of objects {@link List} that will be checked
+     *                        for emptiness.
+     * @author Olena Sotnik
+     */
+    private void checkAndAddToEmptyCollectionValueNull(List<?> emptyCollection) {
+        if (emptyCollection.isEmpty()) {
+            emptyCollection.add(null);
+        }
     }
 
     /**
@@ -158,29 +171,27 @@ public class HabitServiceImpl implements HabitService {
      */
     @Override
     public PageableDto<HabitDto> getAllByDifferentParameters(UserVO userVO, Pageable pageable,
-        Optional<List<String>> tags,
-        Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities, String languageCode) {
+        Optional<List<String>> tags, Optional<Boolean> isCustomHabit, Optional<List<Integer>> complexities,
+        String languageCode) {
         List<String> lowerCaseTags = new ArrayList<>();
         List<Integer> complexitiesList = new ArrayList<>();
         if (tags.isPresent()) {
             lowerCaseTags = tags.get().stream().map(String::toLowerCase).collect(Collectors.toList());
         }
         if (complexities.isPresent()) {
-            complexitiesList = complexities.get().stream().collect(Collectors.toList());
+            complexitiesList = new ArrayList<>(complexities.get());
         }
         Page<HabitTranslation> habitTranslationsPage;
         long userId = userVO.getId();
-        List<Long> availableUsersIds =
-            userRepo.getAllUserFriends(userId).stream().map(user -> user.getId())
-                .collect(Collectors.toList());
-        availableUsersIds.add(userId);
+        List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
+        checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty() && !complexitiesList.isEmpty()) {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage =
-                    habitTranslationRepo.findAllByDifferentParametersIsCustomHabitTrue(pageable, lowerCaseTags,
-                        complexities, languageCode, availableUsersIds);
+                    habitTranslationRepo.findCustomHabitsByDifferentParametersByUserIdAndStatusRequested(pageable,
+                        lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
             } else {
                 habitTranslationsPage =
                     habitTranslationRepo.findAllByDifferentParametersIsCustomHabitFalse(pageable, lowerCaseTags,
@@ -190,8 +201,9 @@ public class HabitServiceImpl implements HabitService {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
                 habitTranslationsPage =
-                    habitTranslationRepo.findAllByIsCustomHabitTrueAndComplexityAndLanguageCode(pageable,
-                        complexities, languageCode, availableUsersIds);
+                    habitTranslationRepo.findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
+                        pageable,
+                        complexities, languageCode, requestedCustomHabitIds, userId);
             } else {
                 habitTranslationsPage =
                     habitTranslationRepo.findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(pageable,
@@ -199,36 +211,36 @@ public class HabitServiceImpl implements HabitService {
             }
         } else if (!complexitiesList.isEmpty() && !lowerCaseTags.isEmpty()) {
             habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeForAvailableUsersIfIsCustomTrue(pageable,
-                    lowerCaseTags,
-                    complexities, languageCode, availableUsersIds);
+                habitTranslationRepo.findAllByTagsAndComplexityAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
+                    lowerCaseTags, complexities, languageCode, requestedCustomHabitIds, userId);
         } else if (isCustomHabit.isPresent() && !lowerCaseTags.isEmpty()) {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
-                habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitTrueAndLanguageCode(pageable,
-                    lowerCaseTags, languageCode, availableUsersIds);
+                habitTranslationsPage = habitTranslationRepo
+                    .findCustomHabitsByTagsAndLanguageCodeAndByUserIdAndStatusRequested(pageable,
+                        lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
             } else {
                 habitTranslationsPage = habitTranslationRepo.findAllByTagsAndIsCustomHabitFalseAndLanguageCode(pageable,
                     lowerCaseTags, languageCode);
             }
         } else if (!lowerCaseTags.isEmpty()) {
             habitTranslationsPage =
-                habitTranslationRepo.findAllByTagsAndLanguageCodeAndForAvailableUsersIfIsCustomHabitTrue(pageable,
-                    lowerCaseTags,
-                    languageCode, availableUsersIds);
+                habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(pageable,
+                    lowerCaseTags, languageCode, requestedCustomHabitIds, userId);
         } else if (isCustomHabit.isPresent()) {
             boolean checkIsCustomHabit = isCustomHabit.get();
             if (checkIsCustomHabit) {
-                habitTranslationsPage = habitTranslationRepo.findAllByIsCustomHabitTrueAndLanguageCode(pageable,
-                    languageCode, availableUsersIds);
+                habitTranslationsPage =
+                    habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(pageable,
+                        languageCode, requestedCustomHabitIds, userId);
             } else {
                 habitTranslationsPage = habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(pageable,
                     languageCode);
             }
         } else {
             habitTranslationsPage =
-                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndForAvailableUsersIfIsCustomHabit(pageable,
-                    complexities, languageCode, availableUsersIds);
+                habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(pageable,
+                    complexities, languageCode, requestedCustomHabitIds, userId);
         }
         return buildPageableDtoForDifferentParameters(habitTranslationsPage, userVO);
     }
