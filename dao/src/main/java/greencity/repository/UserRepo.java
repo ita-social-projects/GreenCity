@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -441,8 +442,17 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         value = "SELECT * FROM users u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
     List<User> searchUsers(String searchQuery);
 
+    /**
+     * Method to find recommended friends for current user by city.
+     *
+     * @param userId   current user's id.
+     * @param city     current user's city.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
     @Query(nativeQuery = true, value = "SELECT users.* FROM users "
-            + "JOIN user_location ON users.user_location = user_location.id "
-            + "where user_location.city_ua = :city")
-    Page<User> findRecommendedFriendsByCity(String city, Pageable pageable);
+        + "JOIN user_location ON users.user_location = user_location.id "
+        + "WHERE user_location.city_ua = :city AND users.id !=:userId")
+    Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 }

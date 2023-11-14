@@ -6,6 +6,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -614,6 +616,7 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getRecommendedFriendsOfFriends(userId, pageable)).thenReturn(userPage);
         when(
@@ -630,6 +633,7 @@ class FriendServiceImplTest {
         assertEquals(totalElements, pageableDto.getTotalPages());
         assertEquals(page, pageableDto.getCurrentPage());
 
+        verify(userRepo).findById(userId);
         verify(userRepo).existsById(userId);
         verify(userRepo).getRecommendedFriendsOfFriends(userId, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
@@ -646,6 +650,7 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
         when(
@@ -662,6 +667,7 @@ class FriendServiceImplTest {
         assertEquals(totalElements, pageableDto.getTotalPages());
         assertEquals(page, pageableDto.getCurrentPage());
 
+        verify(userRepo).findById(userId);
         verify(userRepo).existsById(userId);
         verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, "", pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
@@ -678,6 +684,7 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.findRecommendedFriendsByHabits(userId, pageable)).thenReturn(userPage);
         when(
@@ -694,8 +701,47 @@ class FriendServiceImplTest {
         assertEquals(totalElements, pageableDto.getTotalPages());
         assertEquals(page, pageableDto.getCurrentPage());
 
+        verify(userRepo).findById(userId);
         verify(userRepo).existsById(userId);
         verify(userRepo).findRecommendedFriendsByHabits(userId, pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void findRecommendedFriendsByCity() {
+        long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        User userWithLocation = new User();
+        UserLocation userLocation = new UserLocation();
+        userLocation.setCityUa("testCity");
+        userWithLocation.setUserLocation(userLocation);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.findById(userId)).thenReturn(Optional.of(userWithLocation));
+        when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).findById(userId);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).findRecommendedFriendsByCity(userId, "testCity", pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }
