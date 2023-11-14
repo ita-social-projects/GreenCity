@@ -38,7 +38,12 @@ public class UserFriendDto {
         this.profilePicturePath = profilePicturePath;
         this.chatId = chatId;
         this.friendStatus = friendStatus;
-        this.userLocationDto =
-            new UserLocationDto(ulId, cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, latitude, longitude);
+        if (ulId != null) {
+            this.userLocationDto =
+                new UserLocationDto(ulId, cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, latitude,
+                    longitude);
+        } else {
+            this.userLocationDto = null;
+        }
     }
 }
