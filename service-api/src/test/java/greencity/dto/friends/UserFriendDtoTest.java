@@ -4,6 +4,7 @@ import greencity.dto.location.UserLocationDto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UserFriendDtoTest {
     @Test
@@ -32,4 +33,24 @@ class UserFriendDtoTest {
         assertEquals(chatId, userFriendDto.getChatId());
         assertEquals(friendStatus, userFriendDto.getFriendStatus());
     }
+
+    @Test
+    void testUserFriendDtoConstructorWithoutUserLocation() {
+        Long id = 1L;
+        String name = "name";
+        String email = "email";
+        Double rating = 1.0;
+        Long ulId = null;
+        Long mutualFriends = 2L;
+        String profilePicturePath = "/path/to/profile/picture";
+        Long chatId = 4L;
+        String friendStatus = "FRIEND";
+
+        UserFriendDto userFriendDto = new UserFriendDto(
+            id, name, email, rating, ulId, null, null, null, null, null, null,
+            null, null, mutualFriends, profilePicturePath, chatId, friendStatus);
+
+        assertNull(userFriendDto.getUserLocationDto());
+    }
+
 }
