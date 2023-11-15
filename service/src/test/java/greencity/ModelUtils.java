@@ -419,6 +419,9 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
+            .userLocationDto(
+                new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                    "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -1725,7 +1728,6 @@ public class ModelUtils {
                     .ecoNewsLiked(null)
                     .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
-                    .city("fdsfsdf")
                     .showLocation(true)
                     .showEcoPlace(true)
                     .showShoppingList(true)
@@ -1744,7 +1746,6 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
