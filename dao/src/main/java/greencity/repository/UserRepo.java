@@ -440,4 +440,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Query(nativeQuery = true,
         value = "SELECT * FROM users u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
     List<User> searchUsers(String searchQuery);
+
+    /**
+     * Method to find recommended friends for current user by city.
+     *
+     * @param userId   current user's id.
+     * @param city     current user's city.
+     * @param pageable current page.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT users.* FROM users "
+        + "JOIN user_location ON users.user_location = user_location.id "
+        + "WHERE user_location.city_ua = :city AND users.id !=:userId")
+    Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
 }
