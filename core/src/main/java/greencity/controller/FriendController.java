@@ -182,7 +182,7 @@ public class FriendController {
      *
      * @param userVO user.
      * @param type   type to find recommended friends Supported values:
-     *               "FRIENDS_OF_FRIENDS", "HABITS".
+     *               "FRIENDS_OF_FRIENDS", "HABITS", "CITY".
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
