@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
@@ -203,9 +204,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
-
         setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
             habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
+        saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
         habitAssignRepo.save(habitAssign);
 
@@ -218,6 +219,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         return habitAssignManagementDtoList;
+    }
+
+    private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
+        User user, Habit habit) {
+        if (!CollectionUtils.isEmpty(saveList)) {
+            saveList.forEach(item -> {
+                CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
+                List<CustomShoppingListItem> duplicates = user.getCustomShoppingListItems().stream()
+                    .filter(userItem -> userItem.getText().equals(customShoppingListItem.getText()))
+                    .collect(Collectors.toList());
+                if (duplicates.isEmpty()) {
+                    customShoppingListItem.setUser(user);
+                    customShoppingListItem.setHabit(habit);
+                    user.getCustomShoppingListItems().add(customShoppingListItem);
+                    customShoppingListItemRepo.save(customShoppingListItem);
+                } else {
+                    throw new CustomShoppingListItemNotSavedException(String.format(
+                        ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_EXISTS, customShoppingListItem.getText()));
+                }
+            });
+        }
     }
 
     private void assignFriendsForCustomHabit(Habit habit,
