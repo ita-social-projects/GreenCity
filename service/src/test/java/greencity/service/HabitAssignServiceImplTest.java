@@ -36,6 +36,7 @@ import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
@@ -57,14 +58,11 @@ import greencity.repository.UserRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -182,6 +180,13 @@ class HabitAssignServiceImplTest {
         HabitAssignCustomPropertiesDto.builder()
             .habitAssignPropertiesDto(habitAssignPropertiesDto)
             .friendsIdsList(List.of())
+            .build();
+
+    private HabitAssignCustomPropertiesDto habitAssignCustomPropertiesDtoWithCustomShoppingListItem =
+        HabitAssignCustomPropertiesDto.builder()
+            .habitAssignPropertiesDto(habitAssignPropertiesDto)
+            .friendsIdsList(List.of())
+            .customShoppingListItemList(List.of(ModelUtils.getCustomShoppingListItemSaveRequestDto()))
             .build();
 
     private String language = "en";
@@ -408,6 +413,57 @@ class HabitAssignServiceImplTest {
         List<HabitAssignManagementDto> actual = habitAssignService
             .assignCustomHabitForUser(habit.getId(), userVO, habitAssignCustomPropertiesDto);
         assertEquals(List.of(habitAssignManagementDto), actual);
+    }
+
+    @Test
+    void assignCustomHabitForUserWithCustomShoppingListItemList() {
+        user.setCustomShoppingListItems(new ArrayList<>());
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(customShoppingListItemRepo.save(any())).thenReturn(ModelUtils.getCustomShoppingListItem());
+        when(modelMapper.map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class))
+            .thenReturn(ModelUtils.getCustomShoppingListItem());
+
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        when(modelMapper.map(habitAssign, HabitAssignManagementDto.class)).thenReturn(habitAssignManagementDto);
+        List<HabitAssignManagementDto> actual = habitAssignService.assignCustomHabitForUser(habit.getId(), userVO,
+            habitAssignCustomPropertiesDtoWithCustomShoppingListItem);
+
+        assertEquals(List.of(habitAssignManagementDto), actual);
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitAssignRepo).findAllByUserId(userVO.getId());
+        verify(customShoppingListItemRepo).save(any());
+        verify(modelMapper).map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class);
+        verify(habitRepo).findById(habit.getId());
+        verify(modelMapper).map(habitAssign, HabitAssignManagementDto.class);
+        verify(habitAssignRepo, times(2)).save(any());
+    }
+
+    @Test
+    void assignCustomHabitForUserThrowsCustomShoppingListItemNotSavedException() {
+        user.setCustomShoppingListItems(List.of(ModelUtils.getCustomShoppingListItem()));
+        when(modelMapper.map(userVO, User.class)).thenReturn(user);
+        when(habitAssignRepo.findAllByUserId(userVO.getId())).thenReturn(List.of(habitAssign));
+        when(modelMapper.map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class))
+            .thenReturn(ModelUtils.getCustomShoppingListItem());
+        when(habitRepo.findById(habit.getId())).thenReturn(Optional.of(habit));
+        when(habitAssignRepo.save(any())).thenReturn(habitAssign);
+        String expectedErrorMessage = String.format(ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_EXISTS,
+            ModelUtils.getCustomShoppingListItem().getText());
+
+        CustomShoppingListItemNotSavedException exception = assertThrows(CustomShoppingListItemNotSavedException.class,
+            () -> habitAssignService.assignCustomHabitForUser(1L, userVO,
+                habitAssignCustomPropertiesDtoWithCustomShoppingListItem));
+        System.out.println(exception.getMessage());
+        assertEquals(expectedErrorMessage, exception.getMessage());
+
+        verify(modelMapper).map(userVO, User.class);
+        verify(habitAssignRepo).findAllByUserId(userVO.getId());
+        verify(modelMapper).map(ModelUtils.getCustomShoppingListItemSaveRequestDto(), CustomShoppingListItem.class);
+        verify(habitRepo).findById(habit.getId());
+        verify(habitAssignRepo).save(any());
     }
 
     @Test
