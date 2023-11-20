@@ -1,5 +1,6 @@
 package greencity.client;
 
+import greencity.annotations.NotificationType;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -16,6 +17,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
+import greencity.enums.TypeOfEmailNotification;
+import greencity.message.AbstractEmailMessage;
 import greencity.message.SendEventCreationNotification;
 import greencity.security.jwt.JwtTool;
 import org.springframework.beans.factory.annotation.Value;
@@ -582,5 +585,13 @@ public class RestClient {
         HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
+    }
+
+    public void sendEmailNotification(AbstractEmailMessage notification) {
+        HttpHeaders headers = setHeader();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<AbstractEmailMessage> entity = new HttpEntity<>(notification, headers);
+        restTemplate.exchange(greenCityUserServerAddress
+                + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
     }
 }

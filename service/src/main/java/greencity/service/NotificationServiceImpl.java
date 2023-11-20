@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
@@ -11,6 +12,8 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
+import greencity.enums.TypeOfEmailNotification;
+import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -100,6 +103,23 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusMonths(1);
         sendReport(EmailNotification.MONTHLY, startDate);
     }
+
+    /**
+     * method sends a notification
+     *
+     * @author Yurii Midianyi
+     */
+//    @Override
+//    @NotificationType(type = TypeOfEmailNotification.EVENT_CREATED)
+//    public void sendEmailNotification(String userName, String email) {
+//        String message = "Dear, " + userName + "!"
+//                + "\nYou have successfully created an event: ";
+//        SendEventCreationNotification notification = SendEventCreationNotification.builder()
+//                .email(email)
+//                .message(message)
+//                .build();
+//        restClient.sendEmailNotification(notification, "");
+//    }
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);

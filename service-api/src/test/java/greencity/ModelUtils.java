@@ -228,7 +228,7 @@ public class ModelUtils {
     public static SendEventCreationNotification getSendEventCreationNotification() {
         return SendEventCreationNotification.builder()
             .email("test@gmail.com")
-            .messageBody("You have successfully created event")
+            .message("You have successfully created event")
             .build();
     }
 }

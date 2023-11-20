@@ -2,6 +2,7 @@ package greencity.service;
 
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
+import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -32,6 +33,7 @@ import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -81,6 +83,7 @@ public class EventServiceImpl implements EventService {
     private final GoogleApiService googleApiService;
     private final UserService userService;
     private final EventsSearchRepo eventsSearchRepo;
+    private final NotificationService notificationService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
@@ -100,6 +103,7 @@ public class EventServiceImpl implements EventService {
     private static final String SOCIAL_TAG = "SOCIAL";
 
     @Override
+    @NotificationType(type = TypeOfEmailNotification.EVENT_CREATED)
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
@@ -129,7 +133,8 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
+        //notificationService.sendEmailNotification(organizer.getEmail(), organizer.getName());
+        //sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
@@ -844,15 +849,15 @@ public class EventServiceImpl implements EventService {
      *
      * @author Olena Sotnik.
      */
-    public void sendEmailNotification(String eventTitle, String userName, String email) {
-        String message = "Dear, " + userName + "!"
-            + "\nYou have successfully created an event: " + eventTitle;
-        SendEventCreationNotification notification = SendEventCreationNotification.builder()
-            .email(email)
-            .messageBody(message)
-            .build();
-        restClient.sendEventCreationNotification(notification);
-    }
+//    public void sendEmailNotification(String eventTitle, String userName, String email) {
+//        String message = "Dear, " + userName + "!"
+//            + "\nYou have successfully created an event: " + eventTitle;
+//        SendEventCreationNotification notification = SendEventCreationNotification.builder()
+//            .email(email)
+//            .message(message)
+//            .build();
+//        restClient.sendEventCreationNotification(notification);
+//    }
 
     @Override
     public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {

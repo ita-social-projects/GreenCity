@@ -1,6 +1,7 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import greencity.dto.EmailSendable;
 import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class EventDto {
+public class EventDto implements EmailSendable {
     private Long id;
 
     private String title;

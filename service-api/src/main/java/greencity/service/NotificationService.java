@@ -30,4 +30,6 @@ public interface NotificationService {
      * {@code EmailNotification} type - MONTHLY.
      */
     void sendMonthlyReport();
+
+    //void sendEmailNotification(String userName, String email);
 }
