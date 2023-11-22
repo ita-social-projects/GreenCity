@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.annotations.NotificationType;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -20,6 +21,7 @@ import greencity.enums.AchievementAction;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -65,6 +67,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
 
     @Override
+    @NotificationType(type = TypeOfEmailNotification.NEWS_COMMENTED)
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
