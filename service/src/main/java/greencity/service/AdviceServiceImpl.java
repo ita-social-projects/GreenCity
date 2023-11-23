@@ -64,7 +64,6 @@ public class AdviceServiceImpl implements AdviceService {
     @Override
     public PageableDto<AdviceVO> getFilteredAdvices(Pageable pageable, AdviceViewDto adviceViewDto) {
         Page<Advice> filteredAdvices = adviceRepo.findAll(getSpecification(adviceViewDto), pageable);
-
         return buildPageableDto(filteredAdvices);
     }
 
