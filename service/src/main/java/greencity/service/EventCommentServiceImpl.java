@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -21,6 +22,7 @@ import greencity.enums.Role;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -64,6 +66,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return {@link AddEventCommentDtoResponse} instance.
      */
     @Override
+    @NotificationType(type = TypeOfEmailNotification.EVENT_COMMENTED)
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
         UserVO userVO) {
         EventVO eventVO = eventService.findById(eventId);
@@ -94,7 +97,6 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventCommentRepo.save(eventComment), AddEventCommentDtoResponse.class);
 
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
-        sendEmailDto(addEventCommentDtoResponse);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);

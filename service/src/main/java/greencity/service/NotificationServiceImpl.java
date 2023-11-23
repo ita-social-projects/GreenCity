@@ -1,6 +1,5 @@
 package greencity.service;
 
-import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.LogMessage;
@@ -12,8 +11,6 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
-import greencity.enums.TypeOfEmailNotification;
-import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;

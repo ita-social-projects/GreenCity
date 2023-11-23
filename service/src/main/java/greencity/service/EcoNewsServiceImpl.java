@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
@@ -22,6 +23,7 @@ import greencity.enums.Role;
 import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -524,6 +526,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param id     - @{@link Long} eco news id.
      */
     @Override
+    @NotificationType(type = TypeOfEmailNotification.NEWS_LIKED)
     public void like(UserVO userVO, Long id) {
         EcoNewsVO ecoNewsVO = findById(id);
         if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {

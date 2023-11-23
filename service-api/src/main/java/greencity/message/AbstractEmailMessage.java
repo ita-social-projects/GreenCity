@@ -12,7 +12,8 @@ import java.io.Serializable;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SendEventCreationNotification.class, name = "eventCreation"),
-        @JsonSubTypes.Type(value = NewsCommentMessage.class, name = "newsCommented")
+        @JsonSubTypes.Type(value = NewsCommentMessage.class, name = "newsCommented"),
+        @JsonSubTypes.Type(value = EventCommentedMessage.class, name = "eventCommented")
 })
 @Getter
 @ToString
