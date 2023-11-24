@@ -100,7 +100,7 @@ public interface AchievementService {
      *         criteria.
      */
     List<AchievementVO> findAllByType(String principalEmail, String achievementStatus);
-    
+
     /**
      * Method for achieve.
      */
