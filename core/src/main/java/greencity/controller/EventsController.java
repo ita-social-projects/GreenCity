@@ -144,8 +144,7 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
         @ApiIgnore Pageable pageable, @ApiIgnore Principal principal, FilterEventDto filterEventDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllFilteredEvents(
-            pageable, principal, filterEventDto));
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvents(pageable, principal, filterEventDto));
     }
 
     /**
@@ -355,5 +354,26 @@ public class EventsController {
     @GetMapping("/addresses")
     public ResponseEntity<Set<AddressDto>> getAllEventsAddresses() {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllEventsAddresses());
+    }
+
+    /**
+     * The method finds count of events organized and attended by user id.
+     *
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of organized and attended events by user id.
+     *
+     * @author Olena Sotnik
+     */
+    @ApiOperation(value = "Finds amount of events where user is organizer or attender")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/userEvents/count")
+    public ResponseEntity<Long> findAmountOfOrganizedAndAttendedEvents(@RequestParam Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getAmountOfOrganizedAndAttendedEventsByUserId(userId));
     }
 }

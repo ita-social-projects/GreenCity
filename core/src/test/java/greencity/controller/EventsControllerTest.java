@@ -117,7 +117,7 @@ class EventsControllerTest {
 
         FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
 
-        when(eventService.getAllFilteredEvents(pageable, principal, filterEventDto))
+        when(eventService.getEvents(pageable, principal, filterEventDto))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
@@ -127,7 +127,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getAllFilteredEvents(pageable, principal, filterEventDto);
+        verify(eventService).getEvents(pageable, principal, filterEventDto);
     }
 
     @Test
@@ -689,5 +689,15 @@ class EventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).getAllEventsAddresses();
+    }
+
+    @Test
+    @SneakyThrows
+    void findAmountOfOrganizedAndAttendedEvents() {
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/userEvents/count")
+            .param("userId", "1"))
+            .andExpect(status().isOk());
+
+        verify(eventService).getAmountOfOrganizedAndAttendedEventsByUserId(1L);
     }
 }

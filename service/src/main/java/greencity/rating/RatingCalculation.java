@@ -26,8 +26,9 @@ public class RatingCalculation {
      */
     public void ratingCalculation(RatingCalculationEnum rating, UserVO userVo) {
         User user = modelMapper.map(userVo, User.class);
-        userVo.setRating(userVo.getRating() + rating.getRatingPoints());
-        userService.save(userVo);
+        double newRating = userVo.getRating() + rating.getRatingPoints();
+        userVo.setRating(newRating > 0 ? newRating : 0);
+        userService.updateUserRating(user.getId(), userVo.getRating());
         RatingStatistics ratingStatistics = RatingStatistics
             .builder()
             .rating(userVo.getRating())

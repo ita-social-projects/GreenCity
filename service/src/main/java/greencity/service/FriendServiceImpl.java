@@ -5,9 +5,11 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -17,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -88,25 +89,40 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public List<UserManagementDto> findUserFriendsByUserId(long userId) {
+    public PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId) {
         validateUserExistence(userId);
-        List<User> friends = userRepo.getAllUserFriends(userId);
-        return friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
-            .collect(Collectors.toList());
+        Page<User> friends;
+        if (pageable.getSort().isEmpty()) {
+            friends = userRepo.getAllUserFriendsPage(pageable, userId);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
+        List<UserManagementDto> friendList =
+            friends.stream().map(friend -> modelMapper.map(friend, UserManagementDto.class))
+                .collect(Collectors.toList());
+        return new PageableDto<>(
+            friendList,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(long userId,
+    public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
         @Nullable String name, Pageable pageable) {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
         name = name == null ? "" : name;
-        Page<User> users =
-            userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        Page<User> users;
+        if (pageable.getSort().isEmpty()) {
+            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
@@ -120,10 +136,36 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable) {
+    public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type,
+        Pageable pageable) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
         validateUserExistence(userId);
+        Page<User> mutualFriends;
+        if (type == RecommendedFriendsType.FRIENDS_OF_FRIENDS) {
+            mutualFriends = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+        } else if (type == RecommendedFriendsType.HABITS) {
+            mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        } else if (type == RecommendedFriendsType.CITY) {
+            mutualFriends = userRepo.findRecommendedFriendsByCity(userId, user.getUserLocation().getCityUa(), pageable);
+        } else {
+            mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
+        }
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+                mutualFriends.getContent());
+        return new PageableDto<>(
+            userFriendDtoList,
+            mutualFriends.getTotalElements(),
+            mutualFriends.getPageable().getPageNumber(),
+            mutualFriends.getTotalPages());
+    }
+
+    @Override
+    public PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable) {
+        validateUserAndFriends(userId, friendId);
         Page<User> users =
-            userRepo.getRecommendedFriendsOfFriends(userId, pageable);
+            userRepo.getMutualFriends(userId, friendId, pageable);
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
         return new PageableDto<>(
@@ -160,15 +202,41 @@ public class FriendServiceImpl implements FriendService {
 
         validateUserExistence(userId);
         name = name == null ? "" : name;
-        Page<User> users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+        Page<User> users;
+        if (pageable.getSort().isEmpty()) {
+            users = userRepo.findAllFriendsOfUser(userId, name, pageable);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
-        userFriendDtoList.forEach(friend -> friend.setFriendStatus("FRIEND"));
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
             users.getPageable().getPageNumber(),
             users.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteRequestOfCurrentUserToFriend(long userId, long friendId) {
+        validateUserAndFriendNotSamePerson(userId, friendId);
+        validateUserAndFriendExistence(userId, friendId);
+        validateFriendNotExists(userId, friendId);
+        validateFriendRequestSentByCurrentUser(userId, friendId);
+        userRepo.canselUserRequestToFriend(userId, friendId);
+    }
+
+    private Page<User> getAllUsersExceptMainUserAndFriends(long userId, Pageable pageable) {
+        return userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+    }
+
+    private void validateUserAndFriends(Long userId, Long friendId) {
+        validateUserAndFriendExistence(userId, friendId);
+        validateUserAndFriendNotSamePerson(userId, friendId);
     }
 
     private void validateUserAndFriendExistence(long userId, long friendId) {
@@ -196,6 +264,12 @@ public class FriendServiceImpl implements FriendService {
 
     private void validateFriendRequestSentByFriend(long userId, long friendId) {
         if (!userRepo.isFriendRequestedByCurrentUser(friendId, userId)) {
+            throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
+        }
+    }
+
+    private void validateFriendRequestSentByCurrentUser(long userId, long friendId) {
+        if (!userRepo.isFriendRequestedByCurrentUser(userId, friendId)) {
             throw new NotFoundException(ErrorMessage.FRIEND_REQUEST_NOT_SENT);
         }
     }

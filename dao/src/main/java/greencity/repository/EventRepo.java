@@ -1,6 +1,7 @@
 package greencity.repository;
 
 import greencity.entity.User;
+import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
     /**
@@ -125,4 +127,25 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     @Query(nativeQuery = true, value = " SELECT distinct * FROM public.fn_searchevents "
         + "( :searchQuery, :languageCode) ")
     Page<Event> searchEvents(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Get all events addresses.
+     *
+     * @author Olena Sotnik.
+     */
+    @Query(value = "SELECT edl.address FROM Event e LEFT JOIN e.dates edl WHERE edl.address IS NOT NULL")
+    Set<Address> findAllEventsAddresses();
+
+    /**
+     * Method returns count of all events where user is organizer or attender.
+     *
+     * @param userId {@link Long} id of current user.
+     * @return {@link Long} count of organized or attended by user events.
+     *
+     * @author Olena Sotnik
+     */
+    @Query(nativeQuery = true, value = "SELECT COUNT(DISTINCT e.id) FROM events e "
+        + "LEFT JOIN events_attenders att ON e.id = att.event_id "
+        + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
+    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 }

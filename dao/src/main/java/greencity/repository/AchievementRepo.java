@@ -7,10 +7,70 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface AchievementRepo extends JpaRepository<Achievement, Long> {
+    /**
+     * Retrieves a list of achievements that a specific user hasn't achieved yet
+     * within a specified achievement category. The method identifies unachieved
+     * achievements by comparing user actions count with the conditions of
+     * achievements and by checking if a user already has the achievement in the
+     * user_achievements table.
+     *
+     * @param userId                The unique identifier of the user.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category.
+     * @return A list of Achievement objects that the user hasn't achieved within
+     *         the specified category.
+     */
+    @Query(value = "SELECT ach.* "
+        + "FROM achievements ach "
+        + "WHERE ach.id IN ("
+        + "    SELECT achievement_id "
+        + "    FROM user_achievements uach "
+        + "    WHERE uach.user_id = :userId"
+        + "    AND uach.habit_id = :habitId"
+        + ") "
+        + "AND ach.condition > ("
+        + "    SELECT ua.count "
+        + "    FROM user_actions ua "
+        + "    WHERE ua.user_id = :userId "
+        + "    AND ua.achievement_category_id = :achievementCategoryId"
+        + ") "
+        + "AND ach.achievement_category_id = :achievementCategoryId ",
+        nativeQuery = true)
+    List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId, Long habitId);
+
+    /**
+     * Retrieves a list of achievements that a specific user hasn't achieved yet
+     * within a specified achievement category. The method identifies unachieved
+     * achievements by comparing user actions count with the conditions of
+     * achievements and by checking if a user already has the achievement in the
+     * user_achievements table.
+     *
+     * @param userId                The unique identifier of the user.
+     * @param achievementCategoryId The unique identifier of the achievement
+     *                              category.
+     * @return A list of Achievement objects that the user hasn't achieved within
+     *         the specified category.
+     */
+    @Query(value = "Select ach.*\n"
+        + "from achievements as ach\n"
+        + "where\n"
+        + "    ach.id in\n"
+        + "      (SELECT achievement_id from user_achievements uach where uach.user_id = :userId)\n"
+        + "  and\n"
+        + "    ach.condition > (SELECT ua.count\n"
+        + "                                      from user_actions ua\n"
+        + "                                      where ua.user_id = :userId and\n"
+        + "                                            ua.achievement_category_id=:achievementCategoryId)\n"
+        + "and\n"
+        + "    ach.achievement_category_id=:achievementCategoryId",
+        nativeQuery = true)
+    List<Achievement> findUnAchieved(Long userId, Long achievementCategoryId);
+
     /**
      * Searches for achievements based on a query string and returns a paginated
      * result.
@@ -35,4 +95,17 @@ public interface AchievementRepo extends JpaRepository<Achievement, Long> {
      * @author Orest Mamchuk
      */
     Optional<Achievement> findByAchievementCategoryIdAndCondition(Long achievementCategoryId, Integer condition);
+
+    /**
+     * Searches for achievements that have not yet been achieved by the specified
+     * user.
+     *
+     * @param userId The ID of the user for whom to find unachieved achievements.
+     * @return A list of achievements that the user has not yet achieved.
+     */
+    @Query(value = "SELECT * from achievements "
+        + "where id not in (select achievement_id "
+        + "                 from user_achievements "
+        + "                 where user_id = :userId)", nativeQuery = true)
+    List<Achievement> searchAchievementsUnAchieved(Long userId);
 }

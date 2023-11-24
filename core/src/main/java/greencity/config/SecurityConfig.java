@@ -173,6 +173,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/place/filter")
             .permitAll()
             .antMatchers(HttpMethod.GET,
+                "/econews/comments/getUsersToTagInComment",
                 "/achievements",
                 "/advices/random/{habitId}",
                 "/advices",
@@ -221,6 +222,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 EVENTS + "/myEvents/createdEvents",
                 EVENTS + "/myEvents/relatedEvents",
                 EVENTS + "/getAllFavoriteEvents",
+                EVENTS + "/userEvents/count",
                 "/user/shopping-list-items/{userId}/get-all-inprogress",
                 "/habit/assign/{habitAssignId}/allUserAndCustomList",
                 "/habit/assign/allUserAndCustomShoppingListsInprogress",
@@ -230,6 +232,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/habit/{habitId}/friends/profile-pictures",
                 FRIENDS + "/not-friends-yet",
                 FRIENDS + "/recommended-friends",
+                FRIENDS + "/mutual-friends",
                 FRIENDS + "/friendRequests",
                 FRIENDS)
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -296,7 +299,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                 "/user/profilePicture",
                 "/user/deleteProfilePicture",
-                FRIENDS + "/{friendId}/acceptFriend")
+                FRIENDS + "/{friendId}/acceptFriend",
+                FRIENDS + "/{friendId}/declineFriend")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.DELETE,
                 ECONEWS_COMMENTS,
@@ -315,7 +319,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
                 FRIENDS + "/{friendId}",
-                FRIENDS + "/{friendId}/declineFriend")
+                FRIENDS + "/{friendId}/cancelRequest")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",

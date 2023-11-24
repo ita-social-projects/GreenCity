@@ -33,6 +33,7 @@ import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
+import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
@@ -87,6 +88,7 @@ import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.location.LocationAddressAndGeoDto;
 import greencity.dto.location.LocationDto;
 import greencity.dto.location.LocationVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.openhours.OpeningHoursDto;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.place.AddPlaceDto;
@@ -95,6 +97,7 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
+import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
@@ -102,6 +105,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -114,6 +118,8 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
+import greencity.dto.user.UserSearchDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
@@ -122,6 +128,7 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -413,7 +420,9 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
+            .userLocationDto(
+                new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                    "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -560,6 +569,10 @@ public class ModelUtils {
             .text("TEXT")
             .status(ShoppingListItemStatus.INPROGRESS)
             .build();
+    }
+
+    public static CustomShoppingListItemSaveRequestDto getCustomShoppingListItemSaveRequestDto() {
+        return CustomShoppingListItemSaveRequestDto.builder().text("TEXT").build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
@@ -1414,11 +1427,11 @@ public class ModelUtils {
     }
 
     public static UserAchievement getUserAchievement() {
-        return new UserAchievement(1L, getUser(), getAchievement(), false);
+        return new UserAchievement(1L, getUser(), getAchievement(), false, getHabit());
     }
 
     public static UserAction getUserAction() {
-        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0);
+        return new UserAction(1L, ModelUtils.getUser(), ModelUtils.getAchievementCategory(), 0, getHabit());
     }
 
     public static UserActionVO getUserActionVO() {
@@ -1720,7 +1733,6 @@ public class ModelUtils {
                     .ecoNewsLiked(null)
                     .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
-                    .city("fdsfsdf")
                     .showLocation(true)
                     .showEcoPlace(true)
                     .showShoppingList(true)
@@ -1739,7 +1751,6 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -1830,10 +1841,37 @@ public class ModelUtils {
             getKyivAddress(), null));
         dates.add(new EventDateLocation(2L, event,
             ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2023, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2050, 11, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
             getKyivAddress(), null));
         event.setDates(dates);
         event.setTags(List.of(getEventTag()));
+        event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
+        return event;
+    }
+
+    public static Event getEventWithTags() {
+        Event event = new Event();
+        Set<User> followers = new HashSet<>();
+        Tag tag1 = getEventTag();
+        tag1.setId(12L);
+        Tag tag2 = getEventTag();
+        tag2.setId(13L);
+        Tag tag3 = getEventTag();
+        tag3.setId(14L);
+        followers.add(getUser());
+        event.setOpen(true);
+        event.setDescription("Description");
+        event.setId(1L);
+        event.setOrganizer(getUser());
+        event.setFollowers(followers);
+        event.setTitle("Title");
+        List<EventDateLocation> dates = new ArrayList<>();
+        dates.add(new EventDateLocation(1L, event,
+            ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            ZonedDateTime.of(2022, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
+            getKyivAddress(), null));
+        event.setDates(dates);
+        event.setTags(List.of(tag1, tag2, tag3));
         event.setTitleImage(AppConstant.DEFAULT_EVENT_IMAGES);
         return event;
     }
@@ -3020,7 +3058,8 @@ public class ModelUtils {
         return UserFriendDto.builder()
             .id(1L)
             .name("name")
-            .city("city")
+            .userLocationDto(new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                "Львівська", "Ukraine", "Україна", 12.345678, 12.345678))
             .rating(10.0)
             .mutualFriends(3L)
             .profilePicturePath("path-to-picture")
@@ -3032,12 +3071,12 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("FUTURE", "PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("OPEN", "CLOSED", "SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("OPEN", "CLOSED", "JOINED", "CREATED", "SAVED"))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
 
-    public static FilterEventDto getFilterEventDtoWithStatuses() {
+    public static FilterEventDto getFilterEventDtoWithOpenStatus() {
         return FilterEventDto.builder()
             .statuses(List.of("OPEN"))
             .build();
@@ -3047,19 +3086,31 @@ public class ModelUtils {
         return FilterEventDto.builder()
             .eventTime(List.of("PAST"))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("SUBSCRIBED", "CREATED", "SAVED"))
+            .statuses(List.of("JOINED", "CREATED", "SAVED"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithCities() {
         return FilterEventDto.builder()
-            .cities(List.of("Kyiv", "Lviv", "Odessa"))
+            .cities(List.of("Kyiv", "Lviv", "City"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
-            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
+            .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
+            .build();
+    }
+
+    public static AdminPlaceDto getAdminPlaceDto() {
+        return AdminPlaceDto.builder()
+            .id(1L)
+            .name("TestPlace")
+            .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
+            .openingHoursList(new ArrayList<>())
+            .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
+            .status(PlaceStatus.APPROVED)
+            .modifiedDate(LocalDateTime.now())
             .build();
     }
 
@@ -3077,6 +3128,42 @@ public class ModelUtils {
             .events(List.of(getSearchEvents()))
             .countOfEcoNewsResults(4L)
             .countOfEventsResults(4L)
+            .build();
+    }
+
+    public static FilterEventDto getFilterEventDtoWithClosedStatus() {
+        return FilterEventDto.builder()
+            .statuses(List.of("CLOSED"))
+            .build();
+    }
+
+    public static AmountCommentLikesDto getAmountCommentLikesDto() {
+        return AmountCommentLikesDto.builder()
+            .id(1L)
+            .amountLikes(2)
+            .build();
+    }
+
+    public static User getTagUser() {
+        return User.builder()
+            .id(1L)
+            .name("Test")
+            .profilePicturePath("Pic")
+            .build();
+    }
+
+    public static UserTagDto getUserTagDto() {
+        return UserTagDto.builder()
+            .userId(1L)
+            .userName("Test")
+            .profilePicture("Pic")
+            .build();
+    }
+
+    public static UserSearchDto getUserSearchDto() {
+        return UserSearchDto.builder()
+            .currentUserId(1L)
+            .searchQuery("Test")
             .build();
     }
 }

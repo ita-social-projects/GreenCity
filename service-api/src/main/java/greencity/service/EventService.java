@@ -52,8 +52,7 @@ public interface EventService {
      *
      * @return List of {@link EventDto} instance.
      */
-    PageableAdvancedDto<EventDto> getAllFilteredEvents(
-        Pageable page, Principal principal, FilterEventDto filterEventDto);
+    PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto);
 
     /**
      * Method for getting all Event instances that user attended.
@@ -193,4 +192,14 @@ public interface EventService {
      * @author Anton Bondar
      */
     PageableDto<SearchEventsDto> search(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Method for getting amount of events organized and attended by user id.
+     *
+     * @param userId {@link Long} user id.
+     * @return {@link Long} amount of organized and attended events by user id.
+     *
+     * @author Olena Sotnik
+     */
+    Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 }

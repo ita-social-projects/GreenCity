@@ -31,6 +31,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
     private AchievementCalculation achievementCalculation;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -94,7 +96,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         addEventCommentDtoResponse.setAuthor(modelMapper.map(userVO, EventCommentAuthorDto.class));
         sendEmailDto(addEventCommentDtoResponse);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
+        achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         return addEventCommentDtoResponse;
     }
@@ -241,7 +243,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .forEach(comment -> comment.setStatus(CommentStatus.DELETED));
         }
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_COMMENT_OR_REPLY, user);
-        achievementCalculation.calculateAchievement(user.getId(),
+        achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.DELETE);
 
         eventCommentRepo.save(eventComment);
@@ -306,11 +308,11 @@ public class EventCommentServiceImpl implements EventCommentService {
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
+            achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
-            achievementCalculation.calculateAchievement(userVO.getId(),
+            achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
         }
@@ -340,5 +342,25 @@ public class EventCommentServiceImpl implements EventCommentService {
             .isLiked(isLiked)
             .amountLikes(comment.getUsersLiked().size())
             .build();
+    }
+
+    /**
+     * Method returns count of likes to certain {@link EventComment} specified by
+     * id.
+     *
+     * @param amountCommentLikesDto dto with id and count likes for comments.
+     */
+    @Override
+    @Transactional
+    public void eventCommentLikeAndCount(AmountCommentLikesDto amountCommentLikesDto) {
+        EventComment comment = eventCommentRepo.findById(amountCommentLikesDto.getId()).orElseThrow(
+            () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+        boolean isLiked = comment.getUsersLiked().stream().map(User::getId)
+            .anyMatch(x -> x.equals(amountCommentLikesDto.getUserId()));
+        amountCommentLikesDto.setLiked(isLiked);
+        int size = comment.getUsersLiked().size();
+        amountCommentLikesDto.setAmountLikes(size);
+        messagingTemplate.convertAndSend("/topic/" + amountCommentLikesDto.getId() + "/eventComment",
+            amountCommentLikesDto);
     }
 }

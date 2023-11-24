@@ -5,10 +5,10 @@ import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.RecommendedFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
 
 public interface FriendService {
     /**
@@ -50,9 +50,9 @@ public interface FriendService {
      *
      * @param userId user id
      *
-     * @return {@link List} of {@link UserManagementDto} instances.
+     * @return {@link Page} of {@link UserManagementDto} instances.
      */
-    List<UserManagementDto> findUserFriendsByUserId(long userId);
+    PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId);
 
     /**
      * Method find all users except current user and his friends.
@@ -66,7 +66,8 @@ public interface FriendService {
      *
      * @author Stepan Omeliukh
      */
-    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriend(long userId, @Nullable String name,
+    PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
+        @Nullable String name,
         Pageable pageable);
 
     /**
@@ -92,13 +93,35 @@ public interface FriendService {
     PageableDto<UserFriendDto> findAllFriendsOfUser(long userId, @Nullable String name, Pageable pageable);
 
     /**
-     * Method find friends of friends for current user.
+     * Method find recommended friends for user by recommendation type.
      *
      * @param userId   user id.
+     * @param type     type to find recommended friends
      * @param pageable the information about pagination and sorting for the result,
      *                 must not be null.
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    PageableDto<UserFriendDto> findRecommendedFriends(long userId, Pageable pageable);
+    PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type, Pageable pageable);
+
+    /**
+     * Method that finds mutual friends for user.
+     *
+     * @param userId   user id.
+     * @param friendId friend id.
+     * @param pageable the information about pagination and sorting for the result,
+     *                 must not be null.
+     *
+     * @return {@link PageableDto} of {@link UserFriendDto}.
+     */
+    PageableDto<UserFriendDto> getMutualFriends(Long userId, Long friendId, Pageable pageable);
+
+    /**
+     * Delete user's request to be a friend by friendId.
+     *
+     * @param userId   user id
+     * @param friendId friend id
+     * @author Marian Datsko
+     */
+    void deleteRequestOfCurrentUserToFriend(long userId, long friendId);
 }

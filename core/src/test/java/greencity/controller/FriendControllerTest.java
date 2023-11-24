@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.ModelUtils;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.user.UserVO;
+import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,7 +103,7 @@ class FriendControllerTest {
 
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/declineFriend", friendId)
+        mockMvc.perform(patch(FRIEND_LINK + "/{friendId}/declineFriend", friendId)
             .principal(principal))
             .andExpect(status().isOk());
 
@@ -117,7 +118,7 @@ class FriendControllerTest {
         mockMvc.perform(get(FRIEND_LINK + "/user/{userId}", userId))
             .andExpect(status().isOk());
 
-        verify(friendService).findUserFriendsByUserId(userId);
+        verify(friendService).findUserFriendsByUserId(PageRequest.of(0, 10), userId);
     }
 
     @Test
@@ -129,19 +130,33 @@ class FriendControllerTest {
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findAllUsersExceptMainUserAndUsersFriend(userVO.getId(), null, PageRequest.of(0, 20));
+        verify(friendService).findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userVO.getId(), null,
+            PageRequest.of(0, 10));
     }
 
     @Test
     void findRecommendedFriends() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
-        mockMvc.perform(get(FRIEND_LINK + "/recommended-friends")
+        mockMvc.perform(get(FRIEND_LINK + "/recommended-friends?type=FRIENDS_OF_FRIENDS")
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail(principal.getName());
-        verify(friendService).findRecommendedFriends(userVO.getId(), PageRequest.of(0, 20));
+        verify(friendService).findRecommendedFriends(userVO.getId(), RecommendedFriendsType.FRIENDS_OF_FRIENDS,
+            PageRequest.of(0, 20));
+    }
+
+    @Test
+    void getMutualFriendsTest() throws Exception {
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(get(FRIEND_LINK + "/mutual-friends?friendId=1")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).getMutualFriends(userVO.getId(), 1L, PageRequest.of(0, 20));
     }
 
     @Test
@@ -167,5 +182,19 @@ class FriendControllerTest {
 
         verify(userService).findByEmail(principal.getName());
         verify(friendService).findAllFriendsOfUser(userVO.getId(), name, PageRequest.of(0, 20));
+    }
+
+    @Test
+    void cancelRequestTest() throws Exception {
+        long friendId = 1L;
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(delete(FRIEND_LINK + "/{friendId}/cancelRequest", friendId)
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
     }
 }

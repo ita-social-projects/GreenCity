@@ -2,16 +2,19 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
-import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
 
+import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
@@ -20,13 +23,13 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -46,8 +49,10 @@ public class AchievementServiceImpl implements AchievementService {
     private final UserActionService userActionService;
     private AchievementCalculation achievementCalculation;
     private UserService userService;
-    private SimpMessagingTemplate messagingTemplate;
     private final UserAchievementRepo userAchievementRepo;
+    private static final String ACHIEVED = "ACHIEVED";
+    private static final String UNACHIEVED = "UNACHIEVED";
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional
@@ -76,7 +81,6 @@ public class AchievementServiceImpl implements AchievementService {
         achievement.setTitle(achievementPostDto.getTitle());
         achievement.setName(achievementPostDto.getName());
         achievement.setNameEng(achievementPostDto.getNameEng());
-
         achievement.setAchievementCategory(modelMapper.map(achievementCategoryVO, AchievementCategory.class));
         AchievementVO achievementVO = modelMapper.map(achievementRepo.save(achievement), AchievementVO.class);
         UserAchievementVO userAchievementVO = new UserAchievementVO();
@@ -85,7 +89,7 @@ public class AchievementServiceImpl implements AchievementService {
         List<UserVO> all = restClient.findAll();
         all.forEach(userVO -> {
             UserActionVO userActionByUserIdAndAchievementCategory =
-                userActionService.findUserActionByUserIdAndAchievementCategory(userVO.getId(),
+                userActionService.findUserAction(userVO.getId(),
                     achievementCategoryVO.getId());
             if (userActionByUserIdAndAchievementCategory == null) {
                 userActionVO.setAchievementCategory(achievementCategoryVO);
@@ -94,23 +98,9 @@ public class AchievementServiceImpl implements AchievementService {
             }
             userVO.getUserAchievements().add(userAchievementVO);
             userAchievementVO.setUser(userVO);
-            userService.save(userVO);
+            userService.updateUserRating(userVO.getId(), userVO.getRating());
         });
         return achievementVO;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Yuriy Olkhovskyi
-     */
-    @Cacheable(value = CacheConstants.ALL_ACHIEVEMENTS_CACHE_NAME)
-    @Override
-    public List<AchievementVO> findAll() {
-        return achievementRepo.findAll()
-            .stream()
-            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
-            .collect(Collectors.toList());
     }
 
     /**
@@ -126,6 +116,46 @@ public class AchievementServiceImpl implements AchievementService {
             .map(achievement -> modelMapper.map(achievement, AchievementVO.class))
             .collect(Collectors.toList());
         return createPageable(achievementVOS, pages);
+    }
+
+    private List<AchievementVO> findAll() {
+        return achievementRepo.findAll()
+            .stream()
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Oksana Spodaryk
+     */
+    @Override
+    public List<AchievementVO> findAllByType(String principalEmail, String achievementStatus) {
+        User currentUser = modelMapper.map(userService.findByEmail(principalEmail), User.class);
+        Long userId = currentUser.getId();
+        if (ACHIEVED.equalsIgnoreCase(achievementStatus)) {
+            return findAllAchieved(userId);
+        } else if (UNACHIEVED.equalsIgnoreCase(achievementStatus)) {
+            return achievementRepo.searchAchievementsUnAchieved(userId).stream()
+                .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+                .collect(Collectors.toList());
+        }
+        return findAll();
+    }
+
+    private List<AchievementVO> findAllAchieved(Long userId) {
+        List<Long> achievemnetsId = userAchievementRepo.getUserAchievementByUserId(userId)
+            .stream()
+            .map(userAchievement -> userAchievement.getAchievement().getId())
+            .collect(Collectors.toList());
+        return achievemnetsId
+            .stream()
+            .map(achievementRepo::findById)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
+            .collect(Collectors.toList());
     }
 
     private PageableAdvancedDto<AchievementVO> createPageable(List<AchievementVO> achievementVOS,
@@ -228,6 +258,7 @@ public class AchievementServiceImpl implements AchievementService {
     @Override
     public void calculateAchievements(Long id,
         AchievementCategoryType achievementCategory, AchievementAction achievementAction) {
-        achievementCalculation.calculateAchievement(id, achievementCategory, achievementAction);
+        UserVO userVO = userService.findById(id);
+        achievementCalculation.calculateAchievement(userVO, achievementCategory, achievementAction);
     }
 }

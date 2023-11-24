@@ -6,9 +6,12 @@ import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
 import greencity.entity.User;
+import greencity.entity.UserLocation;
+import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.Test;
@@ -21,8 +24,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -474,26 +479,28 @@ class FriendServiceImplTest {
     @Test
     void findUserFriendsByUserIdTest() {
         long userId = 1L;
-        List<User> users = List.of(ModelUtils.getUser());
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> users = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, 1);
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.getAllUserFriends(userId)).thenReturn(users);
+        when(userRepo.getAllUserFriendsPage(pageable, userId)).thenReturn(users);
 
-        friendService.findUserFriendsByUserId(userId);
+        friendService.findUserFriendsByUserId(pageable, userId);
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUserFriends(userId);
-        verify(modelMapper).map(users.get(0), UserManagementDto.class);
+        verify(userRepo).getAllUserFriendsPage(pageable, userId);
+        verify(modelMapper).map(users.getContent().get(0), UserManagementDto.class);
     }
 
     @Test
     void findUserFriendsByUserIdWhenUserNotFoundTest() {
         long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
 
         when(userRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> friendService.findUserFriendsByUserId(userId));
+            () -> friendService.findUserFriendsByUserId(pageable, userId));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -503,7 +510,20 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendTest() {
+    void findUserFriendsByUserIdWhenUnsupportedSortExceptionTest() {
+        long userId = 1L;
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id"));
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class,
+            () -> friendService.findUserFriendsByUserId(pageable, userId));
+
+        verify(userRepo).existsById(userId);
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserTest() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -514,13 +534,14 @@ class FriendServiceImplTest {
         String name = "vi";
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.getAllUsersExceptMainUserAndFriends(userId, name, pageable)).thenReturn(userPage);
+        when(userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable))
+            .thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable);
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, pageable);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -531,13 +552,28 @@ class FriendServiceImplTest {
         assertEquals(page, pageableDto.getCurrentPage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, name, pageable);
+        verify(userRepo).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenNameIsNullTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserUnsupportedSortExceptionTest() {
+        long userId = 1L;
+
+        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
+        String name = "vi";
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(1L,
+                name, pageable);
+        });
+    }
+
+    @Test
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenNameIsNullTest() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -547,13 +583,14 @@ class FriendServiceImplTest {
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
         when(userRepo.existsById(userId)).thenReturn(true);
-        when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
+        when(userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, "", pageable))
+            .thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findAllUsersExceptMainUserAndUsersFriend(userId, null, pageable);
+            friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, null, pageable);
 
         assertNotNull(pageableDto);
         assertNotNull(pageableDto.getPage());
@@ -564,13 +601,13 @@ class FriendServiceImplTest {
         assertEquals(page, pageableDto.getCurrentPage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+        verify(userRepo).getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, "", pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }
 
     @Test
-    void findRecommendedFriends() {
+    void findRecommendedFriendsByFriendsOfFriends() {
         long userId = 1L;
         int page = 0;
         int size = 1;
@@ -579,6 +616,7 @@ class FriendServiceImplTest {
         UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
         Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
 
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
         when(userRepo.existsById(userId)).thenReturn(true);
         when(userRepo.getRecommendedFriendsOfFriends(userId, pageable)).thenReturn(userPage);
         when(
@@ -586,7 +624,148 @@ class FriendServiceImplTest {
                 .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
-            friendService.findRecommendedFriends(userId, pageable);
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.FRIENDS_OF_FRIENDS, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).findById(userId);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getRecommendedFriendsOfFriends(userId, pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void findRecommendedFriendsWithoutType() {
+        long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findRecommendedFriends(userId, null, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).findById(userId);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUsersExceptMainUserAndFriends(userId, "", pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void findRecommendedFriendsByHabits() {
+        long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(new User()));
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.findRecommendedFriendsByHabits(userId, pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABITS, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).findById(userId);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).findRecommendedFriendsByHabits(userId, pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void findRecommendedFriendsByCity() {
+        long userId = 1L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        User userWithLocation = new User();
+        UserLocation userLocation = new UserLocation();
+        userLocation.setCityUa("testCity");
+        userWithLocation.setUserLocation(userLocation);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.findById(userId)).thenReturn(Optional.of(userWithLocation));
+        when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
+
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).findById(userId);
+        verify(userRepo).existsById(userId);
+        verify(userRepo).findRecommendedFriendsByCity(userId, "testCity", pageable);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+    }
+
+    @Test
+    void getMutualFriendsTest() {
+        long userId = 1L;
+        long friendId = 2L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.getMutualFriends(userId, friendId, pageable)).thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+
+        PageableDto<UserFriendDto> pageableDto =
+            friendService.getMutualFriends(userId, friendId, pageable);
 
         assertNotNull(pageableDto.getPage());
         assertEquals(1, pageableDto.getPage().size());
@@ -596,13 +775,14 @@ class FriendServiceImplTest {
         assertEquals(page, pageableDto.getCurrentPage());
 
         verify(userRepo).existsById(userId);
-        verify(userRepo).getRecommendedFriendsOfFriends(userId, pageable);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).getMutualFriends(userId, friendId, pageable);
         verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
             userPage.getContent());
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenUserNotFoundTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenUserNotFoundTest() {
         long userId = 1L;
         String name = "vi";
         Pageable pageable = PageRequest.of(0, 20);
@@ -610,7 +790,8 @@ class FriendServiceImplTest {
         when(userRepo.existsById(userId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-            () -> friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, pageable));
+            () -> friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name,
+                pageable));
 
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
 
@@ -620,12 +801,12 @@ class FriendServiceImplTest {
     }
 
     @Test
-    void findAllUsersExceptMainUserAndUsersFriendWhenPageableIsNullTest() {
+    void findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUserWhenPageableIsNullTest() {
         long userId = 1L;
         String name = "vi";
 
         assertThrows(NullPointerException.class,
-            () -> friendService.findAllUsersExceptMainUserAndUsersFriend(userId, name, null));
+            () -> friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, null));
 
         verify(userRepo, never()).existsById(anyLong());
         verify(userRepo, never()).getAllUsersExceptMainUserAndFriends(anyLong(), anyString(), any());
@@ -763,6 +944,22 @@ class FriendServiceImplTest {
     }
 
     @Test
+    void findAllFriendsOfUserWhenUnsupportedSortExceptionTest() {
+        long userId = 1L;
+        PageRequest pageable = PageRequest.of(0, 1, Sort.by("id"));
+        String name = "vi";
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            friendService.findAllFriendsOfUser(1L,
+                name, pageable);
+        });
+
+        verify(userRepo).existsById(1L);
+    }
+
+    @Test
     void findAllFriendsOfUserWhenUserNotFoundTest() {
         long userId = 1L;
         String name = "vi";
@@ -791,5 +988,122 @@ class FriendServiceImplTest {
         verify(userRepo, never()).existsById(anyLong());
         verify(userRepo, never()).findAllFriendsOfUser(anyLong(), anyString(), any());
         verify(customUserRepo, never()).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(anyLong(), any());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(true);
+
+        friendService.deleteRequestOfCurrentUserToFriend(userId, friendId);
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
+        verify(userRepo).canselUserRequestToFriend(userId, friendId);
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUserIdEqualFriendIdTest() {
+        long userId = 1L;
+        long friendId = 1L;
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.OWN_USER_ID + friendId, exception.getMessage());
+
+        verify(userRepo, never()).existsById(anyLong());
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).deleteUserFriendById(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUserNotFoundTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + userId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo, never()).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenFriendNotFoundTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo, never()).isFriend(anyLong(), anyLong());
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenUsersIsAlreadyFriendsTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(true);
+
+        BadRequestException exception = assertThrows(BadRequestException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_EXISTS + friendId, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo, never()).isFriendRequestedByCurrentUser(anyLong(), anyLong());
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
+    }
+
+    @Test
+    void deleteRequestOfCurrentUserToFriendWhenRequestIsNotMadeTest() {
+        long userId = 1L;
+        long friendId = 2L;
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.existsById(friendId)).thenReturn(true);
+        when(userRepo.isFriend(userId, friendId)).thenReturn(false);
+        when(userRepo.isFriendRequestedByCurrentUser(userId, friendId)).thenReturn(false);
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> friendService.deleteRequestOfCurrentUserToFriend(userId, friendId));
+
+        assertEquals(ErrorMessage.FRIEND_REQUEST_NOT_SENT, exception.getMessage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).existsById(friendId);
+        verify(userRepo).isFriend(userId, friendId);
+        verify(userRepo).isFriendRequestedByCurrentUser(userId, friendId);
+        verify(userRepo, never()).canselUserRequestToFriend(anyLong(), anyLong());
     }
 }

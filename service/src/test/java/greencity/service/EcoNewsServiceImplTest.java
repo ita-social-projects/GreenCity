@@ -11,6 +11,7 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
@@ -20,6 +21,8 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.AchievementCategoryType;
+import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -28,7 +31,8 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
-import greencity.repository.EcoNewsRepo;
+import greencity.repository.*;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
@@ -36,7 +40,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
-import greencity.repository.EcoNewsSearchRepo;
 import lombok.SneakyThrows;
 
 import org.junit.jupiter.api.Test;
@@ -93,6 +96,23 @@ class EcoNewsServiceImplTest {
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
 
+    @Mock
+    private UserActionService userActionService;
+
+    @Mock
+    private AchievementCategoryService achievementCategoryService;
+
+    @Mock
+    private UserAchievementRepo userAchievementRepo;
+    @Mock
+    private AchievementRepo achievementRepo;
+    @Mock
+    private UserRepo userRepo;
+    @Mock
+    private AchievementCategoryRepo achievementCategoryRepo;
+    @Mock
+    private RatingCalculationEnum ratingCalculationEnum;
+
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private EcoNews ecoNews = ModelUtils.getEcoNews();
     private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
@@ -136,10 +156,11 @@ class EcoNewsServiceImplTest {
         addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
-
+        when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
+        verify(userService).findById(anyLong());
     }
 
     @Test

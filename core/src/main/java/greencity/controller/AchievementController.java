@@ -7,9 +7,11 @@ import greencity.dto.achievement.ActionDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/achievements")
@@ -37,15 +40,19 @@ public class AchievementController {
      *
      * @return list of {@link AchievementDTO}
      */
-    @ApiOperation(value = "Get all achievements.")
+    @ApiOperation(value = "Get all achievements by type.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = HttpStatuses.OK),
         @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("")
-    public ResponseEntity<List<AchievementVO>> getAll() {
-        return ResponseEntity.status(HttpStatus.OK).body(achievementService.findAll());
+    public ResponseEntity<List<AchievementVO>> getAll(@ApiIgnore Principal principal,
+        @ApiParam(value = "Available values : ACHIEVED, UNACHIEVED."
+            + " Leave this field empty if you need items with any status") @RequestParam(
+                required = false) String achievementStatus) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(achievementService.findAllByType(principal.getName(), achievementStatus));
     }
 
     /**

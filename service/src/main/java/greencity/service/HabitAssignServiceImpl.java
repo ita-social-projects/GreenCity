@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
@@ -134,7 +135,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         checkStatusInProgressExists(habitId, userVO);
 
         User user = modelMapper.map(userVO, User.class);
-
         Habit habit = habitRepo.findById(habitId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_NOT_FOUND_BY_ID + habitId));
         validateHabitForAssign(habitId, user);
@@ -145,11 +145,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
             habitAssign.setCreateDate(ZonedDateTime.now());
         } else {
-            List<ShoppingListItem> shoppingList =
-                shoppingListItemRepo.getShoppingListByListOfId(
-                    shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId));
+            List<Long> allShoppingListItemId =
+                shoppingListItemRepo.getAllShoppingListItemIdByHabitIdISContained(habitId);
             habitAssign = buildHabitAssign(habit, user, HabitAssignStatus.INPROGRESS);
-            saveUserShoppingListItems(shoppingList, habitAssign);
+            if (!allShoppingListItemId.isEmpty()) {
+                List<ShoppingListItem> shoppingList =
+                    shoppingListItemRepo.getShoppingListByListOfId(allShoppingListItemId);
+                saveUserShoppingListItems(shoppingList, habitAssign);
+            }
         }
 
         enhanceAssignWithDefaultProperties(habitAssign);
@@ -201,9 +204,9 @@ public class HabitAssignServiceImpl implements HabitAssignService {
                         .getDefaultShoppingListItems());
             saveUserShoppingListItems(shoppingList, habitAssign);
         }
-
         setDefaultShoppingListItemsIntoCustomHabit(habitAssign,
             habitAssignCustomPropertiesDto.getHabitAssignPropertiesDto().getDefaultShoppingListItems());
+        saveCustomShoppingListItemList(habitAssignCustomPropertiesDto.getCustomShoppingListItemList(), user, habit);
 
         habitAssignRepo.save(habitAssign);
 
@@ -216,6 +219,27 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         }
 
         return habitAssignManagementDtoList;
+    }
+
+    private void saveCustomShoppingListItemList(List<CustomShoppingListItemSaveRequestDto> saveList,
+        User user, Habit habit) {
+        if (!CollectionUtils.isEmpty(saveList)) {
+            saveList.forEach(item -> {
+                CustomShoppingListItem customShoppingListItem = modelMapper.map(item, CustomShoppingListItem.class);
+                List<CustomShoppingListItem> duplicates = user.getCustomShoppingListItems().stream()
+                    .filter(userItem -> userItem.getText().equals(customShoppingListItem.getText()))
+                    .collect(Collectors.toList());
+                if (duplicates.isEmpty()) {
+                    customShoppingListItem.setUser(user);
+                    customShoppingListItem.setHabit(habit);
+                    user.getCustomShoppingListItems().add(customShoppingListItem);
+                    customShoppingListItemRepo.save(customShoppingListItem);
+                } else {
+                    throw new CustomShoppingListItemNotSavedException(String.format(
+                        ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_EXISTS, customShoppingListItem.getText()));
+                }
+            });
+        }
     }
 
     private void assignFriendsForCustomHabit(Habit habit,
@@ -706,8 +730,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
 
         updateHabitAssignAfterEnroll(habitAssign, habitCalendar);
         UserVO userVO = userService.findById(userId);
-        achievementCalculation.calculateAchievement(userVO.getId(),
-            AchievementCategoryType.HABIT, AchievementAction.ASSIGN);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.HABIT, AchievementAction.ASSIGN, habitAssign.getHabit().getId());
         ratingCalculation.ratingCalculation(RatingCalculationEnum.DAYS_OF_HABIT_IN_PROGRESS, userVO);
 
         return buildHabitAssignDto(habitAssign, language);
@@ -796,8 +820,8 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         updateHabitAssignAfterUnenroll(habitAssign);
         UserVO userVO = userService.findById(userId);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS, userVO);
-        achievementCalculation.calculateAchievement(userVO.getId(),
-            AchievementCategoryType.HABIT, AchievementAction.DELETE);
+        achievementCalculation.calculateAchievement(userVO,
+            AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         return modelMapper.map(habitAssign, HabitAssignDto.class);
     }
 
@@ -988,7 +1012,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
+            achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.HABIT, AchievementAction.DELETE);
         }
         habitAssignRepo.save(habitAssignToCancel);
@@ -1013,7 +1037,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         for (int i = 0; i < habitAssign.getWorkingDays(); i++) {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
-            achievementCalculation.calculateAchievement(userVO.getId(),
+            achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.HABIT, AchievementAction.DELETE);
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());

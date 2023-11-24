@@ -93,14 +93,17 @@ public interface PlaceService {
     List<PlaceVO> findAll();
 
     /**
-     * Find all places from DB.
+     * Find all places from DB for User with current email.
      *
      * @param pageable {@link Pageable}.
+     * @param email    - String that represents loggedIn User email to show if place
+     *                 isFavorite.
      * @return an object of {@link PageableDto} which contains a list of
      *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
+     * @author Olena Sotnik
      */
-    PageableDto<AdminPlaceDto> findAll(Pageable pageable);
+    PageableDto<AdminPlaceDto> findAll(Pageable pageable, String email);
 
     /**
      * Method for deleting place by id.
