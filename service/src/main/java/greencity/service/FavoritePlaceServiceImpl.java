@@ -43,8 +43,8 @@ public class FavoritePlaceServiceImpl implements FavoritePlaceService {
             throw new WrongIdException(ErrorMessage.PLACE_NOT_FOUND_BY_ID);
         }
         if (favoritePlaceRepo.findByPlaceIdAndUserEmail(favoritePlaceDto.getPlaceId(), userEmail) != null) {
-            throw new WrongIdException(String.format(
-                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS, favoritePlaceDto.getPlaceId(), userEmail));
+            throw new WrongIdException(
+                ErrorMessage.FAVORITE_PLACE_ALREADY_EXISTS.formatted(favoritePlaceDto.getPlaceId(), userEmail));
         }
         favoritePlace
             .setUser(User.builder().email(userEmail).id(restClient.findIdByEmail(userEmail)).build());

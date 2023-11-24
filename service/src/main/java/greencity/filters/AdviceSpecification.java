@@ -8,7 +8,7 @@ import greencity.entity.Habit;
 import greencity.entity.Habit_;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.AdviceTranslation_;
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.List;
 
 public class AdviceSpecification implements MySpecification<Advice> {

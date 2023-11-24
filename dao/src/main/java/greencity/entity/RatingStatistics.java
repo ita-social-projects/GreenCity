@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import greencity.enums.RatingCalculationEnum;
 import lombok.*;

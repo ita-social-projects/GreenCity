@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface SocialNetworkImageRepo extends JpaRepository<SocialNetworkImage, Long> {
     /**
      * Method finds {@link SocialNetworkImage} by given host address.
-     * 
+     *
      * @param hostPath host address
      * @return Optional of {@link SocialNetworkImage}
      */

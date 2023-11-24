@@ -12,8 +12,8 @@ import greencity.entity.User_;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import greencity.rating.RatingCalculation;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,7 +137,7 @@ class RatingStatisticsSpecificationTest {
 
         when(ratingStatisticsRootMock.get("id")).thenReturn(pathRatingStatisticsIdMock);
 
-        when(criteriaBuilderMock.equal(pathRatingStatisticsIdMock, criteriaList.get(0).getValue()))
+        when(criteriaBuilderMock.equal(pathRatingStatisticsIdMock, criteriaList.getFirst().getValue()))
             .thenReturn(andIdNumericPredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);

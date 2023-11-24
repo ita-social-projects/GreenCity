@@ -1,6 +1,6 @@
 package greencity.dto.econews;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import lombok.*;
 

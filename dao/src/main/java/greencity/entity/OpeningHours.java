@@ -2,7 +2,7 @@ package greencity.entity;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 

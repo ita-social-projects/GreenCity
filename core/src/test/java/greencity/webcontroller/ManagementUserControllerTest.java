@@ -95,10 +95,10 @@ class ManagementUserControllerTest {
 
         mockMvc.perform(get(managementUserLink +
             "?page=" + 0 + "&size=" + 20 + "&sort=id,DESC")
-                .principal(principal)
-                .param("status", "ACTIVATED")
-                .param("role", "ROLE_ADMIN")
-                .param("query", "Test"))
+            .principal(principal)
+            .param("status", "ACTIVATED")
+            .param("role", "ROLE_ADMIN")
+            .param("query", "Test"))
             .andExpect(model()
                 .attribute("users", userAdvancedDto));
     }

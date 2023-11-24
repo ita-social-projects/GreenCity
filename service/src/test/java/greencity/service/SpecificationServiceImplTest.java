@@ -82,7 +82,7 @@ class SpecificationServiceImplTest {
     void deleteByIdTest() {
         when(specificationRepo.findById(anyLong())).thenReturn(Optional.of(new Specification()));
 
-        assertEquals(new Long(1), specificationService.deleteById(1L));
+        assertEquals(1L, specificationService.deleteById(1L));
     }
 
     @Test

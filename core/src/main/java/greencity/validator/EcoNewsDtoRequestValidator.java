@@ -7,8 +7,8 @@ import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.exception.exceptions.WrongCountOfTagsException;
 import static greencity.validator.UrlValidator.isUrlValid;
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class EcoNewsDtoRequestValidator implements ConstraintValidator<ValidEcoNewsDtoRequest, AddEcoNewsDtoRequest> {
     @Override

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

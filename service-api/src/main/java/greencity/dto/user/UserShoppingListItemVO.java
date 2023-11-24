@@ -20,6 +20,7 @@ public class UserShoppingListItemVO {
 
     private ShoppingListItemVO shoppingListItemVO;
 
+    @Builder.Default
     private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
 
     private LocalDateTime dateCompleted;

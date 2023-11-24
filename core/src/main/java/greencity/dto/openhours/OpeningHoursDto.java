@@ -5,7 +5,7 @@ import greencity.dto.breaktime.BreakTimeDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 

@@ -83,7 +83,7 @@ class HabitFactControllerTest {
 
     @Test
     void getRandomFactByHabitIdTest() throws Exception {
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         Gson gson = new Gson();
         String json = gson.toJson(locale);
         mockMvc.perform(get(factLink + "/random/{habitId}", 1)
@@ -104,7 +104,7 @@ class HabitFactControllerTest {
     void getAllTest() throws Exception {
         int pageNumber = 0;
         int pageSize = 20;
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         mockMvc.perform(get(factLink))
             .andExpect(status().isOk());

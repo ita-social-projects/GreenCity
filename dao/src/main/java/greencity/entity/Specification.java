@@ -2,7 +2,7 @@ package greencity.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -21,6 +21,7 @@ public class Specification {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "specification")
     private List<DiscountValue> discountValues = new ArrayList<>();
 }

@@ -1,8 +1,7 @@
 package greencity.entity;
 
 import lombok.*;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 
@@ -25,6 +24,7 @@ public class UserAction {
     private AchievementCategory achievementCategory;
 
     @Column(name = "count")
+    @Builder.Default
     private Integer count = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

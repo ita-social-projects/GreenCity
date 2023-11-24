@@ -4,8 +4,8 @@ import greencity.annotations.LanguageTranslationConstraint;
 import greencity.enums.TagType;
 import lombok.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @NoArgsConstructor

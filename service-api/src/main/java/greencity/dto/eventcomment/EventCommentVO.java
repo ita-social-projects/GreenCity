@@ -11,8 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +40,7 @@ public class EventCommentVO {
 
     private EventCommentVO parentComment;
 
+    @Builder.Default
     private List<EventCommentVO> comments = new ArrayList<>();
 
     private UserVO user;
@@ -48,6 +49,7 @@ public class EventCommentVO {
 
     private boolean currentUserLiked;
 
+    @Builder.Default
     private Set<UserVO> usersLiked = new HashSet<>();
 
     private String status;

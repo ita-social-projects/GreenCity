@@ -133,19 +133,20 @@ class ShoppingListItemServiceImplTest {
     void saveUserShoppingListItemTest() {
         ObjectMapper mapper = new ObjectMapper();
         UserShoppingListItem userShoppingListItem =
-            mapper.convertValue(shoppingListItemRequestDtos.get(0), UserShoppingListItem.class);
+            mapper.convertValue(shoppingListItemRequestDtos.getFirst(), UserShoppingListItem.class);
         when(habitAssignRepo.findByHabitIdAndUserId(1L, userId))
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.getShoppingListItemsIdForHabit(habitAssign.getHabit().getId()))
             .thenReturn(Collections.singletonList(1L));
         when(userShoppingListItemRepo.getAllAssignedShoppingListItems(habitAssign.getId()))
             .thenReturn(Collections.singletonList(2L));
-        when(modelMapper.map(shoppingListItemRequestDtos.get(0), UserShoppingListItem.class))
+        when(modelMapper.map(shoppingListItemRequestDtos.getFirst(), UserShoppingListItem.class))
             .thenReturn(userShoppingListItem);
         getUserShoppingListItemTest();
         userShoppingListItem.setHabitAssign(habitAssign);
         shoppingListItemService
-            .saveUserShoppingListItems(userId, 1L, Collections.singletonList(shoppingListItemRequestDtos.get(0)), "en");
+            .saveUserShoppingListItems(userId, 1L, Collections.singletonList(shoppingListItemRequestDtos.getFirst()),
+                "en");
         verify(userShoppingListItemRepo).saveAll(Collections.singletonList(userShoppingListItem));
     }
 
@@ -170,7 +171,7 @@ class ShoppingListItemServiceImplTest {
         when(userShoppingListItemRepo.getAllAssignedShoppingListItems(habitAssign.getId()))
             .thenReturn(Collections.singletonList(1L));
         List<ShoppingListItemRequestDto> shoppingListItemRequestDto =
-            Collections.singletonList(shoppingListItemRequestDtos.get(0));
+            Collections.singletonList(shoppingListItemRequestDtos.getFirst());
         assertThrows(WrongIdException.class, () -> shoppingListItemService
             .saveUserShoppingListItems(userId, 1L, shoppingListItemRequestDto, "en"));
     }
@@ -179,7 +180,7 @@ class ShoppingListItemServiceImplTest {
     void saveUserShoppingListItemThrowException() {
 
         List<ShoppingListItemRequestDto> shoppingListItemRequestDto =
-            Collections.singletonList(shoppingListItemRequestDtos.get(0));
+            Collections.singletonList(shoppingListItemRequestDtos.getFirst());
 
         assertThrows(UserHasNoShoppingListItemsException.class, () -> shoppingListItemService
             .saveUserShoppingListItems(userId, 1L, shoppingListItemRequestDto, "en"));
@@ -202,8 +203,7 @@ class ShoppingListItemServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
             userShoppingListItem));
-        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class))
-            .thenReturn(expected.get(0));
+        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class));
         when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, 1L))
             .thenReturn(ShoppingListItemTranslation.builder().id(1L).build());
 
@@ -222,8 +222,7 @@ class ShoppingListItemServiceImplTest {
                 translation.getContent(), ShoppingListItemStatus.ACTIVE.toString()))
             .collect(Collectors.toList());
 
-        when(modelMapper.map(shoppingListItemTranslations.get(0), ShoppingListItemDto.class))
-            .thenReturn(shoppingListItemDto.get(0));
+        when(modelMapper.map(shoppingListItemTranslations.getFirst(), ShoppingListItemDto.class));
         when(modelMapper.map(shoppingListItemTranslations.get(1), ShoppingListItemDto.class))
             .thenReturn(shoppingListItemDto.get(1));
         when(shoppingListItemTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE))
@@ -239,7 +238,7 @@ class ShoppingListItemServiceImplTest {
             new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType())).thenReturn(languageTranslationDTOS);
         List<LanguageTranslationDTO> res = shoppingListItemService.saveShoppingListItem(shoppingListItemPostDto);
-        assertEquals(languageTranslationDTOS.get(0).getContent(), res.get(0).getContent());
+        assertEquals(languageTranslationDTOS.getFirst().getContent(), res.getFirst().getContent());
     }
 
     @Test
@@ -250,7 +249,7 @@ class ShoppingListItemServiceImplTest {
             new TypeToken<List<LanguageTranslationDTO>>() {
             }.getType())).thenReturn(languageTranslationDTOS);
         List<LanguageTranslationDTO> res = shoppingListItemService.update(shoppingListItemPostDto);
-        assertEquals(languageTranslationDTOS.get(0).getContent(), res.get(0).getContent());
+        assertEquals(languageTranslationDTOS.getFirst().getContent(), res.getFirst().getContent());
     }
 
     @Test
@@ -272,14 +271,14 @@ class ShoppingListItemServiceImplTest {
         when(modelMapper.map(any(), eq(UserShoppingListItemResponseDto.class)))
             .thenReturn(new UserShoppingListItemResponseDto(2L, null, ShoppingListItemStatus.DONE));
         when(
-            shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, userShoppingListItem.getId()))
-                .thenReturn(shoppingListItemTranslations.get(0));
+            shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language,
+                userShoppingListItem.getId()));
         UserShoppingListItemResponseDto userShoppingListItemResponseDto =
             shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItem.getId(), "uk");
 
         assertEquals(ShoppingListItemStatus.DONE, userShoppingListItem.getStatus());
         assertEquals(userShoppingListItemResponseDto.getId(),
-            new UserShoppingListItemResponseDto(2L, shoppingListItemTranslations.get(0).getContent(),
+            new UserShoppingListItemResponseDto(2L, shoppingListItemTranslations.getFirst().getContent(),
                 ShoppingListItemStatus.DONE).getId());
         verify(userShoppingListItemRepo).save(userShoppingListItem);
     }
@@ -312,7 +311,7 @@ class ShoppingListItemServiceImplTest {
         List<UserShoppingListItemResponseDto> result = shoppingListItemService
             .updateUserShoppingListItemStatus(2L, 1L, "en", "DONE");
 
-        assertEquals(ShoppingListItemStatus.DONE, result.get(0).getStatus());
+        assertEquals(ShoppingListItemStatus.DONE, result.getFirst().getStatus());
 
         verify(userShoppingListItemRepo).getAllByUserShoppingListIdAndUserId(1L, 2L);
         verify(modelMapper).map(userShoppingListItem, UserShoppingListItemResponseDto.class);
@@ -390,7 +389,7 @@ class ShoppingListItemServiceImplTest {
             0, 1, 0, false, false, true, true);
 
         when(shoppingListItemRepo.findAll(pageable)).thenReturn(page);
-        when(modelMapper.map(shoppingListItems.get(0), ShoppingListItemManagementDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class));
 
         PageableAdvancedDto<ShoppingListItemManagementDto> actual =
             shoppingListItemService.findShoppingListItemsForManagementByPage(pageable);
@@ -414,7 +413,7 @@ class ShoppingListItemServiceImplTest {
             0, 1, 0, false, false, true, true);
 
         when(shoppingListItemRepo.searchBy(pageable, "uk")).thenReturn(page);
-        when(modelMapper.map(shoppingListItems.get(0), ShoppingListItemManagementDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class));
 
         PageableAdvancedDto<ShoppingListItemManagementDto> actual = shoppingListItemService.searchBy(pageable, "uk");
 
@@ -637,7 +636,7 @@ class ShoppingListItemServiceImplTest {
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
-        assertEquals(expectedDto, actualDtoList.get(0));
+        assertEquals(expectedDto, actualDtoList.getFirst());
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(userShoppingListItemRepo).findAllByHabitAssingId(habitAssignId);

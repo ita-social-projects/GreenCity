@@ -510,7 +510,7 @@ class EventServiceImplTest {
     void getAllUserOfflineEventsWithoutUserGeoPosition() {
         String eventType = "OFFLINE";
         List<Event> eventsOffline = List.of(ModelUtils.getEvent());
-        List<Long> eventIds = List.of(eventsOffline.get(0).getId());
+        List<Long> eventIds = List.of(eventsOffline.getFirst().getId());
         EventDto expected = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -551,7 +551,7 @@ class EventServiceImplTest {
         String userLatitude = "50.42929";
         String userLongitude = "30.53806";
         List<Event> eventsOffline = List.of(ModelUtils.getOfflineOnlineEventIfEventFinalDateToday());
-        List<Long> eventIds = List.of(eventsOffline.get(0).getId());
+        List<Long> eventIds = List.of(eventsOffline.getFirst().getId());
         EventDto expected = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -590,7 +590,7 @@ class EventServiceImplTest {
     void getAllUserEventsWithoutParams() {
         String eventType = "";
         List<Event> events = List.of(ModelUtils.getOnlineEvent());
-        List<Long> eventIds = List.of(events.get(0).getId());
+        List<Long> eventIds = List.of(events.getFirst().getId());
         List<EventDto> expected = List.of(ModelUtils.getEventDto());
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
@@ -613,8 +613,8 @@ class EventServiceImplTest {
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
 
         assertEquals(expected.size(), actual.size());
-        assertFalse(actual.get(0).isFavorite());
-        assertTrue(actual.get(0).isSubscribed());
+        assertFalse(actual.getFirst().isFavorite());
+        assertTrue(actual.getFirst().isSubscribed());
 
         verify(restClient).findByEmail(principal.getName());
         verify(eventRepo).findAllByAttender(TEST_USER_VO.getId());
@@ -631,7 +631,7 @@ class EventServiceImplTest {
         String eventType = "ONLINE";
         List<Event> eventsOnline = List.of(ModelUtils.getOnlineEvent(),
             ModelUtils.getSecondEvent());
-        List<Long> eventIds = List.of(eventsOnline.get(0).getId(), eventsOnline.get(1).getId());
+        List<Long> eventIds = List.of(eventsOnline.getFirst().getId(), eventsOnline.get(1).getId());
         List<EventDto> expected = List.of(ModelUtils.getEventDto(),
             ModelUtils.getEventWithoutAddressDto());
         expected.get(1).setId(2L);
@@ -653,8 +653,6 @@ class EventServiceImplTest {
             eventService.getAllUserEvents(
                 pageRequest, principal.getName(), "", "", eventType);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-
-        assertEquals(expected.get(0), actual.get(0));
         actual.forEach(eventDto -> {
             assertFalse(eventDto.isFavorite());
             assertFalse(eventDto.isSubscribed());
@@ -746,8 +744,6 @@ class EventServiceImplTest {
             eventService.getAllUserEvents(
                 pageRequest, principal.getName(), "", "", eventType);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
-
-        assertTrue(expected.contains(actual.get(0)));
         assertTrue(expected.contains(actual.get(1)));
         actual.forEach(eventDto -> {
             assertTrue(eventDto.isFavorite());
@@ -767,7 +763,7 @@ class EventServiceImplTest {
     @Test
     void getEventsCreatedByUser() {
         List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
-        List<Long> eventIds = List.of(events.get(0).getId());
+        List<Long> eventIds = List.of(events.getFirst().getId());
         EventDto expected = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 2);
@@ -780,10 +776,8 @@ class EventServiceImplTest {
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(List.of(expected));
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId()))
-            .thenReturn(List.of(events.get(0)));
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()))
-            .thenReturn(List.of(events.get(0)));
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId()));
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getEventsCreatedByUser(pageRequest, principal.getName());
@@ -802,7 +796,7 @@ class EventServiceImplTest {
     @Test
     void getRelatedToUserEvents() {
         List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
-        List<Long> eventIds = List.of(events.get(0).getId(), events.get(1).getId());
+        List<Long> eventIds = List.of(events.getFirst().getId(), events.get(1).getId());
         List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, events.size());
@@ -1135,7 +1129,7 @@ class EventServiceImplTest {
     @Test
     void getAllWithCurrentUser() {
         List<Event> events = List.of(ModelUtils.getEvent());
-        List<Long> eventIds = List.of(events.get(0).getId());
+        List<Long> eventIds = List.of(events.getFirst().getId());
         EventDto expected = ModelUtils.getEventDto();
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);

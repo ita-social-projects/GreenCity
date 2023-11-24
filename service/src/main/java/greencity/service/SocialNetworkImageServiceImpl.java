@@ -14,20 +14,23 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.repository.SocialNetworkImageRepo;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
@@ -36,7 +39,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Service
 @Slf4j
@@ -56,11 +58,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     @Override
     public SocialNetworkImageVO getSocialNetworkImageByUrl(String url) {
         try {
-            URL checkUrl = new URL(url);
+            URI checkUrl = Paths.get(url).toUri();
             Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
             return modelMapper.map(optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
-                : saveSocialNetworkImage(checkUrl), SocialNetworkImageVO.class);
+                : saveSocialNetworkImage(checkUrl.toURL()), SocialNetworkImageVO.class);
         } catch (IOException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
@@ -229,10 +231,10 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
      */
     private String uploadImageToCloud(URL url) throws IOException {
         String preparedUrlHost = url.getHost();
-        String preparedFaviconUrl = String.format("http://www.google.com/s2/favicons?sz=64&domain_url=%s", URLEncoder
-            .encode(preparedUrlHost, "UTF-8"));
-        URL faviconUrl = new URL(preparedFaviconUrl);
-        BufferedImage bufferedImage = ImageIO.read(faviconUrl);
+        String preparedFaviconUrl = "http://www.google.com/s2/favicons?sz=64&domain_url=%s".formatted(URLEncoder
+            .encode(preparedUrlHost, StandardCharsets.UTF_8));
+        URI faviconUrl = Paths.get(preparedFaviconUrl).toUri();
+        BufferedImage bufferedImage = ImageIO.read(faviconUrl.toURL());
         File tempFile = new File("tempImage.png");
         ImageIO.write(bufferedImage, "png", tempFile);
         return uploadFileToCloud(tempFile);
@@ -252,7 +254,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
             IOUtils.copy(inputStream, outputStream);
             outputStream.flush();
         }
-        CommonsMultipartFile multipartFile = new CommonsMultipartFile(fileItem);
+        MultipartFile multipartFile = new MultipartFileImpl("mainFile", tempFile.getName(),
+            Files.probeContentType(tempFile.toPath()), Files.readAllBytes(tempFile.toPath()));
         return fileService.upload(multipartFile);
     }
 }

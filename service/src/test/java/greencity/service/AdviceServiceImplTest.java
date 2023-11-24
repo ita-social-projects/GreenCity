@@ -116,7 +116,7 @@ class AdviceServiceImplTest {
         List<AdviceTranslation> adviceTranslationList = ModelUtils.getAdviceTranslations();
         when(adviceTranslationRepo.getAllByHabitIdAndLanguageCode(id, language)).thenReturn(adviceTranslationList);
 
-        when(modelMapper.map(adviceTranslationList.get(0), LanguageTranslationDTO.class)).thenReturn(expected.get(0));
+        when(modelMapper.map(adviceTranslationList.getFirst(), LanguageTranslationDTO.class));
         when(modelMapper.map(adviceTranslationList.get(1), LanguageTranslationDTO.class)).thenReturn(expected.get(1));
         when(modelMapper.map(adviceTranslationList.get(2), LanguageTranslationDTO.class)).thenReturn(expected.get(2));
 

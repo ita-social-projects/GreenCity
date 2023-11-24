@@ -17,5 +17,6 @@ public class UserActionVO {
 
     private AchievementCategoryVO achievementCategory;
 
+    @Builder.Default
     private Integer count = 0;
 }

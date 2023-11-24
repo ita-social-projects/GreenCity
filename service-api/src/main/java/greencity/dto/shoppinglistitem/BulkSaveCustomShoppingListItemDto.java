@@ -1,7 +1,7 @@
 package greencity.dto.shoppinglistitem;
 
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

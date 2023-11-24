@@ -1,7 +1,7 @@
 package greencity.dto.user;
 
 import greencity.enums.UserStatus;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.*;
 

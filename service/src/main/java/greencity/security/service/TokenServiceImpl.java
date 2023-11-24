@@ -3,8 +3,8 @@ package greencity.security.service;
 import greencity.exception.exceptions.BadRequestException;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class TokenServiceImpl implements TokenService {

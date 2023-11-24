@@ -12,8 +12,8 @@ import static greencity.validator.UrlValidator.isUrlValid;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, AddEventDtoRequest> {
     @Override

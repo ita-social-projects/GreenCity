@@ -142,7 +142,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
 
     /**
      * Method for get total Eco News count.
-     * 
+     *
      * @return {@link int} total count of Eco News
      */
     @Query(nativeQuery = true,

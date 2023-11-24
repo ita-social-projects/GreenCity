@@ -25,7 +25,7 @@ public interface AchievementCategoryService {
 
     /**
      * Method for finding {@link AchievementCategoryVO}.
-     * 
+     *
      * @param name - name category for {@link AchievementCategoryVO}
      * @return {@link AchievementCategoryVO}.
      * @author Orest Mamchuk

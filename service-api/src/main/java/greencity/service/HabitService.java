@@ -73,7 +73,7 @@ public interface HabitService {
     /**
      * Method that add shopping list item To Habit by habit id and shopping list
      * item id.
-     * 
+     *
      * @author Marian Diakiv
      */
     void addShoppingListItemToHabit(Long habitId, Long itemId);

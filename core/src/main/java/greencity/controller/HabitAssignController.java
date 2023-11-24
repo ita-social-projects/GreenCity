@@ -25,9 +25,9 @@ import io.swagger.annotations.ApiResponses;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -316,7 +316,7 @@ class HabitServiceImplTest {
             any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
             anyString(), anyList(), anyLong()))
-                .thenReturn(habitTranslationPage);
+            .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
             .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
@@ -464,7 +464,7 @@ class HabitServiceImplTest {
             any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
             anyString(), anyList(), anyLong()))
-                .thenReturn(habitTranslationPage);
+            .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
             .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
@@ -604,17 +604,17 @@ class HabitServiceImplTest {
     @Test
     void addAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
-        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.getFirst(), 1L);
         habitService.addAllShoppingListItemsByListOfId(1L, listID);
-        verify(habitRepo, times(1)).addShopingListItemToHabit(listID.get(0), 1L);
+        verify(habitRepo, times(1)).addShopingListItemToHabit(listID.getFirst(), 1L);
     }
 
     @Test
     void deleteAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
-        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.getFirst(), 1L);
         habitService.deleteAllShoppingListItemsByListOfId(1L, listID);
-        verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.get(0), 1L);
+        verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.getFirst(), 1L);
     }
 
     @Test
@@ -929,7 +929,7 @@ class HabitServiceImplTest {
 
         List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
         assertFalse(list.isEmpty());
-        assertEquals(friendProfilePicture, list.get(0));
+        assertEquals(friendProfilePicture, list.getFirst());
 
         verify(userRepo).existsById(userId);
         verify(habitRepo).existsById(habitId);

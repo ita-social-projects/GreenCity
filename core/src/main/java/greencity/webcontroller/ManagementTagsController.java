@@ -21,7 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 

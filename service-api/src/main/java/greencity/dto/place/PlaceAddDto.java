@@ -9,9 +9,9 @@ import greencity.dto.photo.PhotoAddDto;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -33,10 +33,12 @@ public class PlaceAddDto {
     private CategoryDto category;
 
     @Valid
+    @Builder.Default
     @Size(min = 1, message = ServiceValidationConstants.BAD_OPENING_HOURS_LIST_REQUEST)
     private Set<OpeningHoursDto> openingHoursList = new HashSet<>();
 
     @Valid
+    @Builder.Default
     @Size(min = 1, message = ServiceValidationConstants.BAD_DISCOUNT_VALUES_LIST_REQUEST)
     private Set<DiscountValueDto> discountValues = new HashSet<>();
 

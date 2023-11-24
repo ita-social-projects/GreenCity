@@ -9,14 +9,15 @@ import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation_;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.SingularAttribute;
-import static org.junit.jupiter.api.Assertions.*;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

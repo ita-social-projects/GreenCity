@@ -4,8 +4,8 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
 import java.util.List;
 

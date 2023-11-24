@@ -24,7 +24,7 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
 
     /**
      * The method returns not deleted comment {@link EventComment}, specified by id.
-     * 
+     *
      * @param id id of {@link EventComment} parent comment
      * @return not deleted comment by it id
      */

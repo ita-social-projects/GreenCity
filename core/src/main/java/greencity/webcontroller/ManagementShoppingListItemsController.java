@@ -7,7 +7,7 @@ import greencity.service.HabitShoppingListItemService;
 import greencity.service.ShoppingListItemService;
 import greencity.service.LanguageService;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

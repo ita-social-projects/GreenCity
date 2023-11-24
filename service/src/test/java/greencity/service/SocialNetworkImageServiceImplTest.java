@@ -4,23 +4,19 @@ import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.eq;
 
@@ -57,7 +53,7 @@ class SocialNetworkImageServiceImplTest {
 
     @Test
     void getSocialNetworkImageByUrlBadRequest() throws Exception {
-        URL checkUrl = new URL("HTTP:");
+        URI checkUrl = new URI("HTTP:");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());

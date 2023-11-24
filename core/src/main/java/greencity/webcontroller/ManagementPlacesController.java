@@ -16,7 +16,7 @@ import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;

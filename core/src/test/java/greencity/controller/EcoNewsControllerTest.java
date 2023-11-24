@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
 import greencity.dto.user.UserVO;
@@ -14,8 +13,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
-import liquibase.pro.packaged.E;
-import liquibase.pro.packaged.O;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

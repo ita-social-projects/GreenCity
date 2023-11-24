@@ -3,7 +3,7 @@ package greencity.entity;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ public class EcoNews {
     @Column(nullable = false)
     private String text;
 
+    @Builder.Default
     @OneToMany(mappedBy = "ecoNews", fetch = FetchType.LAZY)
     private List<EcoNewsComment> ecoNewsComments = new ArrayList<>();
 
@@ -49,6 +50,7 @@ public class EcoNews {
     private List<Tag> tags;
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(
         name = "eco_news_users_likes",
         joinColumns = @JoinColumn(name = "eco_news_id"),
@@ -56,6 +58,7 @@ public class EcoNews {
     private Set<User> usersLikedNews = new HashSet<>();
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(
         name = "eco_news_users_dislikes",
         joinColumns = @JoinColumn(name = "eco_news_id"),

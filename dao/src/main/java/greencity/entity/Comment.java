@@ -3,7 +3,7 @@ package greencity.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -34,9 +34,11 @@ public class Comment {
     @ManyToOne
     private Comment parentComment;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
     private List<Comment> comments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "comment", cascade = {CascadeType.ALL})
     private List<Photo> photos = new ArrayList<>();
 

@@ -1,7 +1,7 @@
 package greencity.dto.habit;
 
 import greencity.enums.HabitAssignStatus;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @NoArgsConstructor

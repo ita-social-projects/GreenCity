@@ -31,11 +31,14 @@ public class EcoNewsVO {
 
     private String text;
 
+    @Builder.Default
     private List<EcoNewsCommentVO> ecoNewsComments = new ArrayList<>();
 
+    @Builder.Default
     private Set<UserVO> usersLikedNews = new HashSet<>();
 
     private List<TagVO> tags;
 
+    @Builder.Default
     private Set<UserVO> usersDislikedNews = new HashSet<>();
 }

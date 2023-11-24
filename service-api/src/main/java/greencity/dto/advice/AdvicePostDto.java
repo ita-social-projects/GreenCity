@@ -5,7 +5,7 @@ import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitIdRequestDto;
 import lombok.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @NoArgsConstructor

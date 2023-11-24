@@ -16,5 +16,6 @@ public class CustomShoppingListItemVO {
 
     private String text;
 
+    @Builder.Default
     private List<UserShoppingListItemVO> userShoppingListItems = new ArrayList<>();
 }

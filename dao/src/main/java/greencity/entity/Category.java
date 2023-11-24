@@ -2,7 +2,7 @@ package greencity.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -28,8 +28,10 @@ public class Category {
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory")
+    @Builder.Default
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "category")
+    @Builder.Default
     private List<Place> places = new ArrayList<>();
 }

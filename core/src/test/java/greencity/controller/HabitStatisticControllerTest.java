@@ -87,7 +87,7 @@ class HabitStatisticControllerTest {
 
     @Test
     void getTodayStatisticsForAllHabitItems() throws Exception {
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         Gson gson = new Gson();
         String json = gson.toJson(locale);
         mockMvc.perform(get(habitLink + "/todayStatisticsForAllHabitItems")

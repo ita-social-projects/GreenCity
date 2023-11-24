@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.security.Principal;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +51,7 @@ public class FavoritePlaceController {
     /**
      * Find all {@link FavoritePlaceVO} by {@link UserVO} email. Parameter principal
      * are ignored because Spring automatically provide the Principal object .
-     * 
+     *
      * @param principal - Principal with {@link UserVO} email
      * @return list of {@link FavoritePlaceDto}
      * @author Zakhar Skaletskyi

@@ -155,7 +155,7 @@ class CustomShoppingListItemServiceImplTest {
 
         when(customShoppingListItemRepo.findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
             anyLong()))
-                .thenReturn(List.of(item));
+            .thenReturn(List.of(item));
         when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
 
         assertEquals(List.of(itemResponseDto), customShoppingListItemService
@@ -199,7 +199,7 @@ class CustomShoppingListItemServiceImplTest {
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave)),
             1L, 1L);
         assertEquals(user.getCustomShoppingListItems().get(0), customShoppingListItem);
-        assertEquals("bar", saveResult.get(0).getText());
+        assertEquals("bar", saveResult.getFirst().getText());
     }
 
     @Test
@@ -238,8 +238,8 @@ class CustomShoppingListItemServiceImplTest {
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
                 customShoppingListItem.getText(), customShoppingListItem.getStatus()));
         List<CustomShoppingListItemResponseDto> findAllResult = customShoppingListItemService.findAll();
-        assertEquals("foo", findAllResult.get(0).getText());
-        assertEquals(1L, (long) findAllResult.get(0).getId());
+        assertEquals("foo", findAllResult.getFirst().getText());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
     }
 
     @Test
@@ -318,8 +318,8 @@ class CustomShoppingListItemServiceImplTest {
             .thenReturn(customShoppingListItemResponseDto);
         List<CustomShoppingListItemResponseDto> findAllByUserResult =
             customShoppingListItemService.findAllByUserAndHabit(user.getId(), habit.getId());
-        assertEquals(findAllByUserResult.get(0).getId(), customShoppingListItemResponseDto.getId());
-        assertEquals(findAllByUserResult.get(0).getText(), customShoppingListItemResponseDto.getText());
+        assertEquals(findAllByUserResult.getFirst().getId(), customShoppingListItemResponseDto.getId());
+        assertEquals(findAllByUserResult.getFirst().getText(), customShoppingListItemResponseDto.getText());
     }
 
     @Test
@@ -406,7 +406,7 @@ class CustomShoppingListItemServiceImplTest {
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
-        assertEquals(expectedDto, actualDtoList.get(0));
+        assertEquals(expectedDto, actualDtoList.getFirst());
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);

@@ -258,7 +258,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
 
     /**
      * Method to find all inprogress, habit assigns.
-     * 
+     *
      * @return list of {@link HabitAssign} instances.
      */
     @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha "
@@ -269,7 +269,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
 
     /**
      * Method to find all habit assigns by status.
-     * 
+     *
      * @param status {@link HabitAssignStatus} status of habit assign.
      *
      * @return list of {@link HabitAssign} instances.

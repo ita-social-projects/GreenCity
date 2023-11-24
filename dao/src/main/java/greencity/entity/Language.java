@@ -3,7 +3,7 @@ package greencity.entity;
 import greencity.entity.localization.AdviceTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import java.util.List;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity

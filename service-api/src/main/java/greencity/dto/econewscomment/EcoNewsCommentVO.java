@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 import greencity.enums.CommentStatus;
 import lombok.*;
@@ -35,14 +35,17 @@ public class EcoNewsCommentVO {
 
     private EcoNewsCommentVO parentComment;
 
+    @Builder.Default
     private List<EcoNewsCommentVO> comments = new ArrayList<>();
 
     private UserVO user;
 
     private EcoNewsVO ecoNews;
 
+    @Builder.Default
     private boolean currentUserLiked = false;
 
+    @Builder.Default
     private Set<UserVO> usersLiked = new HashSet<>();
 
     private CommentStatus status;

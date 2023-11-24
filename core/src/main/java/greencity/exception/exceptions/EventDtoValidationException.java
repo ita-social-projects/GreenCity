@@ -1,6 +1,6 @@
 package greencity.exception.exceptions;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 public class EventDtoValidationException extends ValidationException {
     /**

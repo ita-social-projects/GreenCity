@@ -7,7 +7,7 @@ import io.jsonwebtoken.Jwts;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +57,7 @@ class JwtToolTest {
             .parseClaimsJws(accessToken)
             .getBody()
             .get(ROLE);
-        assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
+        assertEquals(expectedRole, Role.valueOf(authorities.getFirst()));
     }
 
     @Test
@@ -81,7 +81,7 @@ class JwtToolTest {
             .parseClaimsJws(refreshToken)
             .getBody()
             .get(ROLE);
-        assertEquals(expectedRole, Role.valueOf(authorities.get(0)));
+        assertEquals(expectedRole, Role.valueOf(authorities.getFirst()));
     }
 
     @Test

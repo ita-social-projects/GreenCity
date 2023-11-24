@@ -23,7 +23,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     /**
      * Constructor.
-     * 
+     *
      * @param jwtTool {@link JwtTool}
      */
     public JwtAuthenticationProvider(JwtTool jwtTool) {

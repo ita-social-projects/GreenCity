@@ -1,5 +1,6 @@
 package greencity.config;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import java.awt.print.Pageable;
@@ -59,7 +60,7 @@ public class SwaggerConfig {
 
         docket =
             docket.select().apis(RequestHandlerSelectors.any())
-                .paths(Predicates.not(PathSelectors.ant("/management/**")))
+                .paths(Predicates.not((Predicate<String>) PathSelectors.ant("/management/**")))
                 .build();
         return docket;
     }

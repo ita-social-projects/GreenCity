@@ -6,8 +6,8 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.List;
 

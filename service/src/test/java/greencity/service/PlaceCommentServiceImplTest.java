@@ -16,7 +16,7 @@ import greencity.repository.PlaceCommentRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -115,7 +115,7 @@ class PlaceCommentServiceImplTest {
         Page<Comment> comments = new PageImpl<>(list, pageRequest, list.size());
 
         PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
-        when(modelMapper.map(list.get(0), CommentAdminDto.class)).thenReturn(commentAdminDtos.get(0));
+        when(modelMapper.map(list.getFirst(), CommentAdminDto.class));
         when(placeCommentRepo.findAll(pageRequest)).thenReturn(comments);
 
         assertEquals(result, placeCommentService.getAllComments(pageRequest));

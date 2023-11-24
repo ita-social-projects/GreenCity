@@ -25,7 +25,7 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.UserRepo;

@@ -2,7 +2,7 @@ package greencity.entity;
 
 import greencity.enums.ShoppingListItemStatus;
 import java.time.LocalDateTime;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -30,6 +30,7 @@ public class CustomShoppingListItem {
     private Habit habit;
 
     @Column(nullable = false)
+    @Builder.Default
     @Enumerated(value = EnumType.STRING)
     private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
 

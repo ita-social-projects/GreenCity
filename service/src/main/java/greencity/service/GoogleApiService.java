@@ -28,8 +28,8 @@ import java.util.Locale;
 @Slf4j
 public class GoogleApiService {
     private final GeoApiContext context;
-    private static final Locale UKRAINIAN = new Locale("uk");
-    private static final Locale ENGLISH = new Locale("en");
+    private static final Locale UKRAINIAN = Locale.of("uk");
+    private static final Locale ENGLISH = Locale.of("en");
     private static final List<Locale> LOCALES = List.of(UKRAINIAN, ENGLISH);
 
     /**

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 @ActiveProfiles("test")
 @ContextConfiguration(initializers = {

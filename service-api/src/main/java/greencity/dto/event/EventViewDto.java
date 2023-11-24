@@ -10,11 +10,11 @@ import lombok.*;
 @Builder
 @ToString
 public class EventViewDto {
-    private String id = "";
-    private String author = "";
-    private String title = "";
-    private String description = "";
-    private String tags = "";
+    private String id;
+    private String author;
+    private String title;
+    private String description;
+    private String tags;
 
     /**
      * This method check if object is empty.

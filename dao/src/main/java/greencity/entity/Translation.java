@@ -3,7 +3,7 @@ package greencity.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @MappedSuperclass

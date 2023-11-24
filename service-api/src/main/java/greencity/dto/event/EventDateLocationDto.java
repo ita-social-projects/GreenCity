@@ -2,7 +2,7 @@ package greencity.dto.event;
 
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
 
 @Builder

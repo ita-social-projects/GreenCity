@@ -135,8 +135,7 @@ public class AchievementServiceImpl implements AchievementService {
         return achievemnetsId
             .stream()
             .map(achievementRepo::findById)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
     }

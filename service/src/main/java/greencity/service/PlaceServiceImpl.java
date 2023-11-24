@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
@@ -521,8 +521,8 @@ public class PlaceServiceImpl implements PlaceService {
     private void checkPlaceStatuses(PlaceStatus currentStatus, PlaceStatus updatedStatus, Long placeId) {
         if (currentStatus.equals(updatedStatus)) {
             log.error(LogMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus);
-            throw new PlaceStatusException(String.format(
-                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT, placeId, updatedStatus));
+            throw new PlaceStatusException(
+                ErrorMessage.PLACE_STATUS_NOT_DIFFERENT.formatted(placeId, updatedStatus));
         }
     }
 
@@ -581,7 +581,7 @@ public class PlaceServiceImpl implements PlaceService {
 
     private AddPlaceLocation initializeGeoCodingResults(
         List<GeocodingResult> geocodingResults) {
-        GeocodingResult ukrLang = geocodingResults.get(0);
+        GeocodingResult ukrLang = geocodingResults.getFirst();
         GeocodingResult engLang = geocodingResults.get(1);
         return AddPlaceLocation.builder()
             .address(ukrLang.formattedAddress)

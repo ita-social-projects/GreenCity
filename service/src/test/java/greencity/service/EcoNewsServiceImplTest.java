@@ -38,13 +38,12 @@ import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.SneakyThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -279,7 +278,7 @@ class EcoNewsServiceImplTest {
             0, false, false, true, true);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsDto.class));
 
         PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAll(pageRequest);
 
@@ -302,7 +301,7 @@ class EcoNewsServiceImplTest {
         User user = User.builder().id(1L).build();
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(user, pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsGenericDto.class));
 
         PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
 
@@ -331,7 +330,7 @@ class EcoNewsServiceImplTest {
         List<String> tags = Collections.singletonList(ModelUtils.getTagTranslations().get(0).getName());
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsGenericDto.class));
         when(ecoNewsRepo.findByTags(pageRequest, lowerCaseTags))
             .thenReturn(page);
 
@@ -387,7 +386,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
         when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(Collections.singletonList(ecoNews));
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
-        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class));
 
         List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);
 
@@ -435,7 +434,7 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
 
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsDto.class));
         when(ecoNewsRepo.findAllByUserId(1L)).thenReturn(ecoNews);
 
         List<EcoNewsDto> actual = ecoNewsService.getAllPublishedNewsByUserId(1L);

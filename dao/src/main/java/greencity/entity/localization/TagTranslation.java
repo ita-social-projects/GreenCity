@@ -4,7 +4,7 @@ import greencity.entity.Language;
 import greencity.entity.Tag;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tag_translations")
