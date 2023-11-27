@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.FetchType;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -56,13 +57,13 @@ public class EventComment {
     @Column(nullable = false)
     private LocalDateTime modifiedDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private EventComment parentComment;
 
