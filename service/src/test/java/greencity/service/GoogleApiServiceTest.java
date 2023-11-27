@@ -89,4 +89,22 @@ class GoogleApiServiceTest {
         }
     }
 
+    @Test
+    void getResultFromGeoCodeByCoordinatesWithNullResultsTest()
+        throws IOException, InterruptedException, ApiException {
+        LatLng latLng = new LatLng(0.0, 0.0);
+        try (MockedStatic<GeocodingApi> geocodingApiMockedStatic = mockStatic(GeocodingApi.class)) {
+            GeocodingApiRequest request = mock(GeocodingApiRequest.class);
+            when(GeocodingApi.newRequest(context)).thenReturn(request);
+            when(request.latlng(latLng)).thenReturn(request);
+            when(request.language(new Locale("uk").getLanguage())).thenReturn(request);
+            when(request.await()).thenReturn(null);
+
+            assertThrows(BadRequestException.class, () -> googleApiService.getResultFromGeoCodeByCoordinates(latLng));
+
+            verify(request).latlng(latLng);
+            verify(request).language(new Locale("uk").getLanguage());
+            verify(request).await();
+        }
+    }
 }
