@@ -2,7 +2,12 @@ package greencity.dto.friends;
 
 import greencity.dto.PageableDto;
 import greencity.dto.user.UserProfilePictureDto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,7 +16,7 @@ import lombok.*;
 @EqualsAndHashCode
 @Builder
 
-public class SixFriendsPageResponceDto {
+public class SixFriendsPageResponseDto {
     private Integer amountOfFriends;
     private PageableDto<UserProfilePictureDto> pagedFriends;
 }
