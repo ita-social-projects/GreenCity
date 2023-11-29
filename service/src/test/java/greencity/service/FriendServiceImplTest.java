@@ -607,6 +607,75 @@ class FriendServiceImplTest {
     }
 
     @Test
+    void findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUserTest() {
+        long userId = 1L;
+        long currentUserId = 2L;
+        int page = 0;
+        int size = 1;
+        long totalElements = 50;
+        Pageable pageable = PageRequest.of(page, size);
+        UserFriendDto expectedResult = ModelUtils.getUserFriendDto();
+        Page<User> userPage = new PageImpl<>(List.of(ModelUtils.getUser()), pageable, totalElements);
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+        when(userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId))
+            .thenReturn(userPage);
+        when(
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
+                .thenReturn(List.of(expectedResult));
+        when(userRepo.getFriendStatusByUserIdAndCurrentUserId(anyLong(), anyLong())).thenReturn("FRIEND");
+
+        PageableDto<UserFriendDto> pageableDto = friendService
+            .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId);
+
+        assertNotNull(pageableDto);
+        assertNotNull(pageableDto.getPage());
+        assertEquals(1, pageableDto.getPage().size());
+        assertEquals(expectedResult, pageableDto.getPage().get(0));
+        assertEquals(totalElements, pageableDto.getTotalElements());
+        assertEquals(totalElements, pageableDto.getTotalPages());
+        assertEquals(page, pageableDto.getCurrentPage());
+
+        verify(userRepo).existsById(userId);
+        verify(userRepo).getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+            userPage.getContent());
+        verify(userRepo).getFriendStatusByUserIdAndCurrentUserId(anyLong(), anyLong());
+    }
+
+    @Test
+    void findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser_UserNotFoundTest() {
+        long userId = 1L;
+        long currentUserId = 2L;
+        Pageable pageable = PageRequest.of(0, 1);
+
+        when(userRepo.existsById(userId)).thenReturn(false);
+
+        assertThrows(NotFoundException.class, () -> {
+            friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId,
+                currentUserId);
+        });
+
+        verify(userRepo).existsById(userId);
+    }
+
+    @Test
+    void findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser_UnsupportedSortTest() {
+        long userId = 1L;
+        long currentUserId = 2L;
+        Pageable pageable = PageRequest.of(0, 1, Sort.by("id"));
+
+        when(userRepo.existsById(userId)).thenReturn(true);
+
+        assertThrows(UnsupportedSortException.class, () -> {
+            friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId,
+                currentUserId);
+        });
+
+        verify(userRepo).existsById(userId);
+    }
+
+    @Test
     void findRecommendedFriendsByFriendsOfFriends() {
         long userId = 1L;
         int page = 0;
