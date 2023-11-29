@@ -135,6 +135,24 @@ class FriendControllerTest {
     }
 
     @Test
+    void findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUserTest() throws Exception {
+        long userId = 1L;
+
+        when(userService.findByEmail(principal.getName())).thenReturn(userVO);
+
+        mockMvc.perform(get(FRIEND_LINK + "/{userId}/all-user-friends", userId)
+            .param("page", "0")
+            .param("size", "10")
+            .principal(principal))
+            .andExpect(status().isOk());
+
+        verify(userService).findByEmail(principal.getName());
+        verify(friendService).findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(PageRequest.of(0, 10),
+            userId,
+            userVO.getId());
+    }
+
+    @Test
     void findRecommendedFriends() throws Exception {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 

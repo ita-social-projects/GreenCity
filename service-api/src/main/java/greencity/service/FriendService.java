@@ -55,6 +55,24 @@ public interface FriendService {
     PageableDto<UserManagementDto> findUserFriendsByUserId(Pageable pageable, long userId);
 
     /**
+     * Method that finds user's friends by userId but setting FriendStatus related
+     * to current user.
+     * Friends order: friends, who are tracking the same habits as user with
+     * userId; friends, who live in the same city as user with userId; friends, who
+     * have the highest personal rate.
+     *
+     * @param userId        The ID of the user.
+     * @param currentUserId The ID of the current user.
+     *
+     * @return {@link Page} of {@link UserFriendDto} instances.
+     *
+     * @author Lilia Mokhnatska
+     */
+    PageableDto<UserFriendDto> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(Pageable pageable,
+        long userId,
+        long currentUserId);
+
+    /**
      * Method find all users except current user and his friends.
      *
      * @param userId   user id.
