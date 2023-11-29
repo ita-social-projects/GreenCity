@@ -56,10 +56,9 @@ public interface FriendService {
 
     /**
      * Method that finds user's friends by userId but setting FriendStatus related
-     * to current user.
-     * Friends order: friends, who are tracking the same habits as user with
-     * userId; friends, who live in the same city as user with userId; friends, who
-     * have the highest personal rate.
+     * to current user. Friends order: friends, who are tracking the same habits as
+     * user with userId; friends, who live in the same city as user with userId;
+     * friends, who have the highest personal rate.
      *
      * @param userId        The ID of the user.
      * @param currentUserId The ID of the current user.
