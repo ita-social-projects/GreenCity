@@ -765,6 +765,19 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getAllUserEventsThrowsBadRequestExceptionTest() {
+        String eventType = "invalid event type";
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.getAllUserEvents(pageRequest, principal.getName(), "", "", eventType));
+        verify(restClient).findByEmail(principal.getName());
+    }
+
+    @Test
     void getEventsCreatedByUser() {
         List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
         List<Long> eventIds = List.of(events.get(0).getId());
