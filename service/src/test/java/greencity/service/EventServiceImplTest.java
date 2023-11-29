@@ -769,11 +769,12 @@ class EventServiceImplTest {
         String eventType = "invalid event type";
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 2);
+        String email = principal.getName();
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
 
         assertThrows(BadRequestException.class,
-            () -> eventService.getAllUserEvents(pageRequest, principal.getName(), "", "", eventType));
+            () -> eventService.getAllUserEvents(pageRequest, email, "", "", eventType));
         verify(restClient).findByEmail(principal.getName());
     }
 
