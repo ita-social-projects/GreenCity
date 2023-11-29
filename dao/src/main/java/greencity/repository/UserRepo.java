@@ -281,6 +281,47 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<User> getAllUserFriends(Long userId);
 
     /**
+     * Get all user friends order: friends, who are tracking the same habits as user
+     * with userId; friends, who live in the same city as user with userId; friends,
+     * who have the highest personal rate.
+     *
+     * @param userId The ID of the user.
+     *
+     * @return list of {@link User}.
+     */
+
+    @Query(nativeQuery = true, value = ""
+        + "SELECT * "
+        + "FROM users u "
+        + "LEFT JOIN user_location ul ON ul.id = u.user_location "
+        + "RIGHT JOIN ("
+        + " SELECT friends.id, (SELECT count(*)"
+        + "FROM habit_assign "
+        + " WHERE user_id = friends.id "
+        + " AND habit_id in (SELECT habit_id "
+        + "  FROM habit_assign ha3"
+        + "  WHERE user_id = :userId AND status IN ('INPROGRESS', 'ACQUIRED', 'EXPIRED'))) count "
+        + "FROM (SELECT user_id AS id FROM users_friends WHERE friend_id = :userId AND status = 'FRIEND' "
+        + " UNION SELECT friend_id AS id FROM users_friends WHERE user_id = :userId AND status = 'FRIEND') friends "
+        + " ) fh ON fh.id = u.id "
+        + " ORDER BY fh.count desc, ul.city_en, u.rating desc ")
+    Page<User> getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(Pageable pageable, Long userId);
+
+    /**
+     * Get FriendStatus related to current user with currentUserId by user with
+     * userId.
+     *
+     * @param userId        The ID of the user.
+     * @param currentUserId The ID of the current user.
+     *
+     * @return {@link Page} of {@link User}.
+     */
+    @Query(nativeQuery = true, value = "SELECT uf.status FROM users_friends as uf "
+        + " WHERE friend_id = :userId and user_id = :currentUserId "
+        + " OR friend_id = :currentUserId and user_id = :userId")
+    String getFriendStatusByUserIdAndCurrentUserId(Long userId, Long currentUserId);
+
+    /**
      * Get all user friends.
      *
      * @param userId   The ID of the user.
