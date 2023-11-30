@@ -5,7 +5,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.tag.TagUaEnDto;
-import greencity.entity.*;
+import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventDateLocation;
@@ -31,7 +31,6 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
      * @param event object to convert.
      * @return converted object.
      */
-
     @Override
     public EventDto convert(Event event) {
         EventDto eventDto = new EventDto();

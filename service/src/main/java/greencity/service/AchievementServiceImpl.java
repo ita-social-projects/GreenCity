@@ -4,7 +4,11 @@ import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.achievement.*;
+import greencity.dto.achievement.AchievementManagementDto;
+import greencity.dto.achievement.AchievementPostDto;
+import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
+import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
@@ -59,7 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
                 .stream()
                 .filter(userAchievement -> !userAchievement.isNotified())
                 .collect(Collectors.toList());
-        System.out
+        System.out      //TODO: refactor
             .println("USER_ID -" + user.getUserId() + "| userAchievements.isEmpty() " + userAchievements.isEmpty());
         messagingTemplate
             .convertAndSend("/topic/" + user.getUserId() + "/notification", !userAchievements.isEmpty());
