@@ -37,7 +37,7 @@ public class UserAchievement {
     private Achievement achievement;
 
     @Column
-    private boolean notified;       //TODO: Delete
+    private boolean notified; // TODO: Delete
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habit_id", nullable = true)

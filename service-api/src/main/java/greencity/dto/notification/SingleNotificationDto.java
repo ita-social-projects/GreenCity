@@ -1,0 +1,28 @@
+package greencity.dto.notification;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@Builder
+public class SingleNotificationDto {
+    private Long notificationId;
+    private String projectName;
+    private String notificationType;
+    private LocalDateTime time;
+    private Boolean viewed;
+    private String titleText;
+    private String bodyText;
+    private String titleTextEng;
+    private String bodyTextEng;
+}
