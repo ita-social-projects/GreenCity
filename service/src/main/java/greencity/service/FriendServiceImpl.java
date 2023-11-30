@@ -111,6 +111,34 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<UserFriendDto> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(Pageable pageable,
+        long userId, long currentUserId) {
+        validateUserExistence(userId);
+        Page<User> friends;
+        if (pageable.getSort().isEmpty()) {
+            friends = userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
+
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, friends.getContent());
+        for (UserFriendDto userFriendDto : userFriendDtoList) {
+            Long oneOfListUserFriendsId = userFriendDto.getId();
+            userFriendDto.setFriendStatus(
+                userRepo.getFriendStatusByUserIdAndCurrentUserId(oneOfListUserFriendsId, currentUserId));
+        }
+        return new PageableDto<>(
+            userFriendDtoList,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
         @Nullable String name, Pageable pageable) {
         Objects.requireNonNull(pageable);

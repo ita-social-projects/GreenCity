@@ -199,6 +199,7 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
+    public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
 
     private ErrorMessage() {
     }
