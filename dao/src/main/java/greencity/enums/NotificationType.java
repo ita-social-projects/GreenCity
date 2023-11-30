@@ -1,5 +1,9 @@
 package greencity.enums;
 
 public enum NotificationType {
-    //TODO
+    LIKES,
+    ACHIEVEMENT,
+    COMMENT,
+    FRIEND_REQUEST
+    // TODO:
 }
