@@ -8,7 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @NoArgsConstructor
-public class EventCommentedMessage extends AbstractEmailMessage{
+public class EventCommentedMessage extends AbstractEmailMessage {
     @Builder
     public EventCommentedMessage(String email, String name, String subject, String message) {
         super(email, name, subject, message);

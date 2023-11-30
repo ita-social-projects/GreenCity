@@ -37,6 +37,7 @@ public class RestTemplateLinks {
     public static final String FIND_ALL_USERS_CITIES = "/user/findAllUsersCities";
     public static final String ADD_EVENT_COMMENT = "/email/addEventComment";
     public static final String SEND_GENERAL_EMAIL_NOTIFICATION = "email/general/notification";
+
     private RestTemplateLinks() {
     }
 }

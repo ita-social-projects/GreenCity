@@ -66,6 +66,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
+    private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
 
@@ -98,13 +99,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-
         EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
-        sendEmailDto(ecoNewsDto, toSave.getAuthor());
         UserVO user = userService.findByEmail(email);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        notificationService.sendEmailNotification(toSave.getAuthor().getEmail(),
+            toSave.getAuthor().getName(), "You have created eco news",
+            "You have created econews: " + toSave.getTitle());
         return ecoNewsDto;
     }
 
@@ -125,27 +127,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .title(addEcoNewsDtoResponse.getTitle())
             .source(addEcoNewsDtoResponse.getSource())
             .imagePath(addEcoNewsDtoResponse.getImagePath())
-            .build();
-        restClient.addEcoNews(dto);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Danylo Hlynskyi.
-     */
-    public void sendEmailDto(EcoNewsGenericDto ecoNewsDto,
-        User user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
-        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-            .author(placeAuthorDto)
-            .creationDate(ecoNewsDto.getCreationDate())
-            .unsubscribeToken(accessToken)
-            .text(ecoNewsDto.getContent())
-            .title(ecoNewsDto.getTitle())
-            .imagePath(ecoNewsDto.getImagePath())
-            .source(ecoNewsDto.getSource())
             .build();
         restClient.addEcoNews(dto);
     }
@@ -544,6 +525,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+        notificationService.sendEmailNotification(ecoNewsVO.getAuthor().getEmail(),
+            ecoNewsVO.getAuthor().getName(), "Your news received a like",
+            "Somebody liked " + ecoNewsVO.getTitle());
     }
 
     /**

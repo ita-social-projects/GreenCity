@@ -36,9 +36,8 @@ public class EmailNotificationAspect {
     private final UserRepo userRepo;
 
     @AfterReturning(
-            value = "@annotation(typeOfNotification)",
-            returning = "result"
-    )
+        value = "@annotation(typeOfNotification)",
+        returning = "result")
     public void defineEmailNotification(NotificationType typeOfNotification, EmailSendable result) {
         TypeOfEmailNotification notificationType = typeOfNotification.type();
         AbstractEmailMessage emailMessage;
@@ -48,15 +47,15 @@ public class EmailNotificationAspect {
             case NEWS_COMMENTED:
                 AddEcoNewsCommentDtoResponse castedEcoNewsCommentDto = (AddEcoNewsCommentDtoResponse) result;
                 EcoNewsComment ecoNewsComment = ecoNewsCommentRepo.findById(castedEcoNewsCommentDto.getId())
-                        .orElseThrow(()->new BadRequestException("the comment was not found"));
+                    .orElseThrow(() -> new BadRequestException("the comment was not found"));
                 userId = ecoNewsComment.getEcoNews().getAuthor().getId();
-                user = userRepo.findById(userId).orElseThrow(()->new BadRequestException("the user was not found"));
+                user = userRepo.findById(userId).orElseThrow(() -> new BadRequestException("the user was not found"));
                 emailMessage = NewsCommentMessage.builder()
-                        .email(user.getEmail())
-                        .name(ecoNewsComment.getUser().getName())
-                        .subject("You have received a comment on your eco news")
-                        .message("You received a comment: " + castedEcoNewsCommentDto.getText())
-                        .build();
+                    .email(user.getEmail())
+                    .name(ecoNewsComment.getUser().getName())
+                    .subject("You have received a comment on your eco news")
+                    .message("You received a comment: " + castedEcoNewsCommentDto.getText())
+                    .build();
                 restClient.sendEmailNotification(emailMessage);
                 break;
             case NEWS_LIKED:
@@ -68,11 +67,11 @@ public class EmailNotificationAspect {
             case EVENT_CREATED:
                 EventDto castedEventDto = (EventDto) result;
                 emailMessage = SendEventCreationNotification.builder()
-                        .email(castedEventDto.getOrganizer().getEmail())
-                        .name(castedEventDto.getOrganizer().getName())
-                        .subject("Event created")
-                        .message("You successfully crated an event: " + castedEventDto.getTitle())
-                        .build();
+                    .email(castedEventDto.getOrganizer().getEmail())
+                    .name(castedEventDto.getOrganizer().getName())
+                    .subject("Event created")
+                    .message("You successfully crated an event: " + castedEventDto.getTitle())
+                    .build();
                 restClient.sendEmailNotification(emailMessage);
                 break;
             case EVENT_COMMENTED:
@@ -81,11 +80,11 @@ public class EmailNotificationAspect {
                 Event event = eventComment.getEvent();
                 user = event.getOrganizer();
                 emailMessage = SendEventCreationNotification.builder()
-                        .email(user.getEmail())
-                        .name(response.getAuthor().getName())
-                        .subject("You have received a comment on your event")
-                        .message("Somebody commented:" + response.getText())
-                        .build();
+                    .email(user.getEmail())
+                    .name(response.getAuthor().getName())
+                    .subject("You have received a comment on your event")
+                    .message("Somebody commented:" + response.getText())
+                    .build();
                 restClient.sendEmailNotification(emailMessage);
                 break;
             case EVENT_LIKED:

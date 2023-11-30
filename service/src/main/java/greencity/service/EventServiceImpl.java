@@ -2,7 +2,6 @@ package greencity.service;
 
 import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
@@ -33,11 +32,9 @@ import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
 import greencity.enums.RatingCalculationEnum;
-import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.SendEventCreationNotification;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
@@ -59,7 +56,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -68,6 +64,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -103,7 +100,6 @@ public class EventServiceImpl implements EventService {
     private static final String SOCIAL_TAG = "SOCIAL";
 
     @Override
-    @NotificationType(type = TypeOfEmailNotification.EVENT_CREATED)
     public EventDto save(AddEventDtoRequest addEventDtoRequest, String email,
         MultipartFile[] images) {
         addAddressToLocation(addEventDtoRequest.getDatesLocations());
@@ -133,11 +129,11 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        //notificationService.sendEmailNotification(organizer.getEmail(), organizer.getName());
-        //sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        notificationService.sendEmailNotification(organizer.getEmail(), organizer.getName(),
+            "You have created an event", "You have created an event: " + savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -155,6 +151,10 @@ public class EventServiceImpl implements EventService {
 
         if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
+            for (Map.Entry<String, String> entry : getAttendersEmailAndName(toDelete).entrySet()) {
+                notificationService.sendEmailNotification(entry.getKey(), entry.getValue(),
+                    "Event you have joined was canceled", "Event " + toDelete.getTitle() + " was canceled");
+            }
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -162,6 +162,11 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
+    }
+
+    private Map<String, String> getAttendersEmailAndName(Event event) {
+        return event.getAttenders().stream()
+            .collect(Collectors.toMap(User::getEmail, User::getName));
     }
 
     @Override
@@ -347,6 +352,8 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
+        notificationService.sendEmailNotification(event.getOrganizer().getEmail(), event.getOrganizer().getName(),
+            "New people joined your event", currentUser.getName() + " has joined your event");
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -437,6 +444,10 @@ public class EventServiceImpl implements EventService {
 
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
+        for (Map.Entry<String, String> entry : getAttendersEmailAndName(updatedEvent).entrySet()) {
+            notificationService.sendEmailNotification(entry.getKey(), entry.getValue(),
+                "Event you have joined has changed", "Event " + toUpdate.getTitle() + " was updated");
+        }
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

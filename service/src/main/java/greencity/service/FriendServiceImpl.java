@@ -33,6 +33,7 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -57,6 +58,10 @@ public class FriendServiceImpl implements FriendService {
         validateFriendRequestNotSent(userId, friendId);
         validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
+        User emailReceiver = userRepo.getOne(friendId);
+        User friendRequestSender = userRepo.getOne(userId);
+        notificationService.sendEmailNotification(emailReceiver.getEmail(), emailReceiver.getName(),
+            "You have received a friend request", friendRequestSender.getName() + " sent you a friend request");
     }
 
     /**
@@ -70,6 +75,10 @@ public class FriendServiceImpl implements FriendService {
         validateFriendNotExists(userId, friendId);
         validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
+        User user = userRepo.getOne(userId);
+        User friend = userRepo.getOne(friendId);
+        notificationService.sendEmailNotification(friend.getEmail(), friend.getName(),
+            "Your friend request was accepted", "Now you are friends with " + user.getName());
     }
 
     /**

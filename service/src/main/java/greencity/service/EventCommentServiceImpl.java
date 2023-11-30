@@ -46,13 +46,13 @@ import java.util.stream.Collectors;
 public class EventCommentServiceImpl implements EventCommentService {
     private EventCommentRepo eventCommentRepo;
     private EventService eventService;
-    private UserService userService;
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
     private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
     private AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationService notificationService;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -66,7 +66,6 @@ public class EventCommentServiceImpl implements EventCommentService {
      * @return {@link AddEventCommentDtoResponse} instance.
      */
     @Override
-    @NotificationType(type = TypeOfEmailNotification.EVENT_COMMENTED)
     public AddEventCommentDtoResponse save(Long eventId, AddEventCommentDtoRequest addEventCommentDtoRequest,
         UserVO userVO) {
         EventVO eventVO = eventService.findById(eventId);
@@ -89,8 +88,10 @@ public class EventCommentServiceImpl implements EventCommentService {
                     + " in event with id:" + eventId;
                 throw new NotFoundException(message);
             }
-
             eventComment.setParentComment(parentEventComment);
+            notificationService.sendEmailNotification(parentEventComment.getUser().getEmail(),
+                parentEventComment.getUser().getName(), "You received a reply",
+                eventComment.getUser().getName() + " replied to you");
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -100,6 +101,8 @@ public class EventCommentServiceImpl implements EventCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
+        notificationService.sendEmailNotification(eventVO.getOrganizer().getEmail(), eventVO.getOrganizer().getName(),
+            "You receive a comment", "You received a comment on your event: " + eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -317,6 +320,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            notificationService.sendEmailNotification(comment.getUser().getEmail(), comment.getUser().getName(),
+                "You receive a like on your comment", userVO.getName() + " liked your comment");
         }
         eventCommentRepo.save(comment);
     }

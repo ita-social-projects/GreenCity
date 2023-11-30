@@ -51,9 +51,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
-    private final HttpServletRequest httpServletRequest;
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
+    private final NotificationService notificationService;
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -65,9 +65,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @param userVO                      {@link User} that saves the comment.
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
-
     @Override
-    @NotificationType(type = TypeOfEmailNotification.NEWS_COMMENTED)
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
@@ -81,6 +79,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
+                notificationService.sendEmailNotification(parentComment.getUser().getEmail(),
+                    parentComment.getUser().getName(), "You received a reply",
+                    ecoNewsComment.getUser().getName() + " replied to you");
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -91,7 +92,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
 
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-
+        notificationService.sendEmailNotification(ecoNewsVO.getAuthor().getEmail(),
+            ecoNewsVO.getAuthor().getName(), "You received a comment",
+            ecoNewsVO.getTitle() + " received a comment");
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -220,6 +223,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
+            notificationService.sendEmailNotification(comment.getUser().getEmail(), comment.getUser().getName(),
+                "You received like on your comment", userVO.getName() + " liked your comment");
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

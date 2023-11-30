@@ -1,6 +1,9 @@
 package greencity.service;
 
+import greencity.client.RestClient;
 import greencity.dto.place.PlaceVO;
+import greencity.message.AbstractEmailMessage;
+import greencity.message.NewsCommentMessage;
 
 public interface NotificationService {
     /**
@@ -31,5 +34,5 @@ public interface NotificationService {
      */
     void sendMonthlyReport();
 
-    //void sendEmailNotification(String userName, String email);
+    void sendEmailNotification(String email, String name, String subject, String message);
 }

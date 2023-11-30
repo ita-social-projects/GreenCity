@@ -11,6 +11,8 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
+import greencity.message.AbstractEmailMessage;
+import greencity.message.NewsCommentMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -102,21 +104,25 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * method sends a notification
-     *
+     * method sends a general email notification
+     * 
+     * @param email   receiver email
+     * @param name    receiver name
+     * @param subject subject of email message
+     * @param message text of email message
      * @author Yurii Midianyi
      */
-//    @Override
-//    @NotificationType(type = TypeOfEmailNotification.EVENT_CREATED)
-//    public void sendEmailNotification(String userName, String email) {
-//        String message = "Dear, " + userName + "!"
-//                + "\nYou have successfully created an event: ";
-//        SendEventCreationNotification notification = SendEventCreationNotification.builder()
-//                .email(email)
-//                .message(message)
-//                .build();
-//        restClient.sendEmailNotification(notification, "");
-//    }
+    @Override
+    public void sendEmailNotification(String email, String name, String subject, String message) {
+        AbstractEmailMessage emailMessage;
+        emailMessage = NewsCommentMessage.builder()
+            .email(email)
+            .name(name)
+            .subject(subject)
+            .message(message)
+            .build();
+        restClient.sendEmailNotification(emailMessage);
+    }
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
         log.info(LogMessage.IN_SEND_REPORT, emailNotification);
