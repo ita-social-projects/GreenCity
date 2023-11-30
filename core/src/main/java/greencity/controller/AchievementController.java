@@ -4,7 +4,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.service.AchievementService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,7 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
