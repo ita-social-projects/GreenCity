@@ -60,7 +60,7 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
-        notificationService.sendEmailNotification(emailReceiver.getEmail(), emailReceiver.getName(),
+        notificationService.sendEmailNotification(emailReceiver.getEmail(),
             "You have received a friend request", friendRequestSender.getName() + " sent you a friend request");
     }
 
@@ -77,7 +77,7 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
-        notificationService.sendEmailNotification(friend.getEmail(), friend.getName(),
+        notificationService.sendEmailNotification(friend.getEmail(),
             "Your friend request was accepted", "Now you are friends with " + user.getName());
     }
 

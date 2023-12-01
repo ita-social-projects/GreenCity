@@ -22,14 +22,11 @@ import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendEventCreationNotification;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.AddEcoNewsMessage;
-import greencity.message.SendReportEmailMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -225,10 +222,10 @@ public class ModelUtils {
             .build();
     }
 
-    public static SendEventCreationNotification getSendEventCreationNotification() {
-        return SendEventCreationNotification.builder()
-            .email("test@gmail.com")
-            .message("You have successfully created event")
-            .build();
-    }
+//    public static SendEventCreationNotification getSendEventCreationNotification() {
+//        return SendEventCreationNotification.builder()
+//            .email("test@gmail.com")
+//            .message("You have successfully created event")
+//            .build();
+//    }
 }

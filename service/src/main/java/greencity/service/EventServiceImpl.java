@@ -132,7 +132,7 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-        notificationService.sendEmailNotification(organizer.getEmail(), organizer.getName(),
+        notificationService.sendEmailNotification(organizer.getEmail(),
             "You have created an event", "You have created an event: " + savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
     }
@@ -151,9 +151,11 @@ public class EventServiceImpl implements EventService {
 
         if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
-            for (Map.Entry<String, String> entry : getAttendersEmailAndName(toDelete).entrySet()) {
-                notificationService.sendEmailNotification(entry.getKey(), entry.getValue(),
-                    "Event you have joined was canceled", "Event " + toDelete.getTitle() + " was canceled");
+            Set<String> attendersEmails =
+                toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+            for (String attenderEmail : attendersEmails) {
+                notificationService.sendEmailNotification(attenderEmail, "Event you have joined was canceled",
+                    "Event " + toDelete.getTitle() + " was canceled");
             }
             eventRepo.delete(toDelete);
         } else {
@@ -162,11 +164,6 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.CREATE_EVENT, AchievementAction.DELETE);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_CREATE_EVENT, userVO);
-    }
-
-    private Map<String, String> getAttendersEmailAndName(Event event) {
-        return event.getAttenders().stream()
-            .collect(Collectors.toMap(User::getEmail, User::getName));
     }
 
     @Override
@@ -352,7 +349,7 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
-        notificationService.sendEmailNotification(event.getOrganizer().getEmail(), event.getOrganizer().getName(),
+        notificationService.sendEmailNotification(event.getOrganizer().getEmail(),
             "New people joined your event", currentUser.getName() + " has joined your event");
     }
 
@@ -441,12 +438,12 @@ public class EventServiceImpl implements EventService {
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
-
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
-        for (Map.Entry<String, String> entry : getAttendersEmailAndName(updatedEvent).entrySet()) {
-            notificationService.sendEmailNotification(entry.getKey(), entry.getValue(),
-                "Event you have joined has changed", "Event " + toUpdate.getTitle() + " was updated");
+        Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        for (String attenderEmail : attendersEmails) {
+            notificationService.sendEmailNotification(attenderEmail, "Event you have joined was updated",
+                "Event " + toUpdate.getTitle() + " was updated");
         }
         return buildEventDto(updatedEvent, organizer.getId());
     }
@@ -854,21 +851,6 @@ public class EventServiceImpl implements EventService {
     private EventDto buildEventDto(Event event) {
         return modelMapper.map(event, EventDto.class);
     }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Olena Sotnik.
-     */
-//    public void sendEmailNotification(String eventTitle, String userName, String email) {
-//        String message = "Dear, " + userName + "!"
-//            + "\nYou have successfully created an event: " + eventTitle;
-//        SendEventCreationNotification notification = SendEventCreationNotification.builder()
-//            .email(email)
-//            .message(message)
-//            .build();
-//        restClient.sendEventCreationNotification(notification);
-//    }
 
     @Override
     public PageableDto<SearchEventsDto> search(String searchQuery, String languageCode) {

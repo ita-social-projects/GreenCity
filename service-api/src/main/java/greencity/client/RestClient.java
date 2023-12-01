@@ -1,6 +1,5 @@
 package greencity.client;
 
-import greencity.annotations.NotificationType;
 import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserManagementUpdateDto;
 import greencity.dto.user.UserManagementVO;
@@ -12,14 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.enums.TypeOfEmailNotification;
-import greencity.message.AbstractEmailMessage;
-import greencity.message.SendEventCreationNotification;
+import greencity.message.GeneralEmailMessage;
 import greencity.security.jwt.JwtTool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,9 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.google.gson.Gson;
-
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
@@ -573,24 +566,15 @@ public class RestClient {
     }
 
     /**
-     * Method to send email notification about event creation to GreenCityUser.
+     * Method sends general email notification.
      *
-     * @param notification {@link SendEventCreationNotification} has message for
-     *                     sending email to user about event creation status.
-     * @author Olena Sotnik.
+     * @param notification {@link GeneralEmailMessage}.
+     *
      */
-    public void sendEventCreationNotification(SendEventCreationNotification notification) {
+    public void sendEmailNotification(GeneralEmailMessage notification) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
-        restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
-    }
-
-    public void sendEmailNotification(AbstractEmailMessage notification) {
-        HttpHeaders headers = setHeader();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AbstractEmailMessage> entity = new HttpEntity<>(notification, headers);
+        HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
     }

@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
 import greencity.constant.ErrorMessage;
@@ -23,7 +22,6 @@ import greencity.enums.Role;
 import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
 import greencity.enums.RatingCalculationEnum;
-import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -99,13 +97,12 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-        EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
+        final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         UserVO user = userService.findByEmail(email);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(toSave.getAuthor().getEmail(),
-            toSave.getAuthor().getName(), "You have created eco news",
+        notificationService.sendEmailNotification(toSave.getAuthor().getEmail(), "You have created eco news",
             "You have created econews: " + toSave.getTitle());
         return ecoNewsDto;
     }
@@ -507,7 +504,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      * @param id     - @{@link Long} eco news id.
      */
     @Override
-    @NotificationType(type = TypeOfEmailNotification.NEWS_LIKED)
     public void like(UserVO userVO, Long id) {
         EcoNewsVO ecoNewsVO = findById(id);
         if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(u -> u.getId().equals(userVO.getId()))) {
@@ -526,8 +522,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
         notificationService.sendEmailNotification(ecoNewsVO.getAuthor().getEmail(),
-            ecoNewsVO.getAuthor().getName(), "Your news received a like",
-            "Somebody liked " + ecoNewsVO.getTitle());
+            "Your news received a like", "Somebody liked " + ecoNewsVO.getTitle());
     }
 
     /**

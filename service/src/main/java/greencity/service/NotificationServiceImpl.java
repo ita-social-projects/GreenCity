@@ -11,8 +11,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
-import greencity.message.AbstractEmailMessage;
-import greencity.message.NewsCommentMessage;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -104,20 +103,17 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * method sends a general email notification
+     * method sends a general email notification.
      * 
      * @param email   receiver email
-     * @param name    receiver name
      * @param subject subject of email message
      * @param message text of email message
      * @author Yurii Midianyi
      */
     @Override
-    public void sendEmailNotification(String email, String name, String subject, String message) {
-        AbstractEmailMessage emailMessage;
-        emailMessage = NewsCommentMessage.builder()
+    public void sendEmailNotification(String email, String subject, String message) {
+        GeneralEmailMessage emailMessage = GeneralEmailMessage.builder()
             .email(email)
-            .name(name)
             .subject(subject)
             .message(message)
             .build();

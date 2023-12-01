@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.NotificationType;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -22,7 +21,6 @@ import greencity.enums.Role;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
-import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -36,7 +34,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,8 +87,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             }
             eventComment.setParentComment(parentEventComment);
             notificationService.sendEmailNotification(parentEventComment.getUser().getEmail(),
-                parentEventComment.getUser().getName(), "You received a reply",
-                eventComment.getUser().getName() + " replied to you");
+                "You received a reply", eventComment.getUser().getName() + " replied to you");
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -101,7 +97,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(eventVO.getOrganizer().getEmail(), eventVO.getOrganizer().getName(),
+        notificationService.sendEmailNotification(eventVO.getOrganizer().getEmail(),
             "You receive a comment", "You received a comment on your event: " + eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
@@ -320,7 +316,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
-            notificationService.sendEmailNotification(comment.getUser().getEmail(), comment.getUser().getName(),
+            notificationService.sendEmailNotification(comment.getUser().getEmail(),
                 "You receive a like on your comment", userVO.getName() + " liked your comment");
         }
         eventCommentRepo.save(comment);

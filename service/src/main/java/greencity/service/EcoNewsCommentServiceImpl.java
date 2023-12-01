@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.annotations.NotificationType;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -21,14 +20,11 @@ import greencity.enums.AchievementAction;
 import greencity.enums.CommentStatus;
 import greencity.enums.Role;
 import greencity.enums.RatingCalculationEnum;
-import greencity.enums.TypeOfEmailNotification;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
-import javax.servlet.http.HttpServletRequest;
-
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -38,7 +34,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,8 +75,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
                 notificationService.sendEmailNotification(parentComment.getUser().getEmail(),
-                    parentComment.getUser().getName(), "You received a reply",
-                    ecoNewsComment.getUser().getName() + " replied to you");
+                    "You received a reply", ecoNewsComment.getUser().getName() + " replied to you");
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -93,8 +87,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
 
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
         notificationService.sendEmailNotification(ecoNewsVO.getAuthor().getEmail(),
-            ecoNewsVO.getAuthor().getName(), "You received a comment",
-            ecoNewsVO.getTitle() + " received a comment");
+            "You received a comment", ecoNewsVO.getTitle() + " received a comment");
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -223,7 +216,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotification(comment.getUser().getEmail(), comment.getUser().getName(),
+            notificationService.sendEmailNotification(comment.getUser().getEmail(),
                 "You received like on your comment", userVO.getName() + " liked your comment");
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
