@@ -1,12 +1,10 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import greencity.dto.EmailSendable;
 import greencity.dto.tag.TagUaEnDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -18,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class EventDto implements EmailSendable {
+public class EventDto{
     private Long id;
 
     private String title;
