@@ -9,10 +9,11 @@ import java.util.List;
 @Repository
 public interface NotificationRepo extends JpaRepository<Notification, Long> {
     /**
-     * This method should return 3 last notifications.
+     * This method should return 3 last unread notifications.
      * 
      * @param targetUserId user, which should return notification
-     * @return 3 last Notifications for user
+     * @return 3 last Notifications for user, where viewed is false
      */
-    List<Notification> findTop3ByTargetUserIdOrderByTimeDesc(Long targetUserId);
+    List<Notification> findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(Long targetUserId);
+
 }
