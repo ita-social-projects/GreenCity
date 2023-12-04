@@ -16,10 +16,10 @@ import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
@@ -555,20 +555,19 @@ class RestClientTest {
         assertEquals(expected, restClient.findAllUsersCities());
     }
 
-//    @Test
-//    void sendEventCreationNotificationTest() {
-//        String accessToken = "Bearer null";
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(AUTHORIZATION, accessToken);
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        SendEventCreationNotification notification = ModelUtils.getSendEventCreationNotification();
-//        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
-//        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-//            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-//                .thenReturn(ResponseEntity.ok(Object));
-//        restClient.sendEventCreationNotification(notification);
-//
-//        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-//            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class);
-//    }
+    @Test
+    void sendEventCreationNotificationTest() {
+        String accessToken = "Bearer null";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        GeneralEmailMessage notification = ModelUtils.getGeneralEmailNotification();
+        HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
+        when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+                .thenReturn(ResponseEntity.ok(Object));
+        restClient.sendEmailNotification(notification);
+        verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+    }
 }

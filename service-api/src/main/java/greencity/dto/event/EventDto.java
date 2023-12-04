@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class EventDto{
+public class EventDto {
     private Long id;
 
     private String title;

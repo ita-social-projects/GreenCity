@@ -112,6 +112,9 @@ class EventServiceImplTest {
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
 
+    @Mock
+    NotificationService notificationService;
+
     @Test
     void save() {
         EventDto eventDto = ModelUtils.getEventDto();

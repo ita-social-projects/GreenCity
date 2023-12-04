@@ -1,6 +1,5 @@
 package greencity.dto.eventcomment;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddEventCommentDtoResponse{
+public class AddEventCommentDtoResponse {
     @NotNull
     @Min(1)
     private Long id;

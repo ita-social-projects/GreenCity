@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddEcoNewsCommentDtoResponse{
+public class AddEcoNewsCommentDtoResponse {
     @NotNull
     @Min(1)
     private Long id;

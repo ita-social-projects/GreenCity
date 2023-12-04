@@ -64,7 +64,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -153,10 +152,9 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            for (String attenderEmail : attendersEmails) {
-                notificationService.sendEmailNotification(attenderEmail, "Event you have joined was canceled",
-                    "Event " + toDelete.getTitle() + " was canceled");
-            }
+            attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(attenderEmail,
+                "Event you have joined was canceled",
+                "Event " + toDelete.getTitle() + " was canceled"));
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);

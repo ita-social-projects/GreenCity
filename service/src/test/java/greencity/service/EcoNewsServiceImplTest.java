@@ -3,7 +3,6 @@ package greencity.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.*;
-
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
@@ -11,7 +10,6 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
@@ -21,7 +19,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -32,19 +29,15 @@ import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
 import greencity.repository.*;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-
 import lombok.SneakyThrows;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -112,6 +105,9 @@ class EcoNewsServiceImplTest {
     private AchievementCategoryRepo achievementCategoryRepo;
     @Mock
     private RatingCalculationEnum ratingCalculationEnum;
+
+    @Mock
+    private NotificationService notificationService;
 
     private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private EcoNews ecoNews = ModelUtils.getEcoNews();

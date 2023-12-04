@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -110,6 +111,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @param message text of email message
      * @author Yurii Midianyi
      */
+    @Async
     @Override
     public void sendEmailNotification(String email, String subject, String message) {
         GeneralEmailMessage emailMessage = GeneralEmailMessage.builder()
@@ -117,6 +119,7 @@ public class NotificationServiceImpl implements NotificationService {
             .subject(subject)
             .message(message)
             .build();
+        log.info("Email message sent to restController with receiver: " + email);
         restClient.sendEmailNotification(emailMessage);
     }
 

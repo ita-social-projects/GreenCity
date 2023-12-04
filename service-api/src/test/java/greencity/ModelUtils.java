@@ -21,6 +21,7 @@ import greencity.dto.user.UserVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.message.SendHabitNotification;
@@ -222,10 +223,11 @@ public class ModelUtils {
             .build();
     }
 
-//    public static SendEventCreationNotification getSendEventCreationNotification() {
-//        return SendEventCreationNotification.builder()
-//            .email("test@gmail.com")
-//            .message("You have successfully created event")
-//            .build();
-//    }
+    public static GeneralEmailMessage getGeneralEmailNotification() {
+        return GeneralEmailMessage.builder()
+            .email("test@gmail.com")
+            .subject("Congratulations")
+            .message("You have successfully done something")
+            .build();
+    }
 }
