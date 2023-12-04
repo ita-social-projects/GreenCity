@@ -1829,6 +1829,7 @@ public class ModelUtils {
         event.setOrganizer(getUser());
         event.setFollowers(followers);
         event.setTitle("Title");
+        event.setAttenders(new HashSet<>(Collections.singleton(getUser())));
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),

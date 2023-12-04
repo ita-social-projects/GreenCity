@@ -15,6 +15,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -195,5 +196,14 @@ class NotificationServiceImplTest {
 
         verify(restClient, Mockito.times(1))
             .sendReport(any(SendReportEmailMessage.class));
+    }
+
+    @Test
+    void sendEmailNotificationTest() {
+        String email = "test@gmail.com";
+        String subject = "new notification";
+        String message = "check you email box";
+        notificationService.sendEmailNotification(email, subject, message);
+        verify(restClient).sendEmailNotification(any(GeneralEmailMessage.class));
     }
 }
