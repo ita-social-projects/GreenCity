@@ -55,6 +55,8 @@ public class EventDto {
 
     private int countComments;
 
+    private boolean isOrganizedByFriend;
+
     /**
      * Return String of event tags in English.
      *
