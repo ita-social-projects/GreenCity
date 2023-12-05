@@ -776,6 +776,22 @@ public class EventServiceImpl implements EventService {
             new TypeToken<List<EventDto>>() {
             }.getType());
 
+        if (Objects.nonNull(eventDtos)) {
+            eventDtos.forEach(eventDto -> {
+                if (Objects.nonNull(eventDto.getOrganizer())) {
+                    Long idOrganizer = eventDto.getOrganizer().getId();
+                    if (Objects.nonNull(idOrganizer)) {
+                        boolean isOrganizedByFriend = userRepo.isFriend(idOrganizer, userId);
+                        eventDto.setOrganizedByFriend(isOrganizedByFriend);
+                    } else {
+                        eventDto.setOrganizedByFriend(false);
+                    }
+                } else {
+                    eventDto.setOrganizedByFriend(false);
+                }
+            });
+        }
+
         if (CollectionUtils.isNotEmpty(eventDtos)) {
             setSubscribes(eventDtos, userId);
             setFollowers(eventDtos, userId);
