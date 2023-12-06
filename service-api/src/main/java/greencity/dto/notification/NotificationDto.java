@@ -15,12 +15,13 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 @Builder
-public class SingleNotificationDto {
+public class NotificationDto {
     private Long notificationId;
     private String projectName;
     private String notificationType;
     private LocalDateTime time;
     private Boolean viewed;
+    //TODO: Make a language
     private String titleText;
     private String bodyText;
     private String titleTextEng;

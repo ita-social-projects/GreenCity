@@ -142,7 +142,7 @@ public class EventsController {
     })
     @ApiPageableWithoutSort
     @GetMapping
-    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
+    public ResponseEntity<PageableAdvancedDto<EventDto>> getEvents(
         @ApiIgnore Pageable pageable, @ApiIgnore Principal principal, FilterEventDto filterEventDto) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvents(pageable, principal, filterEventDto));
     }

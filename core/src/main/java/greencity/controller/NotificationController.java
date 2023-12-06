@@ -1,15 +1,17 @@
 package greencity.controller;
 
+import greencity.annotations.ApiPageableWithoutSort;
+import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
-import greencity.dto.achievement.AchievementDTO;
-import greencity.dto.achievement.AchievementVO;
-import greencity.dto.notification.NotificationDtoResponse;
+import greencity.dto.PageableAdvancedDto;
+import greencity.dto.notification.FilterNotificationDto;
+import greencity.dto.notification.NotificationDto;
 import greencity.service.UserNotificationService;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -29,7 +33,7 @@ public class NotificationController {
     /**
      * Method returns 3 last new notifications.
      *
-     * @return list of {@link AchievementDTO}
+     * @return set of 3 {@link NotificationDto}
      */
     @ApiOperation(value = "Get all achievements by type.")
     @ApiResponses(value = {
@@ -37,9 +41,33 @@ public class NotificationController {
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
             @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
-    @GetMapping("")
-    public ResponseEntity<List<NotificationDtoResponse>> getThreeLastNotifications(@ApiIgnore Principal principal) {
+    @GetMapping
+    public ResponseEntity<List<NotificationDto>> getThreeLastNotifications(
+            @ApiIgnore Principal principal,
+            @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getThreeLastNotifications(principal.getName()));
+                .body(userNotificationService.getThreeLastNotifications(principal));
+    }
+
+    /**
+     * Method for getting pages of notifications.
+     *
+     * @return list of {@link NotificationDto}
+     */
+    @ApiOperation(value = "Get all notifications")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/all")
+    public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEvent(
+            @ApiIgnore Pageable pageable,
+            @ApiIgnore Principal principal,
+            @ApiIgnore @ValidLanguage Locale locale, //TODO:make locale
+            FilterNotificationDto filter) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userNotificationService.getNotifications(pageable, principal, filter));
     }
 }
