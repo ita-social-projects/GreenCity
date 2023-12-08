@@ -1,5 +1,7 @@
-package greencity.dto.notification;
+package greencity.dto.filter;
 
+import greencity.enums.NotificationType;
+import greencity.enums.ProjectName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class FilterNotificationDto {
-    private String projectName;
-    private String notificationType;
+    private ProjectName[] projectName = {};
+    private NotificationType[] notificationType = {};
 }

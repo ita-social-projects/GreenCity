@@ -4,7 +4,7 @@ import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
-import greencity.dto.notification.FilterNotificationDto;
+import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.service.UserNotificationService;
 import io.swagger.annotations.ApiOperation;
@@ -22,7 +22,6 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -35,7 +34,7 @@ public class NotificationController {
      *
      * @return set of 3 {@link NotificationDto}
      */
-    @ApiOperation(value = "Get all achievements by type.")
+    @ApiOperation(value = "Get 3 last new notifications.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -50,11 +49,11 @@ public class NotificationController {
     }
 
     /**
-     * Method for getting pages of notifications.
+     * Method for getting page of notifications.
      *
      * @return list of {@link NotificationDto}
      */
-    @ApiOperation(value = "Get all notifications")
+    @ApiOperation(value = "Get page of notifications")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = HttpStatuses.OK),
             @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
@@ -65,9 +64,30 @@ public class NotificationController {
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEvent(
             @ApiIgnore Pageable pageable,
             @ApiIgnore Principal principal,
+            @ApiIgnore @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userNotificationService.getNotifications(pageable, principal));
+    }
+
+    /**
+     * Method for getting page of notifications filtered and sorted.
+     *
+     * @return list of {@link NotificationDto}
+     */
+    @ApiOperation(value = "Get page of notification filtered and sorted.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+    })
+    @ApiPageableWithoutSort
+    @GetMapping("/filtered")
+    public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEventFiltered(
+            @ApiIgnore Pageable pageable,
+            @ApiIgnore Principal principal,
             @ApiIgnore @ValidLanguage Locale locale, //TODO:make locale
             FilterNotificationDto filter) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getNotifications(pageable, principal, filter));
+                .body(userNotificationService.getNotificationsFiltered(pageable, principal, filter));
     }
 }

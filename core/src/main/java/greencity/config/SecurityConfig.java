@@ -163,9 +163,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/habit/assign",
                 "/token",
                 "/socket/**",
-                FRIENDS + "/user/{userId}",
-                    "/notification",
-                    "/notification/all")
+                FRIENDS + "/user/{userId}")
             .permitAll()
             .antMatchers(HttpMethod.POST,
                 "/ownSecurity/signUp",
@@ -236,7 +234,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 FRIENDS + "/recommended-friends",
                 FRIENDS + "/mutual-friends",
                 FRIENDS + "/friendRequests",
-                FRIENDS)
+                FRIENDS,
+                "/notification",
+                "/notification/all",
+                "/notification/filtered")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/category",
