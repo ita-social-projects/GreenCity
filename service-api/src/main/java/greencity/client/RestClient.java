@@ -567,9 +567,8 @@ public class RestClient {
 
     /**
      * Method sends general email notification.
-     *
+     * 
      * @param notification {@link GeneralEmailMessage}.
-     *
      */
     public void sendEmailNotification(GeneralEmailMessage notification) {
         HttpHeaders headers = setHeader();

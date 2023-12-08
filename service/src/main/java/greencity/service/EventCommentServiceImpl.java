@@ -25,6 +25,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
@@ -88,9 +89,11 @@ public class EventCommentServiceImpl implements EventCommentService {
             }
             eventComment.setParentComment(parentEventComment);
             notificationService.sendEmailNotification(
-                parentEventComment.getUser().getEmail(),
-                EmailNotificationMessagesConstants.REPLY_SUBJECT,
-                eventComment.getUser().getName() + EmailNotificationMessagesConstants.REPLY_MESSAGE);
+                GeneralEmailMessage.builder()
+                    .email(parentEventComment.getUser().getEmail())
+                    .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
+                    .message(eventComment.getUser().getName() + EmailNotificationMessagesConstants.REPLY_MESSAGE)
+                    .build());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -101,9 +104,11 @@ public class EventCommentServiceImpl implements EventCommentService {
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         notificationService.sendEmailNotification(
-            eventVO.getOrganizer().getEmail(),
-            EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT,
-            EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE + eventVO.getTitle());
+            GeneralEmailMessage.builder()
+                .email(eventVO.getOrganizer().getEmail())
+                .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
+                .message(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE + eventVO.getTitle())
+                .build());
         return addEventCommentDtoResponse;
     }
 
@@ -321,9 +326,12 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
-            notificationService.sendEmailNotification(comment.getUser().getEmail(),
-                EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
-                userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE);
+            notificationService.sendEmailNotification(
+                GeneralEmailMessage.builder()
+                    .email(comment.getUser().getEmail())
+                    .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
+                    .message(userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE)
+                    .build());
         }
         eventCommentRepo.save(comment);
     }

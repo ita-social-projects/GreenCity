@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -61,9 +62,13 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
-        notificationService.sendEmailNotification(emailReceiver.getEmail(),
-            EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT,
-            friendRequestSender.getName() + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE);
+        notificationService.sendEmailNotification(
+            GeneralEmailMessage.builder()
+                .email(emailReceiver.getEmail())
+                .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
+                .message(
+                    friendRequestSender.getName() + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE)
+                .build());
     }
 
     /**
@@ -79,9 +84,12 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
-        notificationService.sendEmailNotification(friend.getEmail(),
-            EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT,
-            EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName());
+        notificationService.sendEmailNotification(
+            GeneralEmailMessage.builder()
+                .email(friend.getEmail())
+                .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
+                .message(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName())
+                .build());
     }
 
     /**

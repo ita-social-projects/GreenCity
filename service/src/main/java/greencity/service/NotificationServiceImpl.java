@@ -106,19 +106,12 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * method sends a general email notification.
      * 
-     * @param email   receiver email
-     * @param subject subject of email message
-     * @param message text of email message
+     * @param emailMessage {@link GeneralEmailMessage}.
      * @author Yurii Midianyi
      */
-    @Async
     @Override
-    public void sendEmailNotification(String email, String subject, String message) {
-        GeneralEmailMessage emailMessage = GeneralEmailMessage.builder()
-            .email(email)
-            .subject(subject)
-            .message(message)
-            .build();
+    public void sendEmailNotification(GeneralEmailMessage emailMessage) {
+        log.info("Already in sendEmailNotification method, thread:{}", Thread.currentThread().getName());
         restClient.sendEmailNotification(emailMessage);
     }
 

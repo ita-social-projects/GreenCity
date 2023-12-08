@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.place.PlaceVO;
+import greencity.message.GeneralEmailMessage;
 
 public interface NotificationService {
     /**
@@ -34,9 +35,7 @@ public interface NotificationService {
     /**
      * Method sends general email notification.
      *
-     * @param email   email to which the notification will be sent
-     * @param subject subject of email message
-     * @param message text of email message
+     * @param emailMessage {@link GeneralEmailMessage}
      */
-    void sendEmailNotification(String email, String subject, String message);
+    void sendEmailNotification(GeneralEmailMessage emailMessage);
 }
