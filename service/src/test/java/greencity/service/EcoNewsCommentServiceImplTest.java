@@ -88,7 +88,7 @@ class EcoNewsCommentServiceImplTest {
     private UserRepo userRepo;
 
     @Mock
-    NotificationService notificationService;
+    private NotificationService notificationService;
 
     private String token = "token";
 

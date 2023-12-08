@@ -7,10 +7,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class ContextAwareTaskDecorator implements TaskDecorator {
     @Override
     public Runnable decorate(Runnable runnable) {
-        RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
         return () -> {
             try {
-                RequestContextHolder.setRequestAttributes(attributes);
+                RequestContextHolder.setRequestAttributes(RequestContextHolder.currentRequestAttributes());
                 runnable.run();
             } finally {
                 RequestContextHolder.resetRequestAttributes();

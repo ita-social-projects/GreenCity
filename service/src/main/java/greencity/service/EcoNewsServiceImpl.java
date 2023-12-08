@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -78,14 +79,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-        sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
         UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
-        return addEcoNewsDtoResponse;
+        notificationService.sendEmailNotification(email, EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT,
+            EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE);
+        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
     /**
@@ -102,8 +102,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(toSave.getAuthor().getEmail(), "You have created eco news",
-            "You have created econews: " + toSave.getTitle());
+        notificationService.sendEmailNotification(toSave.getAuthor().getEmail(),
+            EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT,
+            EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE + toSave.getTitle());
         return ecoNewsDto;
     }
 
@@ -522,7 +523,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
         notificationService.sendEmailNotification(ecoNewsVO.getAuthor().getEmail(),
-            "Your news received a like", "Somebody liked " + ecoNewsVO.getTitle());
+            EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT,
+            EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE + ecoNewsVO.getTitle());
     }
 
     /**

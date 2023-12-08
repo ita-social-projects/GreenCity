@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
@@ -86,8 +87,10 @@ public class EventCommentServiceImpl implements EventCommentService {
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
-            notificationService.sendEmailNotification(parentEventComment.getUser().getEmail(),
-                "You received a reply", eventComment.getUser().getName() + " replied to you");
+            notificationService.sendEmailNotification(
+                parentEventComment.getUser().getEmail(),
+                EmailNotificationMessagesConstants.REPLY_SUBJECT,
+                eventComment.getUser().getName() + EmailNotificationMessagesConstants.REPLY_MESSAGE);
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -97,8 +100,10 @@ public class EventCommentServiceImpl implements EventCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(eventVO.getOrganizer().getEmail(),
-            "You receive a comment", "You received a comment on your event: " + eventVO.getTitle());
+        notificationService.sendEmailNotification(
+            eventVO.getOrganizer().getEmail(),
+            EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT,
+            EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE + eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -317,7 +322,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             notificationService.sendEmailNotification(comment.getUser().getEmail(),
-                "You receive a like on your comment", userVO.getName() + " liked your comment");
+                EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
+                userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE);
         }
         eventCommentRepo.save(comment);
     }

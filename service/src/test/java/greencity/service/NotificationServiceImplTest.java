@@ -1,5 +1,6 @@
 package greencity.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -202,8 +204,13 @@ class NotificationServiceImplTest {
     void sendEmailNotificationTest() {
         String email = "test@gmail.com";
         String subject = "new notification";
-        String message = "check you email box";
+        String message = "check your email box";
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
         notificationService.sendEmailNotification(email, subject, message);
-        verify(restClient).sendEmailNotification(any(GeneralEmailMessage.class));
+        verify(restClient).sendEmailNotification(emailMessageCaptor.capture());
+        GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
+        assertEquals(email, capturedEmailMessage.getEmail());
+        assertEquals(subject, capturedEmailMessage.getSubject());
+        assertEquals(message, capturedEmailMessage.getMessage());
     }
 }

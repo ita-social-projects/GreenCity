@@ -4,6 +4,7 @@ import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -132,7 +133,8 @@ public class EventServiceImpl implements EventService {
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
         notificationService.sendEmailNotification(organizer.getEmail(),
-            "You have created an event", "You have created an event: " + savedEvent.getTitle());
+            EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT,
+            EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE + savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -153,8 +155,8 @@ public class EventServiceImpl implements EventService {
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
             attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(attenderEmail,
-                "Event you have joined was canceled",
-                "Event " + toDelete.getTitle() + " was canceled"));
+                EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
+                EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle()));
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -348,7 +350,8 @@ public class EventServiceImpl implements EventService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
         notificationService.sendEmailNotification(event.getOrganizer().getEmail(),
-            "New people joined your event", currentUser.getName() + " has joined your event");
+            EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT,
+            currentUser.getName() + EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE);
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -439,10 +442,10 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-        for (String attenderEmail : attendersEmails) {
-            notificationService.sendEmailNotification(attenderEmail, "Event you have joined was updated",
-                "Event " + toUpdate.getTitle() + " was updated");
-        }
+        attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(attenderEmail,
+            EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
+            EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle()));
+
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
@@ -61,7 +62,8 @@ public class FriendServiceImpl implements FriendService {
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
         notificationService.sendEmailNotification(emailReceiver.getEmail(),
-            "You have received a friend request", friendRequestSender.getName() + " sent you a friend request");
+            EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT,
+            friendRequestSender.getName() + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE);
     }
 
     /**
@@ -78,7 +80,8 @@ public class FriendServiceImpl implements FriendService {
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
         notificationService.sendEmailNotification(friend.getEmail(),
-            "Your friend request was accepted", "Now you are friends with " + user.getName());
+            EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT,
+            EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName());
     }
 
     /**

@@ -116,7 +116,7 @@ class EventServiceImplTest {
     private AchievementCategoryRepo achievementCategoryRepo;
 
     @Mock
-    NotificationService notificationService;
+    private NotificationService notificationService;
 
     @Test
     void save() {

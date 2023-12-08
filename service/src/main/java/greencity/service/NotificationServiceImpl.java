@@ -119,7 +119,6 @@ public class NotificationServiceImpl implements NotificationService {
             .subject(subject)
             .message(message)
             .build();
-        log.info("Email message sent to restController with receiver: " + email);
         restClient.sendEmailNotification(emailMessage);
     }
 
