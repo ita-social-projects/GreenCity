@@ -8,6 +8,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
+import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
@@ -765,6 +766,20 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getAllUserEventsThrowsBadRequestExceptionTest() {
+        String eventType = "invalid event type";
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        String email = principal.getName();
+
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+
+        assertThrows(BadRequestException.class,
+            () -> eventService.getAllUserEvents(pageRequest, email, "", "", eventType));
+        verify(restClient).findByEmail(principal.getName());
+    }
+
+    @Test
     void getEventsCreatedByUser() {
         List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
         List<Long> eventIds = List.of(events.get(0).getId());
@@ -1164,6 +1179,74 @@ class EventServiceImplTest {
             }.getType());
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+    }
+
+    @Test
+    void getAllWithCurrentUser_WithNullInOrganizerEvent() {
+        List<Event> events = List.of(ModelUtils.getEvent().setOrganizer(null));
+        EventDto expected = ModelUtils.getEventDto().setOrganizer(null);
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(List.of(expected));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getDescription(), actual.getDescription());
+
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+
+        verify(eventRepo).findAllByOrderByIdDesc(any());
+        verify(restClient).findByEmail(any());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+    }
+
+    @Test
+    void getAllWithCurrentUser_WithNullInIdOrganizerEvent() {
+        User user = ModelUtils.getUser();
+        List<Event> events = List.of(ModelUtils.getEvent().setOrganizer(user.setId(null)));
+        EventDto expected = ModelUtils.getEventDto().setOrganizer(EventAuthorDto.builder()
+            .name("User")
+            .id(null)
+            .build());
+        Principal principal = ModelUtils.getPrincipal();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
+        when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(List.of(expected));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getDescription(), actual.getDescription());
+
+        verify(eventRepo).findAllByOrderByIdDesc(any());
+        verify(restClient).findByEmail(any());
+        verify(modelMapper).map(TEST_USER_VO, User.class);
+
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
     }
 
     @Test

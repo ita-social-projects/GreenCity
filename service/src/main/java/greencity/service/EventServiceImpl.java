@@ -250,6 +250,8 @@ public class EventServiceImpl implements EventService {
                 return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                     ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                     : getOfflineUserEventsSortedByDate(attender);
+            } else {
+                throw new BadRequestException(ErrorMessage.INVALID_EVENT_TYPE);
             }
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
@@ -773,6 +775,22 @@ public class EventServiceImpl implements EventService {
         List<EventDto> eventDtos = modelMapper.map(eventsPage.getContent(),
             new TypeToken<List<EventDto>>() {
             }.getType());
+
+        if (Objects.nonNull(eventDtos)) {
+            eventDtos.forEach(eventDto -> {
+                if (Objects.nonNull(eventDto.getOrganizer())) {
+                    Long idOrganizer = eventDto.getOrganizer().getId();
+                    if (Objects.nonNull(idOrganizer)) {
+                        boolean isOrganizedByFriend = userRepo.isFriend(idOrganizer, userId);
+                        eventDto.setOrganizedByFriend(isOrganizedByFriend);
+                    } else {
+                        eventDto.setOrganizedByFriend(false);
+                    }
+                } else {
+                    eventDto.setOrganizedByFriend(false);
+                }
+            });
+        }
 
         if (CollectionUtils.isNotEmpty(eventDtos)) {
             setSubscribes(eventDtos, userId);

@@ -234,6 +234,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 FRIENDS + "/recommended-friends",
                 FRIENDS + "/mutual-friends",
                 FRIENDS + "/friendRequests",
+                FRIENDS + "/{userId}/all-user-friends",
                 FRIENDS,
                 "/notification",
                 "/notification/all",
