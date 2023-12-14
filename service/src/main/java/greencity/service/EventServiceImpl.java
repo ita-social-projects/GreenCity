@@ -140,13 +140,24 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-        notificationService.sendEmailNotification(
-            GeneralEmailMessage.builder()
-                .email(organizer.getEmail())
-                .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
-                .message(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE + savedEvent.getTitle())
-                .build());
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(organizer.getEmail())
+                        .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
+                        .message(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE + savedEvent.getTitle())
+                        .build());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
         return buildEventDto(savedEvent, organizer.getId());
+    }
+
+    private RequestAttributes getOriginaRequestAttributes() {
+        return RequestContextHolder.getRequestAttributes();
     }
 
     @Override
@@ -165,19 +176,17 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            log.info("Before sending notification, Thread:{}", Thread.currentThread().getName());
-            RequestAttributes originalAttributes = RequestContextHolder.getRequestAttributes();
             emailThreadPool.submit(() -> {
                 try {
-                    RequestContextHolder.setRequestAttributes(originalAttributes);
+                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
                     attendersEmails.forEach(attenderEmail -> {
-                        log.info("Sending email notification on thread {}: {}", Thread.currentThread().getName(), attenderEmail);
                         notificationService.sendEmailNotification(
-                                GeneralEmailMessage.builder()
-                                    .email(attenderEmail)
-                                    .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
-                                    .message(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle())
-                                    .build());
+                            GeneralEmailMessage.builder()
+                                .email(attenderEmail)
+                                .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
+                                .message(
+                                    EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle())
+                                .build());
                     });
                 } finally {
                     RequestContextHolder.resetRequestAttributes();
@@ -375,12 +384,19 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
-        notificationService.sendEmailNotification(
-            GeneralEmailMessage.builder()
-                .email(event.getOrganizer().getEmail())
-                .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
-                .message(currentUser.getName() + EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE)
-                .build());
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(event.getOrganizer().getEmail())
+                        .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
+                        .message(currentUser.getName() + EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE)
+                        .build());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -471,29 +487,23 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-
-        log.info("Before sending notification, Thread:{}", Thread.currentThread().getName());
-        RequestAttributes originalAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(originalAttributes);
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
                 attendersEmails.forEach(attenderEmail -> {
-                    log.info("Sending email notification on thread {}: {}", Thread.currentThread().getName(), attenderEmail);
                     notificationService.sendEmailNotification(
-                            GeneralEmailMessage.builder()
-                                    .email(attenderEmail)
-                                    .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
-                                    .message(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle())
-                                    .build());
+                        GeneralEmailMessage.builder()
+                            .email(attenderEmail)
+                            .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
+                            .message(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle())
+                            .build());
                 });
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
         });
-        log.info("Before return, Thread:{}", Thread.currentThread().getName());
         return buildEventDto(updatedEvent, organizer.getId());
     }
-
 
     /**
      * {@inheritDoc}

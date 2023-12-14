@@ -21,8 +21,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +41,7 @@ public class FriendServiceImpl implements FriendService {
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
     private final NotificationService notificationService;
+    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * {@inheritDoc}
@@ -47,6 +53,10 @@ public class FriendServiceImpl implements FriendService {
         validateUserAndFriendExistence(userId, friendId);
         validateFriends(userId, friendId);
         userRepo.deleteUserFriendById(userId, friendId);
+    }
+
+    private RequestAttributes getOriginaRequestAttributes() {
+        return RequestContextHolder.getRequestAttributes();
     }
 
     /**
@@ -62,13 +72,21 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
-        notificationService.sendEmailNotification(
-            GeneralEmailMessage.builder()
-                .email(emailReceiver.getEmail())
-                .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
-                .message(
-                    friendRequestSender.getName() + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE)
-                .build());
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(emailReceiver.getEmail())
+                        .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
+                        .message(
+                            friendRequestSender.getName()
+                                + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE)
+                        .build());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
     }
 
     /**
@@ -84,12 +102,19 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
-        notificationService.sendEmailNotification(
-            GeneralEmailMessage.builder()
-                .email(friend.getEmail())
-                .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
-                .message(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName())
-                .build());
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(friend.getEmail())
+                        .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
+                        .message(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName())
+                        .build());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
     }
 
     /**

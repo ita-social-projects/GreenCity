@@ -111,7 +111,6 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendEmailNotification(GeneralEmailMessage emailMessage) {
-        log.info("Already in sendEmailNotification method, thread:{}", Thread.currentThread().getName());
         restClient.sendEmailNotification(emailMessage);
     }
 

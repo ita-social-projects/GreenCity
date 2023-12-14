@@ -36,7 +36,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +56,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final NotificationService notificationService;
+    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * Method to save {@link greencity.entity.EcoNewsComment}.
@@ -76,12 +82,20 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(parentComment.getUser().getEmail())
-                        .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
-                        .message(ecoNewsComment.getUser().getName() + EmailNotificationMessagesConstants.REPLY_MESSAGE)
-                        .build());
+                emailThreadPool.submit(() -> {
+                    try {
+                        RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                        notificationService.sendEmailNotification(
+                            GeneralEmailMessage.builder()
+                                .email(parentComment.getUser().getEmail())
+                                .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
+                                .message(ecoNewsComment.getUser().getName()
+                                    + EmailNotificationMessagesConstants.REPLY_MESSAGE)
+                                .build());
+                    } finally {
+                        RequestContextHolder.resetRequestAttributes();
+                    }
+                });
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -91,12 +105,19 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        notificationService.sendEmailNotification(
-            GeneralEmailMessage.builder()
-                .email(ecoNewsVO.getAuthor().getEmail())
-                .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
-                .message(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE + ecoNewsVO.getTitle())
-                .build());
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(ecoNewsVO.getAuthor().getEmail())
+                        .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
+                        .message(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE + ecoNewsVO.getTitle())
+                        .build());
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -225,14 +246,25 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotification(
-                GeneralEmailMessage.builder()
-                    .email(comment.getUser().getEmail())
-                    .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
-                    .message(userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE)
-                    .build());
+            emailThreadPool.submit(() -> {
+                try {
+                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                    notificationService.sendEmailNotification(
+                        GeneralEmailMessage.builder()
+                            .email(comment.getUser().getEmail())
+                            .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
+                            .message(userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE)
+                            .build());
+                } finally {
+                    RequestContextHolder.resetRequestAttributes();
+                }
+            });
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
+    }
+
+    private RequestAttributes getOriginaRequestAttributes() {
+        return RequestContextHolder.getRequestAttributes();
     }
 
     /**
