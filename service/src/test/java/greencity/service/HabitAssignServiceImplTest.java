@@ -909,23 +909,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void cancelHabitAssign() {
-        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-        habitAssign.setWorkingDays(10);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-
-        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
-
-        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
-        assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
-
-        verify(habitAssignRepo).save(habitAssign);
-    }
-
-    @Test
     void getByHabitAssignIdAndUserId() {
         Long userId = 1L;
         Long habitAssignId = 2L;

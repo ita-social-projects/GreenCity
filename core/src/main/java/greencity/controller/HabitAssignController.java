@@ -491,26 +491,6 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to cancel inprogress {@link HabitAssignVO} by it's {@link HabitVO} id
-     * and current user id.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  - {@link UserVO} user.
-     * @return {@link HabitAssignDto}.
-     */
-    @ApiOperation(value = "Cancel inprogress user assigned habit.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitAssignDto.class),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
-    })
-    @PatchMapping("/cancel/{habitId}")
-    public ResponseEntity<HabitAssignDto> cancelHabitAssign(@PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.cancelHabitAssign(habitId, userVO.getId()));
-    }
-
-    /**
      * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}
      * by habitAssignId.
      *

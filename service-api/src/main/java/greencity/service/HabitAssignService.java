@@ -5,7 +5,6 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
-import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
@@ -260,15 +259,6 @@ public interface HabitAssignService {
      * @param user {@link UserVO} instance.
      */
     void addDefaultHabit(UserVO user, String language);
-
-    /**
-     * Method to set {@link HabitAssignVO} status from inprogress to cancelled.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userId  - id of {@link UserVO} .
-     * @return {@link HabitAssignDto}.
-     */
-    HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
 
     /**
      * Method delete HabitAssign by habitAssignId for current User.
