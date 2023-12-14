@@ -994,32 +994,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
     }
 
     /**
-     * Method to set {@link HabitAssign} status from inprogress to cancelled.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userId  - id of {@link UserVO}.
-     * @return {@link HabitAssignDto}.
-     */
-    @Transactional
-    @Override
-    public HabitAssignDto cancelHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssignToCancel = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS + habitId));
-        habitAssignToCancel.setStatus(HabitAssignStatus.CANCELLED);
-        UserVO userVO = userService.findById(userId);
-
-        for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                userVO);
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
-        }
-        habitAssignRepo.save(habitAssignToCancel);
-        return buildHabitAssignDto(habitAssignToCancel, "en");
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Transactional
