@@ -1,6 +1,8 @@
 package greencity.constant;
 
 public final class EmailNotificationMessagesConstants {
+
+    private EmailNotificationMessagesConstants(){}
     public static final String ECONEWS_CREATION_SUBJECT = "You have created eco news";
     public static final String ECONEWS_CREATION_MESSAGE = "you successfully created eco news ";
     public static final String ECONEWS_LIKE_SUBJECT = "Your news received a like";
