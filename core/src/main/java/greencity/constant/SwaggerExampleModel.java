@@ -48,6 +48,14 @@ public final class SwaggerExampleModel {
             + EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
+    public static final String ADD_CUSTOM_HABIT_REQUEST =
+        "Add Custom Habit Request\n"
+            + IMAGE_DESCRIPTION
+            + BEFORE_EXAMPLE
+            + "{\n"
+            + EXAMPLE
+            + "}\n"
+            + AFTER_EXAMPLE;
     public static final String UPDATE_ECO_NEWS =
         "Update Eco News\n"
             + IMAGE_DESCRIPTION
