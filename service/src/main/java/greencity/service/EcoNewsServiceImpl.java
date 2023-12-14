@@ -89,9 +89,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(email)
@@ -103,10 +104,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             }
         });
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-    }
-
-    private RequestAttributes getOriginaRequestAttributes() {
-        return RequestContextHolder.getRequestAttributes();
     }
 
     /**
@@ -123,9 +120,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(toSave.getAuthor().getEmail())
@@ -553,9 +551,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(ecoNewsVO.getAuthor().getEmail())

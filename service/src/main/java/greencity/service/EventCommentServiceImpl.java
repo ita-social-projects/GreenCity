@@ -77,7 +77,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         EventComment eventComment = modelMapper.map(addEventCommentDtoRequest, EventComment.class);
         eventComment.setUser(modelMapper.map(userVO, User.class));
         eventComment.setEvent(modelMapper.map(eventVO, Event.class));
-
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         if (addEventCommentDtoRequest.getParentCommentId() != null
             && addEventCommentDtoRequest.getParentCommentId() > 0) {
             Long parentCommentId = addEventCommentDtoRequest.getParentCommentId();
@@ -96,7 +96,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             eventComment.setParentComment(parentEventComment);
             emailThreadPool.submit(() -> {
                 try {
-                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notificationService.sendEmailNotification(
                         GeneralEmailMessage.builder()
                             .email(parentEventComment.getUser().getEmail())
@@ -119,7 +119,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(eventVO.getOrganizer().getEmail())
@@ -131,10 +131,6 @@ public class EventCommentServiceImpl implements EventCommentService {
             }
         });
         return addEventCommentDtoResponse;
-    }
-
-    private RequestAttributes getOriginaRequestAttributes() {
-        return RequestContextHolder.getRequestAttributes();
     }
 
     /**
@@ -351,9 +347,10 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
+            RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
             emailThreadPool.submit(() -> {
                 try {
-                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notificationService.sendEmailNotification(
                         GeneralEmailMessage.builder()
                             .email(comment.getUser().getEmail())

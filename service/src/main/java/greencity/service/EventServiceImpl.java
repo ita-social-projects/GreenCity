@@ -140,9 +140,10 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(organizer.getEmail())
@@ -154,10 +155,6 @@ public class EventServiceImpl implements EventService {
             }
         });
         return buildEventDto(savedEvent, organizer.getId());
-    }
-
-    private RequestAttributes getOriginaRequestAttributes() {
-        return RequestContextHolder.getRequestAttributes();
     }
 
     @Override
@@ -176,9 +173,10 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+            RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
             emailThreadPool.submit(() -> {
                 try {
-                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     attendersEmails.forEach(attenderEmail -> {
                         notificationService.sendEmailNotification(
                             GeneralEmailMessage.builder()
@@ -384,9 +382,10 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(event.getOrganizer().getEmail())
@@ -487,9 +486,10 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 attendersEmails.forEach(attenderEmail -> {
                     notificationService.sendEmailNotification(
                         GeneralEmailMessage.builder()

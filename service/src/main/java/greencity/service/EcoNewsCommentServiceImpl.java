@@ -76,6 +76,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         User user = modelMapper.map(userVO, User.class);
         ecoNewsComment.setUser(user);
         ecoNewsComment.setEcoNews(modelMapper.map(ecoNewsVO, EcoNews.class));
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         if (addEcoNewsCommentDtoRequest.getParentCommentId() != 0) {
             EcoNewsComment parentComment =
                 ecoNewsCommentRepo.findById(addEcoNewsCommentDtoRequest.getParentCommentId()).orElseThrow(
@@ -84,7 +85,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 ecoNewsComment.setParentComment(parentComment);
                 emailThreadPool.submit(() -> {
                     try {
-                        RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                        RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                         notificationService.sendEmailNotification(
                             GeneralEmailMessage.builder()
                                 .email(parentComment.getUser().getEmail())
@@ -107,7 +108,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(ecoNewsVO.getAuthor().getEmail())
@@ -246,9 +247,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
+            RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
             emailThreadPool.submit(() -> {
                 try {
-                    RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                     notificationService.sendEmailNotification(
                         GeneralEmailMessage.builder()
                             .email(comment.getUser().getEmail())
@@ -261,10 +263,6 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             });
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
-    }
-
-    private RequestAttributes getOriginaRequestAttributes() {
-        return RequestContextHolder.getRequestAttributes();
     }
 
     /**

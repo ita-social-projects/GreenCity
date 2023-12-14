@@ -55,10 +55,6 @@ public class FriendServiceImpl implements FriendService {
         userRepo.deleteUserFriendById(userId, friendId);
     }
 
-    private RequestAttributes getOriginaRequestAttributes() {
-        return RequestContextHolder.getRequestAttributes();
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -72,9 +68,10 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(emailReceiver.getEmail())
@@ -102,9 +99,10 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
-                RequestContextHolder.setRequestAttributes(getOriginaRequestAttributes());
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
                 notificationService.sendEmailNotification(
                     GeneralEmailMessage.builder()
                         .email(friend.getEmail())
