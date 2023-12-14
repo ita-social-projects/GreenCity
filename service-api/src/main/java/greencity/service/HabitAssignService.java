@@ -262,15 +262,6 @@ public interface HabitAssignService {
     void addDefaultHabit(UserVO user, String language);
 
     /**
-     * Method to set {@link HabitAssignVO} status from inprogress to cancelled.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userId  - id of {@link UserVO} .
-     * @return {@link HabitAssignDto}.
-     */
-    HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
-
-    /**
      * Method delete HabitAssign by habitAssignId for current User.
      *
      * @param habitAssignId {@link Long} id.

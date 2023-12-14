@@ -136,15 +136,6 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void cancelHabitAssign() throws Exception {
-        mockMvc.perform(patch(habitLink + "/cancel/{habitId}", 1L)
-            .principal(principal))
-            .andExpect(status().isOk());
-
-        verify(habitAssignService).cancelHabitAssign(1L, null);
-    }
-
-    @Test
     void getHabitAssignByHabitIdTest() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
             .principal(principal))
