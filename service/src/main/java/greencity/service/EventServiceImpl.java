@@ -177,15 +177,13 @@ public class EventServiceImpl implements EventService {
             emailThreadPool.submit(() -> {
                 try {
                     RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                    attendersEmails.forEach(attenderEmail ->
-                        notificationService.sendEmailNotification(
-                            GeneralEmailMessage.builder()
-                                .email(attenderEmail)
-                                .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
-                                .message(
-                                    EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle())
-                                .build())
-                    );
+                    attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(
+                        GeneralEmailMessage.builder()
+                            .email(attenderEmail)
+                            .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
+                            .message(
+                                EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle())
+                            .build()));
                 } finally {
                     RequestContextHolder.resetRequestAttributes();
                 }
@@ -490,14 +488,12 @@ public class EventServiceImpl implements EventService {
         emailThreadPool.submit(() -> {
             try {
                 RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                attendersEmails.forEach(attenderEmail ->
-                    notificationService.sendEmailNotification(
-                        GeneralEmailMessage.builder()
-                            .email(attenderEmail)
-                            .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
-                            .message(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle())
-                            .build())
-                );
+                attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(attenderEmail)
+                        .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
+                        .message(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle())
+                        .build()));
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
