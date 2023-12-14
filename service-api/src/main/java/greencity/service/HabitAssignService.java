@@ -269,14 +269,6 @@ public interface HabitAssignService {
     void deleteHabitAssign(Long habitAssignId, Long userId);
 
     /**
-     * Method save HabitAssign.
-     *
-     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto}
-     *                                  habitAssignDto.
-     */
-    void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
-
-    /**
      * Method update shopping item by habit id and item id.
      *
      * @param habitId {@link Long} habit id.

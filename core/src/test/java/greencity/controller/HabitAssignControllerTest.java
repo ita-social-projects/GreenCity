@@ -164,18 +164,6 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void updateShoppingListStatus() throws Exception {
-        UpdateUserShoppingListDto updateUserShoppingListDto = ModelUtils.getUpdateUserShoppingListDto();
-        Gson gson = new Gson();
-        String shoppingListJSON = gson.toJson(updateUserShoppingListDto);
-        mockMvc.perform(put(habitLink + "/saveShoppingListForHabitAssign")
-            .content(shoppingListJSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingListItem(updateUserShoppingListDto);
-    }
-
-    @Test
     void assignCustom() throws Exception {
         HabitAssignCustomPropertiesDto propertiesDto = ModelUtils.getHabitAssignCustomPropertiesDto();
         Gson gson = new Gson();

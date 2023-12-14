@@ -476,30 +476,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         return userItemsDTO;
     }
 
-    @Override
-    @Transactional
-    public void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto) {
-        userShoppingListItemRepo.saveAll(buildUserShoppingListItem(updateUserShoppingListDto));
-    }
-
-    private List<UserShoppingListItem> buildUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto) {
-        HabitAssign habitAssign = habitAssignRepo.findById(updateUserShoppingListDto.getHabitAssignId())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-        List<UserShoppingListItem> userShoppingListItemList = new ArrayList<>();
-        for (UserShoppingListItemAdvanceDto item : updateUserShoppingListDto.getUserShoppingListAdvanceDto()) {
-            ShoppingListItem shoppingListItem = shoppingListItemRepo.findById(item.getShoppingListItemId())
-                .orElseThrow(
-                    () -> new ShoppingListItemNotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID));
-            userShoppingListItemList.add(UserShoppingListItem.builder()
-                .habitAssign(habitAssign)
-                .shoppingListItem(shoppingListItem)
-                .status(item.getStatus())
-                .id(updateUserShoppingListDto.getUserShoppingListItemId())
-                .build());
-        }
-        return userShoppingListItemList;
-    }
-
     /**
      * Method to get {@link HabitTranslation} for current habit assign and language.
      *

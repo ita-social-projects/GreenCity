@@ -1323,24 +1323,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void updateUserShoppingListItem() {
-        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
-        when(userShoppingListItemRepo.saveAll(any())).thenReturn(List.of(userShoppingListItem));
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
-        when(shoppingListItemRepo.findById(1L)).thenReturn(Optional.of(getShoppingListItem()));
-        habitAssignService.updateUserShoppingListItem(getUpdateUserShoppingListDto());
-        verify(userShoppingListItemRepo, times(1)).saveAll(any());
-    }
-
-    @Test
-    void updateUserShoppingListItemThrowException() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
-        UpdateUserShoppingListDto updateUserShoppingListDto = getUpdateUserShoppingListDto();
-        assertThrows(ShoppingListItemNotFoundException.class,
-            () -> habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto));
-    }
-
-    @Test
     void findHabitByUserIdAndHabitAssignIdThrowsNotFoundExceptionWhenHabitAssignNotExists() {
         Long userId = 1L;
         Long habitAssignId = 2L;
