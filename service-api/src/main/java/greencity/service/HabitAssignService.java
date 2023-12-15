@@ -8,7 +8,6 @@ import greencity.dto.habit.HabitAssignUserDurationDto;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -267,14 +266,6 @@ public interface HabitAssignService {
      * @param userId        {@link Long} id.
      */
     void deleteHabitAssign(Long habitAssignId, Long userId);
-
-    /**
-     * Method save HabitAssign.
-     *
-     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto}
-     *                                  habitAssignDto.
-     */
-    void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
 
     /**
      * Method update shopping item by habit id and item id.
