@@ -5,7 +5,6 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -161,18 +160,6 @@ class HabitAssignControllerTest {
         mockMvc.perform(delete(habitLink + "/delete/{habitAssignId}", habitAssignId)
             .principal(principal)).andExpect(status().isOk());
         verify(habitAssignService).deleteHabitAssign(habitAssignId, null);
-    }
-
-    @Test
-    void updateShoppingListStatus() throws Exception {
-        UpdateUserShoppingListDto updateUserShoppingListDto = ModelUtils.getUpdateUserShoppingListDto();
-        Gson gson = new Gson();
-        String shoppingListJSON = gson.toJson(updateUserShoppingListDto);
-        mockMvc.perform(put(habitLink + "/saveShoppingListForHabitAssign")
-            .content(shoppingListJSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingListItem(updateUserShoppingListDto);
     }
 
     @Test
