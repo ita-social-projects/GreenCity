@@ -2,9 +2,9 @@ package greencity.controller;
 
 import greencity.constant.HttpStatuses;
 import greencity.service.LanguageService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +25,9 @@ public class LanguageController {
      *
      * @return list of {@link String}
      */
-    @ApiOperation(value = "Get all language code")
+    @Operation(summary = "Get all language code")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping("")
     public ResponseEntity<List<String>> getAllLanguageCodes() {

@@ -9,10 +9,10 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.service.SearchService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Locale;
 
@@ -37,17 +36,17 @@ public class SearchController {
      * @param searchQuery query to search.
      * @return list of {@link SearchResponseDto}.
      */
-    @ApiOperation(value = "Search.")
+    @Operation(summary = "Search.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ApiLocale
     @GetMapping("")
     public ResponseEntity<SearchResponseDto> search(
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(description = "Query to search") @RequestParam String searchQuery,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(searchService.search(searchQuery, locale.getLanguage()));
     }
 
@@ -57,18 +56,18 @@ public class SearchController {
      * @param searchQuery query to search.
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
-    @ApiOperation(value = "Search Eco news.")
+    @Operation(summary = "Search Eco news.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/econews")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchNewsDto>> searchEcoNews(
-        @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(description = "Query to search") @RequestParam String searchQuery,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
     }
@@ -80,17 +79,17 @@ public class SearchController {
      * @return PageableDto of {@link SearchEventsDto} instances.
      * @author Anton Bondar
      */
-    @ApiOperation(value = "Search Events.")
+    @Operation(summary = "Search Events.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/events")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<SearchEventsDto>> searchEvents(
-        @ApiIgnore Pageable pageable,
-        @ApiParam(value = "Query to search") @RequestParam String searchQuery,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(description = "Query to search") @RequestParam String searchQuery,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllEvents(pageable, searchQuery, locale.getLanguage()));
     }

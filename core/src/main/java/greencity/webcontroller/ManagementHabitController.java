@@ -10,9 +10,12 @@ import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
 import greencity.enums.HabitAssignStatus;
 import greencity.service.*;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,9 +23,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -49,7 +60,7 @@ public class ManagementHabitController {
 
     @GetMapping
     @ApiPageable
-    public String findAllHabits(Model model, @ApiIgnore Pageable pageable,
+    public String findAllHabits(Model model, @Parameter(hidden = true) Pageable pageable,
         @RequestParam(value = "searchReg", required = false) String searchReg,
         @RequestParam(value = "durationFrom", required = false) Integer durationFrom,
         @RequestParam(value = "durationTo", required = false) Integer durationTo,
@@ -69,11 +80,12 @@ public class ManagementHabitController {
      * @param id of {@link HabitVO}.
      * @return {@link HabitManagementDto}.
      */
-    @ApiOperation(value = "Find habit by id.")
+    @Operation(summary = "Find habit by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = HabitManagementDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{id}/find")
     public ResponseEntity<HabitManagementDto> getHabitById(@PathVariable("id") Long id) {
@@ -88,16 +100,17 @@ public class ManagementHabitController {
      * @return {@link HabitManagementDto}.
      * @author Vira Maksymets
      */
-    @ApiOperation(value = "Find habit by id.")
+    @Operation(summary = "Find habit by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = HabitManagementDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/{id}")
     public String getHabitPage(@PathVariable("id") Long id,
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore Locale locale, Model model) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) Locale locale, Model model) {
         model.addAttribute("hfacts", habitFactService.getAllHabitFactsVO(pageable));
         model.addAttribute("hshops", shoppingListItemService.getShoppingListByHabitId(id));
         model.addAttribute("habit", managementHabitService.getById(id));
@@ -120,11 +133,12 @@ public class ManagementHabitController {
      * @return {@link GenericResponseDto} with result of operation and errors
      *         fields.
      */
-    @ApiOperation(value = "Save habit with translations.")
+    @Operation(summary = "Save habit with translations.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = GenericResponseDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PostMapping("/save")
@@ -146,11 +160,12 @@ public class ManagementHabitController {
      * @return {@link GenericResponseDto} with result of operation and errors
      *         fields.
      */
-    @ApiOperation(value = "Update habit with translations.")
+    @Operation(summary = "Update habit with translations.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/update")
@@ -169,11 +184,11 @@ public class ManagementHabitController {
      * @param id {@link HabitDto}'s id.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Delete habit by id.")
+    @Operation(summary = "Delete habit by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/delete")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
@@ -187,11 +202,11 @@ public class ManagementHabitController {
      * @param listId {@link List} of id's.
      * @return {@link ResponseEntity}.
      */
-    @ApiOperation(value = "Delete all habits by given id's.")
+    @Operation(summary = "Delete all habits by given id's.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {

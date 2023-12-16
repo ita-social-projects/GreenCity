@@ -35,6 +35,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,6 +153,7 @@ public class User {
     private Role role;
 
     @Enumerated(value = EnumType.ORDINAL)
+    @JdbcType(IntegerJdbcType.class)
     private UserStatus userStatus;
 
     @Column(nullable = false)
@@ -169,6 +173,7 @@ public class User {
     private List<Estimate> estimates = new ArrayList<>();
 
     @Enumerated(value = EnumType.ORDINAL)
+    @JdbcType(IntegerJdbcType.class)
     private EmailNotification emailNotification;
 
     @Column(name = "refresh_token_key", nullable = false)
@@ -212,7 +217,6 @@ public class User {
     private String userCredo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
-    @Column(name = "social_networks")
     private List<SocialNetwork> socialNetworks;
 
     @Column(name = "show_location")

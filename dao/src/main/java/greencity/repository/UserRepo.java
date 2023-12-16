@@ -69,7 +69,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Transactional
-    @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
+    @Query(value = "UPDATE User u SET u.lastActivityTime=:userLastActivityTime WHERE u.id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
     /**

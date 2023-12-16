@@ -9,15 +9,18 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.factoftheday.FactOfTheDayTranslationVO;
 import greencity.dto.genericresponse.GenericResponseDto;
-import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import java.util.Set;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,9 +29,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -55,7 +66,7 @@ public class ManagementEcoNewsController {
      */
     @GetMapping
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
-        @ApiIgnore Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
+        @Parameter(hidden = true) Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         PageableAdvancedDto<EcoNewsDto> allEcoNews;
         if (!ecoNewsViewDto.isEmpty()) {
             allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
@@ -71,10 +82,10 @@ public class ManagementEcoNewsController {
 
         model.addAttribute("pageable", allEcoNews);
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder("");
+        StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl).append(order.getProperty()).append(",").append(order.getDirection());
             }
             model.addAttribute("sortModel", orderUrl);
         }
@@ -84,14 +95,15 @@ public class ManagementEcoNewsController {
     }
 
     /**
-     * Method which detele {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
+     * Method which delete {@link EcoNewsVO} and {@link FactOfTheDayTranslationVO}
      * by given id.
      *
      * @param id of Eco New
      * @return {@link ResponseEntity}
      */
     @DeleteMapping("/delete")
-    public ResponseEntity<Long> delete(@RequestParam("id") Long id, @ApiIgnore @CurrentUser UserVO user) {
+    public ResponseEntity<Long> delete(@RequestParam("id") Long id,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         ecoNewsService.delete(id, user);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
@@ -114,16 +126,17 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @ApiOperation(value = "Find econews by id.")
+    @Operation(summary = "Find econews by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitManagementDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ApiLocale
     @GetMapping("/find/{id}")
     public ResponseEntity<EcoNewsDto> getEcoNewsById(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage()));
     }
@@ -134,16 +147,17 @@ public class ManagementEcoNewsController {
      * @param id of {@link EcoNewsVO}.
      * @return {@link EcoNewsDto}.
      */
-    @ApiOperation(value = "Find econew's page by id.")
+    @Operation(summary = "Find econew's page by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = EcoNewsDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = EcoNewsDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ApiLocale
     @GetMapping("/{id}")
     public String getEcoNewsPage(@PathVariable("id") Long id,
-        @ApiIgnore Locale locale, Model model) {
+        @Parameter(hidden = true) Locale locale, Model model) {
         EcoNewsDto econew = ecoNewsService.findDtoByIdAndLanguage(id, locale.getLanguage());
         model.addAttribute("econew", econew);
         ZonedDateTime time = econew.getCreationDate();
@@ -170,17 +184,18 @@ public class ManagementEcoNewsController {
      * @param file                 of {@link MultipartFile}
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @ApiOperation(value = "Save EcoNews.")
+    @Operation(summary = "Save EcoNews.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PostMapping("/save")
     public GenericResponseDto saveEcoNews(@Valid @RequestPart AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         BindingResult bindingResult,
         @ImageValidation @RequestParam(required = false, name = "file") MultipartFile file,
-        @ApiIgnore Principal principal) {
+        @Parameter(hidden = true) Principal principal) {
         if (!bindingResult.hasErrors()) {
             ecoNewsService.save(addEcoNewsDtoRequest, file, principal.getName());
         }
@@ -194,10 +209,10 @@ public class ManagementEcoNewsController {
      * @param file                 of {@link MultipartFile}.
      * @return {@link GenericResponseDto} with of operation and errors fields.
      */
-    @ApiOperation(value = "Update Econews.")
+    @Operation(summary = "Update Econews.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
@@ -213,38 +228,38 @@ public class ManagementEcoNewsController {
     /**
      * Method for getting list of users who liked post by post id.
      *
-     * @return list of {@link UserVO} instances.
+     * @return Set of {@link UserVO} instances.
      */
-    @ApiOperation(value = "Get list of users who liked the post by post id.")
+    @Operation(summary = "Get list of users who liked the post by post id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
     @GetMapping("/{id}/likes")
     @ResponseBody
     public Set<UserVO> getLikesByEcoNewsId(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ecoNewsService.findUsersWhoLikedPost(id);
     }
 
     /**
      * Method for getting list of users who disliked post by post id.
      *
-     * @return list of {@link UserVO} instances.
+     * @return Set of {@link UserVO} instances.
      */
-    @ApiOperation(value = "Get list of users who disliked the post by post id.")
+    @Operation(summary = "Get list of users who disliked the post by post id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @ApiLocale
     @GetMapping("/{id}/dislikes")
     @ResponseBody
     public Set<UserVO> getDislikesByEcoNewsId(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ecoNewsService.findUsersWhoDislikedPost(id);
     }
 }

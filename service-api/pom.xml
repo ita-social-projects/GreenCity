@@ -14,7 +14,7 @@
     <version>1.0-SNAPSHOT</version>
     <name>service-api</name>
     <properties>
-        <swagger.version>2.9.2</swagger.version>
+        <swagger.version>3.0.0</swagger.version>
     </properties>
 
     <dependencies>
@@ -50,9 +50,9 @@
             <artifactId>spring-context</artifactId>
         </dependency>
         <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>0.9.1</version>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
 
 @Entity
 @NoArgsConstructor
@@ -80,6 +82,7 @@ public class Place {
 
     @Builder.Default
     @Enumerated(value = EnumType.ORDINAL)
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "int4")
+    @JdbcType(IntegerJdbcType.class)
     private PlaceStatus status = PlaceStatus.PROPOSED;
 }

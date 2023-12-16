@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import greencity.client.RestClient;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
@@ -56,7 +55,7 @@ class EcoNewsCommentControllerTest {
     @Mock
     private ModelMapper modelMapper;
 
-    private Principal principal = getPrincipal();
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setup() {
