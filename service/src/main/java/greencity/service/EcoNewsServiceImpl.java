@@ -29,7 +29,6 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
-import greencity.message.GeneralEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
 import lombok.RequiredArgsConstructor;
@@ -45,14 +44,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -73,7 +67,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
-    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * {@inheritDoc}
@@ -89,21 +82,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(email)
-                        .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE,
-                            toSave.getTitle()))
-                        .build());
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+        notificationService.sendEmailNotification(
+            Collections.singleton(email),
+            EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -121,21 +103,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(toSave.getAuthor().getEmail())
-                        .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE,
-                            toSave.getTitle()))
-                        .build());
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+        notificationService.sendEmailNotification(
+            Collections.singleton(toSave.getAuthor().getEmail()),
+            EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()));
         return ecoNewsDto;
     }
 
@@ -553,21 +524,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(ecoNewsVO.getAuthor().getEmail())
-                        .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE,
-                            ecoNewsVO.getTitle()))
-                        .build());
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+        notificationService.sendEmailNotification(
+            Collections.singleton(ecoNewsVO.getAuthor().getEmail()),
+            EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()));
     }
 
     /**

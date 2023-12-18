@@ -21,13 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
@@ -36,6 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * Constructor.
@@ -104,14 +109,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     /**
-     * method sends a general email notification.
-     * 
-     * @param emailMessage {@link GeneralEmailMessage}.
+     * {@inheritDoc}
+     *
      * @author Yurii Midianyi
      */
     @Override
-    public void sendEmailNotification(GeneralEmailMessage emailMessage) {
-        restClient.sendEmailNotification(emailMessage);
+    public void sendEmailNotification(Set<String> usersEmails, String subject, String message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                usersEmails.forEach(attenderEmail -> restClient.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(attenderEmail)
+                        .subject(subject)
+                        .message(message)
+                        .build()));
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
     }
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {

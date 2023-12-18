@@ -36,13 +36,11 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +56,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -71,13 +67,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class EventServiceImpl implements EventService {
     private final EventRepo eventRepo;
     private final ModelMapper modelMapper;
@@ -92,7 +85,6 @@ public class EventServiceImpl implements EventService {
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
-    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     private static final String FUTURE_EVENT = "FUTURE";
     private static final String PAST_EVENT = "PAST";
@@ -140,21 +132,12 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(organizer.getEmail())
-                        .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
-                            savedEvent.getTitle()))
-                        .build());
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+
+        notificationService.sendEmailNotification(
+            Collections.singleton(organizer.getEmail()),
+            EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE, savedEvent.getTitle()));
+
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -174,22 +157,10 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-            emailThreadPool.submit(() -> {
-                try {
-                    RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                    attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(
-                        GeneralEmailMessage.builder()
-                            .email(attenderEmail)
-                            .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
-                            .message(
-                                String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE,
-                                    toDelete.getTitle()))
-                            .build()));
-                } finally {
-                    RequestContextHolder.resetRequestAttributes();
-                }
-            });
+            notificationService.sendEmailNotification(
+                attendersEmails,
+                EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
+                String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -382,21 +353,10 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(event.getOrganizer().getEmail())
-                        .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE,
-                            currentUser.getName()))
-                        .build());
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+        notificationService.sendEmailNotification(
+            Collections.singleton(event.getOrganizer().getEmail()),
+            EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()));
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -487,21 +447,10 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
-        emailThreadPool.submit(() -> {
-            try {
-                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
-                attendersEmails.forEach(attenderEmail -> notificationService.sendEmailNotification(
-                    GeneralEmailMessage.builder()
-                        .email(attenderEmail)
-                        .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
-                        .message(String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE,
-                            toUpdate.getTitle()))
-                        .build()));
-            } finally {
-                RequestContextHolder.resetRequestAttributes();
-            }
-        });
+        notificationService.sendEmailNotification(
+            attendersEmails,
+            EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

@@ -1,5 +1,7 @@
 package greencity.service;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -206,12 +208,13 @@ class NotificationServiceImplTest {
         String subject = "new notification";
         String message = "check your email box";
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
-        notificationService.sendEmailNotification(
-            new GeneralEmailMessage(email, subject, message));
-        verify(restClient).sendEmailNotification(emailMessageCaptor.capture());
+        notificationService.sendEmailNotification(Collections.singleton(email), subject, message);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
         GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
         assertEquals(email, capturedEmailMessage.getEmail());
         assertEquals(subject, capturedEmailMessage.getSubject());
         assertEquals(message, capturedEmailMessage.getMessage());
     }
+
 }

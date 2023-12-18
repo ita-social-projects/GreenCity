@@ -1,7 +1,8 @@
 package greencity.service;
 
 import greencity.dto.place.PlaceVO;
-import greencity.message.GeneralEmailMessage;
+
+import java.util.Set;
 
 public interface NotificationService {
     /**
@@ -33,9 +34,12 @@ public interface NotificationService {
     void sendMonthlyReport();
 
     /**
-     * Method sends general email notification.
+     * method sends a general email notification.
      *
-     * @param emailMessage {@link GeneralEmailMessage}
+     * @param usersEmails {@link Set} to this users email will be sent.
+     * @param subject     subject of email message.
+     * @param message     text of email message.
+     * @author Yurii Midianyi
      */
-    void sendEmailNotification(GeneralEmailMessage emailMessage);
+    void sendEmailNotification(Set<String> usersEmails, String subject, String message);
 }
