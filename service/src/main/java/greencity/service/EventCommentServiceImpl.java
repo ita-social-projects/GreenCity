@@ -326,10 +326,6 @@ public class EventCommentServiceImpl implements EventCommentService {
                 EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
                     userVO.getName()));
-            notificationService.sendEmailNotification(
-                Collections.singleton(comment.getUser().getEmail()),
-                EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
-                String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()));
         }
         eventCommentRepo.save(comment);
     }
