@@ -148,7 +148,8 @@ public class EventServiceImpl implements EventService {
                     GeneralEmailMessage.builder()
                         .email(organizer.getEmail())
                         .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE + savedEvent.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
+                            savedEvent.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -182,7 +183,8 @@ public class EventServiceImpl implements EventService {
                             .email(attenderEmail)
                             .subject(EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT)
                             .message(
-                                EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE + toDelete.getTitle())
+                                String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE,
+                                    toDelete.getTitle()))
                             .build()));
                 } finally {
                     RequestContextHolder.resetRequestAttributes();
@@ -388,7 +390,8 @@ public class EventServiceImpl implements EventService {
                     GeneralEmailMessage.builder()
                         .email(event.getOrganizer().getEmail())
                         .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
-                        .message(currentUser.getName() + EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE)
+                        .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE,
+                            currentUser.getName()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -492,7 +495,8 @@ public class EventServiceImpl implements EventService {
                     GeneralEmailMessage.builder()
                         .email(attenderEmail)
                         .subject(EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE + toUpdate.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE,
+                            toUpdate.getTitle()))
                         .build()));
             } finally {
                 RequestContextHolder.resetRequestAttributes();

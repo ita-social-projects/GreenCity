@@ -90,8 +90,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                             GeneralEmailMessage.builder()
                                 .email(parentComment.getUser().getEmail())
                                 .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
-                                .message(ecoNewsComment.getUser().getName()
-                                    + EmailNotificationMessagesConstants.REPLY_MESSAGE)
+                                .message(
+                                    String.format(
+                                        EmailNotificationMessagesConstants.REPLY_MESSAGE,
+                                        ecoNewsComment.getUser().getName()))
                                 .build());
                     } finally {
                         RequestContextHolder.resetRequestAttributes();
@@ -113,7 +115,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     GeneralEmailMessage.builder()
                         .email(ecoNewsVO.getAuthor().getEmail())
                         .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE + ecoNewsVO.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE,
+                            ecoNewsVO.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -255,7 +258,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                         GeneralEmailMessage.builder()
                             .email(comment.getUser().getEmail())
                             .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
-                            .message(userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE)
+                            .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
+                                userVO.getName()))
                             .build());
                 } finally {
                     RequestContextHolder.resetRequestAttributes();

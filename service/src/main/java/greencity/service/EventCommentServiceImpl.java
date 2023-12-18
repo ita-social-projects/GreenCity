@@ -102,7 +102,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                             .email(parentEventComment.getUser().getEmail())
                             .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
                             .message(
-                                eventComment.getUser().getName() + EmailNotificationMessagesConstants.REPLY_MESSAGE)
+                                String.format(
+                                    EmailNotificationMessagesConstants.REPLY_MESSAGE,
+                                    eventComment.getUser().getName()))
                             .build());
                 } finally {
                     RequestContextHolder.resetRequestAttributes();
@@ -124,7 +126,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                     GeneralEmailMessage.builder()
                         .email(eventVO.getOrganizer().getEmail())
                         .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE + eventVO.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE,
+                            eventVO.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -355,7 +358,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                         GeneralEmailMessage.builder()
                             .email(comment.getUser().getEmail())
                             .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
-                            .message(userVO.getName() + EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE)
+                            .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
+                                userVO.getName()))
                             .build());
                 } finally {
                     RequestContextHolder.resetRequestAttributes();

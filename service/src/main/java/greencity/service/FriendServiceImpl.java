@@ -77,8 +77,9 @@ public class FriendServiceImpl implements FriendService {
                         .email(emailReceiver.getEmail())
                         .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
                         .message(
-                            friendRequestSender.getName()
-                                + EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE)
+                            String.format(
+                                EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
+                                friendRequestSender.getName()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -107,7 +108,10 @@ public class FriendServiceImpl implements FriendService {
                     GeneralEmailMessage.builder()
                         .email(friend.getEmail())
                         .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE + user.getName())
+                        .message(
+                            String.format(
+                                EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE,
+                                user.getName()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();

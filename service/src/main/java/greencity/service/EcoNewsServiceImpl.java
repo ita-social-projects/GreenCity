@@ -97,7 +97,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                     GeneralEmailMessage.builder()
                         .email(email)
                         .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE)
+                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE,
+                            toSave.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -128,7 +129,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                     GeneralEmailMessage.builder()
                         .email(toSave.getAuthor().getEmail())
                         .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE + toSave.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE,
+                            toSave.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
@@ -559,7 +561,8 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                     GeneralEmailMessage.builder()
                         .email(ecoNewsVO.getAuthor().getEmail())
                         .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-                        .message(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE + ecoNewsVO.getTitle())
+                        .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE,
+                            ecoNewsVO.getTitle()))
                         .build());
             } finally {
                 RequestContextHolder.resetRequestAttributes();
