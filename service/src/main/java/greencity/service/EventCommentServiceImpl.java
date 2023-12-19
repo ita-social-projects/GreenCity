@@ -25,6 +25,7 @@ import greencity.enums.AchievementCategoryType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
@@ -35,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,10 +87,12 @@ public class EventCommentServiceImpl implements EventCommentService {
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
-            notificationService.sendEmailNotification(
-                Collections.singleton(parentEventComment.getUser().getEmail()),
-                EmailNotificationMessagesConstants.REPLY_SUBJECT,
-                String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()));
+            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+                .email(parentEventComment.getUser().getEmail())
+                .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
+                .message(
+                    String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
+                .build());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -100,10 +102,11 @@ public class EventCommentServiceImpl implements EventCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotification(
-            Collections.singleton(eventVO.getOrganizer().getEmail()),
-            EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()));
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(eventVO.getOrganizer().getEmail())
+            .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
+            .build());
         return addEventCommentDtoResponse;
     }
 
@@ -321,11 +324,12 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
-            notificationService.sendEmailNotification(
-                Collections.singleton(comment.getUser().getEmail()),
-                EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
-                String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
-                    userVO.getName()));
+            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+                .email(comment.getUser().getEmail())
+                .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
+                .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
+                    userVO.getName()))
+                .build());
         }
         eventCommentRepo.save(comment);
     }

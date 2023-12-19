@@ -24,6 +24,7 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
 import greencity.repository.EcoNewsRepo;
@@ -35,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,11 +76,12 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
-                notificationService.sendEmailNotification(
-                    Collections.singleton(parentComment.getUser().getEmail()),
-                    EmailNotificationMessagesConstants.REPLY_SUBJECT,
-                    String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
-                        ecoNewsComment.getUser().getName()));
+                notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+                    .email(parentComment.getUser().getEmail())
+                    .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
+                    .message(String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
+                        ecoNewsComment.getUser().getName()))
+                    .build());
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -90,10 +91,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        notificationService.sendEmailNotification(
-            Collections.singleton(ecoNewsVO.getAuthor().getEmail()),
-            EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()));
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(ecoNewsVO.getAuthor().getEmail())
+            .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
+            .build());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -222,10 +224,11 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotification(
-                Collections.singleton(comment.getUser().getEmail()),
-                EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT,
-                String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()));
+            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+                .email(comment.getUser().getEmail())
+                .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
+                .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
+                .build());
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

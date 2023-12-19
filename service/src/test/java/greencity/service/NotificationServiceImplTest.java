@@ -208,7 +208,7 @@ class NotificationServiceImplTest {
         String subject = "new notification";
         String message = "check your email box";
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
-        notificationService.sendEmailNotification(Collections.singleton(email), subject, message);
+        notificationService.sendEmailNotificationToManyUsers(Collections.singleton(email), subject, message);
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
         GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();

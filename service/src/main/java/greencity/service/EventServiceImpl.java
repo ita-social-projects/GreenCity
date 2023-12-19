@@ -36,6 +36,7 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
@@ -132,12 +133,12 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-
-        notificationService.sendEmailNotification(
-            Collections.singleton(organizer.getEmail()),
-            EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE, savedEvent.getTitle()));
-
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(organizer.getEmail())
+            .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
+                savedEvent.getTitle()))
+            .build());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -157,7 +158,7 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            notificationService.sendEmailNotification(
+            notificationService.sendEmailNotificationToManyUsers(
                 attendersEmails,
                 EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
@@ -353,10 +354,11 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
-        notificationService.sendEmailNotification(
-            Collections.singleton(event.getOrganizer().getEmail()),
-            EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()));
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(event.getOrganizer().getEmail())
+            .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
+            .build());
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -447,7 +449,7 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-        notificationService.sendEmailNotification(
+        notificationService.sendEmailNotificationToManyUsers(
             attendersEmails,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));

@@ -11,6 +11,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -62,11 +62,12 @@ public class FriendServiceImpl implements FriendService {
         userRepo.addNewFriend(userId, friendId);
         User emailReceiver = userRepo.getOne(friendId);
         User friendRequestSender = userRepo.getOne(userId);
-        notificationService.sendEmailNotification(
-            Collections.singleton(emailReceiver.getEmail()),
-            EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
-                friendRequestSender.getName()));
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(emailReceiver.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
+                friendRequestSender.getName()))
+            .build());
     }
 
     /**
@@ -82,10 +83,11 @@ public class FriendServiceImpl implements FriendService {
         userRepo.acceptFriendRequest(userId, friendId);
         User user = userRepo.getOne(userId);
         User friend = userRepo.getOne(friendId);
-        notificationService.sendEmailNotification(
-            Collections.singleton(friend.getEmail()),
-            EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT,
-            String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()));
+        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            .email(friend.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
+            .build());
     }
 
     /**

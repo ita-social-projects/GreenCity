@@ -114,7 +114,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @author Yurii Midianyi
      */
     @Override
-    public void sendEmailNotification(Set<String> usersEmails, String subject, String message) {
+    public void sendEmailNotificationToManyUsers(Set<String> usersEmails, String subject, String message) {
         RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
         emailThreadPool.submit(() -> {
             try {
@@ -125,6 +125,24 @@ public class NotificationServiceImpl implements NotificationService {
                         .subject(subject)
                         .message(message)
                         .build()));
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Yurii Midianyi
+     */
+    @Override
+    public void sendEmailNotificationToOneUser(GeneralEmailMessage generalEmailMessage) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendEmailNotification(generalEmailMessage);
             } finally {
                 RequestContextHolder.resetRequestAttributes();
             }
