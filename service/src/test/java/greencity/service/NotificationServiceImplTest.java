@@ -212,7 +212,7 @@ class NotificationServiceImplTest {
         String subject = "new notification";
         String message = "check your email box";
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
-        notificationService.sendEmailNotificationToManyUsers(setOfEmails, subject, message);
+        notificationService.sendEmailNotification(setOfEmails, subject, message);
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient, times(3)).sendEmailNotification(emailMessageCaptor.capture()));
         List<GeneralEmailMessage> capturedEmailMessages = emailMessageCaptor.getAllValues();
@@ -231,7 +231,7 @@ class NotificationServiceImplTest {
         String message = "check your email box";
         GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
-        notificationService.sendEmailNotificationToOneUser(generalEmailMessage);
+        notificationService.sendEmailNotification(generalEmailMessage);
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
         GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();

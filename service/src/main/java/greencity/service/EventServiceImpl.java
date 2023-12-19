@@ -133,7 +133,7 @@ public class EventServiceImpl implements EventService {
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(organizer.getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
@@ -158,7 +158,7 @@ public class EventServiceImpl implements EventService {
             deleteImagesFromServer(eventImages);
             Set<String> attendersEmails =
                 toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-            notificationService.sendEmailNotificationToManyUsers(
+            notificationService.sendEmailNotification(
                 attendersEmails,
                 EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
@@ -354,7 +354,7 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(event.getOrganizer().getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
@@ -449,7 +449,7 @@ public class EventServiceImpl implements EventService {
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
-        notificationService.sendEmailNotificationToManyUsers(
+        notificationService.sendEmailNotification(
             attendersEmails,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));

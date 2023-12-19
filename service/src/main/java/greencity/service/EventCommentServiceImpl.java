@@ -87,7 +87,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
-            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(parentEventComment.getUser().getEmail())
                 .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
                 .message(
@@ -102,7 +102,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         achievementCalculation.calculateAchievement(userVO,
             AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(eventVO.getOrganizer().getEmail())
             .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
@@ -324,7 +324,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
-            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,

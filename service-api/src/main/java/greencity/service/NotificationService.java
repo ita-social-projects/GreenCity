@@ -42,7 +42,7 @@ public interface NotificationService {
      * @param message     text of email message.
      * @author Yurii Midianyi
      */
-    void sendEmailNotificationToManyUsers(Set<String> usersEmails, String subject, String message);
+    void sendEmailNotification(Set<String> usersEmails, String subject, String message);
 
     /**
      * method sends a general email notification to one User.
@@ -50,5 +50,5 @@ public interface NotificationService {
      * @param generalEmailMessage {@link GeneralEmailMessage}.
      * @author Yurii Midianyi
      */
-    void sendEmailNotificationToOneUser(GeneralEmailMessage generalEmailMessage);
+    void sendEmailNotification(GeneralEmailMessage generalEmailMessage);
 }

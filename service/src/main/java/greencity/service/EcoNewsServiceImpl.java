@@ -83,7 +83,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(email)
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
@@ -105,7 +105,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(toSave.getAuthor().getEmail())
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
@@ -527,7 +527,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(ecoNewsVO.getAuthor().getEmail())
             .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))

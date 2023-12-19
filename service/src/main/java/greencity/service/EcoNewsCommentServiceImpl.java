@@ -76,7 +76,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     () -> new BadRequestException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
             if (parentComment.getParentComment() == null) {
                 ecoNewsComment.setParentComment(parentComment);
-                notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+                notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                     .email(parentComment.getUser().getEmail())
                     .subject(EmailNotificationMessagesConstants.REPLY_SUBJECT)
                     .message(String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
@@ -91,7 +91,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 AchievementCategoryType.COMMENT_OR_REPLY, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.COMMENT_OR_REPLY, userVO);
         ecoNewsComment.setStatus(CommentStatus.ORIGINAL);
-        notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
             .email(ecoNewsVO.getAuthor().getEmail())
             .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
@@ -224,7 +224,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
-            notificationService.sendEmailNotificationToOneUser(GeneralEmailMessage.builder()
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
