@@ -60,15 +60,18 @@ public class SecurityConfig {
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
     private final JwtTool jwtTool;
     private final UserService userService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     /**
      * Constructor.
      */
 
     @Autowired
-    public SecurityConfig(JwtTool jwtTool, UserService userService) {
+    public SecurityConfig(JwtTool jwtTool, UserService userService,
+        AuthenticationConfiguration authenticationConfiguration) {
         this.jwtTool = jwtTool;
         this.userService = userService;
+        this.authenticationConfiguration = authenticationConfiguration;
     }
 
     /**
@@ -89,8 +92,7 @@ public class SecurityConfig {
         http.cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-            .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool,
-                authenticationManager(new AuthenticationConfiguration()), userService),
+            .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
                 .sendError(SC_UNAUTHORIZED, "Authorize first."))
@@ -386,10 +388,12 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
             web.ignoring().requestMatchers("/v2/api-docs/**");
+            web.ignoring().requestMatchers("/v3/api-docs/**");
             web.ignoring().requestMatchers("/swagger.json");
             web.ignoring().requestMatchers("/swagger-ui.html");
             web.ignoring().requestMatchers("/swagger-resources/**");
             web.ignoring().requestMatchers("/webjars/**");
+            web.ignoring().requestMatchers("/swagger-ui/**");
         };
     }
 
@@ -406,12 +410,11 @@ public class SecurityConfig {
     /**
      * Provides AuthenticationManager.
      *
-     * @param authConfiguration {@link AuthenticationConfiguration}
      * @return {@link AuthenticationManager}
      */
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
-        return authConfiguration.getAuthenticationManager();
+    AuthenticationManager authenticationManager() throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     /**
