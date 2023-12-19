@@ -3,10 +3,12 @@ package greencity.service;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.category.CategoryDto;
@@ -25,7 +27,9 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -203,12 +207,31 @@ class NotificationServiceImplTest {
     }
 
     @Test
-    void sendEmailNotificationTest() {
-        String email = "test@gmail.com";
+    void sendEmailNotificationToManyUsersTest() {
+        Set<String> setOfEmails = new HashSet<>(Arrays.asList("test1@gmail.com", "test2@gmail.com", "test3@gmail.com"));
         String subject = "new notification";
         String message = "check your email box";
         ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
-        notificationService.sendEmailNotificationToManyUsers(Collections.singleton(email), subject, message);
+        notificationService.sendEmailNotificationToManyUsers(setOfEmails, subject, message);
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> verify(restClient, times(3)).sendEmailNotification(emailMessageCaptor.capture()));
+        List<GeneralEmailMessage> capturedEmailMessages = emailMessageCaptor.getAllValues();
+        assertFalse(capturedEmailMessages.isEmpty());
+        for (GeneralEmailMessage capturedEmailMessage : capturedEmailMessages) {
+            assertTrue(setOfEmails.contains(capturedEmailMessage.getEmail()));
+            assertEquals(subject, capturedEmailMessage.getSubject());
+            assertEquals(message, capturedEmailMessage.getMessage());
+        }
+    }
+
+    @Test
+    void sendEmailNotificationToOneUserTest() {
+        String email = "test1@gmail.com";
+        String subject = "new notification";
+        String message = "check your email box";
+        GeneralEmailMessage generalEmailMessage = new GeneralEmailMessage(email, subject, message);
+        ArgumentCaptor<GeneralEmailMessage> emailMessageCaptor = ArgumentCaptor.forClass(GeneralEmailMessage.class);
+        notificationService.sendEmailNotificationToOneUser(generalEmailMessage);
         await().atMost(5, SECONDS)
             .untilAsserted(() -> verify(restClient).sendEmailNotification(emailMessageCaptor.capture()));
         GeneralEmailMessage capturedEmailMessage = emailMessageCaptor.getValue();
@@ -216,5 +239,4 @@ class NotificationServiceImplTest {
         assertEquals(subject, capturedEmailMessage.getSubject());
         assertEquals(message, capturedEmailMessage.getMessage());
     }
-
 }
