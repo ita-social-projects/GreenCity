@@ -54,6 +54,9 @@ public class EventDto {
 
     private int countComments;
 
+    @JsonProperty("isOrganizedByFriend")
+    private boolean isOrganizedByFriend;
+
     /**
      * Return String of event tags in English.
      *

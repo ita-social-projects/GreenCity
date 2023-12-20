@@ -351,7 +351,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     }
 
     /**
-     * Method that allow you to search users by name.
+     * Method that allow you to search users by name. The search results will be
+     * limited to the first 10 entries, and the list will decrease as the search
+     * query is refined.
      *
      * @param searchUsers dto with current user ID and search query
      *                    {@link UserSearchDto}.
@@ -366,6 +368,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
 
         List<UserTagDto> usersToTag = users.stream()
             .map(u -> modelMapper.map(u, UserTagDto.class))
+            .limit(10)
             .collect(Collectors.toList());
 
         messagingTemplate.convertAndSend("/topic/" + searchUsers.getCurrentUserId() + "/searchUsers", usersToTag);
