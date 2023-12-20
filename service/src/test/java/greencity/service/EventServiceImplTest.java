@@ -12,6 +12,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
@@ -58,6 +59,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static greencity.ModelUtils.TEST_USER_VO;
+import static greencity.ModelUtils.getCloseEvent;
+import static greencity.ModelUtils.getFilterEventDtoWithOpenStatus;
+import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1459,6 +1463,17 @@ class EventServiceImplTest {
         verify(eventRepo).findAll();
         verify(restClient).findByEmail(principal.getName());
         verify(modelMapper).map(TEST_USER_VO, User.class);
+    }
+
+    @Test
+    void getEventsWithInvalidPageNumberTest() {
+        List<Event> events = List.of(getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(100500, 2);
+        FilterEventDto filterEventDto = getFilterEventDtoWithOpenStatus();
+        Principal principal = getPrincipal();
+        when(eventRepo.findAll()).thenReturn(events);
+        assertThrows(NotFoundException.class, () -> eventService.getEvents(pageRequest, principal, filterEventDto));
+        verify(eventRepo).findAll();
     }
 
     @Test
