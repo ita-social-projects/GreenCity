@@ -26,6 +26,7 @@ import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.AchievementCategoryRepo;
 import greencity.repository.EventRepo;
@@ -57,8 +58,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import static greencity.ModelUtils.TEST_USER_VO;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static greencity.ModelUtils.getCloseEvent;
 import static greencity.ModelUtils.getFilterEventDtoWithOpenStatus;
 import static greencity.ModelUtils.getPrincipal;
@@ -116,6 +118,9 @@ class EventServiceImplTest {
     private SimpMessagingTemplate messagingTemplate;
     @Mock
     private AchievementCategoryRepo achievementCategoryRepo;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Test
     void save() {
@@ -223,6 +228,9 @@ class EventServiceImplTest {
 
         verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
         verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+        verify(restClient).findByEmail(anyString());
+        await().atMost(5, SECONDS)
+            .untilAsserted(() -> restClient.sendEmailNotification(any(GeneralEmailMessage.class)));
     }
 
     @Test

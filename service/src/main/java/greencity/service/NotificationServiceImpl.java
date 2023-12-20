@@ -11,6 +11,7 @@ import greencity.entity.Category;
 import greencity.entity.Place;
 import greencity.enums.EmailNotification;
 import greencity.enums.PlaceStatus;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendReportEmailMessage;
 import greencity.repository.PlaceRepo;
 import java.time.LocalDateTime;
@@ -20,12 +21,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 @Slf4j
 @Service
@@ -34,6 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final PlaceRepo placeRepo;
     private final ModelMapper modelMapper;
     private final RestClient restClient;
+    private final ThreadPoolExecutor emailThreadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
     /**
      * Constructor.
@@ -99,6 +106,47 @@ public class NotificationServiceImpl implements NotificationService {
         log.info(LogMessage.IN_SEND_MONTHLY_REPORT, LocalDateTime.now(ZONE_ID));
         LocalDateTime startDate = LocalDateTime.now(ZONE_ID).minusMonths(1);
         sendReport(EmailNotification.MONTHLY, startDate);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Yurii Midianyi
+     */
+    @Override
+    public void sendEmailNotification(Set<String> usersEmails, String subject, String message) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                usersEmails.forEach(attenderEmail -> restClient.sendEmailNotification(
+                    GeneralEmailMessage.builder()
+                        .email(attenderEmail)
+                        .subject(subject)
+                        .message(message)
+                        .build()));
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @author Yurii Midianyi
+     */
+    @Override
+    public void sendEmailNotification(GeneralEmailMessage generalEmailMessage) {
+        RequestAttributes originalRequestAttributes = RequestContextHolder.getRequestAttributes();
+        emailThreadPool.submit(() -> {
+            try {
+                RequestContextHolder.setRequestAttributes(originalRequestAttributes);
+                restClient.sendEmailNotification(generalEmailMessage);
+            } finally {
+                RequestContextHolder.resetRequestAttributes();
+            }
+        });
     }
 
     private void sendReport(EmailNotification emailNotification, LocalDateTime startDate) {
