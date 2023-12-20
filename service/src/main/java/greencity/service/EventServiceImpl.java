@@ -70,6 +70,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static greencity.constant.ErrorMessage.PAGE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -173,6 +175,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
+
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
@@ -191,15 +194,27 @@ public class EventServiceImpl implements EventService {
     private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
         FilterEventDto filterEventDto) {
         List<Event> events = eventRepo.findAll();
+        validatePageNumber(events, page);
+
         return principal != null
             ? getFilteredForLoggedInUser(events, page, principal, filterEventDto)
             : getFilteredForAnonymousUser(events, page, filterEventDto);
+    }
+
+    private void validatePageNumber(List<Event> events, Pageable page) {
+        int pageNumber = page.getPageNumber();
+        int totalPages = (int) Math.ceil((double) events.size() / (double) page.getPageSize());
+
+        if (pageNumber > totalPages) {
+            throw new NotFoundException(PAGE_NOT_FOUND + totalPages);
+        }
     }
 
     private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
         Principal principal, FilterEventDto filterEventDto) {
         long userId = modelMapper.map(restClient.findByEmail(principal.getName()), User.class).getId();
         events = getAllFilteredAndSorted(events, userId, filterEventDto);
+        validatePageNumber(events, page);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage, userId);
     }
@@ -207,6 +222,7 @@ public class EventServiceImpl implements EventService {
     private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
         FilterEventDto filterEventDto) {
         events = getAllFilteredAndSorted(events, null, filterEventDto);
+        validatePageNumber(events, page);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage);
     }
