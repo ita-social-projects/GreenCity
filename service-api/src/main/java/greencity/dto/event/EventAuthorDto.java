@@ -11,4 +11,5 @@ public class EventAuthorDto {
     private Long id;
     private String name;
     private Double organizerRating;
+    private String email;
 }

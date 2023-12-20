@@ -35,7 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,6 +52,9 @@ class FriendServiceImplTest {
     private CustomUserRepo customUserRepo;
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    NotificationService notificationService;
 
     @Test
     void deleteUserFriendByIdTest() {
@@ -134,14 +139,15 @@ class FriendServiceImplTest {
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriendRequested(userId, friendId)).thenReturn(false);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
-
+        when(userRepo.getOne(userId)).thenReturn(ModelUtils.getUser());
+        when(userRepo.getOne(friendId)).thenReturn(ModelUtils.getTestUser());
         friendService.addNewFriend(userId, friendId);
-
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriendRequested(userId, friendId);
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo).addNewFriend(userId, friendId);
+        verify(userRepo, times(2)).getOne(anyLong());
     }
 
     @Test
@@ -251,14 +257,15 @@ class FriendServiceImplTest {
         when(userRepo.existsById(friendId)).thenReturn(true);
         when(userRepo.isFriend(userId, friendId)).thenReturn(false);
         when(userRepo.isFriendRequestedByCurrentUser(friendId, userId)).thenReturn(true);
-
+        when(userRepo.getOne(userId)).thenReturn(ModelUtils.getUser());
+        when(userRepo.getOne(friendId)).thenReturn(ModelUtils.getTestUser());
         friendService.acceptFriendRequest(userId, friendId);
-
         verify(userRepo).existsById(userId);
         verify(userRepo).existsById(friendId);
         verify(userRepo).isFriend(userId, friendId);
         verify(userRepo).isFriendRequestedByCurrentUser(friendId, userId);
         verify(userRepo).acceptFriendRequest(userId, friendId);
+        verify(userRepo, times(2)).getOne(anyLong());
     }
 
     @Test
