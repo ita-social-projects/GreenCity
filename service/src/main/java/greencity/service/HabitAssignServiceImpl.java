@@ -14,7 +14,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -57,7 +56,6 @@ import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
@@ -474,30 +472,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             }
         }
         return userItemsDTO;
-    }
-
-    @Override
-    @Transactional
-    public void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto) {
-        userShoppingListItemRepo.saveAll(buildUserShoppingListItem(updateUserShoppingListDto));
-    }
-
-    private List<UserShoppingListItem> buildUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto) {
-        HabitAssign habitAssign = habitAssignRepo.findById(updateUserShoppingListDto.getHabitAssignId())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.HABIT_ASSIGN_NOT_FOUND_BY_ID));
-        List<UserShoppingListItem> userShoppingListItemList = new ArrayList<>();
-        for (UserShoppingListItemAdvanceDto item : updateUserShoppingListDto.getUserShoppingListAdvanceDto()) {
-            ShoppingListItem shoppingListItem = shoppingListItemRepo.findById(item.getShoppingListItemId())
-                .orElseThrow(
-                    () -> new ShoppingListItemNotFoundException(ErrorMessage.SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID));
-            userShoppingListItemList.add(UserShoppingListItem.builder()
-                .habitAssign(habitAssign)
-                .shoppingListItem(shoppingListItem)
-                .status(item.getStatus())
-                .id(updateUserShoppingListDto.getUserShoppingListItemId())
-                .build());
-        }
-        return userShoppingListItemList;
     }
 
     /**
@@ -991,32 +965,6 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             UserVO userVO = modelMapper.map(user, UserVO.class);
             assignDefaultHabitForUser(1L, userVO);
         }
-    }
-
-    /**
-     * Method to set {@link HabitAssign} status from inprogress to cancelled.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userId  - id of {@link UserVO}.
-     * @return {@link HabitAssignDto}.
-     */
-    @Transactional
-    @Override
-    public HabitAssignDto cancelHabitAssign(Long habitId, Long userId) {
-        HabitAssign habitAssignToCancel = habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(habitId, userId)
-            .orElseThrow(() -> new NotFoundException(
-                ErrorMessage.HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS + habitId));
-        habitAssignToCancel.setStatus(HabitAssignStatus.CANCELLED);
-        UserVO userVO = userService.findById(userId);
-
-        for (int i = 0; i < habitAssignToCancel.getWorkingDays(); i++) {
-            ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
-                userVO);
-            achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
-        }
-        habitAssignRepo.save(habitAssignToCancel);
-        return buildHabitAssignDto(habitAssignToCancel, "en");
     }
 
     /**

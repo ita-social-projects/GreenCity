@@ -78,9 +78,7 @@ import static greencity.ModelUtils.getFullHabitAssignDto;
 import static greencity.ModelUtils.getHabitAssignUserDurationDto;
 import static greencity.ModelUtils.getHabitDto;
 import static greencity.ModelUtils.getHabitAssign;
-import static greencity.ModelUtils.getShoppingListItem;
 import static greencity.ModelUtils.getShoppingListItemTranslationList;
-import static greencity.ModelUtils.getUpdateUserShoppingListDto;
 import static greencity.ModelUtils.getUserShoppingListItem;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -909,23 +907,6 @@ class HabitAssignServiceImplTest {
     }
 
     @Test
-    void cancelHabitAssign() {
-        habitAssign.setStatus(HabitAssignStatus.INPROGRESS);
-        habitAssignDto.setStatus(HabitAssignStatus.CANCELLED);
-        habitAssign.setWorkingDays(10);
-        when(habitAssignRepo.findByHabitIdAndUserIdAndStatusIsInprogress(1L, 1L)).thenReturn(Optional.of(habitAssign));
-        when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
-
-        HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitDto());
-
-        when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
-        assertEquals(habitAssignDto, habitAssignService.cancelHabitAssign(1L, 1L));
-
-        verify(habitAssignRepo).save(habitAssign);
-    }
-
-    @Test
     void getByHabitAssignIdAndUserId() {
         Long userId = 1L;
         Long habitAssignId = 2L;
@@ -1337,24 +1318,6 @@ class HabitAssignServiceImplTest {
         assertEquals(ErrorMessage.INVALID_DURATION, exception.getMessage());
         verify(habitAssignRepo).existsById(anyLong());
         verify(habitAssignRepo).findByHabitAssignIdUserIdAndStatusIsInProgress(anyLong(), anyLong());
-    }
-
-    @Test
-    void updateUserShoppingListItem() {
-        UserShoppingListItem userShoppingListItem = getUserShoppingListItem();
-        when(userShoppingListItemRepo.saveAll(any())).thenReturn(List.of(userShoppingListItem));
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
-        when(shoppingListItemRepo.findById(1L)).thenReturn(Optional.of(getShoppingListItem()));
-        habitAssignService.updateUserShoppingListItem(getUpdateUserShoppingListDto());
-        verify(userShoppingListItemRepo, times(1)).saveAll(any());
-    }
-
-    @Test
-    void updateUserShoppingListItemThrowException() {
-        when(habitAssignRepo.findById(1L)).thenReturn(Optional.of(getHabitAssign()));
-        UpdateUserShoppingListDto updateUserShoppingListDto = getUpdateUserShoppingListDto();
-        assertThrows(ShoppingListItemNotFoundException.class,
-            () -> habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto));
     }
 
     @Test
