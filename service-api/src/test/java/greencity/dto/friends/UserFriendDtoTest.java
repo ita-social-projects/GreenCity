@@ -19,10 +19,11 @@ class UserFriendDtoTest {
         String profilePicture = "profilePicture";
         Long chatId = 4L;
         String friendStatus = "FRIEND";
+        Long requesterId = 3L;
         UserFriendDto userFriendDto = new UserFriendDto(id, name, email, rating, uLocation.getId(),
             uLocation.getCityEn(), uLocation.getCityUa(), uLocation.getRegionEn(), uLocation.getRegionUa(),
             uLocation.getCountryEn(), uLocation.getCountryUa(), uLocation.getLatitude(), uLocation.getLongitude(),
-            mutualFriends, profilePicture, chatId, friendStatus);
+            mutualFriends, profilePicture, chatId, friendStatus, requesterId);
 
         assertEquals(id, userFriendDto.getId());
         assertEquals(name, userFriendDto.getName());
@@ -32,6 +33,7 @@ class UserFriendDtoTest {
         assertEquals(profilePicture, userFriendDto.getProfilePicturePath());
         assertEquals(chatId, userFriendDto.getChatId());
         assertEquals(friendStatus, userFriendDto.getFriendStatus());
+        assertEquals(requesterId, userFriendDto.getRequesterId());
     }
 
     @Test
@@ -45,10 +47,11 @@ class UserFriendDtoTest {
         String profilePicturePath = "/path/to/profile/picture";
         Long chatId = 4L;
         String friendStatus = "FRIEND";
+        Long requesterId = 3L;
 
         UserFriendDto userFriendDto = new UserFriendDto(
             id, name, email, rating, ulId, null, null, null, null, null, null,
-            null, null, mutualFriends, profilePicturePath, chatId, friendStatus);
+            null, null, mutualFriends, profilePicturePath, chatId, friendStatus, requesterId);
 
         assertNull(userFriendDto.getUserLocationDto());
     }

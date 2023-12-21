@@ -21,6 +21,7 @@ public class UserFriendDto {
     private String profilePicturePath;
     private Long chatId;
     private String friendStatus;
+    private Long requesterId;
     private UserLocationDto userLocationDto;
 
     /**
@@ -29,7 +30,7 @@ public class UserFriendDto {
     public UserFriendDto(Long id, String name, String email, Double rating, Long ulId, String cityEn,
         String cityUa, String regionEn, String regionUa, String countryEn, String countryUa,
         Double latitude, Double longitude, Long mutualFriends, String profilePicturePath, Long chatId,
-        String friendStatus) {
+        String friendStatus, Long requesterId) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -38,6 +39,7 @@ public class UserFriendDto {
         this.profilePicturePath = profilePicturePath;
         this.chatId = chatId;
         this.friendStatus = friendStatus;
+        this.requesterId = requesterId;
         if (ulId != null) {
             this.userLocationDto =
                 new UserLocationDto(ulId, cityEn, cityUa, regionEn, regionUa, countryEn, countryUa, latitude,
