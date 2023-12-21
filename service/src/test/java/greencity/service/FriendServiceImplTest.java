@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -628,9 +627,9 @@ class FriendServiceImplTest {
         when(userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId))
             .thenReturn(userPage);
         when(
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
-        when(userRepo.getFriendStatusByUserIdAndCurrentUserId(anyLong(), anyLong())).thenReturn("FRIEND");
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
+                userPage.getContent()))
+                    .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto = friendService
             .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId);
@@ -645,9 +644,8 @@ class FriendServiceImplTest {
 
         verify(userRepo).existsById(userId);
         verify(userRepo).getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
-        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId,
+        verify(customUserRepo).fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
             userPage.getContent());
-        verify(userRepo).getFriendStatusByUserIdAndCurrentUserId(anyLong(), anyLong());
     }
 
     @Test

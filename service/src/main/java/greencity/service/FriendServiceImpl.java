@@ -140,12 +140,9 @@ public class FriendServiceImpl implements FriendService {
         }
 
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, friends.getContent());
-        for (UserFriendDto userFriendDto : userFriendDtoList) {
-            Long oneOfListUserFriendsId = userFriendDto.getId();
-            userFriendDto.setFriendStatus(
-                userRepo.getFriendStatusByUserIdAndCurrentUserId(oneOfListUserFriendsId, currentUserId));
-        }
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
+                friends.getContent());
+
         return new PageableDto<>(
             userFriendDtoList,
             friends.getTotalElements(),
