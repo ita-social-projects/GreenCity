@@ -5,46 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.constant.ErrorMessage;
-
-import java.time.format.DateTimeParseException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-
-import greencity.exception.exceptions.BadCategoryRequestException;
-import greencity.exception.exceptions.BadPlaceRequestException;
-import greencity.exception.exceptions.BadRefreshTokenException;
-import greencity.exception.exceptions.BadRequestException;
-import greencity.exception.exceptions.BadSocialNetworkLinksException;
-import greencity.exception.exceptions.EmailNotVerified;
-import greencity.exception.exceptions.EventDtoValidationException;
-import greencity.exception.exceptions.InvalidStatusException;
-import greencity.exception.exceptions.InvalidURLException;
-import greencity.exception.exceptions.NotCurrentUserException;
-import greencity.exception.exceptions.NotDeleteLastHabit;
-import greencity.exception.exceptions.NotDeletedException;
-import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.NotSavedException;
-import greencity.exception.exceptions.NotUpdatedException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
-import greencity.exception.exceptions.TagNotFoundException;
-import greencity.exception.exceptions.UnsupportedSortException;
-import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
-import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
-import greencity.exception.exceptions.UserAlreadyRegisteredException;
-import greencity.exception.exceptions.UserHasNoAvailableHabitTranslationException;
-import greencity.exception.exceptions.UserHasNoFriendWithIdException;
-import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.exception.exceptions.UserHasNoShoppingListItemsException;
-import greencity.exception.exceptions.UserHasReachedOutOfEnrollRange;
-import greencity.exception.exceptions.UserShoppingListItemNotSavedException;
-import greencity.exception.exceptions.UserShoppingListItemStatusNotUpdatedException;
-import greencity.exception.exceptions.WrongEmailOrPasswordException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.constant.ValidationConstants;
+import greencity.exception.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +24,15 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Custom exception handler.
@@ -220,8 +191,8 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
         log.info(ex.getMessage());
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        if (ex.getMessage().startsWith("Locale part")) {
-            exceptionResponse.setMessage("Select correct language: 'en' or 'ua'");
+        if (ex.getMessage().startsWith(ValidationConstants.LOCALE_PART_ERROR_MESSAGE)) {
+            exceptionResponse.setMessage(ValidationConstants.LANGUAGE_VALIDATION_EXCEPTION_MESSAGE);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
