@@ -3,7 +3,6 @@ package greencity.repository;
 import greencity.entity.User;
 import greencity.entity.event.Address;
 import greencity.entity.event.Event;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -150,5 +149,12 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
         + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
     Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
 
+    /**
+     * Method returns all events by their title.
+     *
+     * @param title {@link String} title of desired events.
+     * @return List of {@link Event}.
+     * @author Yurii Midianyi
+     */
     List<Event> findAllByTitleContainingIgnoreCase(String title);
 }

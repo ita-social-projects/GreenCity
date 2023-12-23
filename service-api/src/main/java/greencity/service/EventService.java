@@ -53,7 +53,7 @@ public interface EventService {
      * @return List of {@link EventDto} instance.
      */
     PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
-                                            String title);
+        String title);
 
     /**
      * Method for getting all Event instances that user attended.

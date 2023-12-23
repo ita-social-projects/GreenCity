@@ -1480,7 +1480,8 @@ class EventServiceImplTest {
         FilterEventDto filterEventDto = getFilterEventDtoWithOpenStatus();
         Principal principal = getPrincipal();
         when(eventRepo.findAll()).thenReturn(events);
-        assertThrows(NotFoundException.class, () -> eventService.getEvents(pageRequest, principal, filterEventDto,null));
+        assertThrows(NotFoundException.class,
+            () -> eventService.getEvents(pageRequest, principal, filterEventDto, null));
         verify(eventRepo).findAll();
     }
 
@@ -1517,11 +1518,11 @@ class EventServiceImplTest {
 
         when(eventRepo.findAllByTitleContainingIgnoreCase("title")).thenReturn(events);
         when(modelMapper.map(events,
-                new TypeToken<List<EventDto>>() {
-                }.getType())).thenReturn(expected);
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-                pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), "title");
+            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), "title");
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
@@ -1530,8 +1531,8 @@ class EventServiceImplTest {
 
         verify(eventRepo).findAllByTitleContainingIgnoreCase("title");
         verify(modelMapper).map(events,
-                new TypeToken<List<EventDto>>() {
-                }.getType());
+            new TypeToken<List<EventDto>>() {
+            }.getType());
     }
 
     @Test

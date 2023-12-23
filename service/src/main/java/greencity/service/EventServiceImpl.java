@@ -197,7 +197,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
-                                                   String title) {
+        String title) {
         if (Objects.isNull(filterEventDto)) {
             return getAll(page, principal);
         }
