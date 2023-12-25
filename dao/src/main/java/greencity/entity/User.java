@@ -74,7 +74,8 @@ import java.util.Set;
                     @ColumnResult(name = "mutualFriends", type = Long.class),
                     @ColumnResult(name = "profilePicturePath", type = String.class),
                     @ColumnResult(name = "chatId", type = Long.class),
-                    @ColumnResult(name = "friendStatus", type = String.class)
+                    @ColumnResult(name = "friendStatus", type = String.class),
+                    @ColumnResult(name = "requesterId", type = Long.class)
                 })
         })
 })
@@ -114,7 +115,12 @@ import java.util.Set;
             + "FROM users_friends uf2 "
             + "WHERE ( uf2.user_id = :userId AND uf2.friend_id = u.id ) "
             + "or ( uf2.user_id = u.id AND uf2.friend_id = :userId )"
-            + "LIMIT 1) as friendStatus "
+            + "LIMIT 1) as friendStatus, "
+            + "(SELECT uf3.user_id "
+            + "FROM users_friends uf3"
+            + " WHERE ( uf3.user_id = :userId AND uf3.friend_id = u.id ) "
+            + "or ( uf3.user_id = u.id AND uf3.friend_id = :userId )"
+            + "LIMIT 1) as requesterId "
             + "FROM users u "
             + "LEFT JOIN user_location ul ON u.user_location = ul.id "
             + "WHERE u.id IN (:users)",

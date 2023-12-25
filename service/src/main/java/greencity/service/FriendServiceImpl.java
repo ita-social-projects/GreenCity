@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
@@ -10,6 +11,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,7 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -57,6 +60,14 @@ public class FriendServiceImpl implements FriendService {
         validateFriendRequestNotSent(userId, friendId);
         validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
+        User emailReceiver = userRepo.getOne(friendId);
+        User friendRequestSender = userRepo.getOne(userId);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(emailReceiver.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
+                friendRequestSender.getName()))
+            .build());
     }
 
     /**
@@ -70,6 +81,13 @@ public class FriendServiceImpl implements FriendService {
         validateFriendNotExists(userId, friendId);
         validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
+        User user = userRepo.getOne(userId);
+        User friend = userRepo.getOne(friendId);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(friend.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
+            .build());
     }
 
     /**
@@ -122,12 +140,9 @@ public class FriendServiceImpl implements FriendService {
         }
 
         List<UserFriendDto> userFriendDtoList =
-            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, friends.getContent());
-        for (UserFriendDto userFriendDto : userFriendDtoList) {
-            Long oneOfListUserFriendsId = userFriendDto.getId();
-            userFriendDto.setFriendStatus(
-                userRepo.getFriendStatusByUserIdAndCurrentUserId(oneOfListUserFriendsId, currentUserId));
-        }
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
+                friends.getContent());
+
         return new PageableDto<>(
             userFriendDtoList,
             friends.getTotalElements(),
