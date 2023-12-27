@@ -148,4 +148,13 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
         + "LEFT JOIN events_attenders att ON e.id = att.event_id "
         + "WHERE att.user_id = :userId OR e.organizer_id = :userId")
     Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+
+    /**
+     * Method returns all events by their title.
+     *
+     * @param title {@link String} title of desired events.
+     * @return List of {@link Event}.
+     * @author Yurii Midianyi
+     */
+    List<Event> findAllByTitleContainingIgnoreCase(String title);
 }
