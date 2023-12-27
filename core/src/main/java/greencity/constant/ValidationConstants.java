@@ -11,6 +11,8 @@ public class ValidationConstants {
     public static final int MAX_AMOUNT_OF_TAGS = 3;
     public static final int PLACE_NAME_MAX_LENGTH = 30;
     public static final int MAX_EVENT_DATES_AMOUNT = 7;
+    public static final String LANGUAGE_VALIDATION_EXCEPTION_MESSAGE = "Select correct language: 'en' or 'ua'";
+    public static final String LOCALE_PART_ERROR_MESSAGE = "Locale part";
 
     private ValidationConstants() {
     }
