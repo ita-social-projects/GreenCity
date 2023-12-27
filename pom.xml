@@ -42,6 +42,18 @@
         <net.java.dev.jna.version>4.5.2</net.java.dev.jna.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.exclusions>**/CustomExceptionHandler.java</sonar.exclusions>
+            </properties>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
