@@ -413,7 +413,7 @@ public class SecurityConfig {
      * @return {@link AuthenticationManager}
      */
     @Bean
-    AuthenticationManager authenticationManager() throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

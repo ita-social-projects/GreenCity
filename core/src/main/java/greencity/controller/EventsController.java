@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
@@ -147,7 +148,7 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
-        FilterEventDto filterEventDto) {
+        @RequestBody(required = false) FilterEventDto filterEventDto) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvents(pageable, principal, filterEventDto));
     }
 

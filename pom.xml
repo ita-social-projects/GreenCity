@@ -27,7 +27,7 @@
         <junit-jupiter.version>5.10.1</junit-jupiter.version>
         <mockito-junit-jupiter.version>5.7.0</mockito-junit-jupiter.version>
         <mockito-core.version>5.2.0</mockito-core.version>
-        <modelmapper.version>3.2.0</modelmapper.version>
+        <modelmapper.version>3.0.0</modelmapper.version>
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -43,15 +43,6 @@
         <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
