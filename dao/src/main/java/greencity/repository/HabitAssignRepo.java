@@ -250,7 +250,8 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "WHERE upper(ha.status) = 'INPROGRESS' "
         + "AND ha.user.id = :userId "
         + "AND cast(ha.createDate as date) BETWEEN cast(:from as date) AND cast(:to as date) "
-        + "OR cast(FUNCTION('DATE_ADD', ha.createDate, ha.duration) as date) BETWEEN cast(:from as date) AND cast(:to as date) "
+        + "OR cast(FUNCTION('DATE_ADD', ha.createDate, ha.duration) as date) "
+        + "BETWEEN cast(:from as date) AND cast(:to as date) "
         + "OR cast(ha.createDate as date) <= cast(:from as date) "
         + "AND cast(:to as date) <= cast(FUNCTION('DATE_ADD', ha.createDate, ha.duration) as date)")
     List<HabitAssign> findAllHabitAssignsBetweenDates(@Param("userId") Long userId, @Param("from") LocalDate from,

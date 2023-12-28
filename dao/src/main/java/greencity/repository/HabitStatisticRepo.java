@@ -20,7 +20,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HabitStatisticRepo extends JpaRepository<HabitStatistic, Long>,
     JpaSpecificationExecutor<HabitStatistic> {
-
     /**
      * Method for finding {@link HabitStatistic} for certain
      * {@link java.time.LocalDate} and {@link Habit} with {@link User} id's.
