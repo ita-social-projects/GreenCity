@@ -90,22 +90,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     void updateUserStatus(Long userId, String userStatus);
 
     /**
-     * Updates user role for a given user.
-     *
-     * @param userId   - {@link User}'s id
-     * @param userRole {@link String} - string value of user role to set
-     */
-    @Modifying
-    @Transactional
-    @Query("UPDATE User SET role = CASE "
-        + "WHEN (:userRole = 'ROLE_USER') THEN 0 "
-        + "WHEN (:userRole = 'ROLE_ADMIN') THEN 1 "
-        + "WHEN (:userRole = 'ROLE_MODERATOR') THEN 2 "
-        + "ELSE 3 END "
-        + "WHERE id = :userId")
-    void updateUserRole(Long userId, String userRole);
-
-    /**
      * Find the last activity time by {@link User}'s id.
      *
      * @param userId - {@link User}'s id

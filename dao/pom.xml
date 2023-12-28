@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>6.2.13.Final</version>
+            <version>6.4.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
