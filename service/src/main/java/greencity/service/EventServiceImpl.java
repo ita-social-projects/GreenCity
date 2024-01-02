@@ -468,9 +468,10 @@ public class EventServiceImpl implements EventService {
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
-        Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        Set<String> emailsToNotify = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        emailsToNotify.add(organizer.getEmail());
         notificationService.sendEmailNotification(
-            attendersEmails,
+            emailsToNotify,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         return buildEventDto(updatedEvent, organizer.getId());
