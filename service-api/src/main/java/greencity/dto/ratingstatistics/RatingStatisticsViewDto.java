@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Builder
+@ToString
 public class RatingStatisticsViewDto {
     private String id;
     private String eventName;

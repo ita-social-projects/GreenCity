@@ -203,7 +203,7 @@ class ShoppingListItemServiceImplTest {
             .thenReturn(Optional.of(habitAssign));
         when(userShoppingListItemRepo.findAllByHabitAssingId(habitAssign.getId())).thenReturn(Collections.singletonList(
             userShoppingListItem));
-        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class));
+        when(modelMapper.map(userShoppingListItem, UserShoppingListItemResponseDto.class)).thenReturn(expected.get(0));
         when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language, 1L))
             .thenReturn(ShoppingListItemTranslation.builder().id(1L).build());
 
@@ -222,7 +222,8 @@ class ShoppingListItemServiceImplTest {
                 translation.getContent(), ShoppingListItemStatus.ACTIVE.toString()))
             .collect(Collectors.toList());
 
-        when(modelMapper.map(shoppingListItemTranslations.getFirst(), ShoppingListItemDto.class));
+        when(modelMapper.map(shoppingListItemTranslations.getFirst(), ShoppingListItemDto.class))
+            .thenReturn(shoppingListItemDto.get(0));
         when(modelMapper.map(shoppingListItemTranslations.get(1), ShoppingListItemDto.class))
             .thenReturn(shoppingListItemDto.get(1));
         when(shoppingListItemTranslationRepo.findAllByLanguageCode(AppConstant.DEFAULT_LANGUAGE_CODE))
@@ -270,9 +271,8 @@ class ShoppingListItemServiceImplTest {
         when(userShoppingListItemRepo.getOne(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
         when(modelMapper.map(any(), eq(UserShoppingListItemResponseDto.class)))
             .thenReturn(new UserShoppingListItemResponseDto(2L, null, ShoppingListItemStatus.DONE));
-        when(
-            shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language,
-                userShoppingListItem.getId()));
+        when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language,
+            userShoppingListItem.getId())).thenReturn(shoppingListItemTranslations.getFirst());
         UserShoppingListItemResponseDto userShoppingListItemResponseDto =
             shoppingListItemService.updateUserShopingListItemStatus(userId, userShoppingListItem.getId(), "uk");
 
@@ -389,7 +389,8 @@ class ShoppingListItemServiceImplTest {
             0, 1, 0, false, false, true, true);
 
         when(shoppingListItemRepo.findAll(pageable)).thenReturn(page);
-        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class));
+        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class))
+            .thenReturn(dtoList.get(0));
 
         PageableAdvancedDto<ShoppingListItemManagementDto> actual =
             shoppingListItemService.findShoppingListItemsForManagementByPage(pageable);
@@ -413,7 +414,8 @@ class ShoppingListItemServiceImplTest {
             0, 1, 0, false, false, true, true);
 
         when(shoppingListItemRepo.searchBy(pageable, "uk")).thenReturn(page);
-        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class));
+        when(modelMapper.map(shoppingListItems.getFirst(), ShoppingListItemManagementDto.class))
+            .thenReturn(dtoList.getFirst());
 
         PageableAdvancedDto<ShoppingListItemManagementDto> actual = shoppingListItemService.searchBy(pageable, "uk");
 

@@ -243,7 +243,7 @@ class PlaceServiceImplTest {
         List<Place> places = Collections.singletonList(ModelUtils.getPlace());
         List<PlaceVO> voList = Collections.singletonList(modelMapper.map(places, PlaceVO.class));
 
-        when(modelMapper.map(places.getFirst(), PlaceVO.class));
+        when(modelMapper.map(places.getFirst(), PlaceVO.class)).thenReturn(voList.getFirst());
         when(placeRepo.findAllByUserId(1L)).thenReturn(places);
 
         List<PlaceVO> actual = placeService.getAllCreatedPlacesByUserId(1L);

@@ -776,8 +776,8 @@ class EventServiceImplTest {
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(List.of(expected));
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId()));
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId()));
+        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(events);
+        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getEventsCreatedByUser(pageRequest, principal.getName());

@@ -73,7 +73,7 @@ class ManagementHabitServiceImplTest {
 
         PageableDto<HabitManagementDto> result =
             new PageableDto<>(habitManagementDtos, habitManagementDtos.size(), 0, 1);
-        when(modelMapper.map(habits.getFirst(), HabitManagementDto.class));
+        when(modelMapper.map(habits.getFirst(), HabitManagementDto.class)).thenReturn(habitManagementDtos.getFirst());
         when(habitRepo.findAll(any(HabitFilter.class), eq(pageRequest))).thenReturn(listHabits);
         assertEquals(result, managementHabitService.getAllHabitsDto(null, null, null,
             null, false, false, pageRequest));

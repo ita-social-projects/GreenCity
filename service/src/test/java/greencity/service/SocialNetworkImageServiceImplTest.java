@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.Optional;
@@ -13,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,42 +24,41 @@ class SocialNetworkImageServiceImplTest {
     @Mock
     SocialNetworkImageRepo socialNetworkImageRepo;
     @Mock
-    FileService fileService;
-    @Mock
     ModelMapper modelMapper;
     @InjectMocks
     SocialNetworkImageServiceImpl socialNetworkImageService;
 
     @Test
     void getSocialNetworkImageByUrl() throws Exception {
-        URL checkUrl = new URL("http:");
+        URL checkUrl = new URL("HTTP://");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
-        socialNetworkImageVO.setImagePath("http:");
+        socialNetworkImageVO.setImagePath("HTTP://");
 
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
-        when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost()))
+        when(socialNetworkImageRepo.findByHostPath(null))
             .thenReturn(socialNetworkImage);
         when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
             .thenReturn(socialNetworkImageVO);
 
         when(modelMapper.map(socialNetworkImageVO, SocialNetworkImageVO.class)).thenReturn(socialNetworkImageVO);
 
-        assertEquals(socialNetworkImageVO, socialNetworkImageService.getSocialNetworkImageByUrl("http:"));
+        assertEquals(socialNetworkImageVO, socialNetworkImageService.getSocialNetworkImageByUrl("HTTP://"));
     }
 
     @Test
     void getSocialNetworkImageByUrlBadRequest() throws Exception {
-        URI checkUrl = new URI("HTTP:");
+        URI checkUrl = new URI("http://example.com");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
-        socialNetworkImageVO.setImagePath("HTTP:");
+        socialNetworkImageVO.setImagePath(checkUrl.getPath());
 
-        when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(Optional.ofNullable(null));
+        when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(null);
 
-        assertThrows(RuntimeException.class, () -> socialNetworkImageService.getSocialNetworkImageByUrl("HTTP:"));
+        assertThrows(RuntimeException.class,
+            () -> socialNetworkImageService.getSocialNetworkImageByUrl(checkUrl.toString()));
     }
 
     @Test

@@ -51,7 +51,7 @@ class HabitStatisticControllerTest {
     void save() throws Exception {
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
-        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
+        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z"));
         addHabitStatisticDto.setHabitRate(GOOD);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content("{\n" +

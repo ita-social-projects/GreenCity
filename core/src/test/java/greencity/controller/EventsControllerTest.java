@@ -115,9 +115,7 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
-
-        when(eventService.getEvents(pageable, principal, filterEventDto))
+        when(eventService.getEvents(pageable, principal, null))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
@@ -127,7 +125,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getEvents(pageable, principal, filterEventDto);
+        verify(eventService).getEvents(pageable, principal, null);
     }
 
     @Test
@@ -256,7 +254,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
-        verify(eventService).save(addEventDtoRequest, principal.getName(), new MultipartFile[0]);
+        verify(eventService).save(addEventDtoRequest, principal.getName(), null);
     }
 
     @Test
@@ -351,7 +349,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).update(updateEventDto, principal.getName(), new MultipartFile[0]);
+        verify(eventService).update(updateEventDto, principal.getName(), null);
     }
 
     @Test

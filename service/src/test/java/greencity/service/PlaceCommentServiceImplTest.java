@@ -115,7 +115,7 @@ class PlaceCommentServiceImplTest {
         Page<Comment> comments = new PageImpl<>(list, pageRequest, list.size());
 
         PageableDto<CommentAdminDto> result = new PageableDto<>(commentAdminDtos, commentAdminDtos.size(), 0, 1);
-        when(modelMapper.map(list.getFirst(), CommentAdminDto.class));
+        when(modelMapper.map(list.getFirst(), CommentAdminDto.class)).thenReturn(new CommentAdminDto());
         when(placeCommentRepo.findAll(pageRequest)).thenReturn(comments);
 
         assertEquals(result, placeCommentService.getAllComments(pageRequest));
