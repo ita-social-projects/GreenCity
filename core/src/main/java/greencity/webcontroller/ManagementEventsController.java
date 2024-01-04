@@ -34,7 +34,7 @@ public class ManagementEventsController {
     public String getAllEvents(@RequestParam(required = false, name = "query") String query, Model model,
         @Parameter(hidden = true) Pageable pageable, EventViewDto eventViewDto) {
         PageableAdvancedDto<EventDto> allEvents;
-        if (!eventViewDto.isEmpty()) {
+        if (eventViewDto.getId() != null && !eventViewDto.isEmpty()) {
             allEvents = eventService.getAll(pageable, null);
             model.addAttribute("fields", eventViewDto);
             model.addAttribute("query", "");

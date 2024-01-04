@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -9,6 +10,7 @@ import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
+import greencity.mapping.LocalDateTimeTypeAdapter;
 import greencity.service.HabitAssignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 import static greencity.ModelUtils.getPrincipal;
@@ -175,7 +178,9 @@ class HabitAssignControllerTest {
     @Test
     void updateShoppingListStatus() throws Exception {
         UpdateUserShoppingListDto updateUserShoppingListDto = ModelUtils.getUpdateUserShoppingListDto();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+            .create();
         String shoppingListJSON = gson.toJson(updateUserShoppingListDto);
         mockMvc.perform(put(habitLink + "/saveShoppingListForHabitAssign")
             .content(shoppingListJSON)

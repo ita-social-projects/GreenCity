@@ -117,9 +117,7 @@ class ManagementEventsControllerTest {
 
         this.mockMvc.perform(get(managementEventsLink)
             .param("page", "0")
-            .param("size", "10")
-            .param("query", "query")
-            .param("title", "title"))
+            .param("size", "10"))
             .andExpect(view().name("core/management_events"))
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());

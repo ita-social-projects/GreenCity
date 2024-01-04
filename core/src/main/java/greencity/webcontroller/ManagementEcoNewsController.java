@@ -68,7 +68,7 @@ public class ManagementEcoNewsController {
     public String getAllEcoNews(@RequestParam(required = false, name = "query") String query, Model model,
         @Parameter(hidden = true) Pageable pageable, EcoNewsViewDto ecoNewsViewDto) {
         PageableAdvancedDto<EcoNewsDto> allEcoNews;
-        if (!ecoNewsViewDto.isEmpty()) {
+        if (ecoNewsViewDto.getId() != null && !ecoNewsViewDto.isEmpty()) {
             allEcoNews = ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
             model.addAttribute("fields", ecoNewsViewDto);
             model.addAttribute("query", "");

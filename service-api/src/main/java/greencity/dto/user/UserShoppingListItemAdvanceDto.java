@@ -2,6 +2,7 @@ package greencity.dto.user;
 
 import greencity.enums.ShoppingListItemStatus;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class UserShoppingListItemAdvanceDto {
     private Long id;
     private Long shoppingListItemId;
     private ShoppingListItemStatus status;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateCompleted;
     private String content;
 

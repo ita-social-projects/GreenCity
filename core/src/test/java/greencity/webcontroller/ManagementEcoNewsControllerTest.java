@@ -1,6 +1,7 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import greencity.client.RestClient;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
@@ -10,6 +11,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
+import greencity.mapping.ZonedDateTimeTypeAdapter;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -19,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import greencity.validator.LanguageValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +66,9 @@ class ManagementEcoNewsControllerTest {
     private TagsService tagsService;
     @Mock
     private UserService userService;
+
+    @Mock
+    private LanguageValidator languageValidator;
 
     private Principal principal = getPrincipal();
 
@@ -174,7 +181,9 @@ class ManagementEcoNewsControllerTest {
         EcoNewsDtoManagement ecoNewsDtoManagement = new EcoNewsDtoManagement();
         ecoNewsDtoManagement.setId(1L);
         ecoNewsDtoManagement.setTags(Collections.singletonList("News"));
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
+            .create();
         String json = gson.toJson(ecoNewsDtoManagement);
         MockMultipartFile jsonFile =
             new MockMultipartFile("ecoNewsDtoManagement", "", "application/json", json.getBytes());
