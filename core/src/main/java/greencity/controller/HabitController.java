@@ -6,6 +6,7 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
+import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
 import greencity.dto.habit.*;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
@@ -230,7 +231,8 @@ public class HabitController {
     @PostMapping(value = "/custom",
         consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
-        @RequestPart @Valid CustomHabitDtoRequest request,
+        @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
+            required = true) @RequestPart @Valid CustomHabitDtoRequest request,
         @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
         @Parameter(hidden = true) Principal principal) {
         return ResponseEntity

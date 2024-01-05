@@ -14,9 +14,8 @@ import java.util.Optional;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
-import greencity.message.SendEventCreationNotification;
+import greencity.message.GeneralEmailMessage;
 import greencity.security.jwt.JwtTool;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,9 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import com.google.gson.Gson;
-
 import greencity.constant.RestTemplateLinks;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.UserVOAchievement;
@@ -570,17 +567,15 @@ public class RestClient {
     }
 
     /**
-     * Method to send email notification about event creation to GreenCityUser.
-     *
-     * @param notification {@link SendEventCreationNotification} has message for
-     *                     sending email to user about event creation status.
-     * @author Olena Sotnik.
+     * Method sends general email notification.
+     * 
+     * @param notification {@link GeneralEmailMessage}.
      */
-    public void sendEventCreationNotification(SendEventCreationNotification notification) {
+    public void sendEmailNotification(GeneralEmailMessage notification) {
         HttpHeaders headers = setHeader();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
+        HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         restTemplate.exchange(greenCityUserServerAddress
-            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class).getBody();
     }
 }

@@ -148,8 +148,9 @@ public class EventsController {
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<EventDto>> getEvent(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
-        @RequestBody(required = false) FilterEventDto filterEventDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(eventService.getEvents(pageable, principal, filterEventDto));
+        @RequestBody(required = false) FilterEventDto filterEventDto, @RequestParam(required = false) String title) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getEvents(pageable, principal, filterEventDto, title));
     }
 
     /**

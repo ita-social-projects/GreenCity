@@ -148,6 +148,33 @@ public class FriendController {
     }
 
     /**
+     * Method to find all user friends by userId and to set FriendStatus related to
+     * current user.
+     *
+     * @param userId user id.
+     *
+     * @return {@link PageableDto} of {@link UserManagementDto}.
+     * @author Lilia Mokhnatska
+     */
+    @ApiOperation(value = "Get all user friends and set FriendStatus related to current user")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/{userId}/all-user-friends")
+    @ApiPageable
+    public ResponseEntity<PageableDto<UserFriendDto>> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(
+        @ApiIgnore @PageableDefault Pageable page,
+        @PathVariable long userId,
+        @ApiIgnore @CurrentUser UserVO userVO) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(page, userId,
+                userVO.getId()));
+    }
+
+    /**
      * Method to find {@link UserFriendDto}s that are not friend for current
      * user(except current user).
      *
@@ -181,7 +208,7 @@ public class FriendController {
      *
      * @param userVO user.
      * @param type   type to find recommended friends Supported values:
-     *               "FRIENDS_OF_FRIENDS", "HABITS".
+     *               "FRIENDS_OF_FRIENDS", "HABITS", "CITY".
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */

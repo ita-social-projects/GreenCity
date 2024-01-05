@@ -3,6 +3,7 @@ package greencity.service;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.CacheConstants;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -28,6 +29,7 @@ import greencity.exception.exceptions.NotSavedException;
 import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +45,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -64,6 +65,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final greencity.rating.RatingCalculation ratingCalculation;
     private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
+    private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
 
@@ -77,14 +79,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     public AddEcoNewsDtoResponse save(AddEcoNewsDtoRequest addEcoNewsDtoRequest,
         MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-
-        AddEcoNewsDtoResponse addEcoNewsDtoResponse = modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
-        sendEmailDto(addEcoNewsDtoResponse, toSave.getAuthor());
         UserVO userVO = userService.findById(toSave.getAuthor().getId());
         achievementCalculation
             .calculateAchievement(userVO, AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, modelMapper.map(toSave, UserVO.class));
-        return addEcoNewsDtoResponse;
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(email)
+            .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
+            .build());
+        return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
     /**
@@ -96,13 +100,16 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     @Override
     public EcoNewsGenericDto saveEcoNews(AddEcoNewsDtoRequest addEcoNewsDtoRequest, MultipartFile image, String email) {
         EcoNews toSave = genericSave(addEcoNewsDtoRequest, image, email);
-
-        EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
-        sendEmailDto(ecoNewsDto, toSave.getAuthor());
+        final EcoNewsGenericDto ecoNewsDto = getEcoNewsGenericDtoWithAllTags(toSave);
         UserVO user = userService.findByEmail(email);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_NEWS, user);
         achievementCalculation.calculateAchievement(user,
             AchievementCategoryType.CREATE_NEWS, AchievementAction.ASSIGN);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(toSave.getAuthor().getEmail())
+            .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
+            .build());
         return ecoNewsDto;
     }
 
@@ -123,27 +130,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .title(addEcoNewsDtoResponse.getTitle())
             .source(addEcoNewsDtoResponse.getSource())
             .imagePath(addEcoNewsDtoResponse.getImagePath())
-            .build();
-        restClient.addEcoNews(dto);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Danylo Hlynskyi.
-     */
-    public void sendEmailDto(EcoNewsGenericDto ecoNewsDto,
-        User user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
-        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-            .author(placeAuthorDto)
-            .creationDate(ecoNewsDto.getCreationDate())
-            .unsubscribeToken(accessToken)
-            .text(ecoNewsDto.getContent())
-            .title(ecoNewsDto.getTitle())
-            .imagePath(ecoNewsDto.getImagePath())
-            .source(ecoNewsDto.getSource())
             .build();
         restClient.addEcoNews(dto);
     }
@@ -541,6 +527,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ecoNewsVO.getUsersLikedNews().add(userVO);
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(ecoNewsVO.getAuthor().getEmail())
+            .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
+            .build());
     }
 
     /**

@@ -105,6 +105,7 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -419,6 +420,9 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
+            .userLocationDto(
+                new UserLocationDto(1L, "Lviv", "Львів", "Lvivska",
+                    "Львівська", "Ukraine", "Україна", 20.000000, 20.000000))
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -565,6 +569,10 @@ public class ModelUtils {
             .text("TEXT")
             .status(ShoppingListItemStatus.INPROGRESS)
             .build();
+    }
+
+    public static CustomShoppingListItemSaveRequestDto getCustomShoppingListItemSaveRequestDto() {
+        return CustomShoppingListItemSaveRequestDto.builder().text("TEXT").build();
     }
 
     public static HabitStatusCalendarDto getHabitStatusCalendarDto() {
@@ -1725,7 +1733,6 @@ public class ModelUtils {
                     .ecoNewsLiked(null)
                     .ecoNewsCommentsLiked(null)
                     .firstName("dfsfsdf")
-                    .city("fdsfsdf")
                     .showLocation(true)
                     .showEcoPlace(true)
                     .showShoppingList(true)
@@ -1744,7 +1751,6 @@ public class ModelUtils {
             .refreshTokenKey("refreshtoooookkkeeeeen42324532542")
             .ownSecurity(null)
             .dateOfRegistration(LocalDateTime.of(2020, 6, 6, 13, 47))
-            .city("Lviv")
             .showShoppingList(true)
             .showEcoPlace(true)
             .showLocation(true)
@@ -1828,6 +1834,7 @@ public class ModelUtils {
         event.setOrganizer(getUser());
         event.setFollowers(followers);
         event.setTitle("Title");
+        event.setAttenders(new HashSet<>(Collections.singleton(getUser())));
         List<EventDateLocation> dates = new ArrayList<>();
         dates.add(new EventDateLocation(1L, event,
             ZonedDateTime.of(2022, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),

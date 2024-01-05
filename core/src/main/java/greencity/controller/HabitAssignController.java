@@ -14,7 +14,6 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarDto;
 import greencity.dto.user.UserVO;
@@ -505,27 +504,6 @@ public class HabitAssignController {
     }
 
     /**
-     * Method to cancel inprogress {@link HabitAssignVO} by it's {@link HabitVO} id
-     * and current user id.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userVO  - {@link UserVO} user.
-     * @return {@link HabitAssignDto}.
-     */
-    @Operation(summary = "Cancel inprogress user assigned habit.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-            content = @Content(schema = @Schema(implementation = HabitAssignDto.class))),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
-    })
-    @PatchMapping("/cancel/{habitId}")
-    public ResponseEntity<HabitAssignDto> cancelHabitAssign(@PathVariable Long habitId,
-        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(habitAssignService.cancelHabitAssign(habitId, userVO.getId()));
-    }
-
-    /**
      * Method delete habit assign {@link HabitAssignVO} for current {@link UserVO}
      * by habitAssignId.
      *
@@ -543,24 +521,6 @@ public class HabitAssignController {
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteHabitAssign(@PathVariable Long habitAssignId,
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         habitAssignService.deleteHabitAssign(habitAssignId, userVO.getId());
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    /**
-     * Method updates user shopping list item {@link UpdateUserShoppingListDto}.
-     *
-     * @param updateUserShoppingListDto - id of {@link UpdateUserShoppingListDto}.
-     */
-    @Operation(summary = "Update shopping list status for current habit.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
-    })
-    @PutMapping("/saveShoppingListForHabitAssign")
-    public ResponseEntity<ResponseEntity.BodyBuilder> updateShoppingListStatus(
-        @RequestBody UpdateUserShoppingListDto updateUserShoppingListDto) {
-        habitAssignService.updateUserShoppingListItem(updateUserShoppingListDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

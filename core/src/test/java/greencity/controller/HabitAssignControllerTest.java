@@ -6,7 +6,6 @@ import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignStatDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -139,15 +138,6 @@ class HabitAssignControllerTest {
     }
 
     @Test
-    void cancelHabitAssign() throws Exception {
-        mockMvc.perform(patch(habitLink + "/cancel/{habitId}", 1L)
-            .principal(principal))
-            .andExpect(status().isOk());
-
-        verify(habitAssignService).cancelHabitAssign(1L, null);
-    }
-
-    @Test
     void getHabitAssignByHabitIdTest() throws Exception {
         mockMvc.perform(get(habitLink + "/{habitId}/active", 1L)
             .principal(principal))
@@ -173,20 +163,6 @@ class HabitAssignControllerTest {
         mockMvc.perform(delete(habitLink + "/delete/{habitAssignId}", habitAssignId)
             .principal(principal)).andExpect(status().isOk());
         verify(habitAssignService).deleteHabitAssign(habitAssignId, null);
-    }
-
-    @Test
-    void updateShoppingListStatus() throws Exception {
-        UpdateUserShoppingListDto updateUserShoppingListDto = ModelUtils.getUpdateUserShoppingListDto();
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
-            .create();
-        String shoppingListJSON = gson.toJson(updateUserShoppingListDto);
-        mockMvc.perform(put(habitLink + "/saveShoppingListForHabitAssign")
-            .content(shoppingListJSON)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
-        verify(habitAssignService).updateUserShoppingListItem(updateUserShoppingListDto);
     }
 
     @Test

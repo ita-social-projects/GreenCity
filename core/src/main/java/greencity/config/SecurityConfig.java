@@ -294,7 +294,6 @@ public class SecurityConfig {
                     HABIT_ASSIGN_ID,
                     "/shopping-list-items/shoppingList/{userId}",
                     HABIT_ASSIGN_ID,
-                    "/habit/assign/cancel/{habitId}",
                     USER_CUSTOM_SHOPPING_LIST_ITEMS,
                     USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
                     USER_SHOPPING_LIST + "/{userShoppingListItemId}",

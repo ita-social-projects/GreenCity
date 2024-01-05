@@ -35,12 +35,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
-
 import static greencity.ModelUtils.getAmountCommentLikesDto;
 import static greencity.ModelUtils.getUser;
 import static greencity.ModelUtils.getUserVO;
@@ -82,6 +80,9 @@ class EventCommentServiceImplTest {
     @Mock
     private SimpMessagingTemplate messagingTemplate;
 
+    @Mock
+    private NotificationService notificationService;
+
     @Test
     void save() {
         UserVO userVO = getUserVO();
@@ -90,20 +91,17 @@ class EventCommentServiceImplTest {
         Event event = ModelUtils.getEvent();
         AddEventCommentDtoRequest addEventCommentDtoRequest = ModelUtils.getAddEventCommentDtoRequest();
         EventComment eventComment = getEventComment();
-        EventAuthorDto eventAuthorDto = ModelUtils.getEventAuthorDto();
         EventCommentAuthorDto eventCommentAuthorDto = ModelUtils.getEventCommentAuthorDto();
 
         when(eventService.findById(anyLong())).thenReturn(eventVO);
         when(eventCommentRepo.save(any(EventComment.class))).then(AdditionalAnswers.returnsFirstArg());
         when(eventCommentRepo.findById(anyLong())).thenReturn(Optional.of(eventComment));
         when(modelMapper.map(userVO, EventCommentAuthorDto.class)).thenReturn(eventCommentAuthorDto);
-        when(modelMapper.map(user, EventAuthorDto.class)).thenReturn(eventAuthorDto);
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(modelMapper.map(eventVO, Event.class)).thenReturn(event);
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
-        doNothing().when(restClient).sendNewEventComment(any());
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());

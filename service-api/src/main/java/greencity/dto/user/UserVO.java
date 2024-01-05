@@ -4,6 +4,7 @@ import greencity.dto.achievement.UserAchievementVO;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageVO;
+import greencity.dto.location.UserLocationDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
@@ -78,8 +79,6 @@ public class UserVO {
 
     private String firstName;
 
-    private String city;
-
     private Boolean showLocation;
 
     private Boolean showEcoPlace;
@@ -92,4 +91,6 @@ public class UserVO {
     private List<UserActionVO> userActions = new ArrayList<>();
 
     private LanguageVO languageVO;
+
+    private UserLocationDto userLocationDto;
 }
