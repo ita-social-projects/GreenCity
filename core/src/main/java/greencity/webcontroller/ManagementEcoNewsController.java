@@ -239,8 +239,7 @@ public class ManagementEcoNewsController {
     @ApiLocale
     @GetMapping("/{id}/likes")
     @ResponseBody
-    public Set<UserVO> getLikesByEcoNewsId(@PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+    public Set<UserVO> getLikesByEcoNewsId(@PathVariable Long id) {
         return ecoNewsService.findUsersWhoLikedPost(id);
     }
 
@@ -258,8 +257,7 @@ public class ManagementEcoNewsController {
     @ApiLocale
     @GetMapping("/{id}/dislikes")
     @ResponseBody
-    public Set<UserVO> getDislikesByEcoNewsId(@PathVariable Long id,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+    public Set<UserVO> getDislikesByEcoNewsId(@PathVariable Long id) {
         return ecoNewsService.findUsersWhoDislikedPost(id);
     }
 }

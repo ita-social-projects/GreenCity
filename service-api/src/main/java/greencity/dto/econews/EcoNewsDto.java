@@ -33,6 +33,7 @@ public class EcoNewsDto {
     private String content;
 
     private String shortInfo;
+
     @NotEmpty
     private EcoNewsAuthorDto author;
 

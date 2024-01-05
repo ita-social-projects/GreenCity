@@ -10,7 +10,7 @@ import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
-import greencity.mapping.LocalDateTimeTypeAdapter;
+import greencity.converters.LocalDateTimeTypeAdapter;
 import greencity.service.HabitAssignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

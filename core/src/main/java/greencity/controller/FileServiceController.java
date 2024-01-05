@@ -5,7 +5,7 @@ import greencity.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +40,7 @@ public class FileServiceController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestPart @NotEmpty MultipartFile image) {
+    public ResponseEntity<String> uploadImage(@RequestPart @NotNull MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK).body(fileService.upload(image));
     }
 }
