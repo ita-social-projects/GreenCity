@@ -21,7 +21,6 @@ public final class ErrorMessage {
         "User has reached the limit of active habit assigns: ";
     public static final String HABIT_STATISTIC_NOT_FOUND_BY_ID = "Habit statistic does not exist by this id : ";
     public static final String HABIT_NOT_FOUND_BY_ID = "Habit does not exist by this id : ";
-    public static final String HABIT_NOT_FOUND_BY_HABIT_ASSIGN_ID = "Habit does not exist by this habitAssignId : ";
     public static final String WRONG_DATE = "Can't create habit statistic for such date";
     public static final String HABIT_TRANSLATION_NOT_FOUND = "Habit translation not found for habit with id : ";
     public static final String SHOPPING_LIST_ITEM_TRANSLATION_NOT_FOUND =
@@ -65,8 +64,6 @@ public final class ErrorMessage {
         "There is no habit assign for current user and such habit with id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ASSIGN_ID =
         "There is no habit assign for current user and such habit assign id: ";
-    public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_HABIT_ID_AND_INPROGRESS_STATUS =
-        "There is no inprogress habit assign for current user and such habit with id: ";
     public static final String HABIT_ASSIGN_NOT_FOUND_WITH_CURRENT_USER_ID_AND_INPROGRESS_STATUS =
         "There is no inprogress habit assign for current user: ";
     public static final String HABIT_STATUS_CALENDAR_OUT_OF_ENROLL_RANGE =
@@ -96,17 +93,15 @@ public final class ErrorMessage {
     public static final String DUPLICATED_USER_SHOPPING_LIST_ITEM = "UserShoppingListItems should be unique";
     public static final String USER_CANT_UPDATE_HIMSELF = "User can't update yourself";
     public static final String IMPOSSIBLE_UPDATE_USER_STATUS = "Impossible to update status of admin or moderator";
-    public static final String PROFILE_PICTURE_NOT_FOUND_BY_ID = "Profile picture not found by id : ";
-    public static final String IMAGE_EXISTS = "Image should be download, PNG or JPEG ";
     public static final String OWN_USER_ID = "You can not perform actions with your own id : ";
     public static final String USER_FRIENDS_LIST = "You don't have a friend with this id : ";
     public static final String FRIEND_EXISTS = "Friend with this id has already been added : ";
     public static final String FRIEND_REQUEST_ALREADY_SENT = "Friend request already exists between two users";
     public static final String FRIEND_REQUEST_NOT_SENT = "Friend request is not exists";
-    public static final String NOT_FOUND_REQUEST = "Not found friend request from user with id: ";
-    public static final String NOT_FOUND_ANY_FRIENDS = "Not found any friends by id: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED =
         "This CustomShoppingListItem(s) already exist(s): ";
+    public static final String CUSTOM_SHOPPING_LIST_ITEM_EXISTS =
+        "The CustomShoppingListItem with text: %s already exists";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_WITH_THIS_ID_NOT_FOUND =
         "CustomShoppingListItem(s) with this id not found: ";
     public static final String CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND =
@@ -133,24 +128,11 @@ public final class ErrorMessage {
     public static final String COMMENT_PROPERTY_TYPE_NOT_FOUND = "For type comment not found this property :";
     public static final String CANNOT_REPLY_THE_REPLY = "Can not make a reply to a reply";
     public static final String NOT_A_CURRENT_USER = "You can't perform actions with the data of other user";
-    public static final String CANNOT_REPLY_TO_DELETED_COMMENT = "Can not reply to deleted comment";
     public static final String FAVORITE_PLACE_ALREADY_EXISTS =
         "Favorite place already exist for this placeId: %d and user with email: %s";
     public static final String FAVORITE_PLACE_NOT_FOUND = "The favorite place does not exist ";
     public static final String USER_SHOPPING_LIST_ITEMS_STATUS_IS_ALREADY_DONE =
         "The status of this shopping list item is already done ";
-    public static final String USER_DEACTIVATED = "User is deactivated";
-    public static final String BAD_GOOGLE_TOKEN = "Bad google token";
-    public static final String BAD_FACEBOOK_TOKEN = "Bad facebook token";
-    public static final String NO_ANY_EMAIL_TO_VERIFY_BY_THIS_TOKEN = "No any email to verify by this token";
-    public static final String EMAIL_TOKEN_EXPIRED = "User late with verify. Token is invalid.";
-    public static final String PASSWORD_RESTORE_LINK_ALREADY_SENT =
-        "Password restore link already sent, please check your email: ";
-    public static final String REFRESH_TOKEN_NOT_VALID = "Refresh token not valid!";
-    public static final String BAD_PASSWORD = "Bad password";
-    public static final String USER_ALREADY_REGISTERED_WITH_THIS_EMAIL = "User with this email is already registered";
-    public static final String PASSWORDS_DO_NOT_MATCHES = "The passwords don't matches";
-    public static final String PASSWORD_DOES_NOT_MATCH = "The password doesn't match";
     public static final String USER_HAS_BLOCKED_STATUS = "User has blocked status.";
     public static final String WRONG_DATE_TIME_FORMAT =
         "The date format is wrong. Should matches " + AppConstant.DATE_FORMAT;
@@ -159,16 +141,14 @@ public final class ErrorMessage {
     public static final String INVALID_HABIT_ID = "Invalid habit id ";
     public static final String WRONG_COUNT_OF_TAGS_EXCEPTION =
         "Count of tags should be at least one but not more three";
-    public static final String TOKEN_FOR_RESTORE_IS_INVALID = "Token is null or it doesn't exist.";
     public static final String ACHIEVEMENT_NOT_DELETED = "Achievement not deleted ";
     public static final String ACHIEVEMENT_NOT_FOUND_BY_ID = "The achievement does not exist by this id: ";
     public static final String ACHIEVEMENT_CATEGORY_NOT_FOUND_BY_ID =
         "The achievement category does not exist by this id: ";
     public static final String PAGE_INDEX_IS_MORE_THAN_TOTAL_PAGES = "Page index is more than total pages: ";
     public static final String MULTIPART_FILE_BAD_REQUEST =
-        "Can`t convert To Multipart Image. Bad inputed image string : ";
+        "Can`t convert To Multipart Image. Bad inputted image string : ";
     public static final String INCORRECT_INPUT_ITEM_STATUS = "Incorrect input status to update item.";
-    public static final String AZURE_NOT_CONNECTED = "Invalid connection string for Azure";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_INPROGRESS_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
         "Habit assign status is not INPROGRESS or user has not any assigned habits";
     public static final String HABIT_ASSIGN_STATUS_IS_NOT_REQUESTED_OR_USER_HAS_NOT_ANY_ASSIGNED_HABITS =
@@ -196,6 +176,9 @@ public final class ErrorMessage {
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
+    public static final String ADDRESS_NOT_FOUND_EXCEPTION = "No address found for the given coordinates.";
+    public static final String INVALID_EVENT_TYPE = "Invalid event type, please specify - online or offline.";
+    public static final String PAGE_NOT_FOUND = "Page not found. Page number should be between 0 and ";
 
     private ErrorMessage() {
     }

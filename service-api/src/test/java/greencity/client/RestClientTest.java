@@ -16,19 +16,18 @@ import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
+import greencity.message.GeneralEmailMessage;
 import greencity.message.SendChangePlaceStatusEmailMessage;
-import greencity.message.SendEventCreationNotification;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-
 import greencity.security.jwt.JwtTool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -47,7 +45,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -565,14 +562,14 @@ class RestClientTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        SendEventCreationNotification notification = ModelUtils.getSendEventCreationNotification();
-        HttpEntity<SendEventCreationNotification> entity = new HttpEntity<>(notification, headers);
+        GeneralEmailMessage notification = ModelUtils.getGeneralEmailNotification();
+        HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class))
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class))
             .thenReturn(ResponseEntity.ok(Object));
-        restClient.sendEventCreationNotification(notification);
+        restClient.sendEmailNotification(notification);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
-            + RestTemplateLinks.SEND_EVENT_CREATION_NOTIFICATION, HttpMethod.POST, entity, Object.class);
+            + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }
 }

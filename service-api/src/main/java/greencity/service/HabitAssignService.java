@@ -5,11 +5,9 @@ import greencity.dto.habit.HabitAssignDto;
 import greencity.dto.habit.HabitAssignManagementDto;
 import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.HabitAssignUserDurationDto;
-import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
@@ -262,29 +260,12 @@ public interface HabitAssignService {
     void addDefaultHabit(UserVO user, String language);
 
     /**
-     * Method to set {@link HabitAssignVO} status from inprogress to cancelled.
-     *
-     * @param habitId - id of {@link HabitVO}.
-     * @param userId  - id of {@link UserVO} .
-     * @return {@link HabitAssignDto}.
-     */
-    HabitAssignDto cancelHabitAssign(Long habitId, Long userId);
-
-    /**
      * Method delete HabitAssign by habitAssignId for current User.
      *
      * @param habitAssignId {@link Long} id.
      * @param userId        {@link Long} id.
      */
     void deleteHabitAssign(Long habitAssignId, Long userId);
-
-    /**
-     * Method save HabitAssign.
-     *
-     * @param updateUserShoppingListDto {@link UpdateUserShoppingListDto}
-     *                                  habitAssignDto.
-     */
-    void updateUserShoppingListItem(UpdateUserShoppingListDto updateUserShoppingListDto);
 
     /**
      * Method update shopping item by habit id and item id.

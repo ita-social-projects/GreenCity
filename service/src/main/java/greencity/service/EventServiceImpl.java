@@ -4,6 +4,7 @@ import com.google.maps.model.LatLng;
 import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
@@ -35,7 +36,7 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import greencity.message.SendEventCreationNotification;
+import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EventRepo;
 import greencity.repository.EventsSearchRepo;
@@ -57,7 +58,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -70,6 +70,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static greencity.constant.ErrorMessage.PAGE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -81,6 +83,7 @@ public class EventServiceImpl implements EventService {
     private final GoogleApiService googleApiService;
     private final UserService userService;
     private final EventsSearchRepo eventsSearchRepo;
+    private final NotificationService notificationService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_EVENT_IMAGES;
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
@@ -129,10 +132,15 @@ public class EventServiceImpl implements EventService {
             }.getType()));
 
         Event savedEvent = eventRepo.save(toSave);
-        sendEmailNotification(savedEvent.getTitle(), organizer.getName(), organizer.getEmail());
         achievementCalculation.calculateAchievement(userVO, AchievementCategoryType.CREATE_EVENT,
             AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.CREATE_EVENT, userVO);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(organizer.getEmail())
+            .subject(EmailNotificationMessagesConstants.EVENT_CREATION_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
+                savedEvent.getTitle()))
+            .build());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -150,6 +158,12 @@ public class EventServiceImpl implements EventService {
 
         if (toDelete.getOrganizer().getId().equals(userVO.getId()) || userVO.getRole() == Role.ROLE_ADMIN) {
             deleteImagesFromServer(eventImages);
+            Set<String> attendersEmails =
+                toDelete.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+            notificationService.sendEmailNotification(
+                attendersEmails,
+                EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
+                String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -173,6 +187,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
         Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
+
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
             return buildPageableAdvancedDto(events, user.getId());
@@ -181,25 +196,39 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto) {
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+        String title) {
         if (Objects.isNull(filterEventDto)) {
             return getAll(page, principal);
         }
-        return getAllFiltered(principal, page, filterEventDto);
+        return getAllFiltered(principal, page, filterEventDto, title);
     }
 
     private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
-        FilterEventDto filterEventDto) {
-        List<Event> events = eventRepo.findAll();
+        FilterEventDto filterEventDto, String title) {
+        List<Event> events = title == null ? eventRepo.findAll() : eventRepo.findAllByTitleContainingIgnoreCase(title);
+
+        validatePageNumber(events, page);
+
         return principal != null
             ? getFilteredForLoggedInUser(events, page, principal, filterEventDto)
             : getFilteredForAnonymousUser(events, page, filterEventDto);
+    }
+
+    private void validatePageNumber(List<Event> events, Pageable page) {
+        int pageNumber = page.getPageNumber();
+        int totalPages = (int) Math.ceil((double) events.size() / (double) page.getPageSize());
+
+        if (pageNumber > totalPages) {
+            throw new NotFoundException(PAGE_NOT_FOUND + totalPages);
+        }
     }
 
     private PageableAdvancedDto<EventDto> getFilteredForLoggedInUser(List<Event> events, Pageable page,
         Principal principal, FilterEventDto filterEventDto) {
         long userId = modelMapper.map(restClient.findByEmail(principal.getName()), User.class).getId();
         events = getAllFilteredAndSorted(events, userId, filterEventDto);
+        validatePageNumber(events, page);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage, userId);
     }
@@ -207,6 +236,7 @@ public class EventServiceImpl implements EventService {
     private PageableAdvancedDto<EventDto> getFilteredForAnonymousUser(List<Event> events, Pageable page,
         FilterEventDto filterEventDto) {
         events = getAllFilteredAndSorted(events, null, filterEventDto);
+        validatePageNumber(events, page);
         Page<Event> eventPage = new PageImpl<>(getEventsForCurrentPage(page, events), page, events.size());
         return buildPageableAdvancedDto(eventPage);
     }
@@ -250,6 +280,8 @@ public class EventServiceImpl implements EventService {
                 return (StringUtils.isNotBlank(userLatitude) && StringUtils.isNotBlank(userLongitude))
                     ? getOfflineUserEventsSortedByUserLocation(attender, userLatitude, userLongitude)
                     : getOfflineUserEventsSortedByDate(attender);
+            } else {
+                throw new BadRequestException(ErrorMessage.INVALID_EVENT_TYPE);
             }
         }
         return eventRepo.findAllByAttender(attender.getId()).stream().sorted(getComparatorByDates())
@@ -342,6 +374,11 @@ public class EventServiceImpl implements EventService {
             AchievementCategoryType.JOIN_EVENT, AchievementAction.ASSIGN);
         ratingCalculation.ratingCalculation(RatingCalculationEnum.JOIN_EVENT, userVO);
         eventRepo.save(event);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(event.getOrganizer().getEmail())
+            .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
+            .build());
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -429,9 +466,14 @@ public class EventServiceImpl implements EventService {
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
-
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
+        Set<String> emailsToNotify = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        emailsToNotify.add(organizer.getEmail());
+        notificationService.sendEmailNotification(
+            emailsToNotify,
+            EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
+            String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         return buildEventDto(updatedEvent, organizer.getId());
     }
 
@@ -774,6 +816,22 @@ public class EventServiceImpl implements EventService {
             new TypeToken<List<EventDto>>() {
             }.getType());
 
+        if (Objects.nonNull(eventDtos)) {
+            eventDtos.forEach(eventDto -> {
+                if (Objects.nonNull(eventDto.getOrganizer())) {
+                    Long idOrganizer = eventDto.getOrganizer().getId();
+                    if (Objects.nonNull(idOrganizer)) {
+                        boolean isOrganizedByFriend = userRepo.isFriend(idOrganizer, userId);
+                        eventDto.setOrganizedByFriend(isOrganizedByFriend);
+                    } else {
+                        eventDto.setOrganizedByFriend(false);
+                    }
+                } else {
+                    eventDto.setOrganizedByFriend(false);
+                }
+            });
+        }
+
         if (CollectionUtils.isNotEmpty(eventDtos)) {
             setSubscribes(eventDtos, userId);
             setFollowers(eventDtos, userId);
@@ -837,21 +895,6 @@ public class EventServiceImpl implements EventService {
 
     private EventDto buildEventDto(Event event) {
         return modelMapper.map(event, EventDto.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Olena Sotnik.
-     */
-    public void sendEmailNotification(String eventTitle, String userName, String email) {
-        String message = "Dear, " + userName + "!"
-            + "\nYou have successfully created an event: " + eventTitle;
-        SendEventCreationNotification notification = SendEventCreationNotification.builder()
-            .email(email)
-            .messageBody(message)
-            .build();
-        restClient.sendEventCreationNotification(notification);
     }
 
     @Override

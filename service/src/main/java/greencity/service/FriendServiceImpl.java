@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
@@ -10,6 +11,7 @@ import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UnsupportedSortException;
+import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,7 @@ public class FriendServiceImpl implements FriendService {
     private final UserRepo userRepo;
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     /**
      * {@inheritDoc}
@@ -57,6 +60,14 @@ public class FriendServiceImpl implements FriendService {
         validateFriendRequestNotSent(userId, friendId);
         validateFriendNotExists(userId, friendId);
         userRepo.addNewFriend(userId, friendId);
+        User emailReceiver = userRepo.getOne(friendId);
+        User friendRequestSender = userRepo.getOne(userId);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(emailReceiver.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
+                friendRequestSender.getName()))
+            .build());
     }
 
     /**
@@ -70,6 +81,13 @@ public class FriendServiceImpl implements FriendService {
         validateFriendNotExists(userId, friendId);
         validateFriendRequestSentByFriend(userId, friendId);
         userRepo.acceptFriendRequest(userId, friendId);
+        User user = userRepo.getOne(userId);
+        User friend = userRepo.getOne(friendId);
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(friend.getEmail())
+            .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
+            .build());
     }
 
     /**
@@ -111,6 +129,31 @@ public class FriendServiceImpl implements FriendService {
      * {@inheritDoc}
      */
     @Override
+    public PageableDto<UserFriendDto> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(Pageable pageable,
+        long userId, long currentUserId) {
+        validateUserExistence(userId);
+        Page<User> friends;
+        if (pageable.getSort().isEmpty()) {
+            friends = userRepo.getAllUserFriendsCollectingBySpecificConditionsAndCertainOrder(pageable, userId);
+        } else {
+            throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
+        }
+
+        List<UserFriendDto> userFriendDtoList =
+            customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
+                friends.getContent());
+
+        return new PageableDto<>(
+            userFriendDtoList,
+            friends.getTotalElements(),
+            friends.getPageable().getPageNumber(),
+            friends.getTotalPages());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PageableDto<UserFriendDto> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(long userId,
         @Nullable String name, Pageable pageable) {
         Objects.requireNonNull(pageable);
@@ -138,12 +181,16 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public PageableDto<UserFriendDto> findRecommendedFriends(long userId, RecommendedFriendsType type,
         Pageable pageable) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID));
         validateUserExistence(userId);
         Page<User> mutualFriends;
         if (type == RecommendedFriendsType.FRIENDS_OF_FRIENDS) {
             mutualFriends = userRepo.getRecommendedFriendsOfFriends(userId, pageable);
         } else if (type == RecommendedFriendsType.HABITS) {
             mutualFriends = userRepo.findRecommendedFriendsByHabits(userId, pageable);
+        } else if (type == RecommendedFriendsType.CITY) {
+            mutualFriends = userRepo.findRecommendedFriendsByCity(userId, user.getUserLocation().getCityUa(), pageable);
         } else {
             mutualFriends = getAllUsersExceptMainUserAndFriends(userId, pageable);
         }

@@ -43,6 +43,7 @@
         <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
     </properties>
+
     <reporting>
         <plugins>
             <plugin>
@@ -61,6 +62,18 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.exclusions>**/CustomExceptionHandler.java</sonar.exclusions>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

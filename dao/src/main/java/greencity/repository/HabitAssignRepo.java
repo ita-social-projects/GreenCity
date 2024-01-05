@@ -74,19 +74,6 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         @Param("dateTime") ZonedDateTime dateTime);
 
     /**
-     * Method to find {@link HabitAssign}'s by {@link User} and {@link Habit} id's
-     * and INPROGRESS status.
-     *
-     * @param habitId {@link Habit} id.
-     * @param userId  {@link User} id.
-     * @return {@link HabitAssign} instance.
-     */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
-        + " WHERE ha.habit.id = :habitId AND ha.user.id = :userId AND upper(ha.status) = 'INPROGRESS'")
-    Optional<HabitAssign> findByHabitIdAndUserIdAndStatusIsInprogress(@Param("habitId") Long habitId,
-        @Param("userId") Long userId);
-
-    /**
      * Method to find {@link HabitAssign}'s by {@link User} and {@link HabitAssign}
      * id and INPROGRESS status.
      *

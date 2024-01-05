@@ -8,6 +8,7 @@ import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.exception.exceptions.BadRequestException;
@@ -80,7 +81,11 @@ public class GoogleApiService {
         try {
             GeocodingResult[] results = GeocodingApi.newRequest(context)
                 .latlng(latLng).language(locale.getLanguage()).await();
-            return getAddressResponse(results[0]);
+            if (results != null && results.length > 0) {
+                return getAddressResponse(results[0]);
+            } else {
+                throw new BadRequestException(ErrorMessage.ADDRESS_NOT_FOUND_EXCEPTION);
+            }
         } catch (IOException | InterruptedException | ApiException e) {
             log.error("Occurred error during the call on google API, reason: {}", e.getMessage());
             Thread.currentThread().interrupt();
