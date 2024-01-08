@@ -243,7 +243,7 @@ public class AdviceServiceImpl implements AdviceService {
      * @param value          - value of field
      */
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (!StringUtils.isEmpty(value)) {
+        if (StringUtils.hasLength(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

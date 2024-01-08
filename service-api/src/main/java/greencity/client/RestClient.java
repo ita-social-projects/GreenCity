@@ -545,11 +545,11 @@ public class RestClient {
             accessToken = getTokenFromCookies(cookies);
         }
 
-        if (StringUtils.isEmpty(accessToken)) {
+        if (!StringUtils.hasLength(accessToken)) {
             accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         }
 
-        if (StringUtils.isEmpty(accessToken)) {
+        if (!StringUtils.hasLength(accessToken)) {
             accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 

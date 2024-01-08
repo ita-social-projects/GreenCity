@@ -27,7 +27,6 @@ import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.message.GeneralEmailMessage;
 import greencity.rating.RatingCalculation;
 import greencity.repository.EcoNewsCommentRepo;
-import jakarta.servlet.http.HttpServletRequest;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;

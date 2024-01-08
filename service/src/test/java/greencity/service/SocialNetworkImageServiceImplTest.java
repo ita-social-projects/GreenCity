@@ -57,8 +57,9 @@ class SocialNetworkImageServiceImplTest {
 
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(null);
 
-        assertThrows(RuntimeException.class,
-            () -> socialNetworkImageService.getSocialNetworkImageByUrl(checkUrl.toString()));
+        assertThrows(RuntimeException.class, () -> {
+            socialNetworkImageService.getSocialNetworkImageByUrl(checkUrl.toString());
+        });
     }
 
     @Test
