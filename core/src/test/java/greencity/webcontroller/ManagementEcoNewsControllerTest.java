@@ -38,6 +38,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 
 import static greencity.ModelUtils.*;
 import static org.mockito.Mockito.*;
@@ -59,6 +60,8 @@ class ManagementEcoNewsControllerTest {
     private TagsService tagsService;
     @Mock
     private UserService userService;
+    @Mock
+    private Validator mockValidator;
     private final Principal principal = getPrincipal();
 
     @BeforeEach
@@ -66,6 +69,7 @@ class ManagementEcoNewsControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
+            .setValidator(mockValidator)
             .build();
     }
 

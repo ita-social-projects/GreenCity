@@ -16,27 +16,27 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = GreenCityApplication.class)
 class LanguageRepoTest extends IntegrationTestBase {
-//    @Autowired
-//    private LanguageRepo languageRepo;
-//
-//    @Test
-//    void findAllLanguageCodes() {
-//        List<String> language = ModelUtils.getAllLanguages();
-//        List<String> actual = languageRepo.findAllLanguageCodes();
-//        Assertions.assertEquals(language, actual);
-//    }
-//
-//    @Test
-//    void findByCode() {
-//        Language language = ModelUtils.getLanguage();
-//        Optional<Language> actual = languageRepo.findByCode("ua");
-//        Assertions.assertEquals(language.getCode(), actual.get().getCode());
-//    }
-//
-//    @Test
-//    void findByTagTranslationId() {
-//        Language language = ModelUtils.getLanguage();
-//        Optional<Language> actual = languageRepo.findByTagTranslationId(1L);
-//        Assertions.assertEquals(language.getCode(), actual.get().getCode());
-//    }
+    @Autowired
+    private LanguageRepo languageRepo;
+
+    @Test
+    void findAllLanguageCodes() {
+        List<String> language = ModelUtils.getAllLanguages();
+        List<String> actual = languageRepo.findAllLanguageCodes();
+        Assertions.assertEquals(language, actual);
+    }
+
+    @Test
+    void findByCode() {
+        Language language = ModelUtils.getLanguage();
+        Optional<Language> actual = languageRepo.findByCode("ua");
+        Assertions.assertEquals(language.getCode(), actual.get().getCode());
+    }
+
+    @Test
+    void findByTagTranslationId() {
+        Language language = ModelUtils.getLanguage();
+        Optional<Language> actual = languageRepo.findByTagTranslationId(1L);
+        Assertions.assertEquals(language.getCode(), actual.get().getCode());
+    }
 }

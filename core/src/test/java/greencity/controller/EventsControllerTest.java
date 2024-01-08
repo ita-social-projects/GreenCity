@@ -578,7 +578,7 @@ class EventsControllerTest {
 
     @SneakyThrows
     private AddEventDtoRequest getAddEventDtoRequest() {
-        String json = "{\n" +
+        String json = "{ \n" +
             "    \"title\":\"string\",\n" +
             "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
             "    \"open\":true,\n" +

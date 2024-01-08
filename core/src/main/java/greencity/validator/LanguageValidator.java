@@ -1,21 +1,22 @@
 package greencity.validator;
 
 import greencity.annotations.ValidLanguage;
-
-import java.util.Arrays;
+import greencity.service.LanguageService;
 import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.List;
 
 public class LanguageValidator implements ConstraintValidator<ValidLanguage, Locale> {
     private List<String> codes;
+    @Autowired
+    private LanguageService languageService;
 
     @Override
     public void initialize(ValidLanguage constraintAnnotation) {
-        this.codes = Arrays.asList("en", "ua");
+        codes = languageService.findAllLanguageCodes();
     }
 
     @Override
