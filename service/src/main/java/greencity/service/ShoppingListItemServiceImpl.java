@@ -411,7 +411,7 @@ public class ShoppingListItemServiceImpl implements ShoppingListItemService {
     @Override
     public UserShoppingListItemResponseDto updateUserShopingListItemStatus(Long userId, Long itemId, String language) {
         UserShoppingListItem userShoppingListItem;
-        userShoppingListItem = userShoppingListItemRepo.getOne(itemId);
+        userShoppingListItem = userShoppingListItemRepo.getReferenceById(itemId);
         if (isActive(userShoppingListItem)) {
             changeStatusToDone(userShoppingListItem);
         } else {

@@ -268,7 +268,7 @@ class ShoppingListItemServiceImplTest {
     @Test
     void updateUserShoppingListItemStatusWithActiveItemStateTest() {
         UserShoppingListItem userShoppingListItem = ModelUtils.getPredefinedUserShoppingListItem();
-        when(userShoppingListItemRepo.getOne(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
+        when(userShoppingListItemRepo.getReferenceById(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
         when(modelMapper.map(any(), eq(UserShoppingListItemResponseDto.class)))
             .thenReturn(new UserShoppingListItemResponseDto(2L, null, ShoppingListItemStatus.DONE));
         when(shoppingListItemTranslationRepo.findByLangAndUserShoppingListItemId(language,
@@ -287,7 +287,7 @@ class ShoppingListItemServiceImplTest {
     void updateUserShoppingListItemStatusWithDoneItemStateTest() {
         UserShoppingListItem userShoppingListItem =
             new UserShoppingListItem(1L, null, null, ShoppingListItemStatus.DONE, null);
-        when(userShoppingListItemRepo.getOne(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
+        when(userShoppingListItemRepo.getReferenceById(userShoppingListItem.getId())).thenReturn(userShoppingListItem);
         Long userId = user.getId();
         Long userShoppingListItemId = userShoppingListItem.getId();
         assertThrows(UserShoppingListItemStatusNotUpdatedException.class,

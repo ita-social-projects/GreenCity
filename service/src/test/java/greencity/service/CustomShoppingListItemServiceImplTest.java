@@ -23,7 +23,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,9 +63,6 @@ class CustomShoppingListItemServiceImplTest {
 
     @Mock
     private RestClient restClient;
-
-    @Mock
-    private HabitRepo habitRepo;
     @Mock
     private HabitAssignRepo habitAssignRepo;
 
@@ -349,7 +345,7 @@ class CustomShoppingListItemServiceImplTest {
             new UserShoppingListItem(1L, ModelUtils.getHabitAssignWithUserShoppingListItem(), shoppingListItem,
                 ShoppingListItemStatus.ACTIVE, LocalDateTime.now());
         when(userShoppingListItemRepo.getByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userShoppingListItemId));
-        when(userShoppingListItemRepo.getOne(userShoppingListItemId)).thenReturn(userShoppingListItem);
+        when(userShoppingListItemRepo.getReferenceById(userShoppingListItemId)).thenReturn(userShoppingListItem);
         customShoppingListItemService.updateItemStatusToDone(1L, 1L);
         userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
         verify(userShoppingListItemRepo).save(userShoppingListItem);
@@ -364,7 +360,6 @@ class CustomShoppingListItemServiceImplTest {
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, "INPROGRESS")
             .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
-        ;
     }
 
     @Test

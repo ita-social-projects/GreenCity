@@ -19,7 +19,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +47,6 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     private UserShoppingListItemRepo userShoppingListItemRepo;
     private ModelMapper modelMapper;
     private RestClient restClient;
-    private HabitRepo habitRepo;
     private HabitAssignRepo habitAssignRepo;
 
     /**
@@ -68,7 +66,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
         List<String> errorMessages = findDuplicates(dto, user, habitAssign.getHabit());
         if (!errorMessages.isEmpty()) {
             throw new CustomShoppingListItemNotSavedException(
-                ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + errorMessages.toString());
+                ErrorMessage.CUSTOM_SHOPPING_LIST_ITEM_WHERE_NOT_SAVED + errorMessages);
         }
         List<CustomShoppingListItem> items = user.getCustomShoppingListItems();
         for (CustomShoppingListItem item : items) {
@@ -98,7 +96,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
         for (CustomShoppingListItemSaveRequestDto el : dto) {
             CustomShoppingListItem customShoppingListItem = modelMapper.map(el, CustomShoppingListItem.class);
             List<CustomShoppingListItem> duplicate = user.getCustomShoppingListItems().stream()
-                .filter(o -> o.getText().equals(customShoppingListItem.getText())).collect(Collectors.toList());
+                .filter(o -> o.getText().equals(customShoppingListItem.getText())).toList();
             if (duplicate.isEmpty()) {
                 customShoppingListItem.setUser(user);
                 customShoppingListItem.setHabit(habit);
@@ -181,7 +179,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
     public void updateItemStatusToDone(Long userId, Long itemId) {
         Long userShoppingListItemId = userShoppingListItemRepo.getByUserAndItemId(userId, itemId)
             .orElseThrow(() -> new NotFoundException(CUSTOM_SHOPPING_LIST_ITEM_NOT_FOUND_BY_ID + " " + itemId));
-        UserShoppingListItem userShoppingListItem = userShoppingListItemRepo.getOne(userShoppingListItemId);
+        UserShoppingListItem userShoppingListItem = userShoppingListItemRepo.getReferenceById(userShoppingListItemId);
         userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
         userShoppingListItemRepo.save(userShoppingListItem);
     }
@@ -217,7 +215,7 @@ public class CustomShoppingListItemServiceImpl implements CustomShoppingListItem
         List<Long> arrayIds = Arrays
             .stream(ids.split(","))
             .map(Long::valueOf)
-            .collect(Collectors.toList());
+            .toList();
 
         List<Long> deleted = new ArrayList<>();
         for (Long id : arrayIds) {

@@ -27,6 +27,7 @@ class SocialNetworkImageServiceImplTest {
     ModelMapper modelMapper;
     @InjectMocks
     SocialNetworkImageServiceImpl socialNetworkImageService;
+    private static final String TEST_URL = "http://example.com";
 
     @Test
     void getSocialNetworkImageByUrl() throws Exception {
@@ -49,7 +50,8 @@ class SocialNetworkImageServiceImplTest {
 
     @Test
     void getSocialNetworkImageByUrlBadRequest() throws Exception {
-        URI checkUrl = new URI("http://example.com");
+        URI checkUrl = new URI(TEST_URL);
+
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
@@ -57,14 +59,12 @@ class SocialNetworkImageServiceImplTest {
 
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(null);
 
-        assertThrows(RuntimeException.class, () -> {
-            socialNetworkImageService.getSocialNetworkImageByUrl(checkUrl.toString());
-        });
+        assertThrows(RuntimeException.class, () -> socialNetworkImageService.getSocialNetworkImageByUrl(TEST_URL));
     }
 
     @Test
     void findByHostPath() throws Exception {
-        URL checkUrl = new URL("HTTP://example.com/");
+        URI checkUrl = new URI("HTTP://example.com/");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
