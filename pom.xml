@@ -33,7 +33,6 @@
         <spring-security.version>6.1.5</spring-security.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.coverage.exclusions>**/config/*,**/entity/*,**/exceptions/*</sonar.coverage.exclusions>
         <sonar.exclusions>**/config/*</sonar.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -42,6 +41,18 @@
         <maven.surefire.plugin.version>3.2.2</maven.surefire.plugin.version>
         <net.java.dev.jna.version>5.13.0</net.java.dev.jna.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.exclusions>**/CustomExceptionHandler.java</sonar.exclusions>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
