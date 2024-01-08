@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
@@ -47,6 +46,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
+
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;

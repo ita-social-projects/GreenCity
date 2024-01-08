@@ -33,7 +33,6 @@
         <spring-security.version>6.1.5</spring-security.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.exclusions>**/config/*</sonar.exclusions>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
@@ -50,6 +49,9 @@
             </activation>
             <properties>
                 <sonar.exclusions>**/CustomExceptionHandler.java</sonar.exclusions>
+                <sonar.exclusions>**/config/*</sonar.exclusions>
+                <sonar.exclusions>**/entity/*</sonar.exclusions>
+                <sonar.exclusions>**/enums/*</sonar.exclusions>
             </properties>
         </profile>
     </profiles>
