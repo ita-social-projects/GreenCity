@@ -5,6 +5,7 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
+import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
@@ -81,7 +82,6 @@ public class HabitController {
      * Method finds all default and custom with created by current user and his
      * friends habits that available for tracking for specific language.
      *
-     * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @return Pageable of {@link HabitTranslationDto}.
      */
@@ -89,15 +89,15 @@ public class HabitController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description =  HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
-    @ApiPageableWithLocale
+    @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable));
     }
 
     /**

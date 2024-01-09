@@ -81,14 +81,10 @@ class HabitControllerTest {
         int pageSize = 20;
         UserVO userVO = new UserVO();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Locale locale = Locale.of("en");
-        Gson gson = new Gson();
-        String json = gson.toJson(locale);
         mockMvc.perform(get(habitLink + "?page=1")
-            .content(json)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage());
+        verify(habitService).getAllHabitsByLanguageCode(userVO, pageable);
     }
 
     @Test
