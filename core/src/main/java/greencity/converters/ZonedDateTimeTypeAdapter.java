@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 public class ZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {
     private static final DateTimeFormatter formatter =
-        DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss.SSSSSSXXX[VV]");
+        DateTimeFormatter.ofPattern("d::MMM::uuuu HH::mm::ss.SSSSSSSSSXXX[VV]");
 
     @Override
     public JsonElement serialize(ZonedDateTime zonedDateTime, Type srcType, JsonSerializationContext context) {
