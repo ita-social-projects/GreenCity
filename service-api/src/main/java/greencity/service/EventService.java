@@ -10,6 +10,7 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.search.SearchEventsDto;
+import greencity.dto.user.UserForListDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
@@ -203,4 +204,29 @@ public interface EventService {
      * @author Olena Sotnik
      */
     Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId);
+
+    /**
+     * Method for adding an event to requested by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     * @author Olha Pitsyk.
+     */
+    void addToRequested(Long eventId, String email);
+
+    /**
+     * Method for removing an event from requested by event id.
+     *
+     * @param eventId - event id.
+     * @param email   - user email.
+     * @author Olha Pitsyk.
+     */
+    void removeFromRequested(Long eventId, String email);
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable);
 }

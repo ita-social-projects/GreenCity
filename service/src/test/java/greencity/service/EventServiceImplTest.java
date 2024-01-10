@@ -6,6 +6,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.PageableDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
@@ -14,6 +15,7 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -46,6 +48,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1630,5 +1633,137 @@ class EventServiceImplTest {
         Long actual = eventService.getAmountOfOrganizedAndAttendedEventsByUserId(1L);
         assertEquals(100L, actual);
         verify(eventRepo).getAmountOfOrganizedAndAttendedEventsByUserId(anyLong());
+    }
+
+    @Test
+    void addToRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.addToRequested(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenEventNotFoundTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void addToRequestedThrowsExceptionWhenUserHasAlreadyAddedEventToRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.addToRequested(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void removeFromRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+        when(eventRepo.save(event)).thenReturn(event);
+
+        eventService.removeFromRequested(1L, TestConst.EMAIL);
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+        verify(eventRepo).save(event);
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenEventNotFoundTest() {
+        when(eventRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenUserNotFoundTest() {
+        when(userRepo.findById(any())).thenThrow(NotFoundException.class);
+        assertThrows(NotFoundException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void removeFromRequestedThrowsExceptionWhenEventIsNotInRequestedTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        user.setId(2L);
+
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findByEmail(TestConst.EMAIL)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> eventService.removeFromRequested(1L, TestConst.EMAIL));
+
+        verify(eventRepo).findById(any());
+        verify(userRepo).findByEmail(TestConst.EMAIL);
+    }
+
+    @Test
+    void getRequestedUsersTest() {
+        Event event = ModelUtils.getEvent();
+        User user = ModelUtils.getUser();
+        Pageable pageable = PageRequest.of(0, 20);
+
+        Page<User> userPage = new PageImpl<>(List.of(user), pageable, 1);
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+        when(userRepo.findUsersByRequestedEvents(any(), any(Pageable.class)))
+            .thenReturn(userPage);
+
+        assertEquals(1, eventService.getRequestedUsers(1L, "", pageable).getTotalElements());
+
+        verify(userRepo).findByEmail(anyString());
+        verify(eventRepo).findById(any());
+        verify(userRepo).findUsersByRequestedEvents(any(), any(Pageable.class));
+    }
+
+    @Test
+    void getRequestedUsersThrowsUserHasNoPermissionExceptionTest() {
+        Event event = ModelUtils.getEvent();
+        User user = User.builder().id(20L).build();
+        Pageable pageable = PageRequest.of(0, 20);
+
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.of(user));
+        when(eventRepo.findById(any())).thenReturn(Optional.of(event));
+
+        assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> eventService.getRequestedUsers(1L, "", pageable));
+
+        verify(userRepo).findByEmail(anyString());
+        verify(eventRepo).findById(any());
+    }
+
+    @Test
+    void getRequestedUsersThrowsUserNotFoundExceptionTest() {
+        when(userRepo.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> eventService.getRequestedUsers(1L, "", null));
     }
 }

@@ -19,6 +19,7 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.tag.TagVO;
+import greencity.dto.user.UserForListDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Tag;
 import greencity.entity.User;
@@ -924,5 +925,64 @@ public class EventServiceImpl implements EventService {
     @Override
     public Long getAmountOfOrganizedAndAttendedEventsByUserId(Long userId) {
         return eventRepo.getAmountOfOrganizedAndAttendedEventsByUserId(userId);
+    }
+
+    @Override
+    public void addToRequested(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (event.getRequesters().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED);
+        }
+
+        event.getRequesters().add(currentUser);
+        eventRepo.save(event);
+    }
+
+    @Override
+    public void removeFromRequested(Long eventId, String email) {
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+
+        User currentUser = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        if (!event.getRequesters().contains(currentUser)) {
+            throw new BadRequestException(ErrorMessage.EVENT_IS_NOT_IN_REQUESTED);
+        }
+
+        event.setRequesters(event.getRequesters()
+            .stream()
+            .filter(user -> !user.getId().equals(currentUser.getId()))
+            .collect(Collectors.toSet()));
+        eventRepo.save(event);
+    }
+
+    @Override
+    public PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable) {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email));
+
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (!user.equals(event.getOrganizer())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+
+        Page<User> usersPage = userRepo.findUsersByRequestedEvents(eventId, pageable);
+        List<UserForListDto> userList = usersPage.stream()
+            .map(users -> modelMapper.map(users, UserForListDto.class))
+            .collect(Collectors.toList());
+
+        return new PageableDto<>(
+            userList,
+            usersPage.getTotalElements(),
+            usersPage.getPageable().getPageNumber(),
+            usersPage.getTotalPages());
     }
 }

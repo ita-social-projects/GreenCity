@@ -378,4 +378,61 @@ public class EventsController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(eventService.getAmountOfOrganizedAndAttendedEventsByUserId(userId));
     }
+
+    /**
+     * Method for adding an event to requested by event id.
+     *
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "Add an event to requested")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/addToRequested/{eventId}")
+    public ResponseEntity<Object> addToRequested(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.addToRequested(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for removing an event from requested by event id.
+     *
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "Remove an event from requested")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/removeFromRequested/{eventId}")
+    public ResponseEntity<Object> removeFromRequested(@PathVariable Long eventId, @ApiIgnore Principal principal) {
+        eventService.removeFromRequested(eventId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "List of requested users")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/{eventId}/requested-users")
+    public ResponseEntity<Object> getRequestedUsers(
+        @PathVariable Long eventId,
+        @ApiIgnore Principal principal,
+        @ApiIgnore Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
+    }
 }

@@ -172,6 +172,9 @@ public final class ErrorMessage {
     public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_FAVORITES =
         "User has already added this event to favorites.";
     public static final String EVENT_IS_NOT_IN_FAVORITES = "This event is not in favorites.";
+    public static final String USER_HAS_ALREADY_ADDED_EVENT_TO_REQUESTED =
+            "User has already added this event to requested.";
+    public static final String EVENT_IS_NOT_IN_REQUESTED = "This event is not in requested.";
     public static final String EVENT_COMMENT_NOT_FOUND_BY_ID = "Event comment doesn't exist by this id: ";
     public static final String EVENT_IS_FINISHED = "Finished event cannot be modified";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";

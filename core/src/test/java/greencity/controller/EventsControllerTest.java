@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -699,5 +700,36 @@ class EventsControllerTest {
             .andExpect(status().isOk());
 
         verify(eventService).getAmountOfOrganizedAndAttendedEventsByUserId(1L);
+    }
+
+    @Test
+    @SneakyThrows
+    void addToRequestedTest() {
+        Long eventId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/addToRequested/{eventId}", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).addToRequested(eventId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void removeFromRequestedTest() {
+        Long eventId = 1L;
+        mockMvc.perform(delete(EVENTS_CONTROLLER_LINK + "/removeFromRequested/{eventId}", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).removeFromRequested(eventId, principal.getName());
+    }
+
+    @Test
+    @SneakyThrows
+    void getRequestedUsersTest() {
+        Long eventId = 1L;
+        Pageable pageable = PageRequest.of(0, 20);
+        mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users", eventId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).getRequestedUsers(eventId, principal.getName(), pageable);
     }
 }

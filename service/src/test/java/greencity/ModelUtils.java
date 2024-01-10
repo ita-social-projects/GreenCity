@@ -1833,6 +1833,7 @@ public class ModelUtils {
         event.setId(1L);
         event.setOrganizer(getUser());
         event.setFollowers(followers);
+        event.setRequesters(followers);
         event.setTitle("Title");
         event.setAttenders(new HashSet<>(Collections.singleton(getUser())));
         List<EventDateLocation> dates = new ArrayList<>();
