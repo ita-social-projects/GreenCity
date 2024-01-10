@@ -373,7 +373,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
         + "WHERE ht.language  IN "
-        + "(SELECT l FROM Language AS l WHERE l.code IN ('ua', 'en'))"
+        + "(SELECT l FROM Language AS l WHERE l.code IN ('ua',  'en'))"
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
