@@ -8,7 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public class MultipartBase64ImageMapperTest {
+class MultipartBase64ImageMapperTest {
     @InjectMocks
     private MultipartBase64ImageMapper multipartBase64ImageMapper;
 

@@ -1,7 +1,6 @@
 package greencity.dto.newssubscriber;
 
 import static greencity.constant.AppConstant.VALIDATION_EMAIL;
-
 import java.io.Serializable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -17,7 +17,6 @@ import greencity.filters.TagSpecification;
 import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

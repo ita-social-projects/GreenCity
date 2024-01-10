@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import static greencity.constant.ServiceValidationConstants.*;
 
 @Data

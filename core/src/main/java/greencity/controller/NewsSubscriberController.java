@@ -5,7 +5,6 @@ import greencity.dto.newssubscriber.NewsSubscriberRequestDto;
 import greencity.dto.newssubscriber.NewsSubscriberResponseDto;
 import greencity.service.NewsSubscriberService;
 import java.util.List;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

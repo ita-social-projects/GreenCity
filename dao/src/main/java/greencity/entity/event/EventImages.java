@@ -1,7 +1,6 @@
 package greencity.entity.event;
 
 import lombok.*;
-
 import jakarta.persistence.*;
 
 @Entity

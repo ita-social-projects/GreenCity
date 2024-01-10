@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habitstatistic.*;
-
 import java.util.List;
 
 public interface HabitStatisticService {

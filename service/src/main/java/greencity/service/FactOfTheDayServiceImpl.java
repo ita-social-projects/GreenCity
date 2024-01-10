@@ -17,7 +17,6 @@ import greencity.repository.FactOfTheDayRepo;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;

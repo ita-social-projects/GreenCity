@@ -2,13 +2,10 @@ package greencity.dto.place;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import org.hibernate.validator.constraints.Length;
-
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.openhours.OpeningHoursDto;
 import lombok.AllArgsConstructor;

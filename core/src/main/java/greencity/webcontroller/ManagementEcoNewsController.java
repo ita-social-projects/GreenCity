@@ -14,7 +14,6 @@ import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import java.util.Set;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,14 +39,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller

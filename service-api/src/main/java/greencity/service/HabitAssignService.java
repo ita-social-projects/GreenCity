@@ -11,7 +11,6 @@ import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -2,9 +2,7 @@ package greencity.annotations;
 
 import static greencity.constant.ErrorMessage.SELECT_CORRECT_LANGUAGE;
 import greencity.validator.LanguageValidator;
-
 import java.lang.annotation.*;
-
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

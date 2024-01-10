@@ -1,7 +1,6 @@
 package greencity.filters;
 
 import static greencity.entity.localization.AdviceTranslation_.content;
-
 import greencity.entity.Advice;
 import greencity.entity.Advice_;
 import greencity.entity.Habit;

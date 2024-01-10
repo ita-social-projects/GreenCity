@@ -4,7 +4,6 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.entity.CustomShoppingListItem;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

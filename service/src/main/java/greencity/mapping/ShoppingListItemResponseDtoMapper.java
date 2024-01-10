@@ -6,7 +6,6 @@ import greencity.entity.ShoppingListItem;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
 import java.util.stream.Collectors;
 
 /**

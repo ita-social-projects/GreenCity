@@ -43,10 +43,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;

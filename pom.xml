@@ -29,7 +29,7 @@
         <java.version>21</java.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <checkstyle-maven-plugin.version>3.1.0</checkstyle-maven-plugin.version>
+        <checkstyle-maven-plugin.version>3.3.1</checkstyle-maven-plugin.version>
         <spring-security.version>6.1.5</spring-security.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>

@@ -1,9 +1,14 @@
 package greencity.dto.user;
 
 import greencity.enums.ShoppingListItemStatus;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 
 @NoArgsConstructor

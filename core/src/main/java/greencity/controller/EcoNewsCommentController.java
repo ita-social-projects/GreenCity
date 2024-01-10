@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
-
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -15,7 +14,6 @@ import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,7 +21,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import jakarta.validation.Valid;
 
 @Validated

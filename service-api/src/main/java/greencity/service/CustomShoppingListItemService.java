@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.shoppinglistitem.*;
 import greencity.dto.user.UserVO;
-
 import java.util.List;
 
 /**

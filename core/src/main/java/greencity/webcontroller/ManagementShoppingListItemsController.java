@@ -7,7 +7,6 @@ import greencity.service.HabitShoppingListItemService;
 import greencity.service.ShoppingListItemService;
 import greencity.service.LanguageService;
 import java.util.List;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Controller

@@ -1,7 +1,6 @@
 package greencity.security.providers;
 
 import static greencity.constant.AppConstant.ROLE;
-
 import greencity.security.jwt.JwtTool;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;

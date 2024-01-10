@@ -18,11 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
 

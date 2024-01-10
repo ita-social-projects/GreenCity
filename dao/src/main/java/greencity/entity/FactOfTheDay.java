@@ -3,7 +3,12 @@ package greencity.entity;
 import java.time.ZonedDateTime;
 import java.util.List;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity

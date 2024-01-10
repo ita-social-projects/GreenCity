@@ -3,7 +3,6 @@ package greencity.repository;
 import greencity.entity.EcoNews;
 import java.util.List;
 import java.util.Optional;
-
 import greencity.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

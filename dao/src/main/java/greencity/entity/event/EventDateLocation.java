@@ -1,8 +1,7 @@
 package greencity.entity.event;
 
+import jakarta.annotation.Nullable;
 import lombok.*;
-import org.springframework.lang.Nullable;
-
 import jakarta.persistence.*;
 import java.time.ZonedDateTime;
 

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import jakarta.validation.Valid;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -19,9 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.google.maps.model.GeocodingResult;
-
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
@@ -68,7 +64,6 @@ import greencity.repository.options.PlaceFilter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
-
 import static greencity.constant.AppConstant.CONSTANT_OF_FORMULA_HAVERSINE_KM;
 
 /**

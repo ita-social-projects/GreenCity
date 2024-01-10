@@ -4,7 +4,6 @@ import greencity.annotations.ValidSocialNetworkLinks;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ServiceValidationConstants;
 import greencity.exception.exceptions.BadSocialNetworkLinksException;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.HashSet;

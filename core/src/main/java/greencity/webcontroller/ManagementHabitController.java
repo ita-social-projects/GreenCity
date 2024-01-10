@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Locale;

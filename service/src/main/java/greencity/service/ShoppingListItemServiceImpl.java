@@ -15,7 +15,6 @@ import greencity.entity.HabitAssign;
 import greencity.entity.UserShoppingListItem;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.ShoppingListItemStatus;
-
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
@@ -30,9 +29,7 @@ import greencity.repository.ShoppingListItemRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
 import greencity.repository.UserShoppingListItemRepo;
-
 import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

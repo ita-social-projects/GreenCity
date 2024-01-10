@@ -4,7 +4,6 @@ import greencity.annotations.ValidLanguage;
 import greencity.service.LanguageService;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;

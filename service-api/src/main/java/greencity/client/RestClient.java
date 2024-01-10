@@ -39,7 +39,6 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Component

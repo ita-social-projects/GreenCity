@@ -7,9 +7,7 @@ import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
 import greencity.exception.exceptions.EventDtoValidationException;
-
 import static greencity.validator.UrlValidator.isUrlValid;
-
 import java.time.ZonedDateTime;
 import java.util.List;
 import jakarta.validation.ConstraintValidator;

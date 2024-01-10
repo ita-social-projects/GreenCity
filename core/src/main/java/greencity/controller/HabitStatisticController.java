@@ -15,7 +15,6 @@ import greencity.dto.user.UserVO;
 import greencity.service.HabitStatisticService;
 import java.util.List;
 import java.util.Locale;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

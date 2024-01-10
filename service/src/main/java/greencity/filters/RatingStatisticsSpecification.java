@@ -9,7 +9,6 @@ import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.criteria.*;
-
 import java.util.Arrays;
 import java.util.List;
 

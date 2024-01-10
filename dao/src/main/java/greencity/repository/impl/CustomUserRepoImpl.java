@@ -5,7 +5,6 @@ import greencity.entity.User;
 import greencity.repository.CustomUserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;

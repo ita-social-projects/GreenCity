@@ -3,7 +3,12 @@ package greencity.entity;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data

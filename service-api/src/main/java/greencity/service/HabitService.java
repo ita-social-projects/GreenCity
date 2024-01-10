@@ -10,7 +10,6 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 

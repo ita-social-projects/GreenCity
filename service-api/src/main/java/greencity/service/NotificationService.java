@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.place.PlaceVO;
 import greencity.message.GeneralEmailMessage;
-
 import java.util.Set;
 
 public interface NotificationService {

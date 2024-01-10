@@ -4,7 +4,11 @@ import greencity.constant.ServiceValidationConstants;
 import greencity.enums.PlaceStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor

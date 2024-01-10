@@ -4,10 +4,8 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.service.AchievementService;
-
 import java.security.Principal;
 import java.util.List;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

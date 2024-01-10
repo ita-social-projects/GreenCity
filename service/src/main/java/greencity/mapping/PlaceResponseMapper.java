@@ -1,10 +1,8 @@
 package greencity.mapping;
 
 import java.util.stream.Collectors;
-
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.openhours.OpeningHoursDto;

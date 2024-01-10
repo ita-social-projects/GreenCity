@@ -5,7 +5,6 @@ import greencity.exception.exceptions.InvalidURLException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;

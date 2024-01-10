@@ -2,7 +2,6 @@ package greencity.dto.place;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import greencity.dto.category.CategoryDto;
 import greencity.dto.location.AddPlaceLocation;
 import greencity.dto.openhours.OpeningHoursDto;

@@ -21,7 +21,6 @@ import greencity.service.HabitAssignService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,7 +31,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -243,10 +241,11 @@ public class HabitAssignController {
      * @param listsDto      {@link UserShoppingAndCustomShoppingListsDto} instance.
      */
     @Operation(summary = "Update user and custom shopping lists",
-        description = "If the item is already present in the db, the method updates it\n"
-            + "If item is not present in the db and id is null, the method attempts to add it to the user\n"
-            + "If some items from db are not present in the lists, the method deletes "
-            + "them (except for items with DISABLED status).")
+        description = """
+            If the item is already present in the db, the method updates it
+            If item is not present in the db and id is null, the method attempts to add it to the user
+            If some items from db are not present in the lists,
+            the method deletes them (except for items with DISABLED status).""")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),

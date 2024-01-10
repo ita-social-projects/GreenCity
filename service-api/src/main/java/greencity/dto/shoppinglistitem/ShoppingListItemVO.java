@@ -1,8 +1,13 @@
 package greencity.dto.shoppinglistitem;
 
 import greencity.dto.user.UserShoppingListItemVO;
-import lombok.*;
-
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
+import lombok.ToString;
 import java.util.List;
 
 @AllArgsConstructor

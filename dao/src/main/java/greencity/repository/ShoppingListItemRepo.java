@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.ShoppingListItem;
 import java.util.List;
-
 import greencity.entity.localization.ShoppingListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import static greencity.constant.ErrorMessage.INVALID_HABIT_ID;
-
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
-
 import jakarta.validation.Valid;
 import java.util.Locale;
 

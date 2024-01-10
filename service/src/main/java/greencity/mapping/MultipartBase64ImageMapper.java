@@ -1,12 +1,10 @@
 package greencity.mapping;
 
 import greencity.exception.exceptions.NotSavedException;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import javax.imageio.ImageIO;
-
 import greencity.service.MultipartFileImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.http.fileupload.FileItem;
@@ -15,7 +13,6 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
 import static org.apache.tomcat.util.codec.binary.Base64.decodeBase64;
 
 /**

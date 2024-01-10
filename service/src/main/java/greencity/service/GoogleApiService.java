@@ -7,16 +7,13 @@ import com.google.maps.model.AddressComponent;
 import com.google.maps.model.AddressComponentType;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-
 import greencity.constant.ErrorMessage;
 import greencity.dto.geocoding.AddressResponse;
 import greencity.dto.geocoding.AddressLatLngResponse;
 import greencity.exception.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

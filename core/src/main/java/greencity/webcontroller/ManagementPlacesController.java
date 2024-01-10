@@ -4,7 +4,6 @@ import greencity.annotations.CurrentUser;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceUpdateDto;
@@ -16,7 +15,6 @@ import greencity.service.PlaceService;
 import greencity.service.SpecificationService;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

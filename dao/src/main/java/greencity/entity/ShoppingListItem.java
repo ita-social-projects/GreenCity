@@ -3,8 +3,22 @@ package greencity.entity;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import java.util.List;
 import java.util.Set;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @AllArgsConstructor

@@ -4,7 +4,6 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.Translation;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;

@@ -37,7 +37,6 @@ import jakarta.persistence.SqlResultSetMappings;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.type.descriptor.jdbc.IntegerJdbcType;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

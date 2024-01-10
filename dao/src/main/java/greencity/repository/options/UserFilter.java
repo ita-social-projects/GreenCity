@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import jakarta.persistence.criteria.*;
-
 import org.springframework.data.jpa.domain.Specification;
 
 /**

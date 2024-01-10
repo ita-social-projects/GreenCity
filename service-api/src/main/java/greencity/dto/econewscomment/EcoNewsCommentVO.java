@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import jakarta.validation.constraints.Size;
-
 import greencity.enums.CommentStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

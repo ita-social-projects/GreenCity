@@ -3,11 +3,16 @@ package greencity.dto.econews;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
-
-import java.util.*;
-
-import lombok.*;
-
+import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 import java.time.ZonedDateTime;
 
 @AllArgsConstructor

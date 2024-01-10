@@ -1,7 +1,6 @@
 package greencity.security.jwt;
 
 import static greencity.constant.AppConstant.ROLE;
-
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import io.jsonwebtoken.Claims;

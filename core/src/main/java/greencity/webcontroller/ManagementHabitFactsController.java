@@ -1,7 +1,6 @@
 package greencity.webcontroller;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;

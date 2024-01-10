@@ -1,7 +1,12 @@
 package greencity.entity;
 
-import lombok.*;
-
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 

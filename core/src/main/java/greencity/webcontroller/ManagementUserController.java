@@ -12,7 +12,6 @@ import greencity.service.HabitAssignService;
 import greencity.service.UserService;
 import java.util.List;
 import java.util.Map;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -36,7 +35,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
-
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
 
 @Validated

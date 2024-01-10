@@ -29,14 +29,12 @@ import greencity.repository.HabitRepo;
 import greencity.repository.HabitTranslationRepo;
 import greencity.repository.ShoppingListItemTranslationRepo;
 import greencity.repository.HabitAssignRepo;
-
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.LanguageRepo;
 import greencity.repository.TagsRepo;
@@ -48,7 +46,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.transaction.Transactional;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 

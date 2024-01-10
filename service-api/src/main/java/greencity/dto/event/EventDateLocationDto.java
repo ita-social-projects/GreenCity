@@ -1,12 +1,15 @@
 package greencity.dto.event;
 
-import lombok.*;
-
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
 
 @Builder
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

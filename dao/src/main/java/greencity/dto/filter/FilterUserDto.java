@@ -1,7 +1,6 @@
 package greencity.dto.filter;
 
 import jakarta.validation.Valid;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

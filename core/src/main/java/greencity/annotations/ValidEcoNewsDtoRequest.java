@@ -1,7 +1,6 @@
 package greencity.annotations;
 
 import greencity.validator.EcoNewsDtoRequestValidator;
-
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;

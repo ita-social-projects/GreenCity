@@ -4,7 +4,6 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.specification.SpecificationNameDto;
 import greencity.service.SpecificationService;
 import java.util.List;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
