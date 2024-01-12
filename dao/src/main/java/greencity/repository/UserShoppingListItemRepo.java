@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.entity.ShoppingListItem;
 import greencity.entity.UserShoppingListItem;
 import java.util.List;
 import java.util.Optional;
@@ -19,15 +18,6 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
      */
     @Query("SELECT ug FROM UserShoppingListItem ug where ug.habitAssign.id =?1")
     List<UserShoppingListItem> findAllByHabitAssingId(Long habitAssignId);
-
-    /**
-     * Method returns predefined item as specific {@link UserShoppingListItem}.
-     *
-     * @param userShoppingListItemId - id of userGoal.
-     * @return {@link ShoppingListItem}
-     */
-    @Query("SELECT ug.shoppingListItem FROM UserShoppingListItem ug WHERE ug.id = ?1")
-    Optional<ShoppingListItem> findShoppingListByUserShoppingListItemId(Long userShoppingListItemId);
 
     /**
      * Method delete selected item from users shopping list.
@@ -115,9 +105,10 @@ public interface UserShoppingListItemRepo extends JpaRepository<UserShoppingList
      * @param userId {@link Long} user id.
      * @param itemId {@link Long} custom shopping list item id.
      */
-    @Query(nativeQuery = true, value = "select usl.id from user_shopping_list as usl\n"
-        + "join habit_assign as ha on ha.id = habit_assign_id\n"
-        + "where ha.user_id = :userId and shopping_list_item_id = :itemId")
+    @Query(nativeQuery = true, value = """
+        select usl.id from user_shopping_list as usl
+        join habit_assign as ha on ha.id = habit_assign_id
+        where ha.user_id = :userId and shopping_list_item_id = :itemId""")
     Optional<Long> getByUserAndItemId(Long userId, Long itemId);
 
     /**
