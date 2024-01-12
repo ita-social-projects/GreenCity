@@ -1,6 +1,5 @@
 package greencity.exception.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.exception.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +30,7 @@ class CustomExceptionHandlerTest {
     @Mock
     ErrorAttributes errorAttributes;
     Map<String, Object> objectMap;
+    @InjectMocks
     CustomExceptionHandler customExceptionHandler;
     @Mock
     HttpHeaders headers;
@@ -40,13 +40,10 @@ class CustomExceptionHandlerTest {
     MethodArgumentTypeMismatchException mismatchException;
     @Mock
     HttpMessageNotReadableException ex;
-    @Mock
-    ObjectMapper objectMapper;
 
     @BeforeEach
     void init() {
         MockitoAnnotations.openMocks(this);
-        customExceptionHandler = new CustomExceptionHandler(errorAttributes, objectMapper);
         objectMap = new HashMap<>();
         objectMap.put("path", "/ownSecurity/restorePassword");
         objectMap.put("message", "test");
