@@ -14,6 +14,9 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.message.GeneralEmailMessage;
 import greencity.repository.CustomUserRepo;
 import greencity.repository.UserRepo;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -21,9 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link FriendService}.
@@ -159,15 +159,18 @@ public class FriendServiceImpl implements FriendService {
         Objects.requireNonNull(pageable);
 
         validateUserExistence(userId);
+
         name = name == null ? "" : name;
-        Page<User> users;
-        if (pageable.getSort().isEmpty()) {
-            users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
-        } else {
+
+        if (!pageable.getSort().isEmpty()) {
             throw new UnsupportedSortException(ErrorMessage.INVALID_SORTING_VALUE);
         }
+
+        Page<User> users = userRepo.getAllUsersExceptMainUserAndFriendsAndRequestersToMainUser(userId, name, pageable);
+
         List<UserFriendDto> userFriendDtoList =
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, users.getContent());
+
         return new PageableDto<>(
             userFriendDtoList,
             users.getTotalElements(),
