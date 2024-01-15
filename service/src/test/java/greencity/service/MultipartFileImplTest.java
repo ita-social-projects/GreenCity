@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 @ExtendWith(SpringExtension.class)
 class MultipartFileImplTest {
     @Test
-    public void testMultipartFileMethods() throws IOException {
+    void testMultipartFileMethods() throws IOException {
         String name = "file";
         String originalFilename = "test.txt";
         String contentType = "text/plain";

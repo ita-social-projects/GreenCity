@@ -4,7 +4,7 @@ import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
 import java.net.URI;
-import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,18 +20,16 @@ import static org.mockito.Mockito.eq;
 
 @ExtendWith(MockitoExtension.class)
 class SocialNetworkImageServiceImplTest {
-
     @Mock
     SocialNetworkImageRepo socialNetworkImageRepo;
     @Mock
     ModelMapper modelMapper;
     @InjectMocks
     SocialNetworkImageServiceImpl socialNetworkImageService;
-    private static final String TEST_URL = "http://example.com";
 
     @Test
-    void getSocialNetworkImageByUrl() throws Exception {
-        URL checkUrl = new URL("HTTP://");
+    void getSocialNetworkImageByUrl() {
+        URI checkUrl = Paths.get("HTTP://").toUri();
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
@@ -50,8 +48,7 @@ class SocialNetworkImageServiceImplTest {
 
     @Test
     void getSocialNetworkImageByUrlBadRequest() throws Exception {
-        URI checkUrl = new URI(TEST_URL);
-
+        URI checkUrl = new URI("https://example.com");
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
@@ -59,12 +56,13 @@ class SocialNetworkImageServiceImplTest {
 
         when(socialNetworkImageRepo.findByHostPath(checkUrl.getHost())).thenReturn(null);
 
-        assertThrows(RuntimeException.class, () -> socialNetworkImageService.getSocialNetworkImageByUrl(TEST_URL));
+        assertThrows(RuntimeException.class,
+            () -> socialNetworkImageService.getSocialNetworkImageByUrl(checkUrl.toString()));
     }
 
     @Test
-    void findByHostPath() throws Exception {
-        URI checkUrl = new URI("HTTP://example.com/");
+    void findByHostPath() {
+        URI checkUrl = Paths.get("HTTP://example.com/").toUri();
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
