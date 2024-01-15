@@ -1,5 +1,6 @@
 package greencity.service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,6 +29,7 @@ public class MultipartFileImpl implements MultipartFile {
         this.content = content;
     }
 
+    @NotNull
     @Override
     public String getName() {
         return name;
@@ -53,13 +55,15 @@ public class MultipartFileImpl implements MultipartFile {
         return content.length;
     }
 
+    @NotNull
     @Override
     public byte[] getBytes() throws IOException {
         return content;
     }
 
+    @NotNull
     @Override
-    public InputStream getInputStream() throws IOException {
+    public InputStream getInputStream() {
         return new ByteArrayInputStream(content);
     }
 
