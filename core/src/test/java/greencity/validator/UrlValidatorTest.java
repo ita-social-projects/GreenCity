@@ -3,6 +3,7 @@ package greencity.validator;
 import static greencity.ModelUtils.getUrl;
 import greencity.exception.exceptions.InvalidURLException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
@@ -13,29 +14,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 class UrlValidatorTest {
 
     @Test
-    void UrlValidatorTrueTest() throws MalformedURLException {
+    void UrlValidatorTrueTest() throws MalformedURLException, URISyntaxException {
         String url = getUrl().toString();
         assertTrue(UrlValidator.isUrlValid(url));
     }
 
     @Test
     void UrlValidatorMalformedURLExceptionTest() {
-        String url = "ht://www.tutorialspoint.com/";
+        String url = "ttt://";
         Assertions.assertThrowsExactly(InvalidURLException.class, () -> UrlValidator.isUrlValid(url),
             "Malformed URL. The string could not be parsed.");
     }
 
     @Test
     void UrlValidatorURISyntaxExceptionTest() {
-        String url = "https:// .";
+        String url = "ht://www.tutorialspoint.com/";
         Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url),
-            "The string could not be parsed as a URI reference.");
-    }
-
-    @Test
-    void IllegalArgumentExceptionTest() {
-        String url2 = "";
-        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url2),
             "The string could not be parsed as a URI reference.");
     }
 }

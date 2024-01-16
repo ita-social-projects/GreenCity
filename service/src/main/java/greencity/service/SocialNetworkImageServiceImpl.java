@@ -80,7 +80,7 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         Page<SocialNetworkImage> pages = socialNetworkImageRepo.findAll(pageable);
         List<SocialNetworkImageResponseDTO> socialNetworkImageResponseDTOS = pages.stream()
             .map(socialNetworkImage -> modelMapper.map(socialNetworkImage, SocialNetworkImageResponseDTO.class))
-            .collect(Collectors.toList());
+            .toList();
         return new PageableDto<>(socialNetworkImageResponseDTOS,
             pages.getTotalElements(),
             pages.getPageable().getPageNumber(),
@@ -132,7 +132,6 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         if (image != null) {
             toSave.setImagePath(fileService.upload(image));
         }
-
         try {
             socialNetworkImageRepo.save(toSave);
         } catch (DataIntegrityViolationException e) {
