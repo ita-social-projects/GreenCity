@@ -289,6 +289,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.PATCH,
                 ECONEWS_COMMENTS,
+                ECONEWS_COMMENTS + "/{commentId}",
                 CUSTOM_SHOPPING_LIST_ITEMS,
                 CUSTOM_SHOPPING_LIST_URL,
                 HABIT_ASSIGN_ID,
@@ -363,7 +364,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/comments")
             .hasAnyRole(ADMIN)
             .antMatchers(HttpMethod.PATCH,
-                "/events/comments")
+                "/events/comments/{commentId}")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.POST,
                 "/events/comments/{eventId}")
