@@ -501,10 +501,11 @@ class EventsControllerTest {
     @SneakyThrows
     void getAllFavoriteEventsByUserTest() {
         Pageable pageable = PageRequest.of(0, 20);
+        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK + "/getAllFavoriteEvents").principal(principal))
             .andExpect(status().isOk());
 
-        verify(eventService).getAllFavoriteEventsByUser(pageable, principal.getName());
+        verify(eventService).getAllFavoriteEventsByUser(pageable, principal, filterEventDto, null);
     }
 
     @Test

@@ -72,15 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class EventServiceImplTest {
@@ -1574,36 +1566,59 @@ class EventServiceImplTest {
     }
 
     @Test
-    void getAllFavoriteEventsByUserTest() {
+    void getAllFavoriteEventsByUserTestNullTitle() {
         User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
         Pageable pageable = PageRequest.of(0, 20);
         List<Event> events = List.of(ModelUtils.getEvent());
         EventDto expected = ModelUtils.getEventDto();
-        Page<Event> eventPage = new PageImpl<>(events, pageable, events.size());
-        List<Long> eventIds = List.of(expected.getId());
 
-        when(eventRepo.findAllFavoritesByUser(anyLong(), eq(pageable))).thenReturn(eventPage);
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.createUserVO2());
+        when(eventRepo.findAllFavoritesByUser(anyLong())).thenReturn(events);
         when(modelMapper.map(restClient.findByEmail(anyString()), User.class)).thenReturn(user);
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
             }.getType())).thenReturn(List.of(expected));
-        when(eventRepo.findFavoritesAmongEventIds(eventIds, user.getId())).thenReturn(events);
-        when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
-            eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
+            eventService.getAllFavoriteEventsByUser(pageable, principal, ModelUtils.getFilterEventDto(), null);
         EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
         assertEquals(expected, actual);
-        assertTrue(actual.isFavorite());
-        assertTrue(actual.isSubscribed());
 
-        verify(eventRepo).findAllFavoritesByUser(anyLong(), eq(pageable));
-        verify(modelMapper).map(restClient.findByEmail(anyString()), User.class);
+        verify(restClient, atLeastOnce()).findByEmail(anyString());
+        verify(eventRepo).findAllFavoritesByUser(anyLong());
+        verify(modelMapper, atLeastOnce()).map(restClient.findByEmail(anyString()), User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
             }.getType());
-        verify(eventRepo).findFavoritesAmongEventIds(eventIds, user.getId());
-        verify(eventRepo).findSubscribedAmongEventIds(eventIds, user.getId());
+    }
+
+    @Test
+    void getAllFavoriteEventsByUserTestWithTitle() {
+        User user = ModelUtils.getUser();
+        Principal principal = ModelUtils.getPrincipal();
+        Pageable pageable = PageRequest.of(0, 20);
+        List<Event> events = List.of(ModelUtils.getEvent());
+        EventDto expected = ModelUtils.getEventDto();
+
+        when(restClient.findByEmail(anyString())).thenReturn(ModelUtils.createUserVO2());
+        when(eventRepo.findAllFavoritesByUserAndTitle(anyLong(), anyString())).thenReturn(events);
+        when(modelMapper.map(restClient.findByEmail(anyString()), User.class)).thenReturn(user);
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(List.of(expected));
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
+            eventService.getAllFavoriteEventsByUser(pageable, principal, ModelUtils.getFilterEventDto(), "");
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        assertEquals(expected, actual);
+
+        verify(restClient, atLeastOnce()).findByEmail(anyString());
+        verify(eventRepo).findAllFavoritesByUserAndTitle(anyLong(), anyString());
+        verify(modelMapper, atLeastOnce()).map(restClient.findByEmail(anyString()), User.class);
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
     }
 
     @Test

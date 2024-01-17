@@ -189,9 +189,10 @@ public class EventsController {
     @ApiPageableWithoutSort
     @GetMapping("/getAllFavoriteEvents")
     public ResponseEntity<PageableAdvancedDto<EventDto>> getAllFavoriteEventsByUser(
-        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal) {
+        @ApiIgnore Pageable pageable, @ApiIgnore Principal principal, FilterEventDto filterEventDto,
+        @RequestParam(required = false) String title) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(eventService.getAllFavoriteEventsByUser(pageable, principal.getName()));
+            .body(eventService.getAllFavoriteEventsByUser(pageable, principal, filterEventDto, title));
     }
 
     /**

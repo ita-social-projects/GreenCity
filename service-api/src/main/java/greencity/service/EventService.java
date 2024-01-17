@@ -156,12 +156,13 @@ public interface EventService {
     /**
      * Method for getting all user's favorite events.
      *
-     * @param pageable {@link Pageable}
-     * @param email    {@link String}
+     * @param pageable  {@link Pageable}
+     * @param principal {@link Principal}
      * @return a page of {@link EventDto} instance.
      * @author Midianyi Yurii.
      */
-    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, String email);
+    PageableAdvancedDto<EventDto> getAllFavoriteEventsByUser(Pageable pageable, Principal principal,
+        FilterEventDto filterEventDto, String title);
 
     /**
      * Method for getting all events' addresses.
