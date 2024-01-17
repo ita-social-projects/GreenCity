@@ -7,6 +7,7 @@ import static greencity.ModelUtils.getUserTagDto;
 import static greencity.ModelUtils.getUserVO;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.dto.econewscomment.EditEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserTagDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -340,11 +341,12 @@ class EcoNewsCommentServiceImplTest {
     void update() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
-        String newText = "new text";
+        EditEcoNewsCommentDtoRequest request = new EditEcoNewsCommentDtoRequest();
+        request.setNewText("edited text");
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
 
-        ecoNewsCommentService.update(newText, commentId, userVO);
+        ecoNewsCommentService.update(commentId, request, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
 
@@ -352,12 +354,13 @@ class EcoNewsCommentServiceImplTest {
     void updateCommentThatDoesntExistsThrowException() {
         UserVO userVO = getUserVO();
         Long commentId = 1L;
-        String newText = "new text";
+        EditEcoNewsCommentDtoRequest request = new EditEcoNewsCommentDtoRequest();
+        request.setNewText("edited text");
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(newText, commentId, userVO));
+            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(commentId, request, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -369,13 +372,14 @@ class EcoNewsCommentServiceImplTest {
         Long commentId = 1L;
         EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
         ecoNewsComment.setUser(user);
-        String newText = "new text";
+        EditEcoNewsCommentDtoRequest request = new EditEcoNewsCommentDtoRequest();
+        request.setNewText("edited text");
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.of(ecoNewsComment));
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> ecoNewsCommentService.update(newText, commentId, userToUpdateVO));
+                () -> ecoNewsCommentService.update(commentId, request, userToUpdateVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 

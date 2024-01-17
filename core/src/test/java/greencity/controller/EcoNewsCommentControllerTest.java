@@ -5,6 +5,7 @@ import greencity.client.RestClient;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.EditEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 import greencity.service.UserService;
@@ -57,6 +58,7 @@ class EcoNewsCommentControllerTest {
     private ModelMapper modelMapper;
 
     private Principal principal = getPrincipal();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {
@@ -182,12 +184,17 @@ class EcoNewsCommentControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(patch(ecoNewsCommentControllerLink + "?id=1&text=text")
+        EditEcoNewsCommentDtoRequest request = new EditEcoNewsCommentDtoRequest();
+        request.setNewText("edited text");
+
+        mockMvc.perform(patch(ecoNewsCommentControllerLink + "/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(ecoNewsCommentService).update("text", 1L, userVO);
+        verify(ecoNewsCommentService).update(1L, request, userVO);
     }
 
     @Test
