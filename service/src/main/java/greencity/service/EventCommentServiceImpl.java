@@ -10,6 +10,7 @@ import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
+import greencity.dto.eventcomment.EditEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentDto;
@@ -209,22 +210,22 @@ public class EventCommentServiceImpl implements EventCommentService {
     /**
      * Method to change the existing {@link greencity.entity.EcoNewsComment}.
      *
-     * @param commentText new text of {@link greencity.entity.EcoNewsComment}.
-     * @param id          to specify {@link greencity.entity.EcoNewsComment} that
-     *                    user wants to change.
-     * @param userVO      current {@link User} that wants to change.
+     * @param request   new text of {@link greencity.entity.EcoNewsComment}.
+     * @param commentId to specify {@link greencity.entity.EcoNewsComment} that user
+     *                  wants to change.
+     * @param userVO    current {@link User} that wants to change.
      */
     @Override
     @Transactional
-    public void update(String commentText, Long id, UserVO userVO) {
-        EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
+    public void update(Long commentId, EditEventCommentDtoRequest request, UserVO userVO) {
+        EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
         if (!userVO.getId().equals(eventComment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
-        eventComment.setText(commentText);
+        eventComment.setText(request.getNewText());
         eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }

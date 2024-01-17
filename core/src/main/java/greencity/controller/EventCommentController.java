@@ -9,6 +9,7 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EditEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
@@ -116,10 +117,10 @@ public class EventCommentController {
      * Method to update certain {@link greencity.dto.eventcomment.EventCommentVO}
      * specified by id.
      *
-     * @param id          of {@link greencity.dto.eventcomment.EventCommentVO} to
-     *                    update
-     * @param commentText edited text of
-     *                    {@link greencity.dto.eventcomment.EventCommentVO}
+     * @param commentId of {@link greencity.dto.eventcomment.EventCommentVO} to
+     *                  update
+     * @param request   edited text of
+     *                  {@link greencity.dto.eventcomment.EventCommentVO}
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
@@ -128,9 +129,11 @@ public class EventCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping()
-    public void update(Long id, @RequestParam @NotBlank String commentText, @ApiIgnore @CurrentUser UserVO user) {
-        eventCommentService.update(commentText, id, user);
+    @PatchMapping("/{commentId}")
+    public void update(@PathVariable Long commentId,
+        @Valid @RequestBody EditEventCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO user) {
+        eventCommentService.update(commentId, request, user);
     }
 
     /**

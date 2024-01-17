@@ -5,6 +5,7 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EditEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
@@ -66,12 +67,11 @@ public interface EventCommentService {
     /**
      * Method to change the existing {@link EventCommentVO}.
      *
-     * @param commentText new text of {@link EventCommentVO}.
-     * @param id          to specify {@link EventCommentVO} that user wants to
-     *                    change.
-     * @param user        current {@link UserVO} that wants to change.
+     * @param request   new text of {@link EventCommentVO}.
+     * @param commentId to specify {@link EventCommentVO} that user wants to change.
+     * @param user      current {@link UserVO} that wants to change.
      */
-    void update(String commentText, Long id, UserVO user);
+    void update(Long commentId, EditEventCommentDtoRequest request, UserVO user);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.
