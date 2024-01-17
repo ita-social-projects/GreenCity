@@ -3,6 +3,7 @@ package greencity.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,11 @@ public class SwaggerConfig {
                     .type(SecurityScheme.Type.HTTP)
                     .scheme("bearer")
                     .bearerFormat("JWT")))
-            .info(new Info().title("Greencity API"));
+            .info(new Info().title("Greencity API")
+                .summary("Api Documentation")
+                .version("3.1.0")
+                .license(new License().name("Apache 2.0").identifier("Apache-2.0")
+                    .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
+            .openapi("3.1.0");
     }
 }
