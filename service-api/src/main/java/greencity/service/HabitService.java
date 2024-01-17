@@ -26,13 +26,12 @@ public interface HabitService {
 
     /**
      * Method returns all default and custom which created by current user his
-     * friends {@code Habit}'s by language code.
+     * friends {@code Habit}'s.
      *
      * @param pageable - instance of {@link Pageable}.
-     * @param language - language code.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String language);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
 
     /**
      * Method returns shopping list in specific language by habit id.

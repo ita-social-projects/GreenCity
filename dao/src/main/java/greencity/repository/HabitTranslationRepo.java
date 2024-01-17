@@ -364,7 +364,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * by habit assign status REQUESTED.
      *
      * @param pageable                {@link Pageable}.
-     * @param language                code language.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @param userId                  {@link Long} id of current user.
@@ -373,13 +372,13 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language = "
-        + "(SELECT l FROM Language AS l WHERE l.code = :language) "
+        + "WHERE ht.language  IN "
+        + "(SELECT l FROM Language AS l WHERE l.code IN ('ua', 'en'))"
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "OR h.isCustomHabit = false) "
         + "ORDER BY ht.habit.id DESC")
-    Page<HabitTranslation> findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(Pageable pageable, String language,
+    Page<HabitTranslation> findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(Pageable pageable,
         List<Long> requestedCustomHabitIds, Long userId);
 }
