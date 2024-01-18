@@ -28,6 +28,7 @@ import greencity.entity.event.EventGrade;
 import greencity.entity.event.EventImages;
 import greencity.entity.event.Address;
 import greencity.enums.EventType;
+import greencity.enums.NotificationType;
 import greencity.enums.TagType;
 import greencity.enums.Role;
 import greencity.enums.AchievementCategoryType;
@@ -88,6 +89,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepo userRepo;
     private final RatingCalculation ratingCalculation;
     private final AchievementCalculation achievementCalculation;
+    private final UserNotificationService userNotificationService;
 
     private static final String FUTURE_EVENT = "FUTURE";
     private static final String PAST_EVENT = "PAST";
@@ -141,6 +143,7 @@ public class EventServiceImpl implements EventService {
             .message(String.format(EmailNotificationMessagesConstants.EVENT_CREATION_MESSAGE,
                 savedEvent.getTitle()))
             .build());
+        userNotificationService.createEventCreatedNotification(userVO, modelMapper.map(savedEvent, EventVO.class));
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -164,6 +167,11 @@ public class EventServiceImpl implements EventService {
                 attendersEmails,
                 EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
+            List<UserVO> userVOList = toDelete.getAttenders().stream()
+                    .map(user -> modelMapper.map(user, UserVO.class))
+                    .collect(Collectors.toList());
+            userNotificationService.createEventNotificationForAttenders(userVOList, toDelete.getTitle(),
+                    NotificationType.EVENT_CANCELED, null);
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -377,6 +385,8 @@ public class EventServiceImpl implements EventService {
             .subject(EmailNotificationMessagesConstants.EVENT_JOINED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
             .build());
+        userNotificationService.createEventNotification(modelMapper.map(event.getOrganizer(), UserVO.class), userVO,
+                modelMapper.map(event, EventVO.class), NotificationType.EVENT_JOINED);
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -471,6 +481,11 @@ public class EventServiceImpl implements EventService {
             attendersEmails,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
+        List<UserVO> userVOList = toUpdate.getAttenders().stream()
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .collect(Collectors.toList());
+        userNotificationService.createEventNotificationForAttenders(userVOList, updatedEvent.getTitle(),
+                NotificationType.EVENT_UPDATED, modelMapper.map(updatedEvent, EventVO.class));
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

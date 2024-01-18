@@ -5,7 +5,9 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.friends.UserFriendDto;
 import greencity.dto.user.UserManagementDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.NotificationType;
 import greencity.enums.RecommendedFriendsType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotDeletedException;
@@ -36,6 +38,7 @@ public class FriendServiceImpl implements FriendService {
     private final CustomUserRepo customUserRepo;
     private final ModelMapper modelMapper;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -68,6 +71,8 @@ public class FriendServiceImpl implements FriendService {
             .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_RECEIVED_MESSAGE,
                 friendRequestSender.getName()))
             .build());
+        userNotificationService.createNotification(modelMapper.map(emailReceiver, UserVO.class),
+                modelMapper.map(friendRequestSender, UserVO.class), NotificationType.FRIEND_REQUEST_RECEIVED);
     }
 
     /**
@@ -88,6 +93,8 @@ public class FriendServiceImpl implements FriendService {
             .subject(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
             .build());
+        userNotificationService.createNotification(modelMapper.map(friend, UserVO.class),
+                modelMapper.map(user, UserVO.class), NotificationType.FRIEND_REQUEST_ACCEPTED);
     }
 
     /**

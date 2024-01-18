@@ -16,11 +16,12 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.entity.User;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
-import greencity.enums.Role;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -36,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     private ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final RatingCalculation ratingCalculation;
+    private final UserNotificationService userNotificationService;
     private final EcoNewsRepo ecoNewsRepo;
     private final UserRepo userRepo;
     private final NotificationService notificationService;
@@ -63,6 +66,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      * @return {@link AddEcoNewsCommentDtoResponse} instance.
      */
     @Override
+    @Transactional
     public AddEcoNewsCommentDtoResponse save(Long econewsId, AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest,
         UserVO userVO) {
         EcoNewsVO ecoNewsVO = ecoNewsService.findById(econewsId);
@@ -82,6 +86,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     .message(String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
                         ecoNewsComment.getUser().getName()))
                     .build());
+                userNotificationService.createEcoNewsCommentNotification(modelMapper.map(parentComment.getUser(),
+                        UserVO.class), userVO, parentComment.getId(), NotificationType.ECONEWS_COMMENT_REPLY);
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -96,6 +102,7 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
             .build());
+        userNotificationService.createEcoNewsNotification(userVO, econewsId, NotificationType.ECONEWS_COMMENT);
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -229,6 +236,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
                 .build());
+            userNotificationService.createEcoNewsCommentNotification(modelMapper.map(comment.getUser(),
+                    UserVO.class), userVO, comment.getId(), NotificationType.ECONEWS_COMMENT_LIKE);
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

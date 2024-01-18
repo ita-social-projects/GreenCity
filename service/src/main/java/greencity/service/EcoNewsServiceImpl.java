@@ -7,7 +7,16 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsForSendEmailDto;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
@@ -15,10 +24,15 @@ import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
+import greencity.enums.NotificationType;
 import greencity.enums.Role;
 import greencity.enums.CommentStatus;
 import greencity.enums.TagType;
@@ -47,7 +61,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -68,6 +86,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * {@inheritDoc}
@@ -88,6 +107,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
+        userNotificationService.createEcoNewsCreatedNotification(userVO, modelMapper.map(toSave, EcoNewsVO.class));
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -110,6 +130,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
+        userNotificationService.createEcoNewsCreatedNotification(user, modelMapper.map(toSave, EcoNewsVO.class));
         return ecoNewsDto;
     }
 
@@ -532,6 +553,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
             .build());
+        userNotificationService.createEcoNewsNotification(userVO, id, NotificationType.ECONEWS_LIKE);
     }
 
     /**

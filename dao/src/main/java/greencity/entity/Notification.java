@@ -1,5 +1,7 @@
 package greencity.entity;
 
+import greencity.entity.event.Event;
+import greencity.entity.event.EventComment;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import lombok.AllArgsConstructor;
@@ -17,9 +19,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "notification")
@@ -37,8 +44,24 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     private User targetUser;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "notification_user",
+        joinColumns = @JoinColumn(name = "notification_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> actionUsers = new ArrayList<>();
+
+    private String customMessage;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    private User actionUser;
+    private EcoNewsComment ecoNewsComment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private EcoNews ecoNews;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private EventComment eventComment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private UserAchievement achievement;
@@ -48,9 +71,6 @@ public class Notification {
 
     @Enumerated(value = EnumType.STRING)
     private ProjectName projectName;
-
-    @Column
-    private Long count;
 
     @Column
     private boolean viewed;

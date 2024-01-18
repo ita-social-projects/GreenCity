@@ -19,8 +19,10 @@ public class NotificationDto {
     private Long notificationId;
     private String projectName;
     private String notificationType;
+    private Long userCount;
     private LocalDateTime time;
     private Boolean viewed;
+
     //TODO: Make a language
     private String titleText;
     private String bodyText;
