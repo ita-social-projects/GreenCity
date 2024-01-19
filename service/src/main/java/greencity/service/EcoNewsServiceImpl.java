@@ -794,4 +794,10 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Set<User> usersDislikedNews = ecoNews.getUsersDislikedNews();
         return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
     }
+
+    @Override
+    public PageableAdvancedDto<EcoNewsDto> findAllFavorite(Pageable pageable, UserVO user) {
+        Page<EcoNews> page = ecoNewsRepo.findAllFavorite(pageable, user.getId());
+        return buildPageableAdvancedDto(page);
+    }
 }

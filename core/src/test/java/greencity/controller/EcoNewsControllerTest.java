@@ -298,4 +298,15 @@ class EcoNewsControllerTest {
 
         verify(ecoNewsService).getContentAndSourceForEcoNewsById(1L);
     }
+
+    @Test
+    @SneakyThrows
+    void findAllFavoriteTest() {
+        Pageable pageable = PageRequest.of(0, 20);
+
+        mockMvc.perform(get(ecoNewsLink + "/favorite"))
+                .andExpect(status().isOk());
+
+        verify(ecoNewsService).findAllFavorite(pageable, null);
+    }
 }
