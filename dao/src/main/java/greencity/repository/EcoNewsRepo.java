@@ -148,4 +148,14 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
     @Query(nativeQuery = true,
         value = "select count(id) from eco_news")
     int totalCountOfCreationNews();
+
+    /**
+     * Method returns favorite {@link EcoNews}.
+     *
+     * @param pageable {@link Pageable}.
+     * @param userId   id of the user.
+     * @return list of {@link EcoNews}.
+     */
+    @Query(value = "SELECT e FROM EcoNews e LEFT JOIN e.usersLikedNews AS f WHERE f.id = :userId")
+    Page<EcoNews> findAllFavorite(Pageable pageable, long userId);
 }

@@ -289,4 +289,13 @@ public interface EcoNewsService {
      * @return list of {@link UserVO} instances.
      */
     Set<UserVO> findUsersWhoDislikedPost(Long id);
+
+    /**
+     * Method for getting all favorite eco news for user.
+     *
+     * @param page parameters of to search.
+     * @param user - current {@link UserVO}.
+     * @return PageableAdvancedDto of {@link EcoNewsDto} instances.
+     */
+    PageableAdvancedDto<EcoNewsDto> findAllFavorite(Pageable page, UserVO user);
 }

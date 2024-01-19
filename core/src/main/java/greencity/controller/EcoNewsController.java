@@ -358,4 +358,22 @@ public class EcoNewsController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(ecoNewsService.getContentAndSourceForEcoNewsById(id));
     }
+
+    /**
+     * Method for getting all favorite eco news for user.
+     *
+     * @return PageableDto of {@link EcoNewsDto} instances.
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "Find all favorite eco news for user.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping("/favorite")
+    @ApiPageable
+    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> findAllFavorite(@ApiIgnore Pageable page,
+        @ApiIgnore @CurrentUser UserVO user) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAllFavorite(page, user));
+    }
 }
