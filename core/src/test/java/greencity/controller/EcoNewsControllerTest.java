@@ -305,7 +305,7 @@ class EcoNewsControllerTest {
         Pageable pageable = PageRequest.of(0, 20);
 
         mockMvc.perform(get(ecoNewsLink + "/favorite"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
 
         verify(ecoNewsService).findAllFavorite(pageable, null);
     }

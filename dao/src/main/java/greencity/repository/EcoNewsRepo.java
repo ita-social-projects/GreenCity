@@ -153,7 +153,7 @@ public interface EcoNewsRepo extends JpaRepository<EcoNews, Long>, JpaSpecificat
      * Method returns favorite {@link EcoNews}.
      *
      * @param pageable {@link Pageable}.
-     * @param userId  id of the user.
+     * @param userId   id of the user.
      * @return list of {@link EcoNews}.
      */
     @Query(value = "SELECT e FROM EcoNews e LEFT JOIN e.usersLikedNews AS f WHERE f.id = :userId")

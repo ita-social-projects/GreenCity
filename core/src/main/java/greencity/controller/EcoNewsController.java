@@ -367,12 +367,13 @@ public class EcoNewsController {
      */
     @ApiOperation(value = "Find all favorite eco news for user.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/favorite")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> findAllFavorite(@ApiIgnore Pageable page, @ApiIgnore @CurrentUser UserVO user) {
+    public ResponseEntity<PageableAdvancedDto<EcoNewsDto>> findAllFavorite(@ApiIgnore Pageable page,
+        @ApiIgnore @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findAllFavorite(page, user));
     }
 }

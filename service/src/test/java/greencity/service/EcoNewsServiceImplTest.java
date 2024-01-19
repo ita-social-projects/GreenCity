@@ -767,18 +767,18 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void findAllFavoriteTest(){
+    void findAllFavoriteTest() {
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<EcoNews> pageOfNews = new PageImpl<>(ecoNews,
-                pageRequest, ecoNews.size());
+            pageRequest, ecoNews.size());
 
         List<EcoNewsDto> dtoList = Collections.singletonList(
-                EcoNewsDto.builder()
-                        .id(1L)
-                        .build());
+            EcoNewsDto.builder()
+                .id(1L)
+                .build());
         PageableAdvancedDto<EcoNewsDto> pageableDto = new PageableAdvancedDto<>(dtoList, dtoList.size(), 0, 1,
-                0, false, false, true, true);
+            0, false, false, true, true);
 
         when(ecoNewsRepo.findAllFavorite(pageRequest, 1)).thenReturn(pageOfNews);
         when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
