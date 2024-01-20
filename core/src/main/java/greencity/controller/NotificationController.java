@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import greencity.annotations.ApiPageableWithoutSort;
-import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
@@ -25,7 +24,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @AllArgsConstructor

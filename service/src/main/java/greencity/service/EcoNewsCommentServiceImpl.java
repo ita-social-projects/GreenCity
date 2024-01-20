@@ -86,8 +86,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                     .message(String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE,
                         ecoNewsComment.getUser().getName()))
                     .build());
-                userNotificationService.createEcoNewsCommentNotification(modelMapper.map(parentComment.getUser(),
-                        UserVO.class), userVO, parentComment.getId(), NotificationType.ECONEWS_COMMENT_REPLY);
+                userNotificationService.createNotification(modelMapper.map(parentComment.getUser(), UserVO.class),
+                        userVO, NotificationType.ECONEWS_COMMENT_REPLY, parentComment.getId(), parentComment.getText());
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -102,7 +102,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_COMMENTED_MESSAGE, ecoNewsVO.getTitle()))
             .build());
-        userNotificationService.createEcoNewsNotification(userVO, econewsId, NotificationType.ECONEWS_COMMENT);
+        userNotificationService.createNotification(ecoNewsVO.getAuthor(), userVO, NotificationType.ECONEWS_COMMENT,
+                econewsId, ecoNewsVO.getTitle());
         return modelMapper.map(ecoNewsCommentRepo.save(ecoNewsComment), AddEcoNewsCommentDtoResponse.class);
     }
 
@@ -229,6 +230,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
         if (comment.getUsersLiked().stream()
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                    userVO, comment.getId(), NotificationType.ECONEWS_COMMENT_LIKE);
         } else {
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
             notificationService.sendEmailNotification(GeneralEmailMessage.builder()
@@ -236,8 +239,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
                 .build());
-            userNotificationService.createEcoNewsCommentNotification(modelMapper.map(comment.getUser(),
-                    UserVO.class), userVO, comment.getId(), NotificationType.ECONEWS_COMMENT_LIKE);
+            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
+                    NotificationType.ECONEWS_COMMENT_LIKE, comment.getId(), comment.getText());
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

@@ -95,9 +95,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(
                     String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
                 .build());
-            userNotificationService.createEventCommentNotification(
-                    modelMapper.map(parentEventComment.getUser(), UserVO.class), userVO, parentCommentId,
-                    NotificationType.EVENT_COMMENT_REPLY);
+            userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
+                    userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -112,8 +111,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
             .build());
-        userNotificationService.createEventNotification(eventVO.getOrganizer(), userVO, eventVO,
-                NotificationType.EVENT_COMMENT);
+        userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
+                eventId, eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -325,7 +324,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
-            userNotificationService.removeEventCommentNotification(modelMapper.map(comment.getUser(), UserVO.class),
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
                     userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
@@ -338,8 +337,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
                     userVO.getName()))
                 .build());
-            userNotificationService.createEventCommentNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                    userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
+            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                    userVO,NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText());
         }
         eventCommentRepo.save(comment);
     }

@@ -25,13 +25,13 @@ public class NotificationTranslation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
+    private String titleUa;
+    @Column(nullable = false)
     private String textUa;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
+    private String titleEng;
+    @Column(nullable = false)
     private String textEng;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notification_id", nullable = false)
-    private Notification notification;
 }

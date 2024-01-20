@@ -2,9 +2,6 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.ActionDto;
-import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
@@ -33,7 +30,8 @@ public interface UserNotificationService {
      * @param filterNotificationDto contains instructions to filter notifications
      * @return Page of {@link NotificationDto} instance.
      */
-    PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal, FilterNotificationDto filterNotificationDto);
+    PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
+                                                                  FilterNotificationDto filterNotificationDto);
 
     /**
      * Method for getting page of Notification instances.
@@ -61,73 +59,14 @@ public interface UserNotificationService {
     void notificationSocket(ActionDto user);
 
     /**
-     * Method for creating Notification about EcoNewsComment.
-     *
-     * @param targetUser user, that should receive notification
-     * @param actionUser user, that performed action
-     * @param ecoNewsCommentId id of comment
-     * @param notificationType type of notification
-     */
-    void createEcoNewsCommentNotification(UserVO targetUser, UserVO actionUser, Long ecoNewsCommentId,
-                                          NotificationType notificationType);
-
-    /**
-     * Method for creating Notification about EcoNews for author.
-     *
-     * @param actionUser user, that performed action
-     * @param ecoNewsId id of EcoNews
-     * @param notificationType type of Notification
-     */
-    void createEcoNewsNotification(UserVO actionUser, Long ecoNewsId, NotificationType notificationType);
-
-    /**
-     * Method to create Notification about successful creation of EcoNews.
-     *
-     * @param targetUserVO user, that created EcoNews
-     * @param ecoNewsVO created EcoNews
-     */
-    void createEcoNewsCreatedNotification(UserVO targetUserVO, EcoNewsVO ecoNewsVO);
-
-    /**
-     * Method to create Notification about successful creation of Event.
-     *
-     * @param targetUserVO user, that created Event
-     * @param eventVO created Event
-     */
-    void createEventCreatedNotification(UserVO targetUserVO, EventVO eventVO);
-
-    /**
-     * Method for creating Notification about EventComment.
-     *
-     * @param targetUser user, that should receive notification
-     * @param actionUser user, that performed action
-     * @param commentId id of comment
-     * @param notificationType type of notification
-     */
-    void createEventCommentNotification(UserVO targetUser, UserVO actionUser, Long commentId,
-                                        NotificationType notificationType);
-
-    /**
-     * Method for creating Notification about Event.
-     *
-     * @param targetUser user, that should receive notification
-     * @param actionUser user, that performed action
-     * @param eventVO event
-     * @param notificationType type of Notification
-     */
-    void createEventNotification(UserVO targetUser, UserVO actionUser, EventVO eventVO,
-                                 NotificationType notificationType);
-
-    /**
      * Method to create Notification for many Users.
-     *
-     * @param attendersList list of Users to receive Notification.
+     *  @param attendersList list of Users to receive Notification.
      * @param title title of Event
      * @param notificationType type of Notification
-     * @param eventVO event of updated Event
+     * @param targetId
      */
-    void createEventNotificationForAttenders(List<UserVO> attendersList, String title,
-                                             NotificationType notificationType, EventVO eventVO);
+    void createNotificationForAttenders(List<UserVO> attendersList, String title,
+                                             NotificationType notificationType, Long targetId);
 
     /**
      * Method to create Notification
@@ -137,10 +76,38 @@ public interface UserNotificationService {
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType);
 
-    void removeEventCommentNotification(UserVO targetUser, UserVO actionUser, Long commentId, NotificationType notificationType);
+    /**
+     * Method to create Notification.
+     *
+     * @param targetUser user, that should receive Notification
+     * @param actionUser user, that performed action
+     * @param notificationType type of Notification
+     * @param targetId id of object
+     * @param customMessage text of Notification
+     */
+    void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
+                            Long targetId, String customMessage);
 
-    void deleteEventCommentNotification(Long commentId);
+    /**
+     * Method to create Notification without actionUser.
+     *
+     * @param targetUser user, that should receive Notification
+     * @param notificationType type of Notification
+     * @param targetId id of object
+     * @param customMessage text to be inserted into Notification message
+     */
+    void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
+                               String customMessage);
 
-    void removeEcoNewsCommentNotification(UserVO targetUserVO, UserVO actionUserVO, Long commentId,
-                                     NotificationType notificationType);
+    /**
+     * Method to remove ActionUser from Notification or delete Notification if that was the only ActionUser.
+     * Called when user canceled the action.
+     *
+     * @param targetUser User, that should receive Notification
+     * @param actionUser User, that canseled the action
+     * @param targetId id of object
+     * @param notificationType type of Notification
+     */
+    void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
+                                          NotificationType notificationType);
 }

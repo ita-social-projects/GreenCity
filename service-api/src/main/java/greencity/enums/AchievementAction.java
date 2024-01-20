@@ -2,5 +2,5 @@ package greencity.enums;
 
 public enum AchievementAction {
     ASSIGN,
-    DELETE
+    DELETE      //TODO: here all delete
 }

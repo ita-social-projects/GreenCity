@@ -56,16 +56,6 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
     Optional<Notification> findNotificationByTargetUserIdAndViewedIsFalse(Long targetUserId);
 
     /**
-     * This method is used to check is notification of specific type is present.
-     *
-     * @param targetUserId     user, which should return Notification
-     * @param notificationType Type of the notification
-     * @return List of {@link Notification} of specific type
-     */
-    List<Notification> findByTargetUserIdAndNotificationTypeAndViewedIsFalse(Long targetUserId,
-        NotificationType notificationType);
-
-    /**
      * Changes {@link Notification} `viewed` as true.
      *
      * @param notificationId to change
@@ -85,29 +75,24 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
     Notification findByIdAndTargetUserId(Long notificationId, Long targetUserId);
 
     /**
-     * This method is used to check is notification of specific type is present.
+     * Method to find specific Notification.
      *
-     * @param targetUserId     user, which should return Notification
-     * @param notificationType Type of the notification
-     * @param eventCommentId   id of EventComment
-     * @return List of {@link Notification} of specific type
+     * @param targetUserId     User, that should receive Notification
+     * @param notificationType type of Notification
+     * @param targetId         id of object
+     * @return {@link Notification} with specific NotificationType and id of object
      */
-    Notification findByTargetUserIdAndNotificationTypeAndEventCommentId(Long targetUserId,
-        NotificationType notificationType, Long eventCommentId);
-
+    Notification findNotificationByTargetUserIdAndNotificationTypeAndTargetId(Long targetUserId,
+        NotificationType notificationType, Long targetId);
 
     /**
-     * This method is used to check is notification of specific type is present.
+     * Method to find specific not viewed Notification.
      *
-     * @param targetUserId     user, which should return Notification
-     * @param notificationType Type of the notification
-     * @param ecoNewsCommentId  id of EcoNewsComment
-     * @return List of {@link Notification} of specific type
+     * @param targetUserId     User, that should receive Notification
+     * @param notificationType type of Notification
+     * @param targetId         id of object
+     * @return {@link Notification} with specific NotificationType and id of object
      */
-    Notification findByTargetUserIdAndNotificationTypeAndEcoNewsCommentId(Long targetUserId,
-                                                                        NotificationType notificationType, Long ecoNewsCommentId);
-
-    void deleteAllByEventCommentId(Long eventCommentId);
-
-    void deleteAllByEcoNewsCommentId(Long ecoNewsCommentId);
+    Optional<Notification> findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
+        Long targetUserId, NotificationType notificationType, Long targetId);
 }
