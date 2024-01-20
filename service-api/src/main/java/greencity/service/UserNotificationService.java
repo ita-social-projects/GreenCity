@@ -31,7 +31,7 @@ public interface UserNotificationService {
      * @return Page of {@link NotificationDto} instance.
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-                                                                  FilterNotificationDto filterNotificationDto);
+        FilterNotificationDto filterNotificationDto);
 
     /**
      * Method for getting page of Notification instances.
@@ -66,7 +66,7 @@ public interface UserNotificationService {
      * @param targetId
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String title,
-                                             NotificationType notificationType, Long targetId);
+        NotificationType notificationType, Long targetId);
 
     /**
      * Method to create Notification
@@ -86,7 +86,7 @@ public interface UserNotificationService {
      * @param customMessage text of Notification
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
-                            Long targetId, String customMessage);
+        Long targetId, String customMessage);
 
     /**
      * Method to create Notification without actionUser.
@@ -97,7 +97,7 @@ public interface UserNotificationService {
      * @param customMessage text to be inserted into Notification message
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
-                               String customMessage);
+        String customMessage);
 
     /**
      * Method to remove ActionUser from Notification or delete Notification if that was the only ActionUser.
@@ -109,5 +109,5 @@ public interface UserNotificationService {
      * @param notificationType type of Notification
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
-                                          NotificationType notificationType);
+        NotificationType notificationType);
 }
