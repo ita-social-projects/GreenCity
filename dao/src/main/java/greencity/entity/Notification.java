@@ -1,7 +1,5 @@
 package greencity.entity;
 
-import greencity.entity.event.Event;
-import greencity.entity.event.EventComment;
 import greencity.enums.NotificationType;
 import greencity.enums.ProjectName;
 import lombok.AllArgsConstructor;
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "notification")
+@Table(name = "notifications")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -44,27 +42,16 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     private User targetUser;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
-        name = "notification_user",
+        name = "notifications_users",
         joinColumns = @JoinColumn(name = "notification_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> actionUsers = new ArrayList<>();
 
     private String customMessage;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private EcoNewsComment ecoNewsComment;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private EcoNews ecoNews;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private EventComment eventComment;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Event event;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private UserAchievement achievement;
+    private Long targetId;
 
     @Enumerated(value = EnumType.STRING)
     private NotificationType notificationType;
