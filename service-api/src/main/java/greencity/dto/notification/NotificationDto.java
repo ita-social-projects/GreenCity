@@ -24,8 +24,7 @@ public class NotificationDto {
     private Boolean viewed;
     private Long targetId;
 
-    //TODO: Make a language
-    private String titleText;
+    private String titleText;   //TODO: Make a language
     private String bodyText;
     private String titleTextEng;
     private String bodyTextEng;
