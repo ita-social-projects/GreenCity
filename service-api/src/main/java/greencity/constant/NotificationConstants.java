@@ -25,6 +25,7 @@ public final class NotificationConstants {
     public static final String FRIEND_REQUEST_RECEIVED_MESSAGE = "%s  sent you a friend request";
     public static final String FRIEND_REQUEST_ACCEPTED_SUBJECT = "Your friend request was accepted";
     public static final String FRIEND_REQUEST_ACCEPTED_MESSAGE = "Now you are friends with %s";
+
     /**
      * Constructor.
      */
