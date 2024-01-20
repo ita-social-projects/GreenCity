@@ -22,6 +22,7 @@ public class NotificationDto {
     private Long userCount;
     private LocalDateTime time;
     private Boolean viewed;
+    private Long targetId;
 
     //TODO: Make a language
     private String titleText;

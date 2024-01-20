@@ -26,6 +26,7 @@ public class NotificationDtoMapper extends AbstractConverter<Notification, Notif
                 .time(notification.getTime())
                 .viewed(notification.isViewed())
                 .userCount((long) notification.getActionUsers().size())
+                .targetId(notification.getTargetId())
                 // TODO: make languages
                 .build();
     }
