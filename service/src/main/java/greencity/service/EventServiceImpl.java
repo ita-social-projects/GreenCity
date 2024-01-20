@@ -205,16 +205,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto) {
+    public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
+        String title) {
         if (Objects.isNull(filterEventDto)) {
             return getAll(page, principal);
         }
-        return getAllFiltered(principal, page, filterEventDto);
+        return getAllFiltered(principal, page, filterEventDto, title);
     }
 
     private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
-        FilterEventDto filterEventDto) {
-        List<Event> events = eventRepo.findAll();
+        FilterEventDto filterEventDto, String title) {
+        List<Event> events = title == null ? eventRepo.findAll() : eventRepo.findAllByTitleContainingIgnoreCase(title);
+
         validatePageNumber(events, page);
 
         return principal != null
@@ -477,9 +479,10 @@ public class EventServiceImpl implements EventService {
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
-        Set<String> attendersEmails = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        Set<String> emailsToNotify = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
+        emailsToNotify.add(organizer.getEmail());
         notificationService.sendEmailNotification(
-            attendersEmails,
+            emailsToNotify,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         List<UserVO> userVOList = toUpdate.getAttenders().stream()

@@ -1334,7 +1334,7 @@ class EventServiceImplTest {
         when(eventRepo.findAll()).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDto());
+            pageRequest, principal, ModelUtils.getFilterEventDto(), null);
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(1, actual);
         assertEquals(expected, eventDtoPageableAdvancedDto.getPage());
@@ -1356,7 +1356,7 @@ class EventServiceImplTest {
         when(eventRepo.findAll()).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithSomeFilters());
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithSomeFilters(), null);
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
 
@@ -1378,7 +1378,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, null);
+            pageRequest, null, null, null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
@@ -1407,7 +1407,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithCities());
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithCities(), null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
@@ -1438,7 +1438,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithTags());
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithTags(), null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
@@ -1464,7 +1464,7 @@ class EventServiceImplTest {
         when(eventRepo.findAll()).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, principal, ModelUtils.getFilterEventDtoWithOpenStatus());
+            pageRequest, principal, ModelUtils.getFilterEventDtoWithOpenStatus(), null);
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
 
@@ -1480,7 +1480,8 @@ class EventServiceImplTest {
         FilterEventDto filterEventDto = getFilterEventDtoWithOpenStatus();
         Principal principal = getPrincipal();
         when(eventRepo.findAll()).thenReturn(events);
-        assertThrows(NotFoundException.class, () -> eventService.getEvents(pageRequest, principal, filterEventDto));
+        assertThrows(NotFoundException.class,
+            () -> eventService.getEvents(pageRequest, principal, filterEventDto, null));
         verify(eventRepo).findAll();
     }
 
@@ -1496,7 +1497,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus());
+            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
@@ -1510,13 +1511,38 @@ class EventServiceImplTest {
     }
 
     @Test
+    void getEventsByTitleFilteredWithAnonymousUser() {
+        List<Event> events = List.of(ModelUtils.getCloseEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        List<EventDto> expected = List.of(ModelUtils.getSecondEventDto());
+
+        when(eventRepo.findAllByTitleContainingIgnoreCase("title")).thenReturn(events);
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(expected);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
+            pageRequest, null, ModelUtils.getFilterEventDtoWithClosedStatus(), "title");
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
+
+        assertEquals(expected.size(), actualSize);
+        assertEquals(expected, actual);
+
+        verify(eventRepo).findAllByTitleContainingIgnoreCase("title");
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+    }
+
+    @Test
     void getEventsFilteredWithAnonymousUserAndClosedStatus() {
         List<Event> events = List.of(ModelUtils.getCloseEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         when(eventRepo.findAll()).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, ModelUtils.getFilterEventDtoWithOpenStatus());
+            pageRequest, null, ModelUtils.getFilterEventDtoWithOpenStatus(), null);
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
         assertEquals(0, actual);
 
@@ -1535,7 +1561,7 @@ class EventServiceImplTest {
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
-            pageRequest, null, null);
+            pageRequest, null, null, null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
