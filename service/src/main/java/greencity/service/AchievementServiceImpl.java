@@ -63,7 +63,7 @@ public class AchievementServiceImpl implements AchievementService {
                 .stream()
                 .filter(userAchievement -> !userAchievement.isNotified())
                 .collect(Collectors.toList());
-        System.out      //TODO: refactor
+        System.out // TODO: refactor
             .println("USER_ID -" + user.getUserId() + "| userAchievements.isEmpty() " + userAchievements.isEmpty());
         messagingTemplate
             .convertAndSend("/topic/" + user.getUserId() + "/notification", !userAchievements.isEmpty());

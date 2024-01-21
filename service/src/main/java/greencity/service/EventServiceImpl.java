@@ -144,7 +144,7 @@ public class EventServiceImpl implements EventService {
                 savedEvent.getTitle()))
             .build());
         userNotificationService.createNewNotification(userVO, NotificationType.EVENT_CREATED, savedEvent.getId(),
-                savedEvent.getTitle());
+            savedEvent.getTitle());
         return buildEventDto(savedEvent, organizer.getId());
     }
 
@@ -169,10 +169,10 @@ public class EventServiceImpl implements EventService {
                 EmailNotificationMessagesConstants.EVENT_CANCELED_SUBJECT,
                 String.format(EmailNotificationMessagesConstants.EVENT_CANCELED_MESSAGE, toDelete.getTitle()));
             List<UserVO> userVOList = toDelete.getAttenders().stream()
-                    .map(user -> modelMapper.map(user, UserVO.class))
-                    .collect(Collectors.toList());
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .collect(Collectors.toList());
             userNotificationService.createNotificationForAttenders(userVOList, toDelete.getTitle(),
-                    NotificationType.EVENT_CANCELED, null);
+                NotificationType.EVENT_CANCELED, null);
             eventRepo.delete(toDelete);
         } else {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
@@ -389,7 +389,7 @@ public class EventServiceImpl implements EventService {
             .message(String.format(EmailNotificationMessagesConstants.EVENT_JOINED_MESSAGE, currentUser.getName()))
             .build());
         userNotificationService.createNotification(modelMapper.map(event.getOrganizer(), UserVO.class), userVO,
-                NotificationType.EVENT_JOINED, eventId, event.getTitle());
+            NotificationType.EVENT_JOINED, eventId, event.getTitle());
     }
 
     private void checkAttenderToJoinTheEvent(Event event, User user) {
@@ -486,10 +486,10 @@ public class EventServiceImpl implements EventService {
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
         List<UserVO> userVOList = toUpdate.getAttenders().stream()
-                .map(user -> modelMapper.map(user, UserVO.class))
-                .collect(Collectors.toList());
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
         userNotificationService.createNotificationForAttenders(userVOList, updatedEvent.getTitle(),
-                NotificationType.EVENT_UPDATED, toUpdate.getId());
+            NotificationType.EVENT_UPDATED, toUpdate.getId());
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

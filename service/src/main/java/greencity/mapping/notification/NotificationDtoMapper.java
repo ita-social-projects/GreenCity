@@ -7,7 +7,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Class that used by {@link ModelMapper} to map list of {@link Notification} into {@link NotificationDto}.
+ * Class that used by {@link ModelMapper} to map list of {@link Notification}
+ * into {@link NotificationDto}.
  */
 @Component
 public class NotificationDtoMapper extends AbstractConverter<Notification, NotificationDto> {
@@ -20,14 +21,14 @@ public class NotificationDtoMapper extends AbstractConverter<Notification, Notif
     @Override
     protected NotificationDto convert(Notification notification) {
         return NotificationDto.builder()
-                .notificationId(notification.getId())
-                .projectName(notification.getProjectName().name())
-                .notificationType(notification.getNotificationType().name())
-                .time(notification.getTime())
-                .viewed(notification.isViewed())
-                .userCount((long) notification.getActionUsers().size())
-                .targetId(notification.getTargetId())
-                // TODO: make languages
-                .build();
+            .notificationId(notification.getId())
+            .projectName(notification.getProjectName().name())
+            .notificationType(notification.getNotificationType().name())
+            .time(notification.getTime())
+            .viewed(notification.isViewed())
+            .userCount((long) notification.getActionUsers().size())
+            .targetId(notification.getTargetId())
+            // TODO: make languages
+            .build();
     }
 }

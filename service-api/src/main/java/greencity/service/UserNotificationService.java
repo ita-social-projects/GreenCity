@@ -25,8 +25,8 @@ public interface UserNotificationService {
     /**
      * Method for getting Notification instances filtered.
      *
-     * @param pageable page of notifications
-     * @param principal user to get notifications
+     * @param pageable              page of notifications
+     * @param principal             user to get notifications
      * @param filterNotificationDto contains instructions to filter notifications
      * @return Page of {@link NotificationDto} instance.
      */
@@ -36,7 +36,7 @@ public interface UserNotificationService {
     /**
      * Method for getting page of Notification instances.
      *
-     * @param pageable page of notifications
+     * @param pageable  page of notifications
      * @param principal user to get notifications
      * @return Page of {@link NotificationDto} instance.
      */
@@ -46,7 +46,7 @@ public interface UserNotificationService {
      * Method for getting Notification instance and marking Notification as viewed.
      *
      * @param notificationId id of requested notification
-     * @param principal user to get notifications
+     * @param principal      user to get notifications
      * @return {@link NotificationDto} instance.
      */
     NotificationDto getNotification(Principal principal, Long notificationId);
@@ -60,18 +60,20 @@ public interface UserNotificationService {
 
     /**
      * Method to create Notification for many Users.
-     *  @param attendersList list of Users to receive Notification.
-     * @param title title of Event
+     * 
+     * @param attendersList    list of Users to receive Notification.
+     * @param title            title of Event
      * @param notificationType type of Notification
-     * @param targetId
+     * @param targetId         represent the corresponding object's ID
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String title,
         NotificationType notificationType, Long targetId);
 
     /**
-     * Method to create Notification
-     * @param targetUser user, that should receive Notification
-     * @param actionUser user, that triggered Notification
+     * Method to create Notification.
+     * 
+     * @param targetUser       user, that should receive Notification
+     * @param actionUser       user, that triggered Notification
      * @param notificationType type of Notification
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType);
@@ -79,11 +81,11 @@ public interface UserNotificationService {
     /**
      * Method to create Notification.
      *
-     * @param targetUser user, that should receive Notification
-     * @param actionUser user, that performed action
+     * @param targetUser       user, that should receive Notification
+     * @param actionUser       user, that performed action
      * @param notificationType type of Notification
-     * @param targetId id of object
-     * @param customMessage text of Notification
+     * @param targetId         represent the corresponding object's ID
+     * @param customMessage    text of Notification
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
         Long targetId, String customMessage);
@@ -91,21 +93,21 @@ public interface UserNotificationService {
     /**
      * Method to create Notification without actionUser.
      *
-     * @param targetUser user, that should receive Notification
+     * @param targetUser       user, that should receive Notification
      * @param notificationType type of Notification
-     * @param targetId id of object
-     * @param customMessage text to be inserted into Notification message
+     * @param targetId         represent the corresponding object's ID
+     * @param customMessage    text to be inserted into Notification message
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
         String customMessage);
 
     /**
-     * Method to remove ActionUser from Notification or delete Notification if that was the only ActionUser.
-     * Called when user canceled the action.
+     * Method to remove ActionUser from Notification or delete Notification if that
+     * was the only ActionUser. Called when user canceled the action.
      *
-     * @param targetUser User, that should receive Notification
-     * @param actionUser User, that canseled the action
-     * @param targetId id of object
+     * @param targetUser       User, that should receive Notification
+     * @param actionUser       User, that canseled the action
+     * @param targetId         represent the corresponding object's ID
      * @param notificationType type of Notification
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,

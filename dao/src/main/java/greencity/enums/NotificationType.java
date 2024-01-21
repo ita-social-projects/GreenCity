@@ -1,5 +1,10 @@
 package greencity.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum NotificationType {
     ECONEWS_COMMENT_REPLY,
     EVENT_COMMENT_REPLY,

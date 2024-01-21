@@ -19,6 +19,7 @@
                 <constraints foreignKeyName="FK_notification_target_user" references="users (id)" />
             </column>
         </createTable>
+
         <createTable tableName="notifications_users">
             <column name="notification_id"  type="BIGINT">
                 <constraints foreignKeyName="FK_event_action_user_id" references="notifications (id)"/>

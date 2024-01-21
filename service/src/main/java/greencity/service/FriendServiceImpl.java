@@ -72,7 +72,7 @@ public class FriendServiceImpl implements FriendService {
                 friendRequestSender.getName()))
             .build());
         userNotificationService.createNotification(modelMapper.map(emailReceiver, UserVO.class),
-                modelMapper.map(friendRequestSender, UserVO.class), NotificationType.FRIEND_REQUEST_RECEIVED);
+            modelMapper.map(friendRequestSender, UserVO.class), NotificationType.FRIEND_REQUEST_RECEIVED);
     }
 
     /**
@@ -94,7 +94,7 @@ public class FriendServiceImpl implements FriendService {
             .message(String.format(EmailNotificationMessagesConstants.FRIEND_REQUEST_ACCEPTED_MESSAGE, user.getName()))
             .build());
         userNotificationService.createNotification(modelMapper.map(friend, UserVO.class),
-                modelMapper.map(user, UserVO.class), NotificationType.FRIEND_REQUEST_ACCEPTED);
+            modelMapper.map(user, UserVO.class), NotificationType.FRIEND_REQUEST_ACCEPTED);
     }
 
     /**

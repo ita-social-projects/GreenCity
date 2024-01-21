@@ -108,7 +108,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
         userNotificationService.createNewNotification(userVO, NotificationType.ECONEWS_CREATED, toSave.getId(),
-                toSave.getTitle());
+            toSave.getTitle());
         return modelMapper.map(toSave, AddEcoNewsDtoResponse.class);
     }
 
@@ -132,7 +132,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
         userNotificationService.createNewNotification(user, NotificationType.EVENT_CREATED, toSave.getId(),
-                toSave.getTitle());
+            toSave.getTitle());
         return ecoNewsDto;
     }
 
@@ -544,14 +544,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
             userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
-                    id, NotificationType.ECONEWS_LIKE);
+                id, NotificationType.ECONEWS_LIKE);
         } else {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
             userNotificationService.createNotification(ecoNewsVO.getAuthor(), userVO, NotificationType.ECONEWS_LIKE, id,
-                    ecoNewsVO.getTitle());
+                ecoNewsVO.getTitle());
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
         notificationService.sendEmailNotification(GeneralEmailMessage.builder()
@@ -573,7 +573,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         if (ecoNewsVO.getUsersLikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
             userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO, id,
-                    NotificationType.ECONEWS_LIKE);
+                NotificationType.ECONEWS_LIKE);
         }
         if (ecoNewsVO.getUsersDislikedNews().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsVO.getUsersDislikedNews().removeIf(u -> u.getId().equals(userVO.getId()));

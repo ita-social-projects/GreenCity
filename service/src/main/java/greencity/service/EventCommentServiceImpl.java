@@ -96,7 +96,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                     String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
                 .build());
             userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
-                    userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText());
+                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -112,7 +112,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
             .build());
         userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
-                eventId, eventVO.getTitle());
+            eventId, eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -325,7 +325,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                    userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
+                userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
@@ -338,7 +338,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                     userVO.getName()))
                 .build());
             userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                    userVO,NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText());
+                userVO, NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText());
         }
         eventCommentRepo.save(comment);
     }

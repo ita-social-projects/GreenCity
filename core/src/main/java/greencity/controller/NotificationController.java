@@ -38,15 +38,15 @@ public class NotificationController {
      */
     @ApiOperation(value = "Get 3 last new notifications.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/new")
     public ResponseEntity<List<NotificationDto>> getThreeLastNotifications(
-            @ApiIgnore Principal principal) {
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getThreeLastNotifications(principal));
+            .body(userNotificationService.getThreeLastNotifications(principal));
     }
 
     /**
@@ -56,17 +56,17 @@ public class NotificationController {
      */
     @ApiOperation(value = "Get page of notifications")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
     @GetMapping("/all")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEvent(
-            @ApiIgnore Pageable pageable,
-            @ApiIgnore Principal principal) {
+        @ApiIgnore Pageable pageable,
+        @ApiIgnore Principal principal) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getNotifications(pageable, principal));
+            .body(userNotificationService.getNotifications(pageable, principal));
     }
 
     /**
@@ -76,18 +76,18 @@ public class NotificationController {
      */
     @ApiOperation(value = "Get page of notification filtered and sorted.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
     @GetMapping("/filtered")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEventFiltered(
-            @ApiIgnore Pageable pageable,
-            @ApiIgnore Principal principal,
-            FilterNotificationDto filter) {
+        @ApiIgnore Pageable pageable,
+        @ApiIgnore Principal principal,
+        FilterNotificationDto filter) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getNotificationsFiltered(pageable, principal, filter));
+            .body(userNotificationService.getNotificationsFiltered(pageable, principal, filter));
     }
 
     /**
@@ -97,16 +97,16 @@ public class NotificationController {
      */
     @ApiOperation(value = "Get single Notification.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/view/{notificationId}")
     public ResponseEntity<NotificationDto> getNotification(
-            @ApiIgnore Principal principal,
-            @PathVariable Long notificationId) {
+        @ApiIgnore Principal principal,
+        @PathVariable Long notificationId) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userNotificationService.getNotification(principal, notificationId));
+            .body(userNotificationService.getNotification(principal, notificationId));
     }
 
     /**
