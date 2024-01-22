@@ -149,18 +149,17 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     @Override
     public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
         Long targetId, String customMessage) {
-        Notification notification =
-            notificationRepo
-                .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
-                    notificationType, targetId)
-                .orElse(Notification.builder()
-                    .notificationType(notificationType)
-                    .projectName(ProjectName.GREENCITY)
-                    .targetUser(modelMapper.map(targetUserVO, User.class))
-                    .actionUsers(new ArrayList<>())
-                    .targetId(targetId)
-                    .customMessage(customMessage)
-                    .build());
+        Notification notification = notificationRepo
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId)
+            .orElse(Notification.builder()
+                .notificationType(notificationType)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUserVO, User.class))
+                .actionUsers(new ArrayList<>())
+                .targetId(targetId)
+                .customMessage(customMessage)
+                .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());
         notificationRepo.save(notification);
