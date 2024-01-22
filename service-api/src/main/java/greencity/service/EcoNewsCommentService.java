@@ -7,6 +7,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.EditEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
@@ -55,11 +56,12 @@ public interface EcoNewsCommentService {
     /**
      * Method to change the existing {@link EcoNewsCommentVO}.
      *
-     * @param text new text of {@link EcoNewsCommentVO}.
-     * @param id   to specify {@link EcoNewsCommentVO} that user wants to change.
-     * @param user current {@link UserVO} that wants to change.
+     * @param request   new text of {@link EcoNewsCommentVO}.
+     * @param commentId to specify {@link EcoNewsCommentVO} that user wants to
+     *                  change.
+     * @param user      current {@link UserVO} that wants to change.
      */
-    void update(String text, Long id, UserVO user);
+    void update(Long commentId, EditEcoNewsCommentDtoRequest request, UserVO user);
 
     /**
      * Method to like or dislike {@link EcoNewsCommentVO} specified by id.

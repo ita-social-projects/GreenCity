@@ -3,7 +3,6 @@ package greencity.controller;
 import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithoutSort;
 import greencity.annotations.CurrentUser;
-
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
@@ -12,15 +11,14 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.EditEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
-
-import javax.validation.constraints.NotBlank;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -39,8 +37,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
 
 @Validated
 @AllArgsConstructor
@@ -152,8 +148,8 @@ public class EcoNewsCommentController {
     /**
      * Method to update certain {@link EcoNewsCommentVO} specified by id.
      *
-     * @param id   of {@link EcoNewsCommentVO} to update
-     * @param text new text of {@link EcoNewsCommentVO}
+     * @param commentId of {@link EcoNewsCommentVO} to update
+     * @param request   new text of {@link EcoNewsCommentVO}
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
@@ -162,9 +158,11 @@ public class EcoNewsCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping("")
-    public void update(Long id, @RequestParam @NotBlank String text, @ApiIgnore @CurrentUser UserVO user) {
-        ecoNewsCommentService.update(text, id, user);
+    @PatchMapping("/{commentId}")
+    public void update(@PathVariable Long commentId,
+        @Valid @RequestBody EditEcoNewsCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO user) {
+        ecoNewsCommentService.update(commentId, request, user);
     }
 
     /**

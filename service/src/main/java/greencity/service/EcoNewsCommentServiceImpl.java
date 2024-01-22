@@ -10,6 +10,7 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.EditEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
@@ -191,20 +192,22 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
     /**
      * Method to change the existing {@link EcoNewsComment}.
      *
-     * @param text   new text of {@link EcoNewsComment}.
-     * @param id     to specify {@link EcoNewsComment} that user wants to change.
-     * @param userVO current {@link User} that wants to change.
+     * @param request   new text of {@link EcoNewsComment}.
+     * @param commentId to specify {@link EcoNewsComment} that user wants to change.
+     * @param userVO    current {@link User} that wants to change.
      */
     @Override
     @Transactional
-    public void update(String text, Long id, UserVO userVO) {
-        EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
+    public void update(Long commentId, EditEcoNewsCommentDtoRequest request, UserVO userVO) {
+        EcoNewsComment comment = ecoNewsCommentRepo.findById(commentId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
+
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
+
         comment.setStatus(CommentStatus.EDITED);
-        comment.setText(text);
+        comment.setText(request.getNewText());
         ecoNewsCommentRepo.save(comment);
     }
 

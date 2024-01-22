@@ -9,6 +9,7 @@ import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
+import greencity.dto.eventcomment.EditEventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
@@ -16,6 +17,7 @@ import greencity.service.EventCommentService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,11 +25,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 @Validated
 @AllArgsConstructor
@@ -116,10 +124,10 @@ public class EventCommentController {
      * Method to update certain {@link greencity.dto.eventcomment.EventCommentVO}
      * specified by id.
      *
-     * @param id          of {@link greencity.dto.eventcomment.EventCommentVO} to
-     *                    update
-     * @param commentText edited text of
-     *                    {@link greencity.dto.eventcomment.EventCommentVO}
+     * @param commentId of {@link greencity.dto.eventcomment.EventCommentVO} to
+     *                  update
+     * @param request   edited text of
+     *                  {@link greencity.dto.eventcomment.EventCommentVO}
      */
     @ApiOperation(value = "Update comment.")
     @ApiResponses(value = {
@@ -128,9 +136,11 @@ public class EventCommentController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @PatchMapping()
-    public void update(Long id, @RequestParam @NotBlank String commentText, @ApiIgnore @CurrentUser UserVO user) {
-        eventCommentService.update(commentText, id, user);
+    @PatchMapping("/{commentId}")
+    public void update(@PathVariable Long commentId,
+        @Valid @RequestBody EditEventCommentDtoRequest request,
+        @ApiIgnore @CurrentUser UserVO user) {
+        eventCommentService.update(commentId, request, user);
     }
 
     /**
