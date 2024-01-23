@@ -6,7 +6,6 @@ import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
 import greencity.dto.eventcomment.AddEventCommentDtoResponse;
@@ -83,6 +82,9 @@ class EventCommentServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private UserNotificationService userNotificationService;
+
     @Test
     void save() {
         UserVO userVO = getUserVO();
@@ -102,6 +104,7 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(addEventCommentDtoRequest, EventComment.class)).thenReturn(eventComment);
         when(modelMapper.map(any(EventComment.class), eq(AddEventCommentDtoResponse.class)))
             .thenReturn(ModelUtils.getAddEventCommentDtoResponse());
+        when(modelMapper.map(eventComment.getUser(), UserVO.class)).thenReturn(userVO);
 
         eventCommentService.save(1L, addEventCommentDtoRequest, userVO);
         assertEquals(CommentStatus.ORIGINAL, eventComment.getStatus());

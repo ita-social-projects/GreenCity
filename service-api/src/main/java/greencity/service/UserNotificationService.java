@@ -70,7 +70,7 @@ public interface UserNotificationService {
         NotificationType notificationType, Long targetId);
 
     /**
-     * Method to create Notification.
+     * Method to create Notification. CustomMessage is set to actionUser name.
      * 
      * @param targetUser       user, that should receive Notification
      * @param actionUser       user, that triggered Notification

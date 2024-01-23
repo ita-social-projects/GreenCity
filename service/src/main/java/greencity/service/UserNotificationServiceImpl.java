@@ -139,6 +139,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .targetUser(modelMapper.map(targetUser, User.class))
             .time(LocalDateTime.now())
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
+            .customMessage(actionUser.getName())
             .build();
         notificationRepo.save(notification);
     }

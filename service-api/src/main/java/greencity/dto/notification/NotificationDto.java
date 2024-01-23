@@ -24,6 +24,4 @@ public class NotificationDto {
     private Long targetId;
     private String titleText;
     private String bodyText;
-    private String titleTextEng;
-    private String bodyTextEng;
 }
