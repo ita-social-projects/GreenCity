@@ -49,16 +49,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) {
         SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
         String email = Jwts.parser()
-                .verifyWith(key).build()
-                .parseSignedClaims(authentication.getName())
-                .getPayload()
-                .getSubject();
+            .verifyWith(key).build()
+            .parseSignedClaims(authentication.getName())
+            .getPayload()
+            .getSubject();
         @SuppressWarnings({"unchecked, rawtype"})
         List<String> authorities = (List<String>) Jwts.parser()
-                .verifyWith(key).build()
-                .parseSignedClaims(authentication.getName())
-                .getPayload()
-                .get(ROLE);
+            .verifyWith(key).build()
+            .parseSignedClaims(authentication.getName())
+            .getPayload()
+            .get(ROLE);
         return new UsernamePasswordAuthenticationToken(
             email,
             "",
