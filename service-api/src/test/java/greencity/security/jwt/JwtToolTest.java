@@ -1,7 +1,6 @@
 package greencity.security.jwt;
 
 import greencity.dto.user.UserVO;
-import greencity.entity.User;
 import greencity.enums.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
