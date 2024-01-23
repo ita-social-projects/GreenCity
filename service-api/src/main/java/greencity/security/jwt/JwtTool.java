@@ -1,15 +1,17 @@
 package greencity.security.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.constant.AppConstant.ROLE;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultJwtParser;
+import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import jakarta.servlet.http.HttpServletRequest;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,17 +49,19 @@ public class JwtTool {
      * @param role  this is role of user.
      */
     public String createAccessToken(String email, Role role) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put(ROLE, Collections.singleton(role.name()));
+        ClaimsBuilder claims = Jwts.claims().subject(email);
+        claims.add(ROLE, Collections.singleton(role.name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, accessTokenValidTimeInMinutes);
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(calendar.getTime())
-            .signWith(SignatureAlgorithm.HS256, accessTokenKey)
+            .claims(claims.build())
+            .issuedAt(now)
+            .expiration(calendar.getTime())
+            .signWith(Keys.hmacShaKeyFor(
+                    accessTokenKey.getBytes(StandardCharsets.UTF_8)),
+                    Jwts.SIG.HS256)
             .compact();
     }
 
@@ -67,17 +71,19 @@ public class JwtTool {
      * @param user - entity {@link UserVO}
      */
     public String createRefreshToken(UserVO user) {
-        Claims claims = Jwts.claims().setSubject(user.getEmail());
-        claims.put(ROLE, Collections.singleton(user.getRole().name()));
+        ClaimsBuilder claims = Jwts.claims().subject(user.getEmail());
+        claims.add(ROLE, Collections.singleton(user.getRole().name()));
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
         calendar.add(Calendar.MINUTE, refreshTokenValidTimeInMinutes);
         return Jwts.builder()
-            .setClaims(claims)
-            .setIssuedAt(now)
-            .setExpiration(calendar.getTime())
-            .signWith(SignatureAlgorithm.HS256, user.getRefreshTokenKey())
+            .claims(claims.build())
+            .issuedAt(now)
+            .expiration(calendar.getTime())
+            .signWith(
+                    Keys.hmacShaKeyFor(user.getRefreshTokenKey().getBytes(StandardCharsets.UTF_8)),
+                    Jwts.SIG.HS256)
             .compact();
     }
 
@@ -91,10 +97,16 @@ public class JwtTool {
      */
     public String getEmailOutOfAccessToken(String token) {
         String[] splitToken = token.split("\\.");
-        String unsignedToken = splitToken[0] + "." + splitToken[1] + ".";
-        DefaultJwtParser parser = new DefaultJwtParser();
-        Jwt<?, ?> jwt = parser.parse(unsignedToken);
-        return ((Claims) jwt.getBody()).getSubject();
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(splitToken[1]));
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode;
+        try {
+            jsonNode = objectMapper.readTree(payload);
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing JSON payload", e);
+        }
+        return jsonNode.path("sub").asText();
     }
 
     /**
@@ -105,8 +117,9 @@ public class JwtTool {
      */
     public boolean isTokenValid(String token, String tokenKey) {
         boolean isValid = false;
+        SecretKey key = Keys.hmacShaKeyFor(tokenKey.getBytes());
         try {
-            Jwts.parser().setSigningKey(tokenKey).parseClaimsJws(token);
+            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             isValid = true;
         } catch (Exception e) {
             log.info("Given token is not valid: " + e.getMessage());
