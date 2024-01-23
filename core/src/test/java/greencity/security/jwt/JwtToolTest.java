@@ -40,7 +40,7 @@ class JwtToolTest {
     public void init() {
         ReflectionTestUtils.setField(jwtTool, "accessTokenValidTimeInMinutes", 15);
         ReflectionTestUtils.setField(jwtTool, "refreshTokenValidTimeInMinutes", 15);
-        ReflectionTestUtils.setField(jwtTool, "accessTokenKey", "123123123");
+        ReflectionTestUtils.setField(jwtTool, "accessTokenKey", "123123123123123123123123123123123123");
     }
 
     @Test
@@ -106,19 +106,21 @@ class JwtToolTest {
     void isTokenValidWithInvalidTokenTest() {
         String random = UUID.randomUUID().toString();
         assertFalse(jwtTool.isTokenValid(random, jwtTool.getAccessTokenKey()));
-        boolean valid = jwtTool.isTokenValid("eyJhbGciOiJIUzI1NiJ9"
-            + ".eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUi"
-            + "JdLCJpYXQiOjE1NzU4MzY5NjUsImV4cCI6MTU3NTgzNzg2NX0"
-            + ".1kVcts6LCzUov-j0zMQqRXqIxeChUUv2gsw_zoLXtc8", jwtTool.getAccessTokenKey());
+        boolean valid = jwtTool.isTokenValid("""
+            eyJhbGciOiJIUzI1NiJ9\
+            .eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJPTEVfVVNFUi\
+            JdLCJpYXQiOjE1NzU4MzY5NjUsImV4cCI6MTU3NTgzNzg2NX0\
+            .1kVcts6LCzUov-j0zMQqRXqIxeChUUv2gsw_zoLXtc8\
+            """, jwtTool.getAccessTokenKey());
         assertFalse(valid);
     }
 
     @Test
     void isTokenValidWithValidTokenTest() {
         final String accessToken = """
-            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhvcml0aWVzIjpbIlJP\
-            TEVfVVNFUiJdLCJpYXQiOjE1NzU4NDUzNTAsImV4cCI6NjE1NzU4NDUyOTB9.E5IaeqJNd6DGp6FG\
-            YRV6rx-colw4wDD2hCYHnliRYlw\
+            eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImF1dGhv\
+            cml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1NzU4NDUzNTAsImV4cCI6N\
+            jE1NzU4NDUyOTB9.Lv0Rk8e1DhkONblzJecx4hCRpT1kKiQ1ns9mgZAWEq0\
             """;
         SecretKey key = Keys.hmacShaKeyFor(jwtTool.getAccessTokenKey().getBytes());
         Date expectedExpiration = new Date(61575845290000L); // 3921 year
