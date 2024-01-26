@@ -27,10 +27,10 @@ import java.util.List;
 
 @Component
 public class AchievementCalculation {
-    private UserActionService userActionService;
-    private AchievementService achievementService;
-    private AchievementCategoryService achievementCategoryService;
-    private UserAchievementRepo userAchievementRepo;
+    private final UserActionService userActionService;
+    private final AchievementService achievementService;
+    private final AchievementCategoryService achievementCategoryService;
+    private final UserAchievementRepo userAchievementRepo;
     private final AchievementRepo achievementRepo;
     private final RatingCalculation ratingCalculation;
     private final ModelMapper modelMapper;

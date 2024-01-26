@@ -28,6 +28,9 @@ import greencity.message.SendHabitNotification;
 import greencity.message.AddEcoNewsMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -229,5 +232,9 @@ public class ModelUtils {
             .subject("Congratulations")
             .message("You have successfully done something")
             .build();
+    }
+
+    public static URL getUrl() throws MalformedURLException {
+        return new URL(TestConst.SITE);
     }
 }
