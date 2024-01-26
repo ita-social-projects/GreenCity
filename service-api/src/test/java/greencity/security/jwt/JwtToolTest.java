@@ -16,10 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import static greencity.constant.AppConstant.ROLE;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
+import com.google.gson.JsonParseException;
 
 /**
  * @author Yurii Koval
@@ -99,6 +99,13 @@ class JwtToolTest {
             + "vcml0aWVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE1NzU4MzY5NjUsImV4cCI6OTk5OTk5OTk5OTk5fQ"
             + ".YFicrqBFN0Q662HqkI2P8yuykgvJjiTgUqsUhN4ICHI");
         assertEquals(expectedEmail, actualEmail);
+    }
+
+    @Test
+    void getEmailOutOfAccessTokenThrowsJsonParseException() {
+        assertThrows(JsonParseException.class,
+            () -> jwtTool.getEmailOutOfAccessToken("YFicrqBFN0Q662HqkI2P8yuykgvJ.jiTgUqsUhN4ICHI"),
+            "Error parsing JSON payload");
     }
 
     @Test

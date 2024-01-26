@@ -3,6 +3,7 @@ package greencity.security.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static greencity.constant.AppConstant.ROLE;
+import com.google.gson.JsonParseException;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import io.jsonwebtoken.ClaimsBuilder;
@@ -104,7 +105,7 @@ public class JwtTool {
         try {
             jsonNode = objectMapper.readTree(payload);
         } catch (Exception e) {
-            throw new RuntimeException("Error parsing JSON payload", e);
+            throw new JsonParseException("Error parsing JSON payload", e);
         }
         return jsonNode.path("sub").asText();
     }

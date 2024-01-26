@@ -7,7 +7,6 @@ import greencity.dto.habit.CustomHabitDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.HabitService;
-
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;

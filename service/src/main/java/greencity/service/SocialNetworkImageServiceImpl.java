@@ -19,7 +19,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,11 +56,11 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
     @Override
     public SocialNetworkImageVO getSocialNetworkImageByUrl(String url) {
         try {
-            URI checkUrl = Paths.get(url).toUri();
+            URL checkUrl = URI.create(url).toURL();
             Optional<SocialNetworkImageVO> optionalSocialNetworkImageVO =
                 findByHostPath(checkUrl.getHost());
             return modelMapper.map(optionalSocialNetworkImageVO.isPresent() ? optionalSocialNetworkImageVO.get()
-                : saveSocialNetworkImage(checkUrl.toURL()), SocialNetworkImageVO.class);
+                : saveSocialNetworkImage(checkUrl), SocialNetworkImageVO.class);
         } catch (IOException | IllegalArgumentException e) {
             log.info(e.getMessage());
             return getDefaultSocialNetworkImage();
@@ -231,8 +230,8 @@ public class SocialNetworkImageServiceImpl implements SocialNetworkImageService 
         String preparedUrlHost = url.getHost();
         String preparedFaviconUrl = "http://www.google.com/s2/favicons?sz=64&domain_url=%s".formatted(URLEncoder
             .encode(preparedUrlHost, StandardCharsets.UTF_8));
-        URI faviconUrl = Paths.get(preparedFaviconUrl).toUri();
-        BufferedImage bufferedImage = ImageIO.read(faviconUrl.toURL());
+        URL faviconUrl = URI.create(preparedFaviconUrl).toURL();
+        BufferedImage bufferedImage = ImageIO.read(faviconUrl);
         File tempFile = new File("tempImage.png");
         ImageIO.write(bufferedImage, "png", tempFile);
         return uploadFileToCloud(tempFile);

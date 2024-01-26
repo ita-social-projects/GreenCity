@@ -6,8 +6,10 @@ import greencity.dto.socialnetwork.SocialNetworkImageResponseDTO;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.entity.SocialNetworkImage;
 import greencity.repository.SocialNetworkImageRepo;
+
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,15 +43,16 @@ class SocialNetworkImageServiceImplTest {
     private static final String DEFAULT_SOCIAL_NETWORK_IMAGE_PATH = "HTTP://img/default_social_network_icon.png/";
 
     @Test
-    void getSocialNetworkImageByUrl() {
-        URI checkUrl = Paths.get(URL_TO_CHECK).toUri();
+    void getSocialNetworkImageByUrl() throws MalformedURLException {
+        URL checkUrl = URI.create(URL_TO_CHECK).toURL();
+        String host = checkUrl.getHost();
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
         socialNetworkImageVO.setHostPath(checkUrl.getHost());
         socialNetworkImageVO.setImagePath(URL_TO_CHECK);
 
         Optional<SocialNetworkImage> socialNetworkImage = Optional.of(new SocialNetworkImage());
-        when(socialNetworkImageRepo.findByHostPath(null))
+        when(socialNetworkImageRepo.findByHostPath(host))
             .thenReturn(socialNetworkImage);
         when(modelMapper.map(any(SocialNetworkImage.class), eq(SocialNetworkImageVO.class)))
             .thenReturn(socialNetworkImageVO);
@@ -60,8 +63,8 @@ class SocialNetworkImageServiceImplTest {
     }
 
     @Test
-    void getSocialNetworkImageByUrlBadRequest() {
-        URI checkUrl = Paths.get(URL_TO_CHECK).toUri();
+    void getSocialNetworkImageByUrlBadRequest() throws MalformedURLException {
+        URL checkUrl = URI.create(URL_TO_CHECK).toURL();
         String host = checkUrl.getHost();
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
@@ -75,8 +78,8 @@ class SocialNetworkImageServiceImplTest {
     }
 
     @Test
-    void findByHostPath() {
-        URI checkUrl = Paths.get(URL_TO_CHECK).toUri();
+    void findByHostPath() throws MalformedURLException {
+        URL checkUrl = URI.create(URL_TO_CHECK).toURL();
         String host = checkUrl.getHost();
         SocialNetworkImageVO socialNetworkImageVO = new SocialNetworkImageVO();
         socialNetworkImageVO.setId(1L);
