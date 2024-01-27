@@ -1,4 +1,4 @@
-package greencity.mapping.notification;
+package greencity.mapping;
 
 import greencity.dto.notification.NotificationDto;
 import greencity.entity.Notification;
@@ -21,14 +21,13 @@ public class NotificationDtoMapper extends AbstractConverter<Notification, Notif
     @Override
     protected NotificationDto convert(Notification notification) {
         return NotificationDto.builder()
-            .notificationId(notification.getId())
-            .projectName(notification.getProjectName().name())
-            .notificationType(notification.getNotificationType().name())
-            .time(notification.getTime())
-            .viewed(notification.isViewed())
-            .userCount((long) notification.getActionUsers().size())
-            .targetId(notification.getTargetId())
-            // TODO: make languages
-            .build();
+                .notificationId(notification.getId())
+                .projectName(notification.getProjectName().name())
+                .notificationType(notification.getNotificationType().name())
+                .time(notification.getTime())
+                .viewed(notification.isViewed())
+                .message(notification.getCustomMessage())
+                .targetId(notification.getTargetId())
+                .build();
     }
 }

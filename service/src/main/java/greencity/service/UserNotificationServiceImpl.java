@@ -24,7 +24,9 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -42,7 +44,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * {@inheritDoc}
      */
-    public List<NotificationDto> getThreeLastNotifications(Principal principal) {
+    public List<NotificationDto> getThreeLastNotifications(Principal principal, String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
         Long userId = currentUser.getId();
         List<Notification> notifications = notificationRepo.findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(userId);
@@ -56,7 +58,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
-        FilterNotificationDto filter) {
+        FilterNotificationDto filter, String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
         Long userId = currentUser.getId();
         if (filter.getProjectName().length == 0) {
@@ -87,14 +89,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public NotificationDto getNotification(Principal principal, Long notificationId) {
+    public NotificationDto getNotification(Principal principal, Long notificationId, String locale) {
         Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
         Notification notification = notificationRepo.findByIdAndTargetUserId(notificationId, userId);
         if (notification == null) {
             throw new NotFoundException("Notification not found with id: " + notificationId);
         }
         notificationRepo.markNotificationAsViewed(notificationId);
-        return modelMapper.map(notification, NotificationDto.class);
+        return createNotificationDto(notification, locale);
     }
 
     /**
@@ -215,5 +217,25 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             notifications.hasNext(),
             notifications.isFirst(),
             notifications.isLast());
+    }
+
+    private NotificationDto createNotificationDto(Notification notification, String locale) {
+        NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
+        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(locale),
+                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
+        dto.setBodyText(bundle.getString(dto.getNotificationType()));
+        System.out.println(locale);
+        System.out.println(bundle.getLocale());
+        int size = notification.getActionUsers().size();
+        if (size == 1) {
+            User actionUser = notification.getActionUsers().get(0);
+            dto.setActionUserId(actionUser.getId());
+            dto.setActionUserText(actionUser.getName());
+        }
+        else {
+            dto.setActionUserText(size + " " + bundle.getString("USERS"));
+        }
+        return dto;
     }
 }

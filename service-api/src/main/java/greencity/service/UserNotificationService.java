@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public interface UserNotificationService {
@@ -18,9 +19,10 @@ public interface UserNotificationService {
      * Method to return three last new notifications.
      *
      * @param principal user to get notifications
+     * @param language
      * @return set of 3 last new notifications
      */
-    List<NotificationDto> getThreeLastNotifications(Principal principal);
+    List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
 
     /**
      * Method for getting Notification instances filtered.
@@ -31,7 +33,7 @@ public interface UserNotificationService {
      * @return Page of {@link NotificationDto} instance.
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
-        FilterNotificationDto filterNotificationDto);
+        FilterNotificationDto filterNotificationDto, String language);
 
     /**
      * Method for getting page of Notification instances.
@@ -40,7 +42,7 @@ public interface UserNotificationService {
      * @param principal user to get notifications
      * @return Page of {@link NotificationDto} instance.
      */
-    PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal);
+    PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal, String language);
 
     /**
      * Method for getting Notification instance and marking Notification as viewed.
@@ -49,7 +51,7 @@ public interface UserNotificationService {
      * @param principal      user to get notifications
      * @return {@link NotificationDto} instance.
      */
-    NotificationDto getNotification(Principal principal, Long notificationId);
+    NotificationDto getNotification(Principal principal, Long notificationId, String language);
 
     /**
      * Method for sending socket.

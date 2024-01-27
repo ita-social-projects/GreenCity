@@ -18,10 +18,13 @@ public class NotificationDto {
     private Long notificationId;
     private String projectName;
     private String notificationType;
-    private Long userCount;
     private LocalDateTime time;
     private Boolean viewed;
-    private Long targetId;
+
     private String titleText;
     private String bodyText;
+    private Long actionUserId;
+    private String actionUserText;
+    private Long targetId;
+    private String message;
 }
