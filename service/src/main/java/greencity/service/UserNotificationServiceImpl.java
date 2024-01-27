@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         Long userId = currentUser.getId();
         List<Notification> notifications = notificationRepo.findTop3ByTargetUserIdAndViewedFalseOrderByTimeDesc(userId);
         return notifications.stream()
-            .map(notification -> modelMapper.map(notification, NotificationDto.class))
+            .map(notification -> createNotificationDto(notification, language))
             .collect(Collectors.toList());
     }
 
@@ -71,32 +72,33 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             notificationRepo.findByTargetUserIdAndProjectNameInAndNotificationTypeInOrderByTimeDesc(userId,
                 filter.getProjectName(),
                 filter.getNotificationType(), page);
-        return buildPageableAdvancedDto(notifications);
+        return buildPageableAdvancedDto(notifications, language);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal) {
+    public PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal,
+        String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
         Long userId = currentUser.getId();
         Page<Notification> notifications = notificationRepo.findByTargetUserId(userId, pageable);
-        return buildPageableAdvancedDto(notifications);
+        return buildPageableAdvancedDto(notifications, language);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public NotificationDto getNotification(Principal principal, Long notificationId, String locale) {
+    public NotificationDto getNotification(Principal principal, Long notificationId, String language) {
         Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
         Notification notification = notificationRepo.findByIdAndTargetUserId(notificationId, userId);
         if (notification == null) {
             throw new NotFoundException("Notification not found with id: " + notificationId);
         }
         notificationRepo.markNotificationAsViewed(notificationId);
-        return createNotificationDto(notification, locale);
+        return createNotificationDto(notification, language);
     }
 
     /**
@@ -203,10 +205,12 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         }
     }
 
-    private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications) {
-        List<NotificationDto> notificationDtoList = modelMapper.map(notifications.getContent(),
-            new TypeToken<List<NotificationDto>>() {
-            }.getType());
+    private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
+        String language) {
+        List<NotificationDto> notificationDtoList = new LinkedList<>();
+        for (Notification n : notifications) {
+            notificationDtoList.add(createNotificationDto(n, language));
+        }
         return new PageableAdvancedDto<>(
             notificationDtoList,
             notifications.getTotalElements(),
@@ -219,21 +223,26 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             notifications.isLast());
     }
 
-    private NotificationDto createNotificationDto(Notification notification, String locale) {
+    /**
+     * Method used to create {@link NotificationDto} from {@link Notification},
+     * adding localized notification text.
+     * 
+     * @param notification that should be transformed into dto
+     * @param language     language code
+     * @return mapped and localized {@link NotificationDto}
+     */
+    private NotificationDto createNotificationDto(Notification notification, String language) {
         NotificationDto dto = modelMapper.map(notification, NotificationDto.class);
-        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(locale),
-                ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
+        ResourceBundle bundle = ResourceBundle.getBundle("notification", Locale.forLanguageTag(language),
+            ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT));
         dto.setTitleText(bundle.getString(dto.getNotificationType() + "_TITLE"));
         dto.setBodyText(bundle.getString(dto.getNotificationType()));
-        System.out.println(locale);
-        System.out.println(bundle.getLocale());
         int size = notification.getActionUsers().size();
         if (size == 1) {
             User actionUser = notification.getActionUsers().get(0);
             dto.setActionUserId(actionUser.getId());
             dto.setActionUserText(actionUser.getName());
-        }
-        else {
+        } else {
             dto.setActionUserText(size + " " + bundle.getString("USERS"));
         }
         return dto;

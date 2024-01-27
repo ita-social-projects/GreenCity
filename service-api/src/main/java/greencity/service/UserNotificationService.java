@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public interface UserNotificationService {
@@ -19,8 +18,9 @@ public interface UserNotificationService {
      * Method to return three last new notifications.
      *
      * @param principal user to get notifications
-     * @param language
+     * @param language  language code
      * @return set of 3 last new notifications
+     * @author Volodymyr Mladonov
      */
     List<NotificationDto> getThreeLastNotifications(Principal principal, String language);
 
@@ -30,7 +30,9 @@ public interface UserNotificationService {
      * @param pageable              page of notifications
      * @param principal             user to get notifications
      * @param filterNotificationDto contains instructions to filter notifications
+     * @param language              language code
      * @return Page of {@link NotificationDto} instance.
+     * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable pageable, Principal principal,
         FilterNotificationDto filterNotificationDto, String language);
@@ -40,7 +42,9 @@ public interface UserNotificationService {
      *
      * @param pageable  page of notifications
      * @param principal user to get notifications
+     * @param language  language code
      * @return Page of {@link NotificationDto} instance.
+     * @author Volodymyr Mladonov
      */
     PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal, String language);
 
@@ -49,7 +53,9 @@ public interface UserNotificationService {
      *
      * @param notificationId id of requested notification
      * @param principal      user to get notifications
+     * @param language       language code
      * @return {@link NotificationDto} instance.
+     * @author Volodymyr Mladonov
      */
     NotificationDto getNotification(Principal principal, Long notificationId, String language);
 
@@ -57,6 +63,7 @@ public interface UserNotificationService {
      * Method for sending socket.
      *
      * @param user user, requested
+     * @author Volodymyr Mladonov
      */
     void notificationSocket(ActionDto user);
 
@@ -67,6 +74,7 @@ public interface UserNotificationService {
      * @param title            title of Event
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
+     * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String title,
         NotificationType notificationType, Long targetId);
@@ -77,6 +85,7 @@ public interface UserNotificationService {
      * @param targetUser       user, that should receive Notification
      * @param actionUser       user, that triggered Notification
      * @param notificationType type of Notification
+     * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType);
 
@@ -88,6 +97,7 @@ public interface UserNotificationService {
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @param customMessage    text of Notification
+     * @author Volodymyr Mladonov
      */
     void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
         Long targetId, String customMessage);
@@ -99,6 +109,7 @@ public interface UserNotificationService {
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @param customMessage    text to be inserted into Notification message
+     * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
         String customMessage);
@@ -111,6 +122,7 @@ public interface UserNotificationService {
      * @param actionUser       User, that canseled the action
      * @param targetId         represent the corresponding object's ID
      * @param notificationType type of Notification
+     * @author Volodymyr Mladonov
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
         NotificationType notificationType);
