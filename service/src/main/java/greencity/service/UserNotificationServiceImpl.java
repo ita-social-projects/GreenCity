@@ -108,7 +108,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     public void notificationSocket(ActionDto user) {
         Optional<Notification> userNotification =
             notificationRepo.findNotificationByTargetUserIdAndViewedIsFalse(user.getUserId());
-        System.out.println(userNotification);
         messagingTemplate
             .convertAndSend("/topic/" + user.getUserId() + "/notification", userNotification.isPresent());
     }
