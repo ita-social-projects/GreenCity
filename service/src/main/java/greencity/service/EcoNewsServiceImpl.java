@@ -13,7 +13,6 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
 import greencity.entity.localization.TagTranslation;
@@ -46,11 +45,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-import java.util.stream.Collectors;
 
-import static greencity.constant.AppConstant.AUTHORIZATION;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @EnableCaching
@@ -63,7 +64,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final FileService fileService;
     private final AchievementCalculation achievementCalculation;
     private final greencity.rating.RatingCalculation ratingCalculation;
-    private final HttpServletRequest httpServletRequest;
     private final EcoNewsSearchRepo ecoNewsSearchRepo;
     private final NotificationService notificationService;
     private final List<String> languageCode = List.of("en", "ua");
@@ -111,27 +111,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
         return ecoNewsDto;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Veremchuk.
-     */
-    public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
-        User user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
-        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-            .author(placeAuthorDto)
-            .creationDate(addEcoNewsDtoResponse.getCreationDate())
-            .unsubscribeToken(accessToken)
-            .text(addEcoNewsDtoResponse.getText())
-            .title(addEcoNewsDtoResponse.getTitle())
-            .source(addEcoNewsDtoResponse.getSource())
-            .imagePath(addEcoNewsDtoResponse.getImagePath())
-            .build();
-        restClient.addEcoNews(dto);
     }
 
     /**
