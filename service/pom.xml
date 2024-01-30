@@ -15,11 +15,15 @@
     <name>service</name>
 
     <properties>
-        <apache.commons.version>3.10</apache.commons.version>
         <commons-io.version>2.15.0</commons-io.version>
         <org.springframework.social.version>2.0.3.RELEASE</org.springframework.social.version>
         <google.maps.version>2.2.0</google.maps.version>
         <apache.http.client.version>5.3-alpha1</apache.http.client.version>
+        <azure.storage.blob.version>12.25.0</azure.storage.blob.version>
+        <jts.core.version>1.19.0</jts.core.version>
+        <commons.collections4.version>4.4</commons.collections4.version>
+        <google.cloud.storage.version>2.29.1</google.cloud.storage.version>
+        <apache.commons.version>3.13.0</apache.commons.version>
     </properties>
 
     <dependencies>
@@ -38,7 +42,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -59,23 +63,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jayway.jsonpath</groupId>
-                    <artifactId>json-path</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
-            <version>2.29.1</version>
+            <version>${google.cloud.storage.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.azure</groupId>
             <artifactId>azure-storage-blob</artifactId>
-            <version>12.25.0</version>
+            <version>${azure.storage.blob.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -91,11 +89,18 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
+            <version>${apache.commons.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.maps</groupId>
             <artifactId>google-maps-services</artifactId>
             <version>${google.maps.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.opencensus</groupId>
+                    <artifactId>opencensus-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -105,12 +110,12 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.19.0</version>
+            <version>${jts.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
+            <version>${commons.collections4.version}</version>
         </dependency>
     </dependencies>
 </project>
