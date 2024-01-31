@@ -95,4 +95,12 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
      */
     Optional<Notification> findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(
         Long targetUserId, NotificationType notificationType, Long targetId);
+
+    /**
+     * Method to delete specific Notification.
+     *
+     * @param notificationId id of searched Notification
+     * @param targetUserId   id of user
+     */
+    void deleteNotificationByIdAndTargetUserId(Long notificationId, Long targetUserId);
 }

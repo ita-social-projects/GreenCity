@@ -204,6 +204,15 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteNotification(Principal principal, Long notificationId) {
+        Long userId = modelMapper.map(userService.findByEmail(principal.getName()), User.class).getId();
+        notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
+    }
+
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
         String language) {
         List<NotificationDto> notificationDtoList = new LinkedList<>();

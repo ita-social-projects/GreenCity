@@ -119,11 +119,20 @@ public interface UserNotificationService {
      * was the only ActionUser. Called when user canceled the action.
      *
      * @param targetUser       User, that should receive Notification
-     * @param actionUser       User, that canseled the action
+     * @param actionUser       User, that canceled the action
      * @param targetId         represent the corresponding object's ID
      * @param notificationType type of Notification
      * @author Volodymyr Mladonov
      */
     void removeActionUserFromNotification(UserVO targetUser, UserVO actionUser, Long targetId,
         NotificationType notificationType);
+
+    /**
+     * Method to delete specific Notification.
+     *
+     * @param principal      user
+     * @param notificationId id of notification, that should be deleted
+     * @author Volodymyr Mladonov
+     */
+    void deleteNotification(Principal principal, Long notificationId);
 }

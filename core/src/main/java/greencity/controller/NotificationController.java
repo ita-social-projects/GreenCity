@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,13 +124,34 @@ public class NotificationController {
         @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/view/{notificationId}")
+    @GetMapping("/{notificationId}")
     public ResponseEntity<NotificationDto> getNotification(
         @ApiIgnore Principal principal,
         @PathVariable Long notificationId,
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getNotification(principal, notificationId, locale.getLanguage()));
+    }
+
+    /**
+     * Method to delete specific Notification.
+     *
+     * @param principal Principal with userId
+     * @param notificationId id of notification, that should be deleted
+     */
+    @ApiOperation(value = "Delete single Notification.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HttpStatuses.OK),
+            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<Object> deleteNotification(
+            @ApiIgnore Principal principal,
+            @PathVariable Long notificationId) {
+        userNotificationService.deleteNotification(principal, notificationId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**
