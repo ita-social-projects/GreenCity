@@ -135,11 +135,11 @@ import java.util.Set;
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems",
-        "eventOrganizerRating", "favoriteEvents", "subscribedEvents"})
+        "eventOrganizerRating", "favoriteEvents", "requestedEvents", "subscribedEvents"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating",
-        "favoriteEvents", "subscribedEvents"})
+        "favoriteEvents", "requestedEvents", "subscribedEvents"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -242,4 +242,7 @@ public class User {
 
     @ManyToMany(mappedBy = "attenders", fetch = FetchType.LAZY)
     private Set<Event> subscribedEvents;
+
+    @ManyToMany(mappedBy = "requesters", fetch = FetchType.LAZY)
+    private Set<Event> requestedEvents;
 }

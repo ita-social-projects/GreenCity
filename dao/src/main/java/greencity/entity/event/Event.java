@@ -34,7 +34,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "events")
-@EqualsAndHashCode(exclude = {"attenders", "followers", "dates"})
+@EqualsAndHashCode(exclude = {"attenders", "followers", "requesters", "dates"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -73,6 +73,12 @@ public class Event {
         inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> followers = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "events_requesters",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> requesters = new HashSet<>();
+
     @NonNull
     @OrderBy("finishDate ASC")
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
@@ -97,8 +103,7 @@ public class Event {
     private List<EventComment> eventsComments = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(
-        name = "events_users_likes",
+    @JoinTable(name = "events_users_likes",
         joinColumns = @JoinColumn(name = "event_id"),
         inverseJoinColumns = @JoinColumn(name = "users_id"))
     private Set<User> usersLikedEvents = new HashSet<>();

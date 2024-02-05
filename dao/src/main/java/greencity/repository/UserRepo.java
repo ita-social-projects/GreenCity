@@ -495,4 +495,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "JOIN user_location ON users.user_location = user_location.id "
         + "WHERE user_location.city_ua = :city AND users.id !=:userId")
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
+
+    /**
+     * Method for getting all users who made request for joining the event.
+     * 
+     * @param eventId  - id of the event
+     * @param pageable
+     *
+     */
+    @Query(nativeQuery = true, value = "SELECT users.* FROM users "
+        + "JOIN events_requesters ON users.id = events_requesters.user_id "
+        + "WHERE events_requesters.event_id = :eventId")
+    Page<User> findUsersByRequestedEvents(Long eventId, Pageable pageable);
 }
