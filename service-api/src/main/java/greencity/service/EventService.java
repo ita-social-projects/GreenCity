@@ -229,4 +229,18 @@ public interface EventService {
      * @author Olha Pitsyk.
      */
     PageableDto<UserForListDto> getRequestedUsers(Long eventId, String email, Pageable pageable);
+
+    /**
+     * Method for approving request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    void approveRequest(Long eventId, String email, Long userId);
+
+    /**
+     * Method for declining request for joining the event.
+     *
+     * @author Olha Pitsyk.
+     */
+    void declineRequest(Long eventId, String email, Long userId);
 }

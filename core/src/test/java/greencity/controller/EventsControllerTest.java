@@ -28,7 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -731,5 +730,27 @@ class EventsControllerTest {
             .principal(principal))
             .andExpect(status().isOk());
         verify(eventService).getRequestedUsers(eventId, principal.getName(), pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    void approveRequest() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/approve", eventId, userId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).approveRequest(eventId, principal.getName(), userId);
+    }
+
+    @Test
+    @SneakyThrows
+    void declineRequest() {
+        Long eventId = 1L;
+        Long userId = 1L;
+        mockMvc.perform(post(EVENTS_CONTROLLER_LINK + "/{eventId}/requested-users/{userId}/decline", eventId, userId)
+            .principal(principal))
+            .andExpect(status().isOk());
+        verify(eventService).declineRequest(eventId, principal.getName(), userId);
     }
 }

@@ -435,4 +435,42 @@ public class EventsController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(eventService.getRequestedUsers(eventId, principal.getName(), pageable));
     }
+
+    /**
+     * Method for approving join request.
+     *
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "Approve join request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/{eventId}/requested-users/{userId}/approve")
+    public ResponseEntity<Object> approveRequest(@PathVariable Long eventId, @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
+        eventService.approveRequest(eventId, principal.getName(), userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
+     * Method for declining join request.
+     *
+     * @author Olha Pitsyk.
+     */
+    @ApiOperation(value = "Decline join request")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @PostMapping("/{eventId}/requested-users/{userId}/decline")
+    public ResponseEntity<Object> declineRequest(@PathVariable Long eventId, @PathVariable Long userId,
+        @ApiIgnore Principal principal) {
+        eventService.declineRequest(eventId, principal.getName(), userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

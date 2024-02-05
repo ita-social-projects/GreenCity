@@ -941,6 +941,13 @@ public class EventServiceImpl implements EventService {
 
         event.getRequesters().add(currentUser);
         eventRepo.save(event);
+
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(event.getOrganizer().getEmail())
+            .subject(EmailNotificationMessagesConstants.NEW_JOIN_REQUEST_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.NEW_JOIN_REQUEST_MESSAGE,
+                currentUser.getName()))
+            .build());
     }
 
     @Override
@@ -984,5 +991,64 @@ public class EventServiceImpl implements EventService {
             usersPage.getTotalElements(),
             usersPage.getPageable().getPageNumber(),
             usersPage.getTotalPages());
+    }
+
+    @Override
+    public void approveRequest(Long eventId, String email, Long userId) {
+        UserVO userVO = restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (currentUser.getId() != event.getOrganizer().getId()) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (event.getRequesters().stream().noneMatch(u -> u.getId() == userId)) {
+            throw new BadRequestException(ErrorMessage.USER_DID_NOT_REQUEST_FOR_EVENT + userId);
+        }
+        User userToJoin = userRepo.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        event
+            .setRequesters(event.getRequesters().stream().filter(u -> u.getId() != userId).collect(Collectors.toSet()));
+        event.getAttenders().add(userToJoin);
+
+        eventRepo.save(event);
+
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(userToJoin.getEmail())
+            .subject(EmailNotificationMessagesConstants.JOIN_REQUEST_APPROVED_SUBJECT)
+            .message(String.format(EmailNotificationMessagesConstants.JOIN_REQUEST_APPROVED_MESSAGE,
+                event.getTitle()))
+            .build());
+    }
+
+    @Override
+    public void declineRequest(Long eventId, String email, Long userId) {
+        UserVO userVO = restClient.findByEmail(email);
+        User currentUser = modelMapper.map(userVO, User.class);
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND));
+
+        if (currentUser.getId() != event.getOrganizer().getId()) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+        if (event.getRequesters().stream().noneMatch(u -> u.getId() == userId)) {
+            throw new BadRequestException(ErrorMessage.USER_DID_NOT_REQUEST_FOR_EVENT + userId);
+        }
+        User userToJoin =
+            userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId));
+
+        event
+            .setRequesters(event.getRequesters().stream().filter(u -> u.getId() != userId).collect(Collectors.toSet()));
+
+        eventRepo.save(event);
+
+        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+            .email(userToJoin.getEmail())
+            .subject(EmailNotificationMessagesConstants.JOIN_REQUEST_DECLINED_SUBJECT)
+            .message(EmailNotificationMessagesConstants.JOIN_REQUEST_DECLINED_MESSAGE)
+            .build());
     }
 }
