@@ -16,7 +16,6 @@
 
     <properties>
         <powermock.version>2.0.9</powermock.version>
-        <swagger.version>3.0.0</swagger.version>
         <tngtech.version>1.13.1</tngtech.version>
         <facebook.version>2.0.3.RELEASE</facebook.version>
         <socialcore.version>1.1.6.RELEASE</socialcore.version>
@@ -100,6 +99,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jayway.jsonpath</groupId>
+                    <artifactId>json-path</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
