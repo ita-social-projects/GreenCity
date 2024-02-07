@@ -10,10 +10,11 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="custom_message" type="VARCHAR" />
-            <column name="title_text" type="VARCHAR" />
+            <column name="second_message" type="VARCHAR" />
             <column name="notification_type" type="VARCHAR(255)" />
             <column name="project_name" type="VARCHAR(255)" />
             <column name="target_id" type="BIGINT" />
+            <column name="second_message_id" type="BIGINT" />
             <column name="time" type="TIMESTAMP" />
             <column name="viewed" type="BOOLEAN" />
             <column name="target_user_id" type="BIGINT">

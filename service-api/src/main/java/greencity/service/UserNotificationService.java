@@ -71,7 +71,7 @@ public interface UserNotificationService {
      * Method to create Notification for many Users.
      * 
      * @param attendersList    list of Users to receive Notification.
-     * @param title            title of Event
+     * @param message          title of Event, {message} in template
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @author Volodymyr Mladonov
@@ -83,16 +83,18 @@ public interface UserNotificationService {
      * Method to create Notification for many Users.
      *
      * @param attendersList    list of Users to receive Notification.
-     * @param title            title of Event
+     * @param message          text to be inserted into template instead of
+     *                         {message}
+     * @param secondMessage    additional text, {secondMessage} in template
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
      * @author Volodymyr Mladonov
      */
     void createNotificationForAttenders(List<UserVO> attendersList, String message,
-        NotificationType notificationType, Long targetId, String title);
+        NotificationType notificationType, Long targetId, String secondMessage);
 
     /**
-     * Method to create Notification. CustomMessage is set to actionUser name.
+     * Method to create Notification without CustomMessage.
      * 
      * @param targetUser       user, that should receive Notification
      * @param actionUser       user, that triggered Notification
@@ -115,12 +117,27 @@ public interface UserNotificationService {
         Long targetId, String customMessage);
 
     /**
+     * Method to create Notification.
+     *
+     * @param targetUser        user, that should receive Notification
+     * @param actionUser        user, that performed action
+     * @param notificationType  type of Notification
+     * @param targetId          represent the corresponding object's ID
+     * @param customMessage     text of Notification, {message} in template
+     * @param secondMessageId   if to secondMessageText
+     * @param secondMessageText additional text, {secondMessage} in template
+     * @author Volodymyr Mladonov
+     */
+    void createNotification(UserVO targetUser, UserVO actionUser, NotificationType notificationType,
+        Long targetId, String customMessage, Long secondMessageId, String secondMessageText);
+
+    /**
      * Method to create Notification without actionUser.
      *
      * @param targetUser       user, that should receive Notification
      * @param notificationType type of Notification
      * @param targetId         represent the corresponding object's ID
-     * @param customMessage    text to be inserted into Notification message
+     * @param customMessage    text to be inserted into Notification {message}
      * @author Volodymyr Mladonov
      */
     void createNewNotification(UserVO targetUser, NotificationType notificationType, Long targetId,
@@ -148,5 +165,10 @@ public interface UserNotificationService {
      */
     void deleteNotification(Principal principal, Long notificationId);
 
+    /**
+     * Method to mark specific Notification as unread.
+     *
+     * @param notificationId id of notification, that should be marked
+     */
     void unreadNotification(Long notificationId);
 }

@@ -87,7 +87,8 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                         ecoNewsComment.getUser().getName()))
                     .build());
                 userNotificationService.createNotification(modelMapper.map(parentComment.getUser(), UserVO.class),
-                    userVO, NotificationType.ECONEWS_COMMENT_REPLY, parentComment.getId(), parentComment.getText());
+                    userVO, NotificationType.ECONEWS_COMMENT_REPLY, parentComment.getId(), parentComment.getText(),
+                    econewsId, ecoNewsVO.getTitle());
             } else {
                 throw new BadRequestException(ErrorMessage.CANNOT_REPLY_THE_REPLY);
             }
@@ -239,8 +240,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
                 .subject(EmailNotificationMessagesConstants.COMMENT_LIKE_SUBJECT)
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE, userVO.getName()))
                 .build());
+            EcoNews ecoNews = comment.getEcoNews();
             userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
-                NotificationType.ECONEWS_COMMENT_LIKE, comment.getId(), comment.getText());
+                NotificationType.ECONEWS_COMMENT_LIKE, comment.getId(), comment.getText(),
+                ecoNews.getId(), ecoNews.getTitle());
         }
         ecoNewsCommentRepo.save(modelMapper.map(ecoNewsCommentVO, EcoNewsComment.class));
     }

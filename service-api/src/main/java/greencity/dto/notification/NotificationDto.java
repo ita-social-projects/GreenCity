@@ -27,4 +27,6 @@ public class NotificationDto {
     private String actionUserText;
     private Long targetId;
     private String message;
+    private String secondMessage;
+    private Long secondMessageId;
 }

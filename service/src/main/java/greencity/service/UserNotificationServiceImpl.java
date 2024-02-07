@@ -13,7 +13,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.repository.NotificationRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -44,6 +43,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return set of 3 last new notifications
      */
     public List<NotificationDto> getThreeLastNotifications(Principal principal, String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
@@ -56,6 +57,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return Page of {@link NotificationDto} instance.
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotificationsFiltered(Pageable page, Principal principal,
@@ -77,6 +80,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return Page of {@link NotificationDto} instance.
      */
     @Override
     public PageableAdvancedDto<NotificationDto> getNotifications(Pageable pageable, Principal principal,
@@ -89,6 +94,8 @@ public class UserNotificationServiceImpl implements UserNotificationService {
 
     /**
      * {@inheritDoc}
+     *
+     * @return {@link NotificationDto} instance.
      */
     @Override
     public NotificationDto getNotification(Principal principal, Long notificationId, String language) {
@@ -145,7 +152,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .time(LocalDateTime.now())
                 .targetId(targetId)
                 .customMessage(message)
-                    .titleText(title)
+                .secondMessage(title)
                 .build();
             notificationRepo.save(notification);
         }
@@ -162,7 +169,6 @@ public class UserNotificationServiceImpl implements UserNotificationService {
             .targetUser(modelMapper.map(targetUser, User.class))
             .time(LocalDateTime.now())
             .actionUsers(List.of(modelMapper.map(actionUser, User.class)))
-            .customMessage(actionUser.getName())
             .build();
         notificationRepo.save(notification);
     }
@@ -183,6 +189,30 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .actionUsers(new ArrayList<>())
                 .targetId(targetId)
                 .customMessage(customMessage)
+                .build());
+        notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
+        notification.setTime(LocalDateTime.now());
+        notificationRepo.save(notification);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createNotification(UserVO targetUserVO, UserVO actionUserVO, NotificationType notificationType,
+        Long targetId, String customMessage, Long secondMessageId, String secondMessageText) {
+        Notification notification = notificationRepo
+            .findNotificationByTargetUserIdAndNotificationTypeAndTargetIdAndViewedIsFalse(targetUserVO.getId(),
+                notificationType, targetId)
+            .orElse(Notification.builder()
+                .notificationType(notificationType)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUserVO, User.class))
+                .actionUsers(new ArrayList<>())
+                .targetId(targetId)
+                .customMessage(customMessage)
+                .secondMessageId(secondMessageId)
+                .secondMessage(secondMessageText)
                 .build());
         notification.getActionUsers().add(modelMapper.map(actionUserVO, User.class));
         notification.setTime(LocalDateTime.now());

@@ -28,6 +28,8 @@ public class NotificationDtoMapper extends AbstractConverter<Notification, Notif
             .viewed(notification.isViewed())
             .message(notification.getCustomMessage())
             .targetId(notification.getTargetId())
+            .secondMessageId(notification.getSecondMessageId())
+            .secondMessage(notification.getSecondMessage())
             .build();
     }
 }

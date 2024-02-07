@@ -96,7 +96,8 @@ public class EventCommentServiceImpl implements EventCommentService {
                     String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
                 .build());
             userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
-                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText());
+                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText(),
+                eventId, eventVO.getTitle());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -337,8 +338,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
                     userVO.getName()))
                 .build());
-            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class),
-                userVO, NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText());
+            Event event = comment.getEvent();
+            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
+                NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText(), event.getId(), event.getTitle());
         }
         eventCommentRepo.save(comment);
     }

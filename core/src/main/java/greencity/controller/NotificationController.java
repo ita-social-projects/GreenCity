@@ -158,20 +158,20 @@ public class NotificationController {
     /**
      * Method to delete specific Notification.
      *
-     * @param principal Principal with userId
+     * @param principal      Principal with userId
      * @param notificationId id of notification, that should be deleted
      */
     @ApiOperation(value = "Delete single Notification.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpStatuses.OK),
-            @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-            @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<Object> deleteNotification(
-            @ApiIgnore Principal principal,
-            @PathVariable Long notificationId) {
+        @ApiIgnore Principal principal,
+        @PathVariable Long notificationId) {
         userNotificationService.deleteNotification(principal, notificationId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

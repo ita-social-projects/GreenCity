@@ -478,15 +478,14 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
         List<UserVO> userVOList = toUpdate.getAttenders().stream()
-                .map(user -> modelMapper.map(user, UserVO.class))
-                .collect(Collectors.toList());
+            .map(user -> modelMapper.map(user, UserVO.class))
+            .collect(Collectors.toList());
         if (toUpdate.getTitle().equals(eventDto.getTitle())) {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                    NotificationType.EVENT_UPDATED, toUpdate.getId());
-        }
-        else {
+                NotificationType.EVENT_UPDATED, toUpdate.getId());
+        } else {
             userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
-                    NotificationType.EVENT_UPDATED, toUpdate.getId());
+                NotificationType.EVENT_NAME_UPDATED, toUpdate.getId(), eventDto.getTitle());
         }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
