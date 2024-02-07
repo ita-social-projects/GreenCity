@@ -19,4 +19,7 @@ public class HabitTranslationDto implements Serializable {
     private String habitItem;
     private String languageCode;
     private String name;
+    private String descriptionUa;
+    private String nameUa;
+    private String habitItemUa;
 }

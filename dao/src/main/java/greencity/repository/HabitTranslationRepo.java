@@ -371,13 +371,22 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.language  IN "
-        + "(SELECT l FROM Language AS l WHERE l.code IN ('ua', 'en'))"
+        + "WHERE ht.language = "
+        + "(SELECT l FROM Language AS l WHERE l.code = :language) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "OR h.isCustomHabit = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(Pageable pageable,
-        List<Long> requestedCustomHabitIds, Long userId);
+        List<Long> requestedCustomHabitIds, Long userId, String language);
+
+    /**
+     * Method that returns all habit translations in Ukrainian language by habit id.
+     *
+     * @param id {@link Long} habit id.
+     * @return {@link HabitTranslation}.
+     */
+    @Query("SELECT ht FROM HabitTranslation ht WHERE ht.language.id = 1  AND ht.habit.id = :id")
+    HabitTranslation getHabitTranslationByUaLanguage(Long id);
 }

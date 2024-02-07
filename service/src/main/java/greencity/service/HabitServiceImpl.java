@@ -71,6 +71,7 @@ public class HabitServiceImpl implements HabitService {
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
+    private static final String EN_LANGUAGE_CODE = "en";
 
     /**
      * Method returns Habit by its id.
@@ -113,7 +114,7 @@ public class HabitServiceImpl implements HabitService {
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-                requestedCustomHabitIds, userId);
+                requestedCustomHabitIds, userId, EN_LANGUAGE_CODE);
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
     }
 
@@ -253,7 +254,22 @@ public class HabitServiceImpl implements HabitService {
     private PageableDto<HabitDto> buildPageableDtoForDifferentParameters(Page<HabitTranslation> habitTranslationsPage,
         UserVO userVO) {
         List<HabitDto> habits = habitTranslationsPage.stream()
-            .map(habitTranslation -> modelMapper.map(habitTranslation, HabitDto.class))
+            .map(habitTranslation -> {
+                HabitDto habitDto = modelMapper.map(habitTranslation, HabitDto.class);
+                HabitTranslation habitTranslationByUaLanguage =
+                    habitTranslationRepo.getHabitTranslationByUaLanguage(habitTranslation.getHabit().getId());
+                habitDto.getHabitTranslation()
+                    .setDescriptionUa(habitTranslationByUaLanguage.getDescription() != null
+                        ? habitTranslationByUaLanguage.getDescription()
+                        : "");
+                habitDto.getHabitTranslation().setNameUa(
+                    habitTranslationByUaLanguage.getName() != null ? habitTranslationByUaLanguage.getName() : "");
+                habitDto.getHabitTranslation()
+                    .setHabitItemUa(habitTranslationByUaLanguage.getHabitItem() != null
+                        ? habitTranslationByUaLanguage.getHabitItem()
+                        : "");
+                return habitDto;
+            })
             .collect(Collectors.toList());
         habits.forEach(
             habitDto -> habitDto.setAmountAcquiredUsers(habitAssignRepo.findAmountOfUsersAcquired(habitDto.getId())));
