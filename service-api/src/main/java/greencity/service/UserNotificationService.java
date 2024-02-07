@@ -76,8 +76,20 @@ public interface UserNotificationService {
      * @param targetId         represent the corresponding object's ID
      * @author Volodymyr Mladonov
      */
-    void createNotificationForAttenders(List<UserVO> attendersList, String title,
+    void createNotificationForAttenders(List<UserVO> attendersList, String message,
         NotificationType notificationType, Long targetId);
+
+    /**
+     * Method to create Notification for many Users.
+     *
+     * @param attendersList    list of Users to receive Notification.
+     * @param title            title of Event
+     * @param notificationType type of Notification
+     * @param targetId         represent the corresponding object's ID
+     * @author Volodymyr Mladonov
+     */
+    void createNotificationForAttenders(List<UserVO> attendersList, String message,
+        NotificationType notificationType, Long targetId, String title);
 
     /**
      * Method to create Notification. CustomMessage is set to actionUser name.

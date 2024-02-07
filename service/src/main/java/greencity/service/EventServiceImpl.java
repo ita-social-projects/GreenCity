@@ -477,6 +477,17 @@ public class EventServiceImpl implements EventService {
         if (findLastEventDateTime(toUpdate).isBefore(ZonedDateTime.now())) {
             throw new BadRequestException(ErrorMessage.EVENT_IS_FINISHED);
         }
+        List<UserVO> userVOList = toUpdate.getAttenders().stream()
+                .map(user -> modelMapper.map(user, UserVO.class))
+                .collect(Collectors.toList());
+        if (toUpdate.getTitle().equals(eventDto.getTitle())) {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                    NotificationType.EVENT_UPDATED, toUpdate.getId());
+        }
+        else {
+            userNotificationService.createNotificationForAttenders(userVOList, toUpdate.getTitle(),
+                    NotificationType.EVENT_UPDATED, toUpdate.getId());
+        }
         enhanceWithNewData(toUpdate, eventDto, images);
         Event updatedEvent = eventRepo.save(toUpdate);
         Set<String> emailsToNotify = toUpdate.getAttenders().stream().map(User::getEmail).collect(Collectors.toSet());
@@ -485,11 +496,6 @@ public class EventServiceImpl implements EventService {
             emailsToNotify,
             EmailNotificationMessagesConstants.EVENT_UPDATED_SUBJECT,
             String.format(EmailNotificationMessagesConstants.EVENT_UPDATED_MESSAGE, toUpdate.getTitle()));
-        List<UserVO> userVOList = toUpdate.getAttenders().stream()
-            .map(user -> modelMapper.map(user, UserVO.class))
-            .collect(Collectors.toList());
-        userNotificationService.createNotificationForAttenders(userVOList, updatedEvent.getTitle(),
-            NotificationType.EVENT_UPDATED, toUpdate.getId());
         return buildEventDto(updatedEvent, organizer.getId());
     }
 

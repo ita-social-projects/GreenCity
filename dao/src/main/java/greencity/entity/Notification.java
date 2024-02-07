@@ -50,6 +50,8 @@ public class Notification {
     private List<User> actionUsers = new ArrayList<>();
 
     private String customMessage;
+    
+    private String titleText;
 
     private Long targetId;
 

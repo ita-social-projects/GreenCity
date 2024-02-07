@@ -116,7 +116,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
      * {@inheritDoc}
      */
     @Override
-    public void createNotificationForAttenders(List<UserVO> attendersList, String title,
+    public void createNotificationForAttenders(List<UserVO> attendersList, String message,
         NotificationType notificationType, Long targetId) {
         for (UserVO targetUserVO : attendersList) {
             Notification notification = Notification.builder()
@@ -125,7 +125,27 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .targetUser(modelMapper.map(targetUserVO, User.class))
                 .time(LocalDateTime.now())
                 .targetId(targetId)
-                .customMessage(title)
+                .customMessage(message)
+                .build();
+            notificationRepo.save(notification);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createNotificationForAttenders(List<UserVO> attendersList, String message,
+        NotificationType notificationType, Long targetId, String title) {
+        for (UserVO targetUserVO : attendersList) {
+            Notification notification = Notification.builder()
+                .notificationType(notificationType)
+                .projectName(ProjectName.GREENCITY)
+                .targetUser(modelMapper.map(targetUserVO, User.class))
+                .time(LocalDateTime.now())
+                .targetId(targetId)
+                .customMessage(message)
+                    .titleText(title)
                 .build();
             notificationRepo.save(notification);
         }
