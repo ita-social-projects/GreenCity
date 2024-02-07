@@ -66,6 +66,16 @@ public interface NotificationRepo extends JpaRepository<Notification, Long>, Jpa
     void markNotificationAsViewed(Long notificationId);
 
     /**
+     * Changes {@link Notification} `viewed` as false.
+     *
+     * @param notificationId to change
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE Notification n SET n.viewed = false WHERE n.id = :notificationId")
+    void markNotificationAsNotViewed(Long notificationId);
+
+    /**
      * method to get single {@link Notification}.
      *
      * @param notificationId id of searched Notification

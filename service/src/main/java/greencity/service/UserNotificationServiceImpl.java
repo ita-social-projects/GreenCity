@@ -213,6 +213,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notificationRepo.deleteNotificationByIdAndTargetUserId(notificationId, userId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unreadNotification(Long notificationId) {
+        notificationRepo.markNotificationAsNotViewed(notificationId);
+    }
+
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
         String language) {
         List<NotificationDto> notificationDtoList = new LinkedList<>();

@@ -109,7 +109,7 @@ public class NotificationController {
     }
 
     /**
-     * Method for returning specific Notification.
+     * Method to return specific Notification and mark it as viewed.
      *
      * @param principal      Principal with userId
      * @param notificationId id of notification, that should be returned
@@ -131,6 +131,27 @@ public class NotificationController {
         @ApiIgnore @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getNotification(principal, notificationId, locale.getLanguage()));
+    }
+
+    /**
+     * Method to mark specific Notification as not viewed.
+     *
+     * @param notificationId id of notification, that should be marked as not viewed
+     * @return One {@link NotificationDto}
+     * @author Volodymyr Mladonov
+     */
+    @ApiOperation(value = "Get single Notification.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = HttpStatuses.OK),
+        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+    })
+    @GetMapping("/{notificationId}")
+    public ResponseEntity<Object> unreadNotification(
+        @PathVariable Long notificationId) {
+        userNotificationService.unreadNotification(notificationId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**

@@ -135,4 +135,6 @@ public interface UserNotificationService {
      * @author Volodymyr Mladonov
      */
     void deleteNotification(Principal principal, Long notificationId);
+
+    void unreadNotification(Long notificationId);
 }
