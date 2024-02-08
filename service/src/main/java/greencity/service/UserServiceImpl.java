@@ -255,4 +255,12 @@ public class UserServiceImpl implements UserService {
         }
         return new UserFilterDto(criteria, role, status);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateUserLastActivityTimeByEmail(String email, LocalDateTime userLastActivityTime) {
+        userRepo.updateUserLastActivityTimeByEmail(email, userLastActivityTime);
+    }
 }

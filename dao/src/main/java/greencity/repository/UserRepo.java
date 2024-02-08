@@ -4,6 +4,7 @@ import greencity.dto.habit.HabitVO;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,6 +28,18 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      * @return {@link User}
      */
     Optional<User> findByEmail(String email);
+
+    /**
+     * Updates last activity time for a given user by email.
+     *
+     * @param email                - {@link User}'s email
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Yurii Zhurakovskyi
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE User SET lastActivityTime=:userLastActivityTime WHERE email=:email")
+    void updateUserLastActivityTimeByEmail(String email, LocalDateTime userLastActivityTime);
 
     /**
      * Find all {@link UserManagementVO}.

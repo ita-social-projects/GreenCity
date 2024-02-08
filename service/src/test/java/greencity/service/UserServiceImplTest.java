@@ -315,4 +315,12 @@ class UserServiceImplTest {
         assertThrows(NotFoundException.class, () -> userService.updateUserRating(1L, 6.0d));
         verify(userRepo).findById(1L);
     }
+
+    @Test
+    void updateUserLastActivityTimeByEmailTest() {
+        String userEmail = "test@gmail.com";
+        LocalDateTime currentTime = LocalDateTime.now();
+        userService.updateUserLastActivityTimeByEmail(userEmail, currentTime);
+        verify(userRepo).updateUserLastActivityTimeByEmail(userEmail, currentTime);
+    }
 }
