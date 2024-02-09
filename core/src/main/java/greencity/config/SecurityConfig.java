@@ -9,6 +9,7 @@ import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -68,8 +69,8 @@ public class SecurityConfig {
 
     @Autowired
     public SecurityConfig(JwtTool jwtTool, UserService userService,
-        AuthenticationConfiguration authenticationConfiguration, FriendService friendService,
-        ThreadPoolTaskExecutor customThreadPool) {
+        AuthenticationConfiguration authenticationConfiguration,
+                          @Qualifier("taskExecutor") ThreadPoolTaskExecutor customThreadPool) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationConfiguration = authenticationConfiguration;
@@ -235,6 +236,7 @@ public class SecurityConfig {
                     "/habit/tags/search",
                     "/habit/search",
                     "/habit/{habitId}/friends/profile-pictures",
+                    FRIENDS + "/isOnline/{userId}",
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",

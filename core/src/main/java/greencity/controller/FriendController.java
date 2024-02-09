@@ -9,6 +9,7 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
+import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +20,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/friends")
 public class FriendController {
     private final FriendService friendService;
+    private final UserService userService;
 
     /**
      * Method for deleting user's friend.
@@ -323,5 +326,20 @@ public class FriendController {
         @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @Operation(summary = "Get friend online status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    //@GetMapping("/isOnline/{userId}")
+    @MessageMapping("/isOnline/{userId}")
+    public ResponseEntity<Boolean> getOnlineStatusOfFriend(
+            @Parameter(description = "Id of the user. Cannot be empty.") @PathVariable Long userId) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.checkIfTheUserIsOnline(userId));
     }
 }
