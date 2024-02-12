@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.achievement.AchievementCalculation;
-import greencity.client.RestClient;
 import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
@@ -45,7 +44,6 @@ public class EventCommentServiceImpl implements EventCommentService {
     private EventService eventService;
     private ModelMapper modelMapper;
     private final EventRepo eventRepo;
-    private final RestClient restClient;
     private final RatingCalculation ratingCalculation;
     private AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
