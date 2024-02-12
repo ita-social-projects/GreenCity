@@ -7,22 +7,33 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewContentSourceDto;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
-import greencity.entity.*;
+import greencity.entity.EcoNews;
+import greencity.entity.EcoNewsComment;
+import greencity.entity.EcoNews_;
+import greencity.entity.Tag;
+import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
-import greencity.enums.Role;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
-import greencity.enums.TagType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -32,6 +43,7 @@ import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -45,11 +57,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Service
 @EnableCaching
@@ -110,27 +124,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
         return ecoNewsDto;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Veremchuk.
-     */
-    public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
-        User user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
-        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-            .author(placeAuthorDto)
-            .creationDate(addEcoNewsDtoResponse.getCreationDate())
-            .unsubscribeToken(accessToken)
-            .text(addEcoNewsDtoResponse.getText())
-            .title(addEcoNewsDtoResponse.getTitle())
-            .source(addEcoNewsDtoResponse.getSource())
-            .imagePath(addEcoNewsDtoResponse.getImagePath())
-            .build();
-        restClient.addEcoNews(dto);
     }
 
     /**

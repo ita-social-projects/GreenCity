@@ -6,22 +6,20 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
+import greencity.dto.eventcomment.AddEventCommentDtoResponse;
 import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
 import greencity.entity.event.EventComment;
-import greencity.enums.CommentStatus;
-import greencity.enums.Role;
-import greencity.enums.RatingCalculationEnum;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
+import greencity.enums.CommentStatus;
+import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -36,6 +34,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,34 +107,6 @@ public class EventCommentServiceImpl implements EventCommentService {
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
             .build());
         return addEventCommentDtoResponse;
-    }
-
-    /**
-     * Method to send {@link greencity.dto.eventcomment.EventCommentForSendEmailDto}
-     * for sending notification to the event organizer about the EventComment
-     * addition.
-     *
-     * @param addEventCommentDtoResponse to get all needed information about
-     *                                   EventComment addition.
-     */
-    @Override
-    public void sendEmailDto(AddEventCommentDtoResponse addEventCommentDtoResponse) {
-        Long id = addEventCommentDtoResponse.getId();
-        EventComment eventComment = eventCommentRepo.findById(id)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + id));
-        Event event = eventComment.getEvent();
-        User organizer = event.getOrganizer();
-        EventAuthorDto eventAuthorDto = modelMapper.map(organizer, EventAuthorDto.class);
-
-        EventCommentForSendEmailDto dto = EventCommentForSendEmailDto.builder()
-            .id(addEventCommentDtoResponse.getId())
-            .author(addEventCommentDtoResponse.getAuthor())
-            .text(addEventCommentDtoResponse.getText())
-            .createdDate(addEventCommentDtoResponse.getCreatedDate())
-            .organizer(eventAuthorDto)
-            .email(organizer.getEmail())
-            .build();
-        restClient.sendNewEventComment(dto);
     }
 
     /**
