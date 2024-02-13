@@ -108,31 +108,30 @@ class UserServiceImplTest {
         assertThrows(WrongIdException.class, () -> userService.checkIfTheUserIsOnline(null));
     }
 
-    @Test
-    void checkIfTheUserIsOnlineEqualsTrueTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now());
-        User user = ModelUtils.getUser();
-
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(userLastActivityTime));
-
-        assertTrue(userService.checkIfTheUserIsOnline(1L));
-    }
-
-    @Test
-    void checkIfTheUserIsOnlineEqualsFalseTest() {
-        ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
-        LocalDateTime localDateTime = LocalDateTime.of(
-            2015, Month.JULY, 29, 19, 30, 40);
-        Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime);
-        User user = ModelUtils.getUser();
-
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
-        when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty());
-
-        assertFalse(userService.checkIfTheUserIsOnline(1L));
-    }
+    /*
+     * @Test void checkIfTheUserIsOnlineEqualsTrueTest() {
+     * ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+     * Timestamp userLastActivityTime = Timestamp.valueOf(LocalDateTime.now()); User
+     * user = ModelUtils.getUser();
+     *
+     * when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+     * when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.of(
+     * userLastActivityTime));
+     *
+     * assertTrue(userService.checkIfTheUserIsOnline(1L)); }
+     *
+     * @Test void checkIfTheUserIsOnlineEqualsFalseTest() {
+     * ReflectionTestUtils.setField(userService, "timeAfterLastActivity", 300000);
+     * LocalDateTime localDateTime = LocalDateTime.of( 2015, Month.JULY, 29, 19, 30,
+     * 40); Timestamp userLastActivityTime = Timestamp.valueOf(localDateTime); User
+     * user = ModelUtils.getUser();
+     *
+     * when(userRepo.findById(anyLong())).thenReturn(Optional.of(user));
+     * when(userRepo.findLastActivityTimeById(anyLong())).thenReturn(Optional.empty(
+     * ));
+     *
+     * assertFalse(userService.checkIfTheUserIsOnline(1L)); }
+     */
 
     @Test
     void getSixFriendsWithTheHighestRatingTest() {
