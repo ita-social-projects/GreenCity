@@ -4,7 +4,6 @@ import greencity.security.filters.AccessTokenAuthenticationFilter;
 import greencity.security.filters.UserOnlineStatusUpdateFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
-import greencity.service.FriendService;
 import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,7 +69,7 @@ public class SecurityConfig {
     @Autowired
     public SecurityConfig(JwtTool jwtTool, UserService userService,
         AuthenticationConfiguration authenticationConfiguration,
-                          @Qualifier("taskExecutor") ThreadPoolTaskExecutor customThreadPool) {
+        @Qualifier("taskExecutor") ThreadPoolTaskExecutor customThreadPool) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationConfiguration = authenticationConfiguration;

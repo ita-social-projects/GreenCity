@@ -185,7 +185,8 @@ public class UserServiceImpl implements UserService {
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
-            messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus", result <= timeAfterLastActivity);
+            messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus",
+                result <= timeAfterLastActivity);
         }
         messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus", false);
     }
