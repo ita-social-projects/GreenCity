@@ -32,6 +32,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     @Value("300000")
     private long timeAfterLastActivity;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * {@inheritDoc}
@@ -173,7 +175,7 @@ public class UserServiceImpl implements UserService {
      * {@inheritDoc}
      */
     @Override
-    public boolean checkIfTheUserIsOnline(Long userId) {
+    public void checkIfTheUserIsOnline(Long userId) {
         if (userRepo.findById(userId).isEmpty()) {
             throw new WrongIdException(ErrorMessage.USER_NOT_FOUND_BY_ID + userId);
         }
@@ -183,9 +185,9 @@ public class UserServiceImpl implements UserService {
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
-            return result <= timeAfterLastActivity;
+            messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus", result <= timeAfterLastActivity);
         }
-        return false;
+        messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus", false);
     }
 
     /**

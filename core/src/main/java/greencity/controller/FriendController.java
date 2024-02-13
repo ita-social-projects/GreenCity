@@ -328,18 +328,8 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @Operation(summary = "Get friend online status")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
-    })
-    //@GetMapping("/isOnline/{userId}")
     @MessageMapping("/isOnline/{userId}")
-    public ResponseEntity<Boolean> getOnlineStatusOfFriend(
-            @Parameter(description = "Id of the user. Cannot be empty.") @PathVariable Long userId) {
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.checkIfTheUserIsOnline(userId));
+    public void getOnlineStatusOfFriend(@PathVariable Long userId) {
+        userService.checkIfTheUserIsOnline(userId);
     }
 }

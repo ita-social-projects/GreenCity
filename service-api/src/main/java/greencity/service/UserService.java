@@ -92,9 +92,8 @@ public interface UserService {
      * The method checks by id if a {@link UserVO} is online.
      *
      * @param userId - {@link UserVO}'s id
-     * @return {boolean} is user online
      */
-    boolean checkIfTheUserIsOnline(Long userId);
+    void checkIfTheUserIsOnline(Long userId);
 
     /**
      * Method that returns {@link String} initials (first one or two letters of
