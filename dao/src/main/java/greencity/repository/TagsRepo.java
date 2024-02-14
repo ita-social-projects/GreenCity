@@ -4,7 +4,6 @@ import greencity.entity.Tag;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.TagType;
 import org.springframework.data.domain.Page;

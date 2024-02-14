@@ -45,8 +45,10 @@ public class UserVO {
 
     private UserStatus userStatus;
 
+    @Builder.Default
     private List<UserShoppingListItemVO> userShoppingListItemVOS = new ArrayList<>();
 
+    @Builder.Default
     private List<CustomShoppingListItemVO> customShoppingListItemVOS = new ArrayList<>();
 
     private VerifyEmailVO verifyEmail;
@@ -59,8 +61,10 @@ public class UserVO {
 
     private List<SocialNetworkVO> socialNetworks;
 
+    @Builder.Default
     private List<UserVO> userFriends = new ArrayList<>();
 
+    @Builder.Default
     private List<UserAchievementVO> userAchievements = new ArrayList<>();
 
     private String refreshTokenKey;
@@ -83,6 +87,7 @@ public class UserVO {
 
     private LocalDateTime lastActivityTime;
 
+    @Builder.Default
     private List<UserActionVO> userActions = new ArrayList<>();
 
     private LanguageVO languageVO;

@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -243,7 +242,7 @@ public class AdviceServiceImpl implements AdviceService {
      * @param value          - value of field
      */
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (!StringUtils.isEmpty(value)) {
+        if (StringUtils.hasLength(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

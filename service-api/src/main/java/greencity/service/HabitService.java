@@ -10,7 +10,6 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +25,12 @@ public interface HabitService {
 
     /**
      * Method returns all default and custom which created by current user his
-     * friends {@code Habit}'s by language code.
+     * friends {@code Habit}'s.
      *
      * @param pageable - instance of {@link Pageable}.
-     * @param language - language code.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String language);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
 
     /**
      * Method returns shopping list in specific language by habit id.
@@ -73,7 +71,7 @@ public interface HabitService {
     /**
      * Method that add shopping list item To Habit by habit id and shopping list
      * item id.
-     * 
+     *
      * @author Marian Diakiv
      */
     void addShoppingListItemToHabit(Long habitId, Long itemId);

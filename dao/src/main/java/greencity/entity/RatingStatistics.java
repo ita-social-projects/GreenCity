@@ -1,10 +1,23 @@
 package greencity.entity;
 
 import java.time.ZonedDateTime;
-import javax.persistence.*;
-
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import greencity.enums.RatingCalculationEnum;
-import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity

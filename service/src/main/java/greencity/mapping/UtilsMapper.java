@@ -3,7 +3,6 @@ package greencity.mapping;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;

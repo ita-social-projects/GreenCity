@@ -1,6 +1,8 @@
 package greencity.dto.user;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.EqualsAndHashCode;
 
 @Getter
 @AllArgsConstructor

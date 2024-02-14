@@ -25,8 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import greencity.security.jwt.JwtTool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,7 +94,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER_FIND_BY_ID + RestTemplateLinks.ID + 1L, HttpMethod.GET, entity, UserVO.class))
-                .thenReturn(ResponseEntity.ok(userVO));
+            .thenReturn(ResponseEntity.ok(userVO));
         assertEquals(userVO, restClient.findById(1L));
     }
 
@@ -146,7 +147,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER + "/1", HttpMethod.PUT, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         // when
         restClient.updateUser(userManagementDto);
         // then
@@ -186,7 +187,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER_FIND_ALL, HttpMethod.GET, entity, UserVO[].class))
-                .thenReturn(ResponseEntity.of(Optional.of(userVOS)));
+            .thenReturn(ResponseEntity.of(Optional.of(userVOS)));
 
         assertEquals(Arrays.asList(userVOS), restClient.findAll());
     }
@@ -253,7 +254,7 @@ class RestClientTest {
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.USER_FIND_ID_BY_EMAIL
             + RestTemplateLinks.EMAIL + email, HttpMethod.GET, entity, Long.class))
-                .thenReturn(ResponseEntity.ok(1L));
+            .thenReturn(ResponseEntity.ok(1L));
 
         assertEquals(1L, restClient.findIdByEmail(email));
     }
@@ -271,7 +272,7 @@ class RestClientTest {
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_REASONS
             + RestTemplateLinks.ID + 1L
             + RestTemplateLinks.ADMIN_LANG + "en", HttpMethod.GET, entity, String[].class))
-                .thenReturn(ResponseEntity.ok(test));
+            .thenReturn(ResponseEntity.ok(test));
         assertEquals(listString, restClient.getDeactivationReason(1L, "en"));
     }
 
@@ -285,7 +286,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_LANG
             + RestTemplateLinks.ID + 1L, HttpMethod.GET, entity, String.class))
-                .thenReturn(ResponseEntity.ok(test));
+            .thenReturn(ResponseEntity.ok(test));
         assertEquals(test, restClient.getUserLang(1L));
     }
 
@@ -300,7 +301,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.deactivateUser(1L, test);
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_DEACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
@@ -315,7 +316,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.setActivatedStatus(1L);
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.USER_ACTIVATE
             + RestTemplateLinks.ID + 1L, HttpMethod.PUT, entity, Object.class);
@@ -353,7 +354,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.OWN_SECURITY_REGISTER, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
 
         // when
         restClient.managementRegisterUser(userManagementDto);
@@ -374,7 +375,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.ADD_ECO_NEWS, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.addEcoNews(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
@@ -392,7 +393,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.ADD_EVENT_COMMENT, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.sendNewEventComment(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
@@ -405,7 +406,7 @@ class RestClientTest {
         HttpEntity<SendReportEmailMessage> entity = new HttpEntity<>(message, ModelUtils.getHeaders());
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_REPORT, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(SYSTEM_EMAIL, Role.ROLE_ADMIN)).thenReturn("accessToken");
         restClient.sendReport(message);
 
@@ -426,7 +427,7 @@ class RestClientTest {
         when(httpServletRequest.getHeader(AUTHORIZATION)).thenReturn(accessToken);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.CHANGE_PLACE_STATUS, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.changePlaceStatus(message);
 
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
@@ -439,7 +440,7 @@ class RestClientTest {
         HttpEntity<SendHabitNotification> entity = new HttpEntity<>(notification, ModelUtils.getHeaders());
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_HABIT_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         when(jwtTool.createAccessToken(SYSTEM_EMAIL, Role.ROLE_ADMIN)).thenReturn("accessToken");
         restClient.sendHabitNotification(notification);
 
@@ -503,7 +504,7 @@ class RestClientTest {
         HttpEntity<String> entity = new HttpEntity<>(new HttpHeaders());
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
             HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.scheduleDeleteDeactivatedUsers();
         verify(restTemplate, times(1)).exchange(GREEN_CITY_USER_ADDRESS + RestTemplateLinks.DELETE_DEACTIVATED_USERS,
             HttpMethod.POST, entity, Object.class);
@@ -518,7 +519,7 @@ class RestClientTest {
             + RestTemplateLinks.EMAIL_NOTIFICATION + EmailNotification.IMMEDIATELY,
             HttpMethod.GET, entity, new ParameterizedTypeReference<List<UserVO>>() {
             }))
-                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(userVOS));
+            .thenReturn(ResponseEntity.status(HttpStatus.OK).body(userVOS));
 
         assertEquals(userVOS, restClient.findAllByEmailNotification(EmailNotification.IMMEDIATELY));
     }
@@ -551,7 +552,7 @@ class RestClientTest {
             + RestTemplateLinks.FIND_ALL_USERS_CITIES,
             HttpMethod.GET, entity, new ParameterizedTypeReference<List<String>>() {
             }))
-                .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
+            .thenReturn(ResponseEntity.status(HttpStatus.OK).body(expected));
         assertEquals(expected, restClient.findAllUsersCities());
     }
 
@@ -565,8 +566,9 @@ class RestClientTest {
         HttpEntity<GeneralEmailMessage> entity = new HttpEntity<>(notification, headers);
         when(restTemplate.exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class))
-                .thenReturn(ResponseEntity.ok(Object));
+            .thenReturn(ResponseEntity.ok(Object));
         restClient.sendEmailNotification(notification);
+
         verify(restTemplate).exchange(GREEN_CITY_USER_ADDRESS
             + RestTemplateLinks.SEND_GENERAL_EMAIL_NOTIFICATION, HttpMethod.POST, entity, Object.class);
     }

@@ -7,16 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,25 +48,30 @@ public class EventsSearchRepo {
             criteriaBuilder.createQuery(Event.class);
         Root<Event> root = criteriaQuery.from(Event.class);
 
-        Predicate predicate = getPredicate(criteriaQuery, searchingText, languageCode, root);
+        Predicate predicate = getPredicate(criteriaBuilder, searchingText, languageCode, root);
 
         criteriaQuery.select(root).distinct(true).where(predicate);
-        TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery);
-        typedQuery.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
-        typedQuery.setMaxResults(pageable.getPageSize());
+        TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery)
+            .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+            .setMaxResults(pageable.getPageSize());
         List<Event> resultList = typedQuery.getResultList();
+        long total = getEventsCount(criteriaBuilder, searchingText, languageCode);
 
-        return new PageImpl<>(resultList, pageable, getEventsCount(predicate));
+        return new PageImpl<>(resultList, pageable, total);
     }
 
-    private long getEventsCount(Predicate predicate) {
+    private long getEventsCount(CriteriaBuilder criteriaBuilder, String searchingText, String languageCode) {
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        Root<Event> countEventsRoot = countQuery.from(Event.class);
-        countQuery.select(criteriaBuilder.count(countEventsRoot)).where(predicate);
+        Root<Event> countRoot = countQuery.from(Event.class);
+
+        Predicate countPredicate = getPredicate(criteriaBuilder, searchingText, languageCode, countRoot);
+        countQuery.select(criteriaBuilder.count(countRoot)).where(countPredicate);
+
         return entityManager.createQuery(countQuery).getSingleResult();
     }
 
-    private List<Predicate> formEventsLikePredicate(String searchingText, Root<Event> root) {
+    private List<Predicate> formEventsLikePredicate(CriteriaBuilder criteriaBuilder, String searchingText,
+        Root<Event> root) {
         Expression<String> title = root.get("title").as(String.class);
         Expression<String> description = root.get("description").as(String.class);
 
@@ -80,9 +84,10 @@ public class EventsSearchRepo {
         return predicateList;
     }
 
-    private Predicate formTagTranslationsPredicate(CriteriaQuery<Event> criteriaQuery, String searchingText,
+    private Predicate formTagTranslationsPredicate(CriteriaBuilder criteriaBuilder, String searchingText,
         String languageCode, Root<Event> root) {
-        Subquery<Tag> tagSubquery = criteriaQuery.subquery(Tag.class);
+        CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        Subquery<Long> tagSubquery = criteriaQuery.subquery(Long.class);
         Root<Tag> tagRoot = tagSubquery.from(Tag.class);
         Join<Event, Tag> eventsTagJoin = tagRoot.join("events");
 
@@ -91,15 +96,15 @@ public class EventsSearchRepo {
 
         Join<TagTranslation, Tag> tagTranslationTagJoin = tagTranslationRoot.join("tagTranslations");
 
-        Predicate predicate = predicateForTags(searchingText, languageCode, tagTranslationTagJoin);
-        tagTranslationSubquery.select(tagTranslationTagJoin.get("name"))
+        Predicate predicate = predicateForTags(criteriaBuilder, searchingText, languageCode, tagTranslationTagJoin);
+        tagTranslationSubquery.select(tagTranslationTagJoin.get("id"))
             .where(predicate);
 
-        tagSubquery.select(eventsTagJoin).where(criteriaBuilder.exists(tagTranslationSubquery));
+        tagSubquery.select(eventsTagJoin.get("id")).where(criteriaBuilder.exists(tagTranslationSubquery));
         return criteriaBuilder.in(root.get("id")).value(tagSubquery);
     }
 
-    private Predicate predicateForTags(String searchingText, String languageCode,
+    private Predicate predicateForTags(CriteriaBuilder criteriaBuilder, String searchingText, String languageCode,
         Join<TagTranslation, Tag> tagTranslationTagJoin) {
         List<Predicate> predicateList = new ArrayList<>();
         Arrays.stream(searchingText.split(" ")).forEach(partOfSearchingText -> predicateList.add(criteriaBuilder.and(
@@ -110,10 +115,10 @@ public class EventsSearchRepo {
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 
-    private Predicate getPredicate(CriteriaQuery<Event> criteriaQuery, String searchingText,
+    private Predicate getPredicate(CriteriaBuilder criteriaBuilder, String searchingText,
         String languageCode, Root<Event> root) {
-        List<Predicate> predicateList = formEventsLikePredicate(searchingText, root);
-        predicateList.add(formTagTranslationsPredicate(criteriaQuery, searchingText, languageCode, root));
+        List<Predicate> predicateList = formEventsLikePredicate(criteriaBuilder, searchingText, root);
+        predicateList.add(formTagTranslationsPredicate(criteriaBuilder, searchingText, languageCode, root));
         return criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 }

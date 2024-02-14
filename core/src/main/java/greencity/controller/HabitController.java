@@ -5,30 +5,28 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
+import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
-import greencity.dto.habit.CustomHabitDtoRequest;
-import greencity.dto.habit.CustomHabitDtoResponse;
+import greencity.dto.habit.*;
 import greencity.dto.shoppinglistitem.ShoppingListItemDto;
-import greencity.dto.habit.HabitDto;
-import greencity.dto.habit.HabitVO;
 import greencity.dto.habittranslation.HabitTranslationDto;
 import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.service.HabitService;
 import greencity.service.TagsService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -45,9 +43,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 @Validated
 @AllArgsConstructor
@@ -64,16 +60,17 @@ public class HabitController {
      * @param locale {@link Locale} with needed language code.
      * @return {@link HabitDto}.
      */
-    @ApiOperation(value = "Find habit by id.")
+    @Operation(summary = "Find habit by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitDto.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = HabitDto.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/{id}")
     @ApiLocale
     public ResponseEntity<HabitDto> getHabitById(@PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.getByIdAndLanguageCode(id, locale.getLanguage()));
     }
@@ -82,23 +79,22 @@ public class HabitController {
      * Method finds all default and custom with created by current user and his
      * friends habits that available for tracking for specific language.
      *
-     * @param locale   {@link Locale} with needed language code.
      * @param pageable {@link Pageable} instance.
      * @return Pageable of {@link HabitTranslationDto}.
      */
-    @ApiOperation(value = "Find all habits.")
+    @Operation(summary = "Find all habits.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
-    @ApiPageableWithLocale
+    @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @ApiIgnore @ValidLanguage Locale locale,
-        @ApiIgnore Pageable pageable) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable));
     }
 
     /**
@@ -108,16 +104,16 @@ public class HabitController {
      * @param id     {@link Long} with needed habit id.
      * @return List of {@link ShoppingListItemDto}.
      */
-    @ApiOperation(value = "Get shopping list.")
+    @Operation(summary = "Get shopping list.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("{id}/shopping-list")
     @ApiLocale
     public ResponseEntity<List<ShoppingListItemDto>> getShoppingListItems(
         @PathVariable Long id,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getShoppingListForHabit(id, locale.getLanguage()));
     }
@@ -130,17 +126,17 @@ public class HabitController {
      * @param tags     {@link List} of {@link String}
      * @return Pageable of {@link HabitDto}.
      */
-    @ApiOperation(value = "Find all habits by tags and language code.")
+    @Operation(summary = "Find all habits by tags and language code.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/tags/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByTagsAndLanguageCode(
-        @ApiIgnore @ValidLanguage Locale locale,
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam List<String> tags,
-        @ApiIgnore Pageable pageable) {
+        @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
             habitService.getAllByTagsAndLanguageCode(pageable, tags, locale.getLanguage()));
     }
@@ -156,21 +152,21 @@ public class HabitController {
      * @param complexities  {@link List} of {@link Integer}.
      * @return Pageable of {@link HabitDto} instance.
      */
-    @ApiOperation(value = "Find all habits by tags, isCustomHabit, complexities.")
+    @Operation(summary = "Find all habits by tags, isCustomHabit, complexities.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/search")
     @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAllByDifferentParameters(
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @ApiIgnore @ValidLanguage Locale locale,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @RequestParam(required = false, name = "tags") Optional<List<String>> tags,
         @RequestParam(required = false, name = "isCustomHabit") Optional<Boolean> isCustomHabit,
         @RequestParam(required = false, name = "complexities") Optional<List<Integer>> complexities,
-        @ApiIgnore Pageable pageable) throws BadRequestException {
+        @Parameter(hidden = true) Pageable pageable) throws BadRequestException {
         if (isValid(tags, isCustomHabit, complexities)) {
             return ResponseEntity.status(HttpStatus.OK).body(
                 habitService.getAllByDifferentParameters(userVO, pageable, tags,
@@ -202,14 +198,14 @@ public class HabitController {
      * @return list of {@link String} (tag's names).
      * @author Markiyan Derevetskyi
      */
-    @ApiOperation(value = "Find all habits tags")
+    @Operation(summary = "Find all habits tags")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
     })
     @GetMapping("/tags")
     @ApiLocale
-    public ResponseEntity<List<String>> findAllHabitsTags(@ApiIgnore @ValidLanguage Locale locale) {
+    public ResponseEntity<List<String>> findAllHabitsTags(@Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK).body(tagsService.findAllHabitsTags(locale.getLanguage()));
     }
 
@@ -221,20 +217,21 @@ public class HabitController {
      *
      * @author Lilia Mokhnatska.
      */
-    @ApiOperation(value = "Add new custom habit.")
+    @Operation(summary = "Add new custom habit.")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = CustomHabitDtoResponse.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
+            content = @Content(schema = @Schema(implementation = CustomHabitDtoResponse.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping(value = "/custom",
-        consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+        consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<CustomHabitDtoResponse> addCustomHabit(
-        @ApiParam(value = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
+        @Parameter(example = SwaggerExampleModel.ADD_CUSTOM_HABIT_REQUEST,
             required = true) @RequestPart @Valid CustomHabitDtoRequest request,
-        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
-        @ApiIgnore Principal principal) {
+        @Parameter(description = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image,
+        @Parameter(hidden = true) Principal principal) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(habitService.addCustomHabit(request, image, principal.getName()));
@@ -248,19 +245,18 @@ public class HabitController {
      * @param userVO  {@link UserVO}.
      * @return List of friends profile picture.
      */
-    @ApiOperation(
-        value = "Retrieves the list of profile pictures of the user's friends "
-            + "(which have INPROGRESS assign to the habit).")
+    @Operation(summary = "Retrieves the list of profile pictures of the user's friends "
+        + "(which have INPROGRESS assign to the habit).")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/{habitId}/friends/profile-pictures")
     public ResponseEntity<List<UserProfilePictureDto>> getFriendsAssignedToHabitProfilePictures(
         @PathVariable Long habitId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.getFriendsAssignedToHabitProfilePictures(habitId, userVO.getId()));
     }
@@ -273,17 +269,19 @@ public class HabitController {
      *
      * @author Olena Sotnik.
      */
-    @ApiOperation(value = "Update new custom habit.")
+    @Operation(summary = "Update new custom habit.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = CustomHabitDtoResponse.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = CustomHabitDtoResponse.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PutMapping(value = "/update/{habitId}")
     public ResponseEntity<CustomHabitDtoResponse> updateCustomHabit(@PathVariable Long habitId,
-        @RequestPart @Valid CustomHabitDtoRequest request, @ApiIgnore Principal principal,
-        @ApiParam(value = "Image of habit") @ImageValidation @RequestPart(required = false) MultipartFile image) {
+        @RequestPart @Valid CustomHabitDtoRequest request, @Parameter(hidden = true) Principal principal,
+        @Parameter(description = "Image of habit") @ImageValidation @RequestPart(
+            required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
     }

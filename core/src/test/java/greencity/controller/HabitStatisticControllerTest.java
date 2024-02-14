@@ -51,7 +51,7 @@ class HabitStatisticControllerTest {
     void save() throws Exception {
         AddHabitStatisticDto addHabitStatisticDto = new AddHabitStatisticDto();
         addHabitStatisticDto.setAmountOfItems(1);
-        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z[UTC]"));
+        addHabitStatisticDto.setCreateDate(ZonedDateTime.parse("2020-10-09T16:49:01.020Z"));
         addHabitStatisticDto.setHabitRate(GOOD);
         mockMvc.perform(post(habitLink + "/{habitId}", 1L)
             .content("{\n" +
@@ -87,7 +87,7 @@ class HabitStatisticControllerTest {
 
     @Test
     void getTodayStatisticsForAllHabitItems() throws Exception {
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         Gson gson = new Gson();
         String json = gson.toJson(locale);
         mockMvc.perform(get(habitLink + "/todayStatisticsForAllHabitItems")

@@ -1,8 +1,12 @@
 package greencity.dto.user;
 
-import lombok.*;
-
-import javax.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor

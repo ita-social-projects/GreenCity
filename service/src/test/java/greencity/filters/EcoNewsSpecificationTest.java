@@ -8,9 +8,9 @@ import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -123,7 +123,7 @@ class EcoNewsSpecificationTest {
 
         when(ecoNewsRootMock.get(EcoNews_.TITLE)).thenReturn(pathEcoNewsTitleMock);
 
-        when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE), "%" + criteriaList.get(0).getValue() + "%"))
+        when(criteriaBuilderMock.like(ecoNewsRootMock.get(EcoNews_.TITLE), "%" + criteriaList.getFirst().getValue() + "%"))
             .thenReturn(andTitlePredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andTitlePredicate)).thenReturn(andTitlePredicate);

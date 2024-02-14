@@ -10,7 +10,6 @@ import greencity.service.TagsService;
 import greencity.service.UserService;
 import java.util.Collections;
 import java.util.List;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -117,9 +115,7 @@ class ManagementEventsControllerTest {
 
         this.mockMvc.perform(get(managementEventsLink)
             .param("page", "0")
-            .param("size", "10")
-            .param("query", "query")
-            .param("title", "title"))
+            .param("size", "10"))
             .andExpect(view().name("core/management_events"))
             .andExpect(model().attribute("pageable", eventsDtoPageableDto))
             .andExpect(status().isOk());

@@ -1,9 +1,13 @@
 package greencity.dto.event;
 
-import lombok.*;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 @NoArgsConstructor

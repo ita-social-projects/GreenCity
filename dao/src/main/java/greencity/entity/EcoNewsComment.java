@@ -10,9 +10,8 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import javax.persistence.*;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +46,7 @@ public class EcoNewsComment {
     @ManyToOne
     private EcoNewsComment parentComment;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parentComment", cascade = {CascadeType.ALL})
     private List<EcoNewsComment> comments = new ArrayList<>();
 
@@ -57,6 +57,7 @@ public class EcoNewsComment {
     private EcoNews ecoNews;
 
     @Transient
+    @Builder.Default
     private boolean currentUserLiked = false;
 
     @ManyToMany

@@ -8,16 +8,23 @@ import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.user.BulkSaveUserShoppingListItemDto;
 import greencity.dto.user.UserVO;
 import greencity.service.CustomShoppingListItemService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,11 +39,11 @@ public class CustomShoppingListItemController {
      * @param userId user id.
      * @return list of {@link CustomShoppingListItemVO}
      */
-    @ApiOperation(value = "Get all available custom shopping-list-items")
+    @Operation(summary = "Get all available custom shopping-list-items")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/{userId}/{habitId}")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllAvailableCustomShoppingListItems(
@@ -54,16 +61,16 @@ public class CustomShoppingListItemController {
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
-    @ApiOperation(value = "Save one or multiple custom Shopping list item for current user.")
+    @Operation(summary = "Save one or multiple custom Shopping list item for current user.")
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @PostMapping("/{userId}/{habitAssignId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> saveUserCustomShoppingListItems(
         @Valid @RequestBody BulkSaveCustomShoppingListItemDto dto,
-        @ApiParam("Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
+        @Parameter(description = "Id of current user. Cannot be empty.") @PathVariable @CurrentUserId Long userId,
         @PathVariable Long habitAssignId) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -79,13 +86,13 @@ public class CustomShoppingListItemController {
      * @return new {@link ResponseEntity}
      * @author Bogdan Kuzenko
      */
-    @ApiOperation(value = "Update custom shopping list items status")
+    @Operation(summary = "Update custom shopping list items status")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.BAD_REQUEST)
     })
     @PatchMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<CustomShoppingListItemResponseDto> updateItemStatus(@PathVariable @CurrentUserId Long userId,
@@ -102,12 +109,12 @@ public class CustomShoppingListItemController {
      * @param itemId {@link Long} with needed item id.
      * @author Volodia Lesko
      */
-    @ApiOperation(value = "Update shopping list item status")
+    @Operation(summary = "Update shopping list item status")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PatchMapping("/{userId}/done")
     public void updateItemStatusToDone(@PathVariable @CurrentUserId Long userId,
@@ -122,16 +129,16 @@ public class CustomShoppingListItemController {
      * @param userId {@link UserVO} id
      * @return new {@link ResponseEntity}
      */
-    @ApiOperation(value = "Delete user custom shopping list items")
+    @Operation(summary = "Delete user custom shopping list items")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @DeleteMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<Long>> bulkDeleteCustomShoppingListItems(
-        @ApiParam(value = "Ids of custom shopping-list-items separated by a comma \n e.g. 1,2",
+        @Parameter(description = "Ids of custom shopping-list-items separated by a comma \n e.g. 1,2",
             required = true) @RequestParam String ids,
         @PathVariable @CurrentUserId Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(customShoppingListItemService.bulkDelete(ids));
@@ -145,17 +152,17 @@ public class CustomShoppingListItemController {
      * @return list of {@link ResponseEntity}
      * @author Max Bohonko
      */
-    @ApiOperation(value = "Get all user's custom shopping items")
+    @Operation(summary = "Get all user's custom shopping items")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = Long.class),
-        @ApiResponse(code = 303, message = HttpStatuses.SEE_OTHER),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/{userId}/custom-shopping-list-items")
     public ResponseEntity<List<CustomShoppingListItemResponseDto>> getAllCustomShoppingItemsByStatus(
         @PathVariable @CurrentUserId Long userId,
-        @ApiParam(value = "Available values : ACTIVE, DONE, DISABLED, INPROGRESS."
+        @Parameter(description = "Available values : ACTIVE, DONE, DISABLED, INPROGRESS."
             + " Leave this field empty if you need items with any status") @RequestParam(
                 required = false) String status) {
         return ResponseEntity.status(HttpStatus.OK)

@@ -1,8 +1,11 @@
 package greencity.dto.advice;
 
 import greencity.dto.user.HabitIdRequestDto;
-import lombok.*;
-
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
 
 @Getter

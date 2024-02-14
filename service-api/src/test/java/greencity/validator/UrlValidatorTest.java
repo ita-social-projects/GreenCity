@@ -21,12 +21,14 @@ class UrlValidatorTest {
     @Test
     void UrlValidatorMalformedURLExceptionTest() {
         String url = "ttt://";
-        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url));
+        Assertions.assertThrowsExactly(InvalidURLException.class, () -> UrlValidator.isUrlValid(url),
+            "Malformed URL. The string could not be parsed.");
     }
 
     @Test
     void UrlValidatorURISyntaxExceptionTest() {
-        String url = "http:// .";
-        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url));
+        String url = "ht://www.tutorialspoint.com/";
+        Assertions.assertThrows(InvalidURLException.class, () -> UrlValidator.isUrlValid(url),
+            "The string could not be parsed as a URI reference.");
     }
 }

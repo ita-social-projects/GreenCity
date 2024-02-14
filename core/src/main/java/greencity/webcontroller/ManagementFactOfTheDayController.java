@@ -1,7 +1,6 @@
 package greencity.webcontroller;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
@@ -12,9 +11,12 @@ import greencity.dto.factoftheday.FactOfTheDayVO;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.service.FactOfTheDayService;
 import greencity.service.LanguageService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +25,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -44,9 +52,9 @@ public class ManagementFactOfTheDayController {
      * @return model
      */
     @ApiPageable
-    @ApiOperation(value = "Get management page with facts of the day.")
+    @Operation(summary = "Get management page with facts of the day.")
     @GetMapping("")
-    public String getAllFacts(Model model, @ApiIgnore Pageable pageable) {
+    public String getAllFacts(Model model, @Parameter(hidden = true) Pageable pageable) {
         PageableDto<FactOfTheDayDTO> allFactsOfTheDay = factOfTheDayService.getAllFactsOfTheDay(pageable);
         model.addAttribute("pageable", allFactsOfTheDay);
         model.addAttribute("languages", languageService.getAllLanguages());
@@ -60,10 +68,10 @@ public class ManagementFactOfTheDayController {
      * @return model
      */
     @ApiPageable
-    @ApiOperation(value = "Get management page with facts of the day that satisfy query.")
+    @Operation(summary = "Get management page with facts of the day that satisfy query.")
     @GetMapping("/findAll")
     public String findAll(@RequestParam(required = false, name = "query") String query,
-        Model model, @ApiIgnore Pageable pageable) {
+        Model model, @Parameter(hidden = true) Pageable pageable) {
         PageableDto<FactOfTheDayDTO> pageableDto = query == null || query.isEmpty()
             ? factOfTheDayService.getAllFactsOfTheDay(pageable)
             : factOfTheDayService.searchBy(pageable, query);
@@ -78,10 +86,11 @@ public class ManagementFactOfTheDayController {
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
      * @return {@link GenericResponseDto} with of operation and errors fields
      */
-    @ApiOperation(value = "Save fact of the day")
+    @Operation(summary = "Save fact of the day")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PostMapping("/")
@@ -99,10 +108,10 @@ public class ManagementFactOfTheDayController {
      * @param factOfTheDayPostDTO of {@link FactOfTheDayPostDTO}
      * @return {@link GenericResponseDto} with of operation and errors fields
      */
-    @ApiOperation(value = "Update fact of the day")
+    @Operation(summary = "Update fact of the day")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/")
@@ -121,10 +130,10 @@ public class ManagementFactOfTheDayController {
      * @param id of Fact of the day
      * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Delete Fact of the day")
+    @Operation(summary = "Delete Fact of the day")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/")
     public ResponseEntity<Long> delete(@RequestParam("id") Long id) {
@@ -139,10 +148,10 @@ public class ManagementFactOfTheDayController {
      * @param listId list of IDs
      * @return {@link ResponseEntity}
      */
-    @ApiOperation(value = "Get all Fact of the day by given IDs")
+    @Operation(summary = "Get all Fact of the day by given IDs")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {

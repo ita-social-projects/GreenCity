@@ -12,8 +12,6 @@ public class AchievementPostDto {
     private String title;
     private String name;
     private String nameEng;
-
     private AchievementCategoryDto achievementCategory;
-
     private Integer condition;
 }

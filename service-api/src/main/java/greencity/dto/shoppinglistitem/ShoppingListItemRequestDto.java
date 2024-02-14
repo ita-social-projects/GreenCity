@@ -1,12 +1,13 @@
 package greencity.dto.shoppinglistitem;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
 @NoArgsConstructor
@@ -18,5 +19,6 @@ import lombok.experimental.SuperBuilder;
 public class ShoppingListItemRequestDto {
     @NotNull
     @Min(1)
+    @Builder.Default
     private Long id = 1L;
 }

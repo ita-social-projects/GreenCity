@@ -3,30 +3,34 @@ package greencity.constant;
 public final class SwaggerExampleModel {
     private static final String IMAGE_DESCRIPTION = "pass image as base64 or upload image\n";
 
-    private static final String BEFORE_EXAMPLE = "<div>\n"
-        + "\t<ul class=\"tab\">\n"
-        + "\t\t<li class=\"tabitem active\">\n"
-        + "\t\t\t<a class=\"tablinks\" data-name=\"example\">Example Value</a>\n"
-        + "\t\t</li>\n"
-        + "\t\t<li class=\"tabitem\">\n"
-        + "\t\t\t<a class=\"tablinks\" data-name=\"model\">Model</a>\n"
-        + "\t\t</li>\n"
-        + "\t</ul>\n"
-        + "\t<pre>\n";
+    private static final String BEFORE_EXAMPLE = """
+        <div>
+        \t<ul class="tab">
+        \t\t<li class="tabitem active">
+        \t\t\t<a class="tablinks" data-name="example">Example Value</a>
+        \t\t</li>
+        \t\t<li class="tabitem">
+        \t\t\t<a class="tablinks" data-name="model">Model</a>
+        \t\t</li>
+        \t</ul>
+        \t<pre>
+        """;
 
     private static final String EXAMPLE =
-        "  \"image\": \"string\",\n"
-            + "  \"source\": \"https://example.org/\",\n"
-            + "  \"shortInfo\": \"string\",\n"
-            + "  \"tags\": [\n"
-            + "    \"string\"\n"
-            + "  ],\n"
-            + "  \"titleTranslation\":\n"
-            + "     {\"content\": \"string\",\n"
-            + "     \"languageCode\": \"string\"},\n"
-            + "  \"textTranslation\":\n"
-            + "     {\"content\": \"string\",\n"
-            + "     \"languageCode\": \"string\"}\n";
+        """
+              "image": "string",
+              "source": "https://example.org/",
+              "shortInfo": "string",
+              "tags": [
+                "string"
+              ],
+              "titleTranslation":
+                 {"content": "string",
+                 "languageCode": "string"},
+              "textTranslation":
+                 {"content": "string",
+                 "languageCode": "string"}
+            """;
 
     private static final String AFTER_EXAMPLE = "\t</pre>\n"
         + "</div>";

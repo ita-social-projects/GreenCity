@@ -17,7 +17,6 @@ import greencity.filters.TagSpecification;
 import greencity.repository.TagTranslationRepo;
 import greencity.repository.TagsRepo;
 import greencity.constant.ErrorMessage;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -156,7 +155,7 @@ public class TagsServiceImpl implements TagsService {
     }
 
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (!StringUtils.isEmpty(value)) {
+        if (StringUtils.hasLength(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

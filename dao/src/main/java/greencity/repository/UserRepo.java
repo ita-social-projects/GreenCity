@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +68,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Transactional
-    @Query(value = "UPDATE User SET last_activity_time=:userLastActivityTime WHERE id=:userId")
+    @Query(value = "UPDATE User u SET u.lastActivityTime=:userLastActivityTime WHERE u.id=:userId")
     void updateUserLastActivityTime(Long userId, Date userLastActivityTime);
 
     /**
@@ -88,22 +87,6 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "ELSE 0 END "
         + "WHERE id = :userId")
     void updateUserStatus(Long userId, String userStatus);
-
-    /**
-     * Updates user role for a given user.
-     *
-     * @param userId   - {@link User}'s id
-     * @param userRole {@link String} - string value of user role to set
-     */
-    @Modifying
-    @Transactional
-    @Query("UPDATE User SET role = CASE "
-        + "WHEN (:userRole = 'ROLE_USER') THEN 0 "
-        + "WHEN (:userRole = 'ROLE_ADMIN') THEN 1 "
-        + "WHEN (:userRole = 'ROLE_MODERATOR') THEN 2 "
-        + "ELSE 3 END "
-        + "WHERE id = :userId")
-    void updateUserRole(Long userId, String userRole);
 
     /**
      * Find the last activity time by {@link User}'s id.
