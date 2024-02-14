@@ -63,7 +63,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(pageable)).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, null);
@@ -78,7 +78,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.filterByAllFields(pageable, filter)).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.findAll(pageable, filter);
@@ -95,7 +95,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);
@@ -112,7 +112,7 @@ class TagsServiceImplTest {
         List<Tag> tags = ModelUtils.getTags();
         Page<Tag> pageTags = new PageImpl<>(tags, pageable, 1);
         when(tagRepo.findAll(any(TagSpecification.class), eq(pageable))).thenReturn(pageTags);
-        when(modelMapper.map(tags.get(0), TagVO.class)).thenReturn(ModelUtils.getTagVO());
+        when(modelMapper.map(tags.getFirst(), TagVO.class)).thenReturn(ModelUtils.getTagVO());
 
         PageableAdvancedDto<TagVO> actual = ModelUtils.getPageableAdvancedDtoForTag();
         PageableAdvancedDto<TagVO> expected = tagsService.search(pageable, tagViewDto);

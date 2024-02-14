@@ -6,7 +6,6 @@ import greencity.dto.user.UserVO;
 import greencity.entity.event.EventComment;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
-
 import java.util.stream.Collectors;
 
 /**

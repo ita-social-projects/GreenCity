@@ -2,11 +2,9 @@ package greencity.filters;
 
 import greencity.entity.*;
 import greencity.entity.localization.ShoppingListItemTranslation;
-
 import greencity.entity.localization.ShoppingListItemTranslation_;
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.List;
-
 import static greencity.entity.Translation_.content;
 
 public class ShoppingListItemSpecification implements MySpecification<ShoppingListItem> {

@@ -1,6 +1,12 @@
 package greencity.dto.event;
 
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,11 +16,11 @@ import lombok.*;
 @Builder
 @ToString
 public class EventViewDto {
-    private String id = "";
-    private String author = "";
-    private String title = "";
-    private String description = "";
-    private String tags = "";
+    private String id;
+    private String author;
+    private String title;
+    private String description;
+    private String tags;
 
     /**
      * This method check if object is empty.

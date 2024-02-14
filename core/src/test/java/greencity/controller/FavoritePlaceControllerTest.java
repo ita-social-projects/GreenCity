@@ -60,7 +60,7 @@ class FavoritePlaceControllerTest {
 
         when(
             modelMapper.map(favoritePlaceService.update(favoritePlaceDto, principal.getName()), FavoritePlaceDto.class))
-                .thenReturn(favoritePlaceDto);
+            .thenReturn(favoritePlaceDto);
 
         mockMvc.perform(put(favoritePlaceLink + "/")
             .content("{\n" +

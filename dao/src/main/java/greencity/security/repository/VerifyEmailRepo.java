@@ -40,7 +40,7 @@ public interface VerifyEmailRepo extends JpaRepository<VerifyEmail, Long> {
 
     /**
      * Deletes from the database users that did not verify their emails on time.
-     * 
+     *
      * @return number of deleted rows
      **/
     @Modifying

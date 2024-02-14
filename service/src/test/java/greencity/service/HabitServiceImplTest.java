@@ -177,6 +177,7 @@ class HabitServiceImplTest {
     @Test
     void getAllHabitsByLanguageCode() {
         Pageable pageable = PageRequest.of(0, 2);
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
@@ -189,18 +190,20 @@ class HabitServiceImplTest {
         List<Long> requestedCustomHabitIds = List.of(1L);
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-            requestedCustomHabitIds, userVO.getId())).thenReturn(habitTranslationPage);
+            requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
-            anyList(), anyLong());
+            anyList(), anyLong(), anyString());
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
@@ -212,6 +215,7 @@ class HabitServiceImplTest {
     void getAllHabitsByLanguageCodeWhenRequestedCustomHabitIdsIsEmpty() {
         Pageable pageable = PageRequest.of(0, 2);
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslation();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
         Habit habit = ModelUtils.getHabit();
@@ -223,22 +227,24 @@ class HabitServiceImplTest {
         List<Long> requestedCustomHabitIds = new ArrayList<>();
         when(habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(1L)).thenReturn(requestedCustomHabitIds);
         when(habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-            requestedCustomHabitIds, userVO.getId())).thenReturn(habitTranslationPage);
+            requestedCustomHabitIds, userVO.getId(), "en")).thenReturn(habitTranslationPage);
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(habitDto);
         when(habitAssignRepo.findAmountOfUsersAcquired(anyLong())).thenReturn(5L);
         when(habitRepo.findById(1L)).thenReturn(Optional.ofNullable(habit));
         when(habitAssignRepo.findByHabitIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(habit.getId())).thenReturn(habitTranslationUa);
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
         assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
-            anyList(), anyLong());
+            anyList(), anyLong(), anyString());
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitAssignRepo).findByHabitIdAndUserId(anyLong(), anyLong());
         verify(habitAssignRepo).findAllHabitIdsByUserIdAndStatusIsRequested(anyLong());
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
         verify(habitRepo).findById(1L);
     }
 
@@ -287,6 +293,7 @@ class HabitServiceImplTest {
         Long userId = ModelUtils.getUser().getId();
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitDto habitDto = ModelUtils.getHabitDto();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
@@ -316,13 +323,14 @@ class HabitServiceImplTest {
             any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
             anyString(), anyList(), anyLong()))
-                .thenReturn(habitTranslationPage);
+            .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
             .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
             anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
             any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(anyLong())).thenReturn(habitTranslationUa);
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
@@ -372,6 +380,7 @@ class HabitServiceImplTest {
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitRepo).findById(1L);
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
@@ -435,6 +444,7 @@ class HabitServiceImplTest {
         Long userId = ModelUtils.getUser().getId();
         List<String> lowerCaseTags = Collections.singletonList(tag.toLowerCase());
         HabitTranslation habitTranslation = ModelUtils.getHabitTranslationWithCustom();
+        HabitTranslation habitTranslationUa = ModelUtils.getHabitTranslationUa();
         HabitDto habitDto = ModelUtils.getHabitDto();
         Page<HabitTranslation> habitTranslationPage =
             new PageImpl<>(Collections.singletonList(habitTranslation), pageable, 10);
@@ -464,13 +474,14 @@ class HabitServiceImplTest {
             any(Pageable.class), anyList(), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(any(Pageable.class),
             anyString(), anyList(), anyLong()))
-                .thenReturn(habitTranslationPage);
+            .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByIsCustomFalseHabitAndLanguageCode(any(Pageable.class), anyString()))
             .thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByTagsAndLanguageCodeAndByUserIdAndRequestedStatus(any(Pageable.class), any(),
             anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
         when(habitTranslationRepo.findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(
             any(Pageable.class), any(), anyString(), anyList(), anyLong())).thenReturn(habitTranslationPage);
+        when(habitTranslationRepo.getHabitTranslationByUaLanguage(anyLong())).thenReturn(habitTranslationUa);
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
@@ -520,6 +531,7 @@ class HabitServiceImplTest {
         verify(modelMapper).map(habitTranslation, HabitDto.class);
         verify(habitAssignRepo).findAmountOfUsersAcquired(anyLong());
         verify(habitRepo).findById(1L);
+        verify(habitTranslationRepo).getHabitTranslationByUaLanguage(anyLong());
 
         if (isCustomHabit.isPresent() && tags.isPresent() && complexities.isPresent()) {
             if (isCustomHabit.get()) {
@@ -604,17 +616,17 @@ class HabitServiceImplTest {
     @Test
     void addAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
-        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.getFirst(), 1L);
         habitService.addAllShoppingListItemsByListOfId(1L, listID);
-        verify(habitRepo, times(1)).addShopingListItemToHabit(listID.get(0), 1L);
+        verify(habitRepo, times(1)).addShopingListItemToHabit(listID.getFirst(), 1L);
     }
 
     @Test
     void deleteAllShoppingListItemToHabitTest() {
         List<Long> listID = Collections.singletonList(1L);
-        doNothing().when(habitRepo).addShopingListItemToHabit(listID.get(0), 1L);
+        doNothing().when(habitRepo).addShopingListItemToHabit(listID.getFirst(), 1L);
         habitService.deleteAllShoppingListItemsByListOfId(1L, listID);
-        verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.get(0), 1L);
+        verify(habitRepo, times(1)).upadateShopingListItemInHabit(listID.getFirst(), 1L);
     }
 
     @Test
@@ -929,7 +941,7 @@ class HabitServiceImplTest {
 
         List<UserProfilePictureDto> list = habitService.getFriendsAssignedToHabitProfilePictures(habitId, userId);
         assertFalse(list.isEmpty());
-        assertEquals(friendProfilePicture, list.get(0));
+        assertEquals(friendProfilePicture, list.getFirst());
 
         verify(userRepo).existsById(userId);
         verify(habitRepo).existsById(habitId);

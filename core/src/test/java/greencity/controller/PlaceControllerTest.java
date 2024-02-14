@@ -51,7 +51,7 @@ import greencity.enums.UserStatus;
 import greencity.service.FavoritePlaceService;
 import greencity.service.PlaceService;
 
-import static org.mockito.Mockito.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -245,7 +245,7 @@ class PlaceControllerTest {
             .openingHoursList(openingHoursDtos)
             .build();
 
-        when(modelMapper.map(placeService.update(anyObject()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
+        when(modelMapper.map(placeService.update(any()), PlaceUpdateDto.class)).thenReturn(placeUpdateDto);
 
         this.mockMvc.perform(put(placeLink + "/update")
             .content("{\n" +
@@ -386,7 +386,6 @@ class PlaceControllerTest {
 
     @Test
     void getFilteredPlaces() throws Exception {
-
         FilterPlaceDto filterPlaceDto = new FilterPlaceDto();
         filterPlaceDto.setDistanceFromUserDto(new FilterDistanceDto(1.0, 1.0, 1.0));
         filterPlaceDto.setMapBoundsDto(new MapBoundsDto(1.0, 1.0, 1.0, 1.0));

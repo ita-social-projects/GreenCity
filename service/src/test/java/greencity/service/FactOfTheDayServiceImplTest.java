@@ -92,7 +92,7 @@ class FactOfTheDayServiceImplTest {
         PageableDto<FactOfTheDayDTO> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(factOfTheDayRepo.findAll(pageable)).thenReturn(pageFacts);
-        when(modelMapper.map(factsOfTheDays.get(0), FactOfTheDayDTO.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(factsOfTheDays.getFirst(), FactOfTheDayDTO.class)).thenReturn(dtoList.getFirst());
 
         PageableDto<FactOfTheDayDTO> actual = factOfTheDayService.getAllFactsOfTheDay(pageable);
         assertEquals(pageableDto, actual);
@@ -197,7 +197,7 @@ class FactOfTheDayServiceImplTest {
         PageableDto<FactOfTheDayDTO> pageableDto = new PageableDto<>(dtoList, dtoList.size(), 0, 1);
 
         when(factOfTheDayRepo.searchBy(pageable, "query")).thenReturn(pageFacts);
-        when(modelMapper.map(factsOfTheDays.get(0), FactOfTheDayDTO.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(factsOfTheDays.getFirst(), FactOfTheDayDTO.class)).thenReturn(dtoList.getFirst());
 
         PageableDto<FactOfTheDayDTO> actual = factOfTheDayService.searchBy(pageable, "query");
         assertEquals(pageableDto, actual);

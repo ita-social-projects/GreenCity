@@ -6,10 +6,8 @@ import greencity.dto.shoppinglistitem.ShoppingListItemDto;
 import greencity.entity.HabitTranslation;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.entity.localization.TagTranslation;
-
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-
 import greencity.enums.ShoppingListItemStatus;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;

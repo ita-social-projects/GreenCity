@@ -4,10 +4,9 @@ import greencity.entity.ShoppingListItem;
 import greencity.entity.Translation;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "shopping_list_item_translations")

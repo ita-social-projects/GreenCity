@@ -35,7 +35,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -214,7 +214,7 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.countNotDeletedEventCommentsByEvent(event)).thenReturn(1);
+        when(eventCommentRepo.countNotDeletedEventCommentsByEvent(eventId)).thenReturn(1);
 
         assertEquals(1, eventCommentService.countComments(eventId));
     }
@@ -241,7 +241,7 @@ class EventCommentServiceImplTest {
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
         when(eventCommentRepo.findAllByParentCommentIdIsNullAndEventIdAndStatusNotOrderByCreatedDateDesc(pageable,
             eventId, CommentStatus.DELETED))
-                .thenReturn(pages);
+            .thenReturn(pages);
         when(modelMapper.map(eventComment, EventCommentDto.class)).thenReturn(eventCommentDto);
 
         PageableDto<EventCommentDto> allComments = eventCommentService.getAllActiveComments(pageable, userVO, eventId);
@@ -370,7 +370,7 @@ class EventCommentServiceImplTest {
         when(modelMapper.map(childComment, EventCommentDto.class)).thenReturn(ModelUtils.getEventCommentDto());
         when(eventCommentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
-                .thenReturn(page);
+            .thenReturn(page);
 
         PageableDto<EventCommentDto> eventCommentDtos =
             eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
@@ -397,7 +397,7 @@ class EventCommentServiceImplTest {
 
         when(eventCommentRepo.findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageable, parentCommentId,
             CommentStatus.DELETED))
-                .thenReturn(page);
+            .thenReturn(page);
 
         eventCommentService.findAllActiveReplies(pageable, parentCommentId, userVO);
 

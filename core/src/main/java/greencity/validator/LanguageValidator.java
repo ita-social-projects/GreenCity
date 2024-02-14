@@ -4,9 +4,8 @@ import greencity.annotations.ValidLanguage;
 import greencity.service.LanguageService;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 
 public class LanguageValidator implements ConstraintValidator<ValidLanguage, Locale> {

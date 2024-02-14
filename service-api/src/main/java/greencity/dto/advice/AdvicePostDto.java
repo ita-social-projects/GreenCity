@@ -3,9 +3,12 @@ package greencity.dto.advice;
 import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.user.HabitIdRequestDto;
-import lombok.*;
-
-import javax.validation.Valid;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @NoArgsConstructor

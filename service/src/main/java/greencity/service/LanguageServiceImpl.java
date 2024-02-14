@@ -7,7 +7,7 @@ import greencity.entity.Language;
 import greencity.exception.exceptions.LanguageNotFoundException;
 import greencity.repository.LanguageRepo;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;

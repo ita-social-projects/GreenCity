@@ -5,7 +5,7 @@ import java.time.ZonedDateTime;
 /**
  * Service that converts dates to ZonedDateTime that corresponds to datasource
  * timezone.
- * 
+ *
  * @author Yurii Koval
  */
 public interface DateService {

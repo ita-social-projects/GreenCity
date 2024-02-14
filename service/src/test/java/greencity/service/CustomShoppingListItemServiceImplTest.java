@@ -23,7 +23,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
 import greencity.repository.CustomShoppingListItemRepo;
 import greencity.repository.HabitAssignRepo;
-import greencity.repository.HabitRepo;
 import greencity.repository.UserShoppingListItemRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,9 +63,6 @@ class CustomShoppingListItemServiceImplTest {
 
     @Mock
     private RestClient restClient;
-
-    @Mock
-    private HabitRepo habitRepo;
     @Mock
     private HabitAssignRepo habitAssignRepo;
 
@@ -155,7 +151,7 @@ class CustomShoppingListItemServiceImplTest {
 
         when(customShoppingListItemRepo.findAllCustomShoppingListItemsForUserIdAndHabitIdInProgress(anyLong(),
             anyLong()))
-                .thenReturn(List.of(item));
+            .thenReturn(List.of(item));
         when(modelMapper.map(item, CustomShoppingListItemResponseDto.class)).thenReturn(itemResponseDto);
 
         assertEquals(List.of(itemResponseDto), customShoppingListItemService
@@ -199,7 +195,7 @@ class CustomShoppingListItemServiceImplTest {
             new BulkSaveCustomShoppingListItemDto(Collections.singletonList(dtoToSave)),
             1L, 1L);
         assertEquals(user.getCustomShoppingListItems().get(0), customShoppingListItem);
-        assertEquals("bar", saveResult.get(0).getText());
+        assertEquals("bar", saveResult.getFirst().getText());
     }
 
     @Test
@@ -238,8 +234,8 @@ class CustomShoppingListItemServiceImplTest {
             .thenReturn(new CustomShoppingListItemResponseDto(customShoppingListItem.getId(),
                 customShoppingListItem.getText(), customShoppingListItem.getStatus()));
         List<CustomShoppingListItemResponseDto> findAllResult = customShoppingListItemService.findAll();
-        assertEquals("foo", findAllResult.get(0).getText());
-        assertEquals(1L, (long) findAllResult.get(0).getId());
+        assertEquals("foo", findAllResult.getFirst().getText());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
     }
 
     @Test
@@ -318,8 +314,8 @@ class CustomShoppingListItemServiceImplTest {
             .thenReturn(customShoppingListItemResponseDto);
         List<CustomShoppingListItemResponseDto> findAllByUserResult =
             customShoppingListItemService.findAllByUserAndHabit(user.getId(), habit.getId());
-        assertEquals(findAllByUserResult.get(0).getId(), customShoppingListItemResponseDto.getId());
-        assertEquals(findAllByUserResult.get(0).getText(), customShoppingListItemResponseDto.getText());
+        assertEquals(findAllByUserResult.getFirst().getId(), customShoppingListItemResponseDto.getId());
+        assertEquals(findAllByUserResult.getFirst().getText(), customShoppingListItemResponseDto.getText());
     }
 
     @Test
@@ -349,7 +345,7 @@ class CustomShoppingListItemServiceImplTest {
             new UserShoppingListItem(1L, ModelUtils.getHabitAssignWithUserShoppingListItem(), shoppingListItem,
                 ShoppingListItemStatus.ACTIVE, LocalDateTime.now());
         when(userShoppingListItemRepo.getByUserAndItemId(1L, 1L)).thenReturn(Optional.of(userShoppingListItemId));
-        when(userShoppingListItemRepo.getOne(userShoppingListItemId)).thenReturn(userShoppingListItem);
+        when(userShoppingListItemRepo.getReferenceById(userShoppingListItemId)).thenReturn(userShoppingListItem);
         customShoppingListItemService.updateItemStatusToDone(1L, 1L);
         userShoppingListItem.setStatus(ShoppingListItemStatus.DONE);
         verify(userShoppingListItemRepo).save(userShoppingListItem);
@@ -364,7 +360,6 @@ class CustomShoppingListItemServiceImplTest {
 
         assertTrue(customShoppingListItemService.findAllUsersCustomShoppingListItemsByStatus(1L, "INPROGRESS")
             .contains(ModelUtils.getCustomShoppingListItemResponseDto()));
-        ;
     }
 
     @Test
@@ -406,7 +401,7 @@ class CustomShoppingListItemServiceImplTest {
 
         assertNotNull(actualDtoList);
         assertEquals(1, actualDtoList.size());
-        assertEquals(expectedDto, actualDtoList.get(0));
+        assertEquals(expectedDto, actualDtoList.getFirst());
 
         verify(habitAssignRepo).findById(habitAssignId);
         verify(customShoppingListItemRepo).findAllAvailableCustomShoppingListItemsForUserId(userId, habitId);

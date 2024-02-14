@@ -5,8 +5,7 @@ import greencity.entity.Tag_;
 import greencity.entity.localization.TagTranslation;
 import greencity.entity.localization.TagTranslation_;
 import lombok.AllArgsConstructor;
-
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 import java.util.List;
 
 @AllArgsConstructor
