@@ -214,7 +214,7 @@ class EventCommentServiceImplTest {
         Long eventId = 1L;
 
         when(eventRepo.findById(1L)).thenReturn(Optional.of(event));
-        when(eventCommentRepo.countNotDeletedEventCommentsByEvent(event)).thenReturn(1);
+        when(eventCommentRepo.countNotDeletedEventCommentsByEvent(eventId)).thenReturn(1);
 
         assertEquals(1, eventCommentService.countComments(eventId));
     }

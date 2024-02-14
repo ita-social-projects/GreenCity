@@ -133,8 +133,9 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     public int countComments(Long eventId) {
-        return eventCommentRepo.countNotDeletedEventCommentsByEvent(eventRepo.findById(eventId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId)));
+        Event event = eventRepo.findById(eventId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId));
+        return eventCommentRepo.countNotDeletedEventCommentsByEvent(event.getId());
     }
 
     /**
