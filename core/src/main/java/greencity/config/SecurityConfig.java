@@ -92,18 +92,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
-                    config.setAllowedMethods(
-                            Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-                    config.setAllowedHeaders(
-                            Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
-                                    "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-                    config.setAllowCredentials(true);
-                    config.setAllowedHeaders(Collections.singletonList("*"));
-                    config.setMaxAge(3600L);
-                    return config;}))
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
+            config.setAllowedMethods(
+                Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+            config.setAllowedHeaders(
+                Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
+                    "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+            config.setAllowCredentials(true);
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setMaxAge(3600L);
+            return config;
+        }))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
