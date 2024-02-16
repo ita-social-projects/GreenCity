@@ -24,8 +24,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import static greencity.constant.AppConstant.ADMIN;
 import static greencity.constant.AppConstant.USER;
 import static greencity.constant.AppConstant.MODERATOR;
@@ -85,7 +83,20 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(AbstractHttpConfigurer::disable)
+        http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
+            config.setAllowedMethods(
+                Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
+            config.setAllowedHeaders(
+                Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
+                    "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
+            config.setAllowCredentials(true);
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setMaxAge(3600L);
+            return config;
+        }))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
@@ -410,23 +421,5 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    /**
-     * Bean {@link CorsConfigurationSource} that uses for CORS setup.
-     */
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("*"));
-        configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-        configuration.setAllowedHeaders(
-            Arrays.asList(
-                "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
