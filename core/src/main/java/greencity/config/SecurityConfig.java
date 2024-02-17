@@ -85,8 +85,8 @@ public class SecurityConfig {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
-            config.setAllowedOrigins(Collections.singletonList("*"));
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200/*"));
+            config.setAllowedOrigins(Collections.singletonList("https://www.greencity.social/"));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
             config.setAllowedHeaders(
@@ -96,8 +96,7 @@ public class SecurityConfig {
             config.setAllowCredentials(true);
             config.setMaxAge(3600L);
             return config;
-        }))
-            .csrf(AbstractHttpConfigurer::disable)
+        })).csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
