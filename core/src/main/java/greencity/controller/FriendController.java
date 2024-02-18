@@ -59,6 +59,13 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @DeleteMapping
+    @ApiIgnore
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams(
+            @ApiIgnore @CurrentUser UserVO userVO) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
     /**
      * Method for add new user friend.
      *
@@ -80,6 +87,7 @@ public class FriendController {
         friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 
     /**
      * Method for accepting friend request from user.

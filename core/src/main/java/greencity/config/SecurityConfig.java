@@ -319,7 +319,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/user/{userId}/userFriend/{friendId}",
                 "/habit/assign/delete/{habitAssignId}",
                 FRIENDS + "/{friendId}",
-                FRIENDS + "/{friendId}/cancelRequest")
+                FRIENDS + "/{friendId}/cancelRequest",
+                    FRIENDS+"/")
             .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
             .antMatchers(HttpMethod.GET,
                 "/newsSubscriber",
