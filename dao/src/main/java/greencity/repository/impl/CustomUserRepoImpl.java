@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -28,9 +30,10 @@ public class CustomUserRepoImpl implements CustomUserRepo {
                 UserFriendDto.class);
         query.setParameter("userId", userId);
         if (users.isEmpty()) {
-            query.setParameter("users", List.of(-1));
+            query.setParameter("users", Collections.singletonList(-1L));
         } else {
-            query.setParameter("users", users);
+            List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            query.setParameter("users", userIds);
         }
         return query.getResultList();
     }
