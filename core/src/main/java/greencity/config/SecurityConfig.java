@@ -84,16 +84,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200/*"));
-            config.setAllowedOrigins(Collections.singletonList("https://www.greencity.social/"));
+            config.setAllowedOrigins(Collections.singletonList("*"));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
             config.setAllowedHeaders(
                 Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
                     "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-            config.setAllowedHeaders(Collections.singletonList("*"));
-            config.setAllowCredentials(true);
+            config.setAllowCredentials(false);
             config.setMaxAge(3600L);
             return config;
         })).csrf(AbstractHttpConfigurer::disable)
