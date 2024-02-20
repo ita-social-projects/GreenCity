@@ -274,7 +274,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
 
     @Query(nativeQuery = true, value = ""
-        + "SELECT * "
+        + "SELECT u.* "
         + "FROM users u "
         + "LEFT JOIN user_location ul ON ul.id = u.user_location "
         + "RIGHT JOIN ("
