@@ -58,11 +58,17 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    /**
+     * Exception for deleting friend with null id.
+     *
+     * @param userVO {@link UserVO} user.
+     * @author Oleksandr Sokil
+     */
     @DeleteMapping
-    @ApiIgnore
+    @Operation(hidden = true)
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams(
-            @ApiIgnore @CurrentUser UserVO userVO) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -86,7 +92,6 @@ public class FriendController {
         friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 
     /**
      * Method for accepting friend request from user.
