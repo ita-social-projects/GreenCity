@@ -38,7 +38,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 import static greencity.enums.FactOfDayStatus.CURRENT;
 
 /**
@@ -313,7 +312,7 @@ public class HabitFactServiceImpl implements HabitFactService {
      * @param value          - value of field
      */
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (!StringUtils.isEmpty(value)) {
+        if (StringUtils.hasLength(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)

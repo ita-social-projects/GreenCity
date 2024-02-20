@@ -2,12 +2,10 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
-import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -38,7 +36,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.time.ZoneId;
@@ -115,9 +112,7 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
-
-        when(eventService.getEvents(pageable, principal, filterEventDto, null))
+        when(eventService.getEvents(pageable, principal, null, null))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
@@ -127,7 +122,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getEvents(pageable, principal, filterEventDto, null);
+        verify(eventService).getEvents(pageable, principal, null, null);
     }
 
     @Test
@@ -256,7 +251,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
-        verify(eventService).save(addEventDtoRequest, principal.getName(), new MultipartFile[0]);
+        verify(eventService).save(addEventDtoRequest, principal.getName(), null);
     }
 
     @Test
@@ -351,7 +346,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).update(updateEventDto, principal.getName(), new MultipartFile[0]);
+        verify(eventService).update(updateEventDto, principal.getName(), null);
     }
 
     @Test
@@ -583,7 +578,7 @@ class EventsControllerTest {
 
     @SneakyThrows
     private AddEventDtoRequest getAddEventDtoRequest() {
-        String json = "{\n" +
+        String json = "{ \n" +
             "    \"title\":\"string\",\n" +
             "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
             "    \"open\":true,\n" +

@@ -78,11 +78,11 @@ spec:
               name: {{ .Values.externalSecret.secretName }}
               key: DATABASE-USER
 
-        - name: DIALECT
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalSecret.secretName }}
-              key: DIALECT
+        # - name: DIALECT
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: {{ .Values.externalSecret.secretName }}
+        #       key: DIALECT
 
         - name: DRIVER
           valueFrom:

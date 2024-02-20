@@ -8,13 +8,14 @@ import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
-import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,13 +27,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @RequestMapping("/management/rating")
 public class ManagementRatingStatisticsController {
-    private RatingStatisticsService ratingStatisticsService;
-    private RatingExcelExporter ratingExcelExporter;
+    private final RatingStatisticsService ratingStatisticsService;
+    private final RatingExcelExporter ratingExcelExporter;
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     /**
@@ -53,9 +53,10 @@ public class ManagementRatingStatisticsController {
      * @author Dovganyuk Taras
      */
     @ApiPageable
-    @ApiOperation(value = "Get management page with facts of the day.")
+    @Operation(summary = "Get management page with facts of the day.")
     @GetMapping("")
-    public String getUserRatingStatistics(Model model, @PageableDefault(value = 20) @ApiIgnore Pageable pageable) {
+    public String getUserRatingStatistics(Model model,
+        @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable) {
         Pageable paging =
             PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createDate").descending());
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
@@ -118,7 +119,7 @@ public class ManagementRatingStatisticsController {
      */
     @PostMapping(value = "", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String filterData(Model model,
-        @PageableDefault(value = 20) @ApiIgnore Pageable pageable,
+        @PageableDefault(value = 20) @Parameter(hidden = true) Pageable pageable,
         RatingStatisticsViewDto ratingStatisticsViewDto) {
         PageableAdvancedDto<RatingStatisticsDtoForTables> pageableDto =
             ratingStatisticsService.getFilteredDataForManagementByPage(pageable,

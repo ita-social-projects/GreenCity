@@ -1,16 +1,18 @@
 package greencity.webcontroller;
 
 import static greencity.dto.genericresponse.GenericResponseDto.buildGenericResponseDto;
-
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.genericresponse.GenericResponseDto;
 import greencity.dto.habitfact.*;
 import greencity.service.HabitFactService;
 import greencity.service.LanguageService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +21,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -39,10 +48,11 @@ public class ManagementHabitFactsController {
      * @return {@link HabitFactVO} instance.
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Get habit facts by id.")
+    @Operation(summary = "Get habit facts by id.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = HabitFactDtoResponse.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = HabitFactDtoResponse.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/find/{id}")
     public ResponseEntity<HabitFactDtoResponse> getHabitFactsById(
@@ -57,10 +67,10 @@ public class ManagementHabitFactsController {
      * @return View template path {@link String}.
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Get management page with habit facts.")
+    @Operation(summary = "Get management page with habit facts.")
     @GetMapping
     public String findAll(@RequestParam(required = false, name = "query") String filter,
-        Model model, @ApiIgnore Pageable pageable) {
+        Model model, @Parameter(hidden = true) Pageable pageable) {
         model.addAttribute("pageable", habitFactService.getAllHabitFactVOsWithFilter(filter, pageable));
         model.addAttribute("languages", languageService.getAllLanguages());
         return "core/management_habit_facts";
@@ -73,10 +83,11 @@ public class ManagementHabitFactsController {
      * @return {@link GenericResponseDto} with of operation and errors fields
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Save habit facts")
+    @Operation(summary = "Save habit facts")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK, response = GenericResponseDto.class),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = GenericResponseDto.class))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PostMapping
@@ -95,10 +106,10 @@ public class ManagementHabitFactsController {
      * @return {@link GenericResponseDto} with of operation and errors fields
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Update fact of the day")
+    @Operation(summary = "Update fact of the day")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ResponseBody
     @PutMapping("/{id}")
@@ -119,10 +130,10 @@ public class ManagementHabitFactsController {
      * @return {@link ResponseEntity}
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Delete Habit Facts")
+    @Operation(summary = "Delete Habit Facts")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> delete(@PathVariable("id") Long id) {
@@ -138,10 +149,10 @@ public class ManagementHabitFactsController {
      * @return {@link ResponseEntity}
      * @author Ivan Behar
      */
-    @ApiOperation(value = "Delete all Habit Facts by given IDs")
+    @Operation(summary = "Delete all Habit Facts by given IDs")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @DeleteMapping("/deleteAll")
     public ResponseEntity<List<Long>> deleteAll(@RequestBody List<Long> listId) {
@@ -156,14 +167,14 @@ public class ManagementHabitFactsController {
      *                         user.
      * @param habitFactViewDto used for receive parameters for filters from UI.
      */
-    @ApiOperation(value = "Get all habit facts by filter data")
+    @Operation(summary = "Get all habit facts by filter data")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 403, message = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PostMapping(value = "/filter")
     public String filterData(Model model,
-        @ApiIgnore Pageable pageable,
+        @Parameter(hidden = true) Pageable pageable,
         HabitFactViewDto habitFactViewDto) {
         PageableDto<HabitFactVO> pageableDto =
             habitFactService.getFilteredDataForManagementByPage(

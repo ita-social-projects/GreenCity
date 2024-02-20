@@ -84,14 +84,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class HabitAssignServiceImplTest {
@@ -132,7 +125,7 @@ class HabitAssignServiceImplTest {
     @Mock
     private AchievementCalculation achievementCalculation;
 
-    private static ZonedDateTime zonedDateTime = ZonedDateTime.now();
+    private final static ZonedDateTime zonedDateTime = ZonedDateTime.now();
 
     private HabitDto habitDto = HabitDto.builder().id(1L).build();
 
@@ -504,7 +497,7 @@ class HabitAssignServiceImplTest {
 
         when(habitAssignRepo.findAllHabitAssignsBetweenDates(anyLong(),
             eq(LocalDate.of(2020, 12, 27)), eq(LocalDate.of(2020, 12, 29))))
-                .thenReturn(habitAssignList);
+            .thenReturn(habitAssignList);
 
         assertEquals(dtos, habitAssignService.findHabitAssignsBetweenDates(13L,
             LocalDate.of(2020, 12, 27), LocalDate.of(2020, 12, 29),
@@ -668,7 +661,7 @@ class HabitAssignServiceImplTest {
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
         verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
-        verify(habitAssignRepo, times(0)).delete(any());
+        verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 
     @Test
@@ -688,7 +681,7 @@ class HabitAssignServiceImplTest {
 
         verify(userShoppingListItemRepo, times(0)).deleteShoppingListItemsByHabitAssignId(anyLong());
         verify(customShoppingListItemRepo, times(0)).deleteCustomShoppingListItemsByHabitId(anyLong());
-        verify(habitAssignRepo, times(0)).delete(any());
+        verify(habitAssignRepo, times(0)).delete(any(HabitAssign.class));
     }
 
     @Test
@@ -751,8 +744,7 @@ class HabitAssignServiceImplTest {
         habitAssignService.deleteAllHabitAssignsByHabit(habit);
 
         verify(habitStatisticService).deleteAllStatsByHabitAssign(habitAssignVO);
-        verify(habitAssignRepo).delete(habitAssign);
-        verify(habitAssignRepo, times(1)).delete(any());
+        verify(habitAssignRepo, times(1)).delete(habitAssign);
     }
 
     @Test
@@ -780,7 +772,7 @@ class HabitAssignServiceImplTest {
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
         when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitAssignDto().getHabit());
 
-        habitAssignDtos.get(0).getHabit().setShoppingListItems(
+        habitAssignDtos.getFirst().getHabit().setShoppingListItems(
             List.of(ShoppingListItemDto.builder()
                 .id(userShoppingListItemCustom.getId())
                 .status(userShoppingListItemCustom.getStatus().toString())
@@ -813,7 +805,7 @@ class HabitAssignServiceImplTest {
             .thenReturn(userShoppingListItemResponseDtos);
         when(
             customShoppingListItemService.findAllAvailableCustomShoppingListItemsByHabitAssignId(userId, habitAssignId))
-                .thenReturn(customShoppingListItemResponseDtos);
+            .thenReturn(customShoppingListItemResponseDtos);
 
         UserShoppingAndCustomShoppingListsDto actual =
             habitAssignService.getUserShoppingAndCustomShoppingLists(userId, habitAssignId, language);
@@ -952,7 +944,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
-                .thenReturn(null);
+            .thenReturn(null);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDto);
         when(modelMapper.map(translation, HabitDto.class)).thenReturn(habitDto);
         when(userService.findById(any())).thenReturn(ModelUtils.getUserVO());
@@ -1046,7 +1038,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
-                .thenReturn(habitStatusCalendarVO);
+            .thenReturn(habitStatusCalendarVO);
 
         UserAlreadyHasEnrolledHabitAssign exception = assertThrows(UserAlreadyHasEnrolledHabitAssign.class,
             () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
@@ -1085,7 +1077,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
-                .thenReturn(null);
+            .thenReturn(null);
 
         UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
             () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
@@ -1124,7 +1116,7 @@ class HabitAssignServiceImplTest {
         when(modelMapper.map(habitAssign, HabitAssignVO.class)).thenReturn(habitAssignVO);
         when(habitStatusCalendarService
             .findHabitStatusCalendarByEnrollDateAndHabitAssign(localDate, habitAssignVO))
-                .thenReturn(null);
+            .thenReturn(null);
 
         UserHasReachedOutOfEnrollRange exception = assertThrows(UserHasReachedOutOfEnrollRange.class,
             () -> habitAssignService.enrollHabit(habitAssignId, userId, localDate, language));
@@ -1160,7 +1152,7 @@ class HabitAssignServiceImplTest {
 
         List<HabitAssignDto> dtoList =
             habitAssignService.findInprogressHabitAssignsOnDate(id, date, language.getCode());
-        assertEquals(dtoList.get(0), habitAssignDto);
+        assertEquals(dtoList.getFirst(), habitAssignDto);
 
     }
 
@@ -1183,7 +1175,7 @@ class HabitAssignServiceImplTest {
 
         List<HabitAssignDto> dtoList =
             habitAssignService.findInprogressHabitAssignsOnDateContent(id, date, language.getCode());
-        assertEquals(dtoList.get(0), habitAssignDto);
+        assertEquals(dtoList.getFirst(), habitAssignDto);
 
     }
 

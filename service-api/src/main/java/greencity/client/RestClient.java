@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import greencity.dto.eventcomment.EventCommentForSendEmailDto;
 import greencity.message.GeneralEmailMessage;
 import greencity.security.jwt.JwtTool;
@@ -39,13 +39,13 @@ import greencity.enums.EmailNotification;
 import greencity.message.SendChangePlaceStatusEmailMessage;
 import greencity.message.SendHabitNotification;
 import greencity.message.SendReportEmailMessage;
-
 import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Component
 public class RestClient {
     private final RestTemplate restTemplate;
     private final String greenCityUserServerAddress;
+
     private final HttpServletRequest httpServletRequest;
     private final JwtTool jwtTool;
     private final String systemEmail;
@@ -174,10 +174,10 @@ public class RestClient {
      */
     public PageableAdvancedDto<UserManagementDto> findUserForManagementByPage(Pageable pageable) {
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder("");
+        StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl + order.getProperty() + "," + order.getDirection());
             }
         }
         HttpEntity<String> entity = new HttpEntity<>(setHeader());
@@ -511,10 +511,10 @@ public class RestClient {
      */
     public PageableAdvancedDto<UserManagementVO> search(Pageable pageable, UserManagementViewDto userViewDto) {
         Sort sort = pageable.getSort();
-        StringBuilder orderUrl = new StringBuilder("");
+        StringBuilder orderUrl = new StringBuilder();
         if (!sort.isEmpty()) {
             for (Sort.Order order : sort) {
-                orderUrl.append(orderUrl.toString() + order.getProperty() + "," + order.getDirection());
+                orderUrl.append(orderUrl + order.getProperty() + "," + order.getDirection());
             }
         }
         HttpHeaders headers = setHeader();
@@ -544,11 +544,11 @@ public class RestClient {
             accessToken = getTokenFromCookies(cookies);
         }
 
-        if (StringUtils.isEmpty(accessToken)) {
+        if (!StringUtils.hasLength(accessToken)) {
             accessToken = httpServletRequest.getHeader(AUTHORIZATION);
         }
 
-        if (StringUtils.isEmpty(accessToken)) {
+        if (!StringUtils.hasLength(accessToken)) {
             accessToken = "Bearer " + jwtTool.createAccessToken(systemEmail, Role.ROLE_ADMIN);
         }
 
@@ -567,7 +567,7 @@ public class RestClient {
 
     /**
      * Method sends general email notification.
-     * 
+     *
      * @param notification {@link GeneralEmailMessage}.
      */
     public void sendEmailNotification(GeneralEmailMessage notification) {

@@ -1,7 +1,10 @@
 package greencity.dto.shoppinglistitem;
 
 import greencity.dto.language.LanguageVO;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
 
 @Data
 @NoArgsConstructor

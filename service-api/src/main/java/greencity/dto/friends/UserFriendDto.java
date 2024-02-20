@@ -1,7 +1,6 @@
 package greencity.dto.friends;
 
 import greencity.dto.location.UserLocationDto;
-import greencity.enums.FriendStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

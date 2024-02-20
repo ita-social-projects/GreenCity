@@ -37,7 +37,7 @@ class EcoNewsDtoRequestValidatorTest {
     @Test
     void isValidInvalidURLExceptionTest() {
         AddEcoNewsDtoRequest request = getAddEcoNewsDtoRequest();
-        request.setSource("/eco-lavca.ua/https:/");
+        request.setSource("/eco-lavca.ua/'s%83");
         assertThrows(InvalidURLException.class, () -> validator.isValid(request, null));
     }
 }

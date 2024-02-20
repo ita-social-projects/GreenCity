@@ -1,6 +1,5 @@
 package greencity.repository;
 
-import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
 import greencity.enums.CommentStatus;
 import org.springframework.data.domain.Page;
@@ -52,15 +51,16 @@ public interface EcoNewsCommentRepo extends JpaRepository<EcoNewsComment, Long> 
     int countOfComments(Long ecoNewsId);
 
     /**
-     * The method returns the count of not deleted comments, specified by
-     * {@link greencity.entity.EcoNews}.
+     * The method returns the count of not deleted comments, specified by.
+     *
+     * @param ecoNewsId {@link Long} - id of ecoNews.
      *
      * @return count of comments, specified by {@link greencity.entity.EcoNews}
      */
-    @Query(value = "select count(ec.id) from econews_comment ec"
-        + " join eco_news en on en.id = ec.eco_news_id"
-        + " where en.id = :ecoNews and ec.status<>'DELETED'", nativeQuery = true)
-    int countEcoNewsCommentByEcoNews(EcoNews ecoNews);
+    @Query(value = "SELECT count(ec.id) FROM econews_comment ec "
+        + "JOIN eco_news en ON en.id = ec.eco_news_id "
+        + "WHERE en.id = :ecoNewsId", nativeQuery = true)
+    int countEcoNewsCommentByEcoNews(Long ecoNewsId);
 
     /**
      * Method returns all {@link EcoNewsComment} by page.

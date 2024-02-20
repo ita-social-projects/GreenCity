@@ -17,19 +17,6 @@ public interface ShoppingListItemTranslationRepo extends JpaRepository<ShoppingL
     List<ShoppingListItemTranslation> findAllByLanguageCode(String languageCode);
 
     /**
-     * Method returns available shopping list items translations for specific user
-     * and language code.
-     *
-     * @param userId       target user id
-     * @param languageCode code of needed language
-     * @return List of available {@link ShoppingListItemTranslation}'s.
-     */
-    @Query("SELECT g FROM ShoppingListItemTranslation g WHERE g.shoppingListItem.id NOT IN "
-        + "(SELECT ug.shoppingListItem FROM UserShoppingListItem ug WHERE ug.habitAssign.id = ?1 "
-        + "AND ug.status = 'ACTIVE') AND g.language.code = ?2")
-    List<ShoppingListItemTranslation> findAvailableByUserId(Long userId, String languageCode);
-
-    /**
      * Method returns shopping list item translation for particular selected item
      * for specific user and language code.
      *
@@ -41,19 +28,6 @@ public interface ShoppingListItemTranslationRepo extends JpaRepository<ShoppingL
         + "where g.shopping_list_item_id = (SELECT ug.shopping_list_item_id FROM user_shopping_list as ug WHERE "
         + "ug.id=:itemId) AND g.language_id = (SELECT id FROM languages l where l.code =:languageCode)")
     ShoppingListItemTranslation findByLangAndUserShoppingListItemId(String languageCode, Long itemId);
-
-    /**
-     * Method updates Shopping list item translation for particular selected item
-     * for specific language code.
-     *
-     * @param itemId       target shopping list item id
-     * @param languageCode code of needed language
-     * @param content      new content
-     * @return {@link ShoppingListItemTranslation}
-     */
-    @Query("UPDATE ShoppingListItemTranslation SET content=?3"
-        + "WHERE id = ?1 AND language.code = ?2")
-    ShoppingListItemTranslation updateTranslationContent(Long itemId, String languageCode, String content);
 
     /**
      * Method for getting shopping list translations for given habit in specific

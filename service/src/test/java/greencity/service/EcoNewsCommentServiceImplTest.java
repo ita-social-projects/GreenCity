@@ -10,7 +10,7 @@ import greencity.achievement.AchievementCalculation;
 import greencity.dto.user.UserTagDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -508,7 +508,7 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo
             .findAllByParentCommentIsNullAndEcoNewsIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 1L,
                 CommentStatus.DELETED))
-                    .thenReturn(page);
+            .thenReturn(page);
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
         when(ecoNewsCommentRepo.countByParentCommentId(ecoNewsCommentDto.getId())).thenReturn(10);
 
@@ -533,7 +533,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo
             .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 1L, CommentStatus.DELETED))
-                .thenReturn(page);
+            .thenReturn(page);
 
         when(modelMapper.map(ecoNewsComment, EcoNewsCommentDto.class)).thenReturn(ecoNewsCommentDto);
 
@@ -551,7 +551,7 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo
             .findAllByParentCommentIdAndStatusNotOrderByCreatedDateDesc(pageRequest, 11111L,
                 CommentStatus.DELETED))
-                    .thenReturn(page1);
+            .thenReturn(page1);
 
         assertThrows(NotFoundException.class,
             () -> ecoNewsCommentService.findAllActiveReplies(pageRequest, 11111L, userVO));

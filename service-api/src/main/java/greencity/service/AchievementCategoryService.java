@@ -2,7 +2,6 @@ package greencity.service;
 
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
-
 import java.util.List;
 
 public interface AchievementCategoryService {
@@ -25,7 +24,7 @@ public interface AchievementCategoryService {
 
     /**
      * Method for finding {@link AchievementCategoryVO}.
-     * 
+     *
      * @param name - name category for {@link AchievementCategoryVO}
      * @return {@link AchievementCategoryVO}.
      * @author Orest Mamchuk

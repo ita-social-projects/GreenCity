@@ -9,7 +9,6 @@ import greencity.dto.user.UserVO;
 import java.util.Set;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 public interface EcoNewsService {

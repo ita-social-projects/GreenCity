@@ -87,9 +87,9 @@ class PlaceCommentControllerTest {
 
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-                .principal(principal)
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON))
+            .principal(principal)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -102,8 +102,8 @@ class PlaceCommentControllerTest {
     void saveBadRequestTest() throws Exception {
         mockMvc.perform(post(placeCommentLinkFirstPart + "/{placeId}" +
             placeCommentLinkSecondPart, 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
             .andExpect(status().isBadRequest());
 
         verify(placeCommentService, times(0)).save(1L, addCommentDto, "fail@ukr.net");

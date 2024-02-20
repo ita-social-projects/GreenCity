@@ -2,7 +2,6 @@ package greencity.repository;
 
 import greencity.entity.ShoppingListItem;
 import java.util.List;
-
 import greencity.entity.localization.ShoppingListItemTranslation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,15 +75,16 @@ public interface ShoppingListItemRepo
      * @param code   language code {@link String}
      * @return {@link ShoppingListItemTranslation}
      */
-    @Query("select translations from UserShoppingListItem as usli \n"
-        + "join HabitAssign as ha on ha.id = usli.habitAssign.id\n"
-        + "join ShoppingListItemTranslation as translations on\n"
-        + "translations.shoppingListItem.id = usli.shoppingListItem.id\n"
-        + "join Language as lang on translations.language.id = lang.id\n"
-        + "where usli.status = 'INPROGRESS'\n"
-        + "and ha.status = 'INPROGRESS'\n"
-        + "and ha.user.id = :userId\n"
-        + "and lang.code = :code")
+    @Query("""
+        select translations from UserShoppingListItem as usli\s
+        join HabitAssign as ha on ha.id = usli.habitAssign.id
+        join ShoppingListItemTranslation as translations on
+        translations.shoppingListItem.id = usli.shoppingListItem.id
+        join Language as lang on translations.language.id = lang.id
+        where usli.status = 'INPROGRESS'
+        and ha.status = 'INPROGRESS'
+        and ha.user.id = :userId
+        and lang.code = :code""")
     List<ShoppingListItemTranslation> findInProgressByUserIdAndLanguageCode(@Param("userId") Long userId,
         @Param("code") String code);
 

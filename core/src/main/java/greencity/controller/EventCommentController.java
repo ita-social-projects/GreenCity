@@ -13,9 +13,12 @@ import greencity.dto.eventcomment.EventCommentDto;
 import greencity.dto.eventcomment.EventCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.service.EventCommentService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,11 +26,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @Validated
 @AllArgsConstructor
@@ -43,18 +53,19 @@ public class EventCommentController {
      * @param request dto for {@link EventCommentVO} entity.
      * @return dto {@link AddEventCommentDtoResponse}
      */
-    @ApiOperation(value = "Add comment.")
+    @Operation(summary = "Add comment.")
     @ResponseStatus(value = HttpStatus.CREATED)
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = HttpStatuses.CREATED, response = AddEventCommentDtoRequest.class),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
+            content = @Content(schema = @Schema(implementation = AddEventCommentDtoResponse.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @PostMapping("/{eventId}")
     public ResponseEntity<AddEventCommentDtoResponse> save(@PathVariable Long eventId,
         @Valid @RequestBody AddEventCommentDtoRequest request,
-        @ApiIgnore @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(eventCommentService.save(eventId, request, user));
@@ -68,7 +79,7 @@ public class EventCommentController {
      */
     @GetMapping("{id}")
     public ResponseEntity<EventCommentDto> getEventCommentById(@PathVariable Long id,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(eventCommentService.getEventCommentById(id, userVO));
     }
@@ -81,10 +92,10 @@ public class EventCommentController {
      * @return amount of all active comments for certain
      *         {@link greencity.dto.event.EventVO}
      */
-    @ApiOperation(value = "Count comments.")
+    @Operation(summary = "Count comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @GetMapping("/count/{eventId}")
     public int getCountOfComments(@PathVariable Long eventId) {
@@ -98,16 +109,17 @@ public class EventCommentController {
      * @param eventId id of {@link greencity.dto.event.EventVO}
      * @return Pageable of {@link greencity.dto.eventcomment.EventCommentDto}
      */
-    @ApiOperation(value = "Get all active comments.")
+    @Operation(summary = "Get all active comments.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/active")
     @ApiPageableWithoutSort
-    public ResponseEntity<PageableDto<EventCommentDto>> getAllActiveComments(@ApiIgnore Pageable pageable,
+    public ResponseEntity<PageableDto<EventCommentDto>> getAllActiveComments(
+        @Parameter(hidden = true) Pageable pageable,
         Long eventId,
-        @ApiIgnore @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(eventCommentService.getAllActiveComments(pageable, user, eventId));
     }
@@ -121,15 +133,16 @@ public class EventCommentController {
      * @param commentText edited text of
      *                    {@link greencity.dto.eventcomment.EventCommentVO}
      */
-    @ApiOperation(value = "Update comment.")
+    @Operation(summary = "Update comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping()
-    public void update(Long id, @RequestParam @NotBlank String commentText, @ApiIgnore @CurrentUser UserVO user) {
+    public void update(Long id, @RequestParam @NotBlank String commentText,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.update(commentText, id, user);
     }
 
@@ -142,14 +155,15 @@ public class EventCommentController {
      * @return id of deleted {@link greencity.dto.eventcomment.EventCommentVO}.
      * @author Oleh Vatulaik.
      */
-    @ApiOperation(value = "Mark comment as deleted.")
+    @Operation(summary = "Mark comment as deleted.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/{eventCommentId}")
-    public ResponseEntity<Object> delete(@PathVariable Long eventCommentId, @ApiIgnore @CurrentUser UserVO user) {
+    public ResponseEntity<Object> delete(@PathVariable Long eventCommentId,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.delete(eventCommentId, user);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -162,17 +176,18 @@ public class EventCommentController {
      * @param user            {@link UserVO} user who want to get replies.
      * @return Pageable of {@link EventCommentDto}
      */
-    @ApiOperation(value = "Get all active replies to comment.")
+    @Operation(description = "Get all active replies to comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("replies/active/{parentCommentId}")
     @ApiPageable
-    public ResponseEntity<PageableDto<EventCommentDto>> findAllActiveReplies(@ApiIgnore Pageable pageable,
+    public ResponseEntity<PageableDto<EventCommentDto>> findAllActiveReplies(
+        @Parameter(hidden = true) Pageable pageable,
         @PathVariable Long parentCommentId,
-        @ApiIgnore @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(eventCommentService.findAllActiveReplies(pageable, parentCommentId, user));
@@ -184,11 +199,11 @@ public class EventCommentController {
      * @param parentCommentId to specify {@link EventCommentDto}
      * @return amount of all active comments for certain {@link EventCommentDto}
      */
-    @ApiOperation(value = "Count replies for comment.")
+    @Operation(summary = "Count replies for comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/replies/active/count/{parentCommentId}")
     public int getCountOfActiveReplies(@PathVariable Long parentCommentId) {
@@ -201,15 +216,15 @@ public class EventCommentController {
      *
      * @param commentId of {@link EventCommentDto} to like/dislike
      */
-    @ApiOperation(value = "Like/dislike comment.")
+    @Operation(summary = "Like/dislike comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/like")
-    public void like(@RequestParam("commentId") Long commentId, @ApiIgnore @CurrentUser UserVO user) {
+    public void like(@RequestParam("commentId") Long commentId, @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.like(commentId, user);
     }
 
@@ -222,15 +237,15 @@ public class EventCommentController {
      *                  comment.
      * @return amountCommentLikesDto dto with id and count likes for comments.
      */
-    @ApiOperation(value = "Count likes for comment.")
+    @Operation(summary = "Count likes for comment.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/likes/count/{commentId}")
     public ResponseEntity<AmountCommentLikesDto> countLikes(@PathVariable("commentId") Long commentId,
-        @ApiIgnore @CurrentUser UserVO user) {
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(eventCommentService.countLikes(commentId, user));

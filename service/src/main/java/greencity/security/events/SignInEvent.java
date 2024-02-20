@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * An event that should be emitted when a user signed in.
- * 
+ *
  * @author Yurii Koval.
  */
 public class SignInEvent extends ApplicationEvent {
