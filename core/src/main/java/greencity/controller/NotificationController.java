@@ -57,31 +57,6 @@ public class NotificationController {
     }
 
     /**
-     * Method for getting page of notifications.
-     *
-     * @param pageable  pageable configuration
-     * @param principal Principal with userId
-     * @param locale    language responseCode
-     * @return list of {@link NotificationDto}
-     * @author Volodymyr Mladonov
-     */
-    @Operation(summary = "Get page of notifications")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
-    })
-    @ApiPageableWithoutSort
-    @GetMapping("/all")
-    public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEvent(
-        @Parameter(hidden = true) Pageable pageable,
-        @Parameter(hidden = true) Principal principal,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(userNotificationService.getNotifications(pageable, principal, locale.getLanguage()));
-    }
-
-    /**
      * Method for getting page of notifications filtered and sorted.
      *
      * @param pageable  pageable configuration
@@ -109,11 +84,9 @@ public class NotificationController {
     }
 
     /**
-     * Method to return specific Notification and mark it as viewed.
+     * Method to mark Notification as viewed.
      *
-     * @param principal      Principal with userId
      * @param notificationId id of notification, that should be returned
-     * @param locale         language responseCode
      * @return One {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
@@ -124,13 +97,11 @@ public class NotificationController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping("/{notificationId}")
-    public ResponseEntity<NotificationDto> getNotification(
-        @Parameter(hidden = true) Principal principal,
-        @PathVariable Long notificationId,
-        @Parameter(hidden = true) @ValidLanguage Locale locale) {
-        return ResponseEntity.status(HttpStatus.OK)
-            .body(userNotificationService.getNotification(principal, notificationId, locale.getLanguage()));
+    @PatchMapping("/view/{notificationId}")
+    public ResponseEntity<NotificationDto> viewNotification(
+        @PathVariable Long notificationId) {
+        userNotificationService.viewNotification(notificationId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     /**

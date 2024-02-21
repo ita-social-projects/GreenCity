@@ -250,9 +250,7 @@ public class SecurityConfig {
                     FRIENDS,
                     "/notification",
                     "/notification/all",
-                    "/notification/new",
-                    "/notification//{notificationId}",
-                    "/notification/filtered")
+                    "/notification/new")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
                     "/category",
@@ -317,6 +315,7 @@ public class SecurityConfig {
                     "/user/profilePicture",
                     "/user/deleteProfilePicture",
                     "/notification/unread/{notificationId}",
+                    "/notification/view/{notificationId}",
                     FRIENDS + "/{friendId}/acceptFriend",
                     FRIENDS + "/{friendId}/declineFriend")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
