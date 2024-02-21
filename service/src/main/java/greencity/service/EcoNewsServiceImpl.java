@@ -12,7 +12,6 @@ import greencity.dto.econews.AddEcoNewsDtoResponse;
 import greencity.dto.econews.EcoNewContentSourceDto;
 import greencity.dto.econews.EcoNewsDto;
 import greencity.dto.econews.EcoNewsDtoManagement;
-import greencity.dto.econews.EcoNewsForSendEmailDto;
 import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.econews.EcoNewsVO;
 import greencity.dto.econews.EcoNewsViewDto;
@@ -22,7 +21,6 @@ import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.EcoNewsAuthorDto;
-import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -30,13 +28,13 @@ import greencity.entity.EcoNews_;
 import greencity.entity.Tag;
 import greencity.entity.User;
 import greencity.entity.localization.TagTranslation;
-import greencity.enums.AchievementCategoryType;
 import greencity.enums.AchievementAction;
-import greencity.enums.NotificationType;
-import greencity.enums.Role;
+import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
-import greencity.enums.TagType;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
+import greencity.enums.Role;
+import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotSavedException;
@@ -46,6 +44,7 @@ import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -60,15 +59,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static greencity.constant.AppConstant.AUTHORIZATION;
 
 @Service
 @EnableCaching
@@ -134,27 +130,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         userNotificationService.createNewNotification(user, NotificationType.EVENT_CREATED, toSave.getId(),
             toSave.getTitle());
         return ecoNewsDto;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @author Zakhar Veremchuk.
-     */
-    public void sendEmailDto(AddEcoNewsDtoResponse addEcoNewsDtoResponse,
-        User user) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(user, PlaceAuthorDto.class);
-        EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-            .author(placeAuthorDto)
-            .creationDate(addEcoNewsDtoResponse.getCreationDate())
-            .unsubscribeToken(accessToken)
-            .text(addEcoNewsDtoResponse.getText())
-            .title(addEcoNewsDtoResponse.getTitle())
-            .source(addEcoNewsDtoResponse.getSource())
-            .imagePath(addEcoNewsDtoResponse.getImagePath())
-            .build();
-        restClient.addEcoNews(dto);
     }
 
     /**
@@ -672,7 +647,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (!StringUtils.isEmpty(value)) {
+        if (StringUtils.hasLength(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)
@@ -704,7 +679,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 .flatMap(t -> t.getTagTranslations().stream())
                 .filter(t -> t.getLanguage().getCode().equals(language))
                 .map(TagTranslation::getName)
-                .collect(Collectors.toList()));
+                .toList());
         }
 
         return buildEcoNewsGenericDto(ecoNews, tags);

@@ -82,7 +82,7 @@ class HabitFactServiceImplTest {
             new PageableDto<>(languageTranslationDTOS, languageTranslationDTOS.size(), 0, 1);
         Page<HabitFactTranslation> pageFacts = new PageImpl<>(habitFactTranslation,
             pageable, habitFactTranslation.size());
-        when(modelMapper.map(habitFactTranslation.get(0), LanguageTranslationDTO.class))
+        when(modelMapper.map(habitFactTranslation.getFirst(), LanguageTranslationDTO.class))
             .thenReturn(languageTranslationDTO);
         when(habitFactTranslationRepo.findAllByLanguageCode(pageable, language))
             .thenReturn(pageFacts);

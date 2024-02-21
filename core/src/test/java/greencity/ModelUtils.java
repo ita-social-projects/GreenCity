@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
-
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
@@ -112,7 +111,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -712,7 +710,7 @@ public class ModelUtils {
     public static AddEventDtoRequest getEventWithInvalidLink() {
         return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
             .startDate(ZonedDateTime.now().plusDays(5))
-            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink").build())).build();
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).onlineLink("invalidLink.").build())).build();
     }
 
     public static AddEventDtoRequest getEventWithTooManyTags() {

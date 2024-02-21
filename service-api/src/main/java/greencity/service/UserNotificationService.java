@@ -8,7 +8,6 @@ import greencity.dto.user.UserVO;
 import greencity.enums.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.security.Principal;
 import java.util.List;
 
@@ -69,7 +68,7 @@ public interface UserNotificationService {
 
     /**
      * Method to create Notification for many Users.
-     * 
+     *
      * @param attendersList    list of Users to receive Notification.
      * @param message          title of Event, {message} in template
      * @param notificationType type of Notification
@@ -95,7 +94,7 @@ public interface UserNotificationService {
 
     /**
      * Method to create Notification without CustomMessage.
-     * 
+     *
      * @param targetUser       user, that should receive Notification
      * @param actionUser       user, that triggered Notification
      * @param notificationType type of Notification

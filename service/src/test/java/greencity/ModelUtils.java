@@ -1350,6 +1350,17 @@ public class ModelUtils {
             .build();
     }
 
+    public static HabitTranslation getHabitTranslationUa() {
+        return HabitTranslation.builder()
+            .id(1L)
+            .description("тест")
+            .habitItem("тест")
+            .language(getLanguage())
+            .name("тест")
+            .habit(getHabit())
+            .build();
+    }
+
     public static HabitTranslation getHabitTranslationWithCustom() {
         return HabitTranslation.builder()
             .id(1L)

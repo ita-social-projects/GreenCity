@@ -8,9 +8,10 @@ import greencity.dto.achievement.ActionDto;
 import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.notification.NotificationDto;
 import greencity.service.UserNotificationService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
@@ -39,20 +38,20 @@ public class NotificationController {
      * Method returns 3 last not viewed notifications.
      *
      * @param principal Principal with userId
-     * @param locale    language code
+     * @param locale    language responseCode
      * @return set of 3 {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @ApiOperation(value = "Get 3 last new notifications.")
+    @Operation(summary = "Get 3 last new notifications.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/new")
     public ResponseEntity<List<NotificationDto>> getThreeLastNotifications(
-        @ApiIgnore Principal principal,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getThreeLastNotifications(principal, locale.getLanguage()));
     }
@@ -62,22 +61,22 @@ public class NotificationController {
      *
      * @param pageable  pageable configuration
      * @param principal Principal with userId
-     * @param locale    language code
+     * @param locale    language responseCode
      * @return list of {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @ApiOperation(value = "Get page of notifications")
+    @Operation(summary = "Get page of notifications")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
     @GetMapping("/all")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEvent(
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) Principal principal,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getNotifications(pageable, principal, locale.getLanguage()));
     }
@@ -88,23 +87,23 @@ public class NotificationController {
      * @param pageable  pageable configuration
      * @param principal Principal with userId
      * @param filter    lists of tags, that should be returned for User
-     * @param locale    language code
+     * @param locale    language responseCode
      * @return list of {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @ApiOperation(value = "Get page of notification filtered and sorted.")
+    @Operation(summary = "Get page of notification filtered and sorted.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
     @GetMapping("/filtered")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEventFiltered(
-        @ApiIgnore Pageable pageable,
-        @ApiIgnore Principal principal,
+        @Parameter(hidden = true) Pageable pageable,
+        @Parameter(hidden = true) Principal principal,
         FilterNotificationDto filter,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getNotificationsFiltered(pageable, principal, filter, locale.getLanguage()));
     }
@@ -114,22 +113,22 @@ public class NotificationController {
      *
      * @param principal      Principal with userId
      * @param notificationId id of notification, that should be returned
-     * @param locale         language code
+     * @param locale         language responseCode
      * @return One {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @ApiOperation(value = "Get single Notification.")
+    @Operation(summary = "Get single Notification.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/{notificationId}")
     public ResponseEntity<NotificationDto> getNotification(
-        @ApiIgnore Principal principal,
+        @Parameter(hidden = true) Principal principal,
         @PathVariable Long notificationId,
-        @ApiIgnore @ValidLanguage Locale locale) {
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userNotificationService.getNotification(principal, notificationId, locale.getLanguage()));
     }
@@ -141,12 +140,12 @@ public class NotificationController {
      * @return One {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @ApiOperation(value = "Get single Notification.")
+    @Operation(summary = "Get single Notification.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping("/unread/{notificationId}")
     public ResponseEntity<Object> unreadNotification(
@@ -161,16 +160,16 @@ public class NotificationController {
      * @param principal      Principal with userId
      * @param notificationId id of notification, that should be deleted
      */
-    @ApiOperation(value = "Delete single Notification.")
+    @Operation(summary = "Delete single Notification.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<Object> deleteNotification(
-        @ApiIgnore Principal principal,
+        @Parameter(hidden = true) Principal principal,
         @PathVariable Long notificationId) {
         userNotificationService.deleteNotification(principal, notificationId);
         return ResponseEntity.status(HttpStatus.OK).build();

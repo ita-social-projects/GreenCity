@@ -1,7 +1,6 @@
 package greencity.service;
 
 import greencity.dto.shoppinglistitem.ShoppingListItemVO;
-
 import java.util.List;
 
 public interface HabitShoppingListItemService {

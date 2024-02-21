@@ -4,7 +4,13 @@ import greencity.dto.shoppinglistitem.ShoppingListItemVO;
 import greencity.dto.habit.HabitAssignVO;
 import greencity.enums.ShoppingListItemStatus;
 import java.time.LocalDateTime;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +26,7 @@ public class UserShoppingListItemVO {
 
     private ShoppingListItemVO shoppingListItemVO;
 
+    @Builder.Default
     private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
 
     private LocalDateTime dateCompleted;

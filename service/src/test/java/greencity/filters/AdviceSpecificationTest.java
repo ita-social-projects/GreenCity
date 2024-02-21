@@ -6,9 +6,9 @@ import greencity.entity.*;
 import greencity.entity.localization.AdviceTranslation;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,9 +99,9 @@ class AdviceSpecificationTest {
 
         when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock).thenReturn(andTranslationPredicate);
 
-        when(adviceRootMock.get(criteriaList.get(0).getKey())).thenReturn(pathAdviceIdMock);
+        when(adviceRootMock.get(criteriaList.getFirst().getKey())).thenReturn(pathAdviceIdMock);
 
-        when(criteriaBuilderMock.equal(pathAdviceIdMock, criteriaList.get(0).getValue()))
+        when(criteriaBuilderMock.equal(pathAdviceIdMock, criteriaList.getFirst().getValue()))
             .thenReturn(andIdNumericPredicate);
 
         when(criteriaBuilderMock.and(predicateMock, andIdNumericPredicate)).thenReturn(andIdNumericPredicate);
@@ -121,7 +121,7 @@ class AdviceSpecificationTest {
 
         adviceSpecification.toPredicate(adviceRootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        verify(adviceRootMock).get(criteriaList.get(0).getKey());
+        verify(adviceRootMock).get(criteriaList.getFirst().getKey());
         verify(criteriaBuilderMock).and(predicateMock, andIdNumericPredicate);
         verify(criteriaBuilderMock).and(andIdNumericPredicate, andHabitIdPredicate);
         verify(criteriaBuilderMock).and(andHabitIdPredicate, andTranslationPredicate);

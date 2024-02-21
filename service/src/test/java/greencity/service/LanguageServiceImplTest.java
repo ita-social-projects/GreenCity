@@ -10,7 +10,7 @@ import greencity.repository.LanguageRepo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;

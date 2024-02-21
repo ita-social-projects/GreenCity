@@ -38,13 +38,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
@@ -256,7 +253,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated());
 
-        verify(eventService).save(addEventDtoRequest, principal.getName(), new MultipartFile[0]);
+        verify(eventService).save(addEventDtoRequest, principal.getName(), null);
     }
 
     @Test
@@ -351,7 +348,7 @@ class EventsControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        verify(eventService).update(updateEventDto, principal.getName(), new MultipartFile[0]);
+        verify(eventService).update(updateEventDto, principal.getName(), null);
     }
 
     @Test
@@ -583,7 +580,7 @@ class EventsControllerTest {
 
     @SneakyThrows
     private AddEventDtoRequest getAddEventDtoRequest() {
-        String json = "{\n" +
+        String json = "{ \n" +
             "    \"title\":\"string\",\n" +
             "    \"description\":\"stringstringstringstringstringstringstringstring\",\n" +
             "    \"open\":true,\n" +

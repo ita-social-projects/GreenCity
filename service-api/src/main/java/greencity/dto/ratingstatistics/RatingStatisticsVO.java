@@ -2,9 +2,12 @@ package greencity.dto.ratingstatistics;
 
 import greencity.dto.user.UserVO;
 import java.time.ZonedDateTime;
-
 import greencity.enums.RatingCalculationEnum;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 @Getter
 @Setter

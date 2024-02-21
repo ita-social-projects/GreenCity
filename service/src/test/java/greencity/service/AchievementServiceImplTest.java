@@ -42,7 +42,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
 class AchievementServiceImplTest {
@@ -90,7 +90,7 @@ class AchievementServiceImplTest {
             .thenReturn(ModelUtils.getAchievementVO());
         when(userService.findByEmail("email@gmail.com")).thenReturn(ModelUtils.getUserVO());
         List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "");
-        assertEquals(1L, (long) findAllResult.get(0).getId());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
     }
 
     @Test
@@ -115,7 +115,7 @@ class AchievementServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
         List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "ACHIEVED");
-        assertEquals(1L, (long) findAllResult.get(0).getId());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
         verify(userService).findByEmail("email@gmail.com");
         verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
         verify(userAchievementRepo).getUserAchievementByUserId(anyLong());
@@ -131,7 +131,7 @@ class AchievementServiceImplTest {
         when(modelMapper.map(ModelUtils.getAchievement(), AchievementVO.class))
             .thenReturn(ModelUtils.getAchievementVO());
         List<AchievementVO> findAllResult = achievementService.findAllByType("email@gmail.com", "UNACHIEVED");
-        assertEquals(1L, (long) findAllResult.get(0).getId());
+        assertEquals(1L, (long) findAllResult.getFirst().getId());
         verify(userService).findByEmail("email@gmail.com");
         verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
         verify(achievementRepo).searchAchievementsUnAchieved(anyLong());

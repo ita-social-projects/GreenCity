@@ -1,7 +1,12 @@
 package greencity.dto.econewscomment;
 
-import javax.validation.constraints.NotBlank;
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 
 @Getter

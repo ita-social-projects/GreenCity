@@ -1,5 +1,11 @@
 package greencity.service;
 
+import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -59,14 +65,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-
-import greencity.repository.AchievementCategoryRepo;
-import greencity.repository.AchievementRepo;
-import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsSearchRepo;
-import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,52 +80,38 @@ import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
-
     @Mock
     EcoNewsRepo ecoNewsRepo;
-
     @Mock
     ModelMapper modelMapper;
-
     @Mock
     NewsSubscriberService newsSubscriberService;
-
     @Mock
     RestClient restClient;
-
     @Mock
     TagsService tagService;
-
     @Mock
     LanguageService languageService;
-
     @Mock
     FileService fileService;
-
     @Mock
     HttpServletRequest httpServletRequest;
-
     @Mock
     EcoNewsSearchRepo ecoNewsSearchRepo;
     @Mock
     private UserService userService;
-
     @Mock
     private RatingCalculation ratingCalculation;
     @Mock
     private AchievementService achievementService;
     @Mock
     private AchievementCalculation achievementCalculation;
-
     @InjectMocks
     private EcoNewsServiceImpl ecoNewsService;
-
     @Mock
     private UserActionService userActionService;
-
     @Mock
     private AchievementCategoryService achievementCategoryService;
-
     @Mock
     private UserAchievementRepo userAchievementRepo;
     @Mock
@@ -310,7 +295,7 @@ class EcoNewsServiceImplTest {
             0, false, false, true, true);
 
         when(ecoNewsRepo.findAllByOrderByCreationDateDesc(pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsDto.class)).thenReturn(dtoList.getFirst());
 
         PageableAdvancedDto<EcoNewsDto> actual = ecoNewsService.findAll(pageRequest);
 
@@ -333,7 +318,7 @@ class EcoNewsServiceImplTest {
         User user = User.builder().id(1L).build();
         when(modelMapper.map(userVO, User.class)).thenReturn(user);
         when(ecoNewsRepo.findAllByAuthorOrderByCreationDateDesc(user, pageRequest)).thenReturn(translationPage);
-        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsGenericDto.class)).thenReturn(dtoList.getFirst());
 
         PageableAdvancedDto<EcoNewsGenericDto> actual = ecoNewsService.findAllByUser(userVO, pageRequest);
 
@@ -362,7 +347,7 @@ class EcoNewsServiceImplTest {
         List<String> tags = Collections.singletonList(ModelUtils.getTagTranslations().get(0).getName());
         List<String> lowerCaseTags = tags.stream().map(String::toLowerCase).collect(Collectors.toList());
 
-        when(modelMapper.map(ecoNews.get(0), EcoNewsGenericDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsGenericDto.class)).thenReturn(dtoList.getFirst());
         when(ecoNewsRepo.findByTags(pageRequest, lowerCaseTags))
             .thenReturn(page);
 
@@ -418,7 +403,7 @@ class EcoNewsServiceImplTest {
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.ofNullable(ecoNews));
         when(ecoNewsRepo.getThreeRecommendedEcoNews(1L)).thenReturn(Collections.singletonList(ecoNews));
         when(ecoNewsRepo.getThreeLastEcoNews()).thenReturn(Collections.singletonList(ecoNews));
-        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews, EcoNewsDto.class)).thenReturn(dtoList.getFirst());
 
         List<EcoNewsDto> actual = ecoNewsService.getThreeRecommendedEcoNews(1L);
 
@@ -466,7 +451,7 @@ class EcoNewsServiceImplTest {
         List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
         List<EcoNewsDto> dtoList = Collections.singletonList(modelMapper.map(ecoNews, EcoNewsDto.class));
 
-        when(modelMapper.map(ecoNews.get(0), EcoNewsDto.class)).thenReturn(dtoList.get(0));
+        when(modelMapper.map(ecoNews.getFirst(), EcoNewsDto.class)).thenReturn(dtoList.getFirst());
         when(ecoNewsRepo.findAllByUserId(1L)).thenReturn(ecoNews);
 
         List<EcoNewsDto> actual = ecoNewsService.getAllPublishedNewsByUserId(1L);

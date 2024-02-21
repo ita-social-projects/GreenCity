@@ -8,8 +8,7 @@ import greencity.entity.User_;
 import greencity.enums.RatingCalculationEnum;
 import greencity.exception.exceptions.NotFoundException;
 import lombok.NoArgsConstructor;
-import javax.persistence.criteria.*;
-
+import jakarta.persistence.criteria.*;
 import java.util.Arrays;
 import java.util.List;
 

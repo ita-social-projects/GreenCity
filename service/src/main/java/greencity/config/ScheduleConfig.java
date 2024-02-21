@@ -18,11 +18,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import static greencity.enums.EmailNotification.*;
 import static greencity.enums.FactOfDayStatus.*;
 
@@ -109,7 +106,7 @@ public class ScheduleConfig {
             habitFactTranslationRepo.updateFactOfDayStatus(CURRENT, USED);
             list = habitFactTranslationRepo.findRandomHabitFact();
         }
-        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.get(0).getHabitFact().getId());
+        habitFactTranslationRepo.updateFactOfDayStatusByHabitFactId(CURRENT, list.getFirst().getHabitFact().getId());
     }
 
     /**

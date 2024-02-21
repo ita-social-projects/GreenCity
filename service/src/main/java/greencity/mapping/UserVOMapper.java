@@ -14,7 +14,6 @@ import greencity.entity.User;
 import greencity.entity.UserLocation;
 import org.modelmapper.AbstractConverter;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;

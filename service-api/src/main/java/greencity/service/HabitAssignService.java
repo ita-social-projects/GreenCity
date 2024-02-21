@@ -11,7 +11,6 @@ import greencity.dto.habit.HabitsDateEnrollmentDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -20,7 +19,7 @@ public interface HabitAssignService {
     /**
      * Method to find {@code HabitAssign} by habitAssignId, userId and specific
      * language.
-     * 
+     *
      * @param userId        {@code User} id.
      * @param habitAssignId {@code HabitAssign} id.
      * @param language      {@link String} of language code value.

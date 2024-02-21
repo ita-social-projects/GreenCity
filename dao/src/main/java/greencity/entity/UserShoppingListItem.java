@@ -3,8 +3,21 @@ package greencity.entity;
 import greencity.enums.ShoppingListItemStatus;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import javax.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -13,7 +26,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"user"})
 @Builder
 public class UserShoppingListItem {
     @Id
@@ -28,6 +40,7 @@ public class UserShoppingListItem {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
+    @Builder.Default
     private ShoppingListItemStatus status = ShoppingListItemStatus.ACTIVE;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd-HH-mm-ss.zzz")

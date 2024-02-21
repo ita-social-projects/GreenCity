@@ -14,7 +14,6 @@ import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.entity.Achievement;
 import greencity.entity.AchievementCategory;
-
 import greencity.entity.User;
 import greencity.entity.UserAchievement;
 import greencity.enums.AchievementCategoryType;
@@ -23,11 +22,9 @@ import greencity.exception.exceptions.NotDeletedException;
 import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.NotUpdatedException;
 import greencity.repository.AchievementRepo;
-
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import greencity.repository.UserAchievementRepo;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -153,8 +150,7 @@ public class AchievementServiceImpl implements AchievementService {
         return achievemnetsId
             .stream()
             .map(achievementRepo::findById)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
             .map(achieve -> modelMapper.map(achieve, AchievementVO.class))
             .collect(Collectors.toList());
     }

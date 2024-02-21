@@ -37,7 +37,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -290,8 +289,10 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     public int countOfComments(Long ecoNewsId) {
-        return ecoNewsCommentRepo.countEcoNewsCommentByEcoNews(ecoNewsRepo.findById(ecoNewsId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId)));
+        EcoNews ecoNews = ecoNewsRepo.findById(ecoNewsId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + ecoNewsId));
+
+        return ecoNewsCommentRepo.countEcoNewsCommentByEcoNews(ecoNews.getId());
     }
 
     /**

@@ -1,7 +1,7 @@
 package greencity.entity;
 
 import java.time.LocalDate;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor

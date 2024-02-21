@@ -547,7 +547,7 @@ class FriendServiceImplTest {
             .thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, name, pageable);
@@ -596,7 +596,7 @@ class FriendServiceImplTest {
             .thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(userId, null, pageable);
@@ -632,7 +632,7 @@ class FriendServiceImplTest {
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(currentUserId,
                 userPage.getContent()))
-                    .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto = friendService
             .findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(pageable, userId, currentUserId);
@@ -698,7 +698,7 @@ class FriendServiceImplTest {
         when(userRepo.getRecommendedFriendsOfFriends(userId, pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.FRIENDS_OF_FRIENDS, pageable);
@@ -732,7 +732,7 @@ class FriendServiceImplTest {
         when(userRepo.getAllUsersExceptMainUserAndFriends(userId, "", pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, null, pageable);
@@ -766,7 +766,7 @@ class FriendServiceImplTest {
         when(userRepo.findRecommendedFriendsByHabits(userId, pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.HABITS, pageable);
@@ -805,7 +805,7 @@ class FriendServiceImplTest {
         when(userRepo.findRecommendedFriendsByCity(userId, "testCity", pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
         PageableDto<UserFriendDto> pageableDto =
             friendService.findRecommendedFriends(userId, RecommendedFriendsType.CITY, pageable);
 
@@ -839,7 +839,7 @@ class FriendServiceImplTest {
         when(userRepo.getMutualFriends(userId, friendId, pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.getMutualFriends(userId, friendId, pageable);
@@ -904,7 +904,7 @@ class FriendServiceImplTest {
         when(userRepo.getAllUserFriendRequests(userId, pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.getAllUserFriendRequests(userId, pageable);
@@ -968,7 +968,7 @@ class FriendServiceImplTest {
         when(userRepo.findAllFriendsOfUser(userId, name, pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllFriendsOfUser(userId, name, pageable);
@@ -1001,7 +1001,7 @@ class FriendServiceImplTest {
         when(userRepo.findAllFriendsOfUser(userId, "", pageable)).thenReturn(userPage);
         when(
             customUserRepo.fillListOfUserWithCountOfMutualFriendsAndChatIdForCurrentUser(userId, userPage.getContent()))
-                .thenReturn(List.of(expectedResult));
+            .thenReturn(List.of(expectedResult));
 
         PageableDto<UserFriendDto> pageableDto =
             friendService.findAllFriendsOfUser(userId, null, pageable);

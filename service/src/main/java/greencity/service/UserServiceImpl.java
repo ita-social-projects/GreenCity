@@ -17,7 +17,6 @@ import greencity.exception.exceptions.NotFoundException;
 import greencity.exception.exceptions.WrongEmailException;
 import greencity.exception.exceptions.WrongIdException;
 import greencity.repository.UserRepo;
-
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -26,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        return optionalUser.isEmpty() ? null : modelMapper.map(optionalUser.get(), UserVO.class);
+        return optionalUser.map(user -> modelMapper.map(user, UserVO.class)).orElse(null);
     }
 
     /**
@@ -122,11 +120,11 @@ public class UserServiceImpl implements UserService {
     /**
      * Update {@code ROLE} of user.
      *
-     * @deprecated updates like this on User entity should be handled in
-     *             GreenCityUser via RestClient.
      * @param id   {@link UserVO} id.
      * @param role {@link Role} for user.
      * @return {@link UserRoleDto}
+     * @deprecated updates like this on User entity should be handled in
+     *             GreenCityUser via RestClient.
      */
     @Deprecated
     @Override

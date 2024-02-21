@@ -10,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.List;
 

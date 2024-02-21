@@ -1,7 +1,7 @@
 package greencity.webcontroller;
 
 import com.google.gson.Gson;
-import greencity.client.RestClient;
+import com.google.gson.GsonBuilder;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.AddEcoNewsDtoRequest;
@@ -10,6 +10,7 @@ import greencity.dto.econews.EcoNewsDtoManagement;
 import greencity.dto.econews.EcoNewsViewDto;
 import greencity.dto.tag.TagDto;
 import greencity.dto.user.UserVO;
+import greencity.converters.ZonedDateTimeTypeAdapter;
 import greencity.service.EcoNewsService;
 import greencity.service.TagsService;
 import greencity.service.UserService;
@@ -33,13 +34,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
+import org.springframework.validation.Validator;
 import static greencity.ModelUtils.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -57,19 +56,19 @@ class ManagementEcoNewsControllerTest {
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private RestClient restClient;
-    @Mock
     private TagsService tagsService;
     @Mock
     private UserService userService;
-
-    private Principal principal = getPrincipal();
+    @Mock
+    private Validator mockValidator;
+    private final Principal principal = getPrincipal();
 
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(managementEcoNewsController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
+            .setValidator(mockValidator)
             .build();
     }
 
@@ -174,19 +173,18 @@ class ManagementEcoNewsControllerTest {
         EcoNewsDtoManagement ecoNewsDtoManagement = new EcoNewsDtoManagement();
         ecoNewsDtoManagement.setId(1L);
         ecoNewsDtoManagement.setTags(Collections.singletonList("News"));
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
+            .create();
         String json = gson.toJson(ecoNewsDtoManagement);
         MockMultipartFile jsonFile =
             new MockMultipartFile("ecoNewsDtoManagement", "", "application/json", json.getBytes());
 
         this.mockMvc.perform(multipart(managementEcoNewsLink + "/")
             .file(jsonFile)
-            .with(new RequestPostProcessor() {
-                @Override
-                public MockHttpServletRequest postProcessRequest(MockHttpServletRequest mockHttpServletRequest) {
-                    mockHttpServletRequest.setMethod("PUT");
-                    return mockHttpServletRequest;
-                }
+            .with(mockHttpServletRequest -> {
+                mockHttpServletRequest.setMethod("PUT");
+                return mockHttpServletRequest;
             })).andExpect(status().isOk());
 
         verify(ecoNewsService, never()).update(ecoNewsDtoManagement, jsonFile);
@@ -217,21 +215,15 @@ class ManagementEcoNewsControllerTest {
 
     @Test
     void getAllEcoNewsSearchByForm() throws Exception {
-        EcoNewsViewDto ecoNewsViewDto = new EcoNewsViewDto("1", "", "", "", "", "", "");
-        Pageable pageable = PageRequest.of(0, 10);
-        List<EcoNewsDto> ecoNewsDtos = Collections.singletonList(new EcoNewsDto());
-        PageableAdvancedDto<EcoNewsDto> ecoNewsDtoPageableDto =
-            new PageableAdvancedDto<>(ecoNewsDtos, 2, 0, 3, 0,
-                true, true, true, true);
-        when(ecoNewsService.getFilteredDataForManagementByPage(pageable, ecoNewsViewDto))
-            .thenReturn(ecoNewsDtoPageableDto);
-        this.mockMvc.perform(get(managementEcoNewsLink + "?id=1")
+        EcoNewsDto ecoNewsDto = new EcoNewsDto();
+        ecoNewsDto.setCreationDate(ZonedDateTime.now());
+        when(ecoNewsService.findDtoByIdAndLanguage(1L, "en")).thenReturn(ecoNewsDto);
+        this.mockMvc.perform(get(managementEcoNewsLink + "/1")
             .param("page", "0")
             .param("size", "10"))
-            .andExpect(model().attribute("pageable", ecoNewsDtoPageableDto))
-            .andExpect(view().name("core/management_eco_news"))
+            .andExpect(view().name("core/management_eco_new"))
             .andExpect(status().isOk());
-        verify(ecoNewsService).getFilteredDataForManagementByPage(pageable, ecoNewsViewDto);
+        verify(ecoNewsService).findDtoByIdAndLanguage(anyLong(), anyString());
     }
 
     @Test

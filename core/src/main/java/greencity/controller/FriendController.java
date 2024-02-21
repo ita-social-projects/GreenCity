@@ -9,10 +9,10 @@ import greencity.dto.user.UserManagementDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.RecommendedFriendsType;
 import greencity.service.FriendService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Validated
 @AllArgsConstructor
@@ -44,17 +43,17 @@ public class FriendController {
      * @param userVO   {@link UserVO} user.
      * @author Marian Datsko
      */
-    @ApiOperation(value = "Delete user's friend")
+    @Operation(summary = "Delete user's friend")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.deleteUserFriendById(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -66,17 +65,17 @@ public class FriendController {
      * @param userVO   {@link UserVO} user.
      * @author Marian Datsko
      */
-    @ApiOperation(value = "Add new user friend")
+    @Operation(summary = "Add new user friend")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @PostMapping("/{friendId}")
     public ResponseEntity<ResponseEntity.BodyBuilder> addNewFriend(
-        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.addNewFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -87,17 +86,17 @@ public class FriendController {
      * @param friendId id user friend.
      * @param userVO   {@link UserVO} user.
      */
-    @ApiOperation(value = "Accept friend request")
+    @Operation(summary = "Accept friend request")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @PatchMapping("/{friendId}/acceptFriend")
     public ResponseEntity<ResponseEntity.BodyBuilder> acceptFriendRequest(
-        @ApiParam("Friend's id. Cannot be empty.") @PathVariable long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(description = "Friend's id. Cannot be empty.") @PathVariable long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.acceptFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -109,17 +108,17 @@ public class FriendController {
      * @param friendId id user friend.
      * @param userVO   {@link UserVO} user.
      */
-    @ApiOperation(value = "Decline friend request")
+    @Operation(summary = "Decline friend request")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
     })
     @PatchMapping("/{friendId}/declineFriend")
     public ResponseEntity<Object> declineFriendRequest(
-        @ApiParam("Friend's id. Cannot be empty.") @PathVariable long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(description = "Friend's id. Cannot be empty.") @PathVariable long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.declineFriendRequest(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -132,16 +131,16 @@ public class FriendController {
      * @return {@link PageableDto} of {@link UserManagementDto}.
      * @author Orest Mamchuk
      */
-    @ApiOperation(value = "Get all user friends")
+    @Operation(summary = "Get all user friends")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/user/{userId}")
     @ApiPageable
     public ResponseEntity<PageableDto<UserManagementDto>> findUserFriendsByUserId(
-        @ApiIgnore @PageableDefault Pageable page,
+        @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId) {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -157,18 +156,18 @@ public class FriendController {
      * @return {@link PageableDto} of {@link UserManagementDto}.
      * @author Lilia Mokhnatska
      */
-    @ApiOperation(value = "Get all user friends and set FriendStatus related to current user")
+    @Operation(summary = "Get all user friends and set FriendStatus related to current user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/{userId}/all-user-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(
-        @ApiIgnore @PageableDefault Pageable page,
+        @Parameter(hidden = true) @PageableDefault Pageable page,
         @PathVariable long userId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findUserFriendsByUserIAndShowFriendStatusRelatedToCurrentUser(page, userId,
@@ -184,19 +183,19 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(
-        value = "Find all users except current user and his friends and users who send request to current user")
+    @Operation(
+        summary = "Find all users except current user and his friends and users who send request to current user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/not-friends-yet")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllUsersExceptMainUserAndUsersFriendAndRequestersToMainUser(
-        @ApiIgnore @PageableDefault Pageable page,
-        @ApiIgnore @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) @PageableDefault Pageable page,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @RequestParam(required = false) @Nullable String name) {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -213,17 +212,17 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find recommended friends by type")
+    @Operation(summary = "Find recommended friends by type")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
     })
     @GetMapping("/recommended-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findRecommendedFriends(
-        @ApiIgnore Pageable page,
+        @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) RecommendedFriendsType type,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findRecommendedFriends(userVO.getId(), type, page));
@@ -236,18 +235,18 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find user's requests")
+    @Operation(summary = "Find user's requests")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/friendRequests")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> getAllUserFriendsRequests(
-        @ApiIgnore Pageable page,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) Pageable page,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.getAllUserFriendRequests(userVO.getId(), page));
@@ -261,18 +260,18 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Find all friends")
+    @Operation(summary = "Find all friends")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> findAllFriendsOfUser(
-        @ApiIgnore Pageable page,
+        @Parameter(hidden = true) Pageable page,
         @RequestParam(required = false) @Nullable String name,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(friendService.findAllFriendsOfUser(userVO.getId(), name, page));
@@ -287,18 +286,18 @@ public class FriendController {
      *
      * @return {@link PageableDto} of {@link UserFriendDto}.
      */
-    @ApiOperation(value = "Get all mutual friends for current user")
+    @Operation(summary = "Get all mutual friends for current user")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/mutual-friends")
     @ApiPageable
     public ResponseEntity<PageableDto<UserFriendDto>> getMutualFriends(
         @RequestParam Long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO,
-        @ApiIgnore Pageable page) {
+        @Parameter(hidden = true) @CurrentUser UserVO userVO,
+        @Parameter(hidden = true) Pageable page) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(friendService.getMutualFriends(userVO.getId(), friendId, page));
     }
@@ -311,17 +310,17 @@ public class FriendController {
      * @param userVO   {@link UserVO} user.
      * @author Lilia Mokhnatska
      */
-    @ApiOperation(value = "Delete user's request to friend")
+    @Operation(summary = "Delete user's request to friend")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = HttpStatuses.OK),
-        @ApiResponse(code = 400, message = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(code = 401, message = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(code = 404, message = HttpStatuses.NOT_FOUND)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/{friendId}/cancelRequest")
     public ResponseEntity<ResponseEntity.BodyBuilder> cancelRequest(
-        @ApiParam("Id friend of current user. Cannot be empty.") @PathVariable long friendId,
-        @ApiIgnore @CurrentUser UserVO userVO) {
+        @Parameter(description = "Id friend of current user. Cannot be empty.") @PathVariable long friendId,
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
         friendService.deleteRequestOfCurrentUserToFriend(userVO.getId(), friendId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

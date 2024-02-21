@@ -10,7 +10,6 @@ import greencity.dto.user.UserProfilePictureDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +71,7 @@ public interface HabitService {
     /**
      * Method that add shopping list item To Habit by habit id and shopping list
      * item id.
-     * 
+     *
      * @author Marian Diakiv
      */
     void addShoppingListItemToHabit(Long habitId, Long itemId);
