@@ -2,10 +2,12 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import greencity.ModelUtils;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.NotFoundException;
@@ -36,12 +38,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
@@ -112,7 +112,9 @@ class EventsControllerTest {
         ObjectWriter ow = objectMapper.writer();
         String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
 
-        when(eventService.getEvents(pageable, principal, null, null))
+        FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
+
+        when(eventService.getEvents(pageable, principal, filterEventDto, null))
             .thenReturn(pageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
@@ -122,7 +124,7 @@ class EventsControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson));
 
-        verify(eventService).getEvents(pageable, principal, null, null);
+        verify(eventService).getEvents(pageable, principal, filterEventDto, null);
     }
 
     @Test
