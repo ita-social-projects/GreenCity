@@ -247,6 +247,7 @@ public class SecurityConfig {
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
                     FRIENDS + "/friendRequests",
+                    FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS)
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.POST,
