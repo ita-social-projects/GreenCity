@@ -170,4 +170,11 @@ public interface UserNotificationService {
      * @param notificationId id of notification, that should be marked
      */
     void unreadNotification(Long notificationId);
+
+    /**
+     * Method to mark specific Notification as read.
+     *
+     * @param notificationId id of notification, that should be marked
+     */
+    void viewNotification(Long notificationId);
 }

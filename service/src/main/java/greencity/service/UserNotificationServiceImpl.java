@@ -270,6 +270,14 @@ public class UserNotificationServiceImpl implements UserNotificationService {
         notificationRepo.markNotificationAsNotViewed(notificationId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void viewNotification(Long notificationId) {
+        notificationRepo.markNotificationAsViewed(notificationId);
+    }
+
     private PageableAdvancedDto<NotificationDto> buildPageableAdvancedDto(Page<Notification> notifications,
         String language) {
         List<NotificationDto> notificationDtoList = new LinkedList<>();

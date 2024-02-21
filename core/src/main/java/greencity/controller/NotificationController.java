@@ -98,7 +98,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @ApiPageableWithoutSort
-    @GetMapping("/filtered")
+    @GetMapping("/all")
     public ResponseEntity<PageableAdvancedDto<NotificationDto>> getEventFiltered(
         @Parameter(hidden = true) Pageable pageable,
         @Parameter(hidden = true) Principal principal,
@@ -140,7 +140,7 @@ public class NotificationController {
      * @return One {@link NotificationDto}
      * @author Volodymyr Mladonov
      */
-    @Operation(summary = "Get single Notification.")
+    @Operation(summary = "Unread single Notification.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
