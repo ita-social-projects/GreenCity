@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-@Parameter(name = "lang", schema = @Schema(type = "string"), in = ParameterIn.QUERY,
+@Parameter(name = "lang", schema = @Schema(type = "string"), in = ParameterIn.DEFAULT,
     description = "Code of the needed language.")
 public @interface ApiLocale {
 }
