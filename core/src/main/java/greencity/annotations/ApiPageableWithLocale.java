@@ -12,8 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Parameter(name = "lang", description = "Code of the needed language.",
     schema = @Schema(type = "string"), in = ParameterIn.QUERY)
-@Parameter(name = "page", schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"),
-    in = ParameterIn.DEFAULT,
+@Parameter(name = "page", schema = @Schema(type = "integer", minimum = "0", defaultValue = "0"), in = ParameterIn.QUERY,
     description = "Page index you want to retrieve [0..N]. "
         + "If page index is less than 0 or not specified then default value is used!")
 @Parameter(name = "size", schema = @Schema(type = "integer", minimum = "1", maximum = "100", defaultValue = "5"),
