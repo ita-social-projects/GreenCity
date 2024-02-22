@@ -2,7 +2,6 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -18,7 +17,7 @@ public class UpdateEventDto {
     @Size(min = 20, max = 63206)
     private String description;
 
-    @Max(7)
+    @Size(min = 1, max = 7)
     private List<EventDateLocationDto> datesLocations;
 
     private String titleImage;
