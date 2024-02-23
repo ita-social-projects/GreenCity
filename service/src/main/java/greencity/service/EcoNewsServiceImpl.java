@@ -517,13 +517,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+                .email(ecoNewsVO.getAuthor().getEmail())
+                .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
+                .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
+                .build());
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(ecoNewsVO.getAuthor().getEmail())
-            .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
-            .build());
     }
 
     /**
