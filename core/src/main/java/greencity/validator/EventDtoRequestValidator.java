@@ -4,49 +4,101 @@ import greencity.annotations.ValidEventDtoRequest;
 import greencity.constant.ErrorMessage;
 import greencity.constant.ValidationConstants;
 import greencity.dto.event.AddEventDtoRequest;
-import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
-import static greencity.validator.UrlValidator.isUrlValid;
-import java.time.ZonedDateTime;
-import java.util.List;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import static greencity.validator.UrlValidator.isUrlValid;
 
-public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, AddEventDtoRequest> {
+public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, Object> {
+    /**
+     * Validates whether the provided value adheres to the constraints defined for
+     * an event DTO. The validation includes checking event date locations, ensuring
+     * they fall within specified bounds, validating the tags count, and checking
+     * the validity of online links. Time zones of the event start dates are
+     * converted to Greenwich Mean Time (GMT) for comparison.
+     *
+     * @param value   The object to be validated, expected to be an instance of
+     *                AddEventDtoRequest or UpdateEventDto.
+     * @param context The context in which the validation is performed.
+     * @return True if the value is valid according to the defined constraints,
+     *         otherwise false.
+     * @throws EventDtoValidationException if the value does not meet the validation
+     *                                     criteria.
+     */
     @Override
-    public void initialize(ValidEventDtoRequest constraintAnnotation) {
-        // Initializes the validator in preparation for #isValid calls
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
+        if (!(value instanceof AddEventDtoRequest || value instanceof UpdateEventDto)) {
+            return false;
+        }
+
+        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+
+        if (value instanceof AddEventDtoRequest addEventDtoRequest) {
+            if (addEventDtoRequest.getDatesLocations() == null || addEventDtoRequest.getDatesLocations().isEmpty()
+                || addEventDtoRequest.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
+                throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
+            } else {
+                eventDateLocationDtos = convertToUTC(addEventDtoRequest.getDatesLocations());
+            }
+        } else if (value instanceof UpdateEventDto updateEventDto) {
+            if (updateEventDto.getDatesLocations() == null || updateEventDto.getDatesLocations().isEmpty()
+                || updateEventDto.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
+                throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
+            } else {
+                eventDateLocationDtos = convertToUTC(updateEventDto.getDatesLocations());
+            }
+        }
+
+        validateEventDateLocations(eventDateLocationDtos);
+        validateTags(value);
+        return true;
     }
 
-    @Override
-    public boolean isValid(AddEventDtoRequest value, ConstraintValidatorContext context) {
-        List<EventDateLocationDto> eventDateLocationDtos = value.getDatesLocations();
+    private List<EventDateLocationDto> convertToUTC(List<EventDateLocationDto> dates) {
+        return dates.stream()
+            .map(e -> e.setStartDate(e.getStartDate().withZoneSameInstant(ZoneOffset.UTC)))
+            .map(e -> e.setFinishDate(e.getFinishDate().withZoneSameInstant(ZoneOffset.UTC)))
+            .toList();
+    }
 
-        if (eventDateLocationDtos == null || eventDateLocationDtos.isEmpty()
-            || eventDateLocationDtos.size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
-            throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
-        }
-
+    /**
+     * Validates a list of EventDateLocationDto objects. Checks if the start date is
+     * before the current time plus an hour, if the start date is before the finish
+     * date minus a day, if the start date is after the finish date, and if the
+     * start date is after the current time plus a year. Throws an
+     * EventDtoValidationException with an appropriate error message if any of the
+     * conditions are met.
+     */
+    private void validateEventDateLocations(List<EventDateLocationDto> eventDateLocationDtos) {
         for (var eventDateLocationDto : eventDateLocationDtos) {
-            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now())
-                || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())) {
+            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC).plusHours(1L))
+                || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
+                || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
+                || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC).plusYears(1L))) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
-            AddressDto addressDto = eventDateLocationDto.getCoordinates();
-            String onlineLink = eventDateLocationDto.getOnlineLink();
-            if (onlineLink == null && addressDto == null) {
+
+            if (eventDateLocationDto.getOnlineLink() == null && eventDateLocationDto.getCoordinates() == null) {
                 throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_ADDRESS);
             }
-            if (onlineLink != null) {
-                isUrlValid(onlineLink);
+            if (eventDateLocationDto.getOnlineLink() != null) {
+                isUrlValid(eventDateLocationDto.getOnlineLink());
             }
         }
+    }
 
-        if (value.getTags().size() > ValidationConstants.MAX_AMOUNT_OF_TAGS) {
+    private void validateTags(Object value) {
+        int tagsSize = (value instanceof AddEventDtoRequest addEventDtoRequest) ? (addEventDtoRequest.getTags().size())
+            : ((UpdateEventDto) value).getTags().size();
+
+        if (tagsSize > ValidationConstants.MAX_AMOUNT_OF_TAGS) {
             throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_TAGS_EXCEPTION);
         }
-
-        return true;
     }
 }

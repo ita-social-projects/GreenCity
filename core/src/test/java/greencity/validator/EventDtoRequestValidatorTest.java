@@ -2,6 +2,7 @@ package greencity.validator;
 
 import greencity.ModelUtils;
 import greencity.dto.event.AddEventDtoRequest;
+import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import greencity.exception.exceptions.InvalidURLException;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 class EventDtoRequestValidatorTest {
@@ -66,8 +66,33 @@ class EventDtoRequestValidatorTest {
     }
 
     @Test
+    void updateWithtooManyTagsException() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithTooManyDates();
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
+    }
+
+    @Test
+    void updateEventDtoWithoutDates() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithotDates();
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
+
+    }
+
+    @Test
     void validEvent() {
         AddEventDtoRequest addEventDtoRequest = ModelUtils.getAddEventDtoRequest();
         assertTrue(validator.isValid(addEventDtoRequest, null));
+    }
+
+    @Test
+    void validEventUpdate() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        assertTrue(validator.isValid(updateEventDto, null));
+    }
+
+    @Test
+    void invalidObjectType() {
+        Object value = new Object();
+        assertFalse(validator.isValid(value, null));
     }
 }
