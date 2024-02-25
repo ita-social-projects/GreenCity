@@ -1,8 +1,32 @@
 package greencity.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import greencity.dto.econews.AddEcoNewsDtoRequest;
+import greencity.dto.econews.AddEcoNewsDtoResponse;
+import greencity.dto.econews.EcoNewsDto;
+import greencity.dto.econews.EcoNewsDtoManagement;
+import greencity.dto.econews.EcoNewsGenericDto;
+import greencity.dto.econews.EcoNewsVO;
+import greencity.dto.econews.EcoNewsViewDto;
+import greencity.dto.econews.UpdateEcoNewsDto;
+import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
@@ -10,7 +34,6 @@ import greencity.client.RestClient;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.*;
 import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.search.SearchNewsDto;
@@ -28,11 +51,9 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
-import greencity.repository.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
-import java.util.*;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
@@ -40,10 +61,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -567,6 +600,7 @@ class EcoNewsServiceImplTest {
         UserVO userVO = ModelUtils.getUserVO();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -581,11 +615,26 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void likeOwnTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.like(userVO, 1L));
+    }
+
+    @Test
     void givenEcoNewsLikedByUser_whenLikedByUser_shouldRemoveLike() {
         // given
         UserVO userVO = ModelUtils.getUserVO();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);

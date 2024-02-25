@@ -513,6 +513,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().removeIf(u -> u.getId().equals(userVO.getId()));
         } else {
+            if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
+                throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            }
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
