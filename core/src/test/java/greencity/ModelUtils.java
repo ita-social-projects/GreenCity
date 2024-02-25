@@ -20,6 +20,7 @@ import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -675,6 +676,26 @@ public class ModelUtils {
 
     public static AddEventDtoRequest getEventDtoWithoutDates() {
         return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDtoWithotDates() {
+        return UpdateEventDto.builder().title("Title").description("Desc").isOpen(true).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDto() {
+        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/")
+            .build())).tags(List.of("first", "second", "third")).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDtoWithTooManyDates() {
+        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+        }
+        return UpdateEventDto.builder().datesLocations(eventDateLocationDtos).build();
     }
 
     public static AddEventDtoRequest getEventDtoWithZeroDates() {
