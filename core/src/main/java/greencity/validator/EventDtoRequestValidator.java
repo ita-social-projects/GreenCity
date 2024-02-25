@@ -44,14 +44,14 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 || addEventDtoRequest.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
                 throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
             } else {
-                eventDateLocationDtos = convertDatesToGMTZone(addEventDtoRequest.getDatesLocations());
+                eventDateLocationDtos = convertToUTC(addEventDtoRequest.getDatesLocations());
             }
         } else if (value instanceof UpdateEventDto updateEventDto) {
             if (updateEventDto.getDatesLocations() == null || updateEventDto.getDatesLocations().isEmpty()
                 || updateEventDto.getDatesLocations().size() > ValidationConstants.MAX_EVENT_DATES_AMOUNT) {
                 throw new EventDtoValidationException(ErrorMessage.WRONG_COUNT_OF_EVENT_DATES);
             } else {
-                eventDateLocationDtos = convertDatesToGMTZone(updateEventDto.getDatesLocations());
+                eventDateLocationDtos = convertToUTC(updateEventDto.getDatesLocations());
             }
         }
 
@@ -60,17 +60,27 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
         return true;
     }
 
-    private List<EventDateLocationDto> convertDatesToGMTZone(List<EventDateLocationDto> dates) {
+    private List<EventDateLocationDto> convertToUTC(List<EventDateLocationDto> dates) {
         return dates.stream()
             .map(e -> e.setStartDate(e.getStartDate().withZoneSameInstant(ZoneOffset.UTC)))
             .map(e -> e.setFinishDate(e.getFinishDate().withZoneSameInstant(ZoneOffset.UTC)))
             .toList();
     }
 
+    /**
+     * Validates a list of EventDateLocationDto objects. Checks if the start date is
+     * before the current time plus an hour, if the start date is before the finish
+     * date minus a day, if the start date is after the finish date, and if the
+     * start date is after the current time plus a year. Throws an
+     * EventDtoValidationException with an appropriate error message if any of the
+     * conditions are met.
+     */
     private void validateEventDateLocations(List<EventDateLocationDto> eventDateLocationDtos) {
         for (var eventDateLocationDto : eventDateLocationDtos) {
-            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC))
-                || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())) {
+            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC).plusHours(1L))
+                || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
+                || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
+                || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC).plusYears(1L))) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
 
