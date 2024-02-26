@@ -77,7 +77,8 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
      */
     private void validateEventDateLocations(List<EventDateLocationDto> eventDateLocationDtos) {
         for (var eventDateLocationDto : eventDateLocationDtos) {
-            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC).plusHours(1L))
+            if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC)
+                .plusHours(1L).withMinute(0).withSecond(0).withNano(0))
                 || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
                 || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC).plusYears(1L))) {
