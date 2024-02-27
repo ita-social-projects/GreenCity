@@ -223,6 +223,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             .anyMatch(user -> user.getId().equals(userVO.getId()))) {
             ecoNewsService.unlikeComment(userVO, ecoNewsCommentVO);
         } else {
+            if (comment.getUser().getId().equals(userVO.getId())) {
+                throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            }
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
             notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())
