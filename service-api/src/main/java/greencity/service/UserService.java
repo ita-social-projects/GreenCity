@@ -8,6 +8,7 @@ import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -91,9 +92,8 @@ public interface UserService {
      * The method checks by id if a {@link UserVO} is online.
      *
      * @param userId - {@link UserVO}'s id
-     * @return {boolean} is user online
      */
-    boolean checkIfTheUserIsOnline(Long userId);
+    void checkIfTheUserIsOnline(Long userId);
 
     /**
      * Method that returns {@link String} initials (first one or two letters of
@@ -105,7 +105,7 @@ public interface UserService {
     String getInitialsById(Long userId);
 
     /**
-     * Method that returns {@link List} of top 6 friends with highest rating.
+     * Method that returns {@link List} of top 6 friends with the highest rating.
      *
      * @param userId - {@link UserVO}'s id
      * @return {@link List} of {@link UserVO} instances
@@ -137,4 +137,12 @@ public interface UserService {
      * @author Anton Bondar.
      */
     void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Updates last activity time for a given user by email.
+     *
+     * @param email                - {@link UserVO}'s email
+     * @param userLastActivityTime - new {@link UserVO}'s last activity time
+     */
+    void updateUserLastActivityTimeByEmail(String email, LocalDateTime userLastActivityTime);
 }
