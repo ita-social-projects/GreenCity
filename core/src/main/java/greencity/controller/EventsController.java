@@ -14,6 +14,7 @@ import greencity.dto.filter.FilterEventDto;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -158,7 +159,7 @@ public class EventsController {
      * @return a page of {@link EventDto} instance.
      * @author Danylo Hlysnkyi, Olena Sotnik.
      */
-    @Operation(summary = "Get all users events")
+    @Operation(summary = "Get all user's events that may be filtered by event type")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
@@ -168,9 +169,12 @@ public class EventsController {
     @GetMapping("/myEvents")
     public ResponseEntity<PageableAdvancedDto<EventDto>> getUserEvents(
         @Parameter(hidden = true) Pageable pageable, @Parameter(hidden = true) Principal principal,
-        @RequestParam(required = false) String eventType,
-        @RequestParam(required = false) String userLatitude,
-        @RequestParam(required = false) String userLongitude) {
+        @Parameter(description = "Type of event. Example : ONLINE,OFFLINE") @RequestParam(
+            required = false) String eventType,
+        @Parameter(description = "User location coordinates latitude value. Example : 50.450001",
+            in = ParameterIn.QUERY) @RequestParam(required = false) String userLatitude,
+        @Parameter(description = "User location coordinates longitude value. Example : 30.523333",
+            in = ParameterIn.QUERY) @RequestParam(required = false) String userLongitude) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.getAllUserEvents(
             pageable, principal.getName(), userLatitude, userLongitude, eventType));
     }
