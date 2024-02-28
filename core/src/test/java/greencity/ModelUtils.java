@@ -698,6 +698,16 @@ public class ModelUtils {
         return UpdateEventDto.builder().datesLocations(eventDateLocationDtos).build();
     }
 
+    public static UpdateEventDto getUpdateEventDtoWithEmptyDateLocations() {
+        return UpdateEventDto.builder().datesLocations(new ArrayList<>()).build();
+    }
+
+    public static UpdateEventDto getUpdateEventWithoutAddressAndLink() {
+        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
+    }
+
     public static AddEventDtoRequest getEventDtoWithZeroDates() {
         return AddEventDtoRequest.builder().datesLocations(new ArrayList<>()).build();
     }

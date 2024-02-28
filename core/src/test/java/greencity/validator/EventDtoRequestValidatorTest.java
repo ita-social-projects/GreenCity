@@ -69,8 +69,14 @@ class EventDtoRequestValidatorTest {
     }
 
     @Test
-    void updateWithtooManyTagsException() {
+    void updateWithTooManyTagsException() {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithTooManyDates();
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
+    }
+
+    @Test
+    void updateWithEmptyDateLocations() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithEmptyDateLocations();
         assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
     }
 
@@ -79,6 +85,20 @@ class EventDtoRequestValidatorTest {
         UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDtoWithoutDates();
         assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
 
+    }
+
+    @Test
+    void updateWithInvalidLinkException() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventWithoutAddressAndLink();
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
+    }
+
+    @Test
+    void updateWithoutLinkAndCoordinates() {
+        UpdateEventDto updateEventDto = ModelUtils.getUpdateEventDto();
+        updateEventDto.getDatesLocations().forEach(e -> e.setOnlineLink(null));
+        updateEventDto.getDatesLocations().forEach(e -> e.setCoordinates(null));
+        assertThrows(EventDtoValidationException.class, () -> validator.isValid(updateEventDto, null));
     }
 
     @Test
