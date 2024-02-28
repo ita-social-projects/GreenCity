@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.time.ZoneId;
@@ -46,8 +45,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import static greencity.ModelUtils.getPrincipal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -361,11 +358,9 @@ class EventsControllerTest {
         UpdateEventDto updateEventDto = getUpdateEventDto();
         updateEventDto.setTitle(
             "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax q%");
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         String json = objectMapper.writeValueAsString(updateEventDto);
-
         MockMultipartFile jsonFile = new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
 
         MockMultipartHttpServletRequestBuilder builder =
@@ -374,15 +369,38 @@ class EventsControllerTest {
             request.setMethod("PUT");
             return request;
         });
-
         mockMvc.perform(builder
             .file(jsonFile)
             .principal(principal)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
+        verify(eventService, times(0)).update(updateEventDto, principal.getName(), null);
+    }
 
-        verify(eventService, times(0)).update(any(UpdateEventDto.class), anyString(), any(MultipartFile[].class));
+    @Test
+    @SneakyThrows
+    void updateTestTitleWithinMaxLength() {
+        UpdateEventDto updateEventDto = getUpdateEventDto();
+        updateEventDto.setTitle("Short title within 70 characters");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        String json = objectMapper.writeValueAsString(updateEventDto);
+        MockMultipartFile jsonFile = new MockMultipartFile("eventDto", "", "application/json", json.getBytes());
+
+        MockMultipartHttpServletRequestBuilder builder =
+            MockMvcRequestBuilders.multipart(EVENTS_CONTROLLER_LINK + "/update");
+        builder.with(request -> {
+            request.setMethod("PUT");
+            return request;
+        });
+        mockMvc.perform(builder
+            .file(jsonFile)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+        verify(eventService).update(updateEventDto, principal.getName(), null);
     }
 
     @Test
