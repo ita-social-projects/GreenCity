@@ -9,10 +9,13 @@ import greencity.dto.event.UpdateEventDto;
 import greencity.exception.exceptions.EventDtoValidationException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import static greencity.validator.UrlValidator.isUrlValid;
 
 public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, Object> {
@@ -54,7 +57,6 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 eventDateLocationDtos = convertToUTC(updateEventDto.getDatesLocations());
             }
         }
-
         validateEventDateLocations(eventDateLocationDtos);
         validateTags(value);
         return true;
@@ -76,7 +78,17 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
      * conditions are met.
      */
     private void validateEventDateLocations(List<EventDateLocationDto> eventDateLocationDtos) {
+        Set<LocalDate> startDateSet = new HashSet<>();
+        Set<LocalDate> finishDateSet = new HashSet<>();
+
         for (var eventDateLocationDto : eventDateLocationDtos) {
+            LocalDate startDate = eventDateLocationDto.getStartDate().toLocalDate();
+            LocalDate finishDate = eventDateLocationDto.getFinishDate().toLocalDate();
+
+            if (!startDateSet.add(startDate) || !finishDateSet.add(finishDate)) {
+                throw new EventDtoValidationException(ErrorMessage.SAME_EVENT_DATES);
+            }
+
             if (eventDateLocationDto.getStartDate().isBefore(ZonedDateTime.now(ZoneOffset.UTC)
                 .plusHours(1L).withMinute(0).withSecond(0).withNano(0))
                 || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
@@ -88,6 +100,7 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
             if (eventDateLocationDto.getOnlineLink() == null && eventDateLocationDto.getCoordinates() == null) {
                 throw new EventDtoValidationException(ErrorMessage.NO_EVENT_LINK_OR_ADDRESS);
             }
+
             if (eventDateLocationDto.getOnlineLink() != null) {
                 isUrlValid(eventDateLocationDto.getOnlineLink());
             }
