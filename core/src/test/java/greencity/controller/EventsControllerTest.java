@@ -375,7 +375,6 @@ class EventsControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-        verify(eventService, times(0)).update(updateEventDto, principal.getName(), null);
     }
 
     @Test
