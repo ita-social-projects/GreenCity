@@ -678,7 +678,7 @@ public class ModelUtils {
         return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
-    public static UpdateEventDto getUpdateEventDtoWithotDates() {
+    public static UpdateEventDto getUpdateEventDtoWithoutDates() {
         return UpdateEventDto.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
