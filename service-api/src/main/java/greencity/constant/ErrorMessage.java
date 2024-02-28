@@ -161,6 +161,8 @@ public final class ErrorMessage {
     public static final String NO_EVENT_LINK_OR_ADDRESS = "Invalid online-link or address";
     public static final String EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST =
         "Start date must be in future and before finish date";
+    public static final String SAME_EVENT_DATES =
+        "User shouldn't be able to create event with the same event dates for two days within one event";
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String HAVE_ALREADY_SUBSCRIBED_ON_EVENT = "You have already subscribed on this event";
     public static final String EVENT_NOT_FOUND = "Event hasn't been found";
