@@ -1,6 +1,8 @@
 package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +18,8 @@ public class UpdateEventDto {
     @NotNull
     private Long id;
 
+    @NotEmpty
+    @NotBlank
     @Size(min = 1, max = 70)
     private String title;
 
