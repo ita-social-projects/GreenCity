@@ -687,7 +687,13 @@ public class ModelUtils {
             .startDate(ZonedDateTime.now().plusDays(5))
             .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
             .onlineLink("http://localhost:8060/swagger-ui.html#/")
-            .build())).tags(List.of("first", "second", "third")).build();
+            .build(),
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(6))
+                .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build()))
+            .tags(List.of("first", "second", "third")).build();
     }
 
     public static UpdateEventDto getUpdateEventDtoWithTooManyDates() {
@@ -753,11 +759,18 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest getAddEventDtoRequest() {
-        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(ZonedDateTime.now().plusDays(5))
-            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
-            .onlineLink("http://localhost:8060/swagger-ui.html#/")
-            .build())).tags(List.of("first", "second", "third")).build();
+        return AddEventDtoRequest.builder().datesLocations(List.of(
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(5))
+                .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build(),
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(6))
+                .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build()))
+            .tags(List.of("first", "second", "third")).build();
     }
 
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {
