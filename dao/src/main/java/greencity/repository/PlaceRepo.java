@@ -107,7 +107,7 @@ public interface PlaceRepo extends JpaRepository<Place, Long>, JpaSpecificationE
      * @return - places with searching category
      */
     @Query(nativeQuery = true,
-        value = "SELECT * FROM places p "
+        value = "SELECT p.* FROM places p "
             + "join categories c on c.id = p.category_id "
             + "WHERE c.name IN (:category) "
             + "or c.name_ua IN (:category)")
