@@ -19,6 +19,8 @@ import java.util.Set;
 import static greencity.validator.UrlValidator.isUrlValid;
 
 public class EventDtoRequestValidator implements ConstraintValidator<ValidEventDtoRequest, Object> {
+    private static final int MAX_YEARS_OF_PLANNING = 10;
+
     /**
      * Validates whether the provided value adheres to the constraints defined for
      * an event DTO. The validation includes checking event date locations, ensuring
@@ -93,7 +95,8 @@ public class EventDtoRequestValidator implements ConstraintValidator<ValidEventD
                 .plusHours(1L).withMinute(0).withSecond(0).withNano(0))
                 || eventDateLocationDto.getStartDate().isBefore(eventDateLocationDto.getFinishDate().minusDays(1L))
                 || eventDateLocationDto.getStartDate().isAfter(eventDateLocationDto.getFinishDate())
-                || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC).plusYears(1L))) {
+                || eventDateLocationDto.getStartDate().isAfter(ZonedDateTime.now(ZoneOffset.UTC)
+                    .plusYears(MAX_YEARS_OF_PLANNING))) {
                 throw new EventDtoValidationException(ErrorMessage.EVENT_START_DATE_AFTER_FINISH_DATE_OR_IN_PAST);
             }
 
