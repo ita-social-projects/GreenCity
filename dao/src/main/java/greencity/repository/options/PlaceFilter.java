@@ -70,7 +70,7 @@ public class PlaceFilter implements Specification<Place> {
         if (status == null) {
             status = PlaceStatus.APPROVED;
         }
-        return cb.equal(r.get(RepoConstants.STATUS), status);
+        return cb.equal(r.get(RepoConstants.PLACE_STATUS), status);
     }
 
     /**
