@@ -214,7 +214,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     @Modifying
     @Query(nativeQuery = true,
         value = "INSERT INTO users_friends(user_id, friend_id, status, created_date) "
-            + "VALUES (:userId, :friendId, 'REQUEST', CURRENT_TIMESTAMP)")
+            + "VALUES (:userId, :friendId, 'REQUEST', CURRENT_TIMESTAMP) "
+            + "ON CONFLICT (user_id, friend_id) DO UPDATE SET status = 'REQUEST'")
     void addNewFriend(Long userId, Long friendId);
 
     /**
