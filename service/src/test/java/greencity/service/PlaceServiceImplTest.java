@@ -417,7 +417,7 @@ class PlaceServiceImplTest {
             pages.stream().map(elem -> modelMapper.map(elem, AdminPlaceDto.class)).collect(Collectors.toList());
         PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, null);
 
         assertEquals(expected, actual);
         verify(placeRepo).findAll(pageable);
@@ -431,7 +431,7 @@ class PlaceServiceImplTest {
         List<AdminPlaceDto> placeDtos = new ArrayList<>();
         PageableDto<AdminPlaceDto> expected =
             new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
-        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, "");
+        PageableDto<AdminPlaceDto> actual = placeService.findAll(pageable, null);
 
         assertEquals(expected, actual);
         verify(placeRepo).findAll(pageable);
@@ -448,7 +448,7 @@ class PlaceServiceImplTest {
         when(favoritePlaceRepo.findAllFavoritePlaceLocationIdsByUserEmail(principal.getName()))
             .thenReturn(Collections.singletonList(1L));
 
-        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal.getName());
+        PageableDto<AdminPlaceDto> resultPageableDto = placeService.findAll(pageable, principal);
         AdminPlaceDto actual = resultPageableDto.getPage().get(0);
 
         AdminPlaceDto expected = modelMapper.map(place, AdminPlaceDto.class);
