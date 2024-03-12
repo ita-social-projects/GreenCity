@@ -63,7 +63,7 @@ class ManagementPlacesControllerTest {
         Pageable pageable = PageRequest.of(0, 10);
         List<AdminPlaceDto> placeDtos = Collections.singletonList(new AdminPlaceDto());
         PageableDto<AdminPlaceDto> adminPlaceDtoPageableDto = new PageableDto<>(placeDtos, 1, 0, 1);
-        when(placeService.findAll(pageable, "")).thenReturn(adminPlaceDtoPageableDto);
+        when(placeService.findAll(pageable, null)).thenReturn(adminPlaceDtoPageableDto);
         when(categoryService.findAllCategoryDto())
             .thenReturn(Collections.singletonList(new CategoryDto("test", "test", null)));
         when(specificationService.findAllSpecificationDto())
@@ -76,7 +76,7 @@ class ManagementPlacesControllerTest {
             .andExpect(model().attribute("pageable", adminPlaceDtoPageableDto))
             .andExpect(status().isOk());
 
-        verify(placeService).findAll(pageable, "");
+        verify(placeService).findAll(pageable, null);
         verify(categoryService).findAllCategoryDto();
         verify(specificationService).findAllSpecificationDto();
     }
