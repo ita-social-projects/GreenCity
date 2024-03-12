@@ -4,6 +4,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterPlaceDto;
 import greencity.dto.place.*;
 import greencity.enums.PlaceStatus;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -95,15 +96,15 @@ public interface PlaceService {
     /**
      * Find all places from DB for User with current email.
      *
-     * @param pageable {@link Pageable}.
-     * @param email    - String that represents loggedIn User email to show if place
-     *                 isFavorite.
+     * @param pageable  {@link Pageable}.
+     * @param principal {@link Principal}. Represents loggedIn User to show if place
+     *                  isFavorite.
      * @return an object of {@link PageableDto} which contains a list of
      *         {@link AdminPlaceDto}.
      * @author Olena Petryshak
      * @author Olena Sotnik
      */
-    PageableDto<AdminPlaceDto> findAll(Pageable pageable, String email);
+    PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal);
 
     /**
      * Method for deleting place by id.
