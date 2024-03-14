@@ -1,5 +1,6 @@
 package greencity.service;
 
+import java.security.Principal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -297,14 +298,14 @@ public class PlaceServiceImpl implements PlaceService {
      *
      */
     @Override
-    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, String email) {
+    public PageableDto<AdminPlaceDto> findAll(Pageable pageable, Principal principal) {
         log.info(LogMessage.IN_FIND_ALL);
 
         Page<Place> pages = placeRepo.findAll(pageable);
         List<AdminPlaceDto> placeDtos =
             pages.stream().map(place -> modelMapper.map(place, AdminPlaceDto.class)).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(placeDtos) && !email.isBlank()) {
-            setIsFavoriteToAdminPlaceDto(placeDtos, email);
+        if (!CollectionUtils.isEmpty(placeDtos) && principal != null) {
+            setIsFavoriteToAdminPlaceDto(placeDtos, principal.getName());
         }
         return new PageableDto<>(placeDtos, pages.getTotalElements(), pageable.getPageNumber(), pages.getTotalPages());
     }

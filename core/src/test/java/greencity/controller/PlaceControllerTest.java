@@ -604,6 +604,6 @@ class PlaceControllerTest {
             .andExpect(status().isOk());
 
         verify(placeService, times(1))
-            .findAll(pageable, "test@gmail.com");
+            .findAll(pageable, principal);
     }
 }
