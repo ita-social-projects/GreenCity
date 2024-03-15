@@ -185,8 +185,11 @@ public class EcoNewsController {
     })
     @GetMapping("")
     @ApiPageable
-    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findAll(@Parameter(hidden = true) Pageable page) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findGenericAll(page));
+    public ResponseEntity<PageableAdvancedDto<EcoNewsGenericDto>> findAll(@Parameter(hidden = true) Pageable page,
+        @Parameter(description = "Tags to filter (if do not input tags get all)") @RequestParam(
+            required = false) List<String> tags,
+        @RequestParam(required = false) String title) {
+        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.findByFilters(page, tags, title));
     }
 
     /**
