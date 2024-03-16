@@ -151,7 +151,7 @@ class EcoNewsControllerTest {
         mockMvc.perform(get(ecoNewsLink + "?page=1"))
             .andExpect(status().isOk());
 
-        verify(ecoNewsService).findGenericAll(pageable);
+        verify(ecoNewsService).findByFilters(pageable, null, null);
     }
 
     @Test

@@ -80,6 +80,16 @@ public interface EcoNewsService {
     PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags);
 
     /**
+     * Method for getting eco news by filter params.
+     *
+     * @param page  parameters of to search.
+     * @param tags  tags to search.
+     * @param title title to search.
+     * @return PageableDto with {@link EcoNewsDto} instance.
+     */
+    PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title);
+
+    /**
      * Method for getting the {@link EcoNewsVO} instance by its id.
      *
      * @param id {@link EcoNewsVO} instance id.
