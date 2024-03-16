@@ -11,7 +11,6 @@ import greencity.dto.achievement.AchievementManagementDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
 import greencity.dto.achievement.UserAchievementVO;
-import greencity.dto.achievement.UserVOAchievement;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -70,7 +69,6 @@ import greencity.dto.habit.HabitAssignVO;
 import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitManagementDto;
 import greencity.dto.habit.HabitVO;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitfact.HabitFactDto;
 import greencity.dto.habitfact.HabitFactPostDto;
@@ -97,7 +95,6 @@ import greencity.dto.place.PlaceAddDto;
 import greencity.dto.place.PlaceByBoundsDto;
 import greencity.dto.place.PlaceResponse;
 import greencity.dto.place.PlaceVO;
-import greencity.dto.place.AdminPlaceDto;
 import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
@@ -128,7 +125,6 @@ import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
-import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
 import greencity.entity.Achievement;
@@ -205,7 +201,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -383,13 +378,6 @@ public class ModelUtils {
             .userStatus(ACTIVATED)
             .email("Test@gmail.com")
             .role(Role.ROLE_ADMIN).build();
-    }
-
-    public static UserVOAchievement getUserVOAchievement() {
-        return UserVOAchievement.builder()
-            .id(1L)
-            .name(TestConst.NAME)
-            .build();
     }
 
     public static UserVO getUserVOWithData() {
@@ -599,10 +587,48 @@ public class ModelUtils {
             .userId(1L).build();
     }
 
+    public static HabitAssignDto getHabitAssignDtoWithFriendsIds() {
+        return HabitAssignDto.builder()
+            .id(1L)
+            .status(HabitAssignStatus.INPROGRESS)
+            .createDateTime(ZonedDateTime.now())
+            .friendsIdsTrackingHabit(List.of(1L, 2L))
+            .habit(HabitDto.builder().id(1L).build())
+            .userId(1L).build();
+    }
+
     public static HabitAssign getHabitAssign() {
         return HabitAssign.builder()
             .id(1L)
             .status(HabitAssignStatus.ACQUIRED)
+            .createDate(ZonedDateTime.now())
+            .habit(Habit.builder()
+                .id(1L)
+                .image("")
+                .userId(2L)
+                .habitTranslations(Collections.singletonList(HabitTranslation.builder()
+                    .id(1L)
+                    .name("")
+                    .description("")
+                    .habitItem("")
+                    .language(getLanguage())
+                    .build()))
+                .build())
+            .user(getUser())
+            .userShoppingListItems(new ArrayList<>())
+            .workingDays(0)
+            .duration(0)
+            .habitStreak(0)
+            .habitStatistic(Collections.singletonList(getHabitStatistic()))
+            .habitStatusCalendars(Collections.singletonList(getHabitStatusCalendar()))
+            .lastEnrollmentDate(ZonedDateTime.now())
+            .build();
+    }
+
+    public static HabitAssign getHabitAssignWithStatusInprogress() {
+        return HabitAssign.builder()
+            .id(1L)
+            .status(HabitAssignStatus.INPROGRESS)
             .createDate(ZonedDateTime.now())
             .habit(Habit.builder()
                 .id(1L)
@@ -1545,18 +1571,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static UpdateUserShoppingListDto getUpdateUserShoppingListDto() {
-        return UpdateUserShoppingListDto.builder()
-            .userShoppingListItemId(1L)
-            .habitAssignId(1L)
-            .userShoppingListAdvanceDto(List.of(UserShoppingListItemAdvanceDto.builder()
-                .id(1L)
-                .shoppingListItemId(1L)
-                .status(ShoppingListItemStatus.INPROGRESS)
-                .build()))
-            .build();
-    }
-
     public static HabitAssignDto getFullHabitAssignDto() {
         return HabitAssignDto.builder()
             .id(1L)
@@ -2031,38 +2045,6 @@ public class ModelUtils {
         .tags(List.of("Social"))
         .build();
 
-    public static AddressDto getAddressDtoWithNullStreetUa() {
-        return AddressDto.builder()
-            .latitude(13.4567236)
-            .longitude(98.2354469)
-            .streetUa(null)
-            .streetEn("Street")
-            .houseNumber("1B")
-            .cityUa("Місто")
-            .cityEn("City")
-            .regionUa("Область")
-            .regionEn("Oblast")
-            .countryUa("Країна")
-            .countryEn("Country")
-            .build();
-    }
-
-    public static AddressDto getAddressDtoWithNullCityUa() {
-        return AddressDto.builder()
-            .latitude(50.4567236)
-            .longitude(30.2354469)
-            .streetUa("Вулиця")
-            .streetEn("Street")
-            .houseNumber("1B")
-            .cityUa(null)
-            .cityEn("City")
-            .regionUa("Область")
-            .regionEn("Oblast")
-            .countryUa("Країна")
-            .countryEn("Country")
-            .build();
-    }
-
     public static AddressDto getAddressDtoWithNullRegionUa() {
         return AddressDto.builder()
             .latitude(13.4567236)
@@ -2130,28 +2112,6 @@ public class ModelUtils {
     public static AddressDto getAddressDtoWithoutData() {
         return AddressDto.builder().build();
     }
-
-    public static AddEventDtoRequest addEventDtoRequestWithNullStreetUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            "/url",
-            getAddressDtoWithNullStreetUa())))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
-
-    public static AddEventDtoRequest addEventDtoRequestWithNullCityUa = AddEventDtoRequest.builder()
-        .datesLocations(List.of(new EventDateLocationDto(1L, null,
-            ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            ZonedDateTime.of(2000, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-            "/url",
-            getAddressDtoWithNullCityUa())))
-        .description("Description")
-        .title("Title")
-        .tags(List.of("Social"))
-        .build();
 
     public static AddEventDtoRequest addEventDtoRequestWithNullRegionUa = AddEventDtoRequest.builder()
         .datesLocations(List.of(new EventDateLocationDto(1L, null,
@@ -2249,25 +2209,6 @@ public class ModelUtils {
                 .nameUa("Соціальний").build()))
             .isFavorite(false)
             .isSubscribed(false)
-            .build();
-    }
-
-    public static EventDto getEventWithOdessaAddressDto() {
-        return EventDto.builder()
-            .id(2L)
-            .description("Description2")
-            .organizer(EventAuthorDto.builder()
-                .name("User2")
-                .id(2L)
-                .build())
-            .title("Title2")
-            .dates(List.of(new EventDateLocationDto(1L, null,
-                ZonedDateTime.of(2023, 1, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                ZonedDateTime.of(2024, 2, 1, 1, 1, 1, 1, ZoneId.systemDefault()),
-                "/url",
-                getSecondAddressDtoCorrect())))
-            .tags(List.of(TagUaEnDto.builder().id(1L).nameEn("Social")
-                .nameUa("Соціальний").build()))
             .build();
     }
 
@@ -2686,25 +2627,6 @@ public class ModelUtils {
             .build();
     }
 
-    public static AddressDto getKyivAddressDto() {
-        return AddressDto.builder()
-            .latitude(50.4567236)
-            .longitude(30.2354469)
-            .streetUa("Вулиця")
-            .streetEn("Street")
-            .houseNumber("1B")
-            .cityUa("Київ")
-            .cityEn("Kyiv")
-            .regionUa("Область")
-            .regionEn("Oblast")
-            .countryUa("Україна")
-            .countryEn("Ukraine")
-            .formattedAddressEn("Full formatted address")
-            .formattedAddressUa("Повна відформатована адреса")
-            .countryEn("Country")
-            .build();
-    }
-
     public static Principal getPrincipal() {
         return () -> "danylo@gmail.com";
     }
@@ -2823,14 +2745,6 @@ public class ModelUtils {
             .organizer(getUserVO())
             .title("title")
             .titleImage("title image")
-            .build();
-    }
-
-    public static EventAuthorDto getEventAuthorDto() {
-        return EventAuthorDto.builder()
-            .id(1L)
-            .name("Inna")
-            .organizerRating(1.0)
             .build();
     }
 
@@ -3111,18 +3025,6 @@ public class ModelUtils {
     public static FilterEventDto getFilterEventDtoWithTags() {
         return FilterEventDto.builder()
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL", "NOT_EVENT_TAG"))
-            .build();
-    }
-
-    public static AdminPlaceDto getAdminPlaceDto() {
-        return AdminPlaceDto.builder()
-            .id(1L)
-            .name("TestPlace")
-            .location(new LocationDto(1L, 53.65412, 30.76539, "address"))
-            .openingHoursList(new ArrayList<>())
-            .author(new PlaceAuthorDto(1L, "Author", "test@gmail.com"))
-            .status(PlaceStatus.APPROVED)
-            .modifiedDate(LocalDateTime.now())
             .build();
     }
 

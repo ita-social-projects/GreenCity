@@ -415,8 +415,14 @@ public class HabitAssignServiceImpl implements HabitAssignService {
         HabitTranslation habitTranslation = getHabitTranslation(habitAssign, language);
         HabitAssignDto habitAssignDto = modelMapper.map(habitAssign, HabitAssignDto.class);
         habitAssignDto.setHabit(modelMapper.map(habitTranslation, HabitDto.class));
+        habitAssignDto.setFriendsIdsTrackingHabit(getFriendsIdsTrackingHabitList(habitAssign));
         setShoppingListItems(habitAssignDto, habitAssign, language);
         return habitAssignDto;
+    }
+
+    private List<Long> getFriendsIdsTrackingHabitList(HabitAssign habitAssign) {
+        return habitAssignRepo
+            .findFriendsIdsTrackingHabit(habitAssign.getHabit().getId(), habitAssign.getUser().getId());
     }
 
     private void setShoppingListItems(HabitAssignDto habitAssignDto, HabitAssign habitAssign, String language) {

@@ -33,4 +33,5 @@ public class HabitAssignDto {
     private Long userId;
     private Integer workingDays;
     private Boolean progressNotificationHasDisplayed;
+    private List<Long> friendsIdsTrackingHabit;
 }

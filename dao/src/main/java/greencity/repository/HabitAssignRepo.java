@@ -303,7 +303,27 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return list of {@link Long} habit ids requested by friends of current user.
      * @author Olena Sotnik
      */
-    @Query(value = "SELECT DISTINCT ha.habit.id FROM HabitAssign ha"
-        + " WHERE ha.user.id = :userId AND upper(ha.status) = 'REQUESTED'")
+    @Query(value = "SELECT DISTINCT ha.habit.id FROM HabitAssign ha "
+        + "WHERE ha.user.id = :userId AND upper(ha.status) = 'REQUESTED'")
     List<Long> findAllHabitIdsByUserIdAndStatusIsRequested(@Param("userId") Long userId);
+
+    /**
+     * Method to find list of friends ids of current user that track the same Habit.
+     *
+     * @param userId  {@link Long} userId of current user.
+     * @param habitId {@link Long} habitId.
+     * @return list of {@link Long} user ids of user's friends tracking current
+     *         habit.
+     * @author Olena Sotnik
+     */
+    @Query(value = "SELECT DISTINCT ha.user_id "
+        + "FROM habit_assign AS ha "
+        + "JOIN users_friends AS uf "
+        + "ON ha.user_id = uf.friend_id "
+        + "WHERE uf.user_id = :userId "
+        + "AND uf.status = 'FRIEND' "
+        + "AND ha.habit_id = :habitId "
+        + "AND ha.user_id != :userId "
+        + "AND ha.status = 'INPROGRESS'", nativeQuery = true)
+    List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
 }
