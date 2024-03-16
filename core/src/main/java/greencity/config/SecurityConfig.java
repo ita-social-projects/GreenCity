@@ -90,7 +90,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Collections.singletonList("https://greencity.greencity.social"));
+            config.setAllowedOrigins(Collections.singletonList("*"));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
             config.setAllowedHeaders(
