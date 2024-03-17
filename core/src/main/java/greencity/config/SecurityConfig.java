@@ -184,9 +184,6 @@ public class SecurityConfig {
                     "/user/{userId}/habit/assign",
                     "/token",
                     "/socket/**",
-                    "/socket",
-                    "/socket/",
-                    "/socket/*",
                     FRIENDS + "/user/{userId}")
                 .permitAll()
                 .requestMatchers(HttpMethod.POST,
