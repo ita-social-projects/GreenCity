@@ -5,7 +5,7 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -407,19 +407,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(
-            List.of("http://localhost:4205",
-                "http://localhost:4205/",
-                "http://localhost:4205/*",
-                "http://localhost:4200",
-                "http://localhost:4200/",
-                "http://localhost:4200/*",
-                "http://localhost:8085",
-                "http://localhost:8085/",
-                "http://localhost:8085/*",
-                "https://greencity.greencity.social",
-                "https://greencity.greencity.social/",
-                "https://greencity.greencity.social/*"));
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedHeaders(
