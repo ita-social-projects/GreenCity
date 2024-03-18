@@ -30,6 +30,6 @@ ingress:
   cors_allow_origin: http://localhost:4200, http://localhost:4200/*, https://www.greencity.social/, http://localhost:4205, http://localhost:4205/*, http://localhost:8085, http://localhost:8085/*
 
   # Only when cors_allow_origin is not "*"
-  cors_allow_credentials: "false"
+  cors_allow_credentials: "true"
 
   hostname: greencity.greencity.social
