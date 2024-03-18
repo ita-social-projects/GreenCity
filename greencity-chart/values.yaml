@@ -27,7 +27,7 @@ ingress:
   # Example: "https://origin-site.com:4443, http://origin-site.com, https://example.org:1199"
   # "https://*.origin-site.com:4443, http://*.origin-site.com"
   # If not set will be used "*" instead. Example: cors_allow_origin: ""
-  cors_allow_origin: http://localhost:4200, http://localhost:4200/*, https://www.greencity.social/
+  cors_allow_origin: http://localhost:4205, http://localhost:4205/*, https://www.greencity.social/, "http://localhost:8085", "http://localhost:8085/*"
 
   # Only when cors_allow_origin is not "*"
   cors_allow_credentials: "true"
