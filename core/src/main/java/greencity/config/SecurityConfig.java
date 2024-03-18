@@ -407,7 +407,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4205", "https://greencity.greencity.social"));
+        configuration.setAllowedOrigins(
+            List.of("http://localhost:4205", "http://localhost:8085", "https://greencity.greencity.social"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
         configuration.setAllowedHeaders(
