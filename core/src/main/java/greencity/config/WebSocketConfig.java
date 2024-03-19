@@ -24,13 +24,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/socket").setAllowedOrigins(
+            "https://www.greencity.social/",
             "http://localhost:4200",
             "http://localhost:4200/*",
-            "https://www.greencity.social/",
             "http://localhost:4205",
-            "http://localhost:4205/*",
-            "http://localhost:8085",
-            "http://localhost:8085/*")
+            "http://localhost:4205/*")
             .withSockJS();
     }
 

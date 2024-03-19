@@ -85,13 +85,11 @@ public class SecurityConfig {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedOriginPatterns(List.of(
+                "https://www.greencity.social/",
                 "http://localhost:4200",
                 "http://localhost:4200/*",
-                "https://www.greencity.social/",
                 "http://localhost:4205",
-                "http://localhost:4205/*",
-                "http://localhost:8085",
-                "http://localhost:8085/*"));
+                "http://localhost:4205/*"));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
             config.setAllowedHeaders(
