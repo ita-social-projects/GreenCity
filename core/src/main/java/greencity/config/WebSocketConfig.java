@@ -10,11 +10,15 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.beans.factory.annotation.Value;
 import java.util.List;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    @Value("${spring.messaging.stomp.websocket.allowed-origins}")
+    private String[] allowedOrigins;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -23,11 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/socket")/*
-                                        * .setAllowedOrigins( "https://www.greencity.social/", "http://localhost:4200",
-                                        * "http://localhost:4200/*", "http://localhost:4205",
-                                        * "http://localhost:4205/*")
-                                        */
+        registry.addEndpoint("/socket").setAllowedOriginPatterns(allowedOrigins)
             .withSockJS();
     }
 
