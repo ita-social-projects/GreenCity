@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -479,4 +480,16 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "JOIN user_location ON users.user_location = user_location.id "
         + "WHERE user_location.city_ua = :city AND users.id !=:userId")
     Page<User> findRecommendedFriendsByCity(Long userId, String city, Pageable pageable);
+
+    /**
+     * Updates last activity time for a given user by email.*
+     *
+     * @param email                - {@link User}'s email
+     * @param userLastActivityTime - new {@link User}'s last activity time
+     * @author Anton Bondar
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE User SET lastActivityTime=:userLastActivityTime WHERE email=:email")
+    void updateUserLastActivityTimeByEmail(String email, LocalDateTime userLastActivityTime);
 }
