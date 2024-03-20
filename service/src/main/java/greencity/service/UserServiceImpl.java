@@ -5,6 +5,7 @@ import greencity.constant.LogMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserOnlineDto;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
@@ -186,9 +187,10 @@ public class UserServiceImpl implements UserService {
             ZonedDateTime lastActivityTimeZDT = ZonedDateTime.of(userLastActivityTime, ZoneId.systemDefault());
             long result = now.toInstant().toEpochMilli() - lastActivityTimeZDT.toInstant().toEpochMilli();
             messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus",
-                result <= timeAfterLastActivity);
+                new UserOnlineDto(userId, result <= timeAfterLastActivity));
         }
-        messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus", false);
+        messagingTemplate.convertAndSend("/topic/" + userId + "/onlineStatus" + "/onlineStatus",
+            new UserOnlineDto(userId, false));
     }
 
     /**
