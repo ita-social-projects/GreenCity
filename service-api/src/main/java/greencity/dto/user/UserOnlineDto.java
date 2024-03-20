@@ -1,5 +1,6 @@
 package greencity.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -15,5 +16,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class UserOnlineDto {
     private Long userId;
+    @JsonProperty(value = "isOnline")
     private boolean isOnline;
 }
