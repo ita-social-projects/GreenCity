@@ -251,6 +251,7 @@ public class SecurityConfig {
                     FRIENDS + "/not-friends-yet",
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
+                    FRIENDS + "/isOnline/{userId}",
                     FRIENDS + "/friendRequests",
                     FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS)
