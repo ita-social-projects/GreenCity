@@ -20,8 +20,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -336,7 +336,7 @@ public class FriendController {
      * @author Anton Bondar
      */
     @MessageMapping("/isOnline/{userId}")
-    public void getOnlineStatusOfFriend(@Payload Long userId) {
+    public void getOnlineStatusOfFriend(@DestinationVariable Long userId) {
         userService.checkIfTheUserIsOnline(userId);
     }
 }
