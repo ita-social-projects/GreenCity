@@ -53,7 +53,8 @@ class UserFriendDtoTest {
             id, name, email, rating, ulId, null, null, null, null, null, null,
             null, null, mutualFriends, profilePicturePath, chatId, friendStatus, requesterId);
 
-        assertNull(userFriendDto.getUserLocationDto());
+        UserLocationDto expectedLocationDto = new UserLocationDto(null, null, null, null, null, null, null, null, null);
+        assertEquals(expectedLocationDto, userFriendDto.getUserLocationDto());
     }
 
 }
