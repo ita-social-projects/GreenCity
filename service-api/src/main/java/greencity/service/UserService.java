@@ -7,6 +7,7 @@ import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
+import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import java.util.Date;
 import java.util.List;
@@ -137,4 +138,12 @@ public interface UserService {
      * @author Anton Bondar.
      */
     void updateUserRating(Long userId, Double rating);
+
+    /**
+     * Updates last activity time for a given user by email.
+     *
+     * @param email                - {@link UserVO}'s email
+     * @param userLastActivityTime - new {@link UserVO}'s last activity time
+     */
+    void updateUserLastActivityTimeByEmail(String email, LocalDateTime userLastActivityTime);
 }

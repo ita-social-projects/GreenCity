@@ -1,8 +1,10 @@
 package greencity.config;
 
 import greencity.security.filters.AccessTokenAuthenticationFilter;
+import greencity.security.filters.UserOnlineStatusUpdateFilter;
 import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
+import greencity.service.FriendService;
 import greencity.service.UserService;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -55,6 +58,7 @@ public class SecurityConfig {
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final ThreadPoolTaskExecutor customThreadPool;
 
     @Value("${spring.messaging.stomp.websocket.allowed-origins}")
     private String[] allowedOrigins;
@@ -65,10 +69,12 @@ public class SecurityConfig {
 
     @Autowired
     public SecurityConfig(JwtTool jwtTool, UserService userService,
-        AuthenticationConfiguration authenticationConfiguration) {
+        AuthenticationConfiguration authenticationConfiguration, FriendService friendService,
+        ThreadPoolTaskExecutor customThreadPool) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationConfiguration = authenticationConfiguration;
+        this.customThreadPool = customThreadPool;
     }
 
     /**
@@ -101,6 +107,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
             .addFilterBefore(new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new UserOnlineStatusUpdateFilter(userService, customThreadPool),
+                AccessTokenAuthenticationFilter.class)
             .exceptionHandling(exception -> exception.authenticationEntryPoint((req, resp, exc) -> resp
                 .sendError(SC_UNAUTHORIZED, "Authorize first."))
                 .accessDeniedHandler((req, resp, exc) -> resp.sendError(SC_FORBIDDEN, "You don't have authorities.")))
