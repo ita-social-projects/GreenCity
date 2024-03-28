@@ -30,7 +30,6 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
      * @param event object to convert.
      * @return converted object.
      */
-
     @Override
     public EventDto convert(Event event) {
         EventDto eventDto = new EventDto();

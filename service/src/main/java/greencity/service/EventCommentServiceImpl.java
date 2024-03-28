@@ -17,6 +17,7 @@ import greencity.entity.event.EventComment;
 import greencity.enums.AchievementAction;
 import greencity.enums.AchievementCategoryType;
 import greencity.enums.CommentStatus;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.Role;
 import greencity.exception.exceptions.BadRequestException;
@@ -48,6 +49,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private AchievementCalculation achievementCalculation;
     private final SimpMessagingTemplate messagingTemplate;
     private final NotificationService notificationService;
+    private final UserNotificationService userNotificationService;
 
     /**
      * Method to save {@link greencity.entity.event.EventComment}.
@@ -79,7 +81,7 @@ public class EventCommentServiceImpl implements EventCommentService {
 
             if (!parentEventComment.getEvent().getId().equals(eventId)) {
                 String message = ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + parentCommentId
-                    + " in event with id:" + eventId;
+                    + " in event with id: " + eventId;
                 throw new NotFoundException(message);
             }
             eventComment.setParentComment(parentEventComment);
@@ -89,6 +91,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(
                     String.format(EmailNotificationMessagesConstants.REPLY_MESSAGE, eventComment.getUser().getName()))
                 .build());
+            userNotificationService.createNotification(modelMapper.map(parentEventComment.getUser(), UserVO.class),
+                userVO, NotificationType.EVENT_COMMENT_REPLY, parentCommentId, parentEventComment.getText(),
+                eventId, eventVO.getTitle());
         }
         eventComment.setStatus(CommentStatus.ORIGINAL);
         AddEventCommentDtoResponse addEventCommentDtoResponse = modelMapper.map(
@@ -103,6 +108,8 @@ public class EventCommentServiceImpl implements EventCommentService {
             .subject(EmailNotificationMessagesConstants.EVENT_COMMENTED_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.EVENT_COMMENTED_MESSAGE, eventVO.getTitle()))
             .build());
+        userNotificationService.createNotification(eventVO.getOrganizer(), userVO, NotificationType.EVENT_COMMENT,
+            eventId, eventVO.getTitle());
         return addEventCommentDtoResponse;
     }
 
@@ -282,12 +289,13 @@ public class EventCommentServiceImpl implements EventCommentService {
     public void like(Long commentId, UserVO userVO) {
         EventComment comment = eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_COMMENT_NOT_FOUND_BY_ID + commentId));
-
         if (comment.getUsersLiked().stream().anyMatch(user -> user.getId().equals(userVO.getId()))) {
             comment.getUsersLiked().removeIf(user -> user.getId().equals(userVO.getId()));
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_LIKE_COMMENT_OR_REPLY, userVO);
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.DELETE);
+            userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
+                userVO, commentId, NotificationType.EVENT_COMMENT_LIKE);
         } else {
             comment.getUsersLiked().add(modelMapper.map(userVO, User.class));
             achievementCalculation.calculateAchievement(userVO,
@@ -299,6 +307,9 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .message(String.format(EmailNotificationMessagesConstants.COMMENT_LIKE_MESSAGE,
                     userVO.getName()))
                 .build());
+            Event event = comment.getEvent();
+            userNotificationService.createNotification(modelMapper.map(comment.getUser(), UserVO.class), userVO,
+                NotificationType.EVENT_COMMENT_LIKE, commentId, comment.getText(), event.getId(), event.getTitle());
         }
         eventCommentRepo.save(comment);
     }

@@ -55,6 +55,9 @@ class FriendServiceImplTest {
     @Mock
     NotificationService notificationService;
 
+    @Mock
+    UserNotificationService userNotificationService;
+
     @Test
     void deleteUserFriendByIdTest() {
         long userId = 1L;
