@@ -23,6 +23,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.enums.NotificationType;
 import greencity.enums.RatingCalculationEnum;
 import greencity.enums.TagType;
 import greencity.exception.exceptions.BadRequestException;
@@ -137,6 +138,9 @@ class EcoNewsServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private UserNotificationService userNotificationService;
+
     private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
     private final EcoNews ecoNews = ModelUtils.getEcoNews();
     private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
@@ -172,23 +176,36 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
-    void saveWithExistedImage() throws IOException {
-        MultipartFile image = ModelUtils.getFile();
-        String imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+    void saveWithExistedImageTest() throws IOException {
+        var image = ModelUtils.getFile();
+        var imageToEncode = Base64.getEncoder().encodeToString(image.getBytes());
+        var ecoNews = ModelUtils.getEcoNews();
+        var tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+
         addEcoNewsDtoRequest.setImage(imageToEncode);
+
         when(modelMapper.map(addEcoNewsDtoRequest, EcoNews.class)).thenReturn(ecoNews);
         when(restClient.findByEmail(TestConst.EMAIL)).thenReturn(ModelUtils.getUserVO());
-        when(fileService.upload(any(MultipartFile.class))).thenReturn(ModelUtils.getUrl().toString());
-        List<TagVO> tagVOList = Collections.singletonList(ModelUtils.getTagVO());
+
         when(tagService.findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS))).thenReturn(tagVOList);
+        doNothing().when(userNotificationService).createNewNotification(ModelUtils.getUserVO(),
+            NotificationType.EVENT_CREATED, ecoNews.getId(), ecoNews.getTitle());
         when(ecoNewsRepo.save(any(EcoNews.class))).thenReturn(ecoNews);
         addEcoNewsDtoResponse.setEcoNewsAuthorDto(ModelUtils.getEcoNewsAuthorDto());
         when(modelMapper.map(ecoNews, AddEcoNewsDtoResponse.class)).thenReturn(addEcoNewsDtoResponse);
         when(modelMapper.map(ModelUtils.getUserVO(), User.class)).thenReturn(ModelUtils.getUser());
         when(userService.findById(anyLong())).thenReturn(ModelUtils.getUserVO());
+
         AddEcoNewsDtoResponse actual = ecoNewsService.save(addEcoNewsDtoRequest, image, TestConst.EMAIL);
 
         assertEquals(addEcoNewsDtoResponse, actual);
+
+        verify(modelMapper).map(addEcoNewsDtoRequest, EcoNews.class);
+        verify(restClient).findByEmail(TestConst.EMAIL);
+        verify(tagService).findTagsByNamesAndType(anyList(), eq(TagType.ECO_NEWS));
+        verify(ecoNewsRepo).save(any(EcoNews.class));
+        verify(modelMapper).map(ecoNews, AddEcoNewsDtoResponse.class);
+        verify(modelMapper).map(ModelUtils.getUserVO(), User.class);
         verify(userService).findById(anyLong());
     }
 
