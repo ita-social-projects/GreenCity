@@ -44,8 +44,13 @@ import greencity.filters.SearchCriteria;
 import greencity.message.GeneralEmailMessage;
 import greencity.repository.EcoNewsRepo;
 import greencity.repository.EcoNewsSearchRepo;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.cache.annotation.CacheEvict;
@@ -57,7 +62,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,6 +88,11 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     private final List<String> languageCode = List.of("en", "ua");
     private final UserService userService;
     private final UserNotificationService userNotificationService;
+
+    private static final String ECO_NEWS_TITLE = "title";
+    private static final String ECO_NEWS_JOIN_TAG = "tags";
+    private static final String ECO_NEWS_TAG_TRANSLATION = "tagTranslations";
+    private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
 
     /**
      * {@inheritDoc}
@@ -127,8 +137,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .subject(EmailNotificationMessagesConstants.ECONEWS_CREATION_SUBJECT)
             .message(String.format(EmailNotificationMessagesConstants.ECONEWS_CREATION_MESSAGE, toSave.getTitle()))
             .build());
-        userNotificationService.createNewNotification(user, NotificationType.EVENT_CREATED, toSave.getId(),
-            toSave.getTitle());
         return ecoNewsDto;
     }
 
@@ -216,7 +224,6 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     /**
      * {@inheritDoc}
-     *
      */
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> find(Pageable page, List<String> tags) {
@@ -224,6 +231,13 @@ public class EcoNewsServiceImpl implements EcoNewsService {
         Page<EcoNews> pages = ecoNewsRepo.findByTags(page, lowerCaseTags);
 
         return buildPageableAdvancedGeneticDto(pages);
+    }
+
+    @Override
+    public PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title) {
+        return buildPageableAdvancedGeneticDto(
+            ecoNewsRepo.findAll((root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
+                page));
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
@@ -521,19 +535,20 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             userNotificationService.removeActionUserFromNotification(ecoNewsVO.getAuthor(), userVO,
                 id, NotificationType.ECONEWS_LIKE);
         } else {
+            if (ecoNewsVO.getAuthor().getId().equals(userVO.getId())) {
+                throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            }
             achievementCalculation.calculateAchievement(userVO,
                 AchievementCategoryType.LIKE_COMMENT_OR_REPLY, AchievementAction.ASSIGN);
             ratingCalculation.ratingCalculation(RatingCalculationEnum.LIKE_COMMENT_OR_REPLY, userVO);
             ecoNewsVO.getUsersLikedNews().add(userVO);
-            userNotificationService.createNotification(ecoNewsVO.getAuthor(), userVO, NotificationType.ECONEWS_LIKE, id,
-                ecoNewsVO.getTitle());
+            notificationService.sendEmailNotification(GeneralEmailMessage.builder()
+                .email(ecoNewsVO.getAuthor().getEmail())
+                .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
+                .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
+                .build());
         }
         ecoNewsRepo.save(modelMapper.map(ecoNewsVO, EcoNews.class));
-        notificationService.sendEmailNotification(GeneralEmailMessage.builder()
-            .email(ecoNewsVO.getAuthor().getEmail())
-            .subject(EmailNotificationMessagesConstants.ECONEWS_LIKE_SUBJECT)
-            .message(String.format(EmailNotificationMessagesConstants.ECONEWS_LIKE_MESSAGE, ecoNewsVO.getTitle()))
-            .build());
     }
 
     /**
@@ -647,7 +662,7 @@ public class EcoNewsServiceImpl implements EcoNewsService {
     }
 
     private void setValueIfNotEmpty(List<SearchCriteria> searchCriteria, String key, String value) {
-        if (StringUtils.hasLength(value)) {
+        if (StringUtils.isNotEmpty(value)) {
             searchCriteria.add(SearchCriteria.builder()
                 .key(key)
                 .type(key)
@@ -797,5 +812,34 @@ public class EcoNewsServiceImpl implements EcoNewsService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + id));
         Set<User> usersDislikedNews = ecoNews.getUsersDislikedNews();
         return usersDislikedNews.stream().map(u -> modelMapper.map(u, UserVO.class)).collect(Collectors.toSet());
+    }
+
+    Predicate getPredicate(Root<EcoNews> root, CriteriaBuilder criteriaBuilder, List<String> tags,
+        String title) {
+        List<Predicate> predicates = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tags)) {
+            predicates.add(predicateForTags(criteriaBuilder, root, tags));
+        }
+        if (StringUtils.isNotEmpty(title)) {
+            predicates
+                .add(criteriaBuilder.like(criteriaBuilder.lower(root.get(ECO_NEWS_TITLE)),
+                    '%' + title.toLowerCase() + '%'));
+        }
+
+        return predicates.size() == 1
+            ? predicates.getFirst()
+            : predicates.isEmpty() ? null : criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private Predicate predicateForTags(CriteriaBuilder criteriaBuilder, Root<EcoNews> root, List<String> tags) {
+        Join<EcoNews, Tag> ecoNewsTag = root.join(ECO_NEWS_JOIN_TAG);
+        List<Predicate> predicateList = new ArrayList<>();
+        tags.forEach(partOfSearchingText -> predicateList.add(criteriaBuilder.and(
+            criteriaBuilder.like(
+                criteriaBuilder.lower(ecoNewsTag.get(ECO_NEWS_TAG_TRANSLATION).get(ECO_NEWS_TAG_TRANSLATION_NAME)),
+                "%" + partOfSearchingText.toLowerCase() + "%"))));
+        return predicateList.size() == 1
+            ? predicateList.getFirst()
+            : criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
     }
 }

@@ -1,26 +1,5 @@
 package greencity.service;
 
-import greencity.repository.AchievementCategoryRepo;
-import greencity.repository.AchievementRepo;
-import greencity.repository.EcoNewsRepo;
-import greencity.repository.EcoNewsSearchRepo;
-import greencity.repository.UserAchievementRepo;
-import greencity.repository.UserRepo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.achievement.AchievementCalculation;
@@ -53,10 +32,39 @@ import greencity.exception.exceptions.UnsupportedSortException;
 import greencity.filters.EcoNewsSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.rating.RatingCalculation;
-
+import greencity.repository.AchievementCategoryRepo;
+import greencity.repository.AchievementRepo;
+import greencity.repository.EcoNewsRepo;
+import greencity.repository.EcoNewsSearchRepo;
+import greencity.repository.UserAchievementRepo;
+import greencity.repository.UserRepo;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
@@ -65,18 +73,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.SneakyThrows;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.*;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.multipart.MultipartFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class EcoNewsServiceImplTest {
@@ -126,13 +137,15 @@ class EcoNewsServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
-    @Mock
-    private UserNotificationService userNotificationService;
+    private final AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
+    private final EcoNews ecoNews = ModelUtils.getEcoNews();
+    private final AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
+    private final EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
 
-    private AddEcoNewsDtoRequest addEcoNewsDtoRequest = ModelUtils.getAddEcoNewsDtoRequest();
-    private EcoNews ecoNews = ModelUtils.getEcoNews();
-    private AddEcoNewsDtoResponse addEcoNewsDtoResponse = ModelUtils.getAddEcoNewsDtoResponse();
-    private EcoNewsGenericDto ecoNewsGenericDto = ModelUtils.getEcoNewsGenericDto();
+    private static final String ECO_NEWS_TITLE = "title";
+    private static final String ECO_NEWS_JOIN_TAG = "tags";
+    private static final String ECO_NEWS_TAG_TRANSLATION = "tagTranslations";
+    private static final String ECO_NEWS_TAG_TRANSLATION_NAME = "name";
 
     @Test
     void save() throws MalformedURLException {
@@ -601,6 +614,7 @@ class EcoNewsServiceImplTest {
         UserVO userVO = ModelUtils.getUserVO();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
 
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
@@ -615,11 +629,26 @@ class EcoNewsServiceImplTest {
     }
 
     @Test
+    void likeOwnTest() {
+        UserVO userVO = ModelUtils.getUserVO();
+        EcoNews ecoNews = ModelUtils.getEcoNews();
+        EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.setUsersLikedNews(new HashSet<>());
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
+        when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
+        when(modelMapper.map(ecoNewsVO, EcoNews.class)).thenReturn(ecoNews);
+
+        assertThrows(BadRequestException.class, () -> ecoNewsService.like(userVO, 1L));
+    }
+
+    @Test
     void givenEcoNewsLikedByUser_whenLikedByUser_shouldRemoveLike() {
         // given
         UserVO userVO = ModelUtils.getUserVO();
         EcoNews ecoNews = ModelUtils.getEcoNews();
         EcoNewsVO ecoNewsVO = ModelUtils.getEcoNewsVO();
+        ecoNewsVO.getAuthor().setId(2L);
         ecoNewsVO.setUsersLikedNews(new HashSet<>());
         when(ecoNewsRepo.findById(1L)).thenReturn(Optional.of(ecoNews));
         when(modelMapper.map(ecoNews, EcoNewsVO.class)).thenReturn(ecoNewsVO);
@@ -730,6 +759,41 @@ class EcoNewsServiceImplTest {
         EcoNewsDto expected = ModelUtils.getEcoNewsDtoForFindDtoByIdAndLanguage();
         when(ecoNewsRepo.findById(anyLong())).thenReturn(Optional.of(ecoNews));
         assertEquals(expected, ecoNewsService.findDtoByIdAndLanguage(1L, "ua"));
+    }
+
+    @Test
+    void findByFilters() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<EcoNews> ecoNews = Collections.singletonList(ModelUtils.getEcoNews());
+        Page<EcoNews> page = new PageImpl<>(ecoNews, pageable, ecoNews.size());
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add("новини");
+        tags.add("news");
+        Root<EcoNews> root = mock(Root.class);
+        CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
+        Join join = mock(Join.class);
+        when(root.join(ECO_NEWS_JOIN_TAG)).thenReturn(join);
+        Path tagTranslations = mock(Path.class);
+        Path name = mock(Path.class);
+        when(join.get(ECO_NEWS_TAG_TRANSLATION)).thenReturn(tagTranslations);
+        when(tagTranslations.get(ECO_NEWS_TAG_TRANSLATION_NAME)).thenReturn(name);
+
+        when(criteriaBuilder.lower(any())).thenReturn(name);
+        when(criteriaBuilder.like(any(), anyString())).thenReturn(mock(Predicate.class));
+        when(criteriaBuilder.and(any())).thenReturn(mock(Predicate.class));
+
+        ecoNewsService.getPredicate(root, criteriaBuilder, tags, "1");
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verify(criteriaBuilder, times(tags.size() + 1)).like(any(), captor.capture());
+
+        assertEquals(List.of("%новини%", "%news%", "%1%"), captor.getAllValues());
+
+        when(ecoNewsRepo.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+
+        ecoNewsService.findByFilters(pageable, tags, "1");
+        verify(ecoNewsRepo, times(1)).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test

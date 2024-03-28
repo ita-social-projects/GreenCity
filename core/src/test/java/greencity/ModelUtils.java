@@ -20,6 +20,7 @@ import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
 import greencity.dto.event.AddEventDtoRequest;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.UpdateEventDto;
 import greencity.dto.factoftheday.FactOfTheDayDTO;
 import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
@@ -677,6 +678,42 @@ public class ModelUtils {
         return AddEventDtoRequest.builder().title("Title").description("Desc").isOpen(true).build();
     }
 
+    public static UpdateEventDto getUpdateEventDtoWithoutDates() {
+        return UpdateEventDto.builder().title("Title").description("Desc").isOpen(true).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDto() {
+        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+            .onlineLink("http://localhost:8060/swagger-ui.html#/")
+            .build(),
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(6))
+                .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build()))
+            .tags(List.of("first", "second", "third")).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDtoWithTooManyDates() {
+        List<EventDateLocationDto> eventDateLocationDtos = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            eventDateLocationDtos.add(EventDateLocationDto.builder().id((long) i).build());
+        }
+        return UpdateEventDto.builder().datesLocations(eventDateLocationDtos).build();
+    }
+
+    public static UpdateEventDto getUpdateEventDtoWithEmptyDateLocations() {
+        return UpdateEventDto.builder().datesLocations(new ArrayList<>()).build();
+    }
+
+    public static UpdateEventDto getUpdateEventWithoutAddressAndLink() {
+        return UpdateEventDto.builder().datesLocations(List.of(EventDateLocationDto.builder()
+            .startDate(ZonedDateTime.now().plusDays(5))
+            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1)).build())).build();
+    }
+
     public static AddEventDtoRequest getEventDtoWithZeroDates() {
         return AddEventDtoRequest.builder().datesLocations(new ArrayList<>()).build();
     }
@@ -722,11 +759,18 @@ public class ModelUtils {
     }
 
     public static AddEventDtoRequest getAddEventDtoRequest() {
-        return AddEventDtoRequest.builder().datesLocations(List.of(EventDateLocationDto.builder()
-            .startDate(ZonedDateTime.now().plusDays(5))
-            .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
-            .onlineLink("http://localhost:8060/swagger-ui.html#/")
-            .build())).tags(List.of("first", "second", "third")).build();
+        return AddEventDtoRequest.builder().datesLocations(List.of(
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(5))
+                .finishDate(ZonedDateTime.now().plusDays(5).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build(),
+            EventDateLocationDto.builder()
+                .startDate(ZonedDateTime.now().plusDays(6))
+                .finishDate(ZonedDateTime.now().plusDays(6).plusHours(1))
+                .onlineLink("http://localhost:8060/swagger-ui.html#/")
+                .build()))
+            .tags(List.of("first", "second", "third")).build();
     }
 
     public static CustomHabitDtoRequest getAddCustomHabitDtoRequest() {

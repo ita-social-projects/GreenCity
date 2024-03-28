@@ -5,8 +5,9 @@ import greencity.security.jwt.JwtTool;
 import greencity.security.providers.JwtAuthenticationProvider;
 import greencity.service.UserService;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -55,6 +56,9 @@ public class SecurityConfig {
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
+    @Value("${spring.messaging.stomp.websocket.allowed-origins}")
+    private String[] allowedOrigins;
+
     /**
      * Constructor.
      */
@@ -84,13 +88,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(List.of(allowedOrigins));
             config.setAllowedMethods(
                 Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
             config.setAllowedHeaders(
                 Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
                     "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-            config.setAllowCredentials(false);
+            config.setAllowCredentials(true);
             config.setMaxAge(3600L);
             return config;
         })).csrf(AbstractHttpConfigurer::disable)
@@ -134,6 +138,7 @@ public class SecurityConfig {
                     "/place/info/favorite/{placeId}",
                     "/favorite_place/favorite/{placeId}",
                     "/place/statuses",
+                    "/place/all",
                     "/habit",
                     "/habit/{id}",
                     "/habit/{id}/shopping-list",
@@ -247,6 +252,7 @@ public class SecurityConfig {
                     FRIENDS + "/recommended-friends",
                     FRIENDS + "/mutual-friends",
                     FRIENDS + "/friendRequests",
+                    FRIENDS + "/{userId}/all-user-friends",
                     FRIENDS,
                     "/notification",
                     "/notification/all",
@@ -277,7 +283,6 @@ public class SecurityConfig {
                     "/place/{placeId}/comments",
                     "/place/propose",
                     "/place/save/favorite/",
-                    "/place/all",
                     USER_CUSTOM_SHOPPING_LIST_ITEMS,
                     USER_SHOPPING_LIST,
                     "/user/{userId}/habit",

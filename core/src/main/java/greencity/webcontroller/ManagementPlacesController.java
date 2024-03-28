@@ -54,7 +54,7 @@ public class ManagementPlacesController {
     public String getAllPlaces(@RequestParam(required = false, name = "query") String query, Model model,
         @Parameter(hidden = true) Pageable pageable) {
         PageableDto<AdminPlaceDto> allPlaces =
-            query == null || query.isEmpty() ? placeService.findAll(pageable, "")
+            query == null || query.isEmpty() ? placeService.findAll(pageable, null)
                 : placeService.searchBy(pageable, query);
         model.addAttribute("pageable", allPlaces);
         model.addAttribute("categoryList", categoryService.findAllCategoryDto());

@@ -233,6 +233,9 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
             userNotificationService.removeActionUserFromNotification(modelMapper.map(comment.getUser(), UserVO.class),
                 userVO, comment.getId(), NotificationType.ECONEWS_COMMENT_LIKE);
         } else {
+            if (comment.getUser().getId().equals(userVO.getId())) {
+                throw new BadRequestException(ErrorMessage.USER_HAS_NO_PERMISSION);
+            }
             ecoNewsService.likeComment(userVO, ecoNewsCommentVO);
             notificationService.sendEmailNotification(GeneralEmailMessage.builder()
                 .email(comment.getUser().getEmail())

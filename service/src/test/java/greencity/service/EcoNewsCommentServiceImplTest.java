@@ -596,4 +596,30 @@ class EcoNewsCommentServiceImplTest {
         verify(userRepo).findAll();
         verify(modelMapper).map(user, UserTagDto.class);
     }
+
+    @Test
+    void likeOwnCommentThrowsException() {
+        UserVO userVO = getUserVO();
+        EcoNewsComment ecoNewsComment = ModelUtils.getEcoNewsComment();
+        ecoNewsComment.setUsersLiked(new HashSet<>());
+
+        when(ecoNewsCommentRepo.findById(anyLong())).thenReturn(Optional.of(ecoNewsComment));
+        assertThrows(BadRequestException.class, () -> ecoNewsCommentService.like(1L, userVO));
+    }
+
+    @Test
+    void countOfCommentsTest() {
+        EcoNews ecoNews = new EcoNews();
+        ecoNews.setId(1L);
+        int commentCount = 5;
+
+        when(ecoNewsRepo.findById(1L)).thenReturn(java.util.Optional.of(ecoNews));
+        when(ecoNewsCommentRepo.countEcoNewsCommentByEcoNews(1L)).thenReturn(commentCount);
+
+        int result = ecoNewsCommentService.countOfComments(1L);
+
+        assertEquals(commentCount, result);
+        verify(ecoNewsRepo).findById(1L);
+        verify(ecoNewsCommentRepo).countEcoNewsCommentByEcoNews(1L);
+    }
 }
