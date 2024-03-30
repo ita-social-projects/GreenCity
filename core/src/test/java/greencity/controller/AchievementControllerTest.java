@@ -1,5 +1,6 @@
 package greencity.controller;
 
+import greencity.dto.achievement.ActionDto;
 import greencity.service.AchievementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,8 @@ import org.mockito.quality.Strictness;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
-
+import static greencity.ModelUtils.getActionDto;
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,5 +72,12 @@ class AchievementControllerTest {
         mockMvc.perform(get(achievementLink).principal(principal).param("achievementStatus", "unAchieVED"))
             .andExpect(status().isOk());
         verify(achievementService).findAllByType("test@gmail.com", "unAchieVED");
+    }
+
+    @Test
+    void achieveTest() {
+        var dto = getActionDto();
+        achievementController.achieve(ActionDto.builder().build());
+        verify(achievementService).achieve(dto);
     }
 }

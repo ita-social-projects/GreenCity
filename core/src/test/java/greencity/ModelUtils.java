@@ -5,6 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.achievement.AchievementPostDto;
 import greencity.dto.achievement.AchievementVO;
+import greencity.dto.achievement.ActionDto;
 import greencity.dto.achievementcategory.AchievementCategoryDto;
 import greencity.dto.achievementcategory.AchievementCategoryVO;
 import greencity.dto.advice.AdvicePostDto;
@@ -26,6 +27,7 @@ import greencity.dto.factoftheday.FactOfTheDayPostDTO;
 import greencity.dto.factoftheday.FactOfTheDayTranslationEmbeddedPostDTO;
 import greencity.dto.favoriteplace.FavoritePlaceDto;
 import greencity.dto.filter.FilterEventDto;
+import greencity.dto.filter.FilterNotificationDto;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
 import greencity.dto.habit.HabitAssignPropertiesDto;
 import greencity.dto.habit.HabitVO;
@@ -92,13 +94,16 @@ import greencity.enums.CommentStatus;
 import greencity.enums.FactOfDayStatus;
 import greencity.enums.HabitAssignStatus;
 import greencity.enums.HabitRate;
+import greencity.enums.NotificationType;
+import greencity.enums.ProjectName;
 import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -802,5 +807,18 @@ public class ModelUtils {
             .statuses(null)
             .tags(null)
             .build();
+    }
+
+    public static ActionDto getActionDto() {
+        return ActionDto.builder().build();
+    }
+
+    public static Pageable getPageable() {
+        return PageRequest.of(0, 20);
+    }
+
+    public static FilterNotificationDto getFilterNotificationDto() {
+        return FilterNotificationDto.builder().projectName(new ProjectName[] {})
+            .notificationType(new NotificationType[] {}).build();
     }
 }

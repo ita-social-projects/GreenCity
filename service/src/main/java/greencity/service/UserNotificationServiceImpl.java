@@ -43,7 +43,7 @@ public class UserNotificationServiceImpl implements UserNotificationService {
     /**
      * {@inheritDoc}
      *
-     * @return set of 3 last new notifications
+     * @return List of 3 last new notifications
      */
     public List<NotificationDto> getThreeLastNotifications(Principal principal, String language) {
         User currentUser = modelMapper.map(userService.findByEmail(principal.getName()), User.class);
