@@ -147,12 +147,14 @@ class UserNotificationServiceImplTest {
 
     @Test
     void getNotificationThrowNotFoundExceptionTest() {
+        var principal = getPrincipal();
+
         when(userService.findByEmail("danylo@gmail.com")).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(TEST_USER);
         when(notificationRepo.findByIdAndTargetUserId(1L, TEST_USER.getId())).thenReturn(null);
 
-        assertThrows(NotFoundException.class, ()-> userNotificationService
-                .getNotification(getPrincipal(), 1L, "en"));
+        assertThrows(NotFoundException.class, () -> userNotificationService
+            .getNotification(principal, 1L, "en"));
 
         verify(userService).findByEmail("danylo@gmail.com");
         verify(modelMapper).map(TEST_USER_VO, User.class);

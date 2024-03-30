@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static greencity.ModelUtils.getActionDto;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import org.springframework.validation.Validator;
@@ -91,7 +90,7 @@ class NotificationControllerTest {
             .principal(principal)
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
-        verify(userNotificationService).deleteNotification(eq(principal), eq(1L));
+        verify(userNotificationService).deleteNotification(principal, 1L);
     }
 
     @Test
