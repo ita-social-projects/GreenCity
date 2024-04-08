@@ -308,7 +308,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
     List<Long> findAllHabitIdsByUserIdAndStatusIsRequested(@Param("userId") Long userId);
 
     /**
-     * Method to find list of friends ids of current user that track the same Habit.
+     * Method to find list of friends ids of current user who tracks the same Habit.
      *
      * @param userId  {@link Long} userId of current user.
      * @param habitId {@link Long} habitId.
@@ -324,6 +324,7 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
         + "AND uf.status = 'FRIEND' "
         + "AND ha.habit_id = :habitId "
         + "AND ha.user_id != :userId "
-        + "AND ha.status = 'INPROGRESS'", nativeQuery = true)
+        + "AND ha.status = 'INPROGRESS' "
+        + "OR ha.status = 'ACQUIRED'", nativeQuery = true)
     List<Long> findFriendsIdsTrackingHabit(@Param("habitId") Long habitId, @Param("userId") Long userId);
 }
