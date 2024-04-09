@@ -14,7 +14,6 @@ import greencity.dto.habit.HabitDto;
 import greencity.dto.habit.HabitEnrollDto;
 import greencity.dto.habit.HabitVO;
 import greencity.dto.habit.HabitsDateEnrollmentDto;
-import greencity.dto.habit.UpdateUserShoppingListDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.habitstatuscalendar.HabitStatusCalendarVO;
 import greencity.dto.shoppinglistitem.BulkSaveCustomShoppingListItemDto;
@@ -40,7 +39,6 @@ import greencity.exception.exceptions.CustomShoppingListItemNotSavedException;
 import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidStatusException;
 import greencity.exception.exceptions.NotFoundException;
-import greencity.exception.exceptions.ShoppingListItemNotFoundException;
 import greencity.exception.exceptions.UserAlreadyHasEnrolledHabitAssign;
 import greencity.exception.exceptions.UserAlreadyHasHabitAssignedException;
 import greencity.exception.exceptions.UserAlreadyHasMaxNumberOfActiveHabitAssigns;
@@ -62,7 +60,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -71,7 +68,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static greencity.ModelUtils.HABIT_ASSIGN_IN_PROGRESS;
 import static greencity.ModelUtils.getFullHabitAssign;
 import static greencity.ModelUtils.getFullHabitAssignDto;
@@ -761,18 +757,20 @@ class HabitAssignServiceImplTest {
     @Test
     void getAllHabitAssignsByUserIdAndStatusNotCancelled() {
         UserShoppingListItem userShoppingListItemCustom = ModelUtils.getFullUserShoppingListItem();
-        HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDto();
-        habitAssignDtoCustom.setCreateDateTime(zonedDateTime);
+        HabitAssignDto habitAssignDtoCustom = ModelUtils.getHabitAssignDtoWithFriendsIds();
+        List<HabitAssignDto> expected = List.of(habitAssignDtoCustom);
 
         when(habitAssignRepo.findAllByUserId(1L)).thenReturn(habitAssigns);
         when(modelMapper.map(habitAssign, HabitAssignDto.class)).thenReturn(habitAssignDtoCustom);
         when(userShoppingListItemRepo.getAllAssignedShoppingListItemsFull(any()))
             .thenReturn(List.of(userShoppingListItemCustom));
+        when(habitAssignRepo.findFriendsIdsTrackingHabit(anyLong(), anyLong())).thenReturn(List.of(1L, 2L));
 
         HabitTranslation habitTranslation = habitAssign.getHabit().getHabitTranslations().stream().findFirst().get();
-        when(modelMapper.map(habitTranslation, HabitDto.class)).thenReturn(ModelUtils.getHabitAssignDto().getHabit());
+        when(modelMapper.map(habitTranslation, HabitDto.class))
+            .thenReturn(ModelUtils.getHabitAssignDtoWithFriendsIds().getHabit());
 
-        habitAssignDtos.getFirst().getHabit().setShoppingListItems(
+        expected.getFirst().getHabit().setShoppingListItems(
             List.of(ShoppingListItemDto.builder()
                 .id(userShoppingListItemCustom.getId())
                 .status(userShoppingListItemCustom.getStatus().toString())
@@ -780,7 +778,7 @@ class HabitAssignServiceImplTest {
                 .build()));
 
         List<HabitAssignDto> actual = habitAssignService.getAllHabitAssignsByUserIdAndStatusNotCancelled(1L, "en");
-        assertEquals(habitAssignDtos, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
