@@ -19,7 +19,12 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      *
      * @return list of {@link Event} instances.
      */
-    Page<Event> findAllByOrderByIdDesc(Pageable page);
+    @Query(nativeQuery = true,
+        value = "SELECT e.* FROM events e "
+            + "INNER JOIN events_dates_locations edl ON e.id = edl.event_id "
+            + "WHERE edl.finish_date >= CURRENT_TIMESTAMP "
+            + "ORDER BY edl.start_date ASC")
+    Page<Event> findAllByOrderByStartDate(Pageable page);
 
     /**
      * Method for getting all events by user.

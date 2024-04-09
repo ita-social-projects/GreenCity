@@ -185,7 +185,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public PageableAdvancedDto<EventDto> getAll(Pageable page, Principal principal) {
-        Page<Event> events = eventRepo.findAllByOrderByIdDesc(page);
+        Page<Event> events = eventRepo.findAllByOrderByStartDate(page);
 
         if (principal != null) {
             User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
@@ -667,7 +667,7 @@ public class EventServiceImpl implements EventService {
                 filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
             }
         }
-        return getSortedListByEventId(filtered);
+        return getSortedListByStartTime(filtered);
     }
 
     private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
@@ -805,8 +805,11 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
     }
 
-    private List<Event> getSortedListByEventId(List<Event> unsorted) {
-        return unsorted.stream().distinct().sorted(Comparator.comparing(Event::getId, Comparator.reverseOrder()))
+    public static List<Event> getSortedListByStartTime(List<Event> unsorted) {
+        return unsorted.stream()
+            .filter(event -> event.getDates().stream()
+                .noneMatch(date -> date.getFinishDate().isBefore(ZonedDateTime.now())))
+            .sorted(Comparator.comparing(event -> event.getDates().getFirst().getStartDate()))
             .collect(Collectors.toList());
     }
 
