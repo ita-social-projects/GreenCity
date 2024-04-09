@@ -125,7 +125,10 @@ import java.util.Set;
             + "LIMIT 1) as requesterId "
             + "FROM users u "
             + "LEFT JOIN user_location ul ON u.user_location = ul.id "
-            + "WHERE u.id IN (:users)",
+            + "WHERE u.id IN (:users) AND (SELECT uf2.status FROM users_friends uf2 "
+            + "WHERE ( uf2.user_id = :userId AND uf2.friend_id = u.id ) "
+            + "or ( uf2.user_id = u.id AND uf2.friend_id = :userId )"
+            + "LIMIT 1) != 'REJECTED'",
         resultSetMapping = "userFriendDtoMapping")
 })
 @NoArgsConstructor
