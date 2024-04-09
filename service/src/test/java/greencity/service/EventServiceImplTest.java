@@ -301,7 +301,7 @@ class EventServiceImplTest {
         when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().getFirst(), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
