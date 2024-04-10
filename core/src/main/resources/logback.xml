@@ -4,10 +4,7 @@
     <property name="DATE_FORMAT" value="yyyy-MM-dd HH:mm:ss" />
 
     <!-- Define the log pattern with the custom date format -->
-    <property name="LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%logger{40}) %msg%n" />
-
-    <!-- Other properties and appenders remain the same -->
-
+    <property name="LOG_PATTERN" value="[%d{${DATE_FORMAT}}] %highlight(%level) %cyan(%-40.40logger{40}) %magenta(%-5.5(:%line)) %msg%n" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!-- Use the log pattern with the custom date format -->
