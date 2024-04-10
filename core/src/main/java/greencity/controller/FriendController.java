@@ -59,6 +59,19 @@ public class FriendController {
     }
 
     /**
+     * Exception for deleting friend with null id.
+     *
+     * @param userVO {@link UserVO} user.
+     * @author Oleksandr Sokil
+     */
+    @DeleteMapping
+    @Operation(hidden = true)
+    public ResponseEntity<ResponseEntity.BodyBuilder> deleteUserFriendWithoutParams(
+        @Parameter(hidden = true) @CurrentUser UserVO userVO) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    /**
      * Method for add new user friend.
      *
      * @param friendId id user friend.
