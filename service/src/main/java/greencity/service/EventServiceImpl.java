@@ -667,7 +667,7 @@ public class EventServiceImpl implements EventService {
                 filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
             }
         }
-        return getSortedListByStartTime(filtered);
+        return getSortedEvents(filtered);
     }
 
     private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
@@ -805,12 +805,28 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
     }
 
-    public static List<Event> getSortedListByStartTime(List<Event> unsorted) {
+    private static List<Event> getSortedFutureEvents(List<Event> unsorted) {
         return unsorted.stream()
-            .filter(event -> event.getDates().stream()
-                .noneMatch(date -> date.getFinishDate().isBefore(ZonedDateTime.now())))
+            .filter(Event::isRelevant)
             .sorted(Comparator.comparing(event -> event.getDates().getFirst().getStartDate()))
             .collect(Collectors.toList());
+    }
+
+    private static List<Event> getSortedPastEvents(List<Event> unsorted) {
+        return unsorted.stream()
+            .filter(event -> !event.isRelevant())
+            .sorted(Comparator.comparing(event -> event.getDates().getFirst().getStartDate()))
+            .collect(Collectors.toList());
+    }
+
+    private static List<Event> getSortedEvents(List<Event> unsorted) {
+        List<Event> pastEvents = getSortedPastEvents(unsorted);
+        List<Event> futureEvents = getSortedFutureEvents(unsorted);
+
+        List<Event> events = new ArrayList<>();
+        events.addAll(pastEvents);
+        events.addAll(futureEvents);
+        return events;
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
