@@ -1131,7 +1131,7 @@ class EventServiceImplTest {
         EventDto expected = ModelUtils.getEventDto();
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
@@ -1161,7 +1161,7 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 1);
         User user = ModelUtils.getUser();
 
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
@@ -1193,7 +1193,7 @@ class EventServiceImplTest {
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
@@ -1211,7 +1211,7 @@ class EventServiceImplTest {
             new TypeToken<List<EventDto>>() {
             }.getType());
 
-        verify(eventRepo).findAllByOrderByStartDate(any());
+        verify(eventRepo).findAllByOrderByIdDesc(any());
         verify(restClient).findByEmail(any());
         verify(modelMapper).map(TEST_USER_VO, User.class);
 
@@ -1231,7 +1231,7 @@ class EventServiceImplTest {
         Principal principal = ModelUtils.getPrincipal();
         PageRequest pageRequest = PageRequest.of(0, 1);
 
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(ModelUtils.getUser());
@@ -1245,7 +1245,7 @@ class EventServiceImplTest {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
 
-        verify(eventRepo).findAllByOrderByStartDate(any());
+        verify(eventRepo).findAllByOrderByIdDesc(any());
         verify(restClient).findByEmail(any());
         verify(modelMapper).map(TEST_USER_VO, User.class);
 
@@ -1364,7 +1364,7 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
 
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
@@ -1378,7 +1378,38 @@ class EventServiceImplTest {
         assertEquals(expected, actual);
         assertEquals(expected.size(), actualSize);
 
-        verify(eventRepo).findAllByOrderByStartDate(pageRequest);
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+    }
+
+    @Test
+    void getEventsWithoutFiltersAndLoggedInUser() {
+        User user = ModelUtils.getAttenderUser();
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Principal principal = ModelUtils.getPrincipal();
+        List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(expected);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
+            pageRequest, principal, null, null);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
+
+        assertEquals(expected, actual);
+        assertEquals(expected.size(), actualSize);
+
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
             }.getType());
@@ -1541,7 +1572,7 @@ class EventServiceImplTest {
 
         when(modelMapper.map(events, new TypeToken<List<EventDto>>() {
         }.getType())).thenReturn(expected);
-        when(eventRepo.findAllByOrderByStartDate(pageRequest))
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
@@ -1552,7 +1583,7 @@ class EventServiceImplTest {
         assertEquals(expected.size(), actualSize);
         assertEquals(expected, actual);
 
-        verify(eventRepo).findAllByOrderByStartDate(pageRequest);
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
         verify(modelMapper).map(events, new TypeToken<List<EventDto>>() {
         }.getType());
     }
