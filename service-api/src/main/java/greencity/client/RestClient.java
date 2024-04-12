@@ -228,7 +228,6 @@ public class RestClient {
         restTemplate.exchange(greenCityUserServerAddress
             + RestTemplateLinks.USER + "/" + userDto.getId(), HttpMethod.PUT, entity, Object.class);
         log.info("User with id {} has been updated", userDto.getId());
-
     }
 
     private UserManagementUpdateDto managementDtoToUpdateDto(UserManagementDto userDto) {
