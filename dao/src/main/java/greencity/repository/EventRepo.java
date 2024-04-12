@@ -22,6 +22,24 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
     Page<Event> findAllByOrderByIdDesc(Pageable page);
 
     /**
+     * Method for getting all events sorted by start date.
+     *
+     * @return list of {@link Event} of future events sorted by start date in
+     *         ascending order, followed by past events sorted by finish date in
+     *         descending order.
+     * @author Anton Bondar
+     */
+    @Query(nativeQuery = true, value = "SELECT e.* FROM events e "
+        + "INNER JOIN events_dates_locations edl ON e.id = edl.event_id "
+        + "WHERE edl.finish_date >= CURRENT_TIMESTAMP "
+        + "UNION "
+        + "SELECT e.* FROM events e "
+        + "INNER JOIN events_dates_locations edl ON e.id = edl.event_id "
+        + "WHERE edl.finish_date < CURRENT_TIMESTAMP "
+        + "ORDER BY edl.finish_date DESC")
+    Page<Event> findAllEventsSortedByStartDate(Pageable page);
+
+    /**
      * Method for getting all events by user.
      *
      * @return list of {@link Event} instances.

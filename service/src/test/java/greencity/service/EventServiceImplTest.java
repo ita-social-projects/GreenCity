@@ -48,7 +48,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -302,7 +301,7 @@ class EventServiceImplTest {
         when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().getFirst(), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
 
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
@@ -319,8 +318,8 @@ class EventServiceImplTest {
         expectedEvent.setAdditionalImages(List.of(EventImages.builder().link("New addition image").build()));
 
         method.invoke(eventService, event, eventToUpdateDto, null);
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
         eventToUpdateDto.setImagesToDelete(List.of("New addition image"));
@@ -328,8 +327,8 @@ class EventServiceImplTest {
 
         method.invoke(eventService, event, eventToUpdateDto, null);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
 
         eventToUpdateDto.setAdditionalImages(null);
         method.invoke(eventService, event, eventToUpdateDto, null);
@@ -351,8 +350,8 @@ class EventServiceImplTest {
 
         method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
-            event.getAdditionalImages().get(0).getLink());
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
+            event.getAdditionalImages().getFirst().getLink());
 
         eventToUpdateDto.setImagesToDelete(null);
         eventToUpdateDto.setTitleImage("url");
@@ -362,7 +361,7 @@ class EventServiceImplTest {
             EventImages.builder().event(expectedEvent).link("Add img 2").build()));
         method.invoke(eventService, event, eventToUpdateDto, multipartFiles);
         assertEquals(expectedEvent.getTitleImage(), event.getTitleImage());
-        assertEquals(expectedEvent.getAdditionalImages().get(0).getLink(),
+        assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
             event.getAdditionalImages().get(0).getLink());
         assertEquals("url2", event.getAdditionalImages().get(3).getLink());
 
@@ -418,7 +417,7 @@ class EventServiceImplTest {
         when(modelMapper.map(updatedTagVO, new TypeToken<List<Tag>>() {
         }.getType())).thenReturn(ModelUtils.getEventTags());
         doNothing().when(eventRepo).deleteEventDateLocationsByEventId(1L);
-        when(modelMapper.map(eventToUpdateDto.getDatesLocations().get(0), EventDateLocation.class))
+        when(modelMapper.map(eventToUpdateDto.getDatesLocations().getFirst(), EventDateLocation.class))
             .thenReturn(ModelUtils.getUpdatedEventDateLocation());
         when(googleApiService.getResultFromGeoCodeByCoordinates(any()))
             .thenReturn(ModelUtils.getAddressLatLngResponse());
@@ -542,7 +541,7 @@ class EventServiceImplTest {
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
                 pageRequest, principal.getName(), "", "", eventType);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
@@ -583,7 +582,7 @@ class EventServiceImplTest {
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllUserEvents(
                 pageRequest, principal.getName(), userLatitude, userLongitude, eventType);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertSame(expected, actual);
         assertFalse(actual.isFavorite());
@@ -808,7 +807,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getEventsCreatedByUser(pageRequest, principal.getName());
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
         assertTrue(actual.isSubscribed());
@@ -1139,7 +1138,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, null);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1173,7 +1172,7 @@ class EventServiceImplTest {
         when(eventRepo.findSubscribedAmongEventIds(eventIds, user.getId())).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1203,7 +1202,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1241,7 +1240,7 @@ class EventServiceImplTest {
             }.getType())).thenReturn(List.of(expected));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getAll(pageRequest, principal);
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
 
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getDescription(), actual.getDescription());
@@ -1262,9 +1261,11 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         Page<Event> page = new PageImpl<>(events, pageRequest, events.size());
         when(eventRepo.searchEventsBy(pageRequest, "query")).thenReturn(page);
-        PageableAdvancedDto<EventDto> expected = new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
-            0, false, false, true, true);
-        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query").getTotalPages());
+        PageableAdvancedDto<EventDto> expected =
+            new PageableAdvancedDto<>(eventDtos, eventDtos.size(), 0, 1,
+                0, false, false, true, true);
+        assertEquals(expected.getTotalPages(), eventService.searchEventsBy(pageRequest, "query")
+            .getTotalPages());
     }
 
     @Test
@@ -1314,26 +1315,24 @@ class EventServiceImplTest {
 
     @Test
     void getEventsWithAllFilters() {
-        List<Event> events = List.of(ModelUtils.getEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
         Principal principal = ModelUtils.getPrincipal();
         List<EventDto> expected = List.of(ModelUtils.getEventDto());
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
+        when(modelMapper.map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()))).thenReturn(List.of(ModelUtils.getEventDto()));
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDto(), null);
         long actual = eventDtoPageableAdvancedDto.getTotalElements();
-        assertEquals(1, actual);
+        assertEquals(0, actual);
         assertEquals(expected, eventDtoPageableAdvancedDto.getPage());
 
-        verify(eventRepo).findAll();
+        verify(modelMapper).map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()));
         verify(restClient).findByEmail(principal.getName());
         verify(modelMapper).map(TEST_USER_VO, User.class);
     }
@@ -1365,7 +1364,7 @@ class EventServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 2);
         List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
 
-        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
         when(modelMapper.map(events,
             new TypeToken<List<EventDto>>() {
@@ -1379,7 +1378,38 @@ class EventServiceImplTest {
         assertEquals(expected, actual);
         assertEquals(expected.size(), actualSize);
 
-        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
+        verify(modelMapper).map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType());
+    }
+
+    @Test
+    void getEventsWithoutFiltersAndLoggedInUser() {
+        User user = ModelUtils.getAttenderUser();
+        List<Event> events = List.of(ModelUtils.getEvent(), ModelUtils.getSecondEvent());
+        PageRequest pageRequest = PageRequest.of(0, 2);
+        Principal principal = ModelUtils.getPrincipal();
+        List<EventDto> expected = List.of(ModelUtils.getEventDto(), ModelUtils.getSecondEventDto());
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
+            .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
+        when(modelMapper.map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class))
+            .thenReturn(user);
+
+        when(modelMapper.map(events,
+            new TypeToken<List<EventDto>>() {
+            }.getType())).thenReturn(expected);
+
+        PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
+            pageRequest, principal, null, null);
+        List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
+        long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
+
+        assertEquals(expected, actual);
+        assertEquals(expected.size(), actualSize);
+
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
+        verify(modelMapper).map(restClient.findByEmail(ModelUtils.getUserVO().getEmail()), User.class);
         verify(modelMapper).map(events,
             new TypeToken<List<EventDto>>() {
             }.getType());
@@ -1387,7 +1417,6 @@ class EventServiceImplTest {
 
     @Test
     void getEventsWithFilterEventDtoWithCities() {
-        List<Event> events = List.of(ModelUtils.getSecondEvent());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
         Principal principal = ModelUtils.getPrincipal();
@@ -1395,30 +1424,25 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
+        when(modelMapper.map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()))).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithCities(), null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
-        assertEquals(expected.size(), actualSize);
+        assertEquals(0, actualSize);
         assertEquals(expected, actual);
 
-        verify(eventRepo).findAll();
         verify(restClient).findByEmail(principal.getName());
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(modelMapper).map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType());
+        verify(modelMapper).map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()));
     }
 
     @Test
     void getEventsWithFilterEventDtoWithTagsAndWrongTag() {
-        List<Event> events = List.of(ModelUtils.getEventWithTags());
         PageRequest pageRequest = PageRequest.of(0, 2);
         User user = ModelUtils.getUser();
         Principal principal = ModelUtils.getPrincipal();
@@ -1426,24 +1450,21 @@ class EventServiceImplTest {
 
         when(restClient.findByEmail(principal.getName())).thenReturn(TEST_USER_VO);
         when(modelMapper.map(TEST_USER_VO, User.class)).thenReturn(user);
-        when(eventRepo.findAll()).thenReturn(events);
-        when(modelMapper.map(events,
-            new TypeToken<List<EventDto>>() {
-            }.getType())).thenReturn(expected);
+        when(modelMapper.map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()))).thenReturn(expected);
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
             pageRequest, principal, ModelUtils.getFilterEventDtoWithTags(), null);
         List<EventDto> actual = eventDtoPageableAdvancedDto.getPage();
         long actualSize = eventDtoPageableAdvancedDto.getTotalElements();
 
-        assertEquals(expected.size(), actualSize);
+        assertEquals(0, actualSize);
         assertEquals(expected, actual);
 
-        verify(eventRepo).findAll();
         verify(restClient).findByEmail(principal.getName());
         verify(modelMapper).map(TEST_USER_VO, User.class);
-        verify(modelMapper).map(events, new TypeToken<List<EventDto>>() {
-        }.getType());
+        verify(modelMapper).map(anyList(), eq(new TypeToken<List<EventDto>>() {
+        }.getType()));
     }
 
     @Test
@@ -1551,7 +1572,7 @@ class EventServiceImplTest {
 
         when(modelMapper.map(events, new TypeToken<List<EventDto>>() {
         }.getType())).thenReturn(expected);
-        when(eventRepo.findAllByOrderByIdDesc(pageRequest))
+        when(eventRepo.findAllEventsSortedByStartDate(pageRequest))
             .thenReturn(new PageImpl<>(events, pageRequest, events.size()));
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto = eventService.getEvents(
@@ -1562,7 +1583,7 @@ class EventServiceImplTest {
         assertEquals(expected.size(), actualSize);
         assertEquals(expected, actual);
 
-        verify(eventRepo).findAllByOrderByIdDesc(pageRequest);
+        verify(eventRepo).findAllEventsSortedByStartDate(pageRequest);
         verify(modelMapper).map(events, new TypeToken<List<EventDto>>() {
         }.getType());
     }
@@ -1586,7 +1607,7 @@ class EventServiceImplTest {
 
         PageableAdvancedDto<EventDto> eventDtoPageableAdvancedDto =
             eventService.getAllFavoriteEventsByUser(pageable, user.getEmail());
-        EventDto actual = eventDtoPageableAdvancedDto.getPage().get(0);
+        EventDto actual = eventDtoPageableAdvancedDto.getPage().getFirst();
         assertEquals(expected, actual);
         assertTrue(actual.isFavorite());
         assertTrue(actual.isSubscribed());

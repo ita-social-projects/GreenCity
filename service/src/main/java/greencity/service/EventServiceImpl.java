@@ -198,9 +198,19 @@ public class EventServiceImpl implements EventService {
     public PageableAdvancedDto<EventDto> getEvents(Pageable page, Principal principal, FilterEventDto filterEventDto,
         String title) {
         if (Objects.isNull(filterEventDto)) {
-            return getAll(page, principal);
+            return getAllSortedEvents(page, principal);
         }
         return getAllFiltered(principal, page, filterEventDto, title);
+    }
+
+    private PageableAdvancedDto<EventDto> getAllSortedEvents(Pageable page, Principal principal) {
+        Page<Event> events = eventRepo.findAllEventsSortedByStartDate(page);
+
+        if (principal != null) {
+            User user = modelMapper.map(restClient.findByEmail(principal.getName()), User.class);
+            return buildPageableAdvancedDto(events, user.getId());
+        }
+        return buildPageableAdvancedDto(events);
     }
 
     private PageableAdvancedDto<EventDto> getAllFiltered(Principal principal, Pageable page,
@@ -667,7 +677,7 @@ public class EventServiceImpl implements EventService {
                 filtered = filterByStatusOpenClosed(filtered, filterEventDto.getStatuses());
             }
         }
-        return getSortedListByEventId(filtered);
+        return sortEvents(filtered);
     }
 
     private List<Event> getFilteredByEventTimeAndCitiesAndTags(List<Event> allEvents, FilterEventDto filterEventDto) {
@@ -805,9 +815,22 @@ public class EventServiceImpl implements EventService {
             .collect(Collectors.toList());
     }
 
-    private List<Event> getSortedListByEventId(List<Event> unsorted) {
-        return unsorted.stream().distinct().sorted(Comparator.comparing(Event::getId, Comparator.reverseOrder()))
+    private List<Event> sortEvents(List<Event> unsorted) {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        List<Event> events = unsorted.stream()
+            .filter(event -> event.getDates().stream().noneMatch(date -> date.getFinishDate().isBefore(now)))
+            .sorted(Comparator.comparing(event -> event.getDates().getFirst().getStartDate()))
             .collect(Collectors.toList());
+
+        List<Event> pastEvents = unsorted.stream()
+            .filter(event -> event.getDates().stream().anyMatch(date -> date.getFinishDate().isBefore(now)))
+            .sorted(
+                Comparator.comparing(event -> event.getDates().getLast().getFinishDate(), Comparator.reverseOrder()))
+            .toList();
+
+        events.addAll(pastEvents);
+        return events;
     }
 
     private PageableAdvancedDto<EventDto> buildPageableAdvancedDto(Page<Event> eventsPage, Long userId) {
