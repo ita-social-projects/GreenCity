@@ -13,7 +13,7 @@
     </appender>
 
     <!-- Define loggers and root level -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="console" />
     </root>
 
