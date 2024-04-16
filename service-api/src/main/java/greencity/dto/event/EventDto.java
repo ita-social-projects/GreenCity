@@ -62,6 +62,8 @@ public class EventDto {
     @JsonProperty("isOrganizedByFriend")
     private boolean isOrganizedByFriend;
 
+    private double eventRate;
+
     /**
      * Return String of event tags in English.
      *
