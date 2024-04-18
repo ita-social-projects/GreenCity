@@ -518,21 +518,16 @@ public class HabitServiceImpl implements HabitService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
         User owner = userRepo.findByEmail(ownerEmail)
             .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + ownerEmail));
-        checkAccessOfOwnerToCustomHabit(owner, toDelete);
-
-        unAssignOwnerFromCustomHabit(customHabitId, owner.getId());
+        unAssignOwnerFromCustomHabit(toDelete, owner.getId());
         toDelete.setIsDeleted(true);
         habitRepo.save(toDelete);
     }
 
-    private void unAssignOwnerFromCustomHabit(Long customHabitId, Long userId) {
-        Optional<Long> habitAssignId = habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, userId);
-        habitAssignId.ifPresent(haId -> habitAssignService.deleteHabitAssign(haId, userId));
-    }
-
-    private void checkAccessOfOwnerToCustomHabit(User owner, Habit habit) {
-        if (!owner.getId().equals(habit.getUserId())) {
+    private void unAssignOwnerFromCustomHabit(Habit habit, Long userId) {
+        if (!userId.equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
+        Optional<Long> habitAssignId = habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId);
+        habitAssignId.ifPresent(haId -> habitAssignService.deleteHabitAssign(haId, userId));
     }
 }
