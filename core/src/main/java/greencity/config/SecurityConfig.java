@@ -335,6 +335,7 @@ public class SecurityConfig {
                     EVENTS + "/removeFromFavorites/{eventId}",
                     "/user/{userId}/userFriend/{friendId}",
                     "/habit/assign/delete/{habitAssignId}",
+                    "/habit/delete/{customHabitId}",
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
                     FRIENDS + "/")

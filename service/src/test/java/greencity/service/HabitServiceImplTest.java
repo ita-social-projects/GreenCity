@@ -17,6 +17,7 @@ import greencity.entity.HabitTranslation;
 import greencity.entity.Language;
 import greencity.entity.Tag;
 import greencity.entity.User;
+import greencity.entity.HabitAssign;
 import greencity.entity.localization.ShoppingListItemTranslation;
 import greencity.enums.Role;
 import greencity.exception.exceptions.NotFoundException;
@@ -49,7 +50,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Collections;
@@ -59,7 +59,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Stream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -121,6 +120,9 @@ class HabitServiceImplTest {
 
     @Mock
     private CustomShoppingListItemRepo customShoppingListItemRepo;
+
+    @Mock
+    private HabitAssignService habitAssignService;
 
     @Test()
     void getByIdAndLanguageCodeIsCustomHabitFalse() {
@@ -1174,5 +1176,74 @@ class HabitServiceImplTest {
         assertNotEquals(user.getId(), habit.getUserId());
         verify(userRepo).findByEmail(anyString());
         verify(habitRepo).findById(anyLong());
+    }
+
+    @Test
+    void deleteCustomHabitSuccessTest() {
+        Long customHabitId = 1L;
+        Habit toDelete = ModelUtils.getHabitWithCustom();
+        HabitAssign habitAssign = ModelUtils.getHabitAssign();
+        User user = ModelUtils.getUser();
+        toDelete.setUserId(1L);
+        when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
+            .thenReturn(Optional.of(toDelete));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L))
+            .thenReturn(Optional.of(habitAssign.getId()));
+
+        habitService.deleteCustomHabit(customHabitId, user.getEmail());
+
+        verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
+        verify(userRepo).findByEmail(user.getEmail());
+        verify(habitRepo).findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L);
+    }
+
+    @Test
+    void deleteCustomHabitThrowsNotFoundExceptionTest() {
+        Long customHabitId = 1L;
+        String userEmail = "email@gmail.com";
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+
+        assertEquals(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId, exception.getMessage());
+        verify(habitRepo, times(0)).save(any(Habit.class));
+    }
+
+    @Test
+    void deleteCustomHabitThrowsWrongEmailExceptionTest() {
+        Long customHabitId = 1L;
+        String userEmail = "email@gmail.com";
+        Habit toDelete = ModelUtils.getHabitWithCustom();
+        toDelete.setUserId(1L);
+        when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
+            .thenReturn(Optional.of(toDelete));
+
+        WrongEmailException exception = assertThrows(WrongEmailException.class,
+            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+
+        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail, exception.getMessage());
+        verify(habitRepo, times(0)).save(any(Habit.class));
+        verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
+    }
+
+    @Test
+    void checkAccessOfOwnerToCustomHabitThrowsUserHasNoPermissionToAccessExceptionTest() {
+        Long customHabitId = 1L;
+        Habit toDelete = ModelUtils.getHabitWithCustom();
+        User user = ModelUtils.getUser();
+        String userEmail = user.getEmail();
+        toDelete.setUserId(4L);
+        when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
+            .thenReturn(Optional.of(toDelete));
+        when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
+            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
+
+        assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
+
+        verify(habitRepo).findByIdAndIsCustomHabitIsTrue(customHabitId);
+        verify(userRepo).findByEmail(user.getEmail());
+        verify(habitRepo, times(0)).save(any(Habit.class));
     }
 }

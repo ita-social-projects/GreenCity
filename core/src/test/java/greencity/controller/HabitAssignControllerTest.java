@@ -1,7 +1,6 @@
 package greencity.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import greencity.ModelUtils;
 import greencity.client.RestClient;
 import greencity.dto.habit.HabitAssignCustomPropertiesDto;
@@ -9,7 +8,6 @@ import greencity.dto.habit.HabitAssignStatDto;
 import greencity.dto.habit.UserShoppingAndCustomShoppingListsDto;
 import greencity.dto.user.UserVO;
 import greencity.enums.HabitAssignStatus;
-import greencity.converters.LocalDateTimeTypeAdapter;
 import greencity.service.HabitAssignService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +19,9 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.security.Principal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Locale;
-
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

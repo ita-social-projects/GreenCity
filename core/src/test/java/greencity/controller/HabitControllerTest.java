@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-
 import greencity.service.TagsService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,10 +28,10 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
@@ -334,5 +333,15 @@ class HabitControllerTest {
             .andExpect(status().isOk());
 
         verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
+    }
+
+    @Test
+    void deleteHabitAssignTest() throws Exception {
+        Long customHabitId = 1L;
+        Principal principal = () -> "email@ukr.net";
+        mockMvc.perform(delete("/habit/delete/{customHabitId}", customHabitId)
+            .principal(principal)).andExpect(status().isOk());
+
+        verify(habitService).deleteCustomHabit(customHabitId, principal.getName());
     }
 }
