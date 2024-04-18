@@ -373,7 +373,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      */
 
     @Query("SELECT ht FROM HabitTranslation AS ht "
-        + "WHERE ht.habit =: habit "
+        + "WHERE ht.habit = :habit "
         + "AND ht.habit.isDeleted = false")
     List<HabitTranslation> findAllByHabit(Habit habit);
 
