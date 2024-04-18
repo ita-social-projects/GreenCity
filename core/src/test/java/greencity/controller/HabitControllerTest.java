@@ -32,8 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -334,5 +333,15 @@ class HabitControllerTest {
             .andExpect(status().isOk());
 
         verify(habitService).updateCustomHabit(dto, habitId, principal.getName(), imageFile);
+    }
+
+    @Test
+    void deleteHabitAssignTest() throws Exception {
+        Long customHabitId = 1L;
+        Principal principal = () -> "email@ukr.net";
+        mockMvc.perform(delete("/habit/delete/{customHabitId}", customHabitId)
+            .principal(principal)).andExpect(status().isOk());
+
+        verify(habitService).deleteCustomHabit(customHabitId, principal.getName());
     }
 }

@@ -337,7 +337,8 @@ public class SecurityConfig {
                     "/habit/assign/delete/{habitAssignId}",
                     FRIENDS + "/{friendId}",
                     FRIENDS + "/{friendId}/cancelRequest",
-                    FRIENDS + "/")
+                    FRIENDS + "/",
+                    "/habit/delete/{customHabitId}")
                 .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
                     "/newsSubscriber",

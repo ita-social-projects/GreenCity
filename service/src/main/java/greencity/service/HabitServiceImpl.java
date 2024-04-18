@@ -70,6 +70,7 @@ public class HabitServiceImpl implements HabitService {
     private final TagsRepo tagsRepo;
     private final FileService fileService;
     private final HabitAssignRepo habitAssignRepo;
+    private final HabitAssignService habitAssignService;
     private static final String DEFAULT_TITLE_IMAGE_PATH = AppConstant.DEFAULT_HABIT_IMAGE;
     private static final String EN_LANGUAGE_CODE = "en";
 
@@ -344,6 +345,7 @@ public class HabitServiceImpl implements HabitService {
         }
         Habit habit = habitRepo.save(customHabitMapper.convert(addCustomHabitDtoRequest));
         habit.setUserId(user.getId());
+        habit.setIsDeleted(false);
         setTagsIdsToHabit(addCustomHabitDtoRequest, habit);
         saveHabitTranslationListsToHabitTranslationRepo(addCustomHabitDtoRequest, habit);
         setCustomShoppingListItemToHabit(addCustomHabitDtoRequest, habit, user);
@@ -503,6 +505,33 @@ public class HabitServiceImpl implements HabitService {
     private void checkAccessForAdminAndModeratorAndByUserId(User user, Habit habit) {
         if (user.getRole() != Role.ROLE_ADMIN && user.getRole() != Role.ROLE_MODERATOR
             && !user.getId().equals(habit.getUserId())) {
+            throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteCustomHabit(Long customHabitId, String ownerEmail) {
+        Habit toDelete = habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.CUSTOM_HABIT_NOT_FOUND + customHabitId));
+        User owner = userRepo.findByEmail(ownerEmail)
+            .orElseThrow(() -> new WrongEmailException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + ownerEmail));
+        checkAccessOfOwnerToCustomHabit(owner, toDelete);
+
+        unAssignOwnerFromCustomHabit(customHabitId, owner.getId());
+        toDelete.setIsDeleted(true);
+        habitRepo.save(toDelete);
+    }
+
+    private void unAssignOwnerFromCustomHabit(Long customHabitId, Long userId) {
+        Optional<Long> habitAssignId = habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, userId);
+        habitAssignId.ifPresent(haId -> habitAssignService.deleteHabitAssign(haId, userId));
+    }
+
+    private void checkAccessOfOwnerToCustomHabit(User owner, Habit habit) {
+        if (!owner.getId().equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
     }

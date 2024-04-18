@@ -18,7 +18,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     /**
      * Method return {@link Optional} of {@link HabitTranslation}.
      *
-     * @param habit    {@link Habit}.
+     * @param habit    {@link Habit} habit.
      * @param language code language.
      * @return {@link Optional} of {@link HabitTranslation}.
      */
@@ -37,7 +37,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param pageable     {@link Pageable}
      * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
-     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Markiyan Derevetskyi
      */
@@ -50,7 +49,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "JOIN h.tags AS t "
         + "WHERE t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
-        + "WHERE lower(tt.name) IN (:tags))) "
+        + "WHERE lower(tt.name) IN (:tags)) "
+        + "AND h.isDeleted = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByTagsAndLanguageCode(Pageable pageable, List<String> tags, String languageCode);
 
@@ -64,7 +64,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @param userId                  {@link Long} id of current user.
-     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -76,8 +75,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId))  "
-        + "OR (h.isCustomHabit = false)) "
+        + "WHERE ((h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "OR (h.isCustomHabit = false AND h.isDeleted = false)) "
         + "AND t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
@@ -94,7 +94,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param complexities {@link List} of {@link Integer}.
      * @param languageCode language code {@link String}.
      * @return {@link List} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      */
 
@@ -104,7 +103,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE h.isCustomHabit = false AND h.complexity IN (:complexities) AND t.id IN "
+        + "WHERE h.isCustomHabit = false AND h.isDeleted = false AND h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
@@ -122,7 +121,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -133,7 +131,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "AND h.complexity IN (:complexities) AND t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
@@ -152,7 +151,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -162,7 +160,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId))) "
+        + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId))) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByLanguageCodeAndByUserIdAndStatusRequested(Pageable pageable,
         String languageCode, List<Long> requestedCustomHabitIds, Long userId);
@@ -182,7 +181,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = false) "
+        + "WHERE h.isCustomHabit = false AND h.isDeleted = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomFalseHabitAndLanguageCode(Pageable pageable, String languageCode);
 
@@ -197,7 +196,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -207,8 +205,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
-        + "OR (h.isCustomHabit = false)) "
+        + "WHERE ((h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "OR (h.isCustomHabit = false AND h.isDeleted = false)) "
         + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
@@ -225,7 +224,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -236,7 +234,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) AND t.id IN "
+        + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "AND t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
@@ -260,7 +260,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE h.isCustomHabit = false AND t.id IN "
+        + "WHERE h.isCustomHabit = false AND h.isDeleted = false "
+        + "AND t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
         + "ORDER BY ht.habit.id DESC")
@@ -279,7 +280,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -290,8 +290,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
         + "JOIN h.tags AS t "
-        + "WHERE ((h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
-        + "OR (h.isCustomHabit = false)) "
+        + "WHERE ((h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "OR (h.isCustomHabit = false AND h.isDeleted = false)) "
         + "AND h.complexity IN (:complexities) AND  t.id IN "
         + "(SELECT tt.tag.id FROM TagTranslation AS tt "
         + "WHERE lower(tt.name) IN (:tags))) "
@@ -312,7 +313,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @return {@link Page} of {@link HabitTranslation}.
-     *
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
      */
@@ -322,7 +322,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
         + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findCustomHabitsByComplexityAndLanguageCodeAndUserIdAndStatusRequested(Pageable pageable,
@@ -344,7 +345,8 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :languageCode) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE h.isCustomHabit = false AND h.complexity IN (:complexities)) "
+        + "WHERE h.isCustomHabit = false AND h.isDeleted = false "
+        + "AND h.complexity IN (:complexities)) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByIsCustomHabitFalseAndComplexityAndLanguageCode(Pageable pageable,
         Optional<List<Integer>> complexities, String languageCode);
@@ -356,6 +358,10 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
+
+    @Query("SELECT ht FROM HabitTranslation AS ht "
+        + "WHERE ht.habit =: habit "
+        + "AND ht.habit.isDeleted = false")
     List<HabitTranslation> findAllByHabit(Habit habit);
 
     /**
@@ -367,7 +373,6 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *                                habit assign status REQUESTED.
      * @param userId                  {@link Long} id of current user.
      * @return {@link Page} of {@link HabitTranslation}`s.
-     *
      * @author Olena Sotnik
      */
     @Query("SELECT DISTINCT ht FROM HabitTranslation AS ht "
@@ -375,8 +380,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
         + "(SELECT l FROM Language AS l WHERE l.code = :language) "
         + "AND ht.habit IN "
         + "(SELECT h FROM Habit AS h "
-        + "WHERE (h.isCustomHabit = true AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
-        + "OR h.isCustomHabit = false) "
+        + "WHERE (h.isCustomHabit = true AND h.isDeleted = false "
+        + "AND (h.id IN (:requestedCustomHabitIds) OR h.userId = :userId)) "
+        + "OR h.isCustomHabit = false AND h.isDeleted = false) "
         + "ORDER BY ht.habit.id DESC")
     Page<HabitTranslation> findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(Pageable pageable,
         List<Long> requestedCustomHabitIds, Long userId, String language);
@@ -387,6 +393,9 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param id {@link Long} habit id.
      * @return {@link HabitTranslation}.
      */
-    @Query("SELECT ht FROM HabitTranslation ht WHERE ht.language.id = 1  AND ht.habit.id = :id")
+    @Query("SELECT ht FROM HabitTranslation ht "
+        + "WHERE ht.language.id = 1 "
+        + "AND ht.habit.id = :id "
+        + "AND ht.habit.isDeleted = false")
     HabitTranslation getHabitTranslationByUaLanguage(Long id);
 }
