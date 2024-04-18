@@ -133,8 +133,8 @@ public class EventCommentController {
     })
     @PatchMapping()
     public void update(@RequestParam Long id,
-                       @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
-                       @Parameter(hidden = true) @CurrentUser UserVO user) {
+        @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
+        @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.update(commentText, id, user);
     }
 
