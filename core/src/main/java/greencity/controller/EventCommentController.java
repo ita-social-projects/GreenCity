@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -141,8 +142,9 @@ public class EventCommentController {
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PatchMapping()
-    public void update(Long id, @RequestParam @NotBlank String commentText,
-        @Parameter(hidden = true) @CurrentUser UserVO user) {
+    public void update(@RequestParam Long id,
+                       @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
+                       @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.update(commentText, id, user);
     }
 
