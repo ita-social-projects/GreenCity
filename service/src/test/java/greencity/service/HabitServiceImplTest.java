@@ -1232,12 +1232,13 @@ class HabitServiceImplTest {
         Long customHabitId = 1L;
         Habit toDelete = ModelUtils.getHabitWithCustom();
         User user = ModelUtils.getUser();
+        String userEmail = user.getEmail();
         toDelete.setUserId(4L);
         when(habitRepo.findByIdAndIsCustomHabitIsTrue(customHabitId))
             .thenReturn(Optional.of(toDelete));
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         UserHasNoPermissionToAccessException exception = assertThrows(UserHasNoPermissionToAccessException.class,
-            () -> habitService.deleteCustomHabit(customHabitId, user.getEmail()));
+            () -> habitService.deleteCustomHabit(customHabitId, userEmail));
 
         assertEquals(ErrorMessage.USER_HAS_NO_PERMISSION, exception.getMessage());
 
