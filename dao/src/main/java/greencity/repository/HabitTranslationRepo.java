@@ -18,7 +18,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
     /**
      * Method return {@link Optional} of {@link HabitTranslation}.
      *
-     * @param habit    {@link Habit} habit.
+     * @param habit    {@link Habit}
      * @param language code language.
      * @return {@link Optional} of {@link HabitTranslation}.
      */
@@ -37,6 +37,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param pageable     {@link Pageable}
      * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Markiyan Derevetskyi
      */
@@ -64,6 +65,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @param userId                  {@link Long} id of current user.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -93,6 +95,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param tags         {@link List} of {@link String}.
      * @param complexities {@link List} of {@link Integer}.
      * @param languageCode language code {@link String}.
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
@@ -120,6 +123,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param languageCode            language code {@link String}.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -150,6 +154,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -172,6 +177,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      *
      * @param pageable     {@link Pageable}
      * @param languageCode language code {@link String}
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
@@ -195,6 +201,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -223,6 +230,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -250,6 +258,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param pageable     {@link Pageable}
      * @param tags         {@link List} of {@link String} tags
      * @param languageCode language code {@link String}
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
@@ -279,6 +288,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -312,6 +322,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param userId                  {@link Long} id of current user.
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
+     *
      * @return {@link Page} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      * @author Olena Sotnik
@@ -336,6 +347,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param pageable     {@link Pageable}.
      * @param complexities {@link List} of {@link Integer}.
      * @param languageCode language code {@link String}.
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
@@ -355,6 +367,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * Method return {@link List} of {@link HabitTranslation} by habit.
      *
      * @param habit {@link Habit}.
+     *
      * @return {@link List} of {@link HabitTranslation}.
      * @author Lilia Mokhnatska
      */
@@ -372,6 +385,7 @@ public interface HabitTranslationRepo extends JpaRepository<HabitTranslation, Lo
      * @param requestedCustomHabitIds {@link List} of {@link Long} habit ids with
      *                                habit assign status REQUESTED.
      * @param userId                  {@link Long} id of current user.
+     *
      * @return {@link Page} of {@link HabitTranslation}`s.
      * @author Olena Sotnik
      */
