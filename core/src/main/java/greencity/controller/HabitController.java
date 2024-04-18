@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 
@@ -284,5 +285,27 @@ public class HabitController {
             required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(habitService.updateCustomHabit(request, habitId, principal.getName(), image));
+    }
+
+    /**
+     * Method for deleting Custom Habit by habitId.
+     *
+     * @param customHabitId - id of custom habit that will be deleted
+     * @author Olena Sotnik.
+     */
+    @Operation(summary = "Deleting of custom habit by habitId for its owner.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
+            content = @Content(schema = @Schema(implementation = CustomHabitDtoResponse.class))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
+    })
+    @DeleteMapping(value = "/delete/{customHabitId}")
+    public ResponseEntity<Object> deleteCustomHabit(@PathVariable Long customHabitId,
+        @Parameter(hidden = true) Principal principal) {
+        habitService.deleteCustomHabit(customHabitId, principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
