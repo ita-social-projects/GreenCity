@@ -141,10 +141,11 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @param habitId {@link Habit} id.
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      */
-    @Query(value = "SELECT DISTINCT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE h.id = :habitId AND ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    @Query(value = "SELECT DISTINCT ha FROM habit_assign AS ha "
+        + "JOIN habits AS h "
+        + "ON ha.habit_id = h.id "
+        + "WHERE h.id = :habitId AND ha.user_id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')", nativeQuery = true)
     Optional<HabitAssign> findByHabitIdAndUserId(@Param("habitId") Long habitId,
         @Param("userId") Long userId);
 
@@ -157,10 +158,11 @@ public interface HabitAssignRepo extends JpaRepository<HabitAssign, Long>,
      * @return {@link HabitAssign} instance, if it doesn't exist returns Optional.
      * @author Anton Bondar
      */
-    @Query(value = "SELECT ha FROM HabitAssign ha"
-        + " JOIN FETCH ha.habit h JOIN FETCH h.habitTranslations ht"
-        + " JOIN FETCH ht.language l"
-        + " WHERE ha.id = :habitAssignId AND ha.user.id = :userId AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')")
+    @Query(value = "SELECT DISTINCT ha FROM habit_assign AS ha "
+        + "JOIN habits AS h "
+        + "ON ha.habit_id = h.id "
+        + "WHERE ha.id = :habitAssignId AND ha.user_id = :userId "
+        + "AND upper(ha.status) NOT IN ('CANCELLED','EXPIRED')", nativeQuery = true)
     Optional<HabitAssign> findByHabitAssignIdUserIdNotCancelledAndNotExpiredStatus(
         @Param("habitAssignId") Long habitAssignId,
         @Param("userId") Long userId);
