@@ -1189,7 +1189,7 @@ class HabitServiceImplTest {
             .thenReturn(Optional.of(toDelete));
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(customHabitId, 1L))
-            .thenReturn(Optional.of(habitAssign.getId()));
+            .thenReturn(List.of(habitAssign.getId()));
 
         habitService.deleteCustomHabit(customHabitId, user.getEmail());
 

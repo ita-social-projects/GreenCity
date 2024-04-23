@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -60,16 +61,13 @@ public interface HabitRepo extends JpaRepository<Habit, Long>, JpaSpecificationE
      *
      * @param userId  {@link Long} userId of user who owns habit.
      * @param habitId {@link Long} habitId.
-     * @return {@link Optional} of {@link HabitAssign} by owner of current habit.
+     * @return {@link List} of {@link HabitAssign} of current habit's owner.
      *
      * @author Olena Sotnik
      */
-    @Query(value = "SELECT ha.id "
-        + "FROM habits AS h "
-        + "INNER JOIN habit_assign ha "
-        + "ON ha.habit_id = h.id "
+    @Query(value = "SELECT DISTINCT ha.id "
+        + "FROM habit_assign AS ha "
         + "WHERE ha.habit_id =:habitId "
-        + "AND h.user_id =:userId", nativeQuery = true)
-    Optional<Long> findHabitAssignByHabitIdAndHabitOwnerId(@Param("habitId") Long habitId,
-        @Param("userId") Long userId);
+        + "AND ha.user_id =:userId", nativeQuery = true)
+    List<Long> findHabitAssignByHabitIdAndHabitOwnerId(@Param("habitId") Long habitId, @Param("userId") Long userId);
 }
