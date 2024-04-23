@@ -527,7 +527,7 @@ public class HabitServiceImpl implements HabitService {
         if (!userId.equals(habit.getUserId())) {
             throw new UserHasNoPermissionToAccessException(ErrorMessage.USER_HAS_NO_PERMISSION);
         }
-        Optional<Long> habitAssignId = habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId);
-        habitAssignId.ifPresent(haId -> habitAssignService.deleteHabitAssign(haId, userId));
+        habitRepo.findHabitAssignByHabitIdAndHabitOwnerId(habit.getId(), userId)
+            .forEach(haId -> habitAssignService.deleteHabitAssign(haId, userId));
     }
 }
