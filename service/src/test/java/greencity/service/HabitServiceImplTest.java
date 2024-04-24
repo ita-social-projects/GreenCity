@@ -201,7 +201,7 @@ class HabitServiceImplTest {
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable, "en"));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());
@@ -238,7 +238,7 @@ class HabitServiceImplTest {
         List<HabitDto> habitDtoList = Collections.singletonList(habitDto);
         PageableDto pageableDto = new PageableDto(habitDtoList, habitTranslationPage.getTotalElements(),
             habitTranslationPage.getPageable().getPageNumber(), habitTranslationPage.getTotalPages());
-        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable));
+        assertEquals(pageableDto, habitService.getAllHabitsByLanguageCode(userVO, pageable, "en"));
 
         verify(habitTranslationRepo).findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(any(Pageable.class),
             anyList(), anyLong(), anyString());

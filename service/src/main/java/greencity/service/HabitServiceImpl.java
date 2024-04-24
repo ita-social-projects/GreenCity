@@ -108,14 +108,14 @@ public class HabitServiceImpl implements HabitService {
      * {@inheritDoc}
      */
     @Override
-    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable) {
+    public PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode) {
         long userId = userVO.getId();
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-                requestedCustomHabitIds, userId, EN_LANGUAGE_CODE);
+                requestedCustomHabitIds, userId, languageCode);
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
     }
 

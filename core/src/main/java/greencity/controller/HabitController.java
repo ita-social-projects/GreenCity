@@ -90,12 +90,13 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
-    @ApiPageable
+    @ApiPageableWithLocale
     public ResponseEntity<PageableDto<HabitDto>> getAll(
+        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
     }
 
     /**
