@@ -45,7 +45,8 @@ public class NewsSubscriberController {
     @Operation(summary = "Get all emails for sending news.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("")
     public ResponseEntity<List<NewsSubscriberResponseDto>> getAll() {

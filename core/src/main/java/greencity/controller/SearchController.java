@@ -39,6 +39,7 @@ public class SearchController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.NOT_FOUND),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @ApiLocale
@@ -59,6 +60,7 @@ public class SearchController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.NOT_FOUND),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/econews")
@@ -81,6 +83,7 @@ public class SearchController {
     @Operation(summary = "Search Events.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.NOT_FOUND),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @GetMapping("/events")
