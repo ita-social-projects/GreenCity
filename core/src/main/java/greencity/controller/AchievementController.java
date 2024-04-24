@@ -4,6 +4,8 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.achievement.AchievementDTO;
 import greencity.dto.achievement.AchievementVO;
 import greencity.service.AchievementService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.security.Principal;
 import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,8 +41,10 @@ public class AchievementController {
     @Operation(summary = "Get all achievements by type.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("")
     public ResponseEntity<List<AchievementVO>> getAll(@Parameter(hidden = true) Principal principal,
