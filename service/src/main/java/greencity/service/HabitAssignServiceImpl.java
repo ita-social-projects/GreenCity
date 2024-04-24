@@ -991,7 +991,7 @@ public class HabitAssignServiceImpl implements HabitAssignService {
             ratingCalculation.ratingCalculation(RatingCalculationEnum.UNDO_DAYS_OF_HABIT_IN_PROGRESS,
                 userVO);
             achievementCalculation.calculateAchievement(userVO,
-                AchievementCategoryType.HABIT, AchievementAction.DELETE);
+                AchievementCategoryType.HABIT, AchievementAction.DELETE, habitAssign.getHabit().getId());
         }
         userShoppingListItemRepo.deleteShoppingListItemsByHabitAssignId(habitAssign.getId());
         customShoppingListItemRepo.deleteCustomShoppingListItemsByHabitId(habitAssign.getHabit().getId());
