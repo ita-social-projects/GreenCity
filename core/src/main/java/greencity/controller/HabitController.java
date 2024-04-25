@@ -1,11 +1,11 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
 import greencity.annotations.ValidLanguage;
-import greencity.annotations.ApiPageable;
 import greencity.constant.HttpStatuses;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.PageableDto;
