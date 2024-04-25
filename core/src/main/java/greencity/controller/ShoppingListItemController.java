@@ -11,6 +11,7 @@ import greencity.dto.shoppinglistitem.ShoppingListItemRequestDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.ShoppingListItemService;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import java.util.List;
 import java.util.Locale;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,9 +53,12 @@ public class ShoppingListItemController {
     @Operation(summary = "Save one or multiple shopping list items for current user.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PostMapping
     @ApiLocale
@@ -79,9 +83,12 @@ public class ShoppingListItemController {
     @Operation(description = "Get user`s shopping list.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @GetMapping("/habits/{habitId}/shopping-list")
     @ApiLocale
@@ -105,9 +112,12 @@ public class ShoppingListItemController {
     @Operation(summary = "Delete from shopping list")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @DeleteMapping
     public void delete(
@@ -126,9 +136,12 @@ public class ShoppingListItemController {
     @Operation(summary = "Change status of one of the shopping list item for current user to DONE.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN)))
     })
     @PatchMapping("/{userShoppingListItemId}")
     @ApiLocale
@@ -154,9 +167,12 @@ public class ShoppingListItemController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK, content = @Content(
             array = @ArraySchema(schema = @Schema(implementation = UserShoppingListItemResponseDto.class)))),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
+            content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND))),
     })
     @PatchMapping("/{userShoppingListItemId}/status/{status}")
     @ApiLocale
@@ -181,10 +197,14 @@ public class ShoppingListItemController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
             content = @Content(schema = @Schema(implementation = Long.class))),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER,
+            content = @Content(examples = @ExampleObject(HttpStatuses.SEE_OTHER))),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN,
+            content = @Content(examples = @ExampleObject(HttpStatuses.FORBIDDEN))),
     })
     @DeleteMapping("/user-shopping-list-items")
     public ResponseEntity<List<Long>> bulkDeleteUserShoppingListItems(
@@ -207,8 +227,10 @@ public class ShoppingListItemController {
     @Operation(summary = "Get all user shopping-list-items with 'INPROGRESS' status.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
-        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST,
+            content = @Content(examples = @ExampleObject(HttpStatuses.BAD_REQUEST))),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED,
+            content = @Content(examples = @ExampleObject(HttpStatuses.UNAUTHORIZED))),
     })
     @GetMapping("/{userId}/get-all-inprogress")
     public ResponseEntity<List<ShoppingListItemDto>> findInProgressByUserId(
