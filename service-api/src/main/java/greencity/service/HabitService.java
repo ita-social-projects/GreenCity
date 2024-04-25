@@ -30,7 +30,7 @@ public interface HabitService {
      * @param pageable - instance of {@link Pageable}.
      * @return Pageable of {@link HabitDto}.
      */
-    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable, String languageCode);
+    PageableDto<HabitDto> getAllHabitsByLanguageCode(UserVO userVO, Pageable pageable);
 
     /**
      * Method returns shopping list in specific language by habit id.

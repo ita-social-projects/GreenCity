@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.ApiLocale;
+import greencity.annotations.ApiPageable;
 import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.CurrentUser;
 import greencity.annotations.ImageValidation;
@@ -89,13 +90,12 @@ public class HabitController {
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("")
-    @ApiPageableWithLocale
+    @ApiPageable
     public ResponseEntity<PageableDto<HabitDto>> getAll(
-        @Parameter(hidden = true) @ValidLanguage Locale locale,
         @Parameter(hidden = true) @CurrentUser UserVO userVO,
         @Parameter(hidden = true) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(
-            habitService.getAllHabitsByLanguageCode(userVO, pageable, locale.getLanguage()));
+            habitService.getAllHabitsByLanguageCode(userVO, pageable));
     }
 
     /**
