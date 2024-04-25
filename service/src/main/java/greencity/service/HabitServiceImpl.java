@@ -112,10 +112,11 @@ public class HabitServiceImpl implements HabitService {
         long userId = userVO.getId();
         List<Long> requestedCustomHabitIds = habitAssignRepo.findAllHabitIdsByUserIdAndStatusIsRequested(userId);
         checkAndAddToEmptyCollectionValueNull(requestedCustomHabitIds);
+        String languageCode = userRepo.findUserLanguageCodeByUserId(userId);
 
         Page<HabitTranslation> habitTranslationPage =
             habitTranslationRepo.findAllByLanguageCodeAndHabitAssignIdsRequestedAndUserId(pageable,
-                requestedCustomHabitIds, userId, EN_LANGUAGE_CODE);
+                requestedCustomHabitIds, userId, languageCode);
         return buildPageableDtoForDifferentParameters(habitTranslationPage, userVO);
     }
 
