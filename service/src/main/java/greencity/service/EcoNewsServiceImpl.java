@@ -232,11 +232,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title) {
-        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title) ?
-                buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(PageRequest.of(page.getPageNumber(), page.getPageSize(),
-                       Sort.by(Sort.Direction.DESC, "creationDate")))) :
-                buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll((root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
-                        PageRequest.of(page.getPageNumber(), page.getPageSize(), Sort.by(Sort.Direction.DESC, "creationDate"))));
+        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title)
+            ? buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+                PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "creationDate"))))
+            : buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
+                PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "creationDate"))));
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
