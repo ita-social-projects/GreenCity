@@ -322,7 +322,7 @@ class EventServiceImplTest {
             event.getAdditionalImages().getFirst().getLink());
         assertEquals(event.getTitleImage(), expectedEvent.getTitleImage());
 
-        eventToUpdateDto.setImagesToDelete(List.of("New addition image"));
+        when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(List.of("New addition image"));
         doNothing().when(fileService).delete(any());
 
         method.invoke(eventService, event, eventToUpdateDto, null);
@@ -353,7 +353,8 @@ class EventServiceImplTest {
         assertEquals(expectedEvent.getAdditionalImages().getFirst().getLink(),
             event.getAdditionalImages().getFirst().getLink());
 
-        eventToUpdateDto.setImagesToDelete(null);
+        when(eventRepo.findAllImagesLinksByEventId(anyLong())).thenReturn(new ArrayList<>());
+        doNothing().when(fileService).delete(any());
         eventToUpdateDto.setTitleImage("url");
         eventToUpdateDto.setAdditionalImages(List.of("Add img 1", "Add img 2"));
         expectedEvent.setTitleImage("url");

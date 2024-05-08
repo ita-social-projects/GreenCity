@@ -174,4 +174,19 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
      * @author Yurii Midianyi
      */
     List<Event> findAllByTitleContainingIgnoreCase(String title);
+
+    /**
+     * Method returns all images of events by event id.
+     *
+     * @param eventId {@link Long} event id.
+     * @return List of {@link String} links of event images.
+     *
+     * @author Olena Sotnik
+     */
+    @Query(nativeQuery = true,
+        value = "SELECT eim.link FROM events AS e "
+            + "JOIN events_images AS eim "
+            + "ON e.id = eim.event_id "
+            + "WHERE e.id = :eventId")
+    List<String> findAllImagesLinksByEventId(Long eventId);
 }

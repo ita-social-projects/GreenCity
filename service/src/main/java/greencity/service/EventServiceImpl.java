@@ -581,16 +581,26 @@ public class EventServiceImpl implements EventService {
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
         eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
-        if (ArrayUtils.isEmpty(images) && updateEventDto.getImagesToDelete() == null) {
+        List<String> imagesToUpdate = updateEventDto.getAdditionalImages();
+        List<String> imagesToDelete =
+            imagesToUpdate == null || imagesToUpdate.isEmpty() ? eventRepo.findAllImagesLinksByEventId(toUpdate.getId())
+                : getImagesLinksToDelete(eventRepo.findAllImagesLinksByEventId(toUpdate.getId()), imagesToUpdate);
+        if (ArrayUtils.isEmpty(images) && imagesToDelete.isEmpty()) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
-            deleteOldImages(toUpdate, updateEventDto);
-        } else if (updateEventDto.getImagesToDelete() == null) {
+            deleteOldImages(toUpdate, updateEventDto, imagesToDelete);
+        } else if (imagesToDelete == null) {
             addNewImages(toUpdate, updateEventDto, images);
         } else {
-            deleteImagesFromServer(updateEventDto.getImagesToDelete());
+            deleteImagesFromServer(imagesToDelete);
             addNewImages(toUpdate, updateEventDto, images);
         }
+    }
+
+    public static List<String> getImagesLinksToDelete(List<String> existingLinks, List<String> newLinks) {
+        return existingLinks.stream()
+            .filter(existingLink -> !newLinks.contains(existingLink))
+            .collect(Collectors.toList());
     }
 
     private void changeOldImagesWithoutRemovingAndAdding(Event toUpdate, UpdateEventDto updateEventDto) {
@@ -607,8 +617,8 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void deleteOldImages(Event toUpdate, UpdateEventDto updateEventDto) {
-        deleteImagesFromServer(updateEventDto.getImagesToDelete());
+    private void deleteOldImages(Event toUpdate, UpdateEventDto updateEventDto, List<String> imagesToDelete) {
+        deleteImagesFromServer(imagesToDelete);
         if (updateEventDto.getTitleImage() != null) {
             toUpdate.setTitleImage(updateEventDto.getTitleImage());
             if (updateEventDto.getAdditionalImages() != null) {
