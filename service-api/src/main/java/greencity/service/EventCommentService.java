@@ -3,10 +3,7 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.dto.eventcomment.EventCommentVO;
+import greencity.dto.eventcomment.*;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
 
@@ -61,7 +58,7 @@ public interface EventCommentService {
      *                    change.
      * @param user        current {@link UserVO} that wants to change.
      */
-    void update(String commentText, Long id, UserVO user);
+    void update(UpdateEventCommentDtoRequest commentText, Long id, UserVO user);
 
     /**
      * Method for deleting the {@link EventCommentVO} instance by its id.

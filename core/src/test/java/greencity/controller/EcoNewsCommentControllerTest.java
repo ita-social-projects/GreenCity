@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.config.SecurityConfig;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
+import greencity.dto.econewscomment.UpdateEcoNewsCommentDtoRequest;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
 import greencity.service.UserService;
@@ -57,12 +58,15 @@ class EcoNewsCommentControllerTest {
 
     private final Principal principal = getPrincipal();
 
+    private ObjectMapper mapper;
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(ecoNewsCommentController)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver(),
                 new UserArgumentResolver(userService, modelMapper))
             .build();
+        mapper = new ObjectMapper();
     }
 
     @Test
@@ -81,7 +85,6 @@ class EcoNewsCommentControllerTest {
             .content(content))
             .andExpect(status().isCreated());
 
-        ObjectMapper mapper = new ObjectMapper();
         AddEcoNewsCommentDtoRequest addEcoNewsCommentDtoRequest =
             mapper.readValue(content, AddEcoNewsCommentDtoRequest.class);
 
@@ -181,12 +184,20 @@ class EcoNewsCommentControllerTest {
         UserVO userVO = getUserVO();
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(patch(ecoNewsCommentControllerLink + "?id=1&text=text")
+        UpdateEcoNewsCommentDtoRequest dtoRequest = new UpdateEcoNewsCommentDtoRequest("updated text");
+
+        mockMvc.perform(patch(ecoNewsCommentControllerLink)
+            .param("id", "1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(dtoRequest))
             .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).findByEmail("test@gmail.com");
-        verify(ecoNewsCommentService).update("text", 1L, userVO);
+        verify(ecoNewsCommentService).update(dtoRequest, 1L, userVO);
+
+        mockMvc.perform(patch(ecoNewsCommentControllerLink))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

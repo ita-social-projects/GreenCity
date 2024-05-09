@@ -6,10 +6,7 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -185,7 +182,7 @@ public class EventCommentServiceImpl implements EventCommentService {
      */
     @Override
     @Transactional
-    public void update(String commentText, Long id, UserVO userVO) {
+    public void update(UpdateEventCommentDtoRequest commentText, Long id, UserVO userVO) {
         EventComment eventComment = eventCommentRepo.findByIdAndStatusNot(id, CommentStatus.DELETED)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
 
@@ -193,7 +190,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
 
-        eventComment.setText(commentText);
+        eventComment.setText(commentText.getText());
         eventComment.setStatus(CommentStatus.EDITED);
         eventCommentRepo.save(eventComment);
     }

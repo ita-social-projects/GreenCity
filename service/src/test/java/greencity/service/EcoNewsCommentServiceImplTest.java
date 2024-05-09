@@ -7,6 +7,7 @@ import static greencity.ModelUtils.getUserTagDto;
 import static greencity.ModelUtils.getUserVO;
 
 import greencity.achievement.AchievementCalculation;
+import greencity.dto.econewscomment.*;
 import greencity.dto.user.UserTagDto;
 import greencity.enums.CommentStatus;
 import greencity.exception.exceptions.UserHasNoPermissionToAccessException;
@@ -25,11 +26,6 @@ import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
 import greencity.dto.user.UserVO;
 import greencity.entity.EcoNews;
 import greencity.entity.EcoNewsComment;
@@ -344,7 +340,7 @@ class EcoNewsCommentServiceImplTest {
 
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.ofNullable(ModelUtils.getEcoNewsComment()));
 
-        ecoNewsCommentService.update(newText, commentId, userVO);
+        ecoNewsCommentService.update(new UpdateEcoNewsCommentDtoRequest(newText), commentId, userVO);
         verify(ecoNewsCommentRepo, times(1)).save(any(EcoNewsComment.class));
     }
 
@@ -357,7 +353,8 @@ class EcoNewsCommentServiceImplTest {
         when(ecoNewsCommentRepo.findById(commentId)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> ecoNewsCommentService.update(newText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> ecoNewsCommentService.update(new UpdateEcoNewsCommentDtoRequest(newText), commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -375,7 +372,8 @@ class EcoNewsCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> ecoNewsCommentService.update(newText, commentId, userToUpdateVO));
+                () -> ecoNewsCommentService.update(new UpdateEcoNewsCommentDtoRequest(newText), commentId,
+                    userToUpdateVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 

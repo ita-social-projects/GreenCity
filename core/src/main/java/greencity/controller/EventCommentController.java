@@ -7,10 +7,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentDto;
-import greencity.dto.eventcomment.EventCommentVO;
+import greencity.dto.eventcomment.*;
 import greencity.dto.user.UserVO;
 import greencity.service.EventCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -142,7 +139,7 @@ public class EventCommentController {
     })
     @PatchMapping()
     public void update(@RequestParam Long id,
-        @RequestBody @Valid @Size(min = 1, max = 8000) String commentText,
+        @RequestBody @Valid @Size(min = 1, max = 8000) UpdateEventCommentDtoRequest commentText,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         eventCommentService.update(commentText, id, user);
     }

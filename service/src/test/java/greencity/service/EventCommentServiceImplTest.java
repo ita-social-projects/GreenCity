@@ -8,10 +8,7 @@ import greencity.dto.PageableDto;
 import greencity.dto.econewscomment.AmountCommentLikesDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventVO;
-import greencity.dto.eventcomment.AddEventCommentDtoRequest;
-import greencity.dto.eventcomment.AddEventCommentDtoResponse;
-import greencity.dto.eventcomment.EventCommentAuthorDto;
-import greencity.dto.eventcomment.EventCommentDto;
+import greencity.dto.eventcomment.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
 import greencity.entity.event.Event;
@@ -268,7 +265,7 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED))
             .thenReturn(Optional.ofNullable(eventComment));
 
-        eventCommentService.update(editedText, commentId, userVO);
+        eventCommentService.update(new UpdateEventCommentDtoRequest(editedText), commentId, userVO);
 
         assertEquals(CommentStatus.EDITED, eventComment.getStatus());
         verify(eventCommentRepo).save(any(EventComment.class));
@@ -283,7 +280,8 @@ class EventCommentServiceImplTest {
         when(eventCommentRepo.findByIdAndStatusNot(commentId, CommentStatus.DELETED)).thenReturn(Optional.empty());
 
         NotFoundException notFoundException =
-            assertThrows(NotFoundException.class, () -> eventCommentService.update(editedText, commentId, userVO));
+            assertThrows(NotFoundException.class,
+                () -> eventCommentService.update(new UpdateEventCommentDtoRequest(editedText), commentId, userVO));
         assertEquals(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION, notFoundException.getMessage());
     }
 
@@ -303,7 +301,7 @@ class EventCommentServiceImplTest {
 
         BadRequestException badRequestException =
             assertThrows(BadRequestException.class,
-                () -> eventCommentService.update(editedText, commentId, userVO));
+                () -> eventCommentService.update(new UpdateEventCommentDtoRequest(editedText), commentId, userVO));
         assertEquals(ErrorMessage.NOT_A_CURRENT_USER, badRequestException.getMessage());
     }
 

@@ -5,11 +5,7 @@ import greencity.constant.EmailNotificationMessagesConstants;
 import greencity.constant.ErrorMessage;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.*;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
@@ -197,14 +193,14 @@ public class EcoNewsCommentServiceImpl implements EcoNewsCommentService {
      */
     @Override
     @Transactional
-    public void update(String text, Long id, UserVO userVO) {
+    public void update(UpdateEcoNewsCommentDtoRequest text, Long id, UserVO userVO) {
         EcoNewsComment comment = ecoNewsCommentRepo.findById(id)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.COMMENT_NOT_FOUND_EXCEPTION));
         if (!userVO.getId().equals(comment.getUser().getId())) {
             throw new BadRequestException(ErrorMessage.NOT_A_CURRENT_USER);
         }
         comment.setStatus(CommentStatus.EDITED);
-        comment.setText(text);
+        comment.setText(text.getText());
         ecoNewsCommentRepo.save(comment);
     }
 

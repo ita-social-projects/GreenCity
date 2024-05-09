@@ -6,11 +6,7 @@ import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.*;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EcoNewsCommentService;
@@ -21,7 +17,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -179,7 +174,7 @@ public class EcoNewsCommentController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PatchMapping("")
-    public void update(Long id, @RequestParam @NotBlank String text,
+    public void update(Long id, @RequestBody UpdateEcoNewsCommentDtoRequest text,
         @Parameter(hidden = true) @CurrentUser UserVO user) {
         ecoNewsCommentService.update(text, id, user);
     }

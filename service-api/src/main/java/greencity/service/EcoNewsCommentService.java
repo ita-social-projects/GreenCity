@@ -2,11 +2,7 @@ package greencity.service;
 
 import greencity.dto.PageableDto;
 import greencity.dto.econews.EcoNewsVO;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
-import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
-import greencity.dto.econewscomment.AmountCommentLikesDto;
-import greencity.dto.econewscomment.EcoNewsCommentDto;
-import greencity.dto.econewscomment.EcoNewsCommentVO;
+import greencity.dto.econewscomment.*;
 import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserVO;
 import org.springframework.data.domain.Pageable;
@@ -53,13 +49,13 @@ public interface EcoNewsCommentService {
     void deleteById(Long id, UserVO user);
 
     /**
-     * Method to change the existing {@link EcoNewsCommentVO}.
+     * Method to update the text of an existing {@link EcoNewsCommentVO}.
      *
-     * @param text new text of {@link EcoNewsCommentVO}.
+     * @param text new text for {@link EcoNewsCommentVO}.
      * @param id   to specify {@link EcoNewsCommentVO} that user wants to change.
      * @param user current {@link UserVO} that wants to change.
      */
-    void update(String text, Long id, UserVO user);
+    void update(UpdateEcoNewsCommentDtoRequest text, Long id, UserVO user);
 
     /**
      * Method to like or dislike {@link EcoNewsCommentVO} specified by id.
