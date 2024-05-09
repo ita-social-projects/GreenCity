@@ -382,6 +382,7 @@ class EventServiceImplTest {
     void updateTitleImage() {
         EventDto eventDto = ModelUtils.getEventDto();
         UpdateEventDto eventToUpdateDto = ModelUtils.getUpdateEventDto();
+        eventToUpdateDto.setAdditionalImages(new ArrayList<>());
         Event event = ModelUtils.getEvent();
         List<Long> eventIds = List.of(event.getId());
         User user = ModelUtils.getUser();

@@ -570,26 +570,24 @@ public class EventServiceImpl implements EventService {
             addAddressToLocation(updateEventDto.getDatesLocations());
             eventRepo.deleteEventDateLocationsByEventId(toUpdate.getId());
             toUpdate.setDates(updateEventDto.getDatesLocations().stream()
-                .map(d -> modelMapper.map(d, EventDateLocation.class))
-                .map(d -> {
+                .map(d -> modelMapper.map(d, EventDateLocation.class)).map(d -> {
                     d.setEvent(toUpdate);
                     return d;
-                })
-                .collect(Collectors.toList()));
+                }).collect(Collectors.toList()));
         }
     }
 
     private void updateImages(Event toUpdate, UpdateEventDto updateEventDto, MultipartFile[] images) {
+        List<String> additionalImages = updateEventDto.getAdditionalImages();
+        List<String> imagesToDelete = additionalImages == null || additionalImages.isEmpty()
+            ? eventRepo.findAllImagesLinksByEventId(toUpdate.getId())
+            : getImagesLinksToDelete(eventRepo.findAllImagesLinksByEventId(toUpdate.getId()), additionalImages);
         eventRepo.deleteEventAdditionalImagesByEventId(updateEventDto.getId());
-        List<String> imagesToUpdate = updateEventDto.getAdditionalImages();
-        List<String> imagesToDelete =
-            imagesToUpdate == null || imagesToUpdate.isEmpty() ? eventRepo.findAllImagesLinksByEventId(toUpdate.getId())
-                : getImagesLinksToDelete(eventRepo.findAllImagesLinksByEventId(toUpdate.getId()), imagesToUpdate);
         if (ArrayUtils.isEmpty(images) && imagesToDelete.isEmpty()) {
             changeOldImagesWithoutRemovingAndAdding(toUpdate, updateEventDto);
         } else if (images == null || images.length == 0) {
             deleteOldImages(toUpdate, updateEventDto, imagesToDelete);
-        } else if (imagesToDelete == null) {
+        } else if (imagesToDelete.isEmpty()) {
             addNewImages(toUpdate, updateEventDto, images);
         } else {
             deleteImagesFromServer(imagesToDelete);
@@ -610,8 +608,9 @@ public class EventServiceImpl implements EventService {
             toUpdate.setTitleImage(DEFAULT_TITLE_IMAGE_PATH);
         }
         if (updateEventDto.getAdditionalImages() != null) {
-            updateEventDto.getAdditionalImages().forEach(img -> toUpdate
-                .setAdditionalImages(List.of(EventImages.builder().link(img).event(toUpdate).build())));
+            toUpdate.setAdditionalImages(updateEventDto.getAdditionalImages().stream()
+                .map(url -> EventImages.builder().event(toUpdate).link(url).build())
+                .collect(Collectors.toList()));
         } else {
             toUpdate.setAdditionalImages(null);
         }
