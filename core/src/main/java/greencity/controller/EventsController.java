@@ -116,10 +116,10 @@ public class EventsController {
             content = @Content(examples = @ExampleObject(HttpStatuses.NOT_FOUND)))
     })
     @PutMapping(value = "/update",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+        consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> update(
         @Parameter(required = true,
-            description = SwaggerExampleModel.UPDATE_EVENT) @RequestPart UpdateEventDto eventDto,
+            description = SwaggerExampleModel.UPDATE_EVENT) @ValidEventDtoRequest @RequestPart UpdateEventDto eventDto,
         @Parameter(hidden = true) Principal principal,
         @RequestPart(required = false) @Nullable MultipartFile[] images) {
         return ResponseEntity.status(HttpStatus.OK).body(
