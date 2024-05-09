@@ -59,6 +59,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.lang3.StringUtils;
@@ -231,9 +232,14 @@ public class EcoNewsServiceImpl implements EcoNewsService {
 
     @Override
     public PageableAdvancedDto<EcoNewsGenericDto> findByFilters(Pageable page, List<String> tags, String title) {
-        return buildPageableAdvancedGeneticDto(
-            ecoNewsRepo.findAll((root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
-                page));
+        return CollectionUtils.isEmpty(tags) && StringUtils.isEmpty(title)
+            ? buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+                PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "creationDate"))))
+            : buildPageableAdvancedGeneticDto(ecoNewsRepo.findAll(
+                (root, query, criteriaBuilder) -> getPredicate(root, criteriaBuilder, tags, title),
+                PageRequest.of(page.getPageNumber(), page.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "creationDate"))));
     }
 
     private PageableAdvancedDto<EcoNewsDto> buildPageableAdvancedDto(Page<EcoNews> ecoNewsPage) {
