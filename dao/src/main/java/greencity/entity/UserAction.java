@@ -23,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "user_actions",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id","achievement_category_id"}))
+    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "achievement_category_id"}))
 @Builder
 @EqualsAndHashCode
 public class UserAction {
