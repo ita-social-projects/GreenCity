@@ -41,7 +41,9 @@ import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAttenderDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventDateLocationPreviewDto;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventPreviewDto;
 import greencity.dto.event.EventVO;
 import greencity.dto.event.UpdateEventDto;
 import greencity.dto.eventcomment.AddEventCommentDtoRequest;
@@ -99,10 +101,10 @@ import greencity.dto.search.SearchEventsDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
+import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemWithStatusSaveRequestDto;
 import greencity.dto.shoppinglistitem.ShoppingListItemWithStatusRequestDto;
-import greencity.dto.shoppinglistitem.CustomShoppingListItemSaveRequestDto;
 import greencity.dto.socialnetwork.SocialNetworkImageVO;
 import greencity.dto.socialnetwork.SocialNetworkVO;
 import greencity.dto.specification.SpecificationVO;
@@ -113,17 +115,18 @@ import greencity.dto.tag.TagTranslationVO;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.tag.TagViewDto;
+import greencity.dto.user.AuthorDto;
 import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.HabitIdRequestDto;
-import greencity.dto.user.UserSearchDto;
-import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserFilterDtoRequest;
 import greencity.dto.user.UserFilterDtoResponse;
 import greencity.dto.user.UserManagementVO;
+import greencity.dto.user.UserSearchDto;
 import greencity.dto.user.UserShoppingListItemAdvanceDto;
 import greencity.dto.user.UserShoppingListItemResponseDto;
 import greencity.dto.user.UserShoppingListItemVO;
 import greencity.dto.user.UserStatusDto;
+import greencity.dto.user.UserTagDto;
 import greencity.dto.user.UserVO;
 import greencity.dto.useraction.UserActionVO;
 import greencity.dto.verifyemail.VerifyEmailVO;
@@ -179,16 +182,19 @@ import greencity.enums.Role;
 import greencity.enums.ShoppingListItemStatus;
 import greencity.enums.TagType;
 import greencity.enums.UserStatus;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.sql.Date;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -201,6 +207,19 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.hibernate.sql.results.internal.TupleElementImpl;
+import org.hibernate.sql.results.internal.TupleImpl;
+import org.hibernate.sql.results.internal.TupleMetadata;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
+import static greencity.enums.EventStatus.CLOSED;
+import static greencity.enums.EventStatus.CREATED;
+import static greencity.enums.EventStatus.JOINED;
+import static greencity.enums.EventStatus.OPEN;
+import static greencity.enums.EventStatus.SAVED;
+import static greencity.enums.EventTime.FUTURE;
+import static greencity.enums.EventTime.PAST;
 import static greencity.enums.UserStatus.ACTIVATED;
 
 public class ModelUtils {
@@ -2995,24 +3014,24 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDto() {
         return FilterEventDto.builder()
-            .eventTime(List.of("FUTURE", "PAST"))
+            .eventTime(List.of(FUTURE, PAST))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("OPEN", "CLOSED", "JOINED", "CREATED", "SAVED"))
+            .statuses(List.of(OPEN, CLOSED, JOINED, CREATED, SAVED))
             .tags(List.of("SOCIAL", "ECONOMIC", "ENVIRONMENTAL"))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithOpenStatus() {
         return FilterEventDto.builder()
-            .statuses(List.of("OPEN"))
+            .statuses(List.of(OPEN))
             .build();
     }
 
     public static FilterEventDto getFilterEventDtoWithSomeFilters() {
         return FilterEventDto.builder()
-            .eventTime(List.of("PAST"))
+            .eventTime(List.of(PAST))
             .cities(List.of("Kyiv"))
-            .statuses(List.of("JOINED", "CREATED", "SAVED"))
+            .statuses(List.of(JOINED, CREATED, SAVED))
             .build();
     }
 
@@ -3047,7 +3066,7 @@ public class ModelUtils {
 
     public static FilterEventDto getFilterEventDtoWithClosedStatus() {
         return FilterEventDto.builder()
-            .statuses(List.of("CLOSED"))
+            .statuses(List.of(CLOSED))
             .build();
     }
 
@@ -3079,5 +3098,147 @@ public class ModelUtils {
             .currentUserId(1L)
             .searchQuery("Test")
             .build();
+    }
+
+    public static List<Tuple> getTuples(TupleElement<?>[] elements) {
+        TupleMetadata tupleMetadata = new TupleMetadata(
+            elements, new String[] {"eventId", "title", "tagId", "languageCode", "tagName",
+                "is_open", "organizerId", "organizerName", "title_image", "creation_date", "id", "start_date",
+                "finish_date", "online_link", "latitude", "longitude", "street_en", "street_ua", "house_number",
+                "city_en", "city_ua", "region_en", "region_ua", "country_en", "country_ua", "formatted_address_en",
+                "formatted_address_ua", "isRelevant", "likes", "countComments", "grade", "isOrganizedByFriend",
+                "isOrganizedByUser", "isSubscribed", "isFavorite"});
+
+        Object[] row1 = new Object[] {1L, "test1", 1L, "en", "Social", true, 1L,
+            "Test", "image.png", Date.valueOf("2024-04-16"), 1L, Instant.parse("2025-05-15T00:00:03Z"),
+            Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            true, true, true};
+        Object[] row2 = new Object[] {1L, "test1", 1L, "ua", "Соціальний", true, 1L,
+            "Test", "image.png", Date.valueOf("2024-04-16"), 1L, Instant.parse("2025-05-15T00:00:03Z"),
+            Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            true, true, true};
+        Object[] row3 = new Object[] {3L, "test3", 2L, "en", "Social1", true, 2L,
+            "Test3", "image.png", Date.valueOf("2024-04-14"), 2L, Instant.parse("2025-05-15T00:00:03Z"),
+            Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            true, true, true};
+        Object[] row4 = new Object[] {3L, "test3", 2L, "ua", "Соціальний1", true, 2L,
+            "Test3", "image.png", Date.valueOf("2024-04-14"), 2L, Instant.parse("2025-05-15T00:00:03Z"),
+            Instant.parse("2025-05-16T00:00:03Z"), "testtesttesttest", 0., 1., null,
+            null, null, "Kyiv", null, null, null, null, null, null, null, true, 0L, 2L, new BigDecimal("3.5"), false,
+            true, true, true};
+        return List.of(new TupleImpl(tupleMetadata, row1), new TupleImpl(tupleMetadata, row2),
+            new TupleImpl(tupleMetadata, row3), new TupleImpl(tupleMetadata, row4));
+    }
+
+    public static TupleElement<?>[] getTupleElements() {
+        return new TupleElement<?>[] {
+            new TupleElementImpl<>(Long.class, "eventId"),
+            new TupleElementImpl<>(String.class, "title"),
+            new TupleElementImpl<>(Long.class, "tagId"),
+            new TupleElementImpl<>(String.class, "languageCode"),
+            new TupleElementImpl<>(String.class, "tagName"),
+            new TupleElementImpl<>(Boolean.class, "is_open"),
+            new TupleElementImpl<>(Long.class, "organizerId"),
+            new TupleElementImpl<>(String.class, "organizerName"),
+            new TupleElementImpl<>(String.class, "title_image"),
+            new TupleElementImpl<>(Date.class, "creation_date"),
+            new TupleElementImpl<>(Instant.class, "start_date"),
+            new TupleElementImpl<>(Instant.class, "finish_date"),
+            new TupleElementImpl<>(String.class, "online_link"),
+            new TupleElementImpl<>(Double.class, "latitude"),
+            new TupleElementImpl<>(Double.class, "longitude"),
+            new TupleElementImpl<>(String.class, "street_en"),
+            new TupleElementImpl<>(String.class, "street_ua"),
+            new TupleElementImpl<>(String.class, "house_number"),
+            new TupleElementImpl<>(String.class, "city_en"),
+            new TupleElementImpl<>(String.class, "city_ua"),
+            new TupleElementImpl<>(String.class, "region_en"),
+            new TupleElementImpl<>(String.class, "region_ua"),
+            new TupleElementImpl<>(String.class, "country_en"),
+            new TupleElementImpl<>(String.class, "country_ua"),
+            new TupleElementImpl<>(String.class, "formatted_address_en"),
+            new TupleElementImpl<>(String.class, "formatted_address_ua"),
+            new TupleElementImpl<>(Boolean.class, "isRelevant"),
+            new TupleElementImpl<>(Long.class, "likes"),
+            new TupleElementImpl<>(Long.class, "countComments"),
+            new TupleElementImpl<>(BigDecimal.class, "grade"),
+            new TupleElementImpl<>(Boolean.class, "isOrganizedByFriend"),
+            new TupleElementImpl<>(Boolean.class, "isOrganizedByUser"),
+            new TupleElementImpl<>(Boolean.class, "isSubscribed"),
+            new TupleElementImpl<>(Boolean.class, "isFavorite")
+        };
+    }
+
+    public static List<EventPreviewDto> getEventPreviewDtos() {
+        return List.of(
+            EventPreviewDto.builder()
+                .id(3L)
+                .title("test3")
+                .organizer(AuthorDto.builder().id(2L).name("Test3").build())
+                .creationDate(Date.valueOf("2024-04-14").toLocalDate())
+                .dates(Set.of(
+                    EventDateLocationPreviewDto.builder()
+                        .startDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
+                        .finishDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-16T00:00:03Z"), ZoneId.systemDefault()))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(2)
+                    .nameUa("Соціальний1")
+                    .nameEn("Social1")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0L)
+                .countComments(2L)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .build(),
+            EventPreviewDto.builder()
+                .id(1L)
+                .title("test1")
+                .organizer(AuthorDto.builder().id(1L).name("Test").build())
+                .creationDate(Date.valueOf("2024-04-16").toLocalDate())
+                .dates(Set.of(
+                    EventDateLocationPreviewDto.builder()
+                        .startDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-15T00:00:03Z"), ZoneId.systemDefault()))
+                        .finishDate(
+                            ZonedDateTime.ofInstant(Instant.parse("2025-05-16T00:00:03Z"), ZoneId.systemDefault()))
+                        .onlineLink("testtesttesttest")
+                        .coordinates(AddressDto.builder()
+                            .latitude(0.0)
+                            .longitude(1.0)
+                            .cityEn("Kyiv")
+                            .build())
+                        .build()))
+                .tags(List.of(TagUaEnDto.builder()
+                    .id(1)
+                    .nameUa("Соціальний")
+                    .nameEn("Social")
+                    .build()))
+                .titleImage("image.png")
+                .isOpen(true)
+                .isSubscribed(true)
+                .isFavorite(true)
+                .isRelevant(true)
+                .likes(0L)
+                .countComments(2L)
+                .isOrganizedByFriend(false)
+                .eventRate(3.5)
+                .build());
     }
 }

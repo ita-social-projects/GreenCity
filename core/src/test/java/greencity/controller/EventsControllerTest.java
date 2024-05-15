@@ -7,6 +7,7 @@ import greencity.dto.PageableAdvancedDto;
 import greencity.dto.event.AddressDto;
 import greencity.dto.event.EventAuthorDto;
 import greencity.dto.event.EventDateLocationDto;
+import greencity.dto.event.EventPreviewDto;
 import greencity.dto.filter.FilterEventDto;
 import greencity.dto.tag.TagUaEnDto;
 import greencity.exception.exceptions.BadRequestException;
@@ -105,17 +106,18 @@ class EventsControllerTest {
         int pageSize = 20;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        PageableAdvancedDto<EventDto> pageableAdvancedDto = getPageableAdvancedDtoEventDto();
+        PageableAdvancedDto<EventPreviewDto> eventPreviewDtoPageableAdvancedDto =
+            ModelUtils.getEventPreviewDtoPageableAdvancedDto(pageable);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
         ObjectWriter ow = objectMapper.writer();
-        String expectedJson = ow.writeValueAsString(pageableAdvancedDto);
+        String expectedJson = ow.writeValueAsString(eventPreviewDtoPageableAdvancedDto);
 
         FilterEventDto filterEventDto = ModelUtils.getNullFilterEventDto();
 
         when(eventService.getEvents(pageable, principal, filterEventDto, null))
-            .thenReturn(pageableAdvancedDto);
+            .thenReturn(eventPreviewDtoPageableAdvancedDto);
 
         mockMvc.perform(get(EVENTS_CONTROLLER_LINK)
             .contentType(MediaType.APPLICATION_JSON)
