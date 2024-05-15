@@ -888,8 +888,10 @@ public class EventServiceImpl implements EventService {
         for (Long id : sortedIds) {
             // Temporary mapping in TagUaEnDto
             Set<TagDto> tags = tagsMap.get(id);
-            TagDto enTag = tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("en")).findAny().get();
-            TagDto uaTag = tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("ua")).findAny().get();
+            TagDto enTag =
+                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("en")).findAny().orElse(new TagDto());
+            TagDto uaTag =
+                tags.stream().filter(t -> t.getLanguageCode().equalsIgnoreCase("ua")).findAny().orElse(new TagDto());
             TagUaEnDto tagUaEnDto = TagUaEnDto.builder()
                 .id(enTag.getId())
                 .nameEn(enTag.getName())
