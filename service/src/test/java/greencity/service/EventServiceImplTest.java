@@ -40,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
@@ -72,6 +73,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
@@ -1340,7 +1343,9 @@ class EventServiceImplTest {
             idsPage.isLast());
         when(restClient.findIdByEmail(principal.getName())).thenReturn(userId);
         when(eventRepo.findAllEventPreviewDtoByFilters(userId, true, true, true,
-            titleCriteria, null, null, filterEventDto.getCities(), filterEventDto.getTags(), pageable))
+            titleCriteria, null, null,
+            filterEventDto.getCities().stream().map(String::toLowerCase).toList(),
+            filterEventDto.getTags().stream().map(String::toLowerCase).toList(), pageable))
             .thenReturn(idsPage);
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent(), userId)).thenReturn(tuples);
 
@@ -1371,8 +1376,9 @@ class EventServiceImplTest {
             idsPage.hasNext(),
             idsPage.isFirst(),
             idsPage.isLast());
-        when(eventRepo.findAllEventPreviewDtoByFilters(titleCriteria, null, null, filterEventDto.getCities(),
-            filterEventDto.getTags(), pageable))
+        when(eventRepo.findAllEventPreviewDtoByFilters(titleCriteria, null, null,
+            filterEventDto.getCities().stream().map(String::toLowerCase).toList(),
+            filterEventDto.getTags().stream().map(String::toLowerCase).toList(), pageable))
             .thenReturn(idsPage);
         when(eventRepo.loadEventPreviewDataByIds(idsPage.getContent())).thenReturn(tuples);
 
