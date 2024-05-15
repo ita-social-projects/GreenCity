@@ -365,23 +365,24 @@ public interface EventRepo extends JpaRepository<Event, Long>, JpaSpecificationE
             (CAST(:isSubscribed as boolean) IS NULL OR combined.isSubscribed = :isSubscribed) AND
             (CAST(:isOrganizedByUser as boolean) IS NULL OR combined.isOrganizedByUser = :isOrganizedByUser) AND
             (CAST(:isFavorite as boolean) IS NULL OR combined.isFavorite = :isFavorite);
-            """, countQuery = """
-        SELECT count(distinct e.id)
-         FROM events e
-                  LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
-                  LEFT JOIN events_tags et ON e.id = et.event_id
-                  LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
-                  left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
-                  left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
-         WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(e.title) like (:titleCriteria)) AND
-             (CAST(:isOpen as boolean) IS NULL OR e.is_open = :isOpen) AND
-             (CAST(:isRelevant as boolean) IS NULL OR (edl.finish_date >= now()) = :isRelevant) AND
-             (CAST(:citiesInLower as varchar[]) IS NULL OR lower(edl.city_en) in (:citiesInLower)) AND
-             (CAST(:tagsInLower as varchar[]) IS NULL OR lower(tt.name) in (:tagsInLower)) AND
-             (CAST(:isSubscribed as boolean) IS NULL OR (ea.user_id = :userId and ea.user_id is not null) = :isSubscribed) AND
-             (CAST(:isOrganizedByUser as boolean) IS NULL OR (e.organizer_id = :userId) = :isOrganizedByUser) AND
-             (CAST(:isFavorite as boolean) IS NULL OR (ef.user_id IS NOT NULL) = :isFavorite);
-            """)
+            """,
+        countQuery = """
+            SELECT count(distinct e.id)
+             FROM events e
+                      LEFT JOIN events_dates_locations edl ON e.id = edl.event_id
+                      LEFT JOIN events_tags et ON e.id = et.event_id
+                      LEFT JOIN tag_translations tt ON et.tag_id = tt.tag_id
+                      left join events_followers ef on e.id = ef.event_id and ef.user_id = :userId
+                      left join events_attenders ea on e.id = ea.event_id and ea.user_id = :userId
+             WHERE (CAST(:titleCriteria as varchar) IS NULL OR lower(e.title) like (:titleCriteria)) AND
+                 (CAST(:isOpen as boolean) IS NULL OR e.is_open = :isOpen) AND
+                 (CAST(:isRelevant as boolean) IS NULL OR (edl.finish_date >= now()) = :isRelevant) AND
+                 (CAST(:citiesInLower as varchar[]) IS NULL OR lower(edl.city_en) in (:citiesInLower)) AND
+                 (CAST(:tagsInLower as varchar[]) IS NULL OR lower(tt.name) in (:tagsInLower)) AND
+                 (CAST(:isSubscribed as boolean) IS NULL OR (ea.user_id = :userId and ea.user_id is not null) = :isSubscribed) AND
+                 (CAST(:isOrganizedByUser as boolean) IS NULL OR (e.organizer_id = :userId) = :isOrganizedByUser) AND
+                 (CAST(:isFavorite as boolean) IS NULL OR (ef.user_id IS NOT NULL) = :isFavorite);
+                """)
     Page<Long> findAllEventPreviewDtoByFilters(Long userId, Boolean isSubscribed, Boolean isOrganizedByUser,
         Boolean isFavorite, String titleCriteria, Boolean isOpen,
         Boolean isRelevant, List<String> citiesInLower,

@@ -242,11 +242,13 @@ public class EventServiceImpl implements EventService {
             }
             if (filterEventDto.getCities() != null) {
                 citiesInLower = filterEventDto.getCities().stream().map(String::toLowerCase).toList();
-                if (citiesInLower.isEmpty()) citiesInLower = null;
+                if (citiesInLower.isEmpty())
+                    citiesInLower = null;
             }
             if (filterEventDto.getTags() != null) {
                 tagsInLower = filterEventDto.getTags().stream().map(String::toLowerCase).toList();
-                if (tagsInLower.isEmpty()) tagsInLower = null;
+                if (tagsInLower.isEmpty())
+                    tagsInLower = null;
             }
         }
 
